@@ -1,0 +1,128 @@
+import express from 'express'
+import session from 'express-session'
+import cookieParser from 'cookie-parser'
+import hbs from 'hbs'
+
+import config, { apps, addrBook } from './config.mjs'
+
+/* Assets */
+import Site from './server/assets/site.mjs'
+import User from './server/assets/user.mjs'
+//! import { User as DriverUser } from './server/assets/driver.mjs'
+//! import { User as StudentUser } from './server/assets/student.mjs'
+
+/* Validators */
+import validationCheck from './server/validators/default.mjs'
+import { validateLocalAuth, validateSession } from './server/validators/user.mjs'
+
+/* Routes */
+import publicApiRoute from './server/routes/api.public.mjs'
+import apiRoute from './server/routes/api.mjs'
+
+/* Registry */
+import { formSelectors } from './client/global/modules/registry/selectors.mjs'
+
+
+const MySQLStore = require('express-mysql-session')(session)
+const { storeOptions, loginUrl, sessionUrl, logoutUrl, secret } = config.session
+const store = new MySQLStore(storeOptions)
+
+
+
+export default branch => {
+    const app = apps[branch]
+    if (!app.active) return
+
+    const server = express()
+    const { type, name, port, route, routes } = app
+    const { maxAge } = app.session
+    let UserSrc = User
+
+    if (branch == 'driver') UserSrc = DriverUser
+    if (branch == 'student') UserSrc = StudentUser
+
+    server.set('trust proxy', '127.0.0.1')
+    //! later set "view engine" and "views" for hbs
+
+    server.use(express.static(`./client/${branch}`))
+    server.use(express.static('./client/global/'))
+
+    server.use(express.urlencoded({ extended: true }))
+    server.use(cookieParser(config.cookie.secret, { httpOnly: true }))
+    server.use(session({
+        secret: `${secret}-${branch}`,
+        name: `connect.sid.${branch}`,
+        resave: false,
+        saveUninitialized: false,
+        rolling: true,
+        cookie: {
+            httpOnly: true,
+            secure: false,
+            maxAge,
+        },
+        store,
+    }))
+    /*
+        * Session Notes:
+        The main idea is to keep a separate session id and session name for each subdomain.
+        The site id can not be accessed from outside a middleware so the idea was abandoned.
+        Since a site will have its own domain, that shouldn't be an issue.
+        ? Time will show...
+    */
+
+    server.use(async (req, res, next) => {
+        const { protocol, originalUrl } = req
+        const host = req.get('host')
+        const parsedUrl = new URL(`${protocol}://${host + originalUrl}`)
+        const domain = parsedUrl.hostname
+        const match = domain.match(/\./g) || []
+        let subdomain = '', coreDomain = domain
+
+        if (match.length > 1) {
+            if (match.length === 2) {
+                const x = domain.split('.')
+                subdomain = x[0]
+                coreDomain = `${x[1]}.${x[2]}`
+            }
+        }
+
+        const site = await new Site(branch, coreDomain)
+        if (!site.active)
+            return res.send(`Access Denied: the site domain <u>${domain}</> is deactivated`)
+
+        const xForwardedFor = req.header('x-forwarded-for')
+
+        req.session.clientIp = xForwardedFor
+            ? xForwardedFor.split(',')[0].trim()
+            : req.socket?.remoteAddress || '::1'
+
+        res.site = { ...site, type }
+        res.session = { branch, siteId: site.id, type, maxAge }
+        res.hbs = {
+            appName: name,
+            siteName: site.name,
+            title: name,
+            addrBook,
+            logoutUrl,
+        }
+
+        next()
+    })
+
+    server.use('/api', apiRoute)
+    server.use('/api/public', publicApiRoute)
+
+    server.post(loginUrl, validateLocalAuth, validationCheck, UserSrc.login)
+    server.post(sessionUrl, validateSession, validationCheck, UserSrc.session)
+    server.get(logoutUrl, UserSrc.logout)
+
+    if (route) server.use(route)
+    if (routes && routes.length)
+        routes.forEach(route => server.use(route.url, route.router))
+
+    server.use((req, res) => {
+        respond404(res)
+    })
+
+    server.listen(port, console.log(`App [${name}]: Server is running on Port ${port}...`))
+}

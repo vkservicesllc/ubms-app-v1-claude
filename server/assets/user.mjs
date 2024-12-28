@@ -29,7 +29,7 @@ import transporter, { sender } from '../tools/nodemailer.mjs'
 import { generateRandomString } from '../tools/string.mjs'
 import { processData } from '../tools/database.mjs'
 
-const { body, validationResult } = require('express-validator')
+const { validationResult } = require('express-validator')
 const mysql = require('../tools/mysql')
 const throwErr = require('../tools/error')
 
@@ -43,7 +43,48 @@ const query = {
 }
 
 
-class User extends Person {}
+class User extends Person {
+    constructor(data = {}, light = false) {}
+
+
+    id = async () => (await mysql.execute(query.users.select('id', {
+        match: { id: User.matchIdHash(this._id) },
+    })))[0][0].id
+
+
+    static #algorithm = 'SHA-512'
+
+    static conditionList = {
+        'A': 'Active',
+        'I': 'Inactive',
+        'L': 'Locked',
+    }
+
+    static locationList = {
+        'US': 'USA',
+        'MX': 'Mexico',
+        'UA': 'Ukraine',
+    }
+
+    static statusList = {
+        'U': 'User',
+        'A': 'Admin',
+        'S': 'Super Admin',
+        'D': 'Developer',
+    }
+
+
+    static hashId = (field = 'id') => hash(field, User.#algorithm)
+
+    static matchIdHash = value => matchHash(value, User.#algorithm)
+
+
+    static login = async (req, res) => {}
+    static session = async (req, res) => {}
+    static logout = async (req, res) => {}
+
+
+}
 
 
 delete User.prefixList

@@ -1,4 +1,4 @@
-export default strip = numStr => numStr.replace(/[\s+\(\)\-]/g, '')
+export default numStr => numStr.replace(/[\s+\(\)\-]/g, '')
 
 
 export const tel = numStr => numStr ? `(${numStr.substr(0, 3)}) ${numStr.substr(3, 3)}-${numStr.substr(6, 4)}` : null
