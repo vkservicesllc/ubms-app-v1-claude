@@ -1,0 +1,1 @@
+export const stringifyBuffer = buffer => buffer.toString('utf8')
