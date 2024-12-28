@@ -1,0 +1,26 @@
+{
+  "name": "ubms-app-v1",
+  "type": "module",
+  "module": "app.mjs",
+  "scripts": {
+    "start": "bun run --watch app.mjs"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-mysql-session": "^3.0.3",
+    "express-session": "^1.18.1",
+    "express-validator": "^7.2.0",
+    "hbs": "^4.2.0",
+    "moment": "^2.30.1",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.12.0",
+    "nodemailer": "^6.9.16",
+    "zxcvbn": "^4.4.2"
+  }
+}
