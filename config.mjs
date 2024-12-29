@@ -13,7 +13,7 @@ const config = {
     copyright: {
         owner: env.SITE__COPYRIGHT_OWNER || author,
         year: parseInt(env.SITE__COPYRIGHT_YEAR),
-        html() {
+        html() { //! This will not refresh the period automatically, this function must be used in a route
             const { owner, year } = this
             let period = year
             const currentYear = new Date().getFullYear()
@@ -61,6 +61,10 @@ const addrBook = {}
 import defaultRoute from './server/routes/default.mjs'
 
 import adminRoute from './server/routes/admin.mjs'
+import adminBusinessRoute from './server/routes/admin/business.mjs'
+import adminOnlineRoute from './server/routes/admin/online.mjs'
+import adminDevToolsRoute from './server/routes/admin/dev-tools.mjs'
+import adminResourceRoute from './server/routes/admin/resource.mjs'
 
 import userRoute from './server/routes/user.mjs'
 
@@ -83,10 +87,10 @@ const apps = {
         active: true,
         route: adminRoute,
         routes: [
-            // { url: '/business', router: adminBusinessRoute },
-            // { url: '/online', router: adminOnlineRoute },
-            // { url: '/dev-tools', router: adminDevRoute },
-            // { url: '/data', router: adminDataRoute },
+            { url: '/business', router: adminBusinessRoute },
+            { url: '/online', router: adminOnlineRoute },
+            { url: '/dev-tools', router: adminDevToolsRoute },
+            { url: '/resource', router: adminResourceRoute },
         ],
         session: {
             maxAge: 5,  /* in minutes */

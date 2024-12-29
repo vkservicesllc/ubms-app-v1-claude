@@ -11,6 +11,9 @@ import User from './server/assets/user.mjs'
 //! import { User as DriverUser } from './server/assets/driver.mjs'
 //! import { User as StudentUser } from './server/assets/student.mjs'
 
+/* Tools */
+import hbsConditions from './server/tools/hbs.mjs'
+
 /* Validators */
 import validationCheck from './server/validators/default.mjs'
 import { validateLocalAuth, validateSession } from './server/validators/user.mjs'
@@ -27,6 +30,15 @@ const MySQLStore = require('express-mysql-session')(session)
 const { storeOptions, loginUrl, sessionUrl, logoutUrl, secret } = config.session
 const store = new MySQLStore(storeOptions)
 
+hbs.registerPartials('./server/views/partials')
+hbs.registerHelper('author', config.author)
+hbs.registerHelper('copyright', config.copyright.html()) //! This will not refresh the period automatically, this function must be used in a route
+hbs.registerHelper('loginUrl', loginUrl)
+hbs.registerHelper('logoutUrl', logoutUrl)
+hbs.registerHelper('logoutId', formSelectors.user.logoutLinkId)
+hbs.registerHelper(hbsConditions)
+hbs.registerHelper('idx', (arr, idx) => arr[idx])
+
 
 
 export default branch => {
@@ -42,7 +54,11 @@ export default branch => {
     if (branch == 'student') UserSrc = StudentUser
 
     server.set('trust proxy', '127.0.0.1')
-    //! later set "view engine" and "views" for hbs
+    server.set('view engine', 'hbs')
+    server.set('views', `./server/views/${branch}`)
+    server.engine('hbs', hbs.__express, {
+        layoutsDir: false,
+    })
 
     server.use(express.static(`./client/${branch}`))
     server.use(express.static('./client/global/'))
