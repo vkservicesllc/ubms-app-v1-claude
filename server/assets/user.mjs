@@ -94,3 +94,101 @@ delete User.formSelect
 
 
 export default User
+
+
+export const adminBranchOnly = (req, res, next) => {
+    if (res.session.branch != 'admin') {
+        const { errKey } = recognizeApi(req)
+
+        return throwErr[errKey].auth(res, 'Error: Access allowed in Admin Environment only')
+    }
+
+    next()
+}
+
+
+export const superAdminUserOnly = (req, res, next) => {
+    if (res.session.branch != 'admin' || res.session.user.status[0] == 'A') {
+        const { errKey } = recognizeApi(req)
+
+        return throwErr[errKey].auth(res, 'Error: Access to this path is granted to Super Admin only<br><a href="/">Dashboard</a>')
+    }
+    next()
+}
+
+
+export const developerOnly = (req, res, next) => {
+    if (res.session.branch != 'admin' || res.session.user.status[0] != 'D') {
+        const { errKey } = recognizeApi(req)
+
+        return throwErr[errKey].auth(res, 'Error: Access to this path is granted to Developer only<br><a href="/">Dashboard</a>')
+    }
+    next()
+}
+
+
+export const sessionError = (session, instructions = {}) => {
+    let error
+
+    if (!session?.user) error = 'Invalid User'
+    else {
+        const { user } = session
+        let { status, branches, usOnly } = instructions
+        if (!Array.isArray(branches)) branches = []
+        if (typeof usOnly != 'boolean') usOnly = false
+        if (status == 'DS') usOnly = true
+
+        if (['DS', 'DSA'].includes(status)) {
+            switch (status) {
+                case 'DS':
+                    if (!user.DS) error = 'Invalid User Status: Super Admin only'
+                    break
+                case 'DSA':
+                    if (!user.DSA) error = 'Invalid User Status: Admin only'
+                    break
+            }
+        }
+
+        if (error === undefined && branches.length) {
+            const { branch } = session
+
+            if (!branches.includes(branch)) error = 'Invalid Branch'
+        }
+
+        if (error === undefined && usOnly === true && user.location[0] != 'US')
+            error = 'Invalid User Location: US Users only' 
+    }
+
+    return error
+}
+
+
+
+function determineUrl(user, branch) {
+    let url = user.lastUrl || '/'
+    const { settings } = user
+
+    if (
+        settings && typeof settings == 'object' &&
+        branch in settings && 'lastUrl' in settings[branch] &&
+        settings[branch].lastUrl === 0
+    ) url = '/'
+
+    return url
+}
+
+
+function stripUrl(url, query, rmKey) {
+    url = url.split('?')[0]
+
+    delete query[rmKey]
+
+    if (Object.keys(query).length) {
+        url += '?'
+
+        for (const key in query)
+            url += `${key}=${query[key]}`
+    }
+
+    return url
+}

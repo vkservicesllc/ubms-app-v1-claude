@@ -1,0 +1,30 @@
+.login-container {
+    height: 75vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login-box {
+    max-width: 400px;
+    width: 100%;
+    padding: 2rem;
+}
+
+.login-box,
+[data-theme="light"] .login-box {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .login-box {
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+}
+
+.help {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .login-box {
+        box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+    }
+}

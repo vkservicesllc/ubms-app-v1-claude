@@ -1,0 +1,46 @@
+{{> head}}
+
+    <section class="hero is-fullheight" style="display: none !important;">
+        <div class="hero-body">
+            <div class="container login-container">
+                <div class="box login-box">
+                    <div class="is-pulled-right mb-5">
+                        {{> admin/theme}}
+                    </div>
+                    <h1 class="title is-4 has-text-centered">{{appName}}</h1>
+                    <form id="{{formId}}" action="{{loginUrl}}" method="POST" autocomplete="off">
+                        <div class="field">
+                            {{{label.username}}}
+                            <div class="control has-icons-left">
+                                {{{input.username}}}
+                                <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                                </span>
+                            </div>
+                            <p class="help is-danger has-text-centered error-message" id="username-error"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.password}}}
+                            <div class="control has-icons-left">
+                                {{{input.password}}}
+                                <span class="icon is-small is-left">
+                                <i class="fas fa-lock"></i>
+                                </span>
+                            </div>
+                            <p class="help is-danger has-text-centered error-message" id="password-error"></p>
+                        </div>
+                        <div class="field my-5">
+                            <div class="control">
+                                {{{button.login}}}
+                            </div>
+                        </div>
+                        <div class="field has-text-centered has-text-grey is-size-7">
+                            <p>{{{copyright}}}</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{{> foot}}

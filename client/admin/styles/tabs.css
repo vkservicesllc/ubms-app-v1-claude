@@ -1,0 +1,3 @@
+.tab-section:not(:first-of-type) {
+    display: none;
+}

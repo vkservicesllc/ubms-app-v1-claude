@@ -1,0 +1,29 @@
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; */
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+    /* appearance: auto; */
+}
+
+input, select {
+    border: 1px solid lightpink !important;
+}
+
+input:disabled,
+select:disabled {
+    border: 1px solid #eee !important;
+}
+
+.label.required::after {
+    content: ' *';
+}
+
+@media (max-width: 768px) {
+    .button-label {
+        display: none;
+    }
+}

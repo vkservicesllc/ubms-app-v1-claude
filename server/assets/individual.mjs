@@ -11,6 +11,7 @@ import { sessionError } from './user.mjs'
 /* Tools */
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
 import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
+import { ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
 import Query, { hash, matchHash } from '../tools/query.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
 import { encrypt } from '../tools/crypto.mjs'
@@ -39,13 +40,17 @@ class Individual extends Person {
                 })))[0][0].id
 
 
-                this.ssn = async (session, destruct = false) => {
+                this.ssn = async (session, format = false) => {
                     if (!session?.user) return
 
                     let { ssn } = (await mysql.execute(query.individuals.select({ aes: [ 'ssn', secret ] }, {
                         match: { id: Individual.matchIdHash(this._id) },
                     })))[0][0]
-                    if (ssn) ssn = stringifyBuffer(ssn)
+                    if (ssn) {
+                        ssn = stringifyBuffer(ssn)
+
+                        if (format) formatSsn(ssn)
+                    }
 
                     return ssn
                 }

@@ -1,0 +1,53 @@
+.navbar {
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.page {
+    display: flex;
+    flex-direction: row;
+    margin-top: 50px;
+    gap: 0;
+    padding: 0;
+}
+
+.page .menu {
+    position: fixed;
+    width: 200px;
+    height: 100%;
+    border-right: 1px solid #F0F0F0;
+}
+
+.page .section {
+    margin-left: 200px;
+    padding: 0;
+    width: 100%;
+}
+
+.page .section .page-content {
+    min-height: 87.4vh;
+}
+
+.page .section .footer {
+    margin: 0;
+}
+
+#user-toggler {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    .inline-navbar-item {
+        display: inline-block;
+    }
+    #user-dropdown {
+        display: none;
+    }
+    #user-toggler {
+        display: inline-block;
+    }
+
+    #user-toggler:hover ~ #user-dropdown,
+    #user-dropdown:hover {
+        display: initial;
+    }
+}

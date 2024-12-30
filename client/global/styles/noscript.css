@@ -1,0 +1,14 @@
+noscript {
+    display: block;
+    position: fixed;
+    top: 0;
+    z-index: 100000;
+    width: 100%;
+    padding: 3px 9px;
+    font-size: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: normal;
+    letter-spacing: 0.7px;
+    background-color: rgb(104, 20, 20);
+    color: rgb(189, 206, 126);
+}

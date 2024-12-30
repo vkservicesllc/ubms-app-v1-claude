@@ -1,0 +1,13 @@
+.dt-container {
+    visibility: hidden;
+}
+
+.dt-action {
+    display: flex;
+    flex-direction: row-reverse;
+}
+.dt-action a,
+.dt-action span {
+    display: inline-block;
+    margin-left: 7px;
+}

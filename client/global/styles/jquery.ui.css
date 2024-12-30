@@ -1,0 +1,7 @@
+.ui-datepicker {
+    z-index: 1000 !important;
+}
+
+.ui-datepicker-calendar thead th {
+    color: gray;
+}
