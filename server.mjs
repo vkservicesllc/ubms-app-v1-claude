@@ -1,6 +1,7 @@
 import express from 'express'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
+import methodOverride from 'method-override'
 import hbs from 'hbs'
 
 import config, { apps, addrBook } from './config.mjs'
@@ -13,6 +14,7 @@ import { User as StudentUser } from './server/assets/student.mjs'
 
 /* Tools */
 import hbsConditions from './server/tools/hbs.mjs'
+import { respond404 } from './server/tools/response.mjs'
 
 /* Validators */
 import validationCheck from './server/validators/default.mjs'
@@ -32,7 +34,7 @@ const store = new MySQLStore(storeOptions)
 
 hbs.registerPartials('./server/views/partials')
 hbs.registerHelper('author', config.author)
-hbs.registerHelper('copyright', config.copyright.html()) //! This will not refresh the period automatically, this function must be used in a route
+hbs.registerHelper('copyrightHelper', config.copyright.html()) //! This may not refresh the period automatically, this function must be used in a route
 hbs.registerHelper('loginUrl', loginUrl)
 hbs.registerHelper('logoutUrl', logoutUrl)
 hbs.registerHelper('logoutId', formSelectors.user.logoutLinkId)
@@ -64,6 +66,7 @@ export default branch => {
     server.use(express.static('./client/global/'))
 
     server.use(express.urlencoded({ extended: true }))
+    server.use(methodOverride('_method_'))
     server.use(cookieParser(config.cookie.secret, { httpOnly: true }))
     server.use(session({
         secret: `${secret}-${branch}`,
@@ -115,11 +118,13 @@ export default branch => {
         res.site = { ...site, type }
         res.session = { branch, siteId: site.id, type, maxAge }
         res.hbs = {
-            appName: name,
-            siteName: site.name,
+            appName: site.name,
+            siteName: config.site.name,
             title: name,
             addrBook,
             logoutUrl,
+
+            copyrightServer: config.copyright.html(), //! Temporary (test)
         }
 
         next()

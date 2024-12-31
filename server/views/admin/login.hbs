@@ -4,12 +4,12 @@
         <div class="hero-body">
             <div class="container login-container">
                 <div class="box login-box">
-                    <div class="is-pulled-right mb-5">
+                    {{!-- <div class="is-pulled-right mb-5">
                         {{> admin/theme}}
-                    </div>
+                    </div> --}}
                     <h1 class="title is-4 has-text-centered">{{appName}}</h1>
                     <form id="{{formId}}" action="{{loginUrl}}" method="POST" autocomplete="off">
-                        <div class="field">
+                        {{!-- <div class="field">
                             {{{label.username}}}
                             <div class="control has-icons-left">
                                 {{{input.username}}}
@@ -33,8 +33,11 @@
                             <div class="control">
                                 {{{button.login}}}
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="field has-text-centered has-text-grey is-size-7">
+                            <p>{{{copyrightHelper}}}</p>
+                            <p>{{{copyrightServer}}}</p>
+                            <p>{{{copyrightMiddleware}}}</p>
                             <p>{{{copyright}}}</p>
                         </div>
                     </form>
@@ -42,5 +45,8 @@
             </div>
         </div>
     </section>
+    <script>
+        $('section').show() //! Temporary
+    </script>
 
 {{> foot}}

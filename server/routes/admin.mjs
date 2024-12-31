@@ -2,78 +2,82 @@ const router = require('express').Router()
 const throwErr = require('../tools/error').data
 
 import { capitalizeEach } from '../../client/global/modules/tools/string.mjs'
+import config from '../../config.mjs'
 
 
 
-// router.use((req, res, next) => {
-//     res.hbs.docAttrs = ''
+router.use((req, res, next) => {
+    res.hbs.docAttrs = ''
 
-//     const theme = req.cookies['document.theme']
+    const theme = req.cookies['document.theme']
 
-//     if (!theme) res.cookie('document.theme', '', { maxAge: 1000 * 60 * 60 * 24 * 365 })
-//     else res.hbs.docAttrs = ` data-theme="${theme}"`
+    if (!theme) res.cookie('document.theme', '', { maxAge: 1000 * 60 * 60 * 24 * 365 })
+    else res.hbs.docAttrs = ` data-theme="${theme}"`
 
-//     if (req.session.user) {
-//         const active = ' class="is-active"'
-//         const inactive = ''
+    if (req.session.user) {
+        const active = ' class="is-active"'
+        const inactive = ''
 
-//         res.hbs.nav = {
-//             active,
+        res.hbs.nav = {
+            active,
 
-//             'dash': inactive,
-//             'charts': inactive,
-//             'companies': inactive,
-//             'owners': inactive,
-//             'branches': inactive,
-//             'sites': inactive,
-//             'users': inactive,
-//             'teams': inactive,
+            'dash': inactive,
+            'charts': inactive,
+            'companies': inactive,
+            'owners': inactive,
+            'branches': inactive,
+            'sites': inactive,
+            'users': inactive,
+            'teams': inactive,
 
-//             'devData': inactive,
-//             'devLogs': inactive,
-//         }
-//     }
+            'devData': inactive,
+            'devLogs': inactive,
+        }
+    }
 
-//     res.hbs.set = function(key, params = {}) {
-//         let { inclKey, navKey, titlePfx } = params
+    res.hbs.set = function(key, params = {}) {
+        let { inclKey, navKey, titlePfx } = params
 
-//         const includer = require('../includes/src')
-//         const includes = require('../includes/admin')
+        const includer = require('../includes/src')
+        const includes = require('../includes/admin')
 
-//         const { user } = res.session
-//         const hbs = { ...this }
-//         const { nav } = hbs
+        const { user } = res.session
+        const hbs = { ...this }
+        const { nav } = hbs
 
-//         if (!inclKey) inclKey = key
-//         if (!titlePfx) titlePfx = capitalizeEach(key.replace(/\-/g, ' '))
+        if (!inclKey) inclKey = key
+        if (!titlePfx) titlePfx = capitalizeEach(key.replace(/\-/g, ' '))
 
-//         hbs.title = `${titlePfx} - ${hbs.title}`
-//         hbs.includes = includer.render(includes[inclKey])
+        hbs.title = `${titlePfx} - ${hbs.title}`
+        hbs.includes = includer.render(includes[inclKey])
 
-//         if (nav) {
-//             if (!navKey) navKey = key
-//             const { active } = nav
+        if (nav) {
+            if (!navKey) navKey = key
+            const { active } = nav
 
-//             nav[navKey] = active
-//         }
-//         if (user) {
-//             const { _id, name, username, avaSrc, status, DS, DSA } = user
-//             hbs.user = { _id, name, username, avaSrc, status: status[1], DS, DSA }
-//             hbs.user.D = user.status[0] == 'D'
-//         }
+            nav[navKey] = active
+        }
+        if (user) {
+            const { _id, name, username, avaSrc, status, DS, DSA } = user
+            hbs.user = { _id, name, username, avaSrc, status: status[1], DS, DSA }
+            hbs.user.D = user.status[0] == 'D'
+        }
 
-//         return hbs
-//     }
+        hbs.copyrightMiddleware = config.copyright.html()
 
-//     next()
-// })
+        return hbs
+    }
+
+    next()
+})
 
 
 
 router.get('/', (req, res) => {
-    const { hbs } = res
-
-    //
+    let { hbs } = res
+    hbs = res.hbs.set('login')
+    hbs.copyright = config.copyright.html()
+console.log(hbs)
 
     res.render('login', hbs)
 })
