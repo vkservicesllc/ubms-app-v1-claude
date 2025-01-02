@@ -1,8 +1,14 @@
 const router = require('express').Router()
 const throwErr = require('../tools/error').data
 
+/* Assets */
+import User from '../assets/user.mjs'
+
+/* Tools */
 import { capitalizeEach } from '../../client/global/modules/tools/string.mjs'
-import config from '../../config.mjs'
+
+/* Middleware */
+import login from './admin/mw/login.mjs'
 
 
 
@@ -63,8 +69,6 @@ router.use((req, res, next) => {
             hbs.user.D = user.status[0] == 'D'
         }
 
-        hbs.copyrightMiddleware = config.copyright.html()
-
         return hbs
     }
 
@@ -72,14 +76,19 @@ router.use((req, res, next) => {
 })
 
 
+router.get('/init', User.initialize)
 
-router.get('/', (req, res) => {
-    let { hbs } = res
-    hbs = res.hbs.set('login')
-    hbs.copyright = config.copyright.html()
-console.log(hbs)
 
-    res.render('login', hbs)
+router.get('/', login, User.verify, async (req, res) => {
+    try {
+        const key = 'dash'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
 })
 
 

@@ -34,7 +34,7 @@ const store = new MySQLStore(storeOptions)
 
 hbs.registerPartials('./server/views/partials')
 hbs.registerHelper('author', config.author)
-hbs.registerHelper('copyrightHelper', config.copyright.html()) //! This may not refresh the period automatically, this function must be used in a route
+hbs.registerHelper('siteName', config.site.name)
 hbs.registerHelper('loginUrl', loginUrl)
 hbs.registerHelper('logoutUrl', logoutUrl)
 hbs.registerHelper('logoutId', formSelectors.user.logoutLinkId)
@@ -118,13 +118,10 @@ export default branch => {
         res.site = { ...site, type }
         res.session = { branch, siteId: site.id, type, maxAge }
         res.hbs = {
-            appName: site.name,
-            siteName: config.site.name,
+            appName: name,
             title: name,
             addrBook,
-            logoutUrl,
-
-            copyrightServer: config.copyright.html(), //! Temporary (test)
+            copyright: config.copyright.html(),
         }
 
         next()

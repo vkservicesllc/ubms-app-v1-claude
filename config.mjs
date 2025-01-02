@@ -13,10 +13,10 @@ const config = {
     copyright: {
         owner: env.SITE__COPYRIGHT_OWNER || author,
         year: parseInt(env.SITE__COPYRIGHT_YEAR),
-        html() { //! This will not refresh the period automatically, this function must be used in a route
+        html() {
             const { owner, year } = this
             let period = year
-            const currentYear = new Date().getFullYear()
+            const currentYear = new Date().getUTCFullYear()
             if (currentYear > year) period += `–${currentYear}`
             return `<span id="copyright">Copyright © ${period} ${owner}</span>`
         },
@@ -68,6 +68,14 @@ import adminResourceRoute from './server/routes/admin/resource.mjs'
 
 import userRoute from './server/routes/user.mjs'
 
+import carrierRoute from './server/routes/carrier.mjs'
+
+import driverRoute from './server/routes/driver.mjs'
+
+import schoolRoute from './server/routes/school.mjs'
+
+import studentRoute from './server/routes/student.mjs'
+
 
 const apps = {
 
@@ -107,49 +115,49 @@ const apps = {
         },
     },
 
-    // 'carrier': {
-    //     catId: 'crr',
-    //     type: 'primary',
-    //     name: `${alias} Carriers`,
-    //     active: false,
-    //     route: carrierRoute,
-    //     session: {
-    //         maxAge: 10,  /* in minutes */
-    //     },
-    // },
+    'carrier': {
+        catId: 'crr',
+        type: 'primary',
+        name: `${alias} Carriers`,
+        active: false,
+        route: carrierRoute,
+        session: {
+            maxAge: 10,  /* in minutes */
+        },
+    },
 
-    // 'driver': {
-    //     catId: 'crr',
-    //     type: 'secondary',
-    //     name: `${alias} Driver Portal`,
-    //     active: false,
-    //     route: driverRoute,
-    //     session: {
-    //         maxAge: 10,  /* in minutes */
-    //     },
-    // },
+    'driver': {
+        catId: 'crr',
+        type: 'secondary',
+        name: `${alias} Driver Portal`,
+        active: false,
+        route: driverRoute,
+        session: {
+            maxAge: 10,  /* in minutes */
+        },
+    },
 
-    // 'school': {
-    //     catId: 'scl',
-    //     type: 'primary',
-    //     name: `${alias} CDL Schools`,
-    //     active: false,
-    //     route: schoolRoute,
-    //     session: {
-    //         maxAge: 10,  /* in minutes */
-    //     },
-    // },
+    'school': {
+        catId: 'scl',
+        type: 'primary',
+        name: `${alias} CDL Schools`,
+        active: false,
+        route: schoolRoute,
+        session: {
+            maxAge: 10,  /* in minutes */
+        },
+    },
 
-    // 'student': {
-    //     catId: 'scl',
-    //     type: 'secondary',
-    //     name: `${alias} Student Portal`,
-    //     active: false,
-    //     route: studentRoute,
-    //     session: {
-    //         maxAge: 10,  /* in minutes */
-    //     },
-    // },
+    'student': {
+        catId: 'scl',
+        type: 'secondary',
+        name: `${alias} Student Portal`,
+        active: false,
+        route: studentRoute,
+        session: {
+            maxAge: 10,  /* in minutes */
+        },
+    },
 
 }
 

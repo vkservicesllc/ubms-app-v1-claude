@@ -65,7 +65,7 @@ export const validateDate = (field, required = false) => {
 }
 
 
-export const validateName = field => {
+export const validateName = (field, required = false) => {
     const length = inputLength.person[field]
     const { min, max } = length
 
@@ -75,7 +75,7 @@ export const validateName = field => {
         .customSanitizer(value => patterns.replace(value, 'name'))
         .customSanitizer(value => value || null)
 
-    if (field == 'firstName' || field == 'lastName')
+    if ((field == 'firstName' || field == 'lastName') && required === true)
         chain = chain
             .notEmpty()
                 .withMessage(`${{firstName: 'First Name', lastName: 'Last Name'}[field]} must not be empty`)

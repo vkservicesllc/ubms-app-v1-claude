@@ -30,11 +30,14 @@ const targets = Object.keys(query)
 class Individual extends Person {
     constructor(data = {}, light = false) {
         super(data)
-        const { _id } = data
 
-        if (_id) {
+        if (data?._id && Object.keys(this).lengt) {
+            const { _id } = data
+
+            reSuper(this, { _id })
 
             if (!light) {
+
                 this.id = async () => (await mysql.execute(query.individuals.select('id', {
                     match: { id: Individual.matchIdHash(this._id) },
                 })))[0][0].id
@@ -238,9 +241,8 @@ class Individual extends Person {
 
                     return { deleted, error }
                 }
-            }
 
-            reSuper(this, { _id })
+            }
         }
     }
 

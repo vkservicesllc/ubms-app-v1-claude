@@ -1,0 +1,80 @@
+{{> head}}
+
+    <nav class="navbar is-fixed-top" style="display: none;">
+        <div class="navbar-menu">
+            <p class="title is-5 p-3">{{appName}}</p>
+        </div>
+        <div class="navbar-end">
+            <span class="navbar-item inline-navbar-item">
+                {{> admin/theme}}
+            </span>
+            <span class="navbar-item inline-navbar-item px-0" id="user-toggler">
+                <a class="button has-text-grey"><i class="fa fa-user"></i></a>
+            </span>
+            <div class="navbar-item has-dropdown is-hoverable" id="user-dropdown">
+                <a class="navbar-link has-text-weight-semibold">
+                    <img class="mr-2" id="navbar-user-avatar" src="{{{user.avaSrc}}}" height="24" alt="Avatar" />
+                    {{user.name}}
+                </a>
+                <div class="navbar-dropdown is-right">
+                    <span class="navbar-item has-text-weight-bold py-0">{{user.username}}</span>
+                    <span class="navbar-item pt-1">{{user.status}}</span>
+                    <hr class="navbar-divider" />
+                    <a class="navbar-item" href="{{addrBook.user}}/profile?refer={{{user._id}}}" target="_blank">Profile</a>
+                    <a class="navbar-item" href="{{addrBook.user}}/account?refer={{{user._id}}}" target="_blank">Account</a>
+                    <a class="navbar-item" href="{{addrBook.user}}/security?refer={{{user._id}}}" target="_blank">Security</a>
+                    <a class="navbar-item" href="/settings">Settings</a>
+                    <hr class="navbar-divider" />
+                    <a class="navbar-item has-text-danger" id="{{logoutId}}" href="{{logoutUrl}}">Sign Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page" style="display: none;">
+
+        <aside class="menu p-5">
+            <p class="menu-label mt-2">General</p>
+            <ul class="menu-list">
+                <li><a{{{nav.dash}}} href="/">Dashboard</a></li>
+                <li><a{{{nav.charts}}} href="/charts">Charts</a></li>
+            </ul>
+            <p class="menu-label mt-5">Administration</p>
+            <ul class="menu-list">
+                <li>
+                    <span class="menu-item">Business</span>
+                    <ul>
+                        <li><a{{{nav.companies}}} href="/business/companies">Companies</a></li>
+                        {{#if (eq user.DS true)}}
+                        <li><a{{{nav.owners}}} href="/business/company-owners">Owners</a></li>
+                        <li><a{{{nav.branches}}} href="/business/branches">Branches</a></li>
+                        {{/if}}
+                    </ul>
+                </li>
+                <li>
+                    <span class="menu-item">Online</span>
+                    <ul>
+                        {{#if (eq user.DS true)}}
+                        <li><a{{{nav.sites}}} href="/online/sites">Sites</a></li>
+                        {{/if}}
+                        <li><a{{{nav.users}}} href="/online/users">Users</a></li>
+                        {{#if (eq user.DS true)}}
+                        <li><a{{{nav.teams}}} href="/online/teams">Teams</a></li>
+                        {{/if}}
+                    </ul>
+                </li>
+                {{#if (eq user.D true)}}
+                <li>
+                    <span class="menu-item">Dev Tools</span>
+                    <ul>
+                        <li><a{{{nav.devData}}} href="/dev-tools/data">Data</a></li>
+                        <li><a{{{nav.devLogs}}} href="/dev-tools/logs">Logs</a></li>
+                    </ul>
+                </li>
+                {{/if}}
+            </ul>
+        </aside>
+
+        <section class="section">
+
+            <div class="page-content p-5">

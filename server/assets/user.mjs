@@ -44,12 +44,414 @@ const query = {
 
 
 class User extends Person {
-    constructor(data = {}, light = false) {}
+    constructor(data = {}, light = false) {
+        super(data)
+
+        if (data?._id && Object.keys(this).length) {
+            const { _id, fails, settings, permissions, lastUrl, lastLogin, _hash } = data
+            const properties = {
+                _id,
+                username: data.username,
+                status: [ data.status, User.statusList[data.status] ],
+                condition: [ data.condition, User.conditionList[data.condition] ],
+                location: [ data.location, User.locationList[data.location] ],
+                DS: data.status == 'S' || data.status == 'D',
+                DSA: data.status != 'U',
+                decliner: data.decliner,
+                name: this.fullName('AL'),
+                email: data.email,
+                phone: data.phone,
+            }
+
+            if (fails !== undefined) this.fails = fails
+            if (settings !== undefined) this.settings = settings
+            if (permissions !== undefined) this.permissions = permissions
+            if (lastUrl !== undefined) this.lastUrl = lastUrl
+            if (lastLogin !== undefined) this.lastLogin = lastLogin
+            if (!light && _hash !== undefined) this._hash = _hash
+            switch (this.sex) {
+                case 1:
+                    this.ava = 'M'
+                    break
+                case 0:
+                    this.ava = 'F'
+                    break
+                default:
+                    this.ava = 'X'
+            }
+            this.avaSrc = `/images/icons/gender/${this.ava}.png`
+
+            reSuper(this, properties)
+
+            if (!light) {
+
+                this.log = async (field, deleted = false) => {
+                    const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+                    if (deleted) fields.push('deletedBy', 'deletedAt')
+            
+                    let log = (await mysql.execute(query.users.select(fields, {
+                        match: { id: User.matchIdHash(this._id) },
+                    })))[0][0]
+            
+                    if (fields.includes(field)) log = log[field]
+            
+                    return log
+                }
 
 
-    id = async () => (await mysql.execute(query.users.select('id', {
-        match: { id: User.matchIdHash(this._id) },
-    })))[0][0].id
+                this.inviter = async session => {
+                    let id = await this.log('createdBy')
+                    if (!id) return { name: config.site.name, email: null }
+
+                    const user = await User.data(session, { id })
+                    const { name, email } = user
+            
+                    return { name, email }
+                }
+
+
+                this.flush = async () => {
+                    return await mysql.execute(query.users.update({ updateLog: null }, {
+                        id: User.matchIdHash(this._id),
+                    }))
+                }
+
+
+                this.report = async session => {
+                    const result = { user: this }
+
+                    const [ rows ] = await mysql.execute(query.users.select([
+                        'createdBy',
+                        'createdAt',
+                        'updateLog',
+                        'deletedBy',
+                        'deletedAt',
+                    ], { match: { id: User.matchIdHash(this._id) } }))
+                    const logs = rows[0]
+
+                    const { createdBy, deletedBy, updateLog } = logs
+                    /*
+                        The timestamps will only be correct on the Live Server
+                        if it is set up with UTC tz
+                    */
+
+                    let id = [ createdBy ]
+                    if (deletedBy) id.push(deletedBy)
+
+                    if (updateLog)
+                        updateLog.forEach(log => {
+                            id.push(log.modifiedBy)
+                        })
+                    id = [ ...new Set(id) ]
+
+                    const labelList = {
+                        username: 'Username',
+                        status: 'Status',
+                        location: 'Location',
+                        condition: 'Condition',
+                        fails: 'Login Attempts',
+                        email: 'Email',
+                        phone: 'US Cell Phone',
+                        firstName: 'First Name',
+                        lastName: 'Last Name',
+                        alias: 'Alias',
+                        sex: 'Gender',
+                    }
+                    const labels = {}
+                    const names = {}
+                    const users = await User.list(session, { id })
+
+                    if (users)
+                        for (let i = 0; i < users.length; i++) {
+                            const id = await users[i].id()
+                            names[id] = users[i].name
+                        }
+
+                    logs.createdBy = names[createdBy] || appName
+                    if (deletedBy) logs.deletedBy = names[deletedBy]
+
+                    if (updateLog)
+                        for (let i = 0; i < updateLog.length; i++) {
+                            logs.updateLog[i].modifiedBy = names[updateLog[i].modifiedBy] || appName
+
+                            for (const prop in updateLog[i].data) {
+                                switch (prop) {
+                                    case 'status':
+                                        logs.updateLog[i].data.status = User.statusList[updateLog[i].data.status]
+                                        logs.updateLog[i].oldData.status = User.statusList[updateLog[i].oldData.status]
+                                        break
+                                    case 'location':
+                                        logs.updateLog[i].data.location = User.locationList[updateLog[i].data.location]
+                                        logs.updateLog[i].oldData.location = User.locationList[updateLog[i].oldData.location]
+                                        break
+                                    case 'condition':
+                                        logs.updateLog[i].data.condition = User.conditionList[updateLog[i].data.condition]
+                                        logs.updateLog[i].oldData.condition = User.conditionList[updateLog[i].oldData.condition]
+                                        break
+                                    case 'sex':
+                                        const genders = { '0': 'Female', '1': 'Male' }
+                                        const { sex } = updateLog[i].data
+                                        const { sex: oldSex } = updateLog[i].oldData
+                                        if ([0, 1].includes(sex)) logs.updateLog[i].data.sex = genders[sex]
+                                        if ([0, 1].includes(oldSex)) logs.updateLog[i].oldData.sex = genders[oldSex]
+                                }
+
+                                if (!(prop in labels))
+                                    labels[prop] = labelList[prop]
+                            }
+                        }
+
+                    result.log = logs
+                    result.labels = labels
+            
+                    return result
+                }
+
+
+                this.modify = async (session, data) => {
+                    let modified = false, modifiedUser, error = sessionError(session, { branches: [ 'admin', 'user' ] })
+                    if (!error && this.status[0] == 'D' && session.user.status[0] != 'D') error = 'Invalid Target: Immune User'
+
+                    const id = await this.id()
+                    const { branch, user: sessionUser } = session
+                    const sessionUserId = await sessionUser.id()
+
+                    if (!error) {
+                        if (branch == 'user' && id !== sessionUserId) error = 'Invalid Target'
+                        else {
+                            const { status, location } = sessionUser
+
+                            if (status[0] == 'A') {
+                                if (this.status[0] == 'S') error = 'Invalid Target: Immune User'
+                                else if (location[0] != 'US' && location[0] != this.location[0])
+                                    error = 'Invalid Region'
+                            }
+                        }
+                    }
+
+                    if (error) return { modified, error }
+
+                    const currentData = { ...this }
+                    currentData.status = this.status[0]
+                    currentData.location = this.location[0]
+                    currentData.condition = this.condition[0]
+
+                    const update = processData(data, {
+                        modifiedBy: sessionUserId,
+                        currentData,
+                        currentUpdateLog: await this.log('updateLog'),
+                        branch,
+                    })
+
+                    if (this.status[0] == 'US') {
+                        if (update.firstName) delete update.firstName
+                        if (update.lastName) delete update.lastName
+                        if (update.alias) delete update.alias
+                    }
+                    if ((this.location[0] != 'US' && update.location != 'US') && update.phone)
+                        update.phone = null
+
+                    try {
+                        const [ result ] = await mysql.execute(query.users.update(update, { id }))
+                        if (result.affectedRows == 1) {
+                            modified = true
+                            modifiedUser = await User.data(session, { id })
+
+                            if (!this.username && this.email != data.email) {
+                                const [ rows ] = await mysql.execute(query.registration.select('formId', { match: { userId: id } }))
+
+                                if (rows.length) {
+                                    const { formId } = rows[0]
+
+                                    User.invite(session, modifiedUser, formId)
+
+                                    const [ result ] = await mysql.execute(query.registration.update({ invitedAt: Query.timeStamp }, {
+                                        userId: id,
+                                        formId,
+                                    }))
+                                    if (result.affectedRows == 0) error = 'Database Error: Registration Not Updated'
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.error(err)
+                        error = 'DB Error'
+                    }
+
+                    return { modified, error, data: modifiedUser }
+                }
+
+
+                this.delete = async session => {
+                    let deleted = false
+                    const error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+                    if (error) return { deleted, error }
+
+                    const sessionUserId = await session.user.id()
+                    const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
+                        modifiedBy: sessionUserId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+                    update.deletedBy = sessionUserId
+                    update.deletedAt = Query.timeStamp
+
+                    const [ result ] = await mysql.execute(query.users.update(update, { id: User.matchIdHash(this._id) }))
+                    if (result.affectedRows == 1) {
+                        deleted = true
+                        const match = { userId: User.matchIdHash(this._id) }
+
+                        await mysql.execute(query.registration.delete(match))
+                        await mysql.execute(query.passReset.delete(match))
+                        await mysql.execute(query.tokens.delete(match))
+                    }
+
+                    return { deleted }
+                }
+
+
+                this.token = async (params = {}) => {
+                    let { clientIp, token } = params
+                    const userId = await this.id()
+                    const { tokenAge } = config.session
+                    
+                    if (clientIp) {  // Retrieve Token
+                        if (clientIp != this.clientIp) this.clientIp = clientIp
+
+                        clientIp = { ip: clientIp }
+
+                        const [ rows ] = await mysql.execute(query.tokens.select([
+                            'verified',
+                            { aes: [ 'token', tokenSecret ] },
+                            'createdAt',
+                        ], { match: { userId, clientIp } }))
+                        if (!rows.length) return {}
+
+                        let { verified, createdAt } = rows[0]
+                        token = stringifyBuffer(rows[0].token)
+                        createdAt = new Date(createdAt)
+
+                        const expiresAt = new Date(createdAt.getTime() + tokenAge * 60 * 1000)
+                        const expired = new Date >= expiresAt
+
+                        return { token, verified, createdAt, expiresAt, expired }
+                    } else if (token) {  // Update Token
+                        if (!this.clientIp) return
+
+                        clientIp = { ip: this.clientIp }
+                        token = { aes: [ token, tokenSecret ]}
+
+                        await mysql.execute(
+                            query.tokens.update({ verified: true }, { userId, clientIp, token })
+                        )
+                    } else {  // Create Token
+                        if (!this.clientIp) return
+
+                        clientIp = { ip: this.clientIp }
+                        token = generateRandomString(inputLength.user.token.max, 'd')
+
+                        await mysql.execute(query.tokens.delete({ userId, clientIp }))
+
+                        await mysql.execute(query.tokens.insert({
+                            userId,
+                            token: { aes: [ token, tokenSecret ]},
+                            clientIp,
+                        }))
+
+                        if (config.notification.email.authToken) {
+                            const tokenExpiration = `${tokenAge} minute${tokenAge > 1 ? 's' : ''}`
+                            const email = {
+                                from: sender,
+                                to: this.email,
+                                subject: 'New Authentication Token',
+                                html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                                    <p>
+                                        Your one-time Security Token is <strong>${token}</strong>.<br />
+                                        The token will expire in ${tokenExpiration}.
+                                    </p>
+                                    <p>
+                                        <em style="background-color: yellow;">To ensure your security, keep this token confidential.</em><br />
+                                        No one from ${appName} will request this number from you.
+                                    </p>
+                                    <p>
+                                        <span style="color: red;">If someone requests this token, do <u>NOT</u> disclose it.</span>
+                                    </p>
+                                </div>`,
+                            }
+
+                            transporter.sendMail(email, error => {
+                                if (error) console.error({ error })
+                            })
+                        }
+
+                        return token
+                    }
+                }
+
+
+                this.url = async (session, lastUrl) => {
+                    if (lastUrl.slice(0, 5) == '/api/') return
+
+                    const { branch, siteId } = session
+                    const userId = await this.id()
+                    const { lastLogin } = this
+
+                    await mysql.execute(query.sessions.update(
+                        { lastUrl },
+                        { userId, siteId, branch, lastLogin }
+                    ))
+
+                    this.lastUrl = lastUrl
+                }
+
+
+                this.teams = async (params = {}) => {
+                    const id = await this.id()
+                    let { plainId } = params
+                    if (typeof plainId != 'boolean') plainId = false
+
+                    const teams = { available: [], current: [] }
+                    const fields = [ [ plainId ? 'teamId' : Team.hashId(), 'id' ] ]
+
+                    teams.available = (await mysql.execute(
+                        new Query(db.business, 'teams').select([ Team.hashId(), 'name' ])
+                    ))[0]
+
+                    teams.current = (await mysql.execute(
+                        Query.select(db.business, [
+                            {
+                                table: 'teams_users',
+                                fields,
+                                match: { userId: id },
+                            },
+                            {
+                                table: 'teams',
+                                fields: 'name',
+                                join: [ 'id', 'teamId' ],
+                            },
+                        ])
+                    ))[0]
+
+                    teams.current.forEach(currentTeam => {
+                        const idx = teams.available.findIndex(availableTeam => availableTeam._id == currentTeam._id)
+                        if (idx > -1) teams.available.splice(idx, 1)
+                    })
+
+                    return teams
+                }
+
+            }
+        }
+    }
+
+
+    id = async () => {
+        if (!this._id) return
+
+        return (await mysql.execute(query.users.select('id', {
+            match: { id: User.matchIdHash(this._id) },
+        })))[0][0].id
+    }
 
 
     static #algorithm = 'SHA-512'
@@ -79,9 +481,492 @@ class User extends Person {
     static matchIdHash = value => matchHash(value, User.#algorithm)
 
 
-    static login = async (req, res) => {}
-    static session = async (req, res) => {}
-    static logout = async (req, res) => {}
+    static create = async (session, data) => {
+        let created = false, newUser, error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+        if (error) return { created, error }
+
+        data = processData(data)
+
+        for (const prop of [ 'status', 'location', 'email', 'firstName', 'lastName' ])
+            if (!data[prop]) return { created, error: 'Invalid Data' }
+
+        const { email } = data
+        if (await User.data(session, { email })) return { created, error: "Invalid Data: Email Registered" }
+
+        data.createdBy = await session.user.id()
+
+        const [ result ] = await mysql.execute(query.users.insert(data))
+        const id = result.insertId
+
+        if (id) {
+            const formId = await User.#formId()
+            const [ result ] = await mysql.execute(query.registration.insert({
+                formId,
+                userId: id,
+                invitedBy: data.createdBy,
+            }))
+
+            if (result.affectedRows == 0) {
+                try {
+                    // await mysql.execute(query.users.delete({ id }))
+                    error = 'Database Error: Unregistered User Deleted'
+                } catch (err) {
+                    console.error(err)
+                    error = 'Database Error: Unregistered User Not Deleted'
+                }
+
+                return { created, error }
+            }
+
+            created = true
+            newUser = await User.data(session, { id })
+
+            User.invite(session, newUser, formId)
+        } else error = 'Database Error'
+
+        return { created, error, data: newUser }
+    }
+
+
+    static invite = (session, user, formId) => {
+        if (!session?.user?.DSA) return
+
+        const { _id, email, name } = user
+        const url = `${addrBook.user}/register/${_id}?form=${formId}`
+        const options = {
+            from: sender,
+            to: email,
+            subject: 'User Registration',
+            html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                Dear ${name},<br/>
+                Welcome to ${appName}!<br/><br/>
+                We are thrilled to have you join our team and look forward to your contributions.
+                To get started, we need you to complete a few simple steps to finalize your registration.<br/><br/>
+                Please follow the link below to complete your registration:<br/>
+                <a href="${url}" target="_blank">Proceed with Registration</a><br/><br/>
+                Kindly complete this process within the next 24 hours to ensure a smooth onboarding experience.
+            </div>`,
+        }
+
+        transporter.sendMail(options, error => {
+            if (error) console.error(error)
+        })
+    }
+
+
+    static #formId = async () => {
+        let formId, found = true
+
+        do {
+            formId = generateRandomString(inputLength.user.formId.max)
+
+            const [ rows ] = await mysql.execute(query.registration.select('formId', {
+                match: { formId }
+            }))
+
+            if (!rows.length) found = false
+        } while (found)
+
+        return formId
+    }
+
+
+    static #batch = (session, options = {}) => {
+        if (!session) return []
+        const { branch, siteId } = session
+
+        const batch = [
+            {
+                table: 'users',
+                fields: [
+                    User.hashId(),
+                    'username',
+                    'email',
+                    'phone',
+                    'firstName',
+                    'lastName',
+                    'alias',
+                    'sex',
+                    'status',
+                    'condition',
+                    'location',
+                    'decliner',
+                ],
+            },
+            {
+                table: 'sessions',
+                fields: [ 'siteId', 'branch', 'lastLogin' ],
+                join: [ 'userId', 'id', { max: 'lastLogin' }],
+            },
+        ]
+
+        let { params, filter } = options
+        if (!params) params = {}
+        if (!filter) filter = {}
+
+        const { _id, id, username, email } = params
+        const { id: ids, firstName, lastName, alias, sex, status, location, condition, decliner, deleted } = filter
+        let deletedBy = null
+        if (deleted === true) deletedBy = { null: false }
+
+        batch[0].match = {
+            deletedBy,
+            id, username, email,
+            firstName, lastName, alias, sex,
+            status, location, condition, decliner,
+        }
+        if (!id && _id) batch[0].match.id = User.matchIdHash(_id)
+        if (!id && !_id) batch[0].match.id = ids
+
+        if (_id || id || username) batch[1].fields.push('lastUrl')
+
+        if (!('user' in session) && username) {
+            batch[0].fields.push([ '_passKey', '_hash' ], 'fails', 'permissions', 'settings')
+            batch[1].fields.push({ ip: 'clientIp' })
+
+            if (branch == 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
+        } else {
+            batch[1].join[2] = {
+                max: [ 'lastLogin', { branch, siteId } ],
+            }
+
+            if (session?.user?.location) {
+                const location = session.user.location[0]
+                if (location != 'US') {
+                    batch[0].match.location = location
+                }
+            }
+        }
+
+        return batch
+    }
+
+
+    static data = async (session, params = {}) => {
+        if (!params._id && !params.id && !params.username && !params.email) return
+
+        const batch = User.#batch(session, { params })
+        const data = (await mysql.execute(Query.select(db.online, batch)))[0][0]
+
+        return !data ? data : new User(data)
+    }
+
+
+    static list = async (session, filter = {}) => {
+        const batch = User.#batch(session, { filter })
+        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+
+        list.forEach((data, i, arr) => arr[i] = new User(data, true))
+
+        return list
+    }
+
+
+    static find = async (session, params = {}) => {
+        if (!session?.user) return { error: 'Invalid User' }
+
+        const { username, email } = params
+        if (!username && !email) return { error: 'Invalid Parameters' }
+
+        let found = false
+
+        const data = (await mysql.execute(query.users.select('id', {
+            match: { username, email },
+        })))[0]
+        found = data.length == 1
+
+        return { found }
+    }
+
+
+    static #authUrl = (session, _id, status) => `${addrBook.user}/authenticate?user=${_id}&branch=${btoa(session.branch)}&site=${btoa(session.siteId)}&status=${status}`
+
+
+    static initialize = async (req, res) => {
+        const [ rows ] = await mysql.execute(query.users.select('id', { id: 1 }))
+
+        if (!rows.length) await mysql.execute(query.users.insert({
+            username: initUser,
+            _passKey: await Bun.password.hash(initPass),
+            firstName: initFname,
+            lastName: initLname,
+            alias: initAlias || null,
+            email: initEmail,
+            status: 'D',
+            location: 'US',
+        }))
+
+        res.redirect('/')
+    }
+
+
+    static login = async (req, res) => {
+        const { api, errKey } = recognizeApi(req)
+
+        try {
+            const apiRes = api
+                ? { error: {}, username: true, password: true, condition: 'A' }
+                : null
+
+            const validationFails = validationResult(req)
+            const { errors } = validationFails
+
+            if (!validationFails.isEmpty()) {
+                res.status(400)
+
+                if (api) {
+                    apiRes.error.validation = { errors }
+                    apiRes.username = false
+                    apiRes.password = false
+
+                    return res.send(apiRes)
+                }
+
+                let errorList = '<pre>Validation Errors:<ol>'
+                errors.forEach(error => {
+                    errorList += `<li>${error.msg}</li>`
+                })
+                errorList += '</ol></pre>'
+
+                return res.send(errorList)
+            }
+
+            const { session } = res
+            const { branch, siteId } = session
+
+
+            /* Step 1: Lookup User by Username */
+
+            const { username, password } = req.body
+            let user = await User.data(session, { username })
+
+            // Interrupt if User not found
+            if (!user) {
+                if (api) {
+                    apiRes.username = false
+                    apiRes.error.username = `${branch == 'admin' ? 'Admin' : 'User'} not found`
+
+                    return res.send(apiRes)
+                } else return throwErr.data.auth(res, 'Authentication failed: User not found')
+            }
+
+
+            /* Step 2: Verify Password if User found */
+
+            const { loginAttempts } = config.session
+            const { _id, _hash } = user
+            let { fails, condition } = user
+            condition = condition[0]
+
+            const matched = await Bun.password.verify(password, _hash)
+
+            // Interrupt if Password mismatched
+            // Increment Fails if API or alter Status if Limit is reached
+            if (!matched) {
+                if (api) {
+                    apiRes.password = false
+                    apiRes.error.password = 'Incorrect password'
+
+                    if (fails < loginAttempts && condition != 'L') {
+                        fails++
+                        let update = { fails }
+
+                        if (fails == loginAttempts) {
+                            update.condition = 'L'
+                            user = await User.data(session, { _id })
+
+                            const currentData = { ...user }
+                            const currentUpdateLog = await user.log('updateLog')
+                            currentData.condition = user.condition[0]
+
+                            const options = { currentData, currentUpdateLog, modifiedBy: 0, modifiedIn: { branch } }
+                            if (siteId) options.modifiedIn.siteId = siteId
+
+                            update = processData(update, options)
+                        }
+
+                        await mysql.execute(query.users.update(update, { id: User.matchIdHash(_id) }))
+                    }
+                } else return throwErr.data.auth(res, 'Authentication failed: User not verified')
+            }
+
+
+            /* Step 3: Check User's Condition if Password verified */
+
+            if (condition != 'A') {
+                const conditions = User.conditionList
+                if (api) {
+                    apiRes.condition = condition
+                    if (!apiRes.error.username)
+                        apiRes.error.username = `User is ${conditions[condition].toLowerCase()}`
+                } else return throwErr.data.auth(res, `Authentication failed: ${conditions[condition]} user`)
+            }
+
+
+            // Respond if API
+            if (api) {
+                apiRes.fails = fails
+
+                return res.send(apiRes)
+            } else {
+
+
+                /* Step 4: Verify IP Token and redirect to Authentication page in User branch */
+
+                // Interrupt if User not found
+                if (!user) return throwErr.data.auth(res, 'Authentication failed: User not found')
+
+                const { clientIp } = req.session
+                const { token, verified, expired } = await user.token({ clientIp })
+
+                if (!token || (!verified && expired)) await user.token()
+
+                await mysql.execute(query.users.update({ fails: 0 }, { id: User.matchIdHash(_id) }))
+
+                res.redirect(User.#authUrl(session, _id, 'pending'))
+            }
+
+        } catch (err) {
+            const msg = 'Authentication failed: Server could not process the request'
+            throwErr[errKey].server(res, msg, err)
+        }
+    }
+
+
+    static session = async (req, res) => {
+        try {
+            const { session } = res
+            const { branch, siteId } = session
+            const { user: _id, token: providedToken } = req.body
+            const { clientIp } = req.session
+            const user = await User.data(session, { _id })
+            const { token, verified, expired } = await user.token({ clientIp })
+
+            if (!verified) {
+
+                if (token !== providedToken)
+                    return res.redirect(User.#authUrl(session, _id, 'mismatch'))
+
+                else if (expired) {
+                    await user.token()
+
+                    return res.redirect(User.#authUrl(session, _id, 'expired'))
+                }
+
+                else
+                    await user.token({ token })
+            }
+
+            const _token = await Bun.password.hash(token)
+            const userId = await user.id()
+            const url = determineUrl(user, branch)
+
+            const data = {
+                userId,
+                siteId,
+                branch,
+                clientIp: { ip: clientIp },
+                lastUrl: url,
+            }
+
+            const [ result ] = await mysql.execute(query.sessions.insert(data))
+            if (!result.affectedRows) {
+                if (req.session.user) delete req.session.user
+                if (res.session.user) delete res.session.user
+
+                return req.session.destroy((err) => {
+                    if (err) return res.status(500).send('Failed to log out')
+        
+                    return throwErr.data.auth(res, 'Authentication failed: Session failed')
+                })
+            }
+
+            req.session.user = _id
+            res.cookie('connect.token', _token, {
+                httpOnly: true,
+            })
+            res.redirect(url)
+        } catch (err) {
+            const msg = 'Authentication failed: Server could not process the request'
+            throwErr.data.server(res, msg, err)
+        }
+    }
+
+
+    static verify = async (req, res, next) => {
+        const { api, errKey } = recognizeApi(req)
+        const { method } = req
+
+        try {
+            const { originalUrl, query } = req
+            const { session } = res
+            const { user: _id, clientIp } = req.session
+            const reject = async apiErrMsg => {
+                if (api) throwErr.api.auth(res, apiErrMsg)
+                else {
+                    const { refer } = query
+                    const { logoutUrl } = config.session
+
+                    if (refer) {
+                        const user = await User.data(session, { _id: refer })
+                        if (method != 'POST') await user.url(session, stripUrl(originalUrl, query, 'refer'))
+                    }
+
+                    if (!next) return false
+                    else return res.redirect(logoutUrl)
+                }
+            }
+
+            if (!_id) return await reject('Authentication check failed: Not authenticated')
+
+            const user = await User.data(session, { _id })
+            if (!user) {
+                User.logout(req, res)
+                return throwErr[errKey].auth(res, 'Authentication check failed: No user found')
+            }
+
+            const connectToken = req.cookies['connect.token']
+            const { token } = await user.token({ clientIp })
+
+            if (!connectToken || !token || !(await Bun.password.verify(token, connectToken)))
+                return await reject('Authentication check failed: Token verification failed')
+
+            if (session.branch == 'admin' && user.status[0] == 'U')
+                return await reject('Authentication check failed: Unauthorized Environment')
+
+            if (user.DS && user.location[0] != 'US')
+                return await reject('Verification failed: Incorrect status in current location')
+
+            if (query.refer) {
+                const newUrl = stripUrl(originalUrl, query, 'refer')
+
+                if (method != 'POST') await user.url(session, newUrl)
+                return res.redirect(newUrl)
+            }
+
+            if (method != 'POST') await user.url(session, originalUrl)
+
+            if (!next) return user
+
+            res.session.user = user
+            next()
+        } catch (err) {
+            const msg = 'Authentication check failed: Server could not process the request'
+            throwErr[errKey].server(res, msg, err)
+        }
+    }
+
+
+    static logout = (req, res) => {
+        if (req.session.user) delete req.session.user
+        if (res.session.user) delete res.session.user
+
+        return req.session.destroy((err) => {
+            if (err) return res.status(500).send('Failed to log out')
+
+            res.redirect('/')
+        })
+    }
 
 
 }
