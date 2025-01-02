@@ -116,7 +116,7 @@ export default branch => {
             : req.socket?.remoteAddress || '::1'
 
         res.site = { ...site, type }
-        res.session = { branch, siteId: site.id, type, maxAge }
+        res.session = { branch, siteId: site.id, type, maxAge, logoutUrl }
         res.hbs = {
             appName: name,
             title: name,

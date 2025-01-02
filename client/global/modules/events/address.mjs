@@ -86,7 +86,6 @@ export const zipEvent = (id, options = {}) => {
         onChange(zip, $zip) {
             if (cityId || stateId)
                 $.ajax(`/api/public/us-zips/${zip}`, {
-                    method: 'POST',
                     success(response) {
                         if (!('data' in response)) return
                         const { city, state } = response.data
