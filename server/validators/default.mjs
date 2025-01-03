@@ -109,6 +109,7 @@ export const validateSuffix = field => body(field || 'suffix')
 
 
 export const validateGender = field => body(field || 'sex')
+    .optional({ nullable: true })
     .isIn([ '0', '1', '', 'M', 'F' ])
         .withMessage('Incorrect gender values provided')
     .customSanitizer(value => {

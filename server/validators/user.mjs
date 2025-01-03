@@ -1,6 +1,7 @@
 import User from '../assets/user.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
 import patterns from '../../client/global/modules/registry/patterns.mjs'
+import { validateName, validateGender, validateEmail, validateTel } from './default.mjs'
 
 const { body } = require('express-validator')
 
@@ -84,8 +85,6 @@ export {
     validateUsername,
     validatePassword,
     validateCondition,
-    validateStatus,
-    validateLocation,
 }
 
 export const validateLocalAuth = [
@@ -100,4 +99,16 @@ export const validateSession = [
 export const validateLocalReg = [
     validateUsername(),
     validatePassword(),
+]
+
+
+export const validateUser = [
+    validateStatus(),
+    validateLocation(),
+    validateEmail('email', true),
+    validateTel('phone', true),
+    validateName('firstName', true),
+    validateName('lastName', true),
+    validateName('alias'),
+    validateGender(),
 ]

@@ -67,6 +67,7 @@ import adminDevToolsRoute from './server/routes/admin/dev-tools.mjs'
 import adminResourceRoute from './server/routes/admin/resource.mjs'
 
 import userRoute from './server/routes/user.mjs'
+import userApiRoute from './server/routes/user/api.mjs'
 
 import carrierRoute from './server/routes/carrier.mjs'
 
@@ -110,6 +111,9 @@ const apps = {
         name: `${alias} User Portal`,
         active: true,
         route: userRoute,
+        routes: [
+            { url: '/api', router: userApiRoute },
+        ],
         session: {
             maxAge: 5,  /* in minutes */
         },

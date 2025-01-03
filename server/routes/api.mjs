@@ -150,8 +150,5 @@ router.post('/user/:_id', User.verify, async (req, res) => {
 })
 
 
-router.post('/user/:_id/decline', User.decline)
-
-
 
 export default router
