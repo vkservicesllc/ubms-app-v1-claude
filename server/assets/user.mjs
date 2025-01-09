@@ -46,6 +46,7 @@ const query = {
 }
 
 
+
 class User extends Person {
     constructor(data = {}, light = false) {
         super(data)

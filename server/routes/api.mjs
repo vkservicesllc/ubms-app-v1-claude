@@ -4,8 +4,8 @@ const throwErr = require('../tools/error').api
 
 /* Assests */
 import User, { adminBranchOnly, superAdminUserOnly, developerOnly } from '../assets/user.mjs'
-// import Team from '../assets/team.mjs'
-// import Company, { Owner } from '../assets/company.mjs'
+import Team from '../assets/team.mjs'
+import Company, { Owner } from '../assets/company.mjs'
 // import Carrier from '../assets/carrier.mjs'
 // import School from '../assets/school.mjs'
 
@@ -50,7 +50,7 @@ router.post('/unique/:env', User.verify, async (req, res) => {
     try {
         const response = { unique: true }
         const { env } = req.params
-        const src = { User }  //! for later: , Team, Company
+        const src = { User, Team, Company }  //! for later: Carrier, School
 
         const { found } = await src[capitalizeFirst(env)].find(res.session, req.body)
         response.unique = !found

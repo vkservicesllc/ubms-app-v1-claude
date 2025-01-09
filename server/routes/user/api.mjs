@@ -13,6 +13,21 @@ import transporter, { sender } from '../../tools/nodemailer.mjs'
 
 
 
+router.post('/username-uniqueness', async (req, res) => {
+    try {
+        const response = { unique: true }
+        const { username } = req.body
+
+        const { found } = await User.find(res.session, { username })
+        response.unique = !found
+
+        res.send(response)
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
 router.post('/user/decline/:_id', async (req, res) => {
     try {
         const { _id } = req.params
