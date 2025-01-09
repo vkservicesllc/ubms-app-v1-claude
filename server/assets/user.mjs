@@ -29,6 +29,9 @@ import transporter, { sender } from '../tools/nodemailer.mjs'
 import { generateRandomString } from '../tools/string.mjs'
 import { processData } from '../tools/database.mjs'
 
+/* Support */
+import permissions from './user/permissions.mjs'
+
 const { validationResult } = require('express-validator')
 const mysql = require('../tools/mysql')
 const throwErr = require('../tools/error')
@@ -474,6 +477,8 @@ class User extends Person {
         'S': 'Super Admin',
         'D': 'Developer',
     }
+
+    static permissions = permissions
 
 
     static hashId = (field = 'id') => hash(field, User.#algorithm)
@@ -1080,6 +1085,9 @@ export const sessionError = (session, instructions = {}) => {
     return error
 }
 
+
+
+/* Supportive Functions */
 
 
 function determineUrl(user, branch) {

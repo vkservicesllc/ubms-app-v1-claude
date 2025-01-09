@@ -21,8 +21,8 @@ import validationCheck from './server/validators/default.mjs'
 import { validateLocalAuth, validateSession } from './server/validators/user.mjs'
 
 /* Routes */
-import publicApiRoute from './server/routes/api.public.mjs'
 import apiRoute from './server/routes/api.mjs'
+import publicApiRoute from './server/routes/api.public.mjs'
 
 /* Registry */
 import { formSelectors } from './client/global/modules/registry/selectors.mjs'
