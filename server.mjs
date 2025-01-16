@@ -66,7 +66,7 @@ export default branch => {
     server.use(express.static('./client/global/'))
 
     server.use(express.urlencoded({ extended: true }))
-    server.use(methodOverride('_method_'))
+    server.use(methodOverride('_method'))
     server.use(cookieParser(config.cookie.secret, { httpOnly: true }))
     server.use(session({
         secret: `${secret}-${branch}`,

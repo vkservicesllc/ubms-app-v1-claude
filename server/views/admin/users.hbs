@@ -1,0 +1,222 @@
+{{> admin/nav.alpha}}
+
+                <div class="tabs" id="users-tabs">
+                    <ul>
+                        <li class="tab-link is-active" data-section="users"><a>Users</a></li>
+                        <li class="tab-link" data-section="default-roles"><a>Roles</a></li>
+                        <li class="tab-link" data-section="carrier-roles"><a>Carrier Roles</a></li>
+                    </ul>
+                </div>
+
+                <section class="tab-section" id="users-section">
+                    <table class="table" id="users-table"></table>
+
+                    <div class="modal" id="user-modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                            <header class="modal-card-head">
+                                <p class="modal-card-title" id="user-modal-title"></p>
+                                {{#if (eq user.DS true)}}
+                                <button class="button" id="user-update-log-trigger" style="display: none;">Log</button>
+                                {{/if}}
+                            </header>
+                            <section class="modal-card-body">
+                                <form class="content" id="{{formId.user}}" action="/resource/user" method="POST" autocomplete="off">
+                                    <input type="hidden" name="_method" />
+                                    {{{input.id}}}
+                                    {{{input.usernameHidden}}}
+                                    {{{input.emailHidden}}}
+                                    <h5 class="has-text-info">Properties</h5>
+                                    <div class="columns">
+                                        <div class="column is-one-third">
+                                            <div class="field">
+                                                {{{label.status}}}
+                                                <div class="control mt-1">
+                                                    <div class="select is-fullwidth">
+                                                        {{{select.status}}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-one-third">
+                                            <div class="field">
+                                                {{{label.location}}}
+                                                <div class="control mt-1">
+                                                    <div class="select is-fullwidth">
+                                                        {{{select.location}}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h5 class="has-text-info">Authentication</h5>
+                                    <div class="columns">
+                                        <div class="column is-two-thirds">
+                                            <div class="field">
+                                                {{{label.email}}}
+                                                <div class="control mt-1">
+                                                    {{{input.email}}}
+                                                </div>
+                                                <p class="help" id="user-email-help" style="display: none;"></p>
+                                            </div>
+                                        </div>
+                                        <div class="column">
+                                            <div class="field">
+                                                {{{label.phone}}}
+                                                <div class="control mt-1">
+                                                    {{{input.phone}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h5 class="has-text-info">Identification</h5>
+                                    <div class="columns">
+                                        <div class="column">
+                                            <div class="field">
+                                                {{{label.firstName}}}
+                                                <div class="control mt-1">
+                                                    {{{input.firstName}}}
+                                                </div>
+                                                <p class="help" id="user-fname-help" style="display: none;"></p>
+                                            </div>
+                                        </div>
+                                        <div class="column">
+                                            <div class="field">
+                                                {{{label.lastName}}}
+                                                <div class="control mt-1">
+                                                    {{{input.lastName}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="columns">
+                                        <div class="column">
+                                            <div class="field">
+                                                {{{label.alias}}}
+                                                <div class="control mt-1">
+                                                    {{{input.alias}}}
+                                                </div>
+                                                <p class="help" id="user-alias-help" style="display: none;"></p>
+                                            </div>
+                                        </div>
+                                        <div class="column">
+                                            <div class="field">
+                                                {{{label.gender}}}
+                                                <div class="control mt-2">
+                                                    <label class="radio">
+                                                        {{{input.genderM}}}
+                                                        Male
+                                                    </label>
+                                                    <label class="radio">
+                                                        {{{input.genderF}}}
+                                                        Female
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </section>
+                            <footer class="modal-card-foot">
+                                <div class="buttons">
+                                    <button type="submit" form="{{formId.user}}" class="button" id="user-modal-submit"></button>
+                                    <button class="button modal-cancel">Cancel</button>
+                                    <p class="has-text-danger is-size-7">* Required fields</p>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
+
+                    <div class="modal" id="user-condition-modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                            <header class="modal-card-head">
+                                <p class="modal-card-title" id="user-condition-modal-title"></p>
+                                <button class="delete"></button>
+                            </header>
+                            <section class="modal-card-body">
+                                <form id="{{formId.userCondition}}" action="/resource/user?_method=PATCH" method="POST" autocomplete="off">
+                                    {{{input.id}}}
+                                    <div class="radios">
+                                        <label class="radio">
+                                            {{{input.conditionA}}}
+                                            &nbsp;Active
+                                        </label>
+                                        <label class="radio ml-5">
+                                            {{{input.conditionI}}}
+                                            &nbsp;Suspended
+                                        </label>
+                                        <label class="radio ml-5">
+                                            {{{input.conditionL}}}
+                                            &nbsp;Locked by the System
+                                        </label>
+                                    </div>
+                                </form>
+                            </section>
+                            <footer class="modal-card-foot">
+                                <button type="submit" form="{{formId.userCondition}}" class="button is-success">Update</button>
+                            </footer>
+                        </div>
+                    </div>
+
+                    <div class="modal" id="user-delete-modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                            <header class="modal-card-head">
+                                <p class="modal-card-title" id="user-delete-modal-title"></p>
+                                <button class="delete"></button>
+                            </header>
+                            <section class="modal-card-body">
+                                <form id="{{formId.deleteUser}}" action="/resource/user?_method=DELETE" method="POST" autocomplete="off">
+                                    {{{input.id}}}
+                                    <p class="has-text-danger">
+                                        <b>Warning:</b><br/>
+                                        Deleting this user will remove their account permanently.
+                                        However, all of their previous activity will remain in the system.
+                                        Are you sure you want to proceed with this action?
+                                    </p><br/>
+                                    <label class="checkbox">
+                                        <input type="checkbox" id="confirm-delete-user" />&nbsp;
+                                        I confirm that I have a valid reason for this deletion
+                                    </label>
+                                </form>
+                            </section>
+                            <footer class="modal-card-foot">
+                                <button type="submit" form="{{formId.deleteUser}}" class="button is-danger" id="user-delete-modal-submit" disabled>Delete</button>
+                            </footer>
+                        </div>
+                    </div>
+
+                    {{#if (eq user.DS true)}}
+                    <div class="modal" id="user-update-log-modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-content">
+                            <div class="panel">
+                                <p class="panel-heading has-background-dark">
+                                    <small style="font-weight: normal;">Update Log for</small>&nbsp;
+                                    <span id="user-update-log-modal-subtitle"></span>
+                                </p>
+                                <div class="has-background-black-ter">
+                                    <div id="user-update-log-modal-list" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="modal-close is-large"></button>
+                    </div>
+
+                    {{/if}}
+                </section>
+
+                <section class="tab-section" id="default-roles-section">
+
+                    Default Roles
+
+                </section>
+
+                <section class="tab-section" id="carrier-roles-section">
+
+                    Carrier Roles
+
+                </section>
+
+{{> admin/nav.omega}}

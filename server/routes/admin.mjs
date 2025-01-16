@@ -92,5 +92,31 @@ router.get('/', login, User.verify, async (req, res) => {
 })
 
 
+router.get('/charts', User.verify, (req, res) => {
+    try {
+        const key = 'charts'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/settings', User.verify, (req, res) => {
+    try {
+        const key = 'settings'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
 
 export default router
