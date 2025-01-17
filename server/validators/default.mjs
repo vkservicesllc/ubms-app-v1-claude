@@ -8,8 +8,6 @@ import Address from '../../client/global/modules/assets/address.us.mjs'
 
 import { calculateYearAge } from '../../client/global/modules/tools/date.mjs'
 import strip from '../../client/global/modules/tools/formatter.mjs'
-// import { stripTelephone } from '../../client/global/modules/tools/telephone.mjs'
-// import { stripAccountNumber } from '../../client/global/modules/tools/license.mjs'
 import { reformatDateString } from '../../client/global/modules/tools/date.mjs'
 import { capitalizeFirst, capitalizeEach } from '../../client/global/modules/tools/string.mjs'
 
@@ -65,7 +63,7 @@ export const validateDate = (field, required = false) => {
 }
 
 
-export const validateName = (field, required = false) => {
+export const validateName = field => {
     const length = inputLength.person[field]
     const { min, max } = length
 
@@ -75,7 +73,7 @@ export const validateName = (field, required = false) => {
         .customSanitizer(value => patterns.replace(value, 'name'))
         .customSanitizer(value => value || null)
 
-    if ((field == 'firstName' || field == 'lastName') && required === true)
+    if (field == 'firstName' || field == 'lastName')
         chain = chain
             .notEmpty()
                 .withMessage(`${{firstName: 'First Name', lastName: 'Last Name'}[field]} must not be empty`)

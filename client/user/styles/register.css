@@ -1,0 +1,23 @@
+.ui.container {
+    margin: 0 !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 480px !important;
+    min-width: 360px !important;
+}
+.ui.container .header {
+    margin-bottom: .2em;
+}
+.ui.button {
+    font-weight: normal;
+}
+.help {
+    margin-top: 5px;
+    font-size: .85em;
+    text-align: right;
+}
+#failed-reg-body section:not(:last-child) {
+    margin-bottom: 10px;
+}

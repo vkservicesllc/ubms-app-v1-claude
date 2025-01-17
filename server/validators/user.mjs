@@ -107,8 +107,8 @@ export const validateUser = [
     validateLocation(),
     validateEmail('email', true),
     validateTel('phone', true),
-    validateName('firstName', true),
-    validateName('lastName', true),
+    validateName('firstName'),
+    validateName('lastName'),
     validateName('alias'),
     validateGender(),
 ]

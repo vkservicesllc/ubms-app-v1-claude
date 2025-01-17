@@ -1,0 +1,54 @@
+{{>head}}
+
+    <div class="ui container" style="display: none;">
+
+        <div>
+            <div class="ui attached negative message">
+                <div class="header">
+                    <i class="icon exclamation triangle"></i>
+                    Verification Required
+                </div>
+                {{#if (eq status 'pending')}}
+                <p>
+                    The server has detected a login attempt from an unrecognized IP address.
+                    For your security, we need to verify your identity.
+                </p>
+                <p>
+                    Please check your email for a verification token.<br />
+                    This token will expire in {{tokenAge}}.
+                </p>
+                {{/if}}
+                {{#if (eq status 'mismatch')}}
+                    <p>The provided token is incorrect.</p>
+                    <p>Please Try again.</p>
+                {{/if}}
+                {{#if (eq status 'expired')}}
+                    <p>The provided token is expired.</p>
+                    <p>
+                        Please check your email for another verification token.<br />
+                        The new token will expire in {{tokenAge}}.
+                    </p>
+                {{/if}}
+            </div>
+            <form class="ui form attached fluid segment" id="{{formId}}" action="{{{actionUrl}}}" method="POST" autocomplete="off">
+                <input type="hidden" name="user" value="{{{userValue}}}" />
+                <div class="two fields">
+                    <div class="field">
+                        {{{input.token}}}
+                    </div>
+                    <div class="field">
+                        {{{button.auth}}}
+                    </div>
+                </div>
+            </form>
+            <div class="ui bottom attached message">
+                <i class="icon attention"></i>
+                Once verified, this IP address will be remembered,
+                and you will not be asked for a token from this address in the future.
+            </div>
+        </div>
+
+    </div>
+    <script>{{{script}}}</script>
+
+{{> foot}}

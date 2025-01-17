@@ -50,7 +50,7 @@ router.post('/unique/:env', User.verify, async (req, res) => {
     try {
         const response = { unique: true }
         const { env } = req.params
-        const src = { User, Team, Company }  //! for later: Carrier, School
+        const src = { User, Team, Company, Owner }  //! for later: Carrier, School
 
         const { found } = await src[capitalizeFirst(env)].find(res.session, req.body)
         response.unique = !found
@@ -88,7 +88,7 @@ router.post('/flush/:env/:_id/:target?', User.verify, developerOnly, async (req,
         const { env, _id, target } = req.params
         let success = false
 
-        const Src = { User }[capitalizeFirst(env)]  //! for later: , Team, Company
+        const Src = { User, Team, Company, Owner }[capitalizeFirst(env)]  //! for later: Carrier, School
         const instance = await Src.data(res.session, { _id })
         const [ result ] = await instance.flush(target)
         if (result.affectedRows == 1) success = true
@@ -128,6 +128,7 @@ router.post('/assets/:source', User.verify, (req, res) => {
 
 router.post('/users', User.verify, adminBranchOnly, async (req, res) => {
     try {
+        //! It may be necessary to remove the branch restriction, since other branches may also need this info
         res.send({ data: await User.list(res.session) })
     } catch (err) {
         throwErr.server(res, null, err, false)

@@ -1,0 +1,12 @@
+.ui.container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    max-width: 360px;
+}
+.header {
+    margin-bottom: 10px !important;
+}
+.two.fields {
+    margin: 0 !important;
+}

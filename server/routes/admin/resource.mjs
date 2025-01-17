@@ -32,7 +32,7 @@ router.post('/user', User.verify, validateUser, validationCheck, User.dataCheck,
 
 
 router.patch('/user', User.verify, validateUser, validationCheck, User.dataCheck, async (req, res) => {
-    delete req.body._method_
+    delete req.body._method
 
     try {
         const { _id } = req.body
