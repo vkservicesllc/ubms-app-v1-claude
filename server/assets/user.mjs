@@ -273,7 +273,7 @@ class User extends Person {
                                         userId: id,
                                         formId,
                                     }))
-                                    if (result.affectedRows == 0) error = 'Database Error: Registration Not Updated'
+                                    if (result.affectedRows == 0) error = 'DB Error: Registration Not Updated'
                                 }
                             }
                         }
@@ -515,10 +515,10 @@ class User extends Person {
             if (result.affectedRows == 0) {
                 try {
                     // await mysql.execute(query.users.delete({ id }))
-                    error = 'Database Error: Unregistered User Deleted'
+                    error = 'DB Error: Unregistered User Deleted'
                 } catch (err) {
                     console.error(err)
-                    error = 'Database Error: Unregistered User Not Deleted'
+                    error = 'DB Error: Unregistered User Not Deleted'
                 }
 
                 return { created, error }
@@ -528,7 +528,7 @@ class User extends Person {
             newUser = await User.data(session, { id })
 
             User.invite(session, newUser, formId)
-        } else error = 'Database Error'
+        } else error = 'DB Error'
 
         return { created, error, data: newUser }
     }

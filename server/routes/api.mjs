@@ -3,6 +3,7 @@ const mysql = require('../tools/mysql')
 const throwErr = require('../tools/error').api
 
 /* Assests */
+import Individual from '../assets/individual.mjs'
 import User, { adminBranchOnly, superAdminUserOnly, developerOnly } from '../assets/user.mjs'
 import Team from '../assets/team.mjs'
 import Company, { Owner } from '../assets/company.mjs'
@@ -50,7 +51,7 @@ router.post('/unique/:env', User.verify, async (req, res) => {
     try {
         const response = { unique: true }
         const { env } = req.params
-        const src = { User, Team, Company, Owner }  //! for later: Carrier, School
+        const src = { User, Team, Individual, Company, Owner }  //! for later: Carrier, School
 
         const { found } = await src[capitalizeFirst(env)].find(res.session, req.body)
         response.unique = !found
@@ -88,7 +89,7 @@ router.post('/flush/:env/:_id/:target?', User.verify, developerOnly, async (req,
         const { env, _id, target } = req.params
         let success = false
 
-        const Src = { User, Team, Company, Owner }[capitalizeFirst(env)]  //! for later: Carrier, School
+        const Src = { User, Team, Individual, Company, Owner }[capitalizeFirst(env)]  //! for later: Carrier, School
         const instance = await Src.data(res.session, { _id })
         const [ result ] = await instance.flush(target)
         if (result.affectedRows == 1) success = true

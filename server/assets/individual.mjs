@@ -31,7 +31,7 @@ class Individual extends Person {
     constructor(data = {}, light = false) {
         super(data)
 
-        if (data?._id && Object.keys(this).lengt) {
+        if (data?._id && Object.keys(this).length) {
             const { _id } = data
 
             reSuper(this, { _id })
@@ -389,14 +389,15 @@ class Individual extends Person {
         const { ssn } = params
         if (!ssn) return { error: 'Invalid Parameters' }
 
-        let found = false
+        let found = false, personId
 
         const data = (await mysql.execute(query.individuals.select('id', {
             match: { ssn: { aes: [ ssn, secret ] } },
         })))[0]
         found = data.length == 1
+        if (found) personId = data[0].id
 
-        return { found }
+        return { found, personId }
     }
 
 
