@@ -96,12 +96,12 @@ usernameEvent({
         const username = $username.val()
 
         if (username) {
-            const { found } = response
+            const { unique } = response
             const { success, failed } = style.message
             let styler = success,
                 message = 'Username available <i class="ui check icon"></i>'
 
-            if (found) {
+            if (!unique) {
                 styler = failed
                 message = 'Username taken <i class="ui close icon"></i>'
                 $username.parent().addClass('error')

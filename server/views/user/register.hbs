@@ -1,0 +1,233 @@
+{{> head}}
+
+    {{#if (eq userRegistered true)}}
+    <div class="ui success container">
+        <div class="ui green icon message">
+            <i class="smile outline icon"></i>
+            <div class="content">
+                <div class="header">User Registered!</div>
+                No need to proceed with the registration
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    {{#if (eq validForm false)}}
+    <div class="ui warning container">
+        <div class="ui red icon message">
+            <i class="frown outline icon"></i>
+            <div class="content">
+                <div class="header">Invalid Registration Form!</div>
+                Check registration URL
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    {{#if (eq expiredForm true)}}
+    <div class="ui warning container">
+        <div class="ui red icon message">
+            <i class="frown outline icon"></i>
+            <div class="content">
+                <div class="header">Expired Form!</div>
+                You were late to register
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    {{#if (eq userRegistered false)}}
+    {{#if (eq validForm true)}}
+    {{#if (eq expiredForm false)}}
+    <div class="ui container">
+        <div class="ui attached success icon message" id="form-header">
+            <i class="id badge outline icon"></i>
+            <div class="content">
+                <div class="header">Welcome to {{siteName}}!</div>
+                Fill out the form below to sign up
+            </div>
+        </div>
+        <form class="ui form attached fluid segment" id="{{formId}}" action="/register" method="POST" autocomplete="off">
+            <input type="hidden" id="form-mode" value="reg" />
+            {{{input.id}}}
+            {{{input.formId}}}
+            <input type="hidden" id="username-validation" />
+            <input type="hidden" id="password-validation" />
+            <input type="hidden" id="conf-password-validation" />
+            <div class="inline field">
+                <label>Display Name:</label>
+                <span class="ui purple text">{{user.name}}</span>
+            </div>
+            <div class="ui divider"></div>
+            <div class="two fields">
+                <div class="field">
+                    {{{label.username}}}
+                    {{{input.username}}}
+                    <p class="help" id="username-help" style="display: none;"><span class="ui text"></span></p>
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    {{{label.newPassword}}}
+                    <div class="ui corder labeled input">
+                        {{{input.newPassword}}}
+                        <div class="ui corner label">
+                            <i class="ui eye slash icon" id="eye-icon"></i>
+                        </div>
+                    </div>
+                    <p class="help" id="password-help" style="display: none;"><span class="ui text"></span></p>
+                </div>
+                <div class="field">
+                    {{{label.confPassword}}}
+                    {{{input.confPassword}}}
+                    <p class="help" id="conf-password-help" style="display: none;"><span class="ui text"></span></p>
+                </div>
+            </div>
+            <div class="ui error message" id="password-error-tip">
+                <div class="header">
+                    Password must:
+                </div>
+                <div class="list">
+                    <li>be at least {{length.password.min}} characters long</li>
+                    <li>have at least one small letter</li>
+                    <li>have at least one capital letter</li>
+                    <li>have at least one number</li>
+                    <li>have at least one special characters</li>
+                    <li>NOT have whitespaces</li>
+                </div>
+            </div>
+            <div class="inline field">
+                <div class="ui checkbox">
+                    <input type="checkbox" id="terms" data-status="unread" />
+                    <label>I agree to the <a href="javascript:void(0)" id="terms-link">Terms and Conditions</a></label>
+                </div>
+            </div>
+            <div class="ui inverted red segment" id="form-error" style="display: none; text-align: center;">
+                Error: make sure all fields are filled correctly
+            </div>
+            <div class="ui divider"></div>
+            <button type="submit" class="ui blue submit button" disabled>Sign up</button>
+        </form>
+        <div class="ui attached red icon message" id="failed-registration" style="display: none;">
+            <i class="id badge outline icon"></i>
+            <div class="content">
+                <div class="header">{{siteName}} registration failed!</div>
+                Please read the message below
+            </div>
+        </div>
+        <div class="ui attached red fluid segment" id="terms-declined" style="display: none;">
+            <section>
+                We regret to inform you that your registration has failed due to your decision to decline the terms and conditions.
+                We understand that everyone has the right to make choices that align with their preferences,
+                but unfortunately, accepting our terms and conditions is a requirement for registration.
+            </section>
+            <section>
+                Our terms and conditions outline the rules and guidelines that govern the use of our system, ensuring the security, privacy, and fair usage of our services.
+                By declining these terms, we are unable to proceed with your registration as it would compromise the integrity of our platform and the experience of our users.
+            </section>
+            <section>
+                The administrator who sent you the invitation will be informed of your decision.
+            </section>
+        </div>
+        <div class="ui bottom attached center aligned message">
+            <span class="ui small text">{{{copyright}}}</span>
+        </div>
+    </div>
+    <div class="ui tiny modal" id="terms-modal">
+        <div class="header">
+            Terms and Conditions
+        </div>
+        <div class="scrolling content">
+            <p>Please carefully read and understand the following terms and conditions before proceeding to use our system.</p>
+            <ol class="ui suffixed list">
+                <li><b>Language Proficiency:</b>
+                    <ol>
+                        <li>
+                            English Proficiency:<br>
+                            You confirm that you have a proficient understanding of the English language,
+                            which will allow you to comprehend and adhere to the policies and instructions provided in English.
+                        </li>
+                    </ol>
+                </li>
+                <li><b>Account Security:</b>
+                    <ol>
+                        <li>
+                            Usernames and Passwords:<br>
+                            You are responsible for maintaining the confidentiality of your username and password.
+                            You must not share your login credentials with anyone, whether within or outside the system.
+                            You agree that you will be solely responsible for any activities or actions taken under your account, whether authorized by you or not.
+                        </li>
+                        <li>
+                            Unauthorized Access:<br>
+                            If you suspect any unauthorized access to your account or any breach of security, you must immediately notify the system administrator.
+                        </li>
+                    </ol>
+                </li>
+                <li><b>System Information:</b>
+                    <ol>
+                        <li>
+                            Confidentiality:<br>
+                            You understand and acknowledge that all information provided to you through the system is confidential and proprietary.
+                            You agree not to share, disclose, or distribute any system information,
+                            including but not limited to user data, trade secrets, technical specifications, or any other sensitive information, with anyone outside the system.
+                        </li>
+                    </ol>
+                </li>
+                <li><b>Compliance and Consequences:</b>
+                    <ol>
+                        <li>
+                            Policy Compliance:<br>
+                            You agree to comply with all applicable policies, rules, and regulations set forth by the system.
+                            This includes but is not limited to adhering to the security measures,
+                            following ethical guidelines, and refraining from engaging in any illegal activities while using the system.
+                        </li>
+                        <li>
+                            Account and Employment Termination:<br>
+                            Incompliance with the policies, breach of security, sharing of credentials or system information,
+                            or any other violation may result in the termination of your account and employment.
+                            The system reserves the right to take appropriate legal action, if necessary, to enforce compliance.
+                        </li>
+                    </ol>
+                </li>
+                <li><b>Modification of Terms:</b>
+                    <ol>
+                        <li>
+                            Changes to Terms and Conditions:<br>
+                            The system reserves the right to modify these terms and conditions at any time without prior notice.
+                            It is your responsibility to review these terms periodically and stay informed of any updates or changes.
+                        </li>
+                    </ol>
+                </li>
+            </ol>
+            <p>By using our system, you acknowledge that you have read, understood, and agreed to comply with these terms and conditions.</p>
+        </div>
+        <div class="actions">
+            <button class="ui black deny button" id="decline-button">I Decline</button>
+            <button class="ui positive right labeled icon button" id="agree-button" disabled>
+                I Understand and Agree
+                <i class="checkmark icon"></i>
+            </button>
+        </div>
+    </div>
+    <div class="ui small modal" id="terms-decline-modal">
+        <div class="header">
+            Confirmation of Declining Terms and Conditions
+        </div>
+        <div class="content">
+            <p>
+                Are you sure you want to decline the terms and conditions?<br>
+                By declining, you will be unable to access certain features or services provided by {{siteName}}.
+            </p>
+            <p><span class="ui red text">Note:</span> Your decision will be emailed to the administrator who invited you.</p>
+        </div>
+        <div class="actions">
+            <button class="ui black deny button" id="cancel-decline-button">Go Back</button>
+            <button class="ui negative right labeled icon button"  id="confirm-decline-button">
+                Confirm Decline
+                <i class="checkmark icon"></i>
+            </button>
+        </div>
+    </div>
+    <script type="module" src="/modules/register.mjs"></script>
+    {{/if}}
+    {{/if}}
+    {{/if}}
+
+{{> foot}}

@@ -12,11 +12,11 @@ import UserMV from './mw/user.mjs'
 
 
 
+/* User Resource */
+
 router.post('/user/upsert', User.verify, UserMV.devLock, validateUser, validationCheck, UserMV.upsert)
 
-
 router.post('/user/update/condition', User.verify, [ validateCondition() ], validationCheck, UserMV.updateCondition)
-
 
 router.post('/user/delete', User.verify, UserMV.delete)
 

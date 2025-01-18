@@ -26,6 +26,7 @@ import { Label, Input, Button } from '../html/user.mjs'
 
 /* Validators */
 import validationCheck, { validateName, validateGender, validateEmail, validateTel } from '../validators/default.mjs'
+import { validateLocalReg } from '../validators/user.mjs'
 
 
 const query = {
@@ -152,6 +153,81 @@ router.get('/authenticate', async (req, res) => {
         throwErr.server(res, null, err)
     }
 })
+
+
+router.get('/register/:_id', async (req, res) => {
+    try {
+        const { _id } = req.params
+        const { form: formId } = req.query
+
+        const key = 'register'
+        let { hbs } = res
+        hbs = hbs.set(key)
+        hbs.userRegistered = false
+        hbs.validForm = true
+        hbs.expiredForm = false
+
+        const user = await User.data(res.session, { _id })
+        if (!user) return respond404(res)
+
+        if (user.username) hbs.userRegistered = true
+        else if (!formId || user.decliner) hbs.validForm = false
+
+        else {
+            const userId = await user.id()
+            const [ rows ] = await mysql.execute(query.registration.select('invitedAt', {
+                match: { formId, userId },
+            }))
+
+            if (!rows.length) hbs.validForm = false
+            else {
+                const { invitedAt } = rows[0]
+                const weekDay = new Date(invitedAt).getDay()
+                let limit = 24
+                if (weekDay == 4) limit = 72
+                if (weekDay == 5) limit = 48
+
+                if (calculateHourAge(invitedAt) > limit) hbs.expiredForm = true
+                else {
+                    hbs.user = {}
+
+                    const props = [ 'name' ]
+                    for (const prop of props)
+                        hbs.user[prop] = user[prop]
+
+                    hbs.formId = formSelectors.user.registerFormId
+                    hbs.label = {
+                        username: Label.username({ content: 'Create Username' }),
+                        newPassword: Label.password({ purpose: 'new' }),
+                        confPassword: Label.password({ purpose: 'repeat' }),
+                    }
+                    hbs.input = {
+                        id: Input.id(_id),
+                        formId: formInput({
+                            type: 'hidden',
+                            id: 'form-id',
+                            name: 'formId',
+                            value: formId,
+                        }),
+                        username: Input.username(),
+                        newPassword: Input.password({ purpose: 'new' }),
+                        confPassword: Input.password({ purpose: 'repeat' }),
+                    }
+                    hbs.length = {
+                        password: length.user.password,
+                    }
+                }
+            }
+        }
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.post('/register', validateLocalReg, validationCheck, User.register)
 
 
 

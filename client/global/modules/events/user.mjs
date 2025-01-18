@@ -29,10 +29,9 @@ export const usernameEvent = (callback = {}) => {
             }
 
             if (onAjax && username) {
-                const _id = $(`#${id}`).val()
-                const url = _id
-                    ? `/api/public/find/user?auth=${_id}`
-                    : '/api/unique/user'
+                let url = '/api/unique/user'
+                const formMode = $('#form-mode')?.val()
+                if (formMode == 'reg') url += '/new/username'
 
                 $.ajax(url, {
                     method: 'POST',
