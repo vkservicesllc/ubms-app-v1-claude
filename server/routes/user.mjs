@@ -26,7 +26,7 @@ import { Label, Input, Button } from '../html/user.mjs'
 
 /* Validators */
 import validationCheck, { validateName, validateGender, validateEmail, validateTel } from '../validators/default.mjs'
-import { validateLocalReg } from '../validators/user.mjs'
+import { validateUsername, validatePassword, validateLocalReg } from '../validators/user.mjs'
 
 
 const query = {
@@ -101,6 +101,163 @@ router.use((req, res, next) => {
     }
 
     next()
+})
+
+
+router.get('/', async (req, res) => {
+    try {
+        const verified = await User.verify(req, res)
+        if (verified) return res.redirect('/profile')
+
+        res.redirect('/login')
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/login', async (req, res) => {
+    try {
+        const verified = await User.verify(req, res)
+        if (verified) return res.redirect('/profile')
+
+        const key = 'login'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        const labelClass = 'ui teal tag label'
+
+        hbs.label = {
+            username: Label.username({ class: labelClass }),
+            password: Label.password({ class: labelClass }),
+        }
+        hbs.input = {
+            username: Input.username(),
+            password: Input.password(),
+        }
+        hbs.button = {
+            login: Button.login({ class: 'ui fluid teal submit button' }),
+        }
+
+        hbs.formId = formSelectors.user.loginFormId
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/profile', User.verify, (req, res) => {
+    try {
+        const key = 'profile'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        const { firstName, lastName, alias, sex, DSA } = hbs.user
+        const readOnly = !DSA
+
+        hbs.formId = formSelectors.user.profileFormId
+        hbs.input = {
+            firstName: Input.firstName({ placeholder: 'Real First Name', value: firstName, readOnly }),
+            alias: Input.alias({ placeholder: 'Alias', value: alias, readOnly }),
+            lastName: Input.lastName({ placeholder: 'Last Name', value: lastName, readOnly }),
+            genderM: Input.gender('m', { checked: sex === 1 }),
+            genderF: Input.gender('f', { checked: sex === 0 }),
+        }
+        hbs.actionUrl = `/profile`
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.post('/profile', User.verify, [
+    validateName('firstName'),
+    validateName('lastName'),
+    validateName('alias'),
+    validateGender(),
+], validationCheck, async (req, res) => {
+    try {
+        const { error } = await res.session.user.modify(res.session, req.body)
+        if (error) return throwErr.server(res, null, error)
+
+        res.redirect('/profile')
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/account', User.verify, (req, res) => {
+    try {
+        const key = 'account'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        const { username, email, phone, location } = hbs.user
+
+        hbs.formId = formSelectors.user.accountFormId
+        hbs.label = {
+            username: Label.username({ addClass: 'required' }),
+            email: Label.email(),
+            phone: Label.phone(),
+        }
+        hbs.input = {
+            username: Input.username({ value: username, disabled: false }),
+            email: Input.email({ value: email }),
+            phone: Input.phone({ value: phone }),
+        }
+        hbs.actionUrl = `/account`
+        hbs.nonUS = location[0] != 'US'
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.post('/account', User.verify, [
+    validateUsername(),
+    validateEmail(),
+    validateTel('phone'),
+], validationCheck, async(req, res) => {
+    try {
+        const { error } = await res.session.user.modify(res.session, req.body)
+        if (error) return throwErr.server(res, null, error)
+
+        res.redirect('/account')
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/security', User.verify, (req, res) => {
+    try {
+        const key = 'security'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        hbs.formId = formSelectors.user.securityFormId
+        hbs.actionUrl = `/security`
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.post('/security', User.verify, [ validatePassword() ], validationCheck, async(req, res) => {
+    try {
+        //
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
 })
 
 

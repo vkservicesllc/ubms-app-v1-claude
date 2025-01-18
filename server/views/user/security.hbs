@@ -1,0 +1,13 @@
+{{> head}}
+
+    <div style="{{{style.page}}}">
+        {{> user/nav}}
+        <div class="ui segment">
+            <h4 class="ui dividing header">{{user.name}}</h4>
+            <form class="ui form" id="{{formId}}" action="{{actionUrl}}" method="POST" autocomplete="off">
+                <button type="submit" class="ui teal button">Update</button>
+            </form>
+        </div>
+    </div>
+
+{{> foot}}

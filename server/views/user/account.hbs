@@ -1,0 +1,40 @@
+{{> head}}
+
+    <div style="{{{style.page}}}">
+        {{> user/nav}}
+        <div class="ui segment">
+            <h4 class="ui dividing header">{{user.name}}</h4>
+            <form class="ui form" id="{{formId}}" action="{{actionUrl}}" method="POST" autocomplete="off">
+                <div class="two fields">
+                    <div class="field">
+                        {{{label.username}}}
+                        {{{input.username}}}
+                        <p class="help" id="username-help" style="display: none;"><span class="ui text red"></span></p>
+                    </div>
+                    {{#if (eq nonUS true)}}
+                    <div class="field">
+                        {{{label.email}}}
+                        {{{input.email}}}
+                        <p class="help" id="email-help" style="display: none;"><span class="ui text red"></span></p>
+                    </div>
+                    {{/if}}
+                </div>
+                {{#if (eq nonUS false)}}
+                <div class="two fields">
+                    <div class="field">
+                        {{{label.email}}}
+                        {{{input.email}}}
+                        <p class="help" id="email-help" style="display: none;"><span class="ui text red"></span></p>
+                    </div>
+                    <div class="field">
+                        {{{label.phone}}}
+                        {{{input.phone}}}
+                    </div>
+                </div>
+                {{/if}}
+                <button type="submit" class="ui teal button">Update</button>
+            </form>
+        </div>
+    </div>
+
+{{> foot}}

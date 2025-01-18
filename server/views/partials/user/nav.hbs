@@ -1,0 +1,12 @@
+<div class="ui secondary pointing menu">
+    <a class="item" href="{{{addrBook.default}}}">Home</a>
+    <a {{{nav.profile}}}>Profile</a>
+    <a {{{nav.account}}}>Account</a>
+    <a {{{nav.security}}}>Security</a>
+    {{#if (eq user.DSA true)}}
+    <a class="item" href="{{{addrBook.admin}}}" target="_blank">Admin Portal</a>
+    {{/if}}
+    <div class="right menu">
+        <a class="ui item" id="{{logoutId}}" href="{{logoutUrl}}">Sign out</a>
+    </div>
+</div>

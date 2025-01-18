@@ -1,0 +1,34 @@
+{{> head}}
+
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            <h2 class="ui blue header">
+                <div class="content">
+                    {{appName}}
+                </div>
+            </h2>
+            <div class="ui hidden divider"></div>
+            <form class="ui form" id="{{formId}}" action="{{loginUrl}}" method="POST" autocomplete="off">
+                <div class="field">
+                    <div class="ui fluid right labeled left icon input">
+                        <i class="user icon"></i>
+                        {{{input.username}}}
+                        {{{label.username}}}
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui fluid right labeled left icon input">
+                        <i class="lock icon"></i>
+                        {{{input.password}}}
+                        {{{label.password}}}
+                    </div>
+                </div>
+                {{{button.login}}}
+            </form>
+            <div class="ui error message" id="error-message" style="display: none;"></div>
+            <div class="ui hidden divider"></div>
+            <p><span class="ui info text">{{{copyright}}}</span></p>
+        </div>
+    </div>
+
+{{> foot}}

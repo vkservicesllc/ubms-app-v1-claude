@@ -1,0 +1,58 @@
+{{> head}}
+
+<style>
+    @media (max-width: 767px) {
+        .ui.form .inline.fields > label {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+<script type="module" defer></script>
+
+    <div style="{{{style.page}}}">
+        {{> user/nav}}
+        <div class="ui segment">
+            <h4 class="ui dividing header">{{idx user.status 1}} in {{idx user.location 1}}</h4>
+            <img class="ui small circular image" id="avatar" src="{{{user.avaSrc}}}" alt="Avatar" />
+            <form class="ui form" id="{{formId}}" action="{{actionUrl}}" method="POST" autocomplete="off">
+                <div class="field">
+                    <label>Name</label>
+                    <div class="three fields">
+                        <div class="field">
+                            {{{input.firstName}}}
+                        </div>
+                        <div class="field">
+                            {{{input.alias}}}
+                        </div>
+                        <div class="field">
+                            {{{input.lastName}}}
+                        </div>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <label>Gender</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            {{{input.genderM}}}
+                            <label>Male</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            {{{input.genderF}}}
+                            <label>Female</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui error message">
+                    <div class="header">Error</div>
+                    <ul id="error-message-list"></ul>
+                </div>
+                <button type="submit" class="ui teal button">Update</button>
+            </form>
+            <h4 class="ui dividing header">Employee in {{idx user.location 1}}</h4>
+            <p><span class="ui red text">Unassigned</span></p>
+        </div>
+    </div>
+
+{{> foot}}
