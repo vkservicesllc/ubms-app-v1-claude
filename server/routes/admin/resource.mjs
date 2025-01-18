@@ -15,14 +15,7 @@ const userErr = 'Server Internal Error: User not found'
 
 
 
-router.post('/user/upsert', User.verify,
-
-    (req, res, next) => {
-        console.log(req.body)
-        next()
-    }, //! temp
-
-validateUser, validationCheck, async (req, res) => {
+router.post('/user/upsert', User.verify, User.devLock, validateUser, validationCheck, async (req, res) => {
     const { session } = res
     const { user: sessionUser } = session
     const sessionStatus = sessionUser.status[0]
