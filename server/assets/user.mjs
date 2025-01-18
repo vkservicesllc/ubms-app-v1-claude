@@ -979,6 +979,21 @@ class User extends Person {
     }
 
 
+    static devLock = async (req, res, next) => {
+        const { _id } = req.body
+
+        if (_id) {
+            const user = await User.data(res.session, { _id })
+            if (user.status[0] == 'D') {
+                req.body.status = 'D'
+                req.body.location = 'US'
+            }
+        }
+
+        next()
+    }
+
+
 }
 
 
