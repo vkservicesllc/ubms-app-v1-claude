@@ -229,6 +229,9 @@ class User extends Person {
                                 if (this.status[0] == 'S') error = 'Invalid Target: Immune User'
                                 else if (location[0] != 'US' && location[0] != this.location[0])
                                     error = 'Invalid Region'
+                            } else if (this.status[0] == 'D') {
+                                if (data.status != 'D') error = 'Invalid Target: Immune User'
+                                else if (data.location != 'US') error = 'Invalid Region'
                             }
                         }
                     }
@@ -976,21 +979,6 @@ class User extends Person {
         }))
 
         res.redirect('/')
-    }
-
-
-    static devLock = async (req, res, next) => {
-        const { _id } = req.body
-
-        if (_id) {
-            const user = await User.data(res.session, { _id })
-            if (user.status[0] == 'D') {
-                req.body.status = 'D'
-                req.body.location = 'US'
-            }
-        }
-
-        next()
     }
 
 

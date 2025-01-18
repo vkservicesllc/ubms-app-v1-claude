@@ -46,7 +46,7 @@ const validateToken = () => body('token')
 
 
 const validateStatus = () => {
-    const list = Object.keys(User.statusList).filter(item => item != 'D')
+    const list = Object.keys(User.statusList)
 
     return body('status')
         .trim()
