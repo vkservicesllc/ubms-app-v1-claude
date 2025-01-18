@@ -961,35 +961,6 @@ class User extends Person {
     }
 
 
-    static dataCheck = (req, res) => {
-        const { session } = res
-        const { user: sessionUser } = session
-        const sessionStatus = sessionUser.status[0]
-        const sessionLocation = sessionUser.location[0]
-        const { body: data } = req
-        let error
-    
-        switch (true) {
-            case data.location != 'US' && data.phone:
-                delete data.phone
-                break
-            case data.status == 'D' && sessionStatus != 'D':
-            case data.status == 'S' && !sessionUser.DS:
-                error = 'Invalid Data: Illegal Status'
-                break
-            case data.status == 'S' && data.location != 'US':
-            case sessionLocation != 'US' && data.location != sessionLocation:
-                error = 'Invalid Data: Illegal Location'
-                break
-            case data.firstName == data.alias:
-                error = 'Invalid Data: Illegal Name'
-                break
-        }
-    
-        if (error) return throwErr.data.server(res, error)
-    }
-
-
     static initialize = async (req, res) => {
         const [ rows ] = await mysql.execute(query.users.select('id', { id: 1 }))
 

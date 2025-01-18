@@ -47,10 +47,6 @@ const $submit = {
     user: $('#user-modal-submit'),
     deleteUser: $('#user-delete-modal-submit'),
 }
-const $method = {
-    all: ('[name="_method"]'),
-    user: ('[name="_method"]'),
-}
 const $trigger = {
     userLog: $('#user-update-log-trigger'),
 }
@@ -368,7 +364,6 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 $('.modal').removeClass('is-active')
 
                 $title.all.html(null)
-                $method.all.val(null)
                 message.removeInvite()
                 $(`input:not(.${genderClass}):not(.${conditionClass}):not([type=search]), select:not('.dt-input')`).val(null)
                 $status.prop('disabled', false).val('U')
@@ -394,7 +389,6 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             $('#invite-user').click(() => {
                 $title.user.html('<small>New User</small>')
                 $submit.user.addClass('is-link').text('Invite')
-                $method.user.val('POST')
                 message.buildInvite()
 
                 $('#user-modal').addClass('is-active')
@@ -521,7 +515,6 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     let disabled = false
 
                     $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${name}</strong>`)
-                    $method.user.val('PATCH')
                     $usernameHidden.val(username)
                     $emailHidden.val(email)
                     if (status == 'D') {

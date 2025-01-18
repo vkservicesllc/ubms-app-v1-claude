@@ -1,7 +1,6 @@
 import express from 'express'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
-import methodOverride from 'method-override'
 import hbs from 'hbs'
 
 import config, { apps, addrBook } from './config.mjs'
@@ -66,7 +65,6 @@ export default branch => {
     server.use(express.static('./client/global/'))
 
     server.use(express.urlencoded({ extended: true }))
-    server.use(methodOverride('_method'))
     server.use(cookieParser(config.cookie.secret, { httpOnly: true }))
     server.use(session({
         secret: `${secret}-${branch}`,
