@@ -1,0 +1,56 @@
+<ul class="steps is-medium is-centered has-content-centered mt-5">
+    <li class="steps-segment{{steps.record.segment}}">
+        <a class="step-link{{steps.record.link}}" id="record-step">
+            <span class="steps-marker{{steps.record.marker}}">{{{steps.record.span}}}</span>
+            <div class="steps-content">
+                <p class="heading">{{step1}}</p>
+            </div>
+        </a>
+    </li>
+    <li class="steps-segment{{steps.ownership.segment}}">
+        <a class="step-link{{steps.ownership.link}}" id="ownership-step">
+            <span class="steps-marker{{steps.ownership.marker}}">{{{steps.ownership.span}}}</span>
+            <div class="steps-content">
+                <p class="heading">Ownership</p>
+            </div>
+        </a>
+    </li>
+    <li class="steps-segment{{steps.address.segment}}">
+        <a class="step-link{{steps.address.link}}" id="address-step">
+            <span class="steps-marker{{steps.address.marker}}">{{{steps.address.span}}}</span>
+            <div class="steps-content">
+                <p class="heading">Address</p>
+            </div>
+        </a>
+    </li>
+    <li class="steps-segment{{steps.contacts.segment}}">
+        <a class="step-link{{steps.contacts.link}}" id="contacts-step">
+            <span class="steps-marker{{steps.contacts.marker}}">{{{steps.contacts.span}}}</span>
+            <div class="steps-content">
+                <p class="heading">Contacts</p>
+            </div>
+        </a>
+    </li>
+    {{#if (
+        or
+            (eq data.catId 'crr')
+    )}}
+    <li class="steps-segment{{steps.credentials.segment}}">
+        <a class="step-link{{steps.credentials.link}}" id="credentials-step">
+            <span class="steps-marker{{steps.credentials.marker}}">{{{steps.credentials.span}}}</span>
+            <div class="steps-content">
+                <p class="heading">Credentials</p>
+            </div>
+        </a>
+    </li>
+    {{/if}}
+    <li class="steps-segment{{steps.confirmation.segment}}">
+        <a class="step-link{{steps.confirmation.link}}" id="card-step">
+            <span class="steps-marker{{steps.confirmation.marker}}">{{{steps.confirmation.span}}}</span>
+            <div class="steps-content">
+                <p class="heading">Confirmation</p>
+            </div>
+        </a>
+    </li>
+</ul>
+<script src="/scripts/company-steps.js"></script>

@@ -1,0 +1,28 @@
+<form class="box px-5 form-container" id="ownership-form" action="/data/company/{{{companyId}}}/ownership" method="POST" autocomplete="off"{{{visibility.ownership}}}>
+    {{{input.current.ownership}}}
+    <div class="field">
+        <div class="columns">
+            <div class="column is-4">
+                {{{label.ownership}}}
+                <div class="select is-fullwidth">
+                    {{{select.ownership}}}
+                </div>
+            </div>
+            <div class="column is-6">
+                <label class="label button-label">&nbsp;</label>
+                {{{button.edit.owner}}}
+            </div>
+            <div class="column is-2" style="text-align:right;">
+                <label class="label button-label">&nbsp;</label>
+                {{{button.add.owner}}}
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column is-2">
+                {{{button.submit.ownership}}}
+            </div>
+        </div>
+    </div>
+</form>
+{{> admin/company/owner}}
+<script type="module" src="/modules/company/ownership.mjs"></script>

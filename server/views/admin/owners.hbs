@@ -1,0 +1,32 @@
+{{> admin/nav.alpha}}
+
+                <table class="table" id="owners-table"></table>
+
+                {{> admin/company/owner}}
+
+                <div class="modal owner-modal" id="owner-delete-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title owner-title" id="owner-delete-title"></p>
+                        </header>
+                        <section class="modal-card-body">
+                            <form action="/resource/company/owner/delete" id="owner-delete-form" method="POST">
+                                {{{input.current.ownerDeleteId}}}
+                                <p class="has-text-danger">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    The company owner's record can be removed since they currently do not own any companies.
+                                    However, it is recommended to keep their record if there is a likelihood they will own companies in the future.
+                                </p>
+                            </form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <div class="buttons">
+                                <button type="submit" class="button is-danger" form="owner-delete-form">Delete</button>
+                                <button class="button modal-cancel">Cancel</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+
+{{> admin/nav.omega}}

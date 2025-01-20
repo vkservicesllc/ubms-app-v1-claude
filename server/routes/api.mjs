@@ -153,4 +153,26 @@ router.post('/user/:_id', User.verify, async (req, res) => {
 
 
 
+/* COMPANY */
+
+
+router.post('/companies', User.verify, async (req, res) => {
+    try {
+        res.send({ data: await Company.list(res.session) })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+router.post('/company-owners', User.verify, async (req, res) => {
+    try {
+        res.send({ data: await Owner.list(res.session) })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+
 export default router

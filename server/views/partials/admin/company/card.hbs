@@ -1,0 +1,292 @@
+{{#if (eq data.confirmed 1)}}
+<nav class="breadcrumb has-arrow-separator">
+    <ul>
+        <li class="is-active"><a class="has-text-grey">Business</a></li>
+        <li class="is-active"><a class="has-text-grey">Company</a></li>
+    </ul>
+</nav>
+
+{{/if}}
+<div class="card form-container" id="card-form">
+    <style>
+        .card-content {
+            min-height: {{css.card.minHeight}};
+        }
+    </style>
+    {{#if (eq data.confirmed 1)}}
+    <header class="card-header">
+        <p class="card-header-title">{{data.name}}</p>
+        <div class="dropdown is-hoverable is-right">
+            <div class="dropdown-trigger">
+                <button class="card-header-icon">
+                    <span class="icon"><i class="fas fa-ellipsis-vertical"></i></span>
+                </button>
+            </div>
+        </div>
+    </header>
+    {{/if}}
+    <div class="card-content">
+        <div class="tabs">
+            <ul>
+                <li class="company-card-tabs is-active" data-section="company"><a>Primary Details</a></li>
+                {{#if (eq data.catId 'crr')}}
+                <li class="company-card-tabs" data-section="carrier"><a>Carrier Credentials</a></li>
+                {{/if}}
+                <li class="company-card-tabs" data-section="logo"><a>Logo</a></li>
+                {{#if (eq data.confirmed 1)}}
+                <li class="company-card-tabs" data-section="teams"><a>Teams</a></li>
+                {{/if}}
+            </ul>
+        </div>
+
+        <section class="company-card-content" id="company-card-content">
+            <div class="columns">
+                <div class="column is-one-half px-5">
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Business Name:</small>
+                        <strong class="has-text-right">{{data.name}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Business Alias:</small>
+                        <strong class="has-text-right">{{data.alias}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Owner:</small>
+                        <strong class="has-text-right">{{data.owner.name}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Launch Date:</small>
+                        <strong class="has-text-right">{{display.data.since}}</strong>
+                    </div>
+                    {{#if (eq data.confirmed 1)}}
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Status:</small>
+                        <strong class="has-text-right">{{{display.status}}}</strong>
+                    </div>
+                    {{/if}}
+                    <div class="is-flex is-justify-content-space-between mt-5">
+                        <small>Category:</small>
+                        <strong class="has-text-right">{{data.group}} / {{data.category}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>EIN:</small>
+                        <strong class="has-text-right">{{idx data.ein 1}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>DUNS:</small>
+                        <strong class="has-text-right">{{{display.data.duns}}}</strong>
+                    </div>
+                </div>
+                <div class="column is-one-half px-5">
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Address:</small>
+                        <strong class="has-text-right">
+                            {{{display.data.address.physical}}}
+                        </strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between mt-5">
+                        <small>Mail Address:</small>
+                        <strong class="has-text-right">
+                            {{{display.data.address.mail}}}
+                        </strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between mt-5">
+                        <small>Phone:</small>
+                        <strong class="has-text-right">{{display.data.phone}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Fax:</small>
+                        <strong class="has-text-right">{{{display.data.fax}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Email:</small>
+                        <strong class="has-text-right">{{{display.data.email}}}</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {{#if (eq data.catId 'crr')}}
+
+        <section class="company-card-content" id="carrier-card-content" style="display: none;">
+            <div class="columns">
+                <div class="column is-two-fifths px-5">
+                    <p class="has-text-primary is-size-7 mb-2">Licensing</p>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>MC:</small>
+                        <strong class="has-text-right">{{data.mc}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>USDOT:</small>
+                        <strong class="has-text-right">{{data.usdot}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>SCAC:</small>
+                        <strong class="has-text-right">{{{display.data.scac}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>IRP:</small>
+                        <strong class="has-text-right">{{{display.data.irp}}}</strong>
+                    </div>
+                    <p class="has-text-primary is-size-7 mt-5 mb-2">Accounts</p>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>EFS Carrier ID:</small>
+                        <strong class="has-text-right">{{{display.data.efs}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Fleet One Carrier ID:</small>
+                        <strong class="has-text-right">{{{display.data.fleetOne}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Transflo ID:</small>
+                        <strong class="has-text-right">{{{display.data.transflo}}}</strong>
+                    </div>
+                    <p class="has-text-primary is-size-7 mt-5 mb-2">Highway Tax</p>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>IFTA:</small>
+                        <strong class="has-text-right">{{{display.data.ifta}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Jurisdiction:</small>
+                        <strong class="has-text-right">{{display.data.iftaJur}}</strong>
+                    </div>
+                </div>
+                <div class="column is-three-fifths px-5">
+                    <p class="has-text-primary is-size-7 mb-2">State Tax Permits</p>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.ca}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.ca}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.fl}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.fl}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.il}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.il}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.in}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.in}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.ky}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.ky}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.nj}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.nj}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.nm}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.nm}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.nv}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.nv}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.ny}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.ny}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.or}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.or}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.tx}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.tx}}}</strong>
+                    </div>
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>{{display.label.stateTax.wa}}:</small>
+                        <strong class="has-text-right">{{{display.data.stateTax.wa}}}</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {{/if}}
+
+        <section class="company-card-content" id="logo-card-content" style="display: none;">
+            <div class="is-flex is-justify-content-center is-align-items-center">
+                {{#if (eq data.logo 1)}}
+                <figure class="image">
+                    <img src="" alt="">
+                </figure>
+                {{/if}}
+                {{#if (eq data.logo 0)}}
+                <button class="button is-ghost is-large">
+                    <i class="fa fa-plus"></i>
+                </button>
+                {{/if}}
+            </div>
+        </section>
+        {{#if (eq data.confirmed 1)}}
+
+        <section class="company-card-content" id="teams-card-content" style="display: none;">
+            <div class="columns">
+                <div class="column is-half">
+                    <style>
+                        .column.is-width-fixed {
+                            min-width: 200px;
+                        }
+                    </style>
+                    {{{input.id}}}
+                    <div class="columns is-vcentered">
+                        <div class="column is-two-fifths is-width-fixed">
+                            <form id="company-team-add-form" action="/data/company/team/add" method="POST">
+                                {{{input.teamAddId}}}
+                                <label class="label">Available Teams</label>
+                                <div class="select is-multiple is-fullwidth">
+                                    <select id="available-teams" name="teams" multiple size="8"><option value=""></option></select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="column is-one-fifth">
+                            <button type="submit" class="button is-fullwidth is-success" form="company-team-add-form">
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
+                            <button type="submit" class="button is-fullwidth is-danger mt-2" form="company-team-delete-form">
+                                <i class="fa fa-arrow-left"></i>
+                            </button>
+                        </div>
+                        <div class="column is-two-fifths is-width-fixed">
+                            <form id="company-team-delete-form" action="/data/company/team/delete" method="POST">
+                                {{{input.teamRemoveId}}}
+                                <label class="label">Current Teams</label>
+                                <div class="select is-multiple is-fullwidth">
+                                    <select id="company-teams" name="teams" multiple size="8"><option value=""></option></select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {{/if}}
+
+    </div>
+    {{#if (eq data.confirmed 0)}}
+    <form action="/data/company/confirm/" id="company-confirm-form" method="POST">
+        {{{input.id}}}
+    </form>
+    <footer class="card-footer">
+        <button class="card-footer-item">Highlight</button>
+        <button type="submit" class="card-footer-item has-text-link" form="company-confirm-form">Confirm</button>
+    </footer>
+    {{/if}}
+</div>
+
+<div class="modal" id="company-highlight-modal">
+    <div class="modal-background"></div>
+    {{!-- <div class="modal-content p-6" style="width: 480px;">
+        <form>
+            <input type="hidden" id="company-highlight-id" value="{{data._companyId}}" />
+            <input type="hidden" class="color-picker" id="company-background-color" value="{{data.style.background}}">
+            <label class="label has-text-weight-medium pr-5 is-size-7" style="display: inline;"> - Background</label>
+            <input type="hidden" class="color-picker" id="company-text-color" value="{{data.style.color}}">
+            <label class="label has-text-weight-medium pr-5 is-size-7" style="display: inline;"> - Text</label>
+            <button type="reset" class="button" id="reset-company-highlighter">Reset</button>
+        </form>
+    </div> --}}
+</div>
+
+<script type="module" src="/modules/company/card.mjs"></script>

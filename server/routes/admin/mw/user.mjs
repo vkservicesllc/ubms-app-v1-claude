@@ -75,7 +75,7 @@ export default class {
     }
 
 
-    static updateCondition = async (req, res) => {
+    static modifyCondition = async (req, res) => {
         try {
             const { _id, condition } = req.body
     

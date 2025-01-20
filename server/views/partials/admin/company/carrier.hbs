@@ -1,0 +1,215 @@
+<form class="box px-5 form-container" id="credentials-form" action="/data/carrier/{{{companyId}}}" method="POST" autocomplete="off"{{{visibility.credentials}}}>
+    {{{input.carrier.current.mc}}}
+    {{{input.carrier.current.usdot}}}
+    {{{input.carrier.current.ifta}}}
+    {{{input.carrier.current.scac}}}
+    {{{input.carrier.current.irp}}}
+    {{{input.carrier.current.efs}}}
+    {{{input.carrier.current.fleetOne}}}
+    {{{input.carrier.current.transflo}}}
+    <div class="field">
+        <h5 class="subtitle has-text-primary-40">Licensing</h5>
+        <div class="columns">
+            <div class="column is-3">
+                {{{label.carrier.mc}}}
+                <div class="control">
+                    {{{input.carrier.mc}}}
+                </div>
+                <p class="help carrier-tip" id="mc-tip"></p>
+            </div>
+            <div class="column is-3">
+                {{{label.carrier.usdot}}}
+                <div class="control">
+                    {{{input.carrier.usdot}}}
+                </div>
+                <p class="help carrier-tip" id="usdot-tip"></p>
+            </div>
+            <div class="column is-3">
+                {{{label.carrier.scac}}}
+                <div class="control">
+                    {{{input.carrier.scac}}}
+                </div>
+                <p class="help carrier-tip" id="scac-tip"></p>
+            </div>
+            <div class="column is-3">
+                {{{label.carrier.irp}}}
+                <div class="control">
+                    {{{input.carrier.irp}}}
+                </div>
+                <p class="help carrier-tip" id="irp-tip"></p>
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <h5 class="subtitle has-text-primary-40">Highway Tax</h5>
+        <div class="columns">
+            <div class="column is-3">
+                {{{label.carrier.ifta}}}
+                <div class="control">
+                    {{{input.carrier.ifta}}}
+                </div>
+                <p class="help carrier-tip" id="ifta-tip"></p>
+            </div>
+            <div class="column is-3">
+                {{{label.carrier.iftaJur}}}
+                <div class="select is-fullwidth">
+                    {{{select.carrier.iftaJur}}}
+                </div>
+            </div>
+            <div class="column is-6">
+                <label class="label button-label">&nbsp;</label>
+                <button type="button" class="button" id="carrier-state-permits-open">State Permits</button>
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <h5 class="subtitle has-text-primary-40">Miscellaneous</h5>
+        <div class="columns">
+            <div class="column is-3">
+                {{{label.carrier.efs}}}
+                <div class="control">
+                    {{{input.carrier.efs}}}
+                </div>
+                <p class="help carrier-tip" id="efs-tip"></p>
+            </div>
+            <div class="column is-3">
+                {{{label.carrier.fleetOne}}}
+                <div class="control">
+                    {{{input.carrier.fleetOne}}}
+                </div>
+                <p class="help carrier-tip" id="fleet-one-tip"></p>
+            </div>
+            <div class="column is-3">
+                {{{label.carrier.transflo}}}
+                <div class="control">
+                    {{{input.carrier.transflo}}}
+                </div>
+                <p class="help carrier-tip" id="transflo-tip"></p>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="carrier-state-permits-modal">
+        <div class="modal-background"></div>
+        <div class="modal-card" style="max-width: 960px;">
+            <header class="modal-card-head">
+                <h5 class="subtitle has-text-primary-40">State Permits</h5>
+            </header>
+            <section class="modal-card-body">
+                {{{input.carrier.permit.current.ca}}}
+                {{{input.carrier.permit.current.fl}}}
+                {{{input.carrier.permit.current.il}}}
+                {{{input.carrier.permit.current.in}}}
+                {{{input.carrier.permit.current.ky}}}
+                {{{input.carrier.permit.current.nj}}}
+                {{{input.carrier.permit.current.nm}}}
+                {{{input.carrier.permit.current.nv}}}
+                {{{input.carrier.permit.current.ny}}}
+                {{{input.carrier.permit.current.or}}}
+                {{{input.carrier.permit.current.tx}}}
+                {{{input.carrier.permit.current.wa}}}
+                <div class="columns">
+                    <div class="column is-6">
+                        <div class="field">
+                            {{{label.carrier.permit.ca}}}
+                            <div class="control">
+                                {{{input.carrier.permit.ca}}}
+                            </div>
+                            <p class="help carrier-tip" id="ca-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.fl}}}
+                            <div class="control">
+                                {{{input.carrier.permit.fl}}}
+                            </div>
+                            <p class="help carrier-tip" id="fl-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.il}}}
+                            <div class="control">
+                                {{{input.carrier.permit.il}}}
+                            </div>
+                            <p class="help carrier-tip" id="il-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.in}}}
+                            <div class="control">
+                                {{{input.carrier.permit.in}}}
+                            </div>
+                            <p class="help carrier-tip" id="in-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.ky}}}
+                            <div class="control">
+                                {{{input.carrier.permit.ky}}}
+                            </div>
+                            <p class="help carrier-tip" id="ky-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.nj}}}
+                            <div class="control">
+                                {{{input.carrier.permit.nj}}}
+                            </div>
+                            <p class="help carrier-tip" id="nj-permit-tip"></p>
+                        </div>
+                    </div>
+                    <div class="column is-6">
+                        <div class="field">
+                            {{{label.carrier.permit.nm}}}
+                            <div class="control">
+                                {{{input.carrier.permit.nm}}}
+                            </div>
+                            <p class="help carrier-tip" id="nm-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.nv}}}
+                            <div class="control">
+                                {{{input.carrier.permit.nv}}}
+                            </div>
+                            <p class="help carrier-tip" id="nv-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.ny}}}
+                            <div class="control">
+                                {{{input.carrier.permit.ny}}}
+                            </div>
+                            <p class="help carrier-tip" id="ny-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.or}}}
+                            <div class="control">
+                                {{{input.carrier.permit.or}}}
+                            </div>
+                            <p class="help carrier-tip" id="or-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.tx}}}
+                            <div class="control">
+                                {{{input.carrier.permit.tx}}}
+                            </div>
+                            <p class="help carrier-tip" id="tx-permit-tip"></p>
+                        </div>
+                        <div class="field">
+                            {{{label.carrier.permit.wa}}}
+                            <div class="control">
+                                {{{input.carrier.permit.wa}}}
+                            </div>
+                            <p class="help carrier-tip" id="wa-permit-tip"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button type="button" class="button" id="carrier-state-permits-close">Done</button>
+            </footer>
+        </div>
+    </div>
+    <div class="columns">
+        <div class="column is-10">
+            <p class="help is-danger" id="carrier-form-tip"></p>
+        </div>
+        <div class="column is-2">
+            {{{button.submit.credentials}}}
+        </div>
+    </div>
+    <script type="module" src="/modules/company/carrier.mjs"></script>
+</form>

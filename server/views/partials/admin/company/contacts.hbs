@@ -1,0 +1,32 @@
+<form class="box px-5 form-container" id="contacts-form" action="/data/company/{{{companyId}}}/contacts" method="POST" autocomplete="off"{{{visibility.contacts}}}>
+    <div class="field">
+        <div class="columns">
+            <div class="column is-3">
+                {{{label.phone}}}
+                <div class="control">
+                    {{{input.phone}}}
+                </div>
+            </div>
+            <div class="column is-3">
+                {{{label.fax}}}
+                <div class="control">
+                    {{{input.fax}}}
+                </div>
+            </div>
+            <div class="column is-6">
+                {{{label.email}}}
+                <div class="control">
+                    {{{input.email}}}
+                </div>
+                <p class="help is-danger" id="email-tip"></p>
+            </div>
+        </div>
+    </div>
+    <div class="columns">
+        <div class="column is-10"></div>
+        <div class="column is-2">
+            {{{button.submit.contacts}}}
+        </div>
+    </div>
+</form>
+<script type="module" src="/modules/company/contacts.mjs"></script>

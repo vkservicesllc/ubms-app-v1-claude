@@ -11,6 +11,7 @@ import db from '../settings/mysql.mjs'
 /* Assets */
 import Individual from './individual.mjs'
 import Person from '../../client/global/modules/assets/person.mjs'
+import Address from '../../client/global/modules/assets/address.us.mjs'
 
 /* Tools */
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
@@ -542,7 +543,7 @@ class Company {
         const batch = await Company.batch(session, { params })
         if (!batch.length) return
 
-        await mysql.query(sqlMode.onlyFullGroupBy.remove)
+        // await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const data = (await mysql.execute(Query.select(db.business, batch)))[0][0]
 
         return !data ? data : new Company(data)
@@ -553,7 +554,7 @@ class Company {
         const batch = await Company.batch(session, { filter })
         if (!batch.length) return []
 
-        await mysql.query(sqlMode.onlyFullGroupBy.remove)
+        // await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const list = (await mysql.execute(Query.select(db.business, batch)))[0]
         list.forEach((data, i, arr) => arr[i] = new Company(data, true))
 
@@ -833,7 +834,7 @@ class Owner extends Person {
         const batch = Owner.#batch(session, { params })
         if (!batch.length) return
 
-        await mysql.query(sqlMode.onlyFullGroupBy.remove)
+        // await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const data = (await mysql.execute(Query.select(db.business, batch)))[0][0]
 
         return !data ? data : new Owner(data)

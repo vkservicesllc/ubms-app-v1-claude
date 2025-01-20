@@ -1,0 +1,91 @@
+<form class="box px-5 form-container" id="record-form" action="{{{recordActionUrl}}}" method="POST" autocomplete="off"{{{visibility.record}}}>
+    {{#if (eq data._id 'new')}}
+    <article class="message is-warning" id="usonly-msg">
+        <div class="message-header">
+            <p>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Important
+            </p>
+            <button class="delete" id="usonly-msg-close"></button>
+        </div>
+        <div class="message-body">
+            Please note that this section of our platform is designed specifically for the registration of <strong>US companies only</strong>!
+        </div>
+    </article>
+    <script>
+        $('#usonly-msg-close').click(() => { $('#usonly-msg').remove() })
+    </script>
+    {{/if}}
+    {{{input.id}}}
+    {{{input.current.since}}}
+    {{{input.current.busName}}}
+    {{{input.current.coType}}}
+    {{{input.current.alias}}}
+    {{{input.current.ein}}}
+    {{{input.current.duns}}}
+    <div class="field">
+        <h5 class="subtitle has-text-primary-40">Identification</h5>
+        <div class="columns">
+            <div class="column is-3">
+                {{{label.catId}}}
+                <div class="select is-fullwidth">
+                    {{{select.catId}}}
+                </div>
+            </div>
+            <div class="column is-3">
+                {{{label.since}}}
+                <div class="control">
+                    {{{input.since}}}
+                </div>
+            </div>
+            <div class="column is-3">
+                {{{label.ein}}}
+                <div class="control">
+                    {{{input.ein}}}
+                </div>
+                <p class="help is-info" id="ein-tip">Not public; encrypted</p>
+            </div>
+            <div class="column is-3">
+                {{{label.duns}}}
+                <div class="control">
+                    {{{input.duns}}}
+                </div>
+                <p class="help" id="duns-tip"></p>
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <h5 class="subtitle has-text-primary-40">Recognition</h5>
+        <div class="columns">
+            <div class="column is-4">
+                {{{label.busName}}}
+                <div class="control">
+                    {{{input.busName}}}
+                </div>
+                <p class="help is-info" id="busname-tip">Without Co Type</p>
+            </div>
+            <div class="column is-2">
+                {{{label.coType}}}
+                <div class="select is-fullwidth">
+                    {{{select.coType}}}
+                </div>
+            </div>
+            <div class="column is-3">
+                {{{label.alias}}}
+                <div class="control">
+                    {{{input.alias}}}
+                </div>
+                <p class="help is-info" id="alias-tip">Typically abbreviation</p>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column is-10">
+                <p class="help is-danger" id="company-form-tip"></p>
+            </div>
+            <div class="column is-2">
+                {{{button.submit.record}}}
+            </div>
+        </div>
+    </div>
+</form>
+<script type="module" src="/modules/company/record.mjs"></script>

@@ -21,7 +21,7 @@
                                 {{/if}}
                             </header>
                             <section class="modal-card-body">
-                                <form class="content" id="{{formId.user}}" action="/resource/user/upsert" method="POST" autocomplete="off">
+                                <form class="content" id="{{formId.user}}" action="/resource/user" method="POST" autocomplete="off">
                                     {{{input.id}}}
                                     {{{input.usernameHidden}}}
                                     {{{input.emailHidden}}}
@@ -134,7 +134,7 @@
                                 <button class="delete"></button>
                             </header>
                             <section class="modal-card-body">
-                                <form id="{{formId.userCondition}}" action="/resource/user/update/condition" method="POST" autocomplete="off">
+                                <form id="{{formId.userCondition}}" action="/resource/user/modify/condition" method="POST" autocomplete="off">
                                     {{{input.id}}}
                                     <div class="radios">
                                         <label class="radio">
