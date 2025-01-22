@@ -21,7 +21,6 @@ import strip, { ein as formatEin } from '../../client/global/modules/tools/forma
 
 const mysql = require('../tools/mysql')
 const { body } = require('express-validator')
-const throwErr = require('../tools/error').data
 
 
 const { sqlMode } = Query

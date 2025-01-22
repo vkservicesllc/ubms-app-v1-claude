@@ -158,6 +158,7 @@ router.post('/user/:_id', User.verify, async (req, res) => {
 
 router.post('/companies', User.verify, async (req, res) => {
     try {
+        //! It may be necessary to apply filters when requested in branches other than admin
         res.send({ data: await Company.list(res.session) })
     } catch (err) {
         throwErr.server(res, null, err, false)
@@ -165,9 +166,20 @@ router.post('/companies', User.verify, async (req, res) => {
 })
 
 
-router.post('/company-owners', User.verify, async (req, res) => {
+router.post('/company-owners', User.verify, adminBranchOnly, superAdminUserOnly, async (req, res) => {
     try {
         res.send({ data: await Owner.list(res.session) })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+router.post('/company-owner/:_id', User.verify, adminBranchOnly, superAdminUserOnly, async (req, res) => {
+    try {
+        const { _id } = req.params
+
+        res.send(await Owner.data(res.session, { _id }))
     } catch (err) {
         throwErr.server(res, null, err, false)
     }

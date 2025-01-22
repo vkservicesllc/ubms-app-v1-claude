@@ -1,4 +1,30 @@
+import moment from 'moment'
+
+/* Assets */
 import Company, { Owner } from '../../../assets/company.mjs'
+import Carrier from '../../../assets/carrier.mjs'
+import Address from '../../../../client/global/modules/assets/address.us.mjs'
+import { button as formButton, formLabel, formInput } from '../../../../client/global/modules/assets/html.mjs'
+
+/* HTML Builders */
+import { Label, Input, Select } from '../../../html/company.mjs'
+import { Label as CarrierLabel, Input as CarrierInput, Select as CarrierSelect } from '../../../html/carrier.mjs'
+import { Label as AddrLabel, Input as AddrInput, Select as AddrSelect } from '../../../html/address.us.mjs'
+import { Label as ContactLabel, Input as ContactInput } from '../../../html/contacts.mjs'
+
+/* Settings */
+import { permits } from '../../../settings/carrier.mjs'
+
+/* Registry */
+import { formSelectors } from '../../../../client/global/modules/registry/selectors.mjs'
+import inputLength from '../../../../client/global/modules/registry/length.mjs'
+
+/* Tools */
+import { duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/formatter.mjs'
+import { respond404 } from '../../../tools/response.mjs'
+
+/* Constatnst */
+import { labelClass, labelClassRequired } from '../constants.mjs'
 
 const throwErr = require('../../../tools/error').data
 
@@ -127,4 +153,498 @@ export default class {
     }
 
 
+}
+
+
+const display = data => {
+    const na = '<em class="has-text-danger has-text-weight-normal">N/A</em>'
+    const display = {}
+    display.data = {}
+    display.label = {}
+
+    if (data.since) {
+        display.data.since = moment(data.since).format('ll')
+        display.data.duns = data.duns ? formatDuns(data.duns) : na
+    }
+
+    if (data.address)
+        display.data.address = {
+            physical: data.address.physical.html({ inline: false }),
+            mail: data.address.mail.zip ? data.address.mail.html({ inline: false }) : '<em class="has-text-grey has-text-weight-normal">Same as physical</em>',
+        }
+
+    if (data.phone) {
+        display.data.phone = formatTel(data.phone)
+        display.data.fax = data.fax ? formatTel(data.fax) : na
+        display.data.email = data.email || na
+    }
+
+    if (data.catId == 'crr') {
+        display.data.scac = data.scac || na
+        display.data.irp = data.irp || na
+        display.data.ifta = data.ifta || na
+        display.data.iftaJur = Address.stateList[data.iftaJur]
+        display.data.stateTax = {}
+        display.label.stateTax = {}
+
+        for (const state in permits) {
+            display.label.stateTax[state] = permits[state].title
+            display.data.stateTax[state] = na
+            if (!data.stateTax) continue
+
+            if (data.stateTax[state])
+                display.data.stateTax[state] = data.stateTax[state]
+        }
+
+        display.data.efs = data.efs || na
+        display.data.fleetOne = data.fleetOne || na
+        display.data.transflo = data.transflo || na
+    }
+
+    return display
+}
+
+
+export const companyById = async (req, res) => {
+    try {
+        const key = 'company'
+        let { hbs } = res
+
+        /* HBS Preset */
+        const { active } = hbs.nav
+        hbs.nav.companies = active
+        let titlePfx = 'New Company'
+
+        /* Data Preset */
+        let { _id } = req.params
+        let data = { _id }
+        let contentTitle = titlePfx
+        const blocks = [ 'record', 'ownership', 'address', 'contacts', 'credentials', 'confirmation' ]
+
+        /* Steps */
+        const step = { segment: '', link: '', marker: '', span: '' }
+        let step1 = 'Registration'
+        const activeStep = {
+            segment: ' is-active',
+            link: ' is-link-live is-link-active',
+            marker: ' is-hollow',
+            span: '<i class="fas fa-pen" style="font-size: 65%;"></i>',
+        }
+        const completedStep = {
+            ...step,
+            link: ' is-link-live',
+            span: '<i class="fas fa-check"></i>',
+        }
+        const steps = { record: activeStep }
+
+        /* Visibility, styles */
+        const hidden = ' style="display: none;"'
+        const visibility = { record: '' }
+        const css = {}
+
+        /* Form */
+        const label = {}, input = { current: {} }, select = {}
+        const button = { submit: {}, add: {}, edit: {}, upsert: {} }
+        const saveSubmit = { style: 'is-success', content: 'Save' }
+        const submitProps = {}
+        const submitButton = (id, content, style) => formButton({ type: 'submit', class: `button is-fullwidth ${style}`, id, content, disabled: true })
+
+        /* Defaults */
+        for (const block of blocks) {
+            if (block == 'confirmation') break
+
+            submitProps[block] = { style: 'is-link', content: 'Next' }
+
+            if (block == 'record') continue
+
+            steps[block] = step
+            visibility[block] = hidden
+        }
+        let catId, since, ein, duns, busName, coType, alias
+
+
+        /* Current Company */
+        if (_id != 'new') {
+            data = await Company.data(res.session, { _id })
+            if (!data) return respond404(res)
+
+            {({ _id, catId, since, duns, busName, coType, alias } = data)}
+            ein = await data.ein(res.session)
+
+            const { name, owner } = data
+            const { _id: _ownerId } = owner
+
+            step1 = 'Record'
+            titlePfx = name
+            contentTitle = `<span class="has-text-weight-semibold is-size-4">${name}</span>`
+            contentTitle += ' &nbsp;&nbsp;<a id="delete-company-trigger"><i class="fas fa-trash-can has-text-danger is-size-6"></i></a>'
+
+            steps.record = completedStep
+            steps.ownership = activeStep
+            visibility.record = hidden
+            visibility.ownership = ''
+            submitProps.record = saveSubmit
+
+
+            /* Current Owner */
+            if (_ownerId) {
+                const { address } = data
+                const { address1, address2, zip, city } = address.physical
+                const {
+                    address1: mailAddress1,
+                    address2: mailAddress2,
+                    zip: mailZip,
+                    city: mailCity,
+                } = address.mail
+                let { state } = address.physical
+                let { state: mailState } = address.mail
+                if (state) state = state[0]
+                if (mailState) mailState = mailState[0]
+
+                steps.ownership = completedStep
+                steps.address = activeStep
+                visibility.ownership = hidden
+                visibility.address = ''
+                submitProps.ownership = saveSubmit
+
+
+                if (zip) {
+                    const { phone, fax, email } = data
+
+                    steps.address = completedStep
+                    steps.contacts = activeStep
+                    visibility.address = hidden
+                    visibility.contacts = ''
+                    submitProps.address = saveSubmit
+
+
+                    if (phone) {
+                        steps.contacts = completedStep
+                        visibility.contacts = hidden
+                        submitProps.contacts = saveSubmit
+
+                        switch (catId) {
+
+
+                            case 'crr':
+                                data = await Carrier.data(res.session, { _companyId: _id })
+                                if (!data) return respond404(res)
+// console.log('carrier', data)
+
+                                const {
+                                    mc, usdot, scac, irp,
+                                    ifta, iftaJur, stateTax,
+                                    efs, fleetOne, transflo
+                                } = data
+
+                                steps.credentials = activeStep
+                                visibility.credentials = ''
+
+                                if (mc && usdot) {
+                                    steps.credentials = completedStep
+                                    steps.confirmation = activeStep
+                                    visibility.credentials = hidden
+                                    submitProps.credentials = saveSubmit
+                                }
+
+                                label.carrier = {
+                                    mc: CarrierLabel.mc({ class: labelClassRequired }),
+                                    usdot: CarrierLabel.usdot({ class: labelClassRequired }),
+                                    scac: CarrierLabel.scac({ class: labelClass }),
+                                    ifta: CarrierLabel.ifta({ class: labelClass }),
+                                    iftaJur: CarrierLabel.iftaJur({ class: labelClass }),
+                                    irp: CarrierLabel.irp({ class: labelClass }),
+                                    efs: CarrierLabel.efs({ class: labelClass }),
+                                    fleetOne: CarrierLabel.fleetOne({ class: labelClass }),
+                                    transflo: CarrierLabel.tranflo({ class: labelClass }),
+                                    permit: {},
+                                }
+
+                                input.carrier = {
+                                    current: {
+                                        mc: CarrierInput.mc({ value: mc }, true),
+                                        usdot: CarrierInput.usdot({ value: usdot }, true),
+                                        scac: CarrierInput.scac({ value: scac }, true),
+                                        ifta: CarrierInput.ifta({ value: ifta }, true),
+                                        irp: CarrierInput.irp({ value: irp }, true),
+                                        efs: CarrierInput.efs({ value: efs }, true),
+                                        fleetOne: CarrierInput.fleetOne({ value: fleetOne }, true),
+                                        transflo: CarrierInput.transflo({ value: transflo }, true),
+                                    },
+                                    mc: CarrierInput.mc({ class: 'input', value: mc }),
+                                    usdot: CarrierInput.usdot({ class: 'input', value: usdot }),
+                                    scac: CarrierInput.scac({ class: 'input', value: scac }),
+                                    ifta: CarrierInput.ifta({ class: 'input', value: ifta }),
+                                    irp: CarrierInput.irp({ class: 'input', value: irp }),
+                                    efs: CarrierInput.efs({ class: 'input', value: efs }),
+                                    fleetOne: CarrierInput.fleetOne({ class: 'input', value: fleetOne }),
+                                    transflo: CarrierInput.transflo({ class: 'input', value: transflo }),
+                                    permit: { current: {} },
+                                }
+
+                                for (const state in inputLength.carrier.permit.max) {
+                                    let value
+                                    if (stateTax) value = stateTax[state]
+
+                                    label.carrier.permit[state] = CarrierLabel.permit(state, { class: labelClass })
+                                    input.carrier.permit[state] = CarrierInput.permit(state, { class: 'input', value })
+                                    input.carrier.permit.current[state] = CarrierInput.permit(state, { value }, true)
+                                }
+
+                                select.carrier = {
+                                    iftaJur: CarrierSelect.iftaJur({
+                                        tabs: 5,
+                                        value: iftaJur || state,
+                                        options: { valOpt: false },
+                                    }),
+                                }
+
+                                button.upsert.statePermits = formButton({
+                                    class: 'button is-primary',
+                                    content: 'State Permits',
+                                })
+
+                                {
+                                    const { style, content } = submitProps.credentials
+                                    button.submit.credentials = submitButton('credentials-submit', content, style)
+                                }
+
+                                break
+
+
+                            default:
+                                steps.confirmation = activeStep
+                        }
+
+                    }
+
+
+                    /* Contacts HBS Form */
+                    const { phoneId, faxId, emailId } = formSelectors.company
+                    /* Label */
+                    label.phone = ContactLabel.tel('phone', { class: labelClassRequired, addClass: 'required', for: phoneId })
+                    label.fax = ContactLabel.tel('fax', { class: labelClass, for: faxId })
+                    label.email = ContactLabel.email({ class: labelClass, for: emailId })
+                    /* Input/Select */
+                    input.phone = ContactInput.tel('phone', { class: 'input', type: 'text', id: phoneId, value: phone, required: true })
+                    input.fax = ContactInput.tel('fax', { class: 'input', type: 'text', id: faxId, value: fax })
+                    input.email = ContactInput.email({ class: 'input', id: emailId, value: email })
+                    {
+                        const { style, content } = submitProps.contacts
+                        button.submit.contacts = submitButton('contacts-submit', content, style)
+                    }
+
+                }
+
+
+                /* Address HBS Form */
+                const { addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.company
+                /* Label */
+                label.address1 = AddrLabel.address1({ class: labelClassRequired, for: addr1Id })
+                label.address2 = AddrLabel.address2({ class: labelClass, for: addr2Id }, true)
+                label.zip = AddrLabel.zip({ class: labelClassRequired, for: zipId })
+                label.city = AddrLabel.city({ class: labelClassRequired, for: cityId })
+                label.state = AddrLabel.state({ class: labelClassRequired, for: stateId })
+                label.country = formLabel({
+                    content: 'Country',
+                    class: labelClass,
+                })
+                /* Input/Select */
+                input.address1 = AddrInput.address1({ class: 'input', id: addr1Id, value: address1 })
+                input.address2 = AddrInput.address2({ class: 'input', id: addr2Id, value: address2 })
+                input.zip = AddrInput.zip({ class: 'input', id: zipId, value: zip })
+                input.city = AddrInput.city({ class: 'input', id: cityId, value: city })
+                select.state = AddrSelect.stateUS({ tabs: 7, id: stateId, value: state, options: { emptyOpt: '--' } })
+                input.country = formInput({
+                    class: 'input',
+                    value: 'United States',
+                    readOnly: true,
+                })
+                {
+                    const { mailStatusId, mailAddr1Id, mailAddr2Id, mailZipId, mailCityId, mailStateId } = formSelectors.company
+                    const disabled = !mailAddress1
+                    input.mailAddress = formInput({
+                        type: 'checkbox',
+                        id: mailStatusId,
+                        checked: !(!mailAddress1),
+                    })
+                    /* Label */
+                    label.mailAddress1 = AddrLabel.address1({ class: labelClassRequired, for: mailAddr1Id }, true)
+                    label.mailAddress2 = AddrLabel.address2({ class: labelClass, for: mailAddr2Id }, true)
+                    label.mailZip = AddrLabel.zip({ class: labelClassRequired, for: mailZipId })
+                    label.mailCity = AddrLabel.city({ class: labelClassRequired, for: mailCityId })
+                    label.mailState = AddrLabel.state({ class: labelClassRequired, for: mailStateId })
+                    /* Input/Select */
+                    input.mailAddress1 = AddrInput.address1({ class: 'input', id: mailAddr1Id, value: mailAddress1, disabled }, true)
+                    input.mailAddress2 = AddrInput.address2({ class: 'input', id: mailAddr2Id, value: mailAddress2, disabled }, true)
+                    input.mailZip = AddrInput.zip({ class: 'input', id: mailZipId, value: mailZip, disabled }, true)
+                    input.mailCity = AddrInput.city({ class: 'input', id: mailCityId, value: mailCity, disabled }, true)
+                    select.mailState = AddrSelect.stateUS({ tabs: 7, id: mailStateId, value: mailState, disabled, options: { emptyOpt: '--' } }, true)
+                }
+                {
+                    const { style, content } = submitProps.address
+                    button.submit.address = submitButton('address-submit', content, style)
+                }
+
+            }
+
+
+            /* Deletion HBS Form */
+            const { id: companyId, aliasId } = formSelectors.company
+            input.deleteId = Input.id(_id, { id: `delete-${companyId}` })
+            input.confirmAlias = Input.alias({ class: 'input', id: `confirm-${aliasId}` })
+
+            /* Ownership HBS Form */
+            input.current.ownership = Input.ownership({ value: _ownerId })
+            label.ownership = Label.ownership({ class: labelClassRequired })
+            select.ownership = await Select.ownership({ tabs: 5, value: _ownerId, options: { emptyOpt: '--' } })
+            button.add.owner = formButton({ class: 'button py-3 is-link', id: 'add-owner-trigger', content: '<i class="fas fa-plus"></i>' })
+            button.edit.owner = formButton({
+                class: 'button py-3 is-primary is-dark',
+                id: 'edit-owner-trigger',
+                content: '<i class="fas fa-pen"></i>',
+                disabled: _ownerId === null,
+            })
+            {
+                const { content, style } = submitProps.ownership
+                button.submit.ownership = submitButton('ownership-submit', content, style)
+            }
+
+            /* Owner HBS Form */
+            /* Current */
+            input.current.ownerId = Input.ownerId()
+            input.current.ownerSsn = Input.ownerSsn({}, true)
+            /* Label */
+            label.ownerUpdateSince = Label.ownerUpdateSince({ class: labelClassRequired })
+            label.ownerFirstName = Label.ownerName('f', { class: labelClassRequired })
+            label.ownerMiddleName = Label.ownerName('m', { class: labelClass })
+            label.ownerLastName = Label.ownerName('l', { class: labelClassRequired })
+            label.ownerSuffix = Label.ownerName('s', { class: labelClass })
+            label.ownerGender = Label.ownerGender({ class: labelClass })
+            label.ownerDob = Label.ownerDob({ class: labelClassRequired })
+            label.ownerSsn = Label.ownerSsn({ class: labelClass })
+            /* Input/Select */
+            input.ownerUpdateSince = Input.ownerUpdateSince({ class: 'input'} )
+            input.ownerFirstName = Input.ownerName('f', { class: 'input' })
+            input.ownerMiddleName = Input.ownerName('m', { class: 'input' })
+            input.ownerLastName = Input.ownerName('l', { class: 'input' })
+            select.ownerSuffix = Select.ownerSuffix({ tabs: 7, options: { emptyOpt: '--' } })
+            select.ownerGender = Select.ownerGender({ tabs: 7, options: { emptyOpt: '--' } })
+            input.ownerDob = Input.ownerDob({ class: 'input' })
+            input.ownerSsn = Input.ownerSsn({ class: 'input' })
+
+        }
+
+
+        /* Record HBS Form */
+        /* Current */
+        input.id = Input.id(_id != 'new' ? _id : null)
+        input.current.since = Input.since({ value: since }, true)
+        input.current.busName = Input.busName({ value: busName }, true)
+        input.current.coType = Input.coType({ value: coType })
+        input.current.alias = Input.alias({ value: alias }, true)
+        input.current.ein = Input.ein({ value: ein }, true)
+        input.current.duns = Input.duns({ value: duns }, true)
+        /* Label */
+        label.catId = Label.catId({ class: labelClassRequired })
+        label.since = Label.since({ class: labelClassRequired })
+        label.ein = Label.ein({ class: labelClassRequired })
+        label.duns = Label.duns({ class: labelClass })
+        label.busName = Label.busName({ class: labelClassRequired })
+        label.coType = Label.coType({ class: labelClassRequired })
+        label.alias = Label.alias({ class: labelClassRequired })
+        /* Input/Select */
+        select.catId = Select.catId({ tabs: 5, value: catId, options: { emptyOpt: '--' } })
+        input.since = Input.since({ class: 'input', value: since })
+        input.ein = Input.ein({ class: 'input', value: ein })
+        input.duns = Input.duns({ class: 'input', value: duns })
+        input.busName = Input.busName({ class: 'input', value: busName })
+        select.coType = Select.coType({ tabs: 5, value: coType, options: { emptyOpt: '--' } })
+        input.alias = Input.alias({ class: 'input', value: alias })
+        /* Submit */
+        {
+            const { content, style } = submitProps.record
+            button.submit.record = submitButton('record-submit', content, style)
+        }
+
+        if (data.catId == 'crr')
+            css.card = {
+                minHeight: '455px',
+            }
+
+        /* HBS Setup */
+        hbs = hbs.set(key, { titlePfx })
+        hbs.actionQuery = `?company=${_id}`
+        hbs.companyId = _id != 'new' ? _id : null
+        hbs.data = data
+        hbs.display = display(data)
+        hbs.contentTitle = contentTitle
+        hbs.steps = steps
+        hbs.step1 = step1
+        hbs.visibility = visibility
+        hbs.css = css
+        hbs.label = label
+        hbs.input = input
+        hbs.select = select
+        hbs.button = button
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+}
+
+
+export const companyByCategoryAndRoute = async (req, res) => {
+    try {
+        const { category, route } = req.params
+        let company = await Company.data(res.session, { route })
+        const { _id: _companyId, catId } = company
+
+        if (!company) return respond404(res)
+        if (category != Company.categoryList[catId].path[1])
+            return respond404(res)
+
+        const css = {}
+
+        switch (catId) {
+
+            case 'crr':
+                company = await Carrier.data(res.session, { _companyId })
+                css.card = {
+                    minHeight: '455px',
+                }
+                break
+
+        }
+
+        const { id: companyId, aliasId } = formSelectors.company
+        const input = {
+            id: Input.id(_companyId),
+            teamAddId: Input.id(_companyId, { id: `team-add-${companyId}` }),
+            teamRemoveId: Input.id(_companyId, { id: `team-remove-${companyId}` }),
+            deleteId: Input.id(_companyId, { id: `delete-${companyId}` }),
+            confirmAlias: Input.alias({ class: 'input', id: `confirm-${aliasId}` }),
+        }
+
+        const key = 'company'
+        let { hbs } = res
+        hbs = hbs.set(key, { titlePfx: company.name })
+
+        const { active } = hbs.nav
+        hbs.nav.companies = active
+
+        hbs.data = company
+        hbs.input = input
+        hbs.display = display(company)
+        hbs.css = css
+
+        hbs.display.status = company.active
+            ? 'Active'
+            : '<i class="has-text-danger">Inactive</i>'
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
 }

@@ -10,6 +10,9 @@ import { Label as CompanyLabel, Input as CompanyInput, Select as CompanySelect }
 /* Registry */
 import { formSelectors } from '../../../client/global/modules/registry/selectors.mjs'
 
+/* Middleware */
+import { companyById, companyByCategoryAndRoute } from './mw/company.mjs'
+
 /* Local Constants */
 import { labelClass, labelClassRequired } from './constants.mjs'
 
@@ -26,6 +29,12 @@ router.get('/companies', User.verify, (req, res) => {
         throwErr.server(res, null, err)
     }
 })
+
+
+router.get('/company/:_id', User.verify, superAdminUserOnly, companyById)
+
+
+router.get('/:category/:route', User.verify, superAdminUserOnly, companyByCategoryAndRoute)
 
 
 router.get('/company-owners', User.verify, (req, res) => {
