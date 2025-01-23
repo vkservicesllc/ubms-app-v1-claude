@@ -48,23 +48,6 @@ if (id && id != 'new') {
 $submit.prop('disabled', false)
 
 
-// const handleChange = (props = {}) => {
-//     const { value, data, current, target, key } = props
-//     let action = value ? 'passed' : 'default'
-
-//     $.ajax(`/api/unique/company/${target}`, {
-//         method: 'POST',
-//         data,
-//         success(response) {
-//             const { unique } = response
-//             if (value && !current && !unique) action = 'failed'
-
-//             setTip[action](key)
-//             if (formValid()) $tip.form.html(null)
-//         },
-//     })
-// }
-
 const handleChange = (props = {}) => {
     let input = true
     const { data, key, current } = props

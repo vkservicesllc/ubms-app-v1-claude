@@ -29,6 +29,7 @@ import { labelClass, labelClassRequired } from '../constants.mjs'
 const throwErr = require('../../../tools/error').data
 
 const url = {
+    company: '/business/company/',
     companies: '/business/companies',
     owners: '/business/company-owners',
 }
@@ -43,14 +44,27 @@ export default class {
 
 
     static add = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { error, data: company } = await Company.create(res.session, req.body)
+            if (error) return throwErr.server(res, error)
+
+            res.redirect(url.company + company._id)
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }
 
 
     static modify = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { _id } = req.params
+
+            const company = await Company.data(res.session, { _id })
+            if (!company) return throwErr.server(res, errMsg.company)
+            
+            //! need to modify companies and company_names all together
+
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }
@@ -65,7 +79,7 @@ export default class {
 
     static delete = async (req, res) => {
         try {
-            const { _id } = req.body
+            const { _id } = req.params
 
             const company = await Company.data(res.session, { _id })
             if (!company) return throwErr.server(res, errMsg.company)
@@ -248,6 +262,12 @@ export const companyById = async (req, res) => {
         const saveSubmit = { style: 'is-success', content: 'Save' }
         const submitProps = {}
         const submitButton = (id, content, style) => formButton({ type: 'submit', class: `button is-fullwidth ${style}`, id, content, disabled: true })
+        const actionUrl = {
+            param: {
+                record: '/add',
+            },
+            query: {},
+        }
 
         /* Defaults */
         for (const block of blocks) {
@@ -283,6 +303,7 @@ export const companyById = async (req, res) => {
             steps.ownership = activeStep
             visibility.record = hidden
             visibility.ownership = ''
+            actionUrl.param.record = `/${_id}/modify`
             submitProps.record = saveSubmit
 
 
@@ -305,6 +326,7 @@ export const companyById = async (req, res) => {
                 steps.address = activeStep
                 visibility.ownership = hidden
                 visibility.address = ''
+                actionUrl.query.owner = `?company=${_id}`
                 submitProps.ownership = saveSubmit
 
 
@@ -329,7 +351,6 @@ export const companyById = async (req, res) => {
                             case 'crr':
                                 data = await Carrier.data(res.session, { _companyId: _id })
                                 if (!data) return respond404(res)
-// console.log('carrier', data)
 
                                 const {
                                     mc, usdot, scac, irp,
@@ -538,7 +559,6 @@ export const companyById = async (req, res) => {
 
         /* Record HBS Form */
         /* Current */
-        input.id = Input.id(_id != 'new' ? _id : null)
         input.current.since = Input.since({ value: since }, true)
         input.current.busName = Input.busName({ value: busName }, true)
         input.current.coType = Input.coType({ value: coType })
@@ -574,8 +594,7 @@ export const companyById = async (req, res) => {
 
         /* HBS Setup */
         hbs = hbs.set(key, { titlePfx })
-        hbs.actionQuery = `?company=${_id}`
-        hbs.companyId = _id != 'new' ? _id : null
+        hbs.actionUrl = actionUrl
         hbs.data = data
         hbs.display = display(data)
         hbs.contentTitle = contentTitle

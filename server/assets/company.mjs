@@ -12,12 +12,14 @@ import db from '../settings/mysql.mjs'
 import Individual from './individual.mjs'
 import Person from '../../client/global/modules/assets/person.mjs'
 import Address from '../../client/global/modules/assets/address.us.mjs'
+import { sessionError } from './user.mjs'
 
 /* Tools */
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
 import Query, { hash, matchHash } from '../tools/query.mjs'
-import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
-import strip, { ein as formatEin } from '../../client/global/modules/tools/formatter.mjs'
+import { processData, logDeletion } from '../tools/database.mjs'
+import strip from '../../client/global/modules/tools/formatter.mjs'
+import { encrypt } from '../tools/crypto.mjs'
 
 const mysql = require('../tools/mysql')
 const { body } = require('express-validator')
@@ -109,16 +111,11 @@ class Company {
             this.ein = async (session, format = false) => {
                 if (!session?.user) return
 
-                let { ssn } = (await mysql.execute(query.individuals.select({ aes: [ 'ssn', secret ] }, {
-                    match: { id: Individual.matchIdHash(this._id) },
+                let { ein } = (await mysql.execute(query.companies.select({ aes: [ 'ein', secret.ein ] }, {
+                    match: { id: Company.matchIdHash(this._id) },
                 })))[0][0]
-                if (ssn) {
-                    ssn = stringifyBuffer(ssn)
 
-                    if (format) formatEin(ssn)
-                }
-
-                return ssn
+                return ein
             }
 
 

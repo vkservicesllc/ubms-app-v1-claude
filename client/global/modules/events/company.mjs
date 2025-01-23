@@ -2,7 +2,7 @@
 import { inputEvent, selectEvent } from './form.mjs'
 import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/string.mjs'
-import { stripAccountNumber } from '../tools/license.mjs'
+import strip from '../tools/formatter.mjs'
 
 
 export const busNameEvent = (id, coTypeId, callback = {}) => {
@@ -88,7 +88,7 @@ export const einEvent = (id, callback = {}) => {
         onInput,
         onChange(ein, $ein) {
             if (onChange) {
-                ein = stripAccountNumber(ein)
+                ein = strip(ein)
                 onChange(ein, $ein)
             }
         },
@@ -106,7 +106,7 @@ export const dunsEvent = (id, callback = {}) => {
         onInput,
         onChange(duns, $duns) {
             if (onChange) {
-                duns = stripAccountNumber(duns)
+                duns = strip(duns)
                 onChange(duns, $duns)
             }
         },
