@@ -62,8 +62,10 @@ export default class {
             const company = await Company.data(res.session, { _id })
             if (!company) return throwErr.server(res, errMsg.company)
             
-            //! need to modify companies and company_names all together
+            const { error } = await company.modify(res.session, 'companies', req.body)
+            if (error) return throwErr.server(res, error)
 
+            res.redirect(url.company + company._id)
         } catch (err) {
             throwErr.server(res, null, err)
         }
