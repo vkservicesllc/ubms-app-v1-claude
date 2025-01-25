@@ -61,8 +61,13 @@ export default class {
 
             const company = await Company.data(res.session, { _id })
             if (!company) return throwErr.server(res, errMsg.company)
-            
-            const { error } = await company.modify(res.session, 'companies', req.body)
+
+            const { catId, since, ein, duns, busName, coType, alias } = req.body
+            let error
+
+            ({ error } = await company.modify(res.session, 'companies', { catId, since, ein, duns }))
+            if (!error)
+               ({ error } = await company.modify(res.session, 'names', { busName, coType, alias }))
             if (error) return throwErr.server(res, error)
 
             res.redirect(url.company + company._id)

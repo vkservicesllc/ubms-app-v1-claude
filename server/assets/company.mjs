@@ -16,6 +16,8 @@ import { sessionError } from './user.mjs'
 
 /* Tools */
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
+import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
+import { ein as formatEin, ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
 import Query, { hash, matchHash } from '../tools/query.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
 import strip from '../../client/global/modules/tools/formatter.mjs'
@@ -114,6 +116,8 @@ class Company {
                 let { ein } = (await mysql.execute(query.companies.select({ aes: [ 'ein', secret.ein ] }, {
                     match: { id: Company.matchIdHash(this._id) },
                 })))[0][0]
+                ein = stringifyBuffer(ein)
+                if (format === true) ein = formatEin(ein)
 
                 return ein
             }
@@ -193,7 +197,7 @@ class Company {
                 switch (target) {
                     case targets[0]:
                         idProp = 'id'
-                        currentData.ein = await this.ein()
+                        currentData.ein = await this.ein(session)
                         break
                     case targets[4]:
                         currentData = this.address.physical
@@ -210,11 +214,16 @@ class Company {
                     currentData,
                     currentUpdateLog: await this.log(target, 'updateLog'),
                 })
+                if ('ein' in data) data.ein = { aes: [ data.ein, secret.ein ] }
 
                 const match = { [idProp]: id, since }
-                const [ result ] = await mysql.execute(query[target].update(data, match))
-                if (result.affectedRows == 1) modified = true
-                else error = 'DB Error'
+
+                try {
+                    const [ result ] = await mysql.execute(query[target].update(data, match))
+                    if (result.affectedRows == 1) modified = true
+                } catch (err) {
+                    error = 'DB Error'
+                }
 
                 if (modified && target == targets[0] && data.since) {
                     const { since } = data
