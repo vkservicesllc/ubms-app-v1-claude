@@ -2,13 +2,14 @@ import { busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '../e
 import { inputEvent, selectEvent } from '../events/form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
 import Tip from '../assets/tip.mjs'
+import getIdFromUrl from '../assets/id.mjs'
 
-const { id: companyId, catId, sinceId, einId, dunsId, busNameId, coTypeId, aliasId } = formSelectors.company
+const { catId, sinceId, einId, dunsId, busNameId, coTypeId, aliasId } = formSelectors.company
 
-const id = $(`#${companyId}`).val()
+const id = getIdFromUrl()
 const duns = $(`#${dunsId}`).val()
 const $submit = $('#record-submit')
-const $form = $('#company-form')
+const $form = $('#record-form')
 
 const $tip = {
     name: $('#busname-tip'),
