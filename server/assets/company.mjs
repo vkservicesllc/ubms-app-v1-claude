@@ -271,7 +271,7 @@ class Company {
             }
 
 
-            this.delete = async (session, target = targets[0], data = {}) => {
+            this.delete = async (session, target = targets[0], filter = {}) => {
                 let deleted = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { deleted, error }
 
@@ -279,7 +279,7 @@ class Company {
                 let idProp = 'id', since, ein, log, history = {}
                 if (target != targets[0]) {
                     idProp = 'companyId'
-                    since = data?.since ? data.since : this.since
+                    since = filter?.since ? filter.since : this.since
                 } else {
                     ein = encrypt(await this.ein(session))
                     log = await this.log()
@@ -303,6 +303,7 @@ class Company {
 
                 let company, file
                 if (deleted) {
+                    let data
                     switch (target) {
                         case targets[0]:
                             data = this
@@ -330,9 +331,9 @@ class Company {
 
                     if (target != targets[0])
                         company = await Company.data(session, { _id: this._id })
-                }
 
-                if (file) await logDeletion(session, file, data, { [idProp]: id })   
+                    if (file && data) await logDeletion(session, file, data, { [idProp]: id }) 
+                }  
 
                 return { deleted, data: company }
             }
@@ -839,7 +840,7 @@ class Owner extends Person {
         const batch = Owner.#batch(session, { params })
         if (!batch.length) return
 
-        // await mysql.query(sqlMode.onlyFullGroupBy.remove)
+        await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const data = (await mysql.execute(Query.select(db.business, batch)))[0][0]
 
         return !data ? data : new Owner(data)

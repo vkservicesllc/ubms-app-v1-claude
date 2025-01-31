@@ -157,6 +157,8 @@ export const openEditModal = _id => {
 
 
 export const openDeleteModal = _id => {
+    if (!_id) return
+
     $.ajax(`/api/company-owner/${_id}`, {
         method: 'POST',
         success(data) {

@@ -102,7 +102,28 @@ export default class {
 
 
     static upsertOwnership = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { _id } = req.params
+            const { _ownerId, since } = req.body //* if `since` is undefined, company `since` will be used
+
+            const company = await Company.data(res.session, { _id })
+            if (!company) return throwErr.server(res, errMsg.company)
+
+            const owner = await Owner.data(res.session, { _id: _ownerId })
+            if (!owner) return throwErr.server(res, errMsg.owner)
+
+            const { error } = await company.delete(res.session, 'ownerships', { since })
+            if (error) return throwErr.server(res, error)
+            else {
+                const { error } = await company.update(res.session, 'ownerships', {
+                    ownerId: await owner.id(),
+                    since,
+                })
+                if (error) return throwErr.server(res, error)
+            }
+
+            res.redirect(url.company + _id)
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }
@@ -144,7 +165,36 @@ export default class {
 
 
     static upsertOwner = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { company: _companyId, since } = req.query
+            const { _id } = req.body
+            delete req.body._id
+
+            if (!_id) {
+                const { error, data: owner } = await Owner.create(res.session, req.body)
+                if (error) return throwErr.server(res, error)
+
+                if (_companyId) {
+                    const company = await Company.data(res.session, { _id: _companyId })
+
+                    const { error } = await company.delete(res.session, 'ownerships', { since })
+                    if (error) return throwErr.server(res, error)
+                    else {
+                        const { error } = await company.update(res.session, 'ownerships', { ownerId: await owner.id(), since })
+                        if (error) return throwErr.server(res, error)
+                    }
+                    //* `since` is undefined if owner is added at company registration
+                    //* `since` must be requested via url query if owner is added at ownership update
+                }
+            } else {
+                const owner = await Owner.data(res.session, { _id })
+
+                const { error } = await owner.modify(res.session, req.body)
+                if (error) return throwErr.server(res, error)
+            }
+
+            res.redirect(_companyId ? url.company + _companyId : url.owners)
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }
@@ -311,6 +361,7 @@ export const companyById = async (req, res) => {
             visibility.record = hidden
             visibility.ownership = ''
             actionUrl.param.record = `/${_id}/modify`
+            actionUrl.query.owner = `?company=${_id}`
             submitProps.record = saveSubmit
 
 
@@ -333,7 +384,6 @@ export const companyById = async (req, res) => {
                 steps.address = activeStep
                 visibility.ownership = hidden
                 visibility.address = ''
-                actionUrl.query.owner = `?company=${_id}`
                 submitProps.ownership = saveSubmit
 
 
