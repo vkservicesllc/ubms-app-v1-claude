@@ -40,6 +40,7 @@ router.post('/company/:_id/:contactType/update', User.verify, superAdminUserOnly
 
 router.post('/company-owner', User.verify, superAdminUserOnly, validateCompanyOwner, CompanyMV.upsertOwner)
 router.post('/company-owner/update', User.verify, superAdminUserOnly, validateCompanyOwnerUpdate, CompanyMV.updateOwner)
+//! need to add source to modify owner's phone
 router.post('/company-owner/delete', User.verify, superAdminUserOnly, CompanyMV.deleteOwner)
 
 

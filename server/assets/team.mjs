@@ -16,9 +16,7 @@ class Team {
 
     static #algorithm = 'MD5'
 
-
     static hashId = (field = 'id') => hash(field, Team.#algorithm)
-
 
     static matchIdHash = value => matchHash(value, Team.#algorithm)
 

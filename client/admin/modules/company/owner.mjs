@@ -5,10 +5,11 @@ import { formSelectors } from '../registry/selectors.mjs'
 import { reformatDateString } from '../tools/date.mjs'
 
 
-const { id, deleteId, class: ownerClass, updateSinceId, firstNameId, middleNameId, lastNameId, suffixId, genderId, dobId, ssnId } = formSelectors.owner
+const { id, deleteOwnerId, ownerPhoneId, class: ownerClass, updateSinceId, firstNameId, middleNameId, lastNameId, suffixId, genderId, dobId, ssnId } = formSelectors.owner
 const $modal = {
     all: $('.owner-modal'),
     form: $('#owner-modal'),
+    phone: $('#owner-phone-modal'),
     delete: $('#owner-delete-modal'),
 }
 const $card = {
@@ -19,6 +20,7 @@ const $card = {
 const $title = {
     all: $('.owner-title'),
     form: $('#owner-title'),
+    phone: $('#owner-phone-title'),
     delete: $('#owner-delete-title'),
 }
 const $trigger = {
@@ -30,9 +32,12 @@ const $option = {
     edit: $('#owner-update-option-edit'),
     update: $('#owner-update-option-update'),
 }
-const $form = $('#company-owner-form')
+const $form = {
+    owner: $('#company-owner-form'),
+    phone: $('#company-owner-phone-form'),
+}
 const action = {
-    default: $form.attr('action'),
+    default: $form.owner.attr('action'),
 }
 action.update = action.default.replace('/company-owner', '/company-owner/update')
 const $field = {
@@ -100,7 +105,7 @@ $trigger.option.click(() => {
                     $field.update.show()
                     $field.upsert.hide().find('input, select').prop('disabled', true)
                     $submit.addClass('is-link').html('Update')
-                    $form.attr('action', action.update)
+                    $form.owner.attr('action', action.update)
                     $card.options.hide()
                     $card.form.show()
                 }   
@@ -124,7 +129,7 @@ export const closeModals = () => {
     $field.upsert.show().find('input, select').prop('disabled', false)
     $trigger.option.prop('disabled', true).removeClass('is-link is-danger')
     $submit.removeClass('is-success is-link').html(null)
-    $form.attr('action', action.default)
+    $form.owner.attr('action', action.default)
     if (!$gender.find('option[value=""]').length)
         $gender.prepend('<option value="">--</option>')
 }
@@ -138,7 +143,7 @@ export const openAddModal = () => {
 }
 
 
-export const openEditModal = _id => {
+export const openModifyModal = _id => {
     if (!_id) return
 
     $.ajax(`/api/company-owner/${_id}`, {
@@ -156,6 +161,21 @@ export const openEditModal = _id => {
 }
 
 
+export const openModifyPhoneModal = _id => {
+    if (!_id) return
+
+    $.ajax(`/api/company-owner/${_id}`, {
+        method: 'POST',
+        success(data) {
+            $title.phone
+                .html(`<small class="has-text-grey is-size-6">Modify Phone for Owner</small> <strong>${new Person(data).fullName()}</strong>`)
+            $(`#${ownerPhoneId}`).val(_id)
+            $modal.phone.addClass('is-active')
+        },
+    })
+}
+
+
 export const openDeleteModal = _id => {
     if (!_id) return
 
@@ -164,7 +184,7 @@ export const openDeleteModal = _id => {
         success(data) {
             $title.delete
                 .html(`<small class="has-text-danger is-size-6">Delete Owner</small> <strong>${new Person(data).fullName()}</strong>`)
-            $(`#${deleteId}`).val(_id)
+            $(`#${deleteOwnerId}`).val(_id)
             $modal.delete.addClass('is-active')
         },
     })

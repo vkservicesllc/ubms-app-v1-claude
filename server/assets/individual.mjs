@@ -22,6 +22,7 @@ const mysql = require('../tools/mysql')
 const query = {
     individuals: new Query(db.person, 'individuals'),
     names: new Query(db.person, 'names'),
+    phones: new Query(db.person, 'phones'),
 }
 const targets = Object.keys(query)
 
@@ -32,9 +33,9 @@ class Individual extends Person {
         super(data)
 
         if (data?._id && Object.keys(this).length) {
-            const { _id } = data
+            const { _id, phone } = data
 
-            reSuper(this, { _id })
+            reSuper(this, { _id }, { phone })
 
             if (!light) {
 
@@ -91,8 +92,11 @@ class Individual extends Person {
 
                     let fields, sort = { desc: 'since' }
                     switch (target) {
-                        case targets[1]:
+                        case targets[1]:  //* names
                             fields = [ 'since', 'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix' ]
+                            break
+                        case targets[2]:  //* phones
+                            fields = [ 'since', 'number' ]
                             break
                     }
                     if (log === true) fields.push('createdBy', 'createdAt', 'createdIn', 'updateLog')
@@ -104,7 +108,7 @@ class Individual extends Person {
                 }
 
 
-                this.modify = async (session, data) => {
+                this.modify = async (session, data, target) => {
                     let modified = false
                     const error = sessionError(session)
                     if (error && !error.includes('Invalid User')) return { modified, error }
@@ -112,55 +116,66 @@ class Individual extends Person {
                     const { branch, siteId, user } = session
                     const id = await this.id()
                     const modifiedBy = await user?.id() || null
-                    const { dob, prefix, firstName, middleName, lastName, suffix, alias } = data
-                    let { sex, ssn } = data
-                    if (!ssn) ssn = await this.ssn(session)
-                    else {
-                        const { found, error } = await Individual.find(session, { ssn })
-                        if (error) return { modified, error }
-                        if (found === true) return { modified, error: 'Invalid Data: SSN exists' }
-                    }
-                    if (typeof sex == 'string' && !isNaN(sex)) sex = +sex
-
                     const currentData = { ...this }
-                    currentData.ssn = await this.ssn(session)
 
-                    const update = {
-                        individuals: processData({ dob, sex, ssn }, {
-                            currentData,
-                            currentUpdateLog: await this.log(null, 'updateLog'),
-                            modifiedBy,
-                            branch,
-                            siteId,
-                        }),
-                        names: processData({
-                            prefix,
-                            firstName,
-                            middleName,
-                            lastName,
-                            suffix,
-                            alias,
-                        }, {
-                            currentData,
-                            currentUpdateLog: await this.log('names', 'updateLog'),
-                            modifiedBy,
-                            branch,
-                            siteId,
-                        }),
+                    if (!targets.includes(target) || targets.indexOf(target) <= 1) target = undefined
+
+                    switch (target) {
+
+                        case targets[2]:
+                            const { phone: number } = data
+                            break
+
+                        default:
+                            const { dob, prefix, firstName, middleName, lastName, suffix, alias } = data
+                            let { sex, ssn } = data
+                            if (!ssn) ssn = await this.ssn(session)
+                            else {
+                                const { found, error } = await Individual.find(session, { ssn })
+                                if (error) return { modified, error }
+                                if (found === true) return { modified, error: 'Invalid Data: SSN exists' }
+                            }
+                            if (typeof sex == 'string' && !isNaN(sex)) sex = +sex
+
+                            currentData.ssn = await this.ssn(session)
+
+                            const update = {
+                                individuals: processData({ dob, sex, ssn }, {
+                                    currentData,
+                                    currentUpdateLog: await this.log(null, 'updateLog'),
+                                    modifiedBy,
+                                    branch,
+                                    siteId,
+                                }),
+                                names: processData({
+                                    prefix,
+                                    firstName,
+                                    middleName,
+                                    lastName,
+                                    suffix,
+                                    alias,
+                                }, {
+                                    currentData,
+                                    currentUpdateLog: await this.log('names', 'updateLog'),
+                                    modifiedBy,
+                                    branch,
+                                    siteId,
+                                }),
+                            }
+
+                            /* This means SSN is being updated */
+                            if ('ssn' in update.individuals) {
+                                // ? check the new SSN on uniqueness
+
+                                update.individuals.ssn = { aes: [ ssn, secret ]}
+                            }
+
+                            if (update.individuals.dob) update.names.since = update.individuals.dob
+
+                            const [ result1 ] = await mysql.execute(query.individuals.update(update.individuals, { id }))
+                            const [ result2 ] = await mysql.execute(query.names.update(update.names, { personId: id, max: 'since' }))
+                            if (result1.affectedRows == 1 || result2.affectedRows == 1) modified = true
                     }
-
-                    /* This means SSN is being updated */
-                    if ('ssn' in update.individuals) {
-                        // ? check the new SSN on uniqueness
-
-                        update.individuals.ssn = { aes: [ ssn, secret ]}
-                    }
-
-                    if (update.individuals.dob) update.names.since = update.individuals.dob
-
-                    const [ result1 ] = await mysql.execute(query.individuals.update(update.individuals, { id }))
-                    const [ result2 ] = await mysql.execute(query.names.update(update.names, { personId: id, max: 'since' }))
-                    if (result1.affectedRows == 1 || result2.affectedRows == 1) modified = true
 
                     return { modified, data: await Individual.data(session, { id }) }
                 }
@@ -249,9 +264,7 @@ class Individual extends Person {
 
     static #algorithm = 'SHA-512/256'
 
-
     static hashId = (field = 'id') => hash(field, Individual.#algorithm)
-
 
     static matchIdHash = value => matchHash(value, Individual.#algorithm)
 
@@ -327,6 +340,7 @@ class Individual extends Person {
     static #batch = (session, options = {}) => {
         if (!session?.user) return []
 
+        const join = [ 'personId', 'id', { max: 'since' } ]
         const batch = [
             {
                 table: 'individuals',
@@ -335,7 +349,12 @@ class Individual extends Person {
             {
                 table: 'names',
                 fields: [ 'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix' ],
-                join: [ 'personId', 'id', { max: 'since' } ],
+                join,
+            },
+            {
+                table: 'phones',
+                fields: [ [ 'number', 'phone' ] ],
+                join,
             },
         ]
 
@@ -344,11 +363,12 @@ class Individual extends Person {
         if (!filter) filter = {}
 
         const { _id, id, ssn } = params
-        const { sex, firstName, lastName } = filter
+        const { sex, firstName, lastName, phone } = filter
 
         const match = {
             individuals: { id, sex },
             names: { firstName, lastName },
+            phones: { number: phone },
         }
         if (!id) match.individuals.id = Individual.matchIdHash(_id)
         if (ssn) match.individuals.ssn = { aes: [ ssn, secret ] }

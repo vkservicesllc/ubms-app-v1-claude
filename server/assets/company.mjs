@@ -596,13 +596,12 @@ class Company {
 
 
 
-class Owner extends Person {
+class Owner extends Individual {
     constructor(data = {}, light = false) {
         super(data, light)
 
         if (data?._id && data?._personId && Object.keys(this).length) {
-            const { _id, _personId } = data
-            const { companyCount } = data
+            const { _id, _personId, companyCount } = data
             const properties = { count: { companies: companyCount } }
 
             const categories = Company.categoryList
@@ -733,7 +732,6 @@ class Owner extends Person {
 
     static #algorithm = 'SHA-1'
 
-
     static hashId = (field = 'id') => hash(field, Owner.#algorithm)
 
     static matchIdHash = value => matchHash(value, Owner.#algorithm)
@@ -795,19 +793,28 @@ class Owner extends Person {
                 } ],
             },
             {
+                db: db.person,
+                table: 'phones',
+                fields: [ [ 'number', 'phone' ] ],
+                join: [ 'personId', 'id', {
+                    table: 'individuals',
+                    max: 'since',
+                } ],
+            },
+            {
                 table: 'company_ownerships',
                 join: [ 'ownerId', 'id' ],
             },
             {
                 table: 'companies',
                 fields: [ { count: [ 'catId', 'companyCount' ] } ],
-                join: [ 'id', 'companyId', 3 ],
+                join: [ 'id', 'companyId', 4 ],
             },
         ]
 
         const categories = Company.categoryList
         for (const catId in categories)
-            batch[4].fields.push({
+            batch[5].fields.push({
                 countCase: [ { catId }, `${categories[catId].path[0]}Count` ],
             })
 
@@ -868,8 +875,10 @@ class Owner extends Person {
         let { scope } = params
         if (!scope || !['global', 'local'].includes(scope)) scope = 'local'
 
+        //* Global search first by default
         let { found, personId } = await Individual.find(session, { ssn })
 
+        //* Search in owners only
         if (personId && scope == 'local') {
             const data = (await mysql.execute(query.owners.select('id', {
                 match: { personId },
@@ -888,7 +897,7 @@ class Owner extends Person {
 delete Owner.prefixList
 delete Owner.suffixList
 delete Owner.genderList
-delete Owner.formSelect
+// delete Owner.formSelect
 
 
 export default Company

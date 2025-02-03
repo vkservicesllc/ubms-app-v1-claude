@@ -65,7 +65,8 @@ export const formSelectors = {
     owner: {
         class: 'company-owner',
         id: 'company-owner-id',
-        deleteId: 'company-owner-delete-id',
+        deleteOwnerId: 'company-owner-delete-id',
+        ownerPhoneId: 'company-owner-delete-id',
         updateSinceId: 'company-owner-update-since',
         prefixId: 'company-owner-pfx',
         firstNameId: 'company-owner-fname',
@@ -76,6 +77,7 @@ export const formSelectors = {
         genderClass: 'company-owner-gender',
         dobId: 'company-owner-dob',
         ssnId: 'company-owner-ssn',
+        phoneId: 'company-owner-phone',
     },
 
     team: {

@@ -1,6 +1,6 @@
 import { selectEvent } from '../events/form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
-import { openAddModal, openEditModal, closeModals } from './owner.mjs'
+import { openAddModal, openModifyModal, closeModals } from './owner.mjs'
 
 const { ownershipId } = formSelectors.company
 
@@ -28,7 +28,7 @@ $button.add.on('click', openAddModal)
 $button.edit.on('click', () => {
     const _id = $owner.val()
 
-    openEditModal(_id)
+    openModifyModal(_id)
 })
 
 $button.cancel.on('click', () => {
