@@ -201,7 +201,18 @@ export default class {
 
 
     static updateOwner = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { company: _companyId } = req.query
+            const { _id } = req.body
+            delete req.body._id
+
+            const owner = await Owner.data(res.session, { _id })
+
+            const { error } = await owner.update(res.session, req.body)
+            if (error) return throwErr.server(res, error)
+
+            res.redirect(_companyId ? url.company + _companyId : url.owners)
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }

@@ -39,7 +39,7 @@ router.post('/company/:_id/contacts', User.verify, superAdminUserOnly, CompanyMV
 router.post('/company/:_id/:contactType/update', User.verify, superAdminUserOnly, CompanyMV.updateContact) //! unfinished
 
 router.post('/company-owner', User.verify, superAdminUserOnly, validateCompanyOwner, CompanyMV.upsertOwner)
-router.post('/company-owner/update', User.verify, superAdminUserOnly, CompanyMV.updateOwner) //! unfinished
+router.post('/company-owner/update', User.verify, superAdminUserOnly, validateCompanyOwnerUpdate, CompanyMV.updateOwner)
 router.post('/company-owner/delete', User.verify, superAdminUserOnly, CompanyMV.deleteOwner)
 
 

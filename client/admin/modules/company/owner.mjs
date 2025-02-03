@@ -31,10 +31,10 @@ const $option = {
     update: $('#owner-update-option-update'),
 }
 const $form = $('#company-owner-form')
-const $action = {
+const action = {
     default: $form.attr('action'),
 }
-$action.update = $action.default.replace('/owner', '/owner/update')
+action.update = action.default.replace('/company-owner', '/company-owner/update')
 const $field = {
     update: $('.owner-update-field'),
     upsert: $('.owner-upsert-field'),
@@ -100,7 +100,7 @@ $trigger.option.click(() => {
                     $field.update.show()
                     $field.upsert.hide().find('input, select').prop('disabled', true)
                     $submit.addClass('is-link').html('Update')
-                    $form.attr('action', $action.update)
+                    $form.attr('action', action.update)
                     $card.options.hide()
                     $card.form.show()
                 }   
@@ -124,7 +124,7 @@ export const closeModals = () => {
     $field.upsert.show().find('input, select').prop('disabled', false)
     $trigger.option.prop('disabled', true).removeClass('is-link is-danger')
     $submit.removeClass('is-success is-link').html(null)
-    $form.attr('action', $action.default)
+    $form.attr('action', action.default)
     if (!$gender.find('option[value=""]').length)
         $gender.prepend('<option value="">--</option>')
 }

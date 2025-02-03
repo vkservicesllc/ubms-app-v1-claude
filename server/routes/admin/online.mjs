@@ -88,7 +88,7 @@ router.get('/users', User.verify, (req, res) => {
 
 router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
     try {
-        const key = 'sites'
+        const key = 'teams'
         let { hbs } = res
         hbs = hbs.set(key)
 
