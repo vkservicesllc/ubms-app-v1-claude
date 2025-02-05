@@ -338,6 +338,35 @@ class Company {
                 return { deleted, data: company }
             }
 
+
+            this.confirm = async session => {
+                let { confirmed } = this, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { confirmed, error }
+
+                if (!confirmed) {
+                    const modifiedBy = await session.user.id()
+
+                    const data = processData({ confirmed: true }, {
+                        modifiedBy,
+                        currentData: this,
+                        currentUpdateLog: await this.log(targets[0], 'updateLog'),
+                    })
+
+                    try {
+                        const [ result ] = await mysql.execute(query.companies.update(data, { id: await this.id() }))
+
+                        if (result.affectedRows == 1) {
+                            confirmed = true
+                            this.confirmed = true
+                        }
+                    } catch (err) {
+                        error = 'DB Error'
+                    }
+                }
+
+                return { confirmed, error, data: this }
+            }
+
         }
     }
 
@@ -521,10 +550,11 @@ class Company {
 
         const match = {
             companies: { id, duns, catId, global, logo },
+            names: {},
             ownerships: { ownerId: Owner.matchIdHash(_ownerId) },
         }
         if (!id) match.companies.id = Company.matchIdHash(_id)
-        if (route) match.companies.route = { route: [ [ 'busName', 'coType' ], route ] }
+        if (route) match.names.route = { route: [ [ 'busName', 'coType' ], route ] }
         if (ein) match.companies.ein = { aes: [ ein, secret.ein ] }
         if (DS && branch == 'admin') {
             const { closed, active, confirmed } = filter
@@ -538,17 +568,18 @@ class Company {
         }
 
         batch[0].match = match.companies
+        batch[1].match = match.names
 
         return batch
     }
 
 
     static data = async (session, params = {}) => {
-        if (!params._id && !params.id && !params.ein && !params.duns) return
+        if (!params._id && !params.id && !params.ein && !params.duns && !params.route) return
 
         const batch = await Company.batch(session, { params })
         if (!batch.length) return
-
+console.log(batch[1].match)
         // await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const data = (await mysql.execute(Query.select(db.business, batch)))[0][0]
 

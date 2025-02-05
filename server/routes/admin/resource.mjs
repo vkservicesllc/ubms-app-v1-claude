@@ -7,10 +7,12 @@ import User, { superAdminUserOnly } from '../../assets/user.mjs'
 import validationCheck from '../../validators/default.mjs'
 import { validateUser, validateCondition } from '../../validators/user.mjs'
 import { validateCompany, validateCompanyOwner, validateCompanyOwnerUpdate, validateCompanyAddress, validateCompanyContacts } from '../../validators/company.mjs'
+import { validateCarrier } from '../../validators/carrier.mjs'
 
 /* Middleware */
 import UserMV from './mw/user.mjs'
 import CompanyMV from './mw/company.mjs'
+import CarrierMV from './mw/carrier.mjs'
 
 
 
@@ -28,6 +30,7 @@ router.post('/company/add', User.verify, superAdminUserOnly, validateCompany, Co
 router.post('/company/:_id/modify', User.verify, superAdminUserOnly, validateCompany, CompanyMV.modify)
 router.post('/company/:_id/update', User.verify, superAdminUserOnly, CompanyMV.update) //! unfinished
 router.post('/company/:_id/delete', User.verify, superAdminUserOnly, CompanyMV.delete)
+router.post('/company/:_id/confirm', User.verify, superAdminUserOnly, CompanyMV.confirm)
 
 router.post('/company/:_id/ownership', User.verify, superAdminUserOnly, CompanyMV.upsertOwnership)
 router.post('/company/:_id/ownership/update', User.verify, superAdminUserOnly, CompanyMV.updateOwnership) //! unfinished
@@ -43,6 +46,9 @@ router.post('/company-owner/update', User.verify, superAdminUserOnly, validateCo
 router.post('/company-owner/delete', User.verify, superAdminUserOnly, CompanyMV.deleteOwner)
 router.post('/company-owner/phone', User.verify, superAdminUserOnly, CompanyMV.upsertOwnerPhone) //! unfinished
 router.post('/company-owner/phone/update', User.verify, superAdminUserOnly, CompanyMV.updateOwnerPhone) //! unfinished
+
+router.post('/carrier/:_companyId', User.verify, superAdminUserOnly, validateCarrier, CarrierMV.upsert)
+router.post('/carrier/:_id/:target/update', User.verify, superAdminUserOnly) //! unfinished
 
 
 

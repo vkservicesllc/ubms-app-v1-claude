@@ -70,7 +70,7 @@
                     </div>
                     <div class="is-flex is-justify-content-space-between">
                         <small>EIN:</small>
-                        <strong class="has-text-right">{{idx data.ein 1}}</strong>
+                        <strong class="has-text-right">{{display.data.ein}}</strong>
                     </div>
                     <div class="is-flex is-justify-content-space-between">
                         <small>DUNS:</small>
@@ -232,7 +232,7 @@
                     {{{input.id}}}
                     <div class="columns is-vcentered">
                         <div class="column is-two-fifths is-width-fixed">
-                            <form id="company-team-add-form" action="/data/company/team/add" method="POST">
+                            <form id="company-team-add-form" action="/resource/company/team/add" method="POST">
                                 {{{input.teamAddId}}}
                                 <label class="label">Available Teams</label>
                                 <div class="select is-multiple is-fullwidth">
@@ -249,7 +249,7 @@
                             </button>
                         </div>
                         <div class="column is-two-fifths is-width-fixed">
-                            <form id="company-team-delete-form" action="/data/company/team/delete" method="POST">
+                            <form id="company-team-delete-form" action="/resource/company/team/delete" method="POST">
                                 {{{input.teamRemoveId}}}
                                 <label class="label">Current Teams</label>
                                 <div class="select is-multiple is-fullwidth">
@@ -265,9 +265,7 @@
 
     </div>
     {{#if (eq data.confirmed 0)}}
-    <form action="/data/company/confirm/" id="company-confirm-form" method="POST">
-        {{{input.id}}}
-    </form>
+    <form action="/resource/company/{{{_id}}}/confirm" id="company-confirm-form" method="POST"></form>
     <footer class="card-footer">
         <button class="card-footer-item">Highlight</button>
         <button type="submit" class="card-footer-item has-text-link" form="company-confirm-form">Confirm</button>

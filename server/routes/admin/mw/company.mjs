@@ -20,10 +20,10 @@ import { formSelectors } from '../../../../client/global/modules/registry/select
 import inputLength from '../../../../client/global/modules/registry/length.mjs'
 
 /* Tools */
-import { duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/formatter.mjs'
+import { ein as formatEin, duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/formatter.mjs'
 import { respond404 } from '../../../tools/response.mjs'
 
-/* Constatnst */
+/* Constants */
 import { labelClass, labelClassRequired } from '../constants.mjs'
 
 const throwErr = require('../../../tools/error').data
@@ -95,6 +95,31 @@ export default class {
             if (error) return throwErr.server(res, error)
 
             res.redirect(url.companies)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
+    static confirm = async (req, res) => {
+        try {
+            const { _id } = req.params
+
+            const company = await Company.data(res.session, { _id })
+            if (!company) return throwErr.server(res, errMsg.company)
+
+            const { confirmed, error } = await company.confirm(res.session)
+            if (error) return throwErr.server(res, error)
+
+            let redirectUrl = url.company + company._id
+            if (confirmed) {
+                const { catId, route } = company
+                const category = Company.categoryList[catId].path[1]
+
+                redirectUrl = `/business/${category}/${route}`
+            }
+
+            res.redirect(redirectUrl)
         } catch (err) {
             throwErr.server(res, null, err)
         }
@@ -339,11 +364,13 @@ export default class {
 }
 
 
-const display = data => {
+const display = (data, ein) => {
     const na = '<em class="has-text-danger has-text-weight-normal">N/A</em>'
     const display = {}
     display.data = {}
     display.label = {}
+
+    if (ein) display.data.ein = formatEin(ein)
 
     if (data.since) {
         display.data.since = moment(data.since).format('ll')
@@ -763,9 +790,10 @@ export const companyById = async (req, res) => {
 
         /* HBS Setup */
         hbs = hbs.set(key, { titlePfx })
+        hbs._id = _id
         hbs.actionUrl = actionUrl
         hbs.data = data
-        hbs.display = display(data)
+        hbs.display = display(data, ein)
         hbs.contentTitle = contentTitle
         hbs.steps = steps
         hbs.step1 = step1
@@ -788,6 +816,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         const { category, route } = req.params
         let company = await Company.data(res.session, { route })
         const { _id: _companyId, catId } = company
+        const { ein } = await company.ein(res.session)
 
         if (!company) return respond404(res)
         if (category != Company.categoryList[catId].path[1])
@@ -824,7 +853,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
 
         hbs.data = company
         hbs.input = input
-        hbs.display = display(company)
+        hbs.display = display(company, ein)
         hbs.css = css
 
         hbs.display.status = company.active

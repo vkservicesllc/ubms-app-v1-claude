@@ -426,7 +426,7 @@ class Query {
             if (field == 'route' || field == 'concat') {
                 const prop = field
                 let fields
-                [ fields, value ] = value
+                [ fields, value ] = value[field]
 
                 value = Query.#value(value)
                 field = { [prop]: [ fields ] }

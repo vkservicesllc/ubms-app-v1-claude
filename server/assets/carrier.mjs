@@ -3,6 +3,7 @@ import db from '../settings/mysql.mjs'
 
 /* Assets */
 import Company from './company.mjs'
+import { sessionError } from './user.mjs'
 
 /* Tools */
 import Query, { hash, matchHash }  from '../tools/query.mjs'
