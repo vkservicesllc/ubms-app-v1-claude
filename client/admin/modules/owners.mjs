@@ -1,4 +1,5 @@
 import Person from './assets/person.mjs'
+import { tel as formatTel } from './tools/formatter.mjs'
 import { openModifyModal, openDeleteModal, closeModals } from './company/owner.mjs'
 
 const categories = $.ajax('/api/assets/company?filter=categories', { async: false, method: 'POST' }).responseJSON
@@ -14,9 +15,15 @@ const columns = [
         searchable: false,
         orderable: false,
         render(data) {
-            if (!data) return ''
+            if (!data) return '<span class="has-text-grey">?</span>'
 
-            return data[0]
+            let fa = 'fa-person', color = 'link-75'
+            if (data[0] == 'F') {
+                fa += '-dress'
+                color = 'danger-65'
+            }
+
+            return `<i class="fa ${fa} has-text-${color}"></i>`
         },
     },
 
@@ -54,7 +61,9 @@ const columns = [
     },
 
     {
-        data: 'phone',
+        data(row) {
+            return formatTel(row.phone || null)
+        },
         title: 'Phone',
     },
 
@@ -132,7 +141,7 @@ columns.push({
         let cell = '<div class="dt-action">'
         if (!row.count.companies)
             cell += `<a class="has-text-danger delete-owner" data-id="${row._id}" title="Delete"><i class="fas fa-trash-can"></i></a>`
-        cell += `<a class="has-text-primary-35 edit-owner-phone" data-id="${row._id} title="Add/Modify Phone"><i class="fas fa-phone"></i></a>`
+        cell += `<a class="has-text-primary-35 edit-owner-phone" data-id="${row._id} title="Add/Modify Phone"><i class="fas fa-mobile-screen"></i></a>`
         cell += `<a class="has-text-success-45 edit-owner" data-id="${row._id}" title="Modify"><i class="fas fa-pen-to-square"></i></a>`
         cell += '</div>'
 

@@ -363,12 +363,11 @@ class Individual extends Person {
         if (!filter) filter = {}
 
         const { _id, id, ssn } = params
-        const { sex, firstName, lastName, phone } = filter
+        const { sex, firstName, lastName } = filter
 
         const match = {
             individuals: { id, sex },
             names: { firstName, lastName },
-            phones: { number: phone },
         }
         if (!id) match.individuals.id = Individual.matchIdHash(_id)
         if (ssn) match.individuals.ssn = { aes: [ ssn, secret ] }

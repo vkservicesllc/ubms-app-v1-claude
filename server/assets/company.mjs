@@ -743,6 +743,7 @@ class Owner extends Individual {
         if (error) return { created, error }
 
         const result = await Individual.create(session, data)
+
         let id, owner
 
         if (!result.created) {
@@ -795,7 +796,7 @@ class Owner extends Individual {
             {
                 db: db.person,
                 table: 'phones',
-                fields: [ [ 'number', 'phone' ] ],
+                fields: [ [ 'number', 'cell' ] ],
                 join: [ 'personId', 'id', {
                     table: 'individuals',
                     max: 'since',
