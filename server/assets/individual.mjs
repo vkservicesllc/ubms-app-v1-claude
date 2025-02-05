@@ -31,233 +31,233 @@ const targets = Object.keys(query)
 class Individual extends Person {
     constructor(data = {}, light = false) {
         super(data)
+        if (!data?._id || !Object.keys(this).length)
+            throw new Error('Individual instantiation failed: Invalid data')
 
-        if (data?._id && Object.keys(this).length) {
-            const { _id, phone } = data
+        const { _id, phone } = data
 
-            reSuper(this, { _id }, { phone })
+        reSuper(this, { _id }, { phone })
 
-            if (!light) {
+        if (!light) {
 
-                this.id = async () => (await mysql.execute(query.individuals.select('id', {
+            this.id = async () => (await mysql.execute(query.individuals.select('id', {
+                match: { id: Individual.matchIdHash(this._id) },
+            })))[0][0].id
+
+
+            this.ssn = async (session, format = false) => {
+                if (!session?.user) return
+
+                let { ssn } = (await mysql.execute(query.individuals.select({ aes: [ 'ssn', secret ] }, {
                     match: { id: Individual.matchIdHash(this._id) },
-                })))[0][0].id
+                })))[0][0]
+                if (ssn) {
+                    ssn = stringifyBuffer(ssn)
 
-
-                this.ssn = async (session, format = false) => {
-                    if (!session?.user) return
-
-                    let { ssn } = (await mysql.execute(query.individuals.select({ aes: [ 'ssn', secret ] }, {
-                        match: { id: Individual.matchIdHash(this._id) },
-                    })))[0][0]
-                    if (ssn) {
-                        ssn = stringifyBuffer(ssn)
-
-                        if (format) formatSsn(ssn)
-                    }
-
-                    return ssn
+                    if (format) formatSsn(ssn)
                 }
 
-
-                this.log = async (target, field) => {
-                    if (!targets.includes(target)) target = targets[0]
-                    const fields = [ 'createdBy', 'createdAt', 'createdIn', 'updateLog' ]
-                    const idProp = target == targets[0] ? 'id' : 'personId'
-
-                    let log = (await mysql.execute(query[target].select(fields, {
-                        match: { [idProp]: Individual.matchIdHash(this._id) },
-                    })))[0][0]
-
-                    if (fields.includes(field)) log = log[field]
-
-                    return log
-                }
-
-
-                this.flush = async target => {
-                    if (!targets.includes(target)) target = targets[0]
-                    const idProp = target == targets[0] ? 'id' : 'personId'
-
-                    await mysql.execute(query[target].update({ updateLog: null }, {
-                        [idProp]: Individual.matchIdHash(this._id),
-                    }))
-                }
-
-
-                this.history = async (session, target = targets[1], log = false) => {
-                    if (sessionError(session)) return []
-
-                    if (!targets.includes(target)) target = targets[1]
-
-                    let fields, sort = { desc: 'since' }
-                    switch (target) {
-                        case targets[1]:  //* names
-                            fields = [ 'since', 'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix' ]
-                            break
-                        case targets[2]:  //* phones
-                            fields = [ 'since', 'number' ]
-                            break
-                    }
-                    if (log === true) fields.push('createdBy', 'createdAt', 'createdIn', 'updateLog')
-
-                    return (await mysql.execute(query[target].select(fields, {
-                        match: { personId: Individual.matchIdHash(this._id) },
-                        sort,
-                    })))[0]
-                }
-
-
-                this.modify = async (session, data, target) => {
-                    let modified = false
-                    const error = sessionError(session)
-                    if (error && !error.includes('Invalid User')) return { modified, error }
-
-                    const { branch, siteId, user } = session
-                    const id = await this.id()
-                    const modifiedBy = await user?.id() || null
-                    const currentData = { ...this }
-
-                    if (!targets.includes(target) || targets.indexOf(target) <= 1) target = undefined
-
-                    switch (target) {
-
-                        case targets[2]:
-                            const { phone: number } = data
-                            break
-
-                        default:
-                            const { dob, prefix, firstName, middleName, lastName, suffix, alias } = data
-                            let { sex, ssn } = data
-                            if (!ssn) ssn = await this.ssn(session)
-                            else {
-                                const { found, error } = await Individual.find(session, { ssn })
-                                if (error) return { modified, error }
-                                if (found === true) return { modified, error: 'Invalid Data: SSN exists' }
-                            }
-                            if (typeof sex == 'string' && !isNaN(sex)) sex = +sex
-
-                            currentData.ssn = await this.ssn(session)
-
-                            const update = {
-                                individuals: processData({ dob, sex, ssn }, {
-                                    currentData,
-                                    currentUpdateLog: await this.log(null, 'updateLog'),
-                                    modifiedBy,
-                                    branch,
-                                    siteId,
-                                }),
-                                names: processData({
-                                    prefix,
-                                    firstName,
-                                    middleName,
-                                    lastName,
-                                    suffix,
-                                    alias,
-                                }, {
-                                    currentData,
-                                    currentUpdateLog: await this.log('names', 'updateLog'),
-                                    modifiedBy,
-                                    branch,
-                                    siteId,
-                                }),
-                            }
-
-                            /* This means SSN is being updated */
-                            if ('ssn' in update.individuals) {
-                                // ? check the new SSN on uniqueness
-
-                                update.individuals.ssn = { aes: [ ssn, secret ]}
-                            }
-
-                            if (update.individuals.dob) update.names.since = update.individuals.dob
-
-                            const [ result1 ] = await mysql.execute(query.individuals.update(update.individuals, { id }))
-                            const [ result2 ] = await mysql.execute(query.names.update(update.names, { personId: id, max: 'since' }))
-                            if (result1.affectedRows == 1 || result2.affectedRows == 1) modified = true
-                    }
-
-                    return { modified, data: await Individual.data(session, { id }) }
-                }
-
-
-                this.update = async (session, data, target = targets[1]) => {
-                    let updated = false
-                    const error = sessionError(session)
-                    if (error && !error.includes('Invalid User')) return { updated, error }
-
-                    const { branch, siteId, user } = session
-                    const id = await this.id()
-                    const createdIn = { branch }
-                    if (siteId) createdIn.siteId = siteId
-
-                    if (!targets.includes(target)) target = targets[1]
-                    data = processData(data)
-
-                    switch (target) {
-                        case targets[1]:
-                            for (const prop of [ 'since', 'firstName', 'lastName' ])
-                                if (!data[prop]) return { updated, error: 'Invalid Data' }
-                            if (data.since <= this.dob) return { updated, error: 'Invalid Data: Effective Date' }
-                            break
-                    }
-
-                    delete data._id
-                    delete data._personId
-                    data.personId = id
-                    data.createdBy = await user?.id() || null
-                    data.createdIn = JSON.stringify(createdIn)
-
-                    const [ result ] = await mysql.execute(query[target].insert(data))
-                    if (result.affectedRows == 1) updated = true
-
-                    return { updated, data: await Individual.data(session, { id }) }
-                }
-
-
-                this.delete = async session => {
-                    let deleted = false, error = sessionError(session)
-                    if (error) return { deleted, error }
-
-                    try {
-                        const id = await this.id()
-                        const ssn = await this.ssn(session)
-                        const log = await this.log()
-                        const history = {
-                            names: await this.history(session, 'names', true),
-                        }
-
-                        const [ result ] = await mysql.execute(query.individuals.delete({ id }))
-                        if (result.affectedRows > 0) deleted = true
-
-                        if (deleted) {
-                            const reduntant = [
-                                'gender',
-                                'prefix',
-                                'firstName',
-                                'middleName',
-                                'lastName',
-                                'suffix',
-                                'alias',
-                                'age',
-                            ]
-
-                            for (const prop of reduntant) delete this[prop]
-                            this.ssn = ssn ? encrypt(ssn) : null
-                            this.history = history
-                            for (const prop in log) this[prop] = log[prop]
-
-                            await logDeletion(session, 'individuals', this, { id })
-                        }
-                    } catch (err) {
-                        console.error(err)
-                        error = 'DB Error'
-                    }
-
-                    return { deleted, error }
-                }
-
+                return ssn
             }
+
+
+            this.log = async (target, field) => {
+                if (!targets.includes(target)) target = targets[0]
+                const fields = [ 'createdBy', 'createdAt', 'createdIn', 'updateLog' ]
+                const idProp = target == targets[0] ? 'id' : 'personId'
+
+                let log = (await mysql.execute(query[target].select(fields, {
+                    match: { [idProp]: Individual.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
+
+
+            this.flush = async target => {
+                if (!targets.includes(target)) target = targets[0]
+                const idProp = target == targets[0] ? 'id' : 'personId'
+
+                await mysql.execute(query[target].update({ updateLog: null }, {
+                    [idProp]: Individual.matchIdHash(this._id),
+                }))
+            }
+
+
+            this.history = async (session, target = targets[1], log = false) => {
+                if (sessionError(session)) return []
+
+                if (!targets.includes(target)) target = targets[1]
+
+                let fields, sort = { desc: 'since' }
+                switch (target) {
+                    case targets[1]:  //* names
+                        fields = [ 'since', 'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix' ]
+                        break
+                    case targets[2]:  //* phones
+                        fields = [ 'since', 'number' ]
+                        break
+                }
+                if (log === true) fields.push('createdBy', 'createdAt', 'createdIn', 'updateLog')
+
+                return (await mysql.execute(query[target].select(fields, {
+                    match: { personId: Individual.matchIdHash(this._id) },
+                    sort,
+                })))[0]
+            }
+
+
+            this.modify = async (session, data, target) => {
+                let modified = false
+                const error = sessionError(session)
+                if (error && !error.includes('Invalid User')) return { modified, error }
+
+                const { branch, siteId, user } = session
+                const id = await this.id()
+                const modifiedBy = await user?.id() || null
+                const currentData = { ...this }
+
+                if (!targets.includes(target) || targets.indexOf(target) <= 1) target = undefined
+
+                switch (target) {
+
+                    case targets[2]:
+                        const { phone: number } = data
+                        break
+
+                    default:
+                        const { dob, prefix, firstName, middleName, lastName, suffix, alias } = data
+                        let { sex, ssn } = data
+                        if (!ssn) ssn = await this.ssn(session)
+                        else {
+                            const { found, error } = await Individual.find(session, { ssn })
+                            if (error) return { modified, error }
+                            if (found === true) return { modified, error: 'Invalid Data: SSN exists' }
+                        }
+                        if (typeof sex == 'string' && !isNaN(sex)) sex = +sex
+
+                        currentData.ssn = await this.ssn(session)
+
+                        const update = {
+                            individuals: processData({ dob, sex, ssn }, {
+                                currentData,
+                                currentUpdateLog: await this.log(null, 'updateLog'),
+                                modifiedBy,
+                                branch,
+                                siteId,
+                            }),
+                            names: processData({
+                                prefix,
+                                firstName,
+                                middleName,
+                                lastName,
+                                suffix,
+                                alias,
+                            }, {
+                                currentData,
+                                currentUpdateLog: await this.log('names', 'updateLog'),
+                                modifiedBy,
+                                branch,
+                                siteId,
+                            }),
+                        }
+
+                        /* This means SSN is being updated */
+                        if ('ssn' in update.individuals) {
+                            // ? check the new SSN on uniqueness
+
+                            update.individuals.ssn = { aes: [ ssn, secret ]}
+                        }
+
+                        if (update.individuals.dob) update.names.since = update.individuals.dob
+
+                        const [ result1 ] = await mysql.execute(query.individuals.update(update.individuals, { id }))
+                        const [ result2 ] = await mysql.execute(query.names.update(update.names, { personId: id, max: 'since' }))
+                        if (result1.affectedRows == 1 || result2.affectedRows == 1) modified = true
+                }
+
+                return { modified, data: await Individual.data(session, { id }) }
+            }
+
+
+            this.update = async (session, data, target = targets[1]) => {
+                let updated = false
+                const error = sessionError(session)
+                if (error && !error.includes('Invalid User')) return { updated, error }
+
+                const { branch, siteId, user } = session
+                const id = await this.id()
+                const createdIn = { branch }
+                if (siteId) createdIn.siteId = siteId
+
+                if (!targets.includes(target)) target = targets[1]
+                data = processData(data)
+
+                switch (target) {
+                    case targets[1]:
+                        for (const prop of [ 'since', 'firstName', 'lastName' ])
+                            if (!data[prop]) return { updated, error: 'Invalid Data' }
+                        if (data.since <= this.dob) return { updated, error: 'Invalid Data: Effective Date' }
+                        break
+                }
+
+                delete data._id
+                delete data._personId
+                data.personId = id
+                data.createdBy = await user?.id() || null
+                data.createdIn = JSON.stringify(createdIn)
+
+                const [ result ] = await mysql.execute(query[target].insert(data))
+                if (result.affectedRows == 1) updated = true
+
+                return { updated, data: await Individual.data(session, { id }) }
+            }
+
+
+            this.delete = async session => {
+                let deleted = false, error = sessionError(session)
+                if (error) return { deleted, error }
+
+                try {
+                    const id = await this.id()
+                    const ssn = await this.ssn(session)
+                    const log = await this.log()
+                    const history = {
+                        names: await this.history(session, 'names', true),
+                    }
+
+                    const [ result ] = await mysql.execute(query.individuals.delete({ id }))
+                    if (result.affectedRows > 0) deleted = true
+
+                    if (deleted) {
+                        const reduntant = [
+                            'gender',
+                            'prefix',
+                            'firstName',
+                            'middleName',
+                            'lastName',
+                            'suffix',
+                            'alias',
+                            'age',
+                        ]
+
+                        for (const prop of reduntant) delete this[prop]
+                        this.ssn = ssn ? encrypt(ssn) : null
+                        this.history = history
+                        for (const prop in log) this[prop] = log[prop]
+
+                        await logDeletion(session, 'individuals', this, { id })
+                    }
+                } catch (err) {
+                    console.error(err)
+                    error = 'DB Error'
+                }
+
+                return { deleted, error }
+            }
+
         }
     }
 

@@ -32,16 +32,17 @@ router.post('/company/:_id/delete', User.verify, superAdminUserOnly, CompanyMV.d
 router.post('/company/:_id/ownership', User.verify, superAdminUserOnly, CompanyMV.upsertOwnership)
 router.post('/company/:_id/ownership/update', User.verify, superAdminUserOnly, CompanyMV.updateOwnership) //! unfinished
 
-router.post('/company/:_id/address', User.verify, superAdminUserOnly, CompanyMV.upsertAddress)
+router.post('/company/:_id/address', User.verify, superAdminUserOnly, validateCompanyAddress, CompanyMV.upsertAddress)
 router.post('/company/:_id/address/:type/update', User.verify, superAdminUserOnly, CompanyMV.updateAddress) //! unfinished
 
-router.post('/company/:_id/contacts', User.verify, superAdminUserOnly, CompanyMV.upsertContacts)
-router.post('/company/:_id/:contactType/update', User.verify, superAdminUserOnly, CompanyMV.updateContact) //! unfinished
+router.post('/company/:_id/contacts', User.verify, superAdminUserOnly, validateCompanyContacts, CompanyMV.upsertContacts)
+router.post('/company/:_id/contacts/:type/update', User.verify, superAdminUserOnly, CompanyMV.updateContact) //! unfinished
 
 router.post('/company-owner', User.verify, superAdminUserOnly, validateCompanyOwner, CompanyMV.upsertOwner)
 router.post('/company-owner/update', User.verify, superAdminUserOnly, validateCompanyOwnerUpdate, CompanyMV.updateOwner)
-//! need to add source to modify owner's phone
 router.post('/company-owner/delete', User.verify, superAdminUserOnly, CompanyMV.deleteOwner)
+router.post('/company-owner/phone', User.verify, superAdminUserOnly, CompanyMV.upsertOwnerPhone) //! unfinished
+router.post('/company-owner/phone/update', User.verify, superAdminUserOnly, CompanyMV.updateOwnerPhone) //! unfinished
 
 
 

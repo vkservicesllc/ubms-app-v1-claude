@@ -137,28 +137,115 @@ export default class {
 
 
     static upsertAddress = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { _id } = req.params
+            const company = await Company.data(res.session, { _id })
+            if (!company) return throwErr.server(res, errMsg.company)
+
+            const { body } = req
+            const { address } = company
+            const action = { physical: null, mail: null }
+            const errors = []
+
+            if (!address.physical.address1) {
+                action.physical = 'update'
+                if (body.mail?.address1) action.mail = 'update'
+            } else {
+                action.physical = 'modify'
+                if (!address.mail.address1) {
+                    if (body.mail?.address1) action.mail = 'update'
+                } else {
+                    if (body.mail?.address1) action.mail = 'modify'
+                    else action.mail = 'delete'
+                }
+            }
+
+            if (action.physical) {
+                const { error } = await company[action.physical](res.session, 'addresses', body.physical)
+                if (error) errors.push(error)
+            }
+            if (action.mail) {
+                const { error } = await company[action.mail](res.session, 'mail', body.mail)
+                if (error) errors.push(error)
+            }
+
+            if (errors.length) return throwErr.server(res, errors.join(' / '))
+
+            res.redirect(url.company + _id)
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }
 
 
     static updateAddress = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { _id, type } = req.params
+
+            //!..
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }
 
 
     static upsertContacts = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { _id } = req.params
+            const company = await Company.data(res.session, { _id })
+            if (!company) return throwErr.server(res, errMsg.company)
+
+            const { body } = req
+            const action = { phone: null, fax: null, email: null }
+            const errors = []
+
+            if (!company.phone) {
+                action.phone = 'update'
+                if (body.fax) action.fax = 'update'
+                if (body.email) action.email = 'update'
+            } else {
+                if (body.phone != company.phone) action.phone = 'modify'
+                if (!body.fax && company.fax) action.fax = 'delete'
+                else if (body.fax && !company.fax) action.fax = 'update'
+                else if (body.fax && company.fax && body.fax != company.fax)
+                    action.fax = 'modify'
+                if (!body.email && company.email) action.email = 'delete'
+                else if (body.email && !company.email) action.email = 'update'
+                else if (body.email && company.email && body.email != company.email)
+                    action.email = 'modify'
+            }
+
+            if (action.phone) {
+                const { phone: number } = body
+                const { error } = await company[action.phone](res.session, 'phones', { number })
+                if (error) errors.push(error)
+            }
+            if (action.fax) {
+                const { fax: number } = body
+                const { error } = await company[action.fax](res.session, 'faxes', { number })
+                if (error) errors.push(error)
+            }
+            if (action.email) {
+                const { email } = body
+                const { error } = await company[action.email](res.session, 'emails', { email })
+                if (error) errors.push(error)
+            }
+
+            if (errors.length) return throwErr.server(res, errors.join(' / '))
+
+            res.redirect(url.company + _id)
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }
 
 
     static updateContact = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { _id, type } = req.params
+
+            //!..
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }
@@ -230,6 +317,20 @@ export default class {
 
             res.redirect(url.owners)
         } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
+    static upsertOwnerPhone = async (req, res) => {
+        try {} catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
+    static updateOwnerPhone = async (req, res) => {
+        try {} catch (err) {
             throwErr.server(res, null, err)
         }
     }

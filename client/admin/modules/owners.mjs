@@ -20,7 +20,7 @@ const columns = [
             let fa = 'fa-person', color = 'link-75'
             if (data[0] == 'F') {
                 fa += '-dress'
-                color = 'danger-65'
+                color = 'danger-70'
             }
 
             return `<i class="fa ${fa} has-text-${color}"></i>`

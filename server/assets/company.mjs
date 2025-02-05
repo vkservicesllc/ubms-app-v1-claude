@@ -110,11 +110,11 @@ class Company {
             })))[0][0].id
 
 
-            this.ein = async (session, format = false) => {
+            this.ein = async (session, format = false, _id) => {
                 if (!session?.user) return
 
                 let { ein } = (await mysql.execute(query.companies.select({ aes: [ 'ein', secret.ein ] }, {
-                    match: { id: Company.matchIdHash(this._id) },
+                    match: { id: Company.matchIdHash(_id || this._id) },
                 })))[0][0]
                 ein = stringifyBuffer(ein)
                 if (format === true) ein = formatEin(ein)
@@ -569,7 +569,7 @@ class Company {
 
 
     static find = async (session, params = {}) => {
-        if (!session?.user?.DS) return { error: 'Invalid User' }
+        if (!session?.user) return { error: 'Invalid User' }
 
         const { ein, duns, busName, coType, alias } = params
         if (
@@ -599,133 +599,133 @@ class Company {
 class Owner extends Individual {
     constructor(data = {}, light = false) {
         super(data, light)
+        if (!data?._id || !data?._personId || !Object.keys(this).length)
+            throw new Error('Owner instantiation failed: Invalid data')
 
-        if (data?._id && data?._personId && Object.keys(this).length) {
-            const { _id, _personId, companyCount } = data
-            const properties = { count: { companies: companyCount } }
+        const { _id, _personId, companyCount } = data
+        const properties = { count: { companies: companyCount } }
 
-            const categories = Company.categoryList
-            for (const catId in categories) {
-                const path = categories[catId].path[0]
-                properties.count[path] = data[`${path}Count`]
-            }
+        const categories = Company.categoryList
+        for (const catId in categories) {
+            const path = categories[catId].path[0]
+            properties.count[path] = data[`${path}Count`]
+        }
 
-            reSuper(this, { _id, _personId }, properties)
+        reSuper(this, { _id, _personId }, properties)
 
-            if (!light) {
+        if (!light) {
 
-                this.id = async () => (await mysql.execute(query.owners.select('id', {
+            this.id = async () => (await mysql.execute(query.owners.select('id', {
+                match: { id: Owner.matchIdHash(this._id) },
+            })))[0][0].id
+
+            this.personId = async () => (await mysql.execute(query.owners.select('personId', {
+                match: { personId: Individual.matchIdHash(this._personId) },
+            })))[0][0].personId
+
+
+            this.log = async field => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+                let log = (await mysql.execute(query.owners.select(fields, {
                     match: { id: Owner.matchIdHash(this._id) },
-                })))[0][0].id
+                })))[0][0]
 
-                this.personId = async () => (await mysql.execute(query.owners.select('personId', {
-                    match: { personId: Individual.matchIdHash(this._personId) },
-                })))[0][0].personId
+                if (fields.includes(field)) log = log[field]
 
-
-                this.log = async field => {
-                    const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
-                    let log = (await mysql.execute(query.owners.select(fields, {
-                        match: { id: Owner.matchIdHash(this._id) },
-                    })))[0][0]
-
-                    if (fields.includes(field)) log = log[field]
-
-                    return log
-                }
-
-
-                this.flush = async target => {}
-
-
-                this.history = async (session, target = 'names', log = false) => {
-                    if (target == 'names') {
-                        const individual = await Individual.data(session, { _id: this._personId })
-                        return individual.history(session, log)
-                    }
-
-                    return []
-                }
-
-
-                this.modify = async (session, data) => {
-                    let modified = false
-                    const error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
-                    if (error) return { modified, error }
-
-                    const { _id, _personId } = this
-                    const individual = await Individual.data(session, { _id: _personId })
-                    const result = await individual.modify(session, data)
-
-                    if (!result.modified) {
-                        if (result.error) return { modified, error: result.error }
-                    } else modified = true
-
-                    return { modified, data: await Owner.data(session, { _id }) }
-                }
-
-
-                this.update = async (session, data) => {
-                    let updated = false
-                    const error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
-                    if (error) return { updated, error }
-
-                    const { _id, _personId } = this
-                    const individual = await Individual.data(session, { _id: _personId })
-                    const result = await individual.update(session, data)
-
-                    if (!result.updated) {
-                        if (result.error) return { updated, error: result.error }
-                    } else updated = true
-
-                    return { updated, data: await Owner.data(session, { _id }) }
-                }
-
-
-                this.delete = async session => {
-                    let deleted = false,
-                        error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
-                    if (error) return { deleted, error }
-
-                    try {
-                        const id = await this.id()
-                        const personId = await this.personId()
-                        const log = await this.log()
-                        const history = {
-                            names: await this.history(session),
-                        }
-
-                        const [ result ] = await mysql.execute(query.owners.delete({ id }))
-                        if (result.affectedRows > 0) deleted = true
-
-                        if (deleted) {
-                            const reduntant = [
-                                'gender',
-                                'prefix',
-                                'firstName',
-                                'middleName',
-                                'lastName',
-                                'suffix',
-                                'alias',
-                                'age',
-                                'count',
-                            ]
-
-                            for (const prop of reduntant) delete this[prop]
-                            this.history = history
-                            for (const prop in log) this[prop] = log[prop]
-
-                            await logDeletion(session, 'company-owners', this, { id, personId })
-                        }
-                    } catch (err) {
-                        console.error(err)
-                        error = 'DB Error'
-                    }
-
-                    return { deleted, error }
-                }
-
+                return log
             }
+
+
+            this.flush = async target => {}
+
+
+            this.history = async (session, target = 'names', log = false) => {
+                if (target == 'names') {
+                    const individual = await Individual.data(session, { _id: this._personId })
+                    return individual.history(session, log)
+                }
+
+                return []
+            }
+
+
+            this.modify = async (session, data) => {
+                let modified = false
+                const error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { modified, error }
+
+                const { _id, _personId } = this
+                const individual = await Individual.data(session, { _id: _personId })
+                const result = await individual.modify(session, data)
+
+                if (!result.modified) {
+                    if (result.error) return { modified, error: result.error }
+                } else modified = true
+
+                return { modified, data: await Owner.data(session, { _id }) }
+            }
+
+
+            this.update = async (session, data) => {
+                let updated = false
+                const error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { updated, error }
+
+                const { _id, _personId } = this
+                const individual = await Individual.data(session, { _id: _personId })
+                const result = await individual.update(session, data)
+
+                if (!result.updated) {
+                    if (result.error) return { updated, error: result.error }
+                } else updated = true
+
+                return { updated, data: await Owner.data(session, { _id }) }
+            }
+
+
+            this.delete = async session => {
+                let deleted = false,
+                    error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { deleted, error }
+
+                try {
+                    const id = await this.id()
+                    const personId = await this.personId()
+                    const log = await this.log()
+                    const history = {
+                        names: await this.history(session),
+                    }
+
+                    const [ result ] = await mysql.execute(query.owners.delete({ id }))
+                    if (result.affectedRows > 0) deleted = true
+
+                    if (deleted) {
+                        const reduntant = [
+                            'gender',
+                            'prefix',
+                            'firstName',
+                            'middleName',
+                            'lastName',
+                            'suffix',
+                            'alias',
+                            'age',
+                            'count',
+                        ]
+
+                        for (const prop of reduntant) delete this[prop]
+                        this.history = history
+                        for (const prop in log) this[prop] = log[prop]
+
+                        await logDeletion(session, 'company-owners', this, { id, personId })
+                    }
+                } catch (err) {
+                    console.error(err)
+                    error = 'DB Error'
+                }
+
+                return { deleted, error }
+            }
+
         }
     }
 
