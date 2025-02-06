@@ -816,7 +816,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         const { category, route } = req.params
         let company = await Company.data(res.session, { route })
         const { _id: _companyId, catId } = company
-        const { ein } = await company.ein(res.session)
+        const ein = await company.ein(res.session)
 
         if (!company) return respond404(res)
         if (category != Company.categoryList[catId].path[1])

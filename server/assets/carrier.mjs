@@ -125,8 +125,8 @@ class Carrier extends Company {
                 data.carrier = processData(data.carrier)
                 data.ifta = processData(data.ifta)
 
-                for (const prop of [ 'mc', 'usdot', 'number', 'jurisdiction' ])
-                    if (!data.carrier[prop] && !data.ifta[prop]) return { created, error: 'Invalid Data' }
+                for (const prop of [ 'mc', 'usdot', 'jurisdiction' ])
+                    if (!data.carrier[prop] && !data.ifta[prop]) return { initialized, error: 'Invalid Data' }
 
                 data.carrier.companyId = await this.companyId()
                 data.carrier.createdBy = await session.user.id()
