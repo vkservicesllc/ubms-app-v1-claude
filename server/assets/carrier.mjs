@@ -369,10 +369,17 @@ class Carrier extends Company {
     static find = async (session, params = {}) => {
         if (!session?.user) return { error: 'Invalid User' }
 
-        const { mc, usdot, ifta } = params
-        if (!mc && !usdot && !ifta) return { error: 'Invalid Parameters' }
+        const { mc, usdot, scac, irp, efs, fleetOne, transflo, iftaId } = params
+        if (!mc && !usdot && !scac && !irp && !efs && !fleetOne && !transflo && !iftaId)
+            return { error: 'Invalid Parameters' }
 
-        //!..
+        let target = targets[0], idProp = 'id'
+        if (iftaId) target = targets[1], idProp = 'carrierId'
+
+        const match = { mc, usdot, scac, irp, efs, fleetOne, transflo, number: iftaId }
+        const data = (await mysql.execute(query[target].select(idProp, { match })))[0]
+
+        return { found: data.length == 1 }
     }
 
 

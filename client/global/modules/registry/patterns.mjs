@@ -12,7 +12,7 @@ export default {
         email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
         suffix: /(\bjr\b|\bsr\b)/i,
         coType: /(\binc\b|\bllc\b)/i,
-        addr2: /(suite|ste|unit|apt)\.?.*?$/i,
+        addr2: /\b(suite|ste|unit|apt)\b\.?.*?$/i,
     },
 
     change: {

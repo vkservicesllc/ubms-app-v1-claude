@@ -199,7 +199,7 @@ $.when(statusReq).done(statusRes => {
 
         lengthMenu,
 
-        order: [ [ 4, 'asc' ] ],
+        order: [ [ 0, 'asc' ], [ 4, 'asc' ] ],
 
         rowGroup: {
             dataSrc(row) {

@@ -63,7 +63,8 @@ const handleChange = (props = {}) => {
         method: 'POST',
         data,
         success(response) {
-            const { unique } = response
+            const { unique, error } = response
+            if (error) alert(error)
             if (input && !current && !unique) action = 'failed'
 
             setTip[action](key)

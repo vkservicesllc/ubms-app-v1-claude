@@ -55,23 +55,20 @@ inputEvent(numberIds, {
                     .html(tip.success)
                     .show()
             else {
-                let target = 'main'
                 let name = $number.attr('name')
-                if (id == iftaId) {
-                    target = 'ifta'
-                    name = 'number'
-                }
-                const data = { find: {}, ignore: {} }
-                data.find[name] = number
-                data.ignore[name] = currentNumber
+                const data = { [name]: number }
     
-                $.ajax(`/api/unique/carrier/${target}`, {
+                $.ajax(`/api/unique/carrier`, {
                     method: 'POST',
                     data,
                     success(response) {
-                        const { unique } = response
+                        const { unique, error } = response
     
-                        $tip.removeClass('is-success is-danger')
+                        $tip.hide().html(null).removeClass('is-success is-danger')
+                        if (error) {
+                            $number.val(null)
+                            return alert(error)
+                        }
     
                         if (unique) {
                             $tip

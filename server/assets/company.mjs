@@ -608,18 +608,16 @@ console.log(batch[1].match)
             (busName && !coType) || (!busName && coType)
         ) return { error: 'Invalid Parameters' }
 
-        let found = false
-
         let target = 'names', idProp = 'companyId'
         if (ein || duns) target = 'companies', idProp = 'id'
 
-        const match = { duns, alias, busName, coType }
+        const match = { alias, busName, coType }
         if (ein) match.ein = { aes: [ strip(ein), secret.ein ] }
+        if (duns) match.duns = strip(duns)
 
         const data = (await mysql.execute(query[target].select(idProp, { match })))[0]
-        found = data.length == 1
 
-        return { found }
+        return { found: data.length == 1 }
     }
 
 

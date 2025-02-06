@@ -7,7 +7,7 @@ import Individual from '../assets/individual.mjs'
 import User, { adminBranchOnly, superAdminUserOnly, developerOnly } from '../assets/user.mjs'
 import Team from '../assets/team.mjs'
 import Company, { Owner } from '../assets/company.mjs'
-// import Carrier from '../assets/carrier.mjs'
+import Carrier from '../assets/carrier.mjs'
 // import School from '../assets/school.mjs'
 
 /* Tools */
@@ -51,10 +51,11 @@ router.post('/unique/:env', User.verify, async (req, res) => {
     try {
         const response = { unique: true }
         const { env } = req.params
-        const src = { User, Team, Individual, Company, Owner }  //! for later: Carrier, School
+        const src = { User, Team, Individual, Company, Owner, Carrier }  //! for later: School
 
-        const { found } = await src[capitalizeFirst(env)].find(res.session, req.body)
+        const { found, error } = await src[capitalizeFirst(env)].find(res.session, req.body)
         response.unique = !found
+        response.error = error
 
         res.send(response)
     } catch (err) {
