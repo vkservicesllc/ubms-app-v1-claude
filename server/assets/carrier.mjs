@@ -1,6 +1,9 @@
 /* Settings */
 import db from '../settings/mysql.mjs'
 
+/* Registry */
+import inputLength from '../../client/global/modules/registry/length.mjs'
+
 /* Assets */
 import Company from './company.mjs'
 import { sessionError } from './user.mjs'
@@ -17,8 +20,11 @@ const mysql = require('../tools/mysql')
 const query = {
     carriers: new Query(db.carrier, 'carriers'),
     ifta: new Query(db.carrier, 'carrier_ifta'),
+    stateTax: new Query(db.carrier, 'carrier_state_permits'),
 }
 const targets = Object.keys(query)
+
+const stateTaxIds = Object.keys(inputLength.carrier.permit.max)
 
 
 
@@ -40,11 +46,12 @@ class Carrier extends Company {
             irp: data.irp,
             ifta: data.ifta,
             iftaJur: data.iftaJur,
-            stateTax: data.stateTax,
+            stateTax: {},  //! data.stateTax,
             efs: data.efs,
             fleetOne: data.fleetOne,
             transflo: data.transflo,
         }
+        stateTaxIds.forEach(state => properties.stateTax[state] = data[`statePermit`])
 
         reSuper(this, { _id, _companyId }, properties)
 
@@ -314,12 +321,15 @@ class Carrier extends Company {
         const batch = await Company.batch(session, options)
         if (!batch.length) return batch
 
+        const join = [ 'carrierId', 'id', 'carriers' ]
+        const stateTaxFields = []
+        stateTaxIds.map(state => stateTaxFields.push([ state, `${state}Permit` ]))
         batch.push({
             db: db.carrier,
             table: 'carriers',
             fields: [
                 [ Carrier.hashId(), 'carrierId' ],
-                'mc', 'usdot', 'scac', 'irp', 'stateTax',
+                'mc', 'usdot', 'scac', 'irp',  //! 'stateTax',
                 'efs', 'fleetOne', 'transflo',
             ],
             join: [ 'companyId', 'id' ],
@@ -327,7 +337,12 @@ class Carrier extends Company {
             db: db.carrier,
             table: 'carrier_ifta',
             fields: [ [ 'number', 'ifta' ], [ 'jurisdiction', 'iftaJur' ] ],
-            join: [ 'carrierId', 'id', 'carriers' ],
+            join,
+        }, {
+            db: db.carrier,
+            table: 'carrier_state_permits',
+            fields: stateTaxFields,
+            join,
         })
         delete batch[0].match.id
         batch[0].match.catId = 'crr'

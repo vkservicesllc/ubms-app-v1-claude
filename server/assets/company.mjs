@@ -579,7 +579,7 @@ class Company {
 
         const batch = await Company.batch(session, { params })
         if (!batch.length) return
-console.log(batch[1].match)
+
         // await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const data = (await mysql.execute(Query.select(db.business, batch)))[0][0]
 
