@@ -20,9 +20,18 @@
                     <span class="navbar-item has-text-weight-bold py-0">{{user.username}}</span>
                     <span class="navbar-item pt-1">{{user.status}}</span>
                     <hr class="navbar-divider" />
-                    <a class="navbar-item" href="{{addrBook.user}}/profile?refer={{{user._id}}}" target="_blank">Profile</a>
-                    <a class="navbar-item" href="{{addrBook.user}}/account?refer={{{user._id}}}" target="_blank">Account</a>
-                    <a class="navbar-item" href="{{addrBook.user}}/security?refer={{{user._id}}}" target="_blank">Security</a>
+                    <a class="navbar-item" href="{{addrBook.user}}/profile?refer={{{user._id}}}" target="_blank">
+                        Profile
+                        &nbsp;<i class="fa fa-arrow-up-right-from-square has-text-grey is-size-7"></i>
+                    </a>
+                    <a class="navbar-item" href="{{addrBook.user}}/account?refer={{{user._id}}}" target="_blank">
+                        Account
+                        &nbsp;<i class="fa fa-arrow-up-right-from-square has-text-grey is-size-7"></i>
+                    </a>
+                    <a class="navbar-item" href="{{addrBook.user}}/security?refer={{{user._id}}}" target="_blank">
+                        Security
+                        &nbsp;<i class="fa fa-arrow-up-right-from-square has-text-grey is-size-7"></i>
+                    </a>
                     <a class="navbar-item" href="/settings">Settings</a>
                     <hr class="navbar-divider" />
                     <a class="navbar-item has-text-danger" id="{{logoutId}}" href="{{logoutUrl}}">Sign Out</a>
