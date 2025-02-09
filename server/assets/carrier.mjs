@@ -51,7 +51,7 @@ class Carrier extends Company {
             fleetOne: data.fleetOne,
             transflo: data.transflo,
         }
-        stateTaxIds.forEach(state => properties.stateTax[state] = data[`statePermit`])
+        stateTaxIds.forEach(state => properties.stateTax[state] = data[`${state}Permit`])
 
         reSuper(this, { _id, _companyId }, properties)
 
@@ -122,15 +122,18 @@ class Carrier extends Company {
                 data = {
                     carrier: data,
                     ifta: data.ifta,
+                    stateTax: data.stateTax,
                 }
                 delete data.carrier.ifta
+                delete data.carrier.stateTax
 
-                const { stateTax } = data.carrier
-                if (!Object.keys(stateTax).length) delete data.carrier.stateTax
-                else data.carrier.stateTax = JSON.stringify(stateTax)
+                //! const { stateTax } = data.carrier
+                //! if (!Object.keys(stateTax).length) delete data.carrier.stateTax
+                //! else data.carrier.stateTax = JSON.stringify(stateTax)
 
                 data.carrier = processData(data.carrier)
                 data.ifta = processData(data.ifta)
+                data.stateTax = processData(data.stateTax)
 
                 for (const prop of [ 'mc', 'usdot', 'jurisdiction' ])
                     if (!data.carrier[prop] && !data.ifta[prop]) return { initialized, error: 'Invalid Data' }
@@ -149,6 +152,14 @@ class Carrier extends Company {
                     const [ result ] = await mysql.execute(query.ifta.insert(data.ifta))
                     if (result.affectedRows == 1) initialized = true
                     else error = 'DB Error: Stage 2'
+
+                    if (!error && Object.keys(data.stateTax).length) {
+                        data.stateTax.carrierId = id
+                        data.stateTax.createdBy = data.carrier.createdBy
+
+                        const [ result ] = await mysql.execute(query.stateTax.insert(data.stateTax))
+                        if (result.affectedRows != 1) error = 'DB Error: State 3'
+                    }
                 } else error = 'DB Error: Stage 1'
 
                 if (error) return { initialized, error }
@@ -157,115 +168,35 @@ class Carrier extends Company {
             }
 
 
-            this.modify = async (session, body) => {
+            this.modify = async (session, data) => {
                 let modified = false,
                     error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { modified, error }
 
-                body = {
-                    carrier: body,
-                    stateTax: body.stateTax,
-                    ifta: body.ifta,
+                data = {
+                    carrier: data,
+                    ifta: data.ifta,
+                    stateTax: data.stateTax,
                 }
-                delete body.carrier.stateTax
-                delete body.carrier.ifta
+                delete data.carrier.ifta
+                delete data.carrier.stateTax
 
-                let carrierModified = false, stateTaxModified = false
                 const id = await this.id()
                 const { branch, siteId } = session
                 const modifiedBy = await session.user.id()
                 const modifiedIn = { branch, siteId }
 
-                let { since, stateTax } = body
+                let { since } = data
                 if (!since) since = this.since
 
-                let currentUpdateLog = await this.log(targets[0], 'updateLog')
-                body.carrier = processData(body.carrier, {
+                data.carrier = processData(data.carrier, {
                     currentData: this,
-                    currentUpdateLog,
+                    currentUpdateLog: await this.log(targets[0], 'updateLog'),
                     modifiedBy,
                     modifiedIn,
                 })
 
-                let { updateLog } = body.carrier
-                let { stateTax: newStateTax } = this
-                if (!newStateTax) newStateTax = {}
-
-                if (currentUpdateLog)
-                    currentUpdateLog = JSON.stringify(currentUpdateLog)
-
-                if (updateLog && updateLog != currentUpdateLog) carrierModified = true
-
-                body.stateTax = processData(body.stateTax, {
-                    currentData: newStateTax,
-                    modifiedBy,
-                })
-
-                /* State Tax Modification */
-                if (Object.keys(body.stateTax).length) {
-                    const data = {}, oldData = {}
-
-                    for (const state in stateTax) {
-                        let value = stateTax[state], oldValue = newStateTax[state]
-                        if ((oldValue == value) || (!oldValue && !value)) continue
-
-                        if (!data.stateTax) data.stateTax = {}
-                        if (!oldData.stateTax) oldData.stateTax = {}
-
-                        if (oldValue && !value) {
-                            value = null
-
-                            delete newStateTax[state]
-                        }
-
-                        if (!oldValue && value) oldValue = null
-
-                        if (value) newStateTax[state] = value
-                        data.stateTax[state] = value
-                        oldData.stateTax[state] = oldValue
-
-                        stateTaxModified = true
-                    }
-
-                    if (stateTaxModified) {
-                        /* Update Log for stateTax */
-                        if (updateLog) {
-                            updateLog = JSON.parse(updateLog)
-
-                            if (carrierModified) {
-                                updateLog[0].data = { ...updateLog[0].data, ...data }
-                                updateLog[0].oldData = { ...updateLog[0].oldData, ...oldData }
-                            } else
-                                updateLog.unshift({
-                                    data,
-                                    oldData,
-                                    modifiedBy,
-                                    modifiedIn,
-                                    modifiedAt: utcTimeStamp(),
-                                })
-                        } else {
-                            if (currentUpdateLog) updateLog = JSON.parse(currentUpdateLog)
-                            else updateLog = []
-
-                            updateLog.unshift({
-                                data,
-                                oldData,
-                                modifiedBy,
-                                modifiedIn,
-                                modifiedAt: utcTimeStamp(),
-                            })
-                        }
-
-                        updateLog = JSON.stringify(updateLog)
-
-                        body.carrier.stateTax = Object.keys(newStateTax).length
-                            ? JSON.stringify(newStateTax)
-                            : null
-                        body.carrier.updateLog = updateLog
-                    }
-                }
-
-                body.ifta = processData(body.ifta, {
+                data.ifta = processData(data.ifta, {
                     currentData: {
                         number: this.ifta,
                         jurisdiction: this.iftaJur,
@@ -275,18 +206,25 @@ class Carrier extends Company {
                     modifiedIn,
                 })
 
-                if (Object.keys(body.carrier)) {
+                data.stateTax = processData(data.stateTax, {
+                    currentData: this.stateTax,
+                    currentUpdateLog: await this.log(targets[2], 'updateLog'),
+                    modifiedBy,
+                    modifiedIn,
+                })
+
+                if (Object.keys(data.carrier).length) {
                     try {
-                        const [ result ] = await mysql.execute(query.carriers.update(body.carrier, { id }))
+                        const [ result ] = await mysql.execute(query.carriers.update(data.carrier, { id }))
                         if (result.affectedRows == 1) modified = true
                     } catch (err) {
                         error = 'DB Error: Stage 1'
                     }
                 }
 
-                if (!error && Object.keys(body.ifta)) {
+                if (!error && Object.keys(data.ifta).length) {
                     try {
-                        const [ result ] = await mysql.execute(query.ifta.update(body.ifta, {
+                        const [ result ] = await mysql.execute(query.ifta.update(data.ifta, {
                             carrierId: id,
                             since,
                         }))
@@ -296,8 +234,160 @@ class Carrier extends Company {
                     }
                 }
 
+                if (!error && Object.keys(data.stateTax).length) {
+                    try {
+                        const [ result ] = await mysql.execute(query.stateTax.update(data.stateTax, { carrierId: id }))
+                        if (result.affectedRows == 1) modified = true
+                    } catch (err) {
+                        error = 'DB Error: Stage 3'
+                    }
+                }
+
                 return { modified, error, data: await Carrier.data(session, { id }) }
             }
+
+
+            // this.modify_OLD = async (session, body) => {
+            //     let modified = false,
+            //         error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+            //     if (error) return { modified, error }
+
+            //     body = {
+            //         carrier: body,
+            //         stateTax: body.stateTax,
+            //         ifta: body.ifta,
+            //     }
+            //     delete body.carrier.stateTax
+            //     delete body.carrier.ifta
+
+            //     let carrierModified = false, stateTaxModified = false
+            //     const id = await this.id()
+            //     const { branch, siteId } = session
+            //     const modifiedBy = await session.user.id()
+            //     const modifiedIn = { branch, siteId }
+
+            //     let { since, stateTax } = body
+            //     if (!since) since = this.since
+
+            //     let currentUpdateLog = await this.log(targets[0], 'updateLog')
+            //     body.carrier = processData(body.carrier, {
+            //         currentData: this,
+            //         currentUpdateLog,
+            //         modifiedBy,
+            //         modifiedIn,
+            //     })
+
+            //     let { updateLog } = body.carrier
+            //     let { stateTax: newStateTax } = this
+            //     if (!newStateTax) newStateTax = {}
+
+            //     if (currentUpdateLog)
+            //         currentUpdateLog = JSON.stringify(currentUpdateLog)
+
+            //     if (updateLog && updateLog != currentUpdateLog) carrierModified = true
+
+            //     body.stateTax = processData(body.stateTax, {
+            //         currentData: newStateTax,
+            //         modifiedBy,
+            //     })
+
+            //     /* State Tax Modification */
+            //     if (Object.keys(body.stateTax).length) {
+            //         const data = {}, oldData = {}
+
+            //         for (const state in stateTax) {
+            //             let value = stateTax[state], oldValue = newStateTax[state]
+            //             if ((oldValue == value) || (!oldValue && !value)) continue
+
+            //             if (!data.stateTax) data.stateTax = {}
+            //             if (!oldData.stateTax) oldData.stateTax = {}
+
+            //             if (oldValue && !value) {
+            //                 value = null
+
+            //                 delete newStateTax[state]
+            //             }
+
+            //             if (!oldValue && value) oldValue = null
+
+            //             if (value) newStateTax[state] = value
+            //             data.stateTax[state] = value
+            //             oldData.stateTax[state] = oldValue
+
+            //             stateTaxModified = true
+            //         }
+
+            //         if (stateTaxModified) {
+            //             /* Update Log for stateTax */
+            //             if (updateLog) {
+            //                 updateLog = JSON.parse(updateLog)
+
+            //                 if (carrierModified) {
+            //                     updateLog[0].data = { ...updateLog[0].data, ...data }
+            //                     updateLog[0].oldData = { ...updateLog[0].oldData, ...oldData }
+            //                 } else
+            //                     updateLog.unshift({
+            //                         data,
+            //                         oldData,
+            //                         modifiedBy,
+            //                         modifiedIn,
+            //                         modifiedAt: utcTimeStamp(),
+            //                     })
+            //             } else {
+            //                 if (currentUpdateLog) updateLog = JSON.parse(currentUpdateLog)
+            //                 else updateLog = []
+
+            //                 updateLog.unshift({
+            //                     data,
+            //                     oldData,
+            //                     modifiedBy,
+            //                     modifiedIn,
+            //                     modifiedAt: utcTimeStamp(),
+            //                 })
+            //             }
+
+            //             updateLog = JSON.stringify(updateLog)
+
+            //             body.carrier.stateTax = Object.keys(newStateTax).length
+            //                 ? JSON.stringify(newStateTax)
+            //                 : null
+            //             body.carrier.updateLog = updateLog
+            //         }
+            //     }
+
+            //     body.ifta = processData(body.ifta, {
+            //         currentData: {
+            //             number: this.ifta,
+            //             jurisdiction: this.iftaJur,
+            //         },
+            //         currentUpdateLog: await this.log(targets[1], 'updateLog'),
+            //         modifiedBy,
+            //         modifiedIn,
+            //     })
+
+            //     if (Object.keys(body.carrier)) {
+            //         try {
+            //             const [ result ] = await mysql.execute(query.carriers.update(body.carrier, { id }))
+            //             if (result.affectedRows == 1) modified = true
+            //         } catch (err) {
+            //             error = 'DB Error: Stage 1'
+            //         }
+            //     }
+
+            //     if (!error && Object.keys(body.ifta)) {
+            //         try {
+            //             const [ result ] = await mysql.execute(query.ifta.update(body.ifta, {
+            //                 carrierId: id,
+            //                 since,
+            //             }))
+            //             if (result.affectedRows == 1) modified = true
+            //         } catch (err) {
+            //             error = 'DB Error: Stage 2'
+            //         }
+            //     }
+
+            //     return { modified, error, data: await Carrier.data(session, { id }) }
+            // }
 
 
             this.update = async (session, targets, data) => {}
@@ -348,7 +438,7 @@ class Carrier extends Company {
         batch[0].match.catId = 'crr'
 
         const { _id, _companyId, id, companyId } = params
-        const idx = batch.length - 2
+        const idx = batch.length - 3
         batch[0].match.id = companyId
         batch[idx].match = { id }
         if (!companyId) batch[0].match.id = Company.matchIdHash(_companyId)
@@ -384,14 +474,23 @@ class Carrier extends Company {
     static find = async (session, params = {}) => {
         if (!session?.user) return { error: 'Invalid User' }
 
-        const { mc, usdot, scac, irp, efs, fleetOne, transflo, iftaId } = params
-        if (!mc && !usdot && !scac && !irp && !efs && !fleetOne && !transflo && !iftaId)
+        const { mc, usdot, scac, irp, efs, fleetOne, transflo, ifta, stateTax } = params
+        if (!mc && !usdot && !scac && !irp && !efs && !fleetOne && !transflo && !ifta && !stateTax)
             return { error: 'Invalid Parameters' }
 
+        let match = { mc, usdot, scac, irp, efs, fleetOne, transflo }
         let target = targets[0], idProp = 'id'
-        if (iftaId) target = targets[1], idProp = 'carrierId'
+        if (ifta) {
+            target = targets[1], idProp = 'carrierId'
+            const { number } = ifta
+            match = { number }
+        }
+        if (stateTax) { //? not tested
+            target = targets[2], idProp = 'carrierId'
+            const keys = Object.keys(stateTax)
+            match = { [keys[0]]: stateTax[keys[0]] }
+        }
 
-        const match = { mc, usdot, scac, irp, efs, fleetOne, transflo, number: iftaId }
         const data = (await mysql.execute(query[target].select(idProp, { match })))[0]
 
         return { found: data.length == 1 }

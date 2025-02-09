@@ -557,7 +557,7 @@ class Query {
     }
 
 
-    static #reserved = [ 'condition' ]
+    static #reserved = [ 'condition', 'in', 'or' ]
 
 
 }
