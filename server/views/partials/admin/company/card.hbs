@@ -12,15 +12,30 @@
         .card-content {
             min-height: {{css.card.minHeight}};
         }
+        #highlight-trigger:hover {
+            background-color: #ff6;
+            color: darkslategray;
+        }
     </style>
     {{#if (eq data.confirmed 1)}}
     <header class="card-header">
         <p class="card-header-title">{{data.name}}</p>
         <div class="dropdown is-hoverable is-right">
             <div class="dropdown-trigger">
-                <button class="card-header-icon">
+                <button class="card-header-icon" aria-controls="summary-dropdown">
                     <span class="icon"><i class="fas fa-ellipsis-vertical"></i></span>
                 </button>
+            </div>
+            <div class="dropdown-menu" id="summary-dropdown">
+                <div class="dropdown-content">
+                    <a class="dropdown-item" id="highlight-company-trigger">Highlight</a>
+                    <a class="dropdown-item" id="update-company-trigger">Modify/Update</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" id="company-condition-trigger">{{{display.statusTrigger}}}</a>
+                    <a class="dropdown-item" id="close-company-trigger">Close</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item has-text-danger" id="delete-company-trigger">Delete</a>
+                </div>
             </div>
         </div>
     </header>
@@ -28,9 +43,9 @@
     <div class="card-content">
         <div class="tabs">
             <ul>
-                <li class="company-card-tabs is-active" data-section="company"><a>Primary Details</a></li>
+                <li class="company-card-tabs is-active" data-section="company"><a>Business Info</a></li>
                 {{#if (eq data.catId 'crr')}}
-                <li class="company-card-tabs" data-section="carrier"><a>Carrier Credentials</a></li>
+                <li class="company-card-tabs" data-section="carrier"><a>Carrier Info</a></li>
                 {{/if}}
                 <li class="company-card-tabs" data-section="logo"><a>Logo</a></li>
                 {{#if (eq data.confirmed 1)}}
@@ -267,7 +282,7 @@
     {{#if (eq data.confirmed 0)}}
     <form action="/resource/company/{{{_id}}}/confirm" id="company-confirm-form" method="POST"></form>
     <footer class="card-footer">
-        <button class="card-footer-item">Highlight</button>
+        <button class="card-footer-item" id="highlight-trigger">Highlight</button>
         <button type="submit" class="card-footer-item has-text-link" form="company-confirm-form">Confirm</button>
     </footer>
     {{/if}}

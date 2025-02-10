@@ -859,6 +859,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs.display.status = company.active
             ? 'Active'
             : '<i class="has-text-danger">Inactive</i>'
+        hbs.display.statusTrigger = company.active ? 'Deactivate' : 'Activate'
 
         res.render(key, hbs)
     } catch (err) {
