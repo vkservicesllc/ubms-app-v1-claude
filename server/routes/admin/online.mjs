@@ -6,9 +6,11 @@ import User, { superAdminUserOnly } from '../../assets/user.mjs'
 
 /* HTML Builders */
 import { Label as UserLabel, Input as UserInput, Select as UserSelect } from '../../html/user.mjs'
+import { Label as TeamLabel, Input as TeamInput, Select as TeamSelect } from '../../html/team.mjs'
 
 /* Registry */
 import { formSelectors } from '../../../client/global/modules/registry/selectors.mjs'
+import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Local Constants */
 import { labelClass, labelClassRequired } from './constants.mjs'
@@ -86,11 +88,52 @@ router.get('/users', User.verify, (req, res) => {
 })
 
 
+router.get('/user/:identifier', User.verify, async (req, res) => {
+    try {
+        // * Identifier can either be
+        // 1) _id for users who have not yet created a username
+        // 2) username, who have created a username and password
+        // ? alter logic in Query.data
+        const key = 'user'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        const { active } = hbs.nav
+        hbs.nav.users = active
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
 router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
     try {
         const key = 'teams'
         let { hbs } = res
         hbs = hbs.set(key)
+
+        hbs.label = {
+            name: TeamLabel.name({ class: labelClassRequired }),
+            category: TeamLabel.catId({ class: labelClassRequired }),
+            description: TeamLabel.description({ class: labelClass }),
+        }
+
+        hbs.input = {
+            current: {
+                name: TeamInput.name({}, true),
+            },
+            id: TeamInput.id(),
+            name: TeamInput.name({ class: 'input' }),
+            description: TeamInput.description({ class: 'textarea' }),
+        }
+
+        hbs.select = {
+            category: TeamSelect.catId({ tabs: 12, options: { emptyOpt: '--' } }),
+        }
+
+        hbs.descMaxChars = inputLength.team.desc.max
 
         res.render(key, hbs)
     } catch (err) {

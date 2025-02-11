@@ -188,4 +188,17 @@ router.post('/company-owner/:_id', User.verify, adminBranchOnly, superAdminUserO
 
 
 
+/* TEAM */
+
+
+router.post('/teams', User.verify, adminBranchOnly, superAdminUserOnly, async (req, res) => {
+    try {
+        res.send({ data: await Team.list(res.session) })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+
 export default router

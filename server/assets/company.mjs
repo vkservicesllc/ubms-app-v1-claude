@@ -24,7 +24,6 @@ import strip from '../../client/global/modules/tools/formatter.mjs'
 import { encrypt } from '../tools/crypto.mjs'
 
 const mysql = require('../tools/mysql')
-const { body } = require('express-validator')
 
 
 const { sqlMode } = Query

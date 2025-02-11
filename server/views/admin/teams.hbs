@@ -1,3 +1,76 @@
 {{> admin/nav.alpha}}
-                <span class="subtitle is-4">Teams</span>
+                
+                <div class="mb-6">
+                    <button class="button" id="team-add-button"><i class="fa fa-plus"></i></button>
+                </div>
+                <div class="modal" id="team-upsert-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title" id="team-upsert-title"></p>
+                            <button class="delete"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <form id="team-upsert-form" action="/data/team" method="POST" autocomplete="off">
+                                {{{input.id}}}
+                                {{{input.current.name}}}
+                                <div class="columns">
+                                    <div class="column">
+                                        <div class="field">
+                                            {{{label.name}}}
+                                            <div class="control">
+                                                {{{input.name}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            {{{label.category}}}
+                                            <div class="select is-fullwidth">
+                                                {{{select.category}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                        <div class="field">
+                                            {{{label.description}}}
+                                            <div class="control">
+                                                {{{input.description}}}
+                                            </div>
+                                            <p class="help">
+                                                Characters: <span id="desc-char-used">0</span> used /
+                                                <span id="desc-char-left">{{descMaxChars}}</span> left
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <div class="buttons">
+                                <button type="submit" form="team-upsert-form" class="button" id="team-upsert-button"></button>
+                                <button class="button is-danger" id="team-delete-button" style="display: none;">Delete</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+                <style>
+                    .column.is-one-fifth {
+                        min-width: 280px;
+                    }
+                </style>
+
+                <div id="team-list"></div>
+
+                <div class="modal" id="team-relationship-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title" id="team-relationship-title"></p>
+                        </header>
+                        <section class="modal-card-body" id="team-relationship"></section>
+                        <footer class="modal-card-foot">
+                            <button class="button" id="team-relationship-close-button">Done</button>
+                        </footer>
+                    </div>
+                </div>
+
 {{> admin/nav.omega}}
