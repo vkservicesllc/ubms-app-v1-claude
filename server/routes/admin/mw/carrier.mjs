@@ -37,4 +37,7 @@ export default class {
     }
 
 
+    static update = async (req, res) => {}
+
+
 }

@@ -200,5 +200,16 @@ router.post('/teams', User.verify, adminBranchOnly, superAdminUserOnly, async (r
 })
 
 
+router.post('/team/:_id', User.verify, adminBranchOnly, superAdminUserOnly, async (req, res) => {
+    try {
+        const { _id } = req.params
+
+        res.send({ data: await Team.data(res.session, { _id })})
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
 
 export default router

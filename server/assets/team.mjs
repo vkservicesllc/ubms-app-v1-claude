@@ -1,8 +1,12 @@
 /* Settings */
 import db from '../settings/mysql.mjs'
 
+/* Assets */
+import { sessionError } from './user.mjs'
+
 /* Tools */
 import Query, { hash, matchHash } from '../tools/query.mjs'
+import { processData, logDeletion } from '../tools/database.mjs'
 
 const mysql = require('../tools/mysql')
 
@@ -43,7 +47,26 @@ class Team {
     static matchIdHash = value => matchHash(value, Team.#algorithm)
 
 
-    static create = async (session, data) => {}
+    static create = async (session, data) => {
+        let created = false
+        const error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+        if (error) return { created, error }
+
+        data = processData(data)
+
+        for (const prop of [ 'name', 'catId' ])
+            if (!data[prop]) return { created, error: 'Invalid Data' }
+
+        data.createdBy = await session.user.id()
+
+        const [ result ] = await mysql.execute(query.teams.insert(data))
+        const id = result.insertId
+
+        if (id) created = true
+        else return { created, error: 'DB Error' }
+
+        return { created, data: await Team.data(session, { id })}
+    }
 
 
     static #batch = async (session, options = {}) => {
@@ -53,10 +76,10 @@ class Team {
         if (!params) params = {}
         if (!filter) filter = {}
 
-        const { _id, id } = params
+        const { _id, id, name } = params
         const { catId } = filter
-        const match = { id, catId }
-        if (!id) match.id = Team.matchIdHash()
+        const match = { id, name, catId }
+        if (!id) match.id = Team.matchIdHash(_id)
 
         const batch = [
             {
@@ -81,7 +104,16 @@ class Team {
     }
 
 
-    static data = async (session, params = {}) => {}
+    static data = async (session, params = {}) => {
+        if (!params._id && !params.id && !params.name) return
+
+        const batch = await Team.#batch(session, { params })
+        if (!batch.length) return
+
+        const data = (await mysql.execute(Query.select(db.business, batch)))[0][0]
+
+        return !data ? data : new Team(data)
+    }
 
 
     static list = async (session, filter = {}) => {
