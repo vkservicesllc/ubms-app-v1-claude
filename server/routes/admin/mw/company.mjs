@@ -34,8 +34,8 @@ const url = {
     owners: '/business/company-owners',
 }
 const errMsg = {
-    company: 'Server Internal Error: Company not found',
-    owner: 'Server Internal Error: Company Owner not found',
+    company: `Server Internal Error: Company not found<br/><a href="${url.companies}">Back to Companies</a>`,
+    owner: `Server Internal Error: Company Owner not found<br/><a href="${url.owners}">Back to Company Owners</a>`,
 }
 
 
@@ -87,12 +87,16 @@ export default class {
     static delete = async (req, res) => {
         try {
             const { _id } = req.params
+            const { alias } = req.body
 
             const company = await Company.data(res.session, { _id })
             if (!company) return throwErr.server(res, errMsg.company)
 
+            if (alias != company.alias)
+                return throwErr.server(res, `Request Error: Incorrect confirmation alias<br/><a href="${url.companies}">Back to Companies</a>`)
+
             const { error } = await company.delete(res.session)
-            if (error) return throwErr.server(res, error)
+            if (error) return throwErr.server(res, error + `<a href="${url.companies}">Back to Companies</a>`)
 
             res.redirect(url.companies)
         } catch (err) {
@@ -338,7 +342,7 @@ export default class {
             if (!owner) return throwErr.server(res, errMsg.owner)
 
             const { error } = await owner.delete(res.session)
-            if (error) return throwErr.server(res, error)
+            if (error) return throwErr.server(res, error + `<a href="${url.owners}">Back to Company Owners</a>`)
 
             res.redirect(url.owners)
         } catch (err) {
@@ -851,6 +855,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         const { active } = hbs.nav
         hbs.nav.companies = active
 
+        hbs._id = _companyId
         hbs.data = company
         hbs.input = input
         hbs.display = display(company, ein)
