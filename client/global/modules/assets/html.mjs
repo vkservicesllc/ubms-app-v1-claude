@@ -2,6 +2,21 @@ import { sortObjectByKey, sortObjectByValue } from '../tools/sorter.mjs'
 
 
 
+const escape = html => html.replace(/[&<>"']/g, function(match) {
+    return {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '`': '&#96;',
+        '=': '&#61;',
+    }[match]
+})
+
+export default escape
+
+
 export const formLabel = props => {
     if (!props) props = {}
     const { for: forId, class: className, addClass, title, content } = props

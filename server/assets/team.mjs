@@ -60,7 +60,7 @@ class Team {
                     currentData: this,
                     currentUpdateLog: await this.log('updateLog'),
                 })
-console.log('processed data', data)
+
                 try {
                     const [ result ] = await mysql.execute(query.teams.update(data, { id }))
                     if (result.affectedRows == 1) modified = true

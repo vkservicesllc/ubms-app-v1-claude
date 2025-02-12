@@ -21,8 +21,9 @@ export default class {
             if (_id) {
                 const team = await Team.data(res.session, { _id })
                 if (!team) return throwErr.server(res, errMsg)
-
-                ({ error } = await team.modify(res.session, req.body))
+                else {
+                    ({ error } = await team.modify(res.session, req.body))
+                }
             } else {
                 ({ error } = await Team.create(res.session, req.body))
             }

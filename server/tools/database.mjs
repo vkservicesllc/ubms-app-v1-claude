@@ -44,8 +44,20 @@ export function processData(data = {}, options = {}) {
 
         if (updateLog && field in currentData) {
             if (currentValue !== value) {
-                updateLog[0].data[field] = value && encData ? encrypt(value) : value
-                updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : currentValue
+                updateLog[0].data[field] = value && encData
+                    ? encrypt(value)
+                    : (
+                        typeof value == 'string'
+                            ? value.replace(/"/g, '\\"')
+                            : value
+                    )
+                updateLog[0].oldData[field] = currentValue && encData
+                    ? encrypt(currentValue)
+                    : (
+                        typeof currentValue == 'string'
+                            ? currentValue.replace(/"/g, '\\"')
+                            : currentValue
+                    )
             }
         }
 
@@ -60,7 +72,7 @@ export function processData(data = {}, options = {}) {
         if (currentUpdateLog)
             updateLog = updateLog.concat(currentUpdateLog)
 
-        data.updateLog = JSON.stringify(updateLog)
+        data.updateLog = JSON.stringify(updateLog).replace(/(?<!\\)\\"/g, '\\\\"')
     }
 
     return data

@@ -1,3 +1,4 @@
+import escapeHTML from '/modules/assets/html.mjs'
 import { teamNameEvent, teamDescEvent } from '/modules/events/team.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import inputLength from '/modules/registry/length.mjs'
@@ -109,8 +110,8 @@ const displayTeams = () => {
                 html += '<div class="card">'
                 html += '<div class="card-content">'
 
-                html += `<p class="title"><a class="team-edit" data-team-id="${_id}">${name}</a></p>`
-                if (description) html += `<p class="subtitle has-text-primary-30 mt-2">${description}</p>`
+                html += `<p class="title"><a class="team-edit" data-team-id="${_id}">${escapeHTML(name)}</a></p>`
+                if (description) html += `<p class="subtitle has-text-primary-30 mt-2">${escapeHTML(description)}</p>`
 
                 html += '<div class="field is-grouped is-grouped-multiline">'
 
