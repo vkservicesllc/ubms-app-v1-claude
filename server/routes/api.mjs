@@ -204,7 +204,27 @@ router.post('/team/:_id', User.verify, adminBranchOnly, superAdminUserOnly, asyn
     try {
         const { _id } = req.params
 
-        res.send({ data: await Team.data(res.session, { _id })})
+        res.send({ data: await Team.data(res.session, { _id }) })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+router.delete('/team/:_id', User.verify, adminBranchOnly, superAdminUserOnly, async (req, res) => {
+    try {
+        let deleted = false, error
+        const { _id } = req.params
+        const team = await Team.data(res.session, { _id })
+
+        try {
+            ({ deleted, error } = await team.delete(res.session))
+        } catch (err) {
+            console.error(err)
+            error = 'DB Error: Failed to delete Team'
+        }
+
+        res.send({ deleted, error })
     } catch (err) {
         throwErr.server(res, null, err, false)
     }

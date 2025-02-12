@@ -72,9 +72,9 @@ $button.delete.click(function() {
         const _id = $(`#${id}`).val()
 
         $.ajax({
-            url: `/api/team/delete/${_id}`,
-            method: 'POST',
-            success(response) { if (response.success) location.reload() },
+            url: `/api/team/${_id}`,
+            method: 'DELETE',
+            success(response) { if (response.deleted) location.reload() },
         })
     }
 })

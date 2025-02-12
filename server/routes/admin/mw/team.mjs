@@ -20,6 +20,8 @@ export default class {
 
             if (_id) {
                 const team = await Team.data(res.session, { _id })
+                if (!team) return throwErr.server(res, errMsg)
+
                 // modify
             } else {
                 ({ error } = await Team.create(res.session, req.body))
@@ -35,7 +37,16 @@ export default class {
 
 
     static delete = async (req, res) => {
-        try {} catch (err) {
+        try {
+            const { _id } = req.body
+            const team = await Team.data(res.session, { _id })
+            if (!team) return throwErr.server(res, errMsg)
+
+            const { error } = await team.delete(res.session)
+            if (error) return throwErr.server(res, error)
+
+            res.redirect(url)
+        } catch (err) {
             throwErr.server(res, null, err)
         }
     }

@@ -32,9 +32,48 @@ class Team {
 
         if (!light) {
         
-            this.id = async () => (await mysql.execute(query.companies.select('id', {
+            this.id = async () => (await mysql.execute(query.teams.select('id', {
                 match: { id: Team.matchIdHash(this._id) },
             })))[0][0].id
+
+
+            this.log = async field => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+
+                let log = (await mysql.execute(query.teams.select(fields, {
+                    match: { id: Team.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
+
+
+            this.delete = async session => {
+                let deleted = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { deleted, error }
+
+                const id = await this.id()
+
+                try {
+                    const [ result ] = await mysql.execute(query.teams.delete({ id }))
+                    if (result.affectedRows > 0) deleted = true
+                } catch(err) {
+                    console.error(err)
+                    error = 'DB Error'
+                }
+
+                if (error) return { deleted, error }
+
+                const log = await this.log()
+                for (const prop in log) this[prop] = log[prop]
+                //? also may consider history of users and companies
+
+                await logDeletion(session, 'teams', this, { id })
+
+                return { deleted }
+            }
 
         }
     }
@@ -59,11 +98,16 @@ class Team {
 
         data.createdBy = await session.user.id()
 
-        const [ result ] = await mysql.execute(query.teams.insert(data))
-        const id = result.insertId
+        let id
+        try {
+            const [ result ] = await mysql.execute(query.teams.insert(data))
+            id = result.insertId
 
-        if (id) created = true
-        else return { created, error: 'DB Error' }
+            if (id) created = true
+        } catch (err) {
+            console.error(err)
+            return { created, error: 'DB Error' }
+        }
 
         return { created, data: await Team.data(session, { id })}
     }

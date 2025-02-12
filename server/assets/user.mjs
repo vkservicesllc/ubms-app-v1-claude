@@ -93,13 +93,13 @@ class User extends Person {
             this.log = async (field, deleted = false) => {
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
                 if (deleted) fields.push('deletedBy', 'deletedAt')
-        
+
                 let log = (await mysql.execute(query.users.select(fields, {
                     match: { id: User.matchIdHash(this._id) },
                 })))[0][0]
-        
+
                 if (fields.includes(field)) log = log[field]
-        
+
                 return log
             }
 
@@ -110,7 +110,7 @@ class User extends Person {
 
                 const user = await User.data(session, { id })
                 const { name, email } = user
-        
+
                 return { name, email }
             }
 

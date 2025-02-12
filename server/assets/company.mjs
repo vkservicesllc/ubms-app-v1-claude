@@ -332,7 +332,7 @@ class Company {
                         company = await Company.data(session, { _id: this._id })
 
                     if (file && data) await logDeletion(session, file, data, { [idProp]: id }) 
-                }  
+                }
 
                 return { deleted, data: company }
             }
