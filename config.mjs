@@ -61,6 +61,7 @@ const addrBook = {}
 import defaultRoute from './server/routes/default.mjs'
 
 import adminRoute from './server/routes/admin.mjs'
+import adminApiRoute from './server/routes/admin/api.mjs'
 import adminBusinessRoute from './server/routes/admin/business.mjs'
 import adminOnlineRoute from './server/routes/admin/online.mjs'
 import adminDevToolsRoute from './server/routes/admin/dev-tools.mjs'
@@ -99,6 +100,7 @@ const apps = {
             { url: '/business', router: adminBusinessRoute },
             { url: '/online', router: adminOnlineRoute },
             { url: '/dev-tools', router: adminDevToolsRoute },
+            { url: '/api', router: adminApiRoute },
             { url: '/resource', router: adminResourceRoute },
         ],
         session: {

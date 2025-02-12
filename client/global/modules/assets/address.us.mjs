@@ -1,3 +1,7 @@
+import escapeHTML from './html.mjs'
+
+
+
 export default class Address {
     constructor(data) {
         this.address1 = data.address1
@@ -21,12 +25,12 @@ export default class Address {
 
         const divider = !inline ? '<br/>' : ', '
 
-        let html = `<span class="us-address us-addr1">${address1}</span>`
+        let html = `<span class="us-address us-addr1">${escapeHTML(address1)}</span>`
         if (address2)
-            html += `${divider}<span class="us-address us-addr2">${address2}</span>`
-        html += `${divider}<span class="us-address us-city">${city}</span>,`
+            html += `${divider}<span class="us-address us-addr2">${escapeHTML(address2)}</span>`
+        html += `${divider}<span class="us-address us-city">${escapeHTML(city)}</span>,`
         html += ` <span class="us-address us-state">${state[stateIdx]}</span>`
-        html += ` <span class="us-address us-zip">${zip}</span>`
+        html += ` <span class="us-address us-zip">${escapeHTML(zip)}</span>`
 
         return html
     }

@@ -1,3 +1,4 @@
+import escapeHTML from '/modules/assets/html.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { tel as formatTel } from '/modules/tools/formatter.mjs'
 import { nameEvent } from '/modules/events/person.mjs'
@@ -271,7 +272,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 data: 'name',
                 title: 'Name',
                 render(data) {
-                    return `<span class="has-text-weight-semibold">${data}</span>`
+                    return `<span class="has-text-weight-semibold">${escapeHTML(data)}</span>`
                 },
             },
 
@@ -282,7 +283,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 render(data, type, row) {
                     if (row.decliner) return '<small class="has-text-danger">N/A</small>'
 
-                    return data
+                    return escapeHTML(data)
                 },
             },
 
@@ -481,7 +482,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                         return $(this).val() == condition[0]
                     }).prop('checked', true)
 
-                    $title.userCondition.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${name}</strong>`)
+                    $title.userCondition.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${escapeHTML(name)}</strong>`)
                     $('#user-condition-modal').addClass('is-active')
                 },
             })
@@ -498,7 +499,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     $id.val(_id)
 
                     if (src == 'delete') {
-                        $title.deleteUser.html(`<small class="has-text-danger is-size-6">Delete User</small> <strong>${name}</strong>`)
+                        $title.deleteUser.html(`<small class="has-text-danger is-size-6">Delete User</small> <strong>${escapeHTML(name)}</strong>`)
 
                         return $('#user-delete-modal').addClass('is-active')
                     }
@@ -514,7 +515,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     ]
                     let disabled = false
 
-                    $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${name}</strong>`)
+                    $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${escapeHTML(name)}</strong>`)
                     $usernameHidden.val(username)
                     $emailHidden.val(email)
                     if (status == 'D') {

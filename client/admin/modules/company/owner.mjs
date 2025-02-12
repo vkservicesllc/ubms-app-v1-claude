@@ -1,4 +1,5 @@
 import Person from '../assets/person.mjs'
+import escapeHTML from '../assets/html.mjs'
 import { nameEvent, ssnEvent } from '../events/person.mjs'
 import { inputEvent, selectEvent } from '../events/form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
@@ -150,7 +151,7 @@ export const openModifyModal = _id => {
         method: 'POST',
         success(data) {
             $title.form
-                .html(`<small class="has-text-grey is-size-6">Modify Owner</small> <strong>${new Person(data).fullName()}</strong>`)
+                .html(`<small class="has-text-grey is-size-6">Modify Owner</small> <strong>${escapeHTML(new Person(data).fullName())}</strong>`)
             $(`#${id}`).val(_id)
             $updateSince.attr('min', data.dob)
 
@@ -168,7 +169,7 @@ export const openModifyPhoneModal = _id => {
         method: 'POST',
         success(data) {
             $title.phone
-                .html(`<small class="has-text-grey is-size-6">Modify Phone for Owner</small> <strong>${new Person(data).fullName()}</strong>`)
+                .html(`<small class="has-text-grey is-size-6">Modify Phone for Owner</small> <strong>${escapeHTML(new Person(data).fullName())}</strong>`)
             $(`#${ownerPhoneId}`).val(_id)
             $modal.phone.addClass('is-active')
         },
@@ -183,7 +184,7 @@ export const openDeleteModal = _id => {
         method: 'POST',
         success(data) {
             $title.delete
-                .html(`<small class="has-text-danger is-size-6">Delete Owner</small> <strong>${new Person(data).fullName()}</strong>`)
+                .html(`<small class="has-text-danger is-size-6">Delete Owner</small> <strong>${escapeHTML(new Person(data).fullName())}</strong>`)
             $(`#${deleteOwnerId}`).val(_id)
             $modal.delete.addClass('is-active')
         },

@@ -1,5 +1,6 @@
 import Person from './assets/person.mjs'
 import Address from './assets/address.us.mjs'
+import escapeHTML from './assets/html.mjs'
 import { tel as formatTel } from './tools/formatter.mjs'
 
 
@@ -44,6 +45,8 @@ $.when(statusReq).done(statusRes => {
                 companies.forEach((company, i) => {
                     const { owner} = company
                     const { name } = owner
+
+                    owner.name = escapeHTML(owner.name)
                     if (dublicates.includes(name))
                         owner.name += ` <small class="has-text-grey">(${owner.age} yo)</small>`
                 })
@@ -86,7 +89,7 @@ $.when(statusReq).done(statusRes => {
                 orderable: false,
                 width: '5%',
                 render(data, type, row) {
-                    return `<span class="box py-0" data-target="${row._id}">${data}</span>`
+                    return `<span class="box py-0" data-target="${row._id}">${escapeHTML(data)}</span>`
                 },
                 createdCell(cell, data, row) {
                     const { style } = row
@@ -105,7 +108,7 @@ $.when(statusReq).done(statusRes => {
                 data: 'name',
                 title: 'Name',
                 render(data) {
-                    return `<span class="has-text-weight-semibold">${data}</span>`
+                    return `<span class="has-text-weight-semibold">${escapeHTML(data)}</span>`
                 },
             },
 

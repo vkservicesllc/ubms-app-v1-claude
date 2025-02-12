@@ -1,4 +1,5 @@
 import Person from './assets/person.mjs'
+import escapeHTML from './assets/html.mjs'
 import { tel as formatTel } from './tools/formatter.mjs'
 import { openModifyModal, openDeleteModal, closeModals } from './company/owner.mjs'
 
@@ -31,7 +32,7 @@ const columns = [
         data: null,
         title: 'Last Name',
         render(data, type, row) {
-            return `<span class="has-text-weight-semibold">${new Person(row).fullLastName()}</span>`
+            return `<span class="has-text-weight-semibold">${escapeHTML(new Person(row).fullLastName())}</span>`
         },
     },
 
@@ -39,7 +40,7 @@ const columns = [
         data: null,
         title: 'First Name',
         render(data, type, row) {
-            return `<span class="has-text-weight-semibold">${new Person(row).fullFirstName()}</span>`
+            return `<span class="has-text-weight-semibold">${escapeHTML(new Person(row).fullFirstName())}</span>`
         },
     },
 
