@@ -77,6 +77,7 @@ class Team {
                 if (error) return { deleted, error }
 
                 const id = await this.id()
+                const log = await this.log()
 
                 try {
                     const [ result ] = await mysql.execute(query.teams.delete({ id }))
@@ -87,8 +88,6 @@ class Team {
                 }
 
                 if (error) return { deleted, error }
-
-                const log = await this.log()
                 for (const prop in log) this[prop] = log[prop]
                 //? also may consider list of users and companies
 

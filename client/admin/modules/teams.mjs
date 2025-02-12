@@ -150,7 +150,7 @@ const displayTeams = () => {
                         $(`#${catId}`).val(category)
                         $(`#${descId}`).val(description)
 
-                        $title.upsert.html(`<small>Modify Team</small> <strong>${name}</strong>`)
+                        $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
                         $button.upsert.html('Update')
                         if (!companies && !users) $button.delete.show()
                         countDescChars(description)
