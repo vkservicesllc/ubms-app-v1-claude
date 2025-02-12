@@ -50,6 +50,28 @@ class Team {
             }
 
 
+            this.modify = async (session, data) => {
+                let modified = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { modified, error }
+
+                const id = await this.id()
+                data = processData(data, {
+                    modifiedBy: await session.user.id(),
+                    currentData: this,
+                    currentUpdateLog: await this.log('updateLog'),
+                })
+console.log('processed data', data)
+                try {
+                    const [ result ] = await mysql.execute(query.teams.update(data, { id }))
+                    if (result.affectedRows == 1) modified = true
+                } catch (err) {
+                    error = 'DB Error'
+                }
+
+                return { modified, error, data: await Team.data(session, { id } ) }
+            }
+
+
             this.delete = async session => {
                 let deleted = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { deleted, error }
@@ -68,7 +90,7 @@ class Team {
 
                 const log = await this.log()
                 for (const prop in log) this[prop] = log[prop]
-                //? also may consider history of users and companies
+                //? also may consider list of users and companies
 
                 await logDeletion(session, 'teams', this, { id })
 
