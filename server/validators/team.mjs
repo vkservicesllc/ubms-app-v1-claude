@@ -10,7 +10,6 @@ const validateName = () => {
 
     return body('name')
         .trim()
-        .escape()
         .customSanitizer(value => value.replace('&amp;', '&').replace('&#x27;', "'"))
         .notEmpty()
             .withMessage('Team Name can not be empty')
@@ -23,7 +22,6 @@ const validateDesc = () => {
 
     return body('description')
         .trim()
-        .escape()
         .customSanitizer(value => value || null)
         .optional({ nullable: true })
         .isLength({ max })

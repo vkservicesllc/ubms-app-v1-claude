@@ -13,7 +13,6 @@ const validateUsername = () => {
 
     return body('username')
         .trim()
-        .escape()
         .notEmpty()
             .withMessage('Username can not be empty')
         .customSanitizer(value => patterns.replace(value, 'username'))
@@ -36,7 +35,6 @@ const validatePassword = () => {
 
 const validateToken = () => body('token')
     .trim()
-    .escape()
     .notEmpty()
         .withMessage('Token can not be empty')
     .isNumeric()
@@ -50,7 +48,6 @@ const validateStatus = () => {
 
     return body('status')
         .trim()
-        .escape()
         .notEmpty()
             .withMessage('Status can not be empty')
         .isIn(list)
@@ -60,7 +57,6 @@ const validateStatus = () => {
 
 const validateLocation = () => body('location')
     .trim()
-    .escape()
     .notEmpty()
         .withMessage('Location can not be empty')
     .isIn(Object.keys(User.locationList))
@@ -72,7 +68,6 @@ const validateCondition = () => {
 
     return body('condition')
         .trim()
-        .escape()
         .notEmpty()
             .withMessage('Location can not be empty')
         .isIn(list)

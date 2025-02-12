@@ -69,7 +69,6 @@ export const validateName = field => {
 
     let chain = body(field)
         .trim()
-        .escape()
         .customSanitizer(value => patterns.replace(value, 'name'))
         .customSanitizer(value => value || null)
 
@@ -90,7 +89,6 @@ export const validateName = field => {
 
 export const validatePrefix = field => body(field || 'prefix')
     .trim()
-    .escape()
     .customSanitizer(value => value || null)
     .optional({ nullable: true })
     .isIn(Object.keys(Person.prefix))
@@ -99,7 +97,6 @@ export const validatePrefix = field => body(field || 'prefix')
 
 export const validateSuffix = field => body(field || 'suffix')
     .trim()
-    .escape()
     .customSanitizer(value => value || null)
     .optional({ nullable: true })
     .isIn(Object.keys(Person.suffixList))
@@ -137,7 +134,6 @@ export const validateDob = (field, maxAge = 16, ageErrMsg) => {
 export const validateNumberId = (field, maxLength, required = false, numericOnly = true) => {
     let chain = body(field)
         .trim()
-        .escape()
         .customSanitizer(value => value || null)
 
     if (!required) chain = chain.optional({ nullable: true })
@@ -168,7 +164,6 @@ export const validateNumberId = (field, maxLength, required = false, numericOnly
 export const validateSsn = (field, required = false) => {
     let chain = body(field || 'ssn')
         .trim()
-        .escape()
         .customSanitizer(value => value ? strip(value) : null)
 
     if (!required) chain = chain.optional({ nullable: true })
@@ -189,7 +184,6 @@ export const validateSsn = (field, required = false) => {
 export const validateEmail = (field, required = false) => {
     let chain = body(field || 'email')
         .trim()
-        .escape()
         .customSanitizer(value => value ? patterns.replace(value, 'email') : null)
 
     if (!required) chain = chain.optional({ nullable: true })
@@ -210,7 +204,6 @@ export const validateEmail = (field, required = false) => {
 export const validateTel = (field, required = false) => {
     let chain = body(field)
         .trim()
-        .escape()
         .customSanitizer(value => value ? strip(value) : null)
 
     if (!required) chain = chain.optional({ nullable: true })
@@ -232,7 +225,6 @@ export const validateAddr1 = (field, required = true) => {
     /* Required by default but can be set to optional if form assumes optional address */
     let chain = body(field)
         .trim()
-        .escape()
         .customSanitizer(value => {
             if (!value) return null
 
@@ -256,7 +248,6 @@ export const validateAddr1 = (field, required = true) => {
 
 export const validateAddr2 = field => body(field)
     .trim()
-    .escape()
     .customSanitizer(value => {
         if (!value) return null
 
@@ -271,7 +262,6 @@ export const validateAddr2 = field => body(field)
 export const validateZip = (field, required = true) => {
     let chain = body(field)
         .trim()
-        .escape()
         .customSanitizer(value => {
             if (!value) return null
 
@@ -300,7 +290,6 @@ export const validateZip = (field, required = true) => {
 export const validateCity = (field, required = true) => {
     let chain = body(field)
         .trim()
-        .escape()
         .customSanitizer(value => {
             if (!value) return null
 
@@ -322,7 +311,6 @@ export const validateCity = (field, required = true) => {
 export const validateStateUS = (field, required = true) => {
     let chain = body(field)
         .trim()
-        .escape()
         .customSanitizer(value => value || null)
 
     if (!required) chain = chain.optional({ nullable: true })

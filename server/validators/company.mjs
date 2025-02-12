@@ -24,7 +24,6 @@ const { body } = require('express-validator')
 
 export const validateCatId = () => body('catId')
     .trim()
-    .escape()
     .notEmpty()
         .withMessage('Category can not be empty')
     .isIn(Object.keys(Company.categoryList))
@@ -32,7 +31,6 @@ export const validateCatId = () => body('catId')
 
 const validateEin = () => body('ein')
     .trim()
-    .escape()
     .notEmpty()
         .withMessage('EIN can not be empty')
     .customSanitizer(value => strip(value))
@@ -43,7 +41,6 @@ const validateEin = () => body('ein')
 
 const validateDuns = () => body('duns')
     .trim()
-    .escape()
     .customSanitizer(value => strip(value) || null)
     .optional({ nullable: true })
     .isNumeric()
@@ -57,7 +54,6 @@ const validateBusName = () => {
 
     return body('busName')
         .trim()
-        .escape()
         .customSanitizer(value => patterns.replace(value, 'busName'))
         .notEmpty()
             .withMessage('Busness name can not be empty')
@@ -67,7 +63,6 @@ const validateBusName = () => {
 
 const validateCoType = () => body('coType')
     .trim()
-    .escape()
     .notEmpty()
         .withMessage('Company type can not be empty')
     .isIn(Object.keys(Company.typeList.full()))
@@ -79,7 +74,6 @@ const validateAlias = () => {
 
     return body('alias')
         .trim()
-        .escape()
         .customSanitizer(value => value.replace(/[^A-Za-z]/, '').toUpperCase())
         .notEmpty()
             .withMessage('Alias name can not be empty')
