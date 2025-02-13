@@ -19,15 +19,17 @@ import db from '../settings/mysql.mjs'
 
 /* Assets */
 import Person from '../../client/global/modules/assets/person.mjs'
+import Team from './team.mjs'
 
 /* Tools */
-import { reSuper } from '../../client/global/modules/tools/object.mjs'
-import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 import Query, { hash, matchHash } from '../tools/query.mjs'
 import recognizeApi from '../tools/api.mjs'
 import transporter, { sender } from '../tools/nodemailer.mjs'
 import { generateRandomString } from '../tools/string.mjs'
 import { processData } from '../tools/database.mjs'
+import { reSuper } from '../../client/global/modules/tools/object.mjs'
+import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
+import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 
 /* Support */
 import permissions from './user/permissions.mjs'
@@ -210,6 +212,58 @@ class User extends Person {
                 result.labels = labels
         
                 return result
+            }
+
+
+            this.teams = async (session, catId ) => {
+                if (!session?.user?.DS && session?.user._id != this._id) return
+
+                const { DS } = this
+                const data = { all: [], available: [], applied: [] }
+                
+
+                const teams = await Team.list(session, { catId })
+                teams.map(team => {
+                    const { _id, name } = team
+
+                    data.all.push({ _id, name, applied: DS })
+                    if (DS) data.applied.push({ _id, name })
+                })
+
+                if (!DS) {
+                    const userId = await this._id
+                    const appliedIds = []
+
+                    const batch = [
+                        {
+                            table: 'teams_users',
+                            match: { userId },
+                        },
+                        {
+                            table: 'teams',
+                            fields: [ Team.hashId(), 'name' ],
+                            join: [ 'id', 'teamId' ],
+                            match: { catId },
+                        },
+                    ]
+
+                    data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                    data.applied.forEach(team => appliedIds.push(team._id))
+
+                    teams.map((team, i) => {
+                        const { _id, name } = team
+    
+                        data.all.push({ _id, name, applied: false })
+                        if (appliedIds.includes(_id)) data.all[i].applied = true
+                        else data.available.push({ _id, name })
+                    })
+                }
+
+                data.all = sortArrayByObjectKey(data.all, 'name')
+                data.applied = sortArrayByObjectKey(data.applied, 'name')
+                data.available = sortArrayByObjectKey(data.available, 'name')
+
+                return data
             }
 
 
@@ -410,42 +464,6 @@ class User extends Person {
                 ))
 
                 this.lastUrl = lastUrl
-            }
-
-
-            this.teams = async (params = {}) => {
-                const id = await this.id()
-                let { plainId } = params
-                if (typeof plainId != 'boolean') plainId = false
-
-                const teams = { available: [], current: [] }
-                const fields = [ [ plainId ? 'teamId' : Team.hashId(), 'id' ] ]
-
-                teams.available = (await mysql.execute(
-                    new Query(db.business, 'teams').select([ Team.hashId(), 'name' ])
-                ))[0]
-
-                teams.current = (await mysql.execute(
-                    Query.select(db.business, [
-                        {
-                            table: 'teams_users',
-                            fields,
-                            match: { userId: id },
-                        },
-                        {
-                            table: 'teams',
-                            fields: 'name',
-                            join: [ 'id', 'teamId' ],
-                        },
-                    ])
-                ))[0]
-
-                teams.current.forEach(currentTeam => {
-                    const idx = teams.available.findIndex(availableTeam => availableTeam._id == currentTeam._id)
-                    if (idx > -1) teams.available.splice(idx, 1)
-                })
-
-                return teams
             }
 
         }

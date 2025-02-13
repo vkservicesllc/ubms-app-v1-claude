@@ -93,6 +93,19 @@ router.post('/companies', User.verify, async (req, res) => {
 })
 
 
+router.post('/company/:_id/teams', User.verify, superAdminUserOnly, async (req, res) => {
+    try {
+        const { _id } = req.params
+        const company = await Company.data(res.session, { _id })
+        const companyTeams = await company.teams(res.session)
+
+        res.send({ data: companyTeams })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
 router.post('/company-owners', User.verify, superAdminUserOnly, async (req, res) => {
     try {
         res.send({ data: await Owner.list(res.session) })

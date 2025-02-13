@@ -10,18 +10,18 @@ import db from '../settings/mysql.mjs'
 
 /* Assets */
 import Individual from './individual.mjs'
-import Person from '../../client/global/modules/assets/person.mjs'
+import Team from './team.mjs'
 import Address from '../../client/global/modules/assets/address.us.mjs'
 import { sessionError } from './user.mjs'
 
 /* Tools */
-import { reSuper } from '../../client/global/modules/tools/object.mjs'
-import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
-import { ein as formatEin, ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
 import Query, { hash, matchHash } from '../tools/query.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
-import strip from '../../client/global/modules/tools/formatter.mjs'
 import { encrypt } from '../tools/crypto.mjs'
+import { reSuper } from '../../client/global/modules/tools/object.mjs'
+import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
+import strip, { ein as formatEin, ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
+import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 
 const mysql = require('../tools/mysql')
 
@@ -178,6 +178,48 @@ class Company {
                     match: { companyId: Company.matchIdHash(this._id) },
                     sort,
                 })))[0]
+            }
+
+
+            this.teams = async session => {
+                if (!session?.user?.DS) return
+
+                const companyId = await this.id()
+                const { catId } = this
+                const data = { all: [], available: [], applied: [] }
+                const appliedIds = []
+
+                const teams = await Team.list(session, { catId })
+
+                const batch = [
+                    {
+                        table: 'teams_companies',
+                        match: { companyId },
+                    },
+                    {
+                        table: 'teams',
+                        fields: [ Team.hashId(), 'name' ],
+                        join: [ 'id', 'teamId' ],
+                        match: { catId },
+                    },
+                ]
+
+                data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                data.applied.forEach(team => appliedIds.push(team._id))
+
+                teams.map((team, i) => {
+                    const { _id, name } = team
+
+                    data.all.push({ _id, name, applied: false })
+                    if (appliedIds.includes(_id)) data.all[i].applied = true
+                    else data.available.push({ _id, name })
+                })
+
+                data.all = sortArrayByObjectKey(data.all, 'name')
+                data.applied = sortArrayByObjectKey(data.applied, 'name')
+                data.available = sortArrayByObjectKey(data.available, 'name')
+
+                return data
             }
 
 

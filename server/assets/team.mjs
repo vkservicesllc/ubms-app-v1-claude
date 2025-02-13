@@ -9,6 +9,7 @@ import { sessionError } from './user.mjs'
 /* Tools */
 import Query, { hash, matchHash } from '../tools/query.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
+import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 
 const mysql = require('../tools/mysql')
 
@@ -87,9 +88,7 @@ class Team {
                         ]
 
                         data[type].applied = (await mysql.execute(Query.select(db.business, batch)))[0]
-                        data[type].applied.forEach(company => {
-                            appliedIds.push(company._id)
-                        })
+                        data[type].applied.forEach(company => appliedIds.push(company._id))
 
                         companies.map((company, i) => {
                             const { _id, name } = company
@@ -140,6 +139,10 @@ class Team {
                         break
 
                 }
+
+                data[type].all = sortArrayByObjectKey(data[type].all, 'name')
+                data[type].applied = sortArrayByObjectKey(data[type].applied, 'name')
+                data[type].available = sortArrayByObjectKey(data[type].available, 'name')
 
                 return data
             }

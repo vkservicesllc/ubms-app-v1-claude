@@ -30,21 +30,21 @@ if ($('#teams-card-content').length) {
     const _id = $(`#${id}`).val()
     const $teams = {
         available: $('#available-teams'),
-        current: $('#company-teams'),
+        applied: $('#company-teams'),
     }
 
-    $.ajax(`/api/teams/company/${_id}`, {
+    $.ajax(`/api/company/${_id}/teams`, {
         method: 'POST',
-        success(response) {
+        success(response) { console.log(response)
             const { data: teams } = response
-            const $options = { available: '', current: '' }
+            const $options = { available: '', applied: '' }
             const option = '<option value=""></option>'
 
             teams.available.forEach(team => $options.available += `<option value="${team._id}">${team.name}</option>`)
-            teams.current.forEach(team => $options.current += `<option value="${team._id}">${team.name}</option>`)
+            teams.applied.forEach(team => $options.applied += `<option value="${team._id}">${team.name}</option>`)
 
             $teams.available.html($options.available || option)
-            $teams.current.html($options.current || option)
+            $teams.applied.html($options.applied || option)
 
             if (urlParams.has('teams')) {
                 $('[data-section=teams]').addClass('is-active')

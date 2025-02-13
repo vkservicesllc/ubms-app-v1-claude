@@ -155,8 +155,8 @@ const displayTeams = () => {
                             if (item.applied) attr += ' checked'
 
                             list += '<p><label class="checkbox">'
-                            list += `<input type="checkbox"${attr} />&nbsp; ${item.name}`
-                            if (item.desc) list += ` <small><i>(${item.desc})</i></small>`
+                            list += `<input type="checkbox"${attr} />&nbsp; ${escapeHTML(item.name)}`
+                            if (item.desc) list += ` <small><i>(${escapeHTML(item.desc)})</i></small>`
                             list += '</label></p>'
                         })
                         list += '</div>'
