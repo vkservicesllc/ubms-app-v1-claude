@@ -2,6 +2,7 @@
 import db from '../settings/mysql.mjs'
 
 /* Assets */
+import User from './user.mjs'
 import Company from './company.mjs'
 import { sessionError } from './user.mjs'
 
@@ -58,6 +59,8 @@ class Team {
                 const data = {
                     [type]: { all: [], available: [], applied: [] },
                 }
+                const appliedIds = []
+                let batch
 
                 switch (type) {
 
@@ -65,7 +68,7 @@ class Team {
                         const { catId } = this
                         const companies = await Company.list(session, { catId, confirmed: true })
 
-                        const batch = [
+                        batch = [
                             {
                                 table: 'teams_companies',
                                 match: { teamId },
@@ -83,22 +86,57 @@ class Team {
                             },
                         ]
 
-                        const all = []
-                        const available = []
-                        const applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                        data[type].applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                        data[type].applied.forEach(company => {
+                            appliedIds.push(company._id)
+                        })
 
                         companies.map((company, i) => {
                             const { _id, name } = company
 
-                            all.push({ _id, name, applied: false })
-                            if (_id == applied._id) all[i].applied = true
-                            else available.push({ _id, name })
+                            data[type].all.push({ _id, name, applied: false })
+                            if (appliedIds.includes(_id)) data[type].all[i].applied = true
+                            else data[type].available.push({ _id, name })
                         })
-
-                        data[type] = { all, available, applied }
                         break
 
                     case 'users':
+                        const status = [ 'U', 'A' ]
+                        const users = await User.list(session, { status })
+
+                        batch = [
+                            {
+                                table: 'teams_users',
+                                match: { teamId },
+                            },
+                            {
+                                db: db.online,
+                                table: 'users',
+                                fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'username' ],
+                                join: [ 'id', 'userId' ],
+                                match: { status },
+                            },
+                        ]
+
+                        data[type].applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                        data[type].applied.forEach(user => {
+                            user = new User(user)
+                            user = {
+                                _id: user._id,
+                                name: user.name,
+                                desc: user.username,
+                            }
+
+                            appliedIds.push(user._id)
+                        })
+
+                        users.map((user, i) => {
+                            const { _id, name, username } = user
+
+                            data[type].all.push({ _id, name, desc: username, applied: false })
+                            if (appliedIds.includes(_id)) data[type].all[i].applied = true
+                            else data[type].available.push({ _id, name, desc: username })
+                        })
                         break
 
                 }
