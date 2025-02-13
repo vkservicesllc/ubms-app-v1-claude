@@ -2,6 +2,7 @@
 import db from '../settings/mysql.mjs'
 
 /* Assets */
+import Company from './company.mjs'
 import { sessionError } from './user.mjs'
 
 /* Tools */
@@ -50,9 +51,67 @@ class Team {
             }
 
 
+            this.data = async (session, type) => {
+                if (!session?.user?.DS) return
+
+                const teamId = await this.id()
+                const data = {
+                    [type]: { all: [], available: [], applied: [] },
+                }
+
+                switch (type) {
+
+                    case 'companies':
+                        const { catId } = this
+                        const companies = await Company.list(session, { catId, confirmed: true })
+
+                        const batch = [
+                            {
+                                table: 'teams_companies',
+                                match: { teamId },
+                            },
+                            {
+                                table: 'companies',
+                                fields: Company.hashId(),
+                                join: [ 'id', 'companyId' ],
+                                match: { catId },
+                            },
+                            {
+                                table: 'company_names',
+                                fields: { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
+                                join: [ 'companyId', 'id', 1 ],
+                            },
+                        ]
+
+                        const all = []
+                        const available = []
+                        const applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+
+                        companies.map((company, i) => {
+                            const { _id, name } = company
+
+                            all.push({ _id, name, applied: false })
+                            if (_id == applied._id) all[i].applied = true
+                            else available.push({ _id, name })
+                        })
+
+                        data[type] = { all, available, applied }
+                        break
+
+                    case 'users':
+                        break
+
+                }
+
+                return data
+            }
+
+
             this.modify = async (session, data) => {
                 let modified = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { modified, error }
+
+                if (this.count.companies) delete data.catId
 
                 const id = await this.id()
                 data = processData(data, {

@@ -558,9 +558,9 @@ class Company {
         if (DS && branch == 'admin') {
             const { closed, active, confirmed } = filter
 
-            if (typeof closed == 'boolean') batch[0].match.until = { null: !closed }
-            if (typeof active == 'boolean') batch[0].match.active = active
-            if (typeof confirmed == 'boolean') batch[0].match.confirmed = confirmed
+            if (typeof closed == 'boolean') match.companies.until = { null: !closed }
+            if (typeof active == 'boolean') match.companies.active = active
+            if (typeof confirmed == 'boolean') match.companies.confirmed = confirmed
         } else {
             match.companies.until = null
             match.companies.confirmed = true

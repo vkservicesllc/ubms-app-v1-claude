@@ -157,5 +157,30 @@ router.delete('/team/:_id', User.verify, superAdminUserOnly, async (req, res) =>
 })
 
 
+router.post('/team/:_id/:relType', User.verify, superAdminUserOnly, async (req, res) => {
+    try {
+        let error
+        const { _id, relType } = req.params
+        const team = await Team.data(res.session, { _id })
+
+        let data = await team.data(res.session, relType)
+        if (!data) {
+            error = 'DB Error'
+            data = {
+                [relType]: {
+                    all: [],
+                    available: [],
+                    applied: [],
+                },
+            }
+        }
+
+        res.send({ data: { team, data, error } })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
 
 export default router

@@ -51,41 +51,15 @@ teamDescEvent({
     },
 })
 
-$('.delete').click(() => {
+const closeUpsert = () => {
     $modal.all.removeClass('is-active')
     $(`.${teamClass}`).val(null)
     $button.delete.hide()
     $button.upsert.html(null)
     $title.upsert.html(null)
+    $(`#${catId}`).attr('disabled', false)
     countDescChars()
-})
-
-$button.add.click(() => {
-    $title.upsert.html('<small>New Team</small>')
-    $button.upsert.html('Create')
-    $modal.upsert.addClass('is-active')
-})
-
-$button.delete.click(function() {
-    const name = $(`#current-${nameId}`).val()
-
-    if (confirm(`Confirm deletion: Are you sure you want to delete "${name}"!`)) {
-        const _id = $(`#${id}`).val()
-
-        $.ajax({
-            url: `/api/team/${_id}`,
-            method: 'DELETE',
-            success(response) { if (response.deleted) location.reload() },
-        })
-    }
-})
-
-$button.closeRel.click(() => {
-    $modal.relationship.removeClass('is-active')
-    $title.relationship.html(null)
-    $relationship.html(null)
-})
-
+}
 
 const displayTeams = () => {
     $('.team-edit').off('click')
@@ -148,6 +122,7 @@ const displayTeams = () => {
                         $(`#${id}`).val(_id)
                         $(`#current-${nameId}, #${nameId}`).val(name)
                         $(`#${catId}`).val(category)
+                        if (companies) $(`#${catId}`).attr('disabled', true)
                         $(`#${descId}`).val(description)
 
                         $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
@@ -164,14 +139,28 @@ const displayTeams = () => {
                 const _id = $(this).data('team-id')
 
                 $.ajax({
-                    url: `/api/team/${relType}/${_id}`,
+                    url: `/api/team/${_id}/${relType}`,
                     method: 'POST',
-                    success(response) {
-                        const { team, companies, users } = response.data
+                    success(response) { console.log(response.data)
+                        const { team, data, error } = response.data
                         const { _id, name } = team
 
-                        $title.relationship.html(`<small>Assign ${capitalizeFirst(relType)} to</small> <strong>${name}</strong>`)
-                        // list of items with checkboxes
+                        if (error) console.error(error)
+                        $title.relationship.html(`<small>Assign ${capitalizeFirst(relType)} to</small> <strong>${escapeHTML(name)}</strong>`)
+
+                        //* list of items with checkboxes
+                        let list = '<div class="checkboxes">'
+                        data[relType].all.forEach(item => {
+                            let attr = ` data-type="${relType}" data-id="${item._id}"`
+                            if (item.applied) attr += ' checked'
+
+                            list += '<p><label class="checkbox">'
+                            list += `<input type="checkbox"${attr} />&nbsp; ${item.name}`
+                            list += '</label></p>'
+                        })
+                        list += '</div>'
+
+                        $relationship.html(list)
                         $modal.relationship.addClass('is-active')
                     },
                 })
@@ -179,6 +168,42 @@ const displayTeams = () => {
         },
     })
 }
+
+$('.delete').click(closeUpsert)
+
+$button.add.click(() => {
+    $title.upsert.html('<small>New Team</small>')
+    $button.upsert.html('Create')
+    $modal.upsert.addClass('is-active')
+})
+
+$button.delete.click(function() {
+    const name = $(`#current-${nameId}`).val()
+
+    if (confirm(`Confirm deletion: Are you sure you want to delete "${name}"!`)) {
+        const _id = $(`#${id}`).val()
+
+        $.ajax({
+            url: `/api/team/${_id}`,
+            method: 'DELETE',
+            success(response) {
+                if (response.deleted) { // location.reload()
+                    displayTeams()
+                    closeUpsert()
+                }
+            },
+        })
+    }
+})
+
+$button.closeRel.click(() => {
+    $modal.relationship.removeClass('is-active')
+    $title.relationship.html(null)
+    $relationship.html(null)
+
+    displayTeams() // location.reload()
+})
+
 
 displayTeams()
 setInterval(displayTeams, interval)
