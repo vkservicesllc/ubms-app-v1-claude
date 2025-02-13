@@ -4,7 +4,7 @@ import moment from 'moment'
 import Company, { Owner } from '../../../assets/company.mjs'
 import Carrier from '../../../assets/carrier.mjs'
 import Address from '../../../../client/global/modules/assets/address.us.mjs'
-import { button as formButton, formLabel, formInput } from '../../../../client/global/modules/assets/html.mjs'
+import escapeHTML, { button as formButton, formLabel, formInput } from '../../../../client/global/modules/assets/html.mjs'
 
 /* HTML Builders */
 import { Label, Input, Select } from '../../../html/company.mjs'
@@ -384,7 +384,9 @@ const display = (data, ein) => {
     if (data.address)
         display.data.address = {
             physical: data.address.physical.html({ inline: false }),
-            mail: data.address.mail.zip ? data.address.mail.html({ inline: false }) : '<em class="has-text-grey has-text-weight-normal">Same as physical</em>',
+            mail: data.address.mail.zip
+                ? data.address.mail.html({ inline: false })
+                : '<em class="has-text-grey has-text-weight-normal">Same as physical</em>',
         }
 
     if (data.phone) {
@@ -496,7 +498,7 @@ export const companyById = async (req, res) => {
 
             step1 = 'Record'
             titlePfx = name
-            contentTitle = `<span class="has-text-weight-semibold is-size-4">${name}</span>`
+            contentTitle = `<span class="has-text-weight-semibold is-size-4">${escapeHTML(name)}</span>`
             contentTitle += ' &nbsp;&nbsp;<a id="delete-company-trigger"><i class="fas fa-trash-can has-text-danger is-size-6"></i></a>'
 
             steps.record = completedStep
@@ -791,6 +793,11 @@ export const companyById = async (req, res) => {
             css.card = {
                 minHeight: '455px',
             }
+        if (data.name) {
+            data.name = escapeHTML(data.name)
+            data.alias = escapeHTML(data.alias)
+        }
+        if (data.owner.name) data.owner.name = escapeHTML(data.owner.name)
 
         /* HBS Setup */
         hbs = hbs.set(key, { titlePfx })
@@ -847,6 +854,10 @@ export const companyByCategoryAndRoute = async (req, res) => {
             deleteId: Input.id(_companyId, { id: `delete-${companyId}` }),
             confirmAlias: Input.alias({ class: 'input', id: `confirm-${aliasId}` }),
         }
+
+        company.name = escapeHTML(company.name)
+        company.alias = escapeHTML(company.alias)
+        company.owner.name = escapeHTML(company.owner.name)
 
         const key = 'company'
         let { hbs } = res
