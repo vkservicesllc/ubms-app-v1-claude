@@ -142,8 +142,9 @@ columns.push({
         let cell = '<div class="dt-action">'
         if (!row.count.companies)
             cell += `<a class="has-text-danger delete-owner" data-id="${row._id}" title="Delete"><i class="fas fa-trash-can"></i></a>`
-        cell += `<a class="has-text-primary-35 edit-owner-phone" data-id="${row._id} title="Add/Modify Phone"><i class="fas fa-mobile-screen"></i></a>`
-        cell += `<a class="has-text-success-45 edit-owner" data-id="${row._id}" title="Modify"><i class="fas fa-pen-to-square"></i></a>`
+        cell += `<a class="has-text-link-80 modify-owner-signature" data-id="${row._id} title="Modify Signature"><i class="fas fa-signature"></i></a>`
+        cell += `<a class="has-text-primary-35 modify-owner-phone" data-id="${row._id} title="Add/Modify Phone"><i class="fas fa-mobile-screen"></i></a>`
+        cell += `<a class="has-text-success-45 modify-owner" data-id="${row._id}" title="Modify"><i class="fas fa-pen-to-square"></i></a>`
         cell += '</div>'
 
         return cell
@@ -182,7 +183,7 @@ onDraw(table, () => {
     if (!refreshed)
         $('.modal-cancel, .modal-close, .delete').click(closeModals)
 
-    $('.edit-owner').click(function() {
+    $('.modify-owner').click(function() {
         const _id = $(this).data('id')
 
         openModifyModal(_id)
