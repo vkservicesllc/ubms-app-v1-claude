@@ -148,6 +148,37 @@ class Team {
             }
 
 
+            this.manage = async (session, target, action, _relId) => {
+                let modified = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { modified, error }
+
+                const types = {
+                    users: { idProp: 'userId', Src: User },
+                    companies: { idProp: 'companyId', Src: Company },
+                }
+                const { idProp, Src } = types[target]
+                const teamId = await this.id()
+                const src = await Src.data(session, { _id: _relId })
+                const data = { teamId, [idProp]: await src.id() }
+
+                switch (action) {
+                    case '+':
+                        data.createdBy = await session.user.id()
+                        action = 'insert'
+                        break
+                    case '-':
+                        action = 'delete'
+                        break
+                }
+
+                const [ result ] = await mysql.execute(query[target][action](data))
+                if (result.affectedRows > 0) modified = true
+                else error = `DB Error: Failed to ${action} data`
+
+                return { modified, error }
+            }
+
+
             this.modify = async (session, data) => {
                 let modified = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { modified, error }

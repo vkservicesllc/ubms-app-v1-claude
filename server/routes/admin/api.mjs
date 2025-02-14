@@ -177,18 +177,23 @@ router.post('/team/:_id/:relType', User.verify, superAdminUserOnly, async (req, 
         const team = await Team.data(res.session, { _id })
 
         let data = await team.data(res.session, relType)
-        if (!data) {
-            error = 'DB Error'
-            data = {
-                [relType]: {
-                    all: [],
-                    available: [],
-                    applied: [],
-                },
-            }
-        }
 
-        res.send({ data: { team, data, error } })
+        res.send({ data: { team, data } })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+router.post('/team/:_id/:relType/:_relId', User.verify, superAdminUserOnly, async (req, res) => {
+    try {
+        const { _id, relType, _relId } = req.params
+        const { action } = req.body
+        const team = await Team.data(res.session, { _id })
+
+        const { modified, error } = await team.manage(res.session, relType, action, _relId)
+
+        res.send({ modified, error })
     } catch (err) {
         throwErr.server(res, null, err, false)
     }

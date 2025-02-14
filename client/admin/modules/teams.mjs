@@ -141,27 +141,48 @@ const displayTeams = () => {
                 $.ajax({
                     url: `/api/team/${_id}/${relType}`,
                     method: 'POST',
-                    success(response) { console.log(response.data)
-                        const { team, data, error } = response.data
+                    success(response) {
+                        const { team, data } = response.data
                         const { _id, name } = team
 
-                        if (error) console.error(error)
                         $title.relationship.html(`<small>Assign ${capitalizeFirst(relType)} to</small> <strong>${escapeHTML(name)}</strong>`)
 
-                        //* list of items with checkboxes
                         let list = '<div class="checkboxes">'
                         data[relType].all.forEach(item => {
                             let attr = ` data-type="${relType}" data-id="${item._id}"`
                             if (item.applied) attr += ' checked'
 
                             list += '<p><label class="checkbox">'
-                            list += `<input type="checkbox"${attr} />&nbsp; ${escapeHTML(item.name)}`
+                            list += `<input type="checkbox" class="modify-team-relationship"${attr} />&nbsp; ${escapeHTML(item.name)}`
                             if (item.desc) list += ` <small><i>(${escapeHTML(item.desc)})</i></small>`
                             list += '</label></p>'
                         })
                         list += '</div>'
 
                         $relationship.html(list)
+
+                        $('.modify-team-relationship').on('change', function() {
+                            const $checkbox = $(this)
+                            const relType = $checkbox.data('type')
+                            const _relId = $checkbox.data('id')
+                            const checked = $checkbox.prop('checked')
+                            const action = checked ? '+' : '-'
+
+                            $.ajax(`/api/team/${_id}/${relType}/${_relId}`, {
+                                method: 'POST',
+                                data: { action },
+                                success(response) {
+                                    const { modified, error } = response
+
+                                    if (error || !modified) {
+                                        if (error) alert(error)
+
+                                            $checkbox.prop('checked', !checked)
+                                    }
+                                },
+                            })
+                        })
+
                         $modal.relationship.addClass('is-active')
                     },
                 })
@@ -198,6 +219,7 @@ $button.delete.click(function() {
 })
 
 $button.closeRel.click(() => {
+    $('.modify-team-relationship').off('change')
     $modal.relationship.removeClass('is-active')
     $title.relationship.html(null)
     $relationship.html(null)
