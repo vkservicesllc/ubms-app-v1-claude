@@ -247,8 +247,8 @@
                     {{{input.id}}}
                     <div class="columns is-vcentered">
                         <div class="column is-two-fifths is-width-fixed">
-                            <form id="company-team-add-form" action="/resource/company/team/add" method="POST">
-                                {{{input.teamAddId}}}
+                            <form id="company-team-add-form" action="/resource/company/{{{_id}}}/teams" method="POST">
+                                <input type="hidden" name="action" value="+" />
                                 <label class="label">Available Teams</label>
                                 <div class="select is-multiple is-fullwidth">
                                     <select id="available-teams" name="teams" multiple size="8"><option value=""></option></select>
@@ -264,8 +264,8 @@
                             </button>
                         </div>
                         <div class="column is-two-fifths is-width-fixed">
-                            <form id="company-team-delete-form" action="/resource/company/team/delete" method="POST">
-                                {{{input.teamRemoveId}}}
+                            <form id="company-team-delete-form" action="/resource/company/{{{_id}}}/teams" method="POST">
+                                <input type="hidden" name="action" value="-" />
                                 <label class="label">Current Teams</label>
                                 <div class="select is-multiple is-fullwidth">
                                     <select id="company-teams" name="teams" multiple size="8"><option value=""></option></select>

@@ -43,6 +43,8 @@ router.post('/company/:_id/address/:type/update', User.verify, superAdminUserOnl
 router.post('/company/:_id/contacts', User.verify, superAdminUserOnly, validateCompanyContacts, CompanyMW.upsertContacts)
 router.post('/company/:_id/contacts/:type/update', User.verify, superAdminUserOnly, CompanyMW.updateContact) //! unfinished
 
+router.post('/company/:_id/teams', User.verify, superAdminUserOnly, CompanyMW.updateTeams)
+
 router.post('/company-owner', User.verify, superAdminUserOnly, validateCompanyOwner, CompanyMW.upsertOwner)
 router.post('/company-owner/update', User.verify, superAdminUserOnly, validateCompanyOwnerUpdate, CompanyMW.updateOwner)
 router.post('/company-owner/delete', User.verify, superAdminUserOnly, CompanyMW.deleteOwner)

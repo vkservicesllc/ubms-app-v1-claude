@@ -35,7 +35,7 @@ if ($('#teams-card-content').length) {
 
     $.ajax(`/api/company/${_id}/teams`, {
         method: 'POST',
-        success(response) { console.log(response)
+        success(response) {
             const { data: teams } = response
             const $options = { available: '', applied: '' }
             const option = '<option value=""></option>'

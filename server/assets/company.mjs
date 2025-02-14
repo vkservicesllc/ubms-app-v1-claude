@@ -19,6 +19,7 @@ import Query, { hash, matchHash } from '../tools/query.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
 import { encrypt } from '../tools/crypto.mjs'
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
+import { numberic } from '../../client/global/modules/tools/number.mjs'
 import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 import strip, { ein as formatEin, ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
 import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
@@ -181,45 +182,86 @@ class Company {
             }
 
 
-            this.teams = async session => {
-                if (!session?.user?.DS) return
-
+            this.teams = async (session, action, teamIds) => {
                 const companyId = await this.id()
-                const { catId } = this
-                const data = { all: [], available: [], applied: [] }
-                const appliedIds = []
 
-                const teams = await Team.list(session, { catId })
+                if (action && teamIds) {
+                    let modified = false,
+                        error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                    if (error) return { modified, error }
 
-                const batch = [
-                    {
-                        table: 'teams_companies',
-                        match: { companyId },
-                    },
-                    {
-                        table: 'teams',
-                        fields: [ Team.hashId(), 'name' ],
-                        join: [ 'id', 'teamId' ],
-                        match: { catId },
-                    },
-                ]
+                    if (!Array.isArray(teamIds)) teamIds = [ teamIds ]
+                    error = []
 
-                data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
-                data.applied.forEach(team => appliedIds.push(team._id))
+                    let i = 0, modCt = 0, createdBy
+                    if (action == '-') action = 'delete'
+                    else if (action == '+') {
+                        action = 'insert'
+                        createdBy = await session.user.id()
+                    }
 
-                teams.map((team, i) => {
-                    const { _id, name } = team
+                    for (let teamId of teamIds) {
+                        if (!numberic(teamId))
+                            teamId = await (await Team.data(session, { _id: teamId })).id()
 
-                    data.all.push({ _id, name, applied: false })
-                    if (appliedIds.includes(_id)) data.all[i].applied = true
-                    else data.available.push({ _id, name })
-                })
+                        try {
+                            const data = { companyId, teamId }
+                            if (action == 'insert') data.createdBy = createdBy
 
-                data.all = sortArrayByObjectKey(data.all, 'name')
-                data.applied = sortArrayByObjectKey(data.applied, 'name')
-                data.available = sortArrayByObjectKey(data.available, 'name')
+                            const [ result ] = await mysql.execute(query.teams[action](data))
+                            if (result.affectedRows == 1) modCt++
+                        } catch (err) {
+                            error.push('DB Error: idx ' + i)
+                        }
 
-                return data
+                        i++
+                    }
+
+                    if (modCt === teamIds.length) {
+                        modified = true
+                        error = undefined
+                    } else error = error.join(' / ')
+
+                    return { modified, error }
+                } else {
+                    if (!session?.user?.DS) return
+
+                    const { catId } = this
+                    const data = { all: [], available: [], applied: [] }
+                    const appliedIds = []
+
+                    const teams = await Team.list(session, { catId })
+
+                    const batch = [
+                        {
+                            table: 'teams_companies',
+                            match: { companyId },
+                        },
+                        {
+                            table: 'teams',
+                            fields: [ Team.hashId(), 'name' ],
+                            join: [ 'id', 'teamId' ],
+                            match: { catId },
+                        },
+                    ]
+
+                    data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                    data.applied.forEach(team => appliedIds.push(team._id))
+
+                    teams.map((team, i) => {
+                        const { _id, name } = team
+
+                        data.all.push({ _id, name, applied: false })
+                        if (appliedIds.includes(_id)) data.all[i].applied = true
+                        else data.available.push({ _id, name })
+                    })
+
+                    data.all = sortArrayByObjectKey(data.all, 'name')
+                    data.applied = sortArrayByObjectKey(data.applied, 'name')
+                    data.available = sortArrayByObjectKey(data.available, 'name')
+
+                    return data
+                }
             }
 
 

@@ -1,0 +1,1 @@
+export const numberic = value => !isNaN(value) && isFinite(value)

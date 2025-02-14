@@ -280,6 +280,22 @@ export default class {
     }
 
 
+    static updateTeams = async (req, res) => {
+        try {
+            const { _id } = req.params
+            const { action, teams: _teamIds } = req.body
+            const company = await Company.data(res.session, { _id })
+
+            const { error } = await company.teams(res.session, action, _teamIds)
+            if (error) return throwErr.server(res, null, error)
+
+            res.redirect(`/business/${Company.categoryList[company.catId].path[1]}/${company.route}?teams`)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
     static upsertOwner = async (req, res) => {
         try {
             const { company: _companyId, since } = req.query
@@ -714,7 +730,7 @@ export const companyById = async (req, res) => {
 
             /* Deletion HBS Form */
             const { id: companyId, aliasId } = formSelectors.company
-            input.deleteId = Input.id(_id, { id: `delete-${companyId}` })
+            // input.deleteId = Input.id(_id, { id: `delete-${companyId}` })
             input.confirmAlias = Input.alias({ class: 'input', id: `confirm-${aliasId}` })
 
             /* Ownership HBS Form */
@@ -849,9 +865,9 @@ export const companyByCategoryAndRoute = async (req, res) => {
         const { id: companyId, aliasId } = formSelectors.company
         const input = {
             id: Input.id(_companyId),
-            teamAddId: Input.id(_companyId, { id: `team-add-${companyId}` }),
-            teamRemoveId: Input.id(_companyId, { id: `team-remove-${companyId}` }),
-            deleteId: Input.id(_companyId, { id: `delete-${companyId}` }),
+            // teamAddId: Input.id(_companyId, { id: `team-add-${companyId}` }),
+            // teamRemoveId: Input.id(_companyId, { id: `team-remove-${companyId}` }),
+            // deleteId: Input.id(_companyId, { id: `delete-${companyId}` }),
             confirmAlias: Input.alias({ class: 'input', id: `confirm-${aliasId}` }),
         }
 
