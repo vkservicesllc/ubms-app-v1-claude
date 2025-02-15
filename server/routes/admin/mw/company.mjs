@@ -812,8 +812,8 @@ export const companyById = async (req, res) => {
         if (data.name) {
             data.name = escapeHTML(data.name)
             data.alias = escapeHTML(data.alias)
+            if (data.owner.name) data.owner.name = escapeHTML(data.owner.name)
         }
-        if (data.owner.name) data.owner.name = escapeHTML(data.owner.name)
 
         /* HBS Setup */
         hbs = hbs.set(key, { titlePfx })

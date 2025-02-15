@@ -84,4 +84,13 @@ module.exports = {
         },
     },
 
+    'apps': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
 }

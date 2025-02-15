@@ -47,6 +47,7 @@ router.use((req, res, next) => {
             profile: 'class="item" href="/profile"',
             account: 'class="item" href="/account"',
             security: 'class="item" href="/security"',
+            apps: 'class="item" href="/apps"'
         }
         res.hbs.style = {
             page: 'max-width: 640px; margin: 0 auto;',
@@ -255,6 +256,21 @@ router.get('/security', User.verify, (req, res) => {
 router.post('/security', User.verify, [ validatePassword() ], validationCheck, async(req, res) => {
     try {
         //
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/apps', User.verify, (req, res) => {
+    try {
+        const key = 'apps'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        hbs.actionUrl = `/apps`
+
+        res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }
