@@ -45,6 +45,7 @@ const query = {
     sessions: new Query(db.online, 'sessions'),
     registration: new Query(db.online, 'user_registration'),
     passReset: new Query(db.online, 'user_passreset'),
+    roles: new Query(db.online, 'user_roles'),
 }
 
 
@@ -1028,7 +1029,130 @@ delete User.genderList
 delete User.formSelect
 
 
+
+class Role {
+    constructor(data, light = false) {
+        this._id = data._id
+        this.catId = data.catId
+        this.location = data.location
+            ? [ data.location, User.locationList[data.location] ]
+            : null
+        this.name = data.name
+        this.permissions = data.permissions
+
+        if (!light) {
+        
+            this.id = async () => (await mysql.execute(query.roles.select('id', {
+                match: { id: Role.matchIdHash(this._id) },
+            })))[0][0].id
+            
+            
+            this.log = async field => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+
+                let log = (await mysql.execute(query.roles.select(fields, {
+                    match: { id: Role.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
+
+
+            this.flush = async () => {
+                return await mysql.execute(query.roles.update({ updateLog: null }, {
+                    id: Role.matchIdHash(this._id),
+                }))
+            }
+
+        }
+    }
+
+
+    static #algorithm = 'SHA-1'
+
+    static hashId = (field = 'id') => hash(field, Role.#algorithm)
+
+    static matchIdHash = value => matchHash(value, Role.#algorithm)
+
+
+    static create = async (session, data) => {
+        let created = false, newUser, error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+        if (error) return { created, error }
+
+        data = processData(data)
+
+        for (const prop of [ 'catId', 'name', 'permissions' ])
+            if (!data[prop]) return { created, error: 'Invalid Data' }
+
+        if (await Role.list(session, {
+            catId: data.catId,
+            location: data.location || null,
+            name: data.name,
+        }).length) return { created, error: 'DB Error: Dublicated Data' }
+
+        data.permissions = JSON.stringify(data.permissions)
+        data.createdBy = await session.user.id()
+
+        const [ result ] = await mysql.execute(query.roles.insert(data))
+        const id = result.insertId
+        if (!id) return { created, error: 'DB Error: Failed to write Data' }
+
+        return { created, error, data: await Role.data(session, { id }) }
+    }
+
+
+    static #batch = (session, options = {}) => {
+        if (!session?.user) return []
+
+        let { params, filter } = options
+        if (!params) params = {}
+        if (!filter) filter = {}
+
+        const { _id, id } = params
+        const { catId, name, location } = filter
+
+        const match = { id, catId, name, location }
+        if (!match.id) match.id = Role.matchIdHash(_id)
+
+        const batch = [
+            {
+                table: 'user_roles',
+                fields: [ Role.hashId(), 'catId', 'location', 'name', 'permissions' ],
+                match,
+            },
+        ]
+
+        return batch
+    }
+
+
+    static data = async (session, params = {}) => {
+        if (!params._id && !params.id) return
+
+        const batch = Role.#batch(session, { params })
+        const data = (await mysql.execute(Query.select(db.online, batch)))[0][0]
+
+        return !data ? data : new Role(data)
+    }
+
+
+    static list = async (session, filter = {}) => {
+        const batch = Role.#batch(session, { filter })
+        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+
+        list.forEach((data, i, arr) => arr[i] = new Role(data, true))
+
+        return list
+    }
+
+
+}
+
+
 export default User
+export { Role }
 
 
 export const adminBranchOnly = (req, res, next) => {

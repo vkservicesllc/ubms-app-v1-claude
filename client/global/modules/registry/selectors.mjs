@@ -34,6 +34,12 @@ export const formSelectors = {
         signUpButtonId: 'sign-up',
         signOutLinkId: 'sign-out',
         authButtonId: 'authenticate',
+        roleId: 'user-role-id',
+        roleNameId: 'user-role-name',
+        roleLocationId: 'user-role-location',
+        carrierRoleId: 'user-carrier-role-id',
+        carrierRoleNameId: 'user-carrier-role-name',
+        carrierRoleLocationId: 'user-carrier-role-location',
     },
 
     company: {

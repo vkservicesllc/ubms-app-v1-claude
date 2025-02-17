@@ -49,7 +49,11 @@ router.get('/users', User.verify, (req, res) => {
             firstName: UserLabel.firstName({ class: labelClassRequired }),
             lastName: UserLabel.lastName({ class: labelClassRequired }),
             alias: UserLabel.alias({ class: labelClass }),
-            gender: UserLabel.gender({ class: labelClass })
+            gender: UserLabel.gender({ class: labelClass }),
+
+            //! will be more added
+            carrierRoleName: UserLabel.roleName({ target: 'crr', class: labelClassRequired }),
+            carrierRoleLocation: UserLabel.roleLocation({ target: 'crr', class: labelClass }),
         }
         hbs.input = {
             id: UserInput.id(null, true),
@@ -65,10 +69,17 @@ router.get('/users', User.verify, (req, res) => {
             conditionA: UserInput.condition(),
             conditionI: UserInput.condition({ value: 'I' }),
             conditionL: UserInput.condition({ value: 'L' }),
+
+            //! will be more added
+            carrierRoleId: UserInput.roleId({ target: 'crr' }),
+            carrierRoleName: UserInput.roleName({ target: 'crr', class: inputClass }),
         }
         hbs.select = {
             status: UserSelect.status(user, selectProps),
             location: UserSelect.location(user, selectProps),
+
+            //! will be more added
+            carrierRoleLocation: UserSelect.roleLocation({ target: 'crr', selectProps })
         }
         hbs.formId = {
             user: mainFormId,

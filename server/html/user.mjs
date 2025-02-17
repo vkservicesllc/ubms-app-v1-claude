@@ -16,6 +16,8 @@ const {
     genderId, genderClass,
     statusId, locationId, conditionId, conditionClass,
     signInButtonId, signUpButtonId, authButtonId,
+    roleId, roleNameId, roleLocationId,
+    carrierRoleId, carrierRoleNameId, carrierRoleLocationId,
 } = formSelectors.user
 
 
@@ -100,6 +102,41 @@ export class Label {
         content: 'Gender',
         ...props,
     })
+
+    static roleName = (props = {}) => {
+        const { target } = props
+        let id = roleNameId
+
+        switch (target) {
+            case 'crr':
+                id = carrierRoleNameId
+                break
+        }
+
+        return formLabel({
+            content: 'Role Name',
+            ...props,
+            addClass: 'required',
+            for: id,
+        })
+    }
+
+    static roleLocation = (props = {}) => {
+        const { target } = props
+        let id = roleLocationId
+
+        switch (target) {
+            case 'crr':
+                id = carrierRoleLocationId
+                break
+        }
+
+        return formLabel({
+            content: 'Location',
+            ...props,
+            for: id,
+        })
+    }
 
 }
 
@@ -259,6 +296,43 @@ export class Input {
         name: 'phone',
     })
 
+    static roleId = (props = {}) => {
+        const { target } = props
+        let id = roleId
+
+        switch (target) {
+            case 'crr':
+                id = carrierRoleId
+                break
+        }
+
+        return formInput({
+            ...props,
+            type: 'hidden',
+            id,
+            name: '_id',
+        })
+    }
+
+    static roleName = (props = {}) => {
+        const { target } = props
+        let id = roleNameId
+
+        switch (target) {
+            case 'crr':
+                id = carrierRoleNameId
+                break
+        }
+
+        return formInput({
+            ...props,
+            id,
+            name: 'name',
+            maxLength: inputLength.user.roleName.max,
+            required: true,
+        })
+    }
+
 }
 
 
@@ -311,6 +385,32 @@ export class Select {
             id: locationId,
             name: 'location',
             required: true,
+        }, data, options)
+    }
+
+
+    static roleLocation = (props = {}) => {
+        const { target } = props
+        let id = roleLocationId
+
+        switch (target) {
+            case 'crr':
+                id = carrierRoleLocationId
+                break
+        }
+
+        let { emptyOpt, options } = props
+        if (!emptyOpt) emptyOpt = 'All'
+        if (!options) options = {}
+        options.emptyOpt = emptyOpt
+
+        const data = { ...User.locationList }
+
+        return formSelect({
+            ...props,
+            id,
+            name: 'location',
+            required: false,
         }, data, options)
     }
 

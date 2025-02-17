@@ -43,6 +43,15 @@
                     .box-column {
                         min-width: 540px;
                     }
+                    .select.is-multiple select {
+                        min-height: 280px;
+                    }
+                    .select.is-multiple select optgroup {
+                        margin: 5px;
+                    }
+                    .select.is-multiple select option {
+                        padding: 0 9px;
+                    }
                 </style>
                 <div class="columns mt-4">
                     <div class="column is-two-fifths box-column">
@@ -53,7 +62,12 @@
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Roles</label>
                                         <div class="select is-multiple is-fullwidth">
-                                            <select id="available-roles" name="roles" multiple size="5"><option value=""></option></select>
+                                            <select id="available-roles" name="roles" multiple>
+                                                <option value="">Registration</option>
+                                                <option value="">Insurance</option>
+                                                <optgroup label="Carrier"><option value="">Recruiter</option><option value="">Dispatcher</option></optgroup>
+                                                <optgroup label="School"><option value="">Teacher</option></optgroup>
+                                            </select>
                                         </div>
                                     </form>
                                 </div>
@@ -68,9 +82,11 @@
                                 <div class="column is-two-fifths is-width-fixed">
                                     <form id="user-role-delete-form" action="" method="POST">
                                         <input type="hidden" name="action" value="-" />
-                                        <label class="label">Current Roles</label>
+                                        <label class="label">User's Roles</label>
                                         <div class="select is-multiple is-fullwidth">
-                                            <select id="user-roles" name="roles" multiple size="5"><option value=""></option></select>
+                                            <select id="user-roles" name="roles" multiple>
+                                                <optgroup><option value=""></option></optgroup>
+                                            </select>
                                         </div>
                                     </form>
                                 </div>
@@ -85,7 +101,9 @@
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Teams</label>
                                         <div class="select is-multiple is-fullwidth">
-                                            <select id="available-teams" name="teams" multiple size="5"><option value=""></option></select>
+                                            <select id="available-teams" name="teams" multiple>
+                                                <optgroup><option value=""></option></optgroup>
+                                            </select>
                                         </div>
                                     </form>
                                 </div>
@@ -100,9 +118,11 @@
                                 <div class="column is-two-fifths is-width-fixed">
                                     <form id="user-team-delete-form" action="" method="POST">
                                         <input type="hidden" name="action" value="-" />
-                                        <label class="label">Current Teams</label>
+                                        <label class="label">User's Teams</label>
                                         <div class="select is-multiple is-fullwidth">
-                                            <select id="user-teams" name="teams" multiple size="5"><option value=""></option></select>
+                                            <select id="user-teams" name="teams" multiple>
+                                                <optgroup><option value=""></option></optgroup>
+                                            </select>
                                         </div>
                                     </form>
                                 </div>

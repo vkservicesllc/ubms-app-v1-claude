@@ -5,6 +5,7 @@ export default {
         password: { min: 12, max: 24 },
         token: { min: 12, max: 12 },
         formId: { min: 24, max: 24 },
+        roleName: { min: 1, max: 24 },
     },
 
     person: {
