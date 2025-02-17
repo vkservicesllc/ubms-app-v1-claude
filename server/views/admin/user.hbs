@@ -1,3 +1,119 @@
 {{> admin/nav.alpha}}
-                <span class="subtitle is-4">User</span>
+
+                <span class="subtitle is-5">User Configurations</span>
+                <p class="mt-5">{{{display.name}}}</p>
+
+                <style>
+                    .column.user-ava {
+                        width: 160px;
+                    }
+                    .user-column {
+                        min-width: 320px;
+                        max-width: 480px;
+                    }
+                </style>
+                <div class="columns mt-1 ml-1">
+                    <div class="column is-one-fifth user-ava">
+                        <figure class="image is-128x128">
+                            <img class="is-rounded" src="{{data.avaSrc}}" alt="User Avatar" />
+                        </figure>
+                    </div>
+                    <div class="column is-one-fifth user-column">
+                        <div class="is-flex is-justify-content-space-between">
+                            <small>Condition:</small>
+                            <strong class="has-text-right">{{{display.condition}}}</strong>
+                        </div>
+                        <div class="is-flex is-justify-content-space-between">
+                            <small>Status:</small>
+                            <strong class="has-text-right">{{display.status}}</strong>
+                        </div>
+                        <div class="is-flex is-justify-content-space-between">
+                            <small>Location:</small>
+                            <strong class="has-text-right">{{display.location}}</strong>
+                        </div>
+                        <div class="is-flex is-justify-content-space-between mt-3 pt-1 bt">
+                            <small>Employee:</small>
+                            <span class="has-text-danger-70 has-text-right">Unassigned</span>
+                        </div>
+                    </div>
+                </div>
+                {{#if (eq data.DS false)}}
+
+                <style>
+                    .box-column {
+                        min-width: 540px;
+                    }
+                </style>
+                <div class="columns mt-4">
+                    <div class="column is-two-fifths box-column">
+                        <div class="box">
+                            <div class="columns is-vcentered">
+                                <div class="column is-two-fifths is-width-fixed">
+                                    <form id="user-role-add-form" action="" method="POST">
+                                        <input type="hidden" name="action" value="+" />
+                                        <label class="label">Available Roles</label>
+                                        <div class="select is-multiple is-fullwidth">
+                                            <select id="available-roles" name="roles" multiple size="5"><option value=""></option></select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="column is-one-fifth">
+                                    <button type="submit" class="button is-fullwidth is-success" form="user-role-add-form">
+                                        <i class="fa fa-arrow-right"></i>
+                                    </button>
+                                    <button type="submit" class="button is-fullwidth is-danger mt-2" form="user-role-delete-form">
+                                        <i class="fa fa-arrow-left"></i>
+                                    </button>
+                                </div>
+                                <div class="column is-two-fifths is-width-fixed">
+                                    <form id="user-role-delete-form" action="" method="POST">
+                                        <input type="hidden" name="action" value="-" />
+                                        <label class="label">Current Roles</label>
+                                        <div class="select is-multiple is-fullwidth">
+                                            <select id="user-roles" name="roles" multiple size="5"><option value=""></option></select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-two-fifths box-column">
+                        <div class="box">
+                            <div class="columns is-vcentered">
+                                <div class="column is-two-fifths is-width-fixed">
+                                    <form id="user-team-add-form" action="" method="POST">
+                                        <input type="hidden" name="action" value="+" />
+                                        <label class="label">Available Teams</label>
+                                        <div class="select is-multiple is-fullwidth">
+                                            <select id="available-teams" name="teams" multiple size="5"><option value=""></option></select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="column is-one-fifth">
+                                    <button type="submit" class="button is-fullwidth is-success" form="user-team-add-form">
+                                        <i class="fa fa-arrow-right"></i>
+                                    </button>
+                                    <button type="submit" class="button is-fullwidth is-danger mt-2" form="user-team-delete-form">
+                                        <i class="fa fa-arrow-left"></i>
+                                    </button>
+                                </div>
+                                <div class="column is-two-fifths is-width-fixed">
+                                    <form id="user-team-delete-form" action="" method="POST">
+                                        <input type="hidden" name="action" value="-" />
+                                        <label class="label">Current Teams</label>
+                                        <div class="select is-multiple is-fullwidth">
+                                            <select id="user-teams" name="teams" multiple size="5"><option value=""></option></select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                {{#if (eq data.DS true)}}
+
+                <p class="has-text-success-45 mt-4">All roles and teams are automatically available to this user</p>
+                {{/if}}
+
 {{> admin/nav.omega}}

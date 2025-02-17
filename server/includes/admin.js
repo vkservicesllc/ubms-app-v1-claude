@@ -123,7 +123,7 @@ module.exports = {
     'user': {
         external: [ ...online.external ],
         internal: {
-            css: [ ...online.internal.css ],
+            css: [ ...online.internal.css, 'theme' ],
             js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs ],
         },

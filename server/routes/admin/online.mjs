@@ -90,10 +90,6 @@ router.get('/users', User.verify, (req, res) => {
 
 router.get('/user/:identifier', User.verify, async (req, res) => {
     try {
-        // * Identifier can either be
-        // 1) _id for users who have not yet created a username
-        // 2) username, who have created a username and password
-        // ? alter logic in Query.data
         const key = 'user'
         let { hbs } = res
         hbs = hbs.set(key)
@@ -101,6 +97,23 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
         const { active } = hbs.nav
         hbs.nav.users = active
 
+        const { identifier } = req.params
+        let user = await User.data(res.session, { username: identifier })
+        if (!user) user = await User.data(res.session, { _id: identifier })
+        const { name, email, username, condition, status, location } = user
+
+        const display = {
+            name: `<span class="has-text-weight-bold">${name}</span>`,
+            condition: username ? condition[1] : 'Not Registered',
+            status: status[1],
+            location: location[1],
+        }
+        display.name += ` <small><i>(${email})</i></small>`
+        if (!username || ['I', 'L'].includes(condition[0]))
+            display.condition = `<span class="has-text-danger-70">${display.condition}</span>`
+
+        hbs.display = display
+        hbs.data= user
         res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)

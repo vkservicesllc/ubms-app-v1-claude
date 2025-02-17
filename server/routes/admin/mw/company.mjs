@@ -390,7 +390,16 @@ const display = (data, ein) => {
     display.data = {}
     display.label = {}
 
-    if (ein) display.data.ein = formatEin(ein)
+    if (ein) {
+        const typeList = {}
+
+        for (const group in Company.typeList)
+            for (const type in Company.typeList[group])
+                typeList[type] = Company.typeList[group][type]
+
+        display.data.ein = formatEin(ein)
+        display.data.type = typeList[data.coType]
+    }
 
     if (data.since) {
         display.data.since = moment(data.since).format('ll')

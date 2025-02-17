@@ -220,7 +220,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 width: '30px',
                 render(data, type, row) {
                     data = data[0]
-                    if (row.status[0] == 'D') return '<i class="fas fa-lock has-text-grey"></i>'
+                    if (row.status[0] == 'D' || (adminStatus == 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
                     if (row.decliner) return '<i class="fas fa-user-lock has-text-grey"></i>'
                     if (!row.username) return '<i class="fas fa-user-clock has-text-grey"></i>'
 
@@ -251,7 +251,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 },
                 createdCell(cell) {
                     $(cell).css('padding', '5px 5px 0 0')
-                }
+                },
             },
 
             {
@@ -325,14 +325,16 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     const { username, _id } = row
                     let cell = '<div class="dt-action">'
 
-                    if (row.status[0] != 'D') {
-                        cell += `<a class="has-text-danger delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
-                        if (!row.decliner)
-                            cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
+                    if (['D', 'S'].includes(adminStatus) || (adminStatus == 'A' && !row.DS)) {
+                        if (row.status[0] != 'D') {
+                            cell += `<a class="has-text-danger delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
+                            if (!row.decliner)
+                                cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
+                        }
+                        if (row.status[0] != 'D' || adminStatus == 'D')
+                            if (!row.decliner)
+                                cell += `<a class="has-text-success-45 edit-user" data-id="${row._id}" title="Edit"><i class="fas fa-user-pen"></i></a>`
                     }
-                    if (row.status[0] != 'D' || adminStatus == 'D')
-                        if (!row.decliner)
-                            cell += `<a class="has-text-success-45 edit-user" data-id="${row._id}" title="Edit"><i class="fas fa-user-pen"></i></a>`
 
                     cell += '</div>'
 

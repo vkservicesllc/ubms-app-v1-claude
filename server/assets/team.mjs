@@ -111,7 +111,7 @@ class Team {
                             {
                                 db: db.online,
                                 table: 'users',
-                                fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'username' ],
+                                fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'email' ],
                                 join: [ 'id', 'userId' ],
                                 match: { status },
                             },
@@ -123,18 +123,18 @@ class Team {
                             user = {
                                 _id: user._id,
                                 name: user.name,
-                                desc: user.username,
+                                desc: user.email,
                             }
 
                             appliedIds.push(user._id)
                         })
 
                         users.map((user, i) => {
-                            const { _id, name, username } = user
+                            const { _id, name, email } = user
 
-                            data[type].all.push({ _id, name, desc: username, applied: false })
+                            data[type].all.push({ _id, name, desc: email, applied: false })
                             if (appliedIds.includes(_id)) data[type].all[i].applied = true
-                            else data[type].available.push({ _id, name, desc: username })
+                            else data[type].available.push({ _id, name, desc: email })
                         })
                         break
 
