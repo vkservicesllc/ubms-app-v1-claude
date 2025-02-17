@@ -29,7 +29,7 @@ export class Label {
 
     static password = (props = {}) => {
         let action = '', id = passId
-        const { purpose } = props
+        const { purpose, content } = props
 
         switch (purpose) {
             case 'new':
@@ -43,7 +43,7 @@ export class Label {
         }
 
         return formLabel({
-            content: `${action}Password`,
+            content: content || `${action}Password`,
             ...props,
             for: id,
         })
@@ -140,7 +140,7 @@ export class Input {
 
     static password = (props = {}) => {
         let name, id = passId, autoComplete = "off"
-        const { purpose } = props
+        const { purpose, disabled } = props
 
         if (!purpose) name = 'password'
         else if (purpose == 'new') {
@@ -160,7 +160,7 @@ export class Input {
             contextMenu: false,
             autoComplete,
             required: true,
-            disabled: true,
+            disabled: typeof disabled == 'boolean' ? disabled : true,
         })
     }
 

@@ -2,73 +2,70 @@
 
     <div style="{{{style.page}}}">
         {{> user/nav}}
-        <div class="ui segment">
+        <div class="ui segment" style="padding: 20px;">
 
             <div class="ui two column grid">
                 <div class="left attached column">
-                    <div class="ui card">
-                        <div class="content">
-                            <div class="header">Primary App</div>
-                            <div class="meta">
-                                <a class="item" href="{{{addrBook.default}}}" target="_blank">
-                                    <i class="small external alternate icon"></i>
-                                    {{{addrBook.default}}}
-                                </a>
+                    <div class="ui items">
+                        <div class="item">
+                            <div class="content">
+                                <p class="header">Primary App</p>
+                                <p class="meta">
+                                    <a href="{{{addrBook.default}}}" target="_blank">
+                                        <i class="small external alternate icon"></i>
+                                        {{{addrBook.default}}}
+                                    </a>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
+                {{#if (eq user.DSA true)}}
+                <div class="right attached column">
+                    <div class="ui items">
+                        <div class="item">
+                            <div class="content">
+                                <p class="header">Admin Portal</p>
+                                <p class="meta">
+                                    <a href="{{{addrBook.admin}}}" target="_blank">
+                                        <i class="small external alternate icon"></i>
+                                        {{{addrBook.admin}}}
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
             </div>
 
             <div class="ui two column grid">
                 <div class="left attached column">
-                    <div class="ui card">
-                        <div class="content">
-                            <div class="header">Admin Portal</div>
-                            <div class="meta">
-                                <a class="item" href="{{{addrBook.admin}}}" target="_blank">
-                                    <i class="small external alternate icon"></i>
-                                    {{{addrBook.admin}}}
-                                </a>
+                    <div class="ui items">
+                        <div class="item">
+                            <div class="content">
+                                <p class="header">Carrier App</p>
+                                <p class="meta">
+                                    <a href="{{{addrBook.carrier}}}" target="_blank">
+                                        <i class="small external alternate icon"></i>
+                                        {{{addrBook.carrier}}}
+                                    </a>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="right attached column">
-                    <div class="ui disabled card">
-                        <div class="content">
-                            <div class="header">User Portal</div>
-                            <div class="meta">
-                                <a class="item" href="{{{addrBook.user}}}" target="_blank">
-                                    {{{addrBook.user}}}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="ui two column grid">
-                <div class="left attached column">
-                    <div class="ui card">
-                        <div class="content">
-                            <div class="header">Carrier App</div>
-                            <div class="meta">
-                                <a class="item" href="{{{addrBook.carrier}}}" target="_blank">
-                                    {{{addrBook.carrier}}}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="right attached column">
-                    <div class="ui card">
-                        <div class="content">
-                            <div class="header">Driver Portal</div>
-                            <div class="meta">
-                                <a class="item" href="{{{addrBook.driver}}}" target="_blank">
-                                    {{{addrBook.driver}}}
-                                </a>
+                    <div class="ui items">
+                        <div class="item">
+                            <div class="content">
+                                <p class="header">Driver Portal</p>
+                                <p class="meta">
+                                    <a href="{{{addrBook.driver}}}" target="_blank">
+                                        <i class="small external alternate icon"></i>
+                                        {{{addrBook.driver}}}
+                                    </a>
+                                </p>
                             </div>
                         </div>
                     </div>

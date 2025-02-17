@@ -244,6 +244,16 @@ router.get('/security', User.verify, (req, res) => {
         hbs = hbs.set(key)
 
         hbs.formId = formSelectors.user.securityFormId
+        hbs.label = {
+            currentPass: Label.password({ content: 'Current Password', addClass: 'required' }),
+            newPass: Label.password({ purpose: 'new', addClass: 'required' }),
+            confPass: Label.password({ purpose: 'repeat', addClass: 'required' }),
+        }
+        hbs.input = {
+            currentPass: Input.password({ disabled: false }),
+            newPass: Input.password({ purpose: 'new', disabled: false }),
+            confPass: Input.password({ purpose: 'repeat', disabled: false }),
+        }
         hbs.actionUrl = `/security`
 
         res.render(key, hbs)

@@ -5,6 +5,22 @@
         <div class="ui segment">
             <h4 class="ui dividing header">{{user.name}}</h4>
             <form class="ui form" id="{{formId}}" action="{{actionUrl}}" method="POST" autocomplete="off">
+                <div class="two fields">
+                    <div class="field">
+                        {{{label.currentPass}}}
+                        {{{input.currentPass}}}
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class="field">
+                        {{{label.newPass}}}
+                        {{{input.newPass}}}
+                    </div>
+                    <div class="field">
+                        {{{label.confPass}}}
+                        {{{input.confPass}}}
+                    </div>
+                </div>
                 <button type="submit" class="ui teal button">Update</button>
             </form>
         </div>
