@@ -69,10 +69,15 @@ teamNameEvent({
             success(response) {
                 const { unique, error } = response
                 if (error) alert(error)
-                if (name && (!currentName || name != currentName) && !unique)
+
+                let disabled = false
+                if (name && (!currentName || name != currentName) && !unique) {
                     action = 'failed'
+                    disabled = true
+                }
 
                 setTip[action]('name')
+                $button.upsert.prop('disabled', disabled)
             },
         })
     },
@@ -91,7 +96,7 @@ const closeUpsert = () => {
     $(`.${teamClass}`).val(null)
     setTip.default('name')
     $button.delete.hide()
-    $button.upsert.html(null)
+    $button.upsert.html(null).removeClass('is-link is-success').prop('disabled', false)
     $title.upsert.html(null)
     $(`#${catId}`).attr('disabled', false)
     countDescChars()
@@ -163,7 +168,7 @@ const displayTeams = () => {
 
                         $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
                         setTip.passed('name')
-                        $button.upsert.html('Update')
+                        $button.upsert.html('Update').addClass('is-success')
                         if (!companies && !users) $button.delete.show()
                         countDescChars(description)
                         $modal.upsert.addClass('is-active')
@@ -232,7 +237,7 @@ $('.delete').click(closeUpsert)
 
 $button.add.click(() => {
     $title.upsert.html('<small>New Team</small>')
-    $button.upsert.html('Create')
+    $button.upsert.html('Create').addClass('is-link')
     $modal.upsert.addClass('is-active')
 })
 
