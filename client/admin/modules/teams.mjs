@@ -1,3 +1,4 @@
+import Tip from './assets/tip.mjs'
 import escapeHTML from '/modules/assets/html.mjs'
 import { teamNameEvent, teamDescEvent } from '/modules/events/team.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
@@ -18,6 +19,20 @@ const $title = {
     upsert: $('#team-upsert-title'),
     relationship: $('#team-relationship-title'),
 }
+const $tip = {
+    name: $('#team-name-tip'),
+}
+const tipDefs = {
+    name: null,
+}
+const message = {
+    success: {
+        name: 'Name is unqiue',
+    },
+    failed: {
+        name: 'Name is taken',
+    },
+}
 const $button = {
     add: $('#team-add-button'),
     upsert: $('#team-upsert-button'),
@@ -25,6 +40,8 @@ const $button = {
     closeRel: $('#team-relationship-close-button'),
 }
 const $relationship = $('#team-relationship')
+
+const setTip = new Tip($tip, tipDefs, message)
 
 const countDescChars = desc => {
     const { max } = inputLength.team.desc
@@ -41,7 +58,25 @@ const countDescChars = desc => {
     $('#desc-char-left').text(left)
 }
 
-teamNameEvent()
+teamNameEvent({
+    onChange(name, $name) {
+        const currentName = $(`#current-${nameId}`).val()
+        let action = name ? 'passed' : 'default'
+
+        $.ajax('/api/unique/team', {
+            method: 'POST',
+            data: { name },
+            success(response) {
+                const { unique, error } = response
+                if (error) alert(error)
+                if (name && (!currentName || name != currentName) && !unique)
+                    action = 'failed'
+
+                setTip[action]('name')
+            },
+        })
+    },
+})
 teamDescEvent({
     onInput(desc) {
         countDescChars(desc)
@@ -54,6 +89,7 @@ teamDescEvent({
 const closeUpsert = () => {
     $modal.all.removeClass('is-active')
     $(`.${teamClass}`).val(null)
+    setTip.default('name')
     $button.delete.hide()
     $button.upsert.html(null)
     $title.upsert.html(null)
@@ -126,6 +162,7 @@ const displayTeams = () => {
                         $(`#${descId}`).val(description)
 
                         $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
+                        setTip.passed('name')
                         $button.upsert.html('Update')
                         if (!companies && !users) $button.delete.show()
                         countDescChars(description)

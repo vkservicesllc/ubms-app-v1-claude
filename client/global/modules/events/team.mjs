@@ -8,7 +8,7 @@ const { nameId, descId } = formSelectors.team
 
 
 export const teamNameEvent = (callback = {}) => {
-    const { onInput, onChange, onAjax, onFocus, onBlur } = callback
+    const { onInput, onChange, onFocus, onBlur } = callback
 
     inputEvent(nameId, {
         strip: true,
@@ -20,7 +20,6 @@ export const teamNameEvent = (callback = {}) => {
             if (onInput) onInput(name, $name, caret)
         },
         onChange,
-        onAjax, //? need to test, possible needs to be inside onChange
         onFocus,
         onBlur,
     })
@@ -31,6 +30,7 @@ export const teamDescEvent = (callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback
 
     inputEvent(descId, {
+        strip: true,
         onInput(desc, $desc, caret) {
             desc = capitalizeAfterPunctuation(desc)
 

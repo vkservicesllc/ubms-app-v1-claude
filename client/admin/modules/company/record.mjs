@@ -1,8 +1,8 @@
+import Tip from '../assets/tip.mjs'
 import { busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '../events/company.mjs'
 import { urlEvent } from '../events/web.mjs'
 import { inputEvent, selectEvent } from '../events/form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
-import Tip from '../assets/tip.mjs'
 import getIdFromUrl from '../assets/id.mjs'
 
 const { catId, sinceId, einId, dunsId, busNameId, coTypeId, aliasId, websiteId } = formSelectors.company
