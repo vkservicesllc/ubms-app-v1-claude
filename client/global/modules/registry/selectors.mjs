@@ -51,6 +51,7 @@ export const formSelectors = {
         busNameId: 'company-busname',
         coTypeId: 'company-cotype',
         aliasId: 'company-alias',
+        websiteId: 'company-website',
         ownershipId: 'company-ownership',
         addr1Id: 'company-address1',
         addr2Id: 'company-address2',

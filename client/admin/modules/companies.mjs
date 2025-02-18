@@ -107,8 +107,12 @@ $.when(statusReq).done(statusRes => {
             {
                 data: 'name',
                 title: 'Name',
-                render(data) {
-                    return `<span class="has-text-weight-semibold">${escapeHTML(data)}</span>`
+                render(data, type, row) {
+                    let link = ''
+                    if (row.website)
+                        link = `&nbsp; <a href="https://${row.website}" target="_blank"><i class="fa fa-arrow-up-right-from-square has-text-grey is-size-7"></i></a>`
+
+                    return `<span class="has-text-weight-semibold">${escapeHTML(data) + link}</span>`
                 },
             },
 

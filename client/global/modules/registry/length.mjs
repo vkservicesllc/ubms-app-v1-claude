@@ -15,6 +15,14 @@ export default {
         alias: { min: 1, max: 30 },
     },
 
+    contact: {
+        email: { max: 100 },
+    },
+
+    web: {
+        url: { max: 100 },
+    },
+
     company: {
         busName: { min: 1, max: 30 },
         alias: { min: 1, max: 6 },
@@ -50,10 +58,6 @@ export default {
         efs: { max: 7 },
         fleetOne: { max: 7 },
         transflo: { max: 7 },
-    },
-
-    contact: {
-        email: { max: 100 },
     },
 
     address: {

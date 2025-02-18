@@ -1,10 +1,11 @@
 import { busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '../events/company.mjs'
+import { urlEvent } from '../events/web.mjs'
 import { inputEvent, selectEvent } from '../events/form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
 import Tip from '../assets/tip.mjs'
 import getIdFromUrl from '../assets/id.mjs'
 
-const { catId, sinceId, einId, dunsId, busNameId, coTypeId, aliasId } = formSelectors.company
+const { catId, sinceId, einId, dunsId, busNameId, coTypeId, aliasId, websiteId } = formSelectors.company
 
 const id = getIdFromUrl()
 const duns = $(`#${dunsId}`).val()
@@ -16,6 +17,7 @@ const $tip = {
     alias: $('#alias-tip'),
     ein: $('#ein-tip'),
     duns: $('#duns-tip'),
+    website: $('#website-tip'),
     form: $('#company-form-tip'),
 }
 
@@ -134,6 +136,16 @@ aliasEvent(aliasId, {
         const current = alias === currentAlias
 
         handleChange({ data: { alias }, key: 'alias', current })
+    },
+})
+
+urlEvent(websiteId, {
+    onInput() {
+        $tip.website.html(null)
+    },
+    onChange(website, valid, $website) {
+        if (website && !valid)
+            $tip.website.html('<i class="fa fa-triangle-exclamation"></i> Invalid website')
     },
 })
 

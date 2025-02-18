@@ -22,11 +22,11 @@ export const emailEvent = (id, callback = {}) => {
 
     inputEvent(id, {
         lower: true,
-        onInput(email, $email) {
+        onInput(email, $email, caret) {
             email = patterns.replace(email, 'email')
 
-            $email.val(email)
-            if (onInput) onInput(email, $email)
+            $email.val(email).caret(caret || caret.end)
+            if (onInput) onInput(email, $email, caret)
         },
         onChange(email, $email) {
             if (onChange) {

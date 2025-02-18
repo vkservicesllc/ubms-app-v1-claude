@@ -10,6 +10,7 @@ export default {
         password: new RegExp(`^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&-])[A-Za-z\\d@$!%*?&-]{${password.min},${password.max}}$`),
         token: new RegExp(`^\\d{${token.min},${token.max}}$`),
         email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        url: /^([\w.-]+\.[a-z]{2,6})(\/[^\s]*)?$/i,
         suffix: /(\bjr\b|\bsr\b)/i,
         coType: /(\binc\b|\bllc\b)/i,
         addr2: /\b(suite|ste|unit|apt)\b\.?.*?$/i,
@@ -26,6 +27,10 @@ export default {
             [ /-+/g, '-' ],
             [ /\_+/g, '_' ],
             [ /@+/g, '@' ],
+        ],
+        url: [
+            [ /^https?:\/\//, '' ],
+            [ /\s+/g, '' ],
         ],
         name: [
             [ /[^\sA-Za-z'-]/g, '' ],

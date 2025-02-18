@@ -62,10 +62,10 @@ export default class {
             const company = await Company.data(res.session, { _id })
             if (!company) return throwErr.server(res, errMsg.company)
 
-            const { catId, since, ein, duns, busName, coType, alias } = req.body
+            const { catId, since, ein, duns, website, busName, coType, alias } = req.body
             let error
 
-            ({ error } = await company.modify(res.session, 'companies', { catId, since, ein, duns }))
+            ({ error } = await company.modify(res.session, 'companies', { catId, since, ein, duns, website }))
             if (!error)
                ({ error } = await company.modify(res.session, 'names', { busName, coType, alias }))
             if (error) return throwErr.server(res, error)
@@ -399,6 +399,11 @@ const display = (data, ein) => {
 
         display.data.ein = formatEin(ein)
         display.data.type = typeList[data.coType]
+        display.data.website = na
+        if (data.website) {
+            const href = `https://${data.website}`
+            display.data.website = `<a href="${href}" target="_blank">${href}</a>`
+        }
     }
 
     if (data.since) {
@@ -507,7 +512,7 @@ export const companyById = async (req, res) => {
             steps[block] = step
             visibility[block] = hidden
         }
-        let catId, since, ein, duns, busName, coType, alias
+        let catId, since, ein, duns, busName, coType, alias, website
 
 
         /* Current Company */
@@ -515,7 +520,7 @@ export const companyById = async (req, res) => {
             data = await Company.data(res.session, { _id })
             if (!data) return respond404(res)
 
-            {({ _id, catId, since, duns, busName, coType, alias } = data)}
+            {({ _id, catId, since, duns, busName, coType, alias, website } = data)}
             ein = await data.ein(res.session)
 
             const { name, owner } = data
@@ -800,6 +805,7 @@ export const companyById = async (req, res) => {
         label.busName = Label.busName({ class: labelClassRequired })
         label.coType = Label.coType({ class: labelClassRequired })
         label.alias = Label.alias({ class: labelClassRequired })
+        label.website = Label.website({ class: labelClass })
         /* Input/Select */
         select.catId = Select.catId({ tabs: 5, value: catId, options: { emptyOpt: '--' } })
         input.since = Input.since({ class: 'input', value: since })
@@ -808,6 +814,7 @@ export const companyById = async (req, res) => {
         input.busName = Input.busName({ class: 'input', value: busName })
         select.coType = Select.coType({ tabs: 5, value: coType, options: { emptyOpt: '--' } })
         input.alias = Input.alias({ class: 'input', value: alias })
+        input.website = Input.website({ class: 'input', value: website })
         /* Submit */
         {
             const { content, style } = submitProps.record

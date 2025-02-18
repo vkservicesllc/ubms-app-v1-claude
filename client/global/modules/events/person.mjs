@@ -9,12 +9,12 @@ export const nameEvent = (id, options = {}) => {
 
     inputEvent(id, {
         strip: true,
-        onInput(name, $name) {
+        onInput(name, $name, caret) {
             name = patterns.replace(name, 'name')
             name = capitalizeEach(name)
 
-            $name.val(name)
-            if (onInput) onInput(name, $name)
+            $name.val(name).caret(caret || caret.end)
+            if (onInput) onInput(name, $name, caret)
         },
         onChange(name, $name) {
             if (sfxId) {

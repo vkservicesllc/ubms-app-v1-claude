@@ -13,11 +13,11 @@ export const usernameEvent = (callback = {}) => {
     inputEvent(userId, {
         lower: true,
         strip: true,
-        onInput(username, $username) {
+        onInput(username, $username, caret) {
             username = patterns.replace(username, 'username')
 
-            $username.val(username)
-            if (onInput) onInput(username, $username)
+            $username.val(username).caret(caret || caret.end)
+            if (onInput) onInput(username, $username, caret)
         },
         onChange(username, $username) {
             if (onChange) {
@@ -54,8 +54,8 @@ export const passwordEvent = (flag, callback = {}) => {
     const key = { current: 'passId', new: 'newPassId', confirm: 'confPassId' }[flag]
 
     inputEvent(formSelectors.user[key], {
-        onInput(password, $password) {
-            if (onInput) onInput($password)
+        onInput(password, $password, caret) {
+            if (onInput) onInput($password, caret)
         },
         onChange(password, $password) {
             if (onChange) {
@@ -90,11 +90,11 @@ export const tokenEvent = (callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback
 
     inputEvent(tokenId, {
-        onInput(token, $token) {
+        onInput(token, $token, caret) {
             token = token.replace(/[\D]/g, '')
 
-            $token.val(token)
-            if (onInput) onInput(token, $token)
+            $token.val(token).caret(caret || caret.end)
+            if (onInput) onInput(token, $token, caret)
         },
         onChange(token, $token) {
             if (onChange) {
@@ -198,11 +198,11 @@ export const roleNameEvent = (id, locationId, catId, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
-        onInput(name, $name) {
+        onInput(name, $name, caret) {
             name = patterns.replace(name, 'roleName')
 
-            $name.val(name)
-            if (onInput) onInput(name, $name)
+            $name.val(name).caret(caret || caret.end)
+            if (onInput) onInput(name, $name, caret)
         },
         onChange(name, $name) {
             //! need to determine

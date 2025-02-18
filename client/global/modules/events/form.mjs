@@ -64,13 +64,14 @@ export const inputEvent = (selector, options = {}) => {
 
     $input
         .on('input', function() {
+            const caret = $(this).caret()
             const { onInput } = options
             let value = slim(english($(this).val()))
             if (lower) value = value.toLowerCase()
             if (upper) value = value.toUpperCase()
 
-            $(this).val(value)
-            if (onInput) onInput(value, $(this))
+            $(this).val(value).caret(caret || caret.end)
+            if (onInput) onInput(value, $(this), caret)
         })
         .on('change', function() {
             const { onChange } = options

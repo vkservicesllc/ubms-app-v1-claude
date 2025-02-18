@@ -12,12 +12,12 @@ export const teamNameEvent = (callback = {}) => {
 
     inputEvent(nameId, {
         strip: true,
-        onInput(name, $name) {
+        onInput(name, $name, caret) {
             name = patterns.replace(name, 'teamName')
             name = capitalizeEach(name)
 
-            $name.val(name)
-            if (onInput) onInput(name, $name)
+            $name.val(name).caret(caret || caret.end)
+            if (onInput) onInput(name, $name, caret)
         },
         onChange,
         onAjax, //? need to test, possible needs to be inside onChange
@@ -31,11 +31,11 @@ export const teamDescEvent = (callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback
 
     inputEvent(descId, {
-        onInput(desc, $desc) {
+        onInput(desc, $desc, caret) {
             desc = capitalizeAfterPunctuation(desc)
 
-            $desc.val(desc)
-            if (onInput) onInput(desc, $desc)
+            $desc.val(desc).caret(caret || caret.end)
+            if (onInput) onInput(desc, $desc, caret)
         },
         onChange(desc, $desc) {
             desc = desc.trim()

@@ -16,6 +16,7 @@ import {
     validateStateUS,
     validateTel,
     validateEmail,
+    validateUrl,
 } from './default.mjs'
 
 const { body } = require('express-validator')
@@ -89,6 +90,7 @@ export const validateCompany = [
     validateBusName(),
     validateCoType(),
     validateAlias(),
+    validateUrl('website'),
     validateDate('since', true),
 ]
 

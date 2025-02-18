@@ -10,12 +10,12 @@ export const busNameEvent = (id, coTypeId, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
-        onInput(busName, $busName) {
+        onInput(busName, $busName, caret) {
             busName = capitalizeEach(busName)
             busName = patterns.replace(busName, 'busName')
 
-            $busName.val(busName)
-            if (onInput) onInput(busName, $busName)
+            $busName.val(busName).caret(caret || caret.end)
+            if (onInput) onInput(busName, $busName, caret)
         },
         onChange(busName, $busName) {
             const $coType = $(`#${coTypeId}`)
@@ -67,11 +67,11 @@ export const aliasEvent = (id, callback = {}) => {
 
     inputEvent(id, {
         upper: true,
-        onInput(alias, $alias) {
+        onInput(alias, $alias, caret) {
             alias = alias.replace(/[^A-Z]/, '')
 
-            $alias.val(alias)
-            if (onInput) onInput(alias, $alias)
+            $alias.val(alias).caret(caret || caret.end)
+            if (onInput) onInput(alias, $alias, caret)
         },
         onChange,
         onFocus,

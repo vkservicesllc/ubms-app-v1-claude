@@ -11,11 +11,11 @@ export const addr1Event = (id, options = {}) => {
 
     inputEvent(id, {
         strip: true,
-        onInput(addr1, $addr1) {
+        onInput(addr1, $addr1, caret) {
             addr1 = capitalizeEach(addr1)
 
-            $addr1.val(addr1)
-            if (onInput) onInput(addr1, $addr1)
+            $addr1.val(addr1).caret(caret || caret.end)
+            if (onInput) onInput(addr1, $addr1, caret)
         },
         onChange(addr1, $addr1) {
             addr1 = patterns.replace(addr1, 'addr1')
@@ -51,11 +51,11 @@ export const addr2Event = (id, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
-        onInput(addr2, $addr2) {
+        onInput(addr2, $addr2, caret) {
             addr2 = capitalizeEach(addr2)
 
-            $addr2.val(addr2)
-            if (onInput) onInput(addr2, $addr2)
+            $addr2.val(addr2).caret(caret || caret.end)
+            if (onInput) onInput(addr2, $addr2, caret)
         },
         onChange(addr2, $addr2) {
             addr2 = patterns.replace(addr2, 'addr2')
@@ -73,15 +73,15 @@ export const zipEvent = (id, options = {}) => {
     const { cityId, stateId, onInput, onChange, onFocus, onBlur } = options
 
     inputEvent(id, {
-        onInput(zip, $zip) {
+        onInput(zip, $zip, caret) {
             zip = patterns.replace(zip, 'zip')
 
             const { length } = zip
             const maxLength = $zip.attr('maxlength')
 
-            $zip.val(zip)
+            $zip.val(zip).caret(caret || caret.end)
             if (length == maxLength) $zip.blur()
-            if (onInput) onInput(zip, $zip)
+            if (onInput) onInput(zip, $zip, caret)
         },
         onChange(zip, $zip) {
             if (cityId || stateId)
@@ -110,12 +110,12 @@ export const cityEvent = (id, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
-        onInput(city, $city) {
+        onInput(city, $city, caret) {
             city = capitalizeEach(city)
             city = patterns.replace(city, 'city')
 
-            $city.val(city)
-            if (onInput) onInput(city, $city)
+            $city.val(city).caret(caret || caret.end)
+            if (onInput) onInput(city, $city, caret)
         },
         onChange,
         onFocus,

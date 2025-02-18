@@ -51,6 +51,7 @@ class Company {
         this.category = Company.categoryList[data.catId].item[1]
         this.group = Company.categoryList[data.catId].group
         this.duns = data.duns
+        this.website = data.website
         this.route = data.route
         this.active = data.active
         this.confirmed = data.confirmed
@@ -541,7 +542,7 @@ class Company {
             {
                 table: 'companies',
                 fields: [
-                    Company.hashId(), 'catId', { aes: [ 'ein', secret.ein ] }, 'duns',
+                    Company.hashId(), 'catId', { aes: [ 'ein', secret.ein ] }, 'duns', 'website',
                     'since', 'until', 'global', 'active', 'confirmed', 'logo', 'style',
                 ],
             },

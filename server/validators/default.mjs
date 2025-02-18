@@ -184,7 +184,12 @@ export const validateSsn = (field, required = false) => {
 export const validateEmail = (field, required = false) => {
     let chain = body(field || 'email')
         .trim()
-        .customSanitizer(value => value ? patterns.replace(value, 'email') : null)
+        .customSanitizer(value => {
+            value = value ? patterns.replace(value, 'email') : null
+            if (value && !patterns.match.email.test(value)) value = null
+
+            return value
+        })
 
     if (!required) chain = chain.optional({ nullable: true })
     else chain = chain
@@ -196,6 +201,30 @@ export const validateEmail = (field, required = false) => {
             .withMessage('Incorrect email address provided')
         .isLength(inputLength.contact.email)
         .normalizeEmail()  /* Removes dots from Gmail addresses */
+
+    return chain
+}
+
+
+export const validateUrl = (field, required = false) => {
+    let chain = body(field || 'url')
+        .trim()
+        .customSanitizer(value => {
+            value = value ? patterns.replace(value, 'url') : null
+            if (value && !patterns.match.url.test(value)) value = null
+
+            return value
+        })
+
+    if (!required) chain = chain.optional({ nullable: true })
+    else chain = chain
+        .notEmpty()
+            .withMessage('URL must not be empty')
+
+    chain = chain
+        .isURL()
+            .withMessage('Incorrect URL provided')
+        .isLength(inputLength.web.url)
 
     return chain
 }

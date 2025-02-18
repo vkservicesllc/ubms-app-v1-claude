@@ -8,7 +8,7 @@ import { reformatDateString } from '../../client/global/modules/tools/date.mjs'
 import Company, { Owner } from '../assets/company.mjs'
 
 
-const { id, busNameId, coTypeId, aliasId, einId, dunsId, sinceId, catId, ownershipId } = formSelectors.company
+const { id, busNameId, coTypeId, aliasId, websiteId, einId, dunsId, sinceId, catId, ownershipId } = formSelectors.company
 const {
     id: ownerId,
     class: ownerClass,
@@ -40,7 +40,7 @@ export class Label {
     })
 
     static alias = (props = {}) => formLabel({
-        content: 'Alias (ID/Code)',
+        content: 'Alias',
         ...props,
         for: aliasId,
         addClass: 'required',
@@ -73,6 +73,12 @@ export class Label {
         for: catId,
         ...props,
         addClass: 'required',
+    })
+
+    static website = (props = {}) => formLabel({
+        content: 'Website',
+        for: websiteId,
+        ...props,
     })
 
     static ownership = (props = {}) => formLabel({
@@ -200,6 +206,14 @@ export class Input {
             required: current === false,
         })
     }
+
+    static website = (props = {}) => formInput({
+        ...props,
+        // type: 'url',
+        id: websiteId,
+        name: 'website',
+        maxLength: inputLength.web.url.max,
+    })
 
     static ein = (props = {}, current = false) => {
         const type = current === true ? 'hidden' : 'text'

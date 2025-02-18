@@ -16,6 +16,7 @@ emailEvent(emailId, {
         if ($tip.email.html()) $tip.email.html(null)
     },
     onChange(email, valid) {
-        if (email && !valid) $tip.email.html('<i class="fa fa-triangle-exclamation"></i> Invalid email')
+        if (email && !valid)
+            $tip.email.html('<i class="fa fa-triangle-exclamation"></i> Invalid email')
     },
 })
