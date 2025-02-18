@@ -20,7 +20,7 @@ export const teamNameEvent = (callback = {}) => {
             if (onInput) onInput(name, $name)
         },
         onChange,
-        onAjax,
+        onAjax, //? need to test, possible needs to be inside onChange
         onFocus,
         onBlur,
     })

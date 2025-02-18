@@ -1,4 +1,5 @@
 {{> admin/nav.alpha}}
+                {{#if (eq user.DS true)}}
 
                 <div class="tabs" id="users-tabs">
                     <ul>
@@ -7,6 +8,7 @@
                         <li class="tab-link is-active" data-section="carrier-roles"><a>Carrier Roles</a></li>
                     </ul>
                 </div>
+                {{/if}}
 
                 <section class="tab-section" id="users-section">
                     <table class="table" id="users-table"></table>
@@ -205,6 +207,7 @@
 
                     {{/if}}
                 </section>
+                {{#if (eq user.DS true)}}
 
                 <section class="tab-section" id="default-roles-section">
 
@@ -238,7 +241,6 @@
                                 </style>
                                 <form action="/resource/role/carrier" method="POST" autocomplete="off">
                                     <button class="delete is-pulled-right"></button>
-                                    <input type="hidden" name="catId" value="crr" />
                                     {{{input.carrierRoleId}}}
                                     <div class="columns">
                                         <div class="column is-one-third">
@@ -264,10 +266,7 @@
                                     <table class="table is-fullwidth is-narrow mt-4">
                                         <thead>
                                             <tr>
-                                                <th colspan="7">CDL Drivers</th>
-                                            </tr>
-                                            <tr>
-                                                <th class="top-header">Permission</th>
+                                                <th>DRIVERS</th>
                                                 <th class="top-header checkbox-header">View</th>
                                                 <th class="top-header checkbox-header">Comment</th>
                                                 <th class="top-header checkbox-header">Create</th>
@@ -279,12 +278,12 @@
                                         <tbody>
                                             <tr>
                                                 <td>Pre-Applications</td>
-                                                <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                                <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                                <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                                <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                                <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                                <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                                <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="v" /></label></td>
+                                                <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="c" /></label></td>
+                                                <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="a" /></label></td>
+                                                <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="e" /></label></td>
+                                                <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="u" /></label></td>
+                                                <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="d" /></label></td>
                                             </tr>
                                             <tr>
                                                 <td>Applications</td>
@@ -321,5 +320,7 @@
                         </div>
                     </div>
                 </section>
+                <script type="module" src="/modules/users.carrier-roles.mjs"></script>
+                {{/if}}
 
 {{> admin/nav.omega}}

@@ -3,7 +3,7 @@ const throwErr = require('../tools/error').api
 
 /* Assets */
 import Individual from '../assets/individual.mjs'
-import User from '../assets/user.mjs'
+import User, { Role } from '../assets/user.mjs'
 import Team from '../assets/team.mjs'
 import Company, { Owner } from '../assets/company.mjs'
 import Carrier from '../assets/carrier.mjs'
@@ -56,6 +56,22 @@ router.post('/unique/:env', User.verify, async (req, res) => {
         response.error = error
 
         res.send(response)
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+router.post('/unique/original/:env', User.verify, async (req, res) => {
+    try {
+        const { env } = req.params
+        const { _id } = req.body
+        delete req.body._id
+
+        const Src = { Role }[capitalizeFirst(env)]
+        const instance = await Src.data(res.session, { _id })
+
+        res.send(await instance.unique(res.session, req.body))
     } catch (err) {
         throwErr.server(res, null, err, false)
     }

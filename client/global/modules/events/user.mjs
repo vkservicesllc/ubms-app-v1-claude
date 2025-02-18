@@ -191,3 +191,23 @@ export const registerEvent = onSubmit => {
         $(`.${userClass}`).removeAttr('disabled')
     }, 750)
 }
+
+
+export const roleNameEvent = (id, locationId, catId, callback = {}) => {
+    const { onInput, onChange, onAjax, onFocus, onBlur } = callback
+
+    inputEvent(id, {
+        strip: true,
+        onInput(name, $name) {
+            name = patterns.replace(name, 'roleName')
+
+            $name.val(name)
+            if (onInput) onInput(name, $name)
+        },
+        onChange(name, $name) {
+            //! need to determine
+        },
+        onFocus,
+        onBlur,
+    })
+}

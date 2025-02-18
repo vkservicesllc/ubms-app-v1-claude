@@ -88,6 +88,13 @@ export default {
             [ /&+/g, '&' ],
             [ /'+/g, "'" ],
         ],
+        roleName: [
+            [ /[^\sA-Za-z0-9\-&']/g, '' ],
+            [ /\s+/g, ' ' ],
+            [ /-+/g, '-' ],
+            [ /&+/g, '&' ],
+            [ /'+/g, "'" ],
+        ],
     },
 
     replace: function(value, target) {

@@ -1066,6 +1066,29 @@ class Role {
                 }))
             }
 
+
+            this.unique = async (session, params = {}) => {
+                let unique = false, original = true,
+                    error = error = sessionError(session, { branches: [ 'admin', 'user' ] })
+
+                if (!error) {
+                    const { name, catId, location } = params
+                    if (
+                        (name != this.name) ||
+                        (name == this.name && catId != this.catId) ||
+                        (name == this.name && catId == this.catId && location != this.location[0])
+                    ) {
+                        original = false
+
+                        const { found, error: sError } = await Role.find(session, params)
+                        if (sError) error = sError
+                        else unique = !found
+                    }
+                }
+
+                return { unique, original, error }
+            }
+
         }
     }
 
@@ -1145,6 +1168,23 @@ class Role {
         list.forEach((data, i, arr) => arr[i] = new Role(data, true))
 
         return list
+    }
+
+
+    static find = async (session, params = {}) => {
+        if (!session?.user) return { error: 'Invalid User' }
+
+        const { name, catId, location } = params
+        if (!name && !catId) return { error: 'Invalid Parameters' }
+
+        let found = false
+
+        const data = (await mysql.execute(query.roles.select('id', {
+            match: { name, catId, location },
+        })))[0]
+        found = data.length == 1
+
+        return { found }
     }
 
 

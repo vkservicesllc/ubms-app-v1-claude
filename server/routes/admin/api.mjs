@@ -2,7 +2,7 @@ const router = require('express').Router()
 const throwErr = require('../../tools/error').api
 
 /* Assets */
-import User, { superAdminUserOnly, developerOnly } from '../../assets/user.mjs'
+import User, { Role, superAdminUserOnly, developerOnly } from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
 import Company, { Owner } from '../../assets/company.mjs'
 import Carrier from '../../assets/carrier.mjs'
@@ -38,7 +38,7 @@ router.post('/flush/:env/:_id/:target?', User.verify, developerOnly, async (req,
         const { env, _id, target } = req.params
         let success = false
 
-        const Src = { User, Team, Individual, Company, Owner, Carrier }[capitalizeFirst(env)]
+        const Src = { User, Role, Team, Individual, Company, Owner, Carrier }[capitalizeFirst(env)]
         const instance = await Src.data(res.session, { _id })
         const [ result ] = await instance.flush(target)
         if (result.affectedRows == 1) success = true
