@@ -216,14 +216,44 @@ class User extends Person {
             }
 
 
-            this.teams = async (session, catId ) => {
+            this.teams = async (session, action, teamIds) => {
+                const userId = await this.id()
+
+                if (action && teamIds) {} else {
+                    const self = session?.user._id == this._id
+                    if (!session?.user?.DSA && !self) return
+
+                    const { DS, DSA } = this
+
+                    const data = { all: [], available: [], applied: [] }
+                    const teams = await Team.list(session)
+
+                    //? if sessionUser is Admin, filter their teams ONLY, even applied
+                    const batch = [
+                        {
+                            table: 'teams_users',
+                            match: { userId },
+                        },
+                        {
+                            table: 'teams',
+                            fields: [ Team.hashId(), 'name', 'catId' ],
+                            join: [ 'id', 'teamId' ],
+                        },
+                    ]
+                    //? if session user is admin and not self, then find teams applied to admin
+
+                    return data
+                }
+            }
+
+
+/*            this.teams = async session => {
                 if (!session?.user?.DS && session?.user._id != this._id) return
 
                 const { DS } = this
                 const data = { all: [], available: [], applied: [] }
-                
 
-                const teams = await Team.list(session, { catId })
+                const teams = await Team.list(session)
                 teams.map(team => {
                     const { _id, name } = team
 
@@ -244,7 +274,6 @@ class User extends Person {
                             table: 'teams',
                             fields: [ Team.hashId(), 'name' ],
                             join: [ 'id', 'teamId' ],
-                            match: { catId },
                         },
                     ]
 
@@ -265,7 +294,7 @@ class User extends Person {
                 data.available = sortArrayByObjectKey(data.available, 'name')
 
                 return data
-            }
+            }   */
 
 
             this.modify = async (session, data) => {

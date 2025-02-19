@@ -14,6 +14,7 @@ import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Local Constants */
 import { labelClass, labelClassRequired } from './constants.mjs'
+import { respond404 } from '../../tools/response.mjs'
 
 
 
@@ -108,23 +109,32 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
         const { active } = hbs.nav
         hbs.nav.users = active
 
-        const { identifier } = req.params
-        let user = await User.data(res.session, { username: identifier })
-        if (!user) user = await User.data(res.session, { _id: identifier })
-        const { name, email, username, condition, status, location } = user
+        try {
+            const { identifier } = req.params
+            let user = await User.data(res.session, { username: identifier })
+            if (!user) user = await User.data(res.session, { _id: identifier })
+            const { name, email, username, condition, status, location } = user
+            const sessionUser = res.session.user
 
-        const display = {
-            name: `<span class="has-text-weight-bold">${name}</span>`,
-            condition: username ? condition[1] : 'Not Registered',
-            status: status[1],
-            location: location[1],
+            if (sessionUser.status[0] == 'A' && user.DS) return respond404(res)
+
+            const display = {
+                name: `<span class="has-text-weight-bold">${name}</span>`,
+                condition: username ? condition[1] : 'Not Registered',
+                status: status[1],
+                location: location[1],
+            }
+            display.name += ` <small><i>(${email})</i></small>`
+            if (!username || ['I', 'L'].includes(condition[0]))
+                display.condition = `<span class="has-text-danger-70">${display.condition}</span>`
+
+            hbs.display = display
+            hbs.data = user
+            hbs.self = user._id == sessionUser._id
+        } catch (err) {
+            return respond404(res)
         }
-        display.name += ` <small><i>(${email})</i></small>`
-        if (!username || ['I', 'L'].includes(condition[0]))
-            display.condition = `<span class="has-text-danger-70">${display.condition}</span>`
 
-        hbs.display = display
-        hbs.data= user
         res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)

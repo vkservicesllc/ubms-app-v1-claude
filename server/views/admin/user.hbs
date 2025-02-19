@@ -37,7 +37,11 @@
                         </div>
                     </div>
                 </div>
-                {{#if (eq data.DS false)}}
+                {{#if (
+                    and
+                        (eq data.DS false)
+                        (eq self false)
+                )}}
 
                 <style>
                     .box-column {
@@ -63,10 +67,7 @@
                                         <label class="label">Available Roles</label>
                                         <div class="select is-multiple is-fullwidth">
                                             <select id="available-roles" name="roles" multiple>
-                                                <option value="">Registration</option>
-                                                <option value="">Insurance</option>
-                                                <optgroup label="Carrier"><option value="">Recruiter</option><option value="">Dispatcher</option></optgroup>
-                                                <optgroup label="School"><option value="">Teacher</option></optgroup>
+                                                <optgroup><option value=""></option></optgroup>
                                             </select>
                                         </div>
                                     </form>
@@ -133,7 +134,15 @@
                 {{/if}}
                 {{#if (eq data.DS true)}}
 
-                <p class="has-text-success-45 mt-4">All roles and teams are automatically available to this user</p>
+                <p class="has-text-success-45 mt-4">All permissions and teams are automatically available to this user</p>
+                {{/if}}
+                {{#if (
+                    and
+                        (eq self true)
+                        (eq data.DS false)
+                )}}
+
+                <p class="has-text-danger-70 mt-4">Roles and teams are to be assigned by a super admin or another admin</p>
                 {{/if}}
 
 {{> admin/nav.omega}}

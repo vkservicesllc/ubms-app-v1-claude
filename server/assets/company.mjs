@@ -19,7 +19,7 @@ import Query, { hash, matchHash } from '../tools/query.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
 import { encrypt } from '../tools/crypto.mjs'
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
-import { numberic } from '../../client/global/modules/tools/number.mjs'
+import { numeric } from '../../client/global/modules/tools/number.mjs'
 import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 import strip, { ein as formatEin, ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
 import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
@@ -202,7 +202,7 @@ class Company {
                     }
 
                     for (let teamId of teamIds) {
-                        if (!numberic(teamId))
+                        if (!numeric(teamId))
                             teamId = await (await Team.data(session, { _id: teamId })).id()
 
                         try {
@@ -616,7 +616,7 @@ class Company {
             const teams = await user.teams(session)
             let teamId = []
             teams.applied.forEach(team => teamId.push(team.id))
-            if (!teamId.length) teamId = null
+            if (!teamId.length) teamId = 0
 
             batch.push({
                 table: 'teams_companies',

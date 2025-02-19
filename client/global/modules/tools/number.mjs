@@ -1,1 +1,1 @@
-export const numberic = value => !isNaN(value) && isFinite(value)
+export const numeric = value => !isNaN(value) && isFinite(value)
