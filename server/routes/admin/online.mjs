@@ -128,8 +128,13 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
             if (!username || ['I', 'L'].includes(condition[0]))
                 display.condition = `<span class="has-text-danger-70">${display.condition}</span>`
 
+            const input = {
+                id: UserInput.id(user._id),
+            }
+
             hbs.display = display
             hbs.data = user
+            hbs.input = input
             hbs.self = user._id == sessionUser._id
         } catch (err) {
             return respond404(res)

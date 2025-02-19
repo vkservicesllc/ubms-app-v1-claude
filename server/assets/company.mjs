@@ -458,12 +458,12 @@ class Company {
     static #algorithm = 'SHA-256'
 
     static categoryList = {
-        'crr': {  item: [ 'Carriers', 'Carrier' ],      group: 'Logistics',     path: [ 'carriers', 'carrier' ]      },
-        'brk': {  item: [ 'Brokers', 'Broker' ],        group: 'Brokerage',     path: [ 'brokers', 'broker' ]        },
-        'whs': {  item: [ 'Warehouses', 'Warehouse' ],  group: 'Storage',       path: [ 'warehouses', 'warehouse' ]  },
-        'shp': {  item: [ 'Shops', 'Shop' ],            group: 'Shops',         path: [ 'shops', 'shop' ]            },
-        'scl': {  item: [ 'Schools', 'School' ],        group: 'CDL Training',  path: [ 'schools', 'school' ]        },
-        'cst': {  item: [ 'Builders', 'Builder' ],      group: 'Construction',  path: [ 'builders', 'builder' ]      },
+        'crr': {  branch: 'carrier',       item: [ 'Carriers', 'Carrier' ],      group: 'Logistics',     path: [ 'carriers', 'carrier' ]      },
+        'brk': {  branch: 'broker',        item: [ 'Brokers', 'Broker' ],        group: 'Brokerage',     path: [ 'brokers', 'broker' ]        },
+        'whs': {  branch: 'warehouse',     item: [ 'Warehouses', 'Warehouse' ],  group: 'Storage',       path: [ 'warehouses', 'warehouse' ]  },
+        'shp': {  branch: 'shop',          item: [ 'Shops', 'Shop' ],            group: 'Shops',         path: [ 'shops', 'shop' ]            },
+        'scl': {  branch: 'school',        item: [ 'Schools', 'School' ],        group: 'CDL Training',  path: [ 'schools', 'school' ]        },
+        'cst': {  branch: 'construction',  item: [ 'Builders', 'Builder' ],      group: 'Construction',  path: [ 'builders', 'builder' ]      },
     }
 
     static typeList = {
@@ -495,6 +495,21 @@ class Company {
     static hashId = (field = 'id') => hash(field, Company.#algorithm)
 
     static matchIdHash = value => matchHash(value, Company.#algorithm)
+
+
+    static catId = branch => {
+        let catId
+        const list = Company.categoryList
+
+        for (const key in list) {
+            if (branch == list[key].branch) {
+                catId = key
+                break
+            }
+        }
+
+        return catId
+    }
 
 
     static create = async (session, data) => {

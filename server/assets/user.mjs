@@ -20,6 +20,7 @@ import db from '../settings/mysql.mjs'
 /* Assets */
 import Person from '../../client/global/modules/assets/person.mjs'
 import Team from './team.mjs'
+import Company from './company.mjs'
 
 /* Tools */
 import Query, { hash, matchHash } from '../tools/query.mjs'
@@ -219,16 +220,17 @@ class User extends Person {
             this.teams = async (session, action, teamIds) => {
                 const userId = await this.id()
 
-                if (action && teamIds) {} else {
-                    const self = session?.user._id == this._id
-                    if (!session?.user?.DSA && !self) return
+                if (action && teamIds) {
+                    //! action not finished yet
 
-                    const { DS, DSA } = this
+                } else {
+                    if (!session?.user) return
+
+                    const sessionUser = session.user
+                    const self = sessionUser._id == this._id
+                    if (!self && !sessionUser.DSA) return
 
                     const data = { all: [], available: [], applied: [] }
-                    const teams = await Team.list(session)
-
-                    //? if sessionUser is Admin, filter their teams ONLY, even applied
                     const batch = [
                         {
                             table: 'teams_users',
@@ -236,11 +238,53 @@ class User extends Person {
                         },
                         {
                             table: 'teams',
-                            fields: [ Team.hashId(), 'name', 'catId' ],
+                            fields: [ Team.hashId(), 'name' ],
                             join: [ 'id', 'teamId' ],
                         },
                     ]
-                    //? if session user is admin and not self, then find teams applied to admin
+
+                    if (self) { /* Filter when SESSION USER in Company Branch */
+                        delete data.all
+                        delete data.available
+
+                        const { branch } = res.session
+                        const catId = Company.catId(branch)
+                        const teams = await Team.data(session, { catId })
+
+                        if (sessionUser.DS) {
+                            teams.map(team => {
+                                const { _id, name } = team
+                                data.applied.push({ _id, name })
+                            })
+                        } else {
+                            batch[1].match = { catId }
+
+                            data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                        }
+
+
+                    } else {
+                        batch[1].fields.push('catId')
+
+                        const teams = await Team.data(session)
+                        data.applied = (await mysql.execute(Query.select(db.business, batch)))
+
+                        if (sessionUser.status[0] == 'A') {
+                            batch[0].match.userId = await sessionUser.id()
+
+                            const teamIds = []
+                            data.all = (await mysql.execute(Query.select(db.business, batch)))
+                            data.all.map(team => teamIds.push(team._id))
+                            data.applied = data.applied.filter(team => teamIds.includes(team._id))
+                        } else {
+                            teams.map(team => {
+                                const { _id, name, catId } = team
+                                data.all.push({ _id, name, catId })
+                            })
+                        }
+
+                        data.available = data.all.filter(team => !data.applied.some(appliedTeam => appliedTeam._id == team._id))
+                    }
 
                     return data
                 }

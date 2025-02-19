@@ -58,11 +58,12 @@
                     }
                 </style>
                 <div class="columns mt-4">
+                    {{{input.id}}}
                     <div class="column is-two-fifths box-column">
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-role-add-form" action="" method="POST">
+                                    <form id="user-role-add-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Roles</label>
                                         <div class="select is-multiple is-fullwidth">
@@ -81,7 +82,7 @@
                                     </button>
                                 </div>
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-role-delete-form" action="" method="POST">
+                                    <form id="user-role-delete-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
                                         <input type="hidden" name="action" value="-" />
                                         <label class="label">User's Roles</label>
                                         <div class="select is-multiple is-fullwidth">
@@ -98,7 +99,7 @@
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-team-add-form" action="" method="POST">
+                                    <form id="user-team-add-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Teams</label>
                                         <div class="select is-multiple is-fullwidth">
@@ -117,7 +118,7 @@
                                     </button>
                                 </div>
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-team-delete-form" action="" method="POST">
+                                    <form id="user-team-delete-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
                                         <input type="hidden" name="action" value="-" />
                                         <label class="label">User's Teams</label>
                                         <div class="select is-multiple is-fullwidth">

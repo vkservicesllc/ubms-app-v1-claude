@@ -125,7 +125,7 @@ module.exports = {
         internal: {
             css: [ ...online.internal.css, 'theme' ],
             js: [ ...online.internal.js ],
-            mjs: [ ...online.internal.mjs ],
+            mjs: [ ...online.internal.mjs, '^user' ],
         },
     },
 
