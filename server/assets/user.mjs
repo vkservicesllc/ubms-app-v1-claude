@@ -266,14 +266,14 @@ class User extends Person {
                     } else {
                         batch[1].fields.push('catId')
 
-                        const teams = await Team.data(session)
-                        data.applied = (await mysql.execute(Query.select(db.business, batch)))
+                        const teams = await Team.list(session)
+                        data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
 
                         if (sessionUser.status[0] == 'A') {
                             batch[0].match.userId = await sessionUser.id()
 
                             const teamIds = []
-                            data.all = (await mysql.execute(Query.select(db.business, batch)))
+                            data.all = (await mysql.execute(Query.select(db.business, batch)))[0]
                             data.all.map(team => teamIds.push(team._id))
                             data.applied = data.applied.filter(team => teamIds.includes(team._id))
                         } else {
@@ -284,6 +284,10 @@ class User extends Person {
                         }
 
                         data.available = data.all.filter(team => !data.applied.some(appliedTeam => appliedTeam._id == team._id))
+
+                        data.all = sortArrayByObjectKey(data.all, 'name')
+                        data.applied = sortArrayByObjectKey(data.applied, 'name')
+                        data.available = sortArrayByObjectKey(data.available, 'name')
                     }
 
                     return data

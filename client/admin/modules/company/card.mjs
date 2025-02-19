@@ -37,14 +37,14 @@ if ($('#teams-card-content').length) {
         method: 'POST',
         success(response) {
             const { data: teams } = response
-            const $options = { available: '', applied: '' }
+            const options = { available: '', applied: '' }
             const option = '<option value=""></option>'
 
-            teams.available.forEach(team => $options.available += `<option value="${team._id}">${team.name}</option>`)
-            teams.applied.forEach(team => $options.applied += `<option value="${team._id}">${team.name}</option>`)
+            teams.available.forEach(team => options.available += `<option value="${team._id}">${team.name}</option>`)
+            teams.applied.forEach(team => options.applied += `<option value="${team._id}">${team.name}</option>`)
 
-            $teams.available.html($options.available || option)
-            $teams.applied.html($options.applied || option)
+            $teams.available.html(options.available || option)
+            $teams.applied.html(options.applied || option)
 
             if (urlParams.has('teams')) {
                 $('[data-section=teams]').addClass('is-active')
