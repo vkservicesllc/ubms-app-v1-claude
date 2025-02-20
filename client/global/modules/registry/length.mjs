@@ -29,7 +29,7 @@ export default {
     },
 
     team: {
-        name: { min: 2, max: 25 },
+        name: { min: 2, max: 12 },
         desc: { max: 50 },
     },
 

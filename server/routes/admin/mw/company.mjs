@@ -899,6 +899,10 @@ export const companyByCategoryAndRoute = async (req, res) => {
         company.alias = escapeHTML(company.alias)
         company.owner.name = escapeHTML(company.owner.name)
 
+        const icon = Company.categoryList[catId].icon
+        let cardTitle = company.name
+        if (icon) cardTitle = `${icon}&nbsp;&nbsp;${cardTitle}`
+
         const key = 'company'
         let { hbs } = res
         hbs = hbs.set(key, { titlePfx: company.name })
@@ -907,6 +911,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs.nav.companies = active
 
         hbs._id = _companyId
+        hbs.cardTitle = cardTitle
         hbs.data = company
         hbs.input = input
         hbs.display = display(company, ein)

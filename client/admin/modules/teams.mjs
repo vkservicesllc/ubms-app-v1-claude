@@ -145,6 +145,8 @@ const displayTeams = () => {
 
                 html += '<div class="field is-grouped is-grouped-multiline">'
 
+                html += `<div>${categories[catId].icon || defaults.catIdIcon}</div>`
+
                 html += '<div class="control"><div class="tags has-addons">'
                 html += `<span class="tag">${categories[catId].item[0]}</span>`
                 html += `<a class="tag team-relationship ${companyStyle}" data-relationship="companies" data-team-id="${_id}">${companies}</a>`
