@@ -29,6 +29,7 @@ import transporter, { sender } from '../tools/nodemailer.mjs'
 import { generateRandomString } from '../tools/string.mjs'
 import { processData } from '../tools/database.mjs'
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
+import { numeric } from '../../client/global/modules/tools/number.mjs'
 import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 
@@ -42,11 +43,13 @@ const throwErr = require('../tools/error')
 
 const query = {
     users: new Query(db.online, 'users'),
+    roles: new Query(db.online, 'user_roles'),
     tokens: new Query(db.online, 'tokens'),
     sessions: new Query(db.online, 'sessions'),
     registration: new Query(db.online, 'user_registration'),
     passReset: new Query(db.online, 'user_passreset'),
-    roles: new Query(db.online, 'user_roles'),
+    userRoles: new Query(db.online, 'users_roles'),
+    userTeams: new Query(db.business, 'teams_users'),
 }
 
 
@@ -222,7 +225,43 @@ class User extends Person {
 
                 if (action && teamIds) {
                     //! action not finished yet
+                    let modified = false,
+                        error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+                    if (error) return { modified, error }
 
+                    if (!Array.isArray(teamIds)) teamIds = [ teamIds ]
+                    error = []
+
+                    let i = 0, modCt = 0, createdBy
+                    if (action == '-') action = 'delete'
+                    else if (action == '+') {
+                        action = 'insert'
+                        createdBy = await session.user.id()
+                    }
+
+                    for (let teamId of teamIds) {
+                        if (!numeric(teamId))
+                            teamId = await (await Team.data(session, { _id: teamId })).id()
+
+                        try {
+                            const data = { userId, teamId }
+                            if (action == 'insert') data.createdBy = createdBy
+
+                            const [ result ] = await mysql.execute(query.userTeams[action](data))
+                            if (result.affectedRows == 1) modCt++
+                        } catch (err) {
+                            error.push('DB Error: idx ' + i)
+                        }
+
+                        i++
+                    }
+
+                    if (modCt === teamIds.length) {
+                        modified = true
+                        error = undefined
+                    } else error = error.join(' / ')
+
+                    return { modified, error }
                 } else {
                     if (!session?.user) return
 

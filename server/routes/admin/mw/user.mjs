@@ -109,4 +109,23 @@ export default class {
     }
 
 
+    static updateTeams = async (req, res) => {
+        try {
+            const { _id } = req.params
+            const { action, teams: _teamIds } = req.body
+            const user = await User.data(res.session, { _id })
+
+            const { error } = await user.teams(res.session, action, _teamIds)
+            if (error) return throwErr.server(res, null, error)
+
+            const { username } = user
+            const identifier = username || _id
+
+            res.redirect(`/online/user/${identifier}`)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
 }

@@ -24,6 +24,8 @@ router.post('/user', User.verify, UserMW.devLock, validateUser, validationCheck,
 router.post('/user/modify/condition', User.verify, [ validateCondition() ], validationCheck, UserMW.modifyCondition)
 router.post('/user/delete', User.verify, UserMW.delete)
 
+router.post('/user/:_id/teams', User.verify, UserMW.updateTeams)
+
 
 
 /* Company Resource */

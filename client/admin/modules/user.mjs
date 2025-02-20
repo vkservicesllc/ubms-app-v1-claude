@@ -36,7 +36,8 @@ $.ajax(`/api/user/${_id}/teams`, {
             }
         }
 
-        $teams.available.html(options.available || option)
-        $teams.applied.html(options.applied || option)
+        $teams.available.html(options.available || optgroup)
+        $teams.applied.html(options.applied || optgroup)
+        $('.loader-wrapper').remove()
     },
 })
