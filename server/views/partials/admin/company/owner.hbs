@@ -12,8 +12,11 @@
                 <div class="columns owner-update-field" style="display: none;">
                     <div class="column is-5">
                         {{{label.ownerUpdateSince}}}
-                        <div class="control">
+                        <div class="control has-icons-left">
                             {{{input.ownerUpdateSince}}}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-calendar-days"></i>
+                            </span>
                         </div>
                     </div>
                     <div class="column is-7">
@@ -61,14 +64,20 @@
                 <div class="columns">
                     <div class="column is-5 owner-upsert-field">
                         {{{label.ownerDob}}}
-                        <div class="control">
+                        <div class="control has-icons-left">
                             {{{input.ownerDob}}}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-calendar-days"></i>
+                            </span>
                         </div>
                     </div>
                     <div class="column is-7 owner-upsert-field">
                         {{{label.ownerSsn}}}
-                        <div class="control">
+                        <div class="control has-icons-left">
                             {{{input.ownerSsn}}}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-fingerprint"></i>
+                            </span>
                         </div>
                         <p class="help is-info" id="owner-ssn-tip">Not public; encrypted</p>
                     </div>

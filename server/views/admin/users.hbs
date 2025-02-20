@@ -32,20 +32,26 @@
                                         <div class="column is-one-third">
                                             <div class="field">
                                                 {{{label.status}}}
-                                                <div class="control mt-1">
+                                                <div class="control has-icons-left mt-1">
                                                     <div class="select is-fullwidth">
                                                         {{{select.status}}}
                                                     </div>
+                                                    <span class="icon is-left">
+                                                        <i class="fas fa-user"></i>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="column is-one-third">
                                             <div class="field">
                                                 {{{label.location}}}
-                                                <div class="control mt-1">
+                                                <div class="control has-icons-left mt-1">
                                                     <div class="select is-fullwidth">
                                                         {{{select.location}}}
                                                     </div>
+                                                    <span class="icon is-left">
+                                                        <i class="fas fa-location-crosshairs"></i>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -55,8 +61,11 @@
                                         <div class="column is-two-thirds">
                                             <div class="field">
                                                 {{{label.email}}}
-                                                <div class="control mt-1">
+                                                <div class="control has-icons-left mt-1">
                                                     {{{input.email}}}
+                                                    <span class="icon is-left">
+                                                        <i class="fas fa-envelope"></i>
+                                                    </span>
                                                 </div>
                                                 <p class="help" id="user-email-help" style="display: none;"></p>
                                             </div>
@@ -64,8 +73,11 @@
                                         <div class="column">
                                             <div class="field">
                                                 {{{label.phone}}}
-                                                <div class="control mt-1">
+                                                <div class="control has-icons-left mt-1">
                                                     {{{input.phone}}}
+                                                    <span class="icon is-left">
+                                                        <i class="fas fa-mobile"></i>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -239,7 +251,7 @@
                                         width: 90px;
                                     }
                                     .tables {
-                                        max-height: 520px;
+                                        max-height: 510px;
                                         overflow-y: scroll;
                                     }
                                 </style>
@@ -258,8 +270,13 @@
                                         <div class="column is-one-quarter">
                                             <div class="field">
                                                 {{{label.carrierRoleLocation}}}
-                                                <div class="select is-fullwidth">
-                                                    {{{select.carrierRoleLocation}}}
+                                                <div class="control has-icons-left">
+                                                    <div class="select is-fullwidth">
+                                                        {{{select.carrierRoleLocation}}}
+                                                    </div>
+                                                    <span class="icon is-left">
+                                                        <i class="fas fa-location-crosshairs"></i>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>

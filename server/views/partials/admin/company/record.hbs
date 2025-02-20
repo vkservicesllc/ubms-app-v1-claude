@@ -33,14 +33,20 @@
             </div>
             <div class="column is-3">
                 {{{label.since}}}
-                <div class="control">
+                <div class="control has-icons-left">
                     {{{input.since}}}
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-calendar-days"></i>
+                    </span>
                 </div>
             </div>
             <div class="column is-3">
                 {{{label.ein}}}
-                <div class="control">
+                <div class="control has-icons-left">
                     {{{input.ein}}}
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-fingerprint"></i>
+                    </span>
                 </div>
                 <p class="help is-info" id="ein-tip">Not public; encrypted</p>
             </div>
@@ -65,8 +71,10 @@
             </div>
             <div class="column is-2">
                 {{{label.coType}}}
-                <div class="select is-fullwidth">
-                    {{{select.coType}}}
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        {{{select.coType}}}
+                    </div>
                 </div>
             </div>
             <div class="column is-2">
@@ -74,7 +82,7 @@
                 <div class="control">
                     {{{input.alias}}}
                 </div>
-                <p class="help is-info" id="alias-tip">Typically abbreviation</p>
+                <p class="help is-info" id="alias-tip">Abbreviation</p>
             </div>
             <div class="column is-4">
                 {{{label.website}}}

@@ -66,7 +66,7 @@ const handleChange = (props = {}) => {
         data,
         success(response) {
             const { unique, error } = response
-            if (error) alert(error)
+            if (input && error) alert(error)
             if (input && !current && !unique) action = 'failed'
 
             setTip[action](key)
@@ -80,11 +80,12 @@ const handleNameChange = (busName, coType) => {
     const currentBusName = $(`#current-${busNameId}`).val()
     const currentCoType = $(`#current-${coTypeId}`).val()
 
-    handleChange({
-        data: { busName, coType },
-        current: busName === currentBusName && coType === currentCoType,
-        key: 'name',
-    })
+    if (busName && coType)
+        handleChange({
+            data: { busName, coType },
+            current: busName === currentBusName && coType === currentCoType,
+            key: 'name',
+        })
 }
 
 
