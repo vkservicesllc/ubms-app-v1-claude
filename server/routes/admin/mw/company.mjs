@@ -490,6 +490,11 @@ export const companyById = async (req, res) => {
 
         /* Form */
         const label = {}, input = { current: {} }, select = {}
+        const icon = {
+            select: {
+                catId: '<i class="fas fa-file-circle-question"></i>',
+            },
+        }
         const button = { submit: {}, add: {}, edit: {}, upsert: {} }
         const saveSubmit = { style: 'is-success', content: 'Save' }
         const submitProps = {}
@@ -525,6 +530,7 @@ export const companyById = async (req, res) => {
 
             const { name, owner } = data
             const { _id: _ownerId } = owner
+            const { icon: catIdIcon } = Company.categoryList[catId]
 
             step1 = 'Record'
             titlePfx = name
@@ -537,6 +543,7 @@ export const companyById = async (req, res) => {
             visibility.ownership = ''
             actionUrl.param.record = `/${_id}/modify`
             actionUrl.query.owner = `?company=${_id}`
+            if (catIdIcon) icon.select.catId = catIdIcon
             submitProps.record = saveSubmit
 
 
@@ -845,6 +852,7 @@ export const companyById = async (req, res) => {
         hbs.label = label
         hbs.input = input
         hbs.select = select
+        hbs.icon = icon
         hbs.button = button
 
         res.render(key, hbs)

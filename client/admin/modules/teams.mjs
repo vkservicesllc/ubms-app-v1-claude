@@ -1,6 +1,7 @@
 import Tip from './assets/tip.mjs'
 import escapeHTML from '/modules/assets/html.mjs'
 import { teamNameEvent, teamDescEvent } from '/modules/events/team.mjs'
+import { catIdEvent } from '/modules/events/company.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import inputLength from '/modules/registry/length.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
@@ -10,6 +11,12 @@ const categories = $.ajax('/api/assets/company?filter=categories', { async: fals
 const interval = 30000
 const { class: teamClass, id, catId, nameId, descId } = formSelectors.team
 
+const ids = {
+    catIdIcon: 'team-category-select-icon',
+}
+const defaults = {
+    catIdIcon: $(`#${ids.catIdIcon}`).html(),
+}
 const $modal = {
     all: $('.modal'),
     upsert: $('#team-upsert-modal'),
@@ -82,6 +89,9 @@ teamNameEvent({
         })
     },
 })
+
+catIdEvent(catId, ids.catIdIcon)
+
 teamDescEvent({
     onInput(desc) {
         countDescChars(desc)
@@ -92,13 +102,18 @@ teamDescEvent({
 })
 
 const closeUpsert = () => {
+    const $catId = $(`#${catId}`)
+
     $modal.all.removeClass('is-active')
     $(`.${teamClass}`).val(null)
     setTip.default('name')
     $button.delete.hide()
     $button.upsert.html(null).removeClass('is-link is-success').prop('disabled', false)
     $title.upsert.html(null)
-    $(`#${catId}`).attr('disabled', false)
+    $catId.attr('disabled', false)
+    if (!$catId.find('option[value=""]').length)
+        $catId.prepend('<option value="">--</option>').val(null)
+    $(`#${ids.catIdIcon}`).html(defaults.catIdIcon)
     countDescChars()
 }
 
@@ -159,11 +174,13 @@ const displayTeams = () => {
                     success(response) {
                         const { _id, catId: category, name, description, count } = response.data
                         const { companies, users } = count
+                        const $catId = $(`#${catId}`)
 
                         $(`#${id}`).val(_id)
                         $(`#current-${nameId}, #${nameId}`).val(name)
-                        $(`#${catId}`).val(category)
-                        if (companies) $(`#${catId}`).attr('disabled', true)
+                        $catId.val(category).find('option[value=""]').remove()
+                        if (companies) $catId.attr('disabled', true)
+                        $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)
                         $(`#${descId}`).val(description)
 
                         $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)

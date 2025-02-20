@@ -4,6 +4,29 @@ import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/string.mjs'
 import strip from '../tools/formatter.mjs'
 
+const categories = $.ajax('/api/assets/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+
+
+export const catIdEvent = (id, iconId, onChange, callback = {}) => {
+    const { onFocus, onBlur } = callback
+
+    selectEvent(id, {
+        fill: true,
+        onChange(catId, $catId) {
+            if (iconId) {
+                const $icon = $(`#${iconId}`)
+                const icon = '<i class="fas fa-file-circle-question"></i>'
+
+                $icon.html(categories[catId].icon || icon)
+            }
+
+            if (onChange) onChange(catId, $catId)
+        },
+        onFocus,
+        onBlur,
+    })
+}
+
 
 export const busNameEvent = (id, coTypeId, callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback

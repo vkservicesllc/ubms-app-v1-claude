@@ -1,7 +1,7 @@
 import Tip from '../assets/tip.mjs'
-import { busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '../events/company.mjs'
+import { catIdEvent, busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '../events/company.mjs'
 import { urlEvent } from '../events/web.mjs'
-import { inputEvent, selectEvent } from '../events/form.mjs'
+import { inputEvent } from '../events/form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
 import getIdFromUrl from '../assets/id.mjs'
 
@@ -89,7 +89,7 @@ const handleNameChange = (busName, coType) => {
 }
 
 
-selectEvent(catId, { fill: true })
+catIdEvent(catId, 'business-category-select-icon')
 
 einEvent(einId, {
     onInput() {
