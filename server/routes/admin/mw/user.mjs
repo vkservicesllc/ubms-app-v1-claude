@@ -1,9 +1,13 @@
-import User from '../../../assets/user.mjs'
+import User, { Role } from '../../../assets/user.mjs'
+import Company from '../../../assets/company.mjs'
 
 const throwErr = require('../../../tools/error').data
 
 const url = '/online/users'
-const errMsg = 'Server Internal Error: User not found'
+const errMsg = {
+    user: 'Server Internal Error: User not found',
+    role: 'Server Internal Error: User Role not found',
+}
 
 
 
@@ -62,7 +66,7 @@ export default class {
                 if (error) return throwErr.server(res, error)
             } else {
                 const user = await User.data(session, { _id })
-                if (!user) return throwErr.server(res, errMsg)
+                if (!user) return throwErr.server(res, errMsg.user)
     
                 const { error } = await user.modify(session, body)
                 if (error) return throwErr.server(res, error)
@@ -80,7 +84,7 @@ export default class {
             const { _id, condition } = req.body
     
             const user = await User.data(res.session, { _id })
-            if (!user) return throwErr.server(res, errMsg)
+            if (!user) return throwErr.server(res, errMsg.user)
     
             const { error } = await user.modify(res.session, { condition })
             if (error) return throwErr.server(res, error)
@@ -97,7 +101,7 @@ export default class {
             const { _id } = req.body
     
             const user = await User.data(res.session, { _id })
-            if (!user) return throwErr.server(res, errMsg)
+            if (!user) return throwErr.server(res, errMsg.user)
     
             const { error } = await user.delete(res.session)
             if (error) return throwErr.server(res, error)
@@ -107,6 +111,49 @@ export default class {
             throwErr.server(res, null, err)
         }
     }
+
+
+    static upsertRole = async (req, res) => {
+        try {
+            const { category } = req.params
+            const { _id } = req.body
+            delete req.body._id
+
+            const catList = Company.categoryList
+            let catId, error
+
+            if (!category) catId = 'def'
+            else
+                for (const key in catList) {
+                    if (category != catList[key].path[1]) continue
+
+                    catId = key
+                    break
+                }
+            if (!catId) return throwErr.server('Server Internal Error: Category not found')
+
+            const data = { ...req.body, catId }
+
+            if (_id) {
+                const role = await Role.data(res.session, { _id })
+                if (!role) return throwErr.server(res, errMsg.role)
+                else {
+                    ({ error } = await role.modify(res.session, data))
+                }
+            } else {
+                ({ error } = await Role.create(res.session, data))
+            }
+
+            if (error) return throwErr.server(res, error)
+
+            res.redirect(`${url}?role=${catId}`)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
+    static updateRole = async (req, res) => {}
 
 
     static updateTeams = async (req, res) => {

@@ -3,11 +3,34 @@
 
                 <div class="tabs" id="users-tabs">
                     <ul>
-                        <li class="tab-link" data-section="users"><a>Users</a></li>
-                        <li class="tab-link" data-section="default-roles"><a>Roles</a></li>
-                        <li class="tab-link is-active" data-section="carrier-roles"><a>Carrier Roles</a></li>
+                        <li class="tab-link is-active" data-section="users"><a>Users</a></li>
+                        <li class="tab-link" data-section="default-roles" data-role="def"><a>Roles</a></li>
+                        <li class="tab-link" data-section="carrier-roles" data-role="crr"><a>Carrier Roles</a></li>
                     </ul>
                 </div>
+                <script>
+                    $(document).ready(() => {
+                        const urlParams = new URLSearchParams(window.location.search)
+                        if (urlParams.has('role')) {
+                            const $tab = $('.tab-link')
+                            const catId = urlParams.get('role')
+
+                            $tab.removeClass('is-active')
+                            $('.tab-section').hide()
+                            history.replaceState(null, '', window.location.href.split('?')[0])
+
+                            $tab.each(function() {
+                                const role = $(this).data('role')
+                                if (role == catId) {
+                                    const section = $(this).data('section')
+
+                                    $(this).addClass('is-active')
+                                    $(`#${section}-section`).show()
+                                }
+                            })
+                        }
+                    })
+                </script>
                 {{/if}}
 
                 <section class="tab-section" id="users-section">

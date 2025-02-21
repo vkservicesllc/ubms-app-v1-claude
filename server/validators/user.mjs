@@ -75,6 +75,26 @@ const validateCondition = () => {
 }
 
 
+const validateRoleName = () => {
+    const { min, max } = inputLength.user.roleName
+
+    return body('name')
+        .trim()
+        .customSanitizer(value => value.replace('&amp;', '&').replace('&#x27;', "'"))
+        .notEmpty()
+            .withMessage('Role Name can not be empty')
+        .isLength({ min, max })
+            .withMessage(`Role Name must be between ${min} and ${max} characters long`)
+}
+
+
+const validateRoleLocation = () => body('location')
+    .customSanitizer(value => value || null)
+    .optional({ nullable: true })
+    .isIn(Object.keys(User.locationList))
+        .withMessage('Incorrect location value provided')
+
+
 
 export {
     validateUsername,
@@ -106,4 +126,10 @@ export const validateUser = [
     validateName('lastName'),
     validateName('alias'),
     validateGender(),
+]
+
+
+export const validateRole = [
+    validateRoleName(),
+    validateRoleLocation(),
 ]

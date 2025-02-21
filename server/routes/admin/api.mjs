@@ -92,6 +92,34 @@ router.post('/user/:_id/teams', User.verify, async (req, res) => {
 
 
 
+/* ROLES */
+
+
+router.post('/roles/:category?', User.verify, async (req, res) => {
+    try {
+        const { category } = req.params
+        const catList = Company.categoryList
+        let catId, error, data = []
+        if (!category) catId = 'def'
+        else
+            for (const key in catList) {
+                if (category != catList[key].path[1]) continue
+
+                catId = key
+                break
+            }
+
+        if (!catId) error = 'Error: Category could not be udentified'
+        else data = await Role.list(res.session, { catId })
+
+        res.send({ error, data })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+
 /* COMPANY */
 
 

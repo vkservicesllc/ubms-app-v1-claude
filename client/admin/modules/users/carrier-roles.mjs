@@ -6,6 +6,7 @@ const { carrierRoleId, carrierRoleNameId, carrierRoleLocationId } = formSelector
 
 
 const $section = $('#carrier-roles-from-section')
+const $panel = $('#carrier-role-panel')
 const $button = {
     add: $('#carrier-role-add'),
     close: $('#carrier-role-close'),
@@ -67,3 +68,11 @@ roleNameEvent(carrierRoleNameId, ajaxData, {
 
 
 roleLocationEvent(carrierRoleLocationId, ajaxData, { onChange, onAjax })
+
+
+$.ajax('/api/roles/carrier', {
+    method: 'POST',
+    success(response) {
+        console.log(response)
+    },
+})

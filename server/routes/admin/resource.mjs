@@ -5,7 +5,7 @@ import User, { superAdminUserOnly } from '../../assets/user.mjs'
 
 /* Validators */
 import validationCheck from '../../validators/default.mjs'
-import { validateUser, validateCondition } from '../../validators/user.mjs'
+import { validateUser, validateCondition, validateRole } from '../../validators/user.mjs'
 import { validateCompany, validateCompanyOwner, validateCompanyOwnerUpdate, validateCompanyAddress, validateCompanyContacts } from '../../validators/company.mjs'
 import { validateCarrier } from '../../validators/carrier.mjs'
 import { validateTeam } from '../../validators/team.mjs'
@@ -25,6 +25,11 @@ router.post('/user/modify/condition', User.verify, [ validateCondition() ], vali
 router.post('/user/delete', User.verify, UserMW.delete)
 
 router.post('/user/:_id/teams', User.verify, UserMW.updateTeams)
+
+
+/* User Role Resource */
+
+router.post('/role/:category?', User.verify, superAdminUserOnly, validateRole, UserMW.upsertRole)
 
 
 
