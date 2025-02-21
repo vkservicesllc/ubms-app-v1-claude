@@ -1189,6 +1189,7 @@ class Role {
 
                 if (!error) {
                     const { name, catId, location } = params
+
                     if (
                         (name != this.name) ||
                         (name == this.name && catId != this.catId) ||
@@ -1290,8 +1291,10 @@ class Role {
     static find = async (session, params = {}) => {
         if (!session?.user) return { error: 'Invalid User' }
 
-        const { name, catId, location } = params
+        const { name, catId } = params
         if (!name && !catId) return { error: 'Invalid Parameters' }
+        let { location } = params
+        if (location !== undefined && !location) location = null
 
         let found = false
 

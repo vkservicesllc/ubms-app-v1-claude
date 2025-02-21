@@ -69,9 +69,18 @@ router.post('/unique/original/:env', User.verify, async (req, res) => {
         delete req.body._id
 
         const Src = { Role }[capitalizeFirst(env)]
-        const instance = await Src.data(res.session, { _id })
+        let response = {}
 
-        res.send(await instance.unique(res.session, req.body))
+        if (_id) {
+            const instance = await Src.data(res.session, { _id })
+            response = await instance.unique(res.session, req.body)
+        } else {
+            const { found, error } = await Src.find(res.session, req.body)
+            response.unique = !found
+            response.error = error
+        }
+
+        res.send(response)
     } catch (err) {
         throwErr.server(res, null, err, false)
     }

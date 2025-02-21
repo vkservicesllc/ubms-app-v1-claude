@@ -1,0 +1,278 @@
+<section class="tab-section" id="carrier-roles-section">
+    <div class="columns is-1">
+        <div class="column is-two-fifths">
+            <style>
+                .panel {
+                    min-width: 240px;
+                }
+                .table thead .top-header  {
+                    font-weight: normal;
+                    font-style: oblique;
+                    font-size: .9em;
+                }
+                .table thead .checkbox-header {
+                    width: 90px;
+                }
+                .tables {
+                    max-height: 510px;
+                    overflow-y: scroll;
+                }
+                #carrier-roles-from-section {
+                    display: none;
+                }
+            </style>
+            <div class="panel">
+                <p class="panel-block" id="carrier-role-panel-header">
+                    <button class="button" id="carrier-role-add"><i class="fa fa-plus"></i></button>
+                </p>
+            </div>
+        </div>
+        <div class="column is-three-fifths">
+            <div class="box" id="carrier-roles-from-section">
+                <button class="delete is-pulled-right" id="carrier-role-close"></button>
+                <form action="/resource/role/carrier" method="POST" autocomplete="off">
+                    {{{input.carrierRoleId}}}
+                    <div class="columns">
+                        <div class="column is-one-third">
+                            <div class="field">
+                                {{{label.carrierRoleName}}}
+                                <div class="control">
+                                    {{{input.carrierRoleName}}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-one-quarter">
+                            <div class="field">
+                                {{{label.carrierRoleLocation}}}
+                                <div class="control has-icons-left">
+                                    <div class="select is-fullwidth">
+                                        {{{select.carrierRoleLocation}}}
+                                    </div>
+                                    <span class="icon is-left">
+                                        <i class="fas fa-location-crosshairs"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column" id="carrier-role-delete-button" style="max-width: 45px; display: none;">
+                            <a id="carrier-role-delete"><i class="fa fa-trash has-text-danger-70"></i></a>
+                        </div>
+                        <div class="column" id="name-unavailable-warning" style="display: none;">
+                            <p class="help has-text-danger">
+                                <i class="fa fa-triangle-exclamation"></i>
+                                The name is not available for this location!<br/>
+                                Please try:<br/>
+                                1) either changing location<br/>
+                                2) or picking a different name for this location
+                            </p>
+                        </div>
+                    </div>
+
+                    <section class="tables mb-5">
+                        <table class="table is-fullwidth is-narrow">
+                            <thead>
+                                <tr>
+                                    <th>DRIVERS</th>
+                                    <th class="top-header checkbox-header">All</th>
+                                    <th class="top-header checkbox-header">View</th>
+                                    <th class="top-header checkbox-header">Comment</th>
+                                    <th class="top-header checkbox-header">Create</th>
+                                    <th class="top-header checkbox-header">Modify</th>
+                                    <th class="top-header checkbox-header">Update</th>
+                                    <th class="top-header checkbox-header">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Pre-Applications</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="v" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="c" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="a" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="e" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="u" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="d" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Applications</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Hired Contractors</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Pre-Employments</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Pay Agreements</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table is-fullwidth is-narrow">
+                            <thead>
+                                <tr>
+                                    <th>DRIVER FILES</th>
+                                    <th class="top-header">Format</th>
+                                    <th class="top-header checkbox-header">All</th>
+                                    <th class="top-header checkbox-header">View</th>
+                                    <th class="top-header checkbox-header">Download</th>
+                                    <th class="top-header checkbox-header">Upload</th>
+                                    <th class="top-header checkbox-header">Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Application</td>
+                                    <td class="has-text-grey is-size-7">.pdf (automatic)</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td title="US Passport / Green Card">US Legal ID *</td>
+                                    <td class="has-text-grey is-size-7">.pdf, .jpeg, .png</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td title="Social Security Card">SSC *</td>
+                                    <td class="has-text-grey is-size-7">.pdf, .jpeg, .png</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td title="Commercial Driver License">CDL *</td>
+                                    <td class="has-text-grey is-size-7">.pdf, .jpeg, .png</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td title="Motor Vehicle Record">MVR *</td>
+                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td title="Pre-Employment Screening Program">PSP *</td>
+                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Driving Record</td>
+                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Road Test</td>
+                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Medical/Psysical Record</td>
+                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Drug Test</td>
+                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Pre-Employment</td>
+                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Pay Agreement</td>
+                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                                <tr>
+                                    <td>Passenger Form</td>
+                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <button type="submit" class="button is-link" id="carrier-role-submit">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="module" src="/modules/users.carrier-roles.mjs"></script>

@@ -2,6 +2,7 @@
 import { inputEvent } from './form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
 import patterns from '../registry/patterns.mjs'
+import { capitalizeEach } from '../tools/string.mjs'
 
 
 const { class: userClass, id, userId, passId, confPassId, newPassId, tokenId } = formSelectors.user
@@ -193,19 +194,33 @@ export const registerEvent = onSubmit => {
 }
 
 
-export const roleNameEvent = (id, locationId, catId, callback = {}) => {
+export const roleNameEvent = (id, ajaxData = {}, callback = {}) => {
+    const { _id, catId, location } = ajaxData
     const { onInput, onChange, onAjax, onFocus, onBlur } = callback
 
     inputEvent(id, {
         strip: true,
         onInput(name, $name, caret) {
             name = patterns.replace(name, 'roleName')
+            name = capitalizeEach(name)
 
             $name.val(name).caret(caret || caret.end)
             if (onInput) onInput(name, $name, caret)
         },
         onChange(name, $name) {
-            //! need to determine
+            if (onChange) onChange(name, $name)
+
+            if (name && catId)
+                $.ajax('/api/unique/original/role', {
+                    method: 'POST',
+                    data: { _id, catId, name, location },
+                    success(response) {
+                        const { unique, original, error } = response
+                        if (error) alert(error)
+
+                        if (onAjax) onAjax({ unique, original }, name, $name)
+                    },
+                })
         },
         onFocus,
         onBlur,
