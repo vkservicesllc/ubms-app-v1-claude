@@ -20,11 +20,16 @@
                 #carrier-roles-from-section {
                     display: none;
                 }
+                #carrier-panel-list {
+                    max-height: 640px;
+                    overflow-y: scroll;
+                }
             </style>
             <div class="panel" id="carrier-role-panel">
                 <p class="panel-block">
                     <button class="button" id="carrier-role-add"><i class="fa fa-plus"></i></button>
                 </p>
+                <div id="carrier-panel-list"></div>
             </div>
         </div>
         <div class="column is-three-fifths">
@@ -85,53 +90,53 @@
                             <tbody>
                                 <tr>
                                     <td>Pre-Applications</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="v" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="c" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="a" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="e" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="u" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" name="drv[lds]" value="d" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="v" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="c" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="a" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="e" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="u" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="d" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Applications</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Hired Contractors</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <td>Pre-Employments</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Pay Agreements</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -151,119 +156,119 @@
                                 <tr>
                                     <td>Application</td>
                                     <td class="has-text-grey is-size-7">.pdf (automatic)</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <td title="US Passport / Green Card">US Legal ID *</td>
                                     <td class="has-text-grey is-size-7">.pdf, .jpeg, .png</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td title="Social Security Card">SSC *</td>
                                     <td class="has-text-grey is-size-7">.pdf, .jpeg, .png</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td title="Commercial Driver License">CDL *</td>
                                     <td class="has-text-grey is-size-7">.pdf, .jpeg, .png</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td title="Motor Vehicle Record">MVR *</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td title="Pre-Employment Screening Program">PSP *</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Driving Record</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Road Test</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Medical/Psysical Record</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Drug Test</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Pre-Employment</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Pay Agreement</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Passenger Form</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                             </tbody>
                         </table>

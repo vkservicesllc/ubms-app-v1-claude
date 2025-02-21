@@ -1,6 +1,7 @@
 import escapeHTML from '/modules/assets/html.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { roleNameEvent, roleLocationEvent } from '/modules/events/user.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
 
 const { carrierRoleId, carrierRoleNameId, carrierRoleLocationId } = formSelectors.user
 
@@ -40,6 +41,7 @@ $button.close.click(() => {
     $id.val(null)
     $name.val(null)
     $location.val(null)
+    $('.carrier-checkbox').prop('checked', false)
     $button.delete.hide()
     hideWarning()
 })
@@ -72,7 +74,27 @@ roleLocationEvent(carrierRoleLocationId, ajaxData, { onChange, onAjax })
 
 $.ajax('/api/roles/carrier', {
     method: 'POST',
-    success(response) {
-        console.log(response)
+    success(response) { console.log(response) //!temp
+        const { error } = response
+
+        if (error) alert(error)
+        else {
+            let { data } = response
+            let list = ''
+            data = sortArrayByObjectKey(data, 'name')
+
+            data.forEach(role => {
+                const { _id, name } = role
+                let { location } = role
+                if (location) location = location[1]
+
+                list += `<a class="panel-block">`
+                list += name
+                if (location) list += `&nbsp; <span class="tag">${location} only</span>`
+                list += '</a>'
+            })
+
+            $('#carrier-panel-list').html(list)
+        }
     },
 })
