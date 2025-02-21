@@ -79,8 +79,9 @@ $.ajax('/api/roles/carrier', {
 
         if (error) alert(error)
         else {
-            let { data } = response
+            const $list = $('#carrier-panel-list')
             let list = ''
+            let { data } = response
             data = sortArrayByObjectKey(data, 'name')
 
             data.forEach(role => {
@@ -94,7 +95,7 @@ $.ajax('/api/roles/carrier', {
                 list += '</a>'
             })
 
-            $('#carrier-panel-list').html(list)
+            $list.html(list)
         }
     },
 })
