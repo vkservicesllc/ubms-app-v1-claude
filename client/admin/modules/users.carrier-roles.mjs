@@ -1,6 +1,6 @@
 import escapeHTML from '/modules/assets/html.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
-import { roleNameEvent } from '/modules/events/user.mjs'
+import { roleNameEvent, roleLocationEvent } from '/modules/events/user.mjs'
 
 const { carrierRoleId, carrierRoleNameId, carrierRoleLocationId } = formSelectors.user
 
@@ -18,6 +18,16 @@ const $id = $(`#${carrierRoleId}`)
 const $name = $(`#${carrierRoleNameId}`)
 const $location = $(`#${carrierRoleLocationId}`)
 
+const showWarning = () => {
+    $warning.show()
+    $button.submit.prop('disabled', true)
+}
+
+const hideWarning = () => {
+    $warning.hide()
+    $button.submit.prop('disabled', false)
+}
+
 $button.add.click(() => {
     setTimeout(() => $('.tables').scrollTop(0), 0)
     $section.show()
@@ -30,28 +40,30 @@ $button.close.click(() => {
     $name.val(null)
     $location.val(null)
     $button.delete.hide()
-    $warning.hide()
-    $button.submit.prop('disabled', false)
+    hideWarning()
 })
 
-
-roleNameEvent(carrierRoleNameId, {
-    _id: $id.val(),
+const ajaxData = {
     catId: 'crr',
-    location: $location.val(),
-}, {
-    onInput(name) {
-        $warning.hide()
-        $button.submit.prop('disabled', false)
+    $id,
+    $name,
+    $location,
+}
+
+const onAjax = response => { console.log(response) //!temp
+    const { unique, original } = response
+    if (!unique && !original) showWarning()
+}
+
+const onChange = () => hideWarning()
+
+
+roleNameEvent(carrierRoleNameId, ajaxData, {
+    onInput() {
+        hideWarning()
     },
-    onAjax(response) {
-        // const { unique, original } = response
-        const unique = false, original = false
-//* make it a function to show and hide
-//* add danger style to name input
-        if (!unique && !original) {
-            $warning.show()
-            $button.submit.prop('disabled', true)
-        }
-    },
+    onAjax,
 })
+
+
+roleLocationEvent(carrierRoleLocationId, ajaxData, { onChange, onAjax })

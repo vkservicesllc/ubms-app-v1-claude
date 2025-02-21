@@ -1,5 +1,5 @@
 /* jQuery required */
-import { inputEvent } from './form.mjs'
+import { inputEvent, selectEvent } from './form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
 import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/string.mjs'
@@ -195,7 +195,7 @@ export const registerEvent = onSubmit => {
 
 
 export const roleNameEvent = (id, ajaxData = {}, callback = {}) => {
-    const { _id, catId, location } = ajaxData
+    const { catId, $id, $location } = ajaxData
     const { onInput, onChange, onAjax, onFocus, onBlur } = callback
 
     inputEvent(id, {
@@ -210,7 +210,10 @@ export const roleNameEvent = (id, ajaxData = {}, callback = {}) => {
         onChange(name, $name) {
             if (onChange) onChange(name, $name)
 
-            if (name && catId)
+            if (name && catId) {
+                const _id = $id.val()
+                const location = $location.val()
+
                 $.ajax('/api/unique/original/role', {
                     method: 'POST',
                     data: { _id, catId, name, location },
@@ -221,6 +224,37 @@ export const roleNameEvent = (id, ajaxData = {}, callback = {}) => {
                         if (onAjax) onAjax({ unique, original }, name, $name)
                     },
                 })
+            }
+        },
+        onFocus,
+        onBlur,
+    })
+}
+
+
+export const roleLocationEvent = (id, ajaxData = {}, callback = {}) => {
+    const { catId, $id, $name } = ajaxData
+    const { onChange, onAjax, onFocus, onBlur } = callback
+
+    selectEvent(id, {
+        onChange(location, $location) {
+            if (onChange) onChange(location, $location)
+
+            const name = $name.val()
+            if (name && catId) {
+                const _id = $id.val()
+
+                $.ajax('/api/unique/original/role', {
+                    method: 'POST',
+                    data: { _id, catId, name, location },
+                    success(response) {
+                        const { unique, original, error } = response
+                        if (error) alert(error)
+
+                        if (onAjax) onAjax({ unique, original }, location, $location)
+                    },
+                })
+            }
         },
         onFocus,
         onBlur,
