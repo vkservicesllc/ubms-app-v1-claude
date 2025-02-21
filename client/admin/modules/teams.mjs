@@ -66,27 +66,32 @@ const countDescChars = desc => {
 }
 
 teamNameEvent({
+    onInput() {
+        setTip.default('name')
+        $button.upsert.prop('disabled', false)
+    },
     onChange(name, $name) {
         const currentName = $(`#current-${nameId}`).val()
         let action = name ? 'passed' : 'default'
 
-        $.ajax('/api/unique/team', {
-            method: 'POST',
-            data: { name },
-            success(response) {
-                const { unique, error } = response
-                if (error) alert(error)
+        if (name)
+            $.ajax('/api/unique/team', {
+                method: 'POST',
+                data: { name },
+                success(response) {
+                    const { unique, error } = response
+                    if (error) alert(error)
 
-                let disabled = false
-                if (name && (!currentName || name != currentName) && !unique) {
-                    action = 'failed'
-                    disabled = true
-                }
+                    let disabled = false
+                    if (name && (!currentName || name != currentName) && !unique) {
+                        action = 'failed'
+                        disabled = true
+                    }
 
-                setTip[action]('name')
-                $button.upsert.prop('disabled', disabled)
-            },
-        })
+                    setTip[action]('name')
+                    $button.upsert.prop('disabled', disabled)
+                },
+            })
     },
 })
 
