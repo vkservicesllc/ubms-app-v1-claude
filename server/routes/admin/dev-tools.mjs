@@ -1,4 +1,32 @@
 const router = require('express').Router()
+const throwErr = require('../../tools/error').data
+
+import User, { developerOnly } from '../../assets/user.mjs'
+
+
+
+router.get('/data', User.verify, developerOnly, (req, res) => {
+    try {
+        let { hbs } = res
+        hbs = hbs.set('devData')
+
+        res.render('dev-data', hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/logs', User.verify, developerOnly, (req, res) => {
+    try {
+        let { hbs } = res
+        hbs = hbs.set('devLogs')
+
+        res.render('dev-logs', hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
 
 
 

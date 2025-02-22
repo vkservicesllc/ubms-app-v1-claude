@@ -25,7 +25,7 @@
                     overflow-y: scroll;
                 }
             </style>
-            <div class="panel" id="carrier-role-panel">
+            <div class="panel">
                 <p class="panel-block">
                     <button class="button" id="carrier-role-add"><i class="fa fa-plus"></i></button>
                 </p>
@@ -90,53 +90,53 @@
                             <tbody>
                                 <tr>
                                     <td>Pre-Applications</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" id="d-drv-lds-all" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="view" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="comment" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="create" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="modify" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="update" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/lds][]" value="delete" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="d-drv-lds" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-lds" name="permissions[d:drv/lds][]" value="view" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-lds" name="permissions[d:drv/lds][]" value="comment" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-lds" name="permissions[d:drv/lds][]" value="create" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-lds" name="permissions[d:drv/lds][]" value="modify" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-lds" name="permissions[d:drv/lds][]" value="update" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-lds" name="permissions[d:drv/lds][]" value="delete" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Applications</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" id="d-drv-apl-all" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/apl][]" value="view" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/apl][]" value="comment" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="d-drv-apl" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-apl" name="permissions[d:drv/apl][]" value="view" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-apl" name="permissions[d:drv/apl][]" value="comment" /></label></td>
                                     <td></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/apl][]" value="modify" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-apl" name="permissions[d:drv/apl][]" value="modify" /></label></td>
                                     <td></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/apl][]" value="delete" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-apl" name="permissions[d:drv/apl][]" value="delete" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Hired Contractors</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" id="d-drv-drv-all" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/drv][]" value="view" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/drv][]" value="comment" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/drv][]" value="create" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/drv][]" value="modify" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/drv][]" value="update" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="d-drv-drv" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-drv" name="permissions[d:drv/drv][]" value="view" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-drv" name="permissions[d:drv/drv][]" value="comment" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-drv" name="permissions[d:drv/drv][]" value="create" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-drv" name="permissions[d:drv/drv][]" value="modify" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-drv" name="permissions[d:drv/drv][]" value="update" /></label></td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <td>Pre-Employments</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" id="d-drv-emp-all" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/emp][]" value="view" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="d-drv-emp" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-emp" name="permissions[d:drv/emp][]" value="view" /></label></td>
                                     <td></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/emp][]" value="create" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/emp][]" value="modify" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/emp][]" value="update" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/emp][]" value="delete" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-emp" name="permissions[d:drv/emp][]" value="create" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-emp" name="permissions[d:drv/emp][]" value="modify" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-emp" name="permissions[d:drv/emp][]" value="update" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-emp" name="permissions[d:drv/emp][]" value="delete" /></label></td>
                                 </tr>
                                 <tr>
                                     <td>Pay Agreements</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" id="d-drv-agr-all" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/agr][]" value="view" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="d-drv-agr" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-agr" name="permissions[d:drv/agr][]" value="view" /></label></td>
                                     <td></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/agr][]" value="create" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/agr][]" value="modify" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/agr][]" value="update" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[d:drv/agr][]" value="delete" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-agr" name="permissions[d:drv/agr][]" value="create" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-agr" name="permissions[d:drv/agr][]" value="modify" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-agr" name="permissions[d:drv/agr][]" value="update" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox d-drv-agr" name="permissions[d:drv/agr][]" value="delete" /></label></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -156,43 +156,43 @@
                                 <tr>
                                     <td>Application</td>
                                     <td class="has-text-grey is-size-7">.pdf (automatic)</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" id="f-drv-apl-all" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[f:drv/apl][]" value="view" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-apl" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-apl" name="permissions[f:drv/apl][]" value="view" /></label></td>
                                     <td></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[f:drv/apl][]" value="download" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-apl" name="permissions[f:drv/apl][]" value="download" /></label></td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <td title="US Passport / Green Card">US Legal ID *</td>
                                     <td class="has-text-grey is-size-7">.pdf, .jpeg, .png</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" id="f-drv-leg-all" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[f:drv/leg][]" value="view" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[f:drv/leg][]" value="upload" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[f:drv/leg][]" value="download" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" name="permissions[f:drv/leg][]" value="delete" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-leg" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-leg" name="permissions[f:drv/leg][]" value="view" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-leg" name="permissions[f:drv/leg][]" value="upload" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-leg" name="permissions[f:drv/leg][]" value="download" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-leg" name="permissions[f:drv/leg][]" value="delete" /></label></td>
                                 </tr>
                                 <tr>
                                     <td title="Social Security Card">SSC *</td>
                                     <td class="has-text-grey is-size-7">.pdf, .jpeg, .png</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-ssc" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-ssc" name="permissions[f:drv/ssc][]" value="view" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-ssc" name="permissions[f:drv/ssc][]" value="upload" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-ssc" name="permissions[f:drv/ssc][]" value="download" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-ssc" name="permissions[f:drv/ssc][]" value="delete" /></label></td>
                                 </tr>
                                 <tr>
                                     <td title="Commercial Driver License">CDL *</td>
                                     <td class="has-text-grey is-size-7">.pdf, .jpeg, .png</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-cdl" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-cdl" name="permissions[f:drv/cdl][]" value="view" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-cdl" name="permissions[f:drv/cdl][]" value="upload" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-cdl" name="permissions[f:drv/cdl][]" value="download" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox f-drv-cdl" name="permissions[f:drv/cdl][]" value="download" /></label></td>
                                 </tr>
                                 <tr>
                                     <td title="Motor Vehicle Record">MVR *</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-mvr" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
@@ -201,7 +201,7 @@
                                 <tr>
                                     <td title="Pre-Employment Screening Program">PSP *</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-psp" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
@@ -210,7 +210,7 @@
                                 <tr>
                                     <td>Driving Record</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-rec" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
@@ -219,16 +219,16 @@
                                 <tr>
                                     <td>Road Test</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-tst" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                 </tr>
                                 <tr>
-                                    <td>Medical/Psysical Record</td>
+                                    <td>Medical/Physical Record</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-med" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
@@ -237,7 +237,7 @@
                                 <tr>
                                     <td>Drug Test</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-drg" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
@@ -246,7 +246,7 @@
                                 <tr>
                                     <td>Pre-Employment</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-emp" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
@@ -254,17 +254,17 @@
                                 </tr>
                                 <tr>
                                     <td>Pay Agreement</td>
-                                    <td class="has-text-grey is-size-7">.pdf</td>
+                                    <td class="has-text-grey is-size-7">.pdf (automatic)</td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-agr" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td>Passenger Form</td>
                                     <td class="has-text-grey is-size-7">.pdf</td>
-                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
+                                    <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox-all" id="f-drv-pas" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>
                                     <td><label class="checkbox"><input type="checkbox" class="carrier-checkbox" /></label></td>

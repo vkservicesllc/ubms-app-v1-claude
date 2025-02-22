@@ -34,7 +34,7 @@ import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 
 /* Support */
-import permissions from './user/permissions.mjs'
+// import permissions from './user/permissions.mjs'
 
 const { validationResult } = require('express-validator')
 const mysql = require('../tools/mysql')
@@ -60,7 +60,7 @@ class User extends Person {
         if (!data?._id || !Object.keys(this).length)
             throw new Error('User instantiation failed: Invalid data')
 
-        const { _id, fails, settings, permissions, lastUrl, lastLogin, _hash } = data
+        const { _id, fails, settings, lastUrl, lastLogin, _hash } = data
         const properties = {
             _id,
             username: data.username,
@@ -77,7 +77,6 @@ class User extends Person {
 
         if (fails !== undefined) this.fails = fails
         if (settings !== undefined) this.settings = settings
-        if (permissions !== undefined) this.permissions = permissions
         if (lastUrl !== undefined) this.lastUrl = lastUrl
         if (lastLogin !== undefined) this.lastLogin = lastLogin
         if (!light && _hash !== undefined) this._hash = _hash
@@ -617,8 +616,6 @@ class User extends Person {
         'D': 'Developer',
     }
 
-    static permissions = permissions
-
 
     static hashId = (field = 'id') => hash(field, User.#algorithm)
 
@@ -765,7 +762,7 @@ class User extends Person {
         if (_id || id || username) batch[1].fields.push('lastUrl')
 
         if (!('user' in session) && username) {
-            batch[0].fields.push([ '_passKey', '_hash' ], 'fails', 'permissions', 'settings')
+            batch[0].fields.push([ '_passKey', '_hash' ], 'fails', 'settings')
             batch[1].fields.push({ ip: 'clientIp' })
 
             if (branch == 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]

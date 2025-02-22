@@ -7,7 +7,7 @@ const { carrierRoleId, carrierRoleNameId, carrierRoleLocationId } = formSelector
 
 
 const $section = $('#carrier-roles-from-section')
-const $panel = $('#carrier-role-panel')
+const $list = $('#carrier-panel-list')
 const $button = {
     add: $('#carrier-role-add'),
     close: $('#carrier-role-close'),
@@ -41,7 +41,7 @@ $button.close.click(() => {
     $id.val(null)
     $name.val(null)
     $location.val(null)
-    $('.carrier-checkbox').prop('checked', false)
+    $('.carrier-checkbox, .carrier-checkbox-all').prop('checked', false)
     $button.delete.hide()
     hideWarning()
 })
@@ -53,7 +53,7 @@ const ajaxData = {
     $location,
 }
 
-const onAjax = response => { console.log(response) //!temp
+const onAjax = response => {
     const { unique, original } = response
     if (!unique && !original) showWarning()
 }
@@ -74,12 +74,11 @@ roleLocationEvent(carrierRoleLocationId, ajaxData, { onChange, onAjax })
 
 $.ajax('/api/roles/carrier', {
     method: 'POST',
-    success(response) { console.log(response) //!temp
+    success(response) {
         const { error } = response
 
         if (error) alert(error)
         else {
-            const $list = $('#carrier-panel-list')
             let list = ''
             let { data } = response
             data = sortArrayByObjectKey(data, 'name')
@@ -98,4 +97,12 @@ $.ajax('/api/roles/carrier', {
             $list.html(list)
         }
     },
+})
+
+
+$('.carrier-checkbox-all').on('change', function() {
+    const row = $(this).attr('id')
+    const checked = $(this).is(':checked')
+
+    $(`.${row}`).prop('checked', checked)
 })

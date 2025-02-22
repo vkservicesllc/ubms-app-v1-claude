@@ -102,7 +102,7 @@ module.exports = {
         },
     },
 
-    'sites': {
+    'domains': {
         external: [ ...online.external ],
         internal: {
             css: [ ...online.internal.css ],

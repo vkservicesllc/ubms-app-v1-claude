@@ -18,9 +18,9 @@ import { respond404 } from '../../tools/response.mjs'
 
 
 
-router.get('/sites', User.verify, superAdminUserOnly, (req, res) => {
+router.get('/domains', User.verify, superAdminUserOnly, (req, res) => {
     try {
-        const key = 'sites'
+        const key = 'domains'
         let { hbs } = res
         hbs = hbs.set(key)
 
