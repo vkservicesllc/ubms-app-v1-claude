@@ -112,7 +112,7 @@ module.exports = {
     },
 
     'users': {
-        external: [ ...online.external, 'jquery.masked-input', 'moment', 'datatables.bulma' ],
+        external: [ ...online.external, 'jquery.masked-input', 'moment', 'datatables.bulma', 'bulma.switch' ],
         internal: {
             css: [ ...online.internal.css, 'form', 'tabs' ],
             js: [ ...online.internal.js, '^tabs' ],

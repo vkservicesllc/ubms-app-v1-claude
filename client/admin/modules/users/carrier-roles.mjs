@@ -106,3 +106,25 @@ $('.carrier-role-checkbox-all').on('change', function() {
 
     $(`.${row}`).prop('checked', checked)
 })
+
+$('.carrier-role-checkbox').on('change', function() {
+    const row = $(this).attr('class').split(' ')[1]
+    const value = $(this).attr('value')
+    const checked = $(this).is(':checked')
+    const allChecked = $(`.${row}`).length == $(`.${row}:checked`).length
+
+    $(`#${row}`).prop('checked', allChecked)
+    if (checked && value != '0') {
+        $(`.${row}[value="0"]`).prop('checked', true)
+    }
+})
+
+$('.carrier-role-checkbox[value="0"]').on('change', function() {
+    const row = $(this).attr('class').split(' ')[1]
+    const checked = $(this).is(':checked')
+
+    if (!checked) {
+        $(`.${row}`).prop('checked', false)
+        $(`#${row}`).prop('checked', false)
+    }
+})

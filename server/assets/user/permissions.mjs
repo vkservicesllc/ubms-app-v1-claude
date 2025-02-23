@@ -44,10 +44,10 @@ export const html = (branch, permissions, tabs = 0) => {
 
             body += `\n${t}\t\t<tr>\n${t}\t\t\t<td${title}>${name}</td>`
             if (src == 'file') body += `\n${t}\t\t\t<td class="has-text-grey is-size-7">${group.format}</td>`
-            body += `\n${t}\t\t\t<td><label class="checkbox"><input type="checkbox" class="${branch}-role-checkbox-all" id="${row}" /></label></td>`
+            body += `\n${t}\t\t\t<td><input type="checkbox" class="${branch}-role-checkbox-all switch is-rounded is-success is-small" id="${row}" /><label for="${row}"></td>`
             for (let i = 0; i < length; i++) {
                 if (all || group.privileges.includes(i))
-                    body+= `\n${t}\t\t\t<td><label class="checkbox"><input type="checkbox" class="${branch}-role-checkbox ${row}" name="permissions[${target}/${prop}][]" value="${i}" /></label></td>`
+                    body+= `\n${t}\t\t\t<td><input type="checkbox" class="${branch}-role-checkbox ${row} switch is-rounded is-info is-small" id="${row}-${i}" name="permissions[${target}/${prop}][]" value="${i}" /><label for="${row}-${i}"></label></td>`
                 else
                     body+= `\n${t}\t\t\t<td></td>`
             }
