@@ -41,7 +41,7 @@ $button.close.click(() => {
     $id.val(null)
     $name.val(null)
     $location.val(null)
-    $('.carrier-role-checkbox, .carrier-rol-checkbox-all').prop('checked', false)
+    $('.carrier-role-checkbox, .carrier-role-checkbox-all').prop('checked', false)
     $button.delete.hide()
     hideWarning()
 })
