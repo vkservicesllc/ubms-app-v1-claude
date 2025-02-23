@@ -41,7 +41,7 @@ $button.close.click(() => {
     $id.val(null)
     $name.val(null)
     $location.val(null)
-    $('.carrier-checkbox, .carrier-checkbox-all').prop('checked', false)
+    $('.carrier-role-checkbox, .carrier-rol-checkbox-all').prop('checked', false)
     $button.delete.hide()
     hideWarning()
 })
@@ -88,7 +88,7 @@ $.ajax('/api/roles/carrier', {
                 let { location } = role
                 if (location) location = location[1]
 
-                list += `<a class="panel-block">`
+                list += `<a class="panel-block carrier-role" data-id="${_id}">`
                 list += name
                 if (location) list += `&nbsp; <span class="tag">${location} only</span>`
                 list += '</a>'
@@ -100,7 +100,7 @@ $.ajax('/api/roles/carrier', {
 })
 
 
-$('.carrier-checkbox-all').on('change', function() {
+$('.carrier-role-checkbox-all').on('change', function() {
     const row = $(this).attr('id')
     const checked = $(this).is(':checked')
 

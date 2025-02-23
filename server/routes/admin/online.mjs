@@ -3,6 +3,8 @@ const throwErr = require('../../tools/error').data
 
 /* Assets */
 import User, { superAdminUserOnly } from '../../assets/user.mjs'
+import permissions, { html as roleHtml } from '../../assets/user/permissions.mjs'
+import carrierPermissions from '../../assets/user/permissions.carrier.mjs'
 
 /* HTML Builders */
 import { Label as UserLabel, Input as UserInput, Select as UserSelect } from '../../html/user.mjs'
@@ -91,6 +93,11 @@ router.get('/users', User.verify, (req, res) => {
             user: '/resource/user',
             deleteUser: '/data/user/delete',
             userCondition: '/data/user/condition',
+        }
+
+        hbs.roleTables = {
+            default: roleHtml('default', permissions),
+            carrier: roleHtml('carrier', carrierPermissions, 6),
         }
 
         res.render(key, hbs)

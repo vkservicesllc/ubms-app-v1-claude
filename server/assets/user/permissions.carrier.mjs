@@ -1,9 +1,108 @@
 import { privileges } from './permissions.mjs'
 
-const groups = {
-    'd-drv': 'Drivers',
-    'f-drv': 'Driver Files',
-    'd-vhl': 'Vehicles/Equipment',
+export default {
+    'd:drv': {
+        title: 'Drivers',
+        groups: {
+            'lds': {
+                name: 'Pre-Applications',
+                privileges: "*",
+            },
+            'apl': {
+                name: 'Applications',
+                privileges: [ 0, 1, 3, 5 ],
+            },
+            'drv': {
+                name: 'Hired Contractors',
+                privileges: [ 0, 1, 2, 3, 4 ],
+            },
+            'emp': {
+                name: 'Pre-Employments',
+                privileges: [ 0, 2, 3, 4, 5 ], //?
+            },
+            'agr': {
+                name: 'Pay Agreements',
+                privileges: [ 0, 2, 3, 4, 5 ],
+            },
+            'lvn': {
+                name: 'Leaving Process',
+                privileges: '*',
+            },
+        },
+    },
+    'f:drv': {
+        title: 'Driver Files',
+        groups: {
+            'apl': {
+                name: 'Applications',
+                format: '.pdf (automatic)',
+                privileges: [ 0, 2 ],
+            },
+            'leg': {
+                name: [ 'US Legal ID', 'US Passport / Green Card' ],
+                format: '.pdf, .jpeg, .png',
+                privileges: '*',
+            },
+            'ssc': {
+                name: [ 'SSC', 'Social Security Card' ],
+                format: '.pdf, .jpeg, .png',
+                privileges: '*',
+            },
+            'cdl': {
+                name: [ 'CDL', 'Driver License' ],
+                format: '.pdf, .jpeg, .png',
+                privileges: '*',
+            },
+            'mvr': {
+                name: [ 'MVR', 'Motor Vehicle Record' ],
+                format: '.pdf',
+                privileges: '*',
+            },
+            'psp': {
+                name: [ 'PSP', 'Pre-Employment Screening Program' ],
+                format: '.pdf',
+                privileges: '*',
+            },
+            'rec': {
+                name: 'Driving Record',
+                format: '.pdf',
+                privileges: '*',
+            },
+            'tst': {
+                name: 'Road Test',
+                format: '.pdf',
+                privileges: '*',
+            },
+            'med': {
+                name: 'Medical/Physical Record',
+                format: '.pdf',
+                privileges: '*',
+            },
+            'drg': {
+                name: 'Drug Test',
+                format: '.pdf',
+                privileges: '*',
+            },
+            'emp': {
+                name: 'Pre-Employment',
+                format: '.pdf',
+                privileges: '*',
+            },
+            'agr': {
+                name: 'Pay Agreement',
+                format: '.pdf (automatic)',
+                privileges: [ 0, 2 ],
+            },
+            'pas': {
+                name: 'Passenger Form',
+                format: '.pdf',
+                privileges: '*',
+            },
+        },
+    },
+    // 'd:vhl': {
+    //     title: 'Vehicles/Equipment',
+    // },
 }
 
 
