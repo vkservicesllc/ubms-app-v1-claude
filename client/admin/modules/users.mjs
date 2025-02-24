@@ -387,7 +387,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 $('#user-update-log-modal-list').html(null)
             }
 
-            $('.modal-cancel, .modal-close, .delete').click(closeModals)
+            $('.modal-cancel, .modal-close, .delete:not(.close-role-section)').click(closeModals)
 
             $('#invite-user').click(() => {
                 $title.user.html('<small>New User</small>')

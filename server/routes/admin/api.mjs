@@ -119,6 +119,17 @@ router.post('/roles/:category?', User.verify, async (req, res) => {
 })
 
 
+router.post('/role/:_id', User.verify, async (req, res) => {
+    try {
+        const { _id } = req.params
+
+        res.send({ data: await Role.data(res.session, { _id }) })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
 
 /* COMPANY */
 

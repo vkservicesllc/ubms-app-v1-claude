@@ -30,20 +30,24 @@ const hideWarning = () => {
     $button.submit.prop('disabled', false)
 }
 
-$button.add.click(() => {
-    setTimeout(() => $('.tables').scrollTop(0), 0)
-    $section.show()
-})
-
-$button.close.click(() => {
-    $section.hide()
-
+const unset = () => {
     $id.val(null)
     $name.val(null)
     $location.val(null)
     $('.carrier-role-checkbox, .carrier-role-checkbox-all').prop('checked', false)
     $button.delete.hide()
     hideWarning()
+}
+
+$button.add.click(() => {
+    setTimeout(() => $('.tables').scrollTop(0), 0)
+    unset()
+    $section.show()
+})
+
+$button.close.click(() => {
+    $section.hide()
+    unset()
 })
 
 const ajaxData = {
@@ -95,6 +99,31 @@ $.ajax('/api/roles/carrier', {
             })
 
             $list.html(list)
+
+            $('.carrier-role').on('click', function() {
+                unset()
+                $button.delete.show()
+                const _id = $(this).data('id')
+
+                $.ajax(`/api/role/${_id}`, {
+                    method: 'POST',
+                    success(response) { console.log(response.data) //!temp
+                        const { _id, name, location, permissions } = response.data
+
+                        $id.val(_id)
+                        $name.val(name)
+                        $location.val(location)
+
+                        for (const permission in permissions) { //! if all checkboxes are checked in a row, check the ALL checkbox as well
+                            permissions[permission]
+                                .forEach(value => $(`[name="permissions[${permission}][]"][value="${value}"]`).prop('checked', true))
+                        }
+
+                        setTimeout(() => $('.tables').scrollTop(0), 0)
+                        $section.show()
+                    },
+                })
+            })
         }
     },
 })
@@ -127,4 +156,12 @@ $('.carrier-role-checkbox[value="0"]').on('change', function() {
         $(`.${row}`).prop('checked', false)
         $(`#${row}`).prop('checked', false)
     }
+})
+
+
+$section.find('form').submit(function(e) {
+    e.preventDefault()
+
+    console.log('submitting form')
+    //! make sure all at least one checkbox is checked
 })
