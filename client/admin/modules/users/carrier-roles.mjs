@@ -14,8 +14,13 @@ const $button = {
     submit: $('#carrier-role-submit'),
 }
 const $warning = $('#carrier-name-unavailable-warning')
+const $form = {
+    role: $('#carrier-role-form'),
+    delete: $('#delete-carrier-role-form'),
+}
 
 const $id = $(`#${carrierRoleId}`)
+const $deleteId = $(`#delete-${carrierRoleId}`)
 const $name = $(`#${carrierRoleNameId}`)
 const $location = $(`#${carrierRoleLocationId}`)
 
@@ -31,6 +36,7 @@ const hideWarning = () => {
 
 const unset = () => {
     $id.val(null)
+    $deleteId.val(null)
     $name.val(null)
     $location.val(null)
     $('.carrier-role-checkbox, .carrier-role-checkbox-all').prop('checked', false)
@@ -112,6 +118,11 @@ $.ajax('/api/roles/carrier', {
                 $button.submit.removeClass('is-link is-success').text(null)
             })
 
+            $button.delete.click(() => {
+                if (confirm('Confirm deletion: Are you sure you want to delete the current role?'))
+                    $form.delete.submit()
+            })
+
             $role.on('click', function() {
                 unset()
                 $button.delete.show()
@@ -126,6 +137,7 @@ $.ajax('/api/roles/carrier', {
                         const { _id, name, location, permissions } = response.data
 
                         $id.val(_id)
+                        $deleteId.val(_id)
                         $name.val(name)
                         $location.val(location)
                         $button.submit.removeClass('is-link').addClass('is-success').text('Update')
@@ -178,7 +190,7 @@ $('.carrier-role-checkbox[value="0"]').on('change', function() {
 })
 
 
-$section.find('form').submit(function(e) {
+$form.role.submit(function(e) {
     e.preventDefault()
 
     if (!$('.carrier-role-checkbox:checked').length)

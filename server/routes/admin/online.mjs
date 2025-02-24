@@ -42,7 +42,10 @@ router.get('/users', User.verify, (req, res) => {
         const { user } = res.session
         const inputClass = 'input'
         const selectProps = { tab: 13 }
-        const { mainFormId, deleteFormId, conditionFormId } = formSelectors.user
+        const {
+            mainFormId, deleteFormId, conditionFormId,
+            roleId, carrierRoleId,
+        } = formSelectors.user
 
         hbs.label = {
             status: UserLabel.status({ class: labelClassRequired }),
@@ -75,6 +78,7 @@ router.get('/users', User.verify, (req, res) => {
 
             //! will be more added
             carrierRoleId: UserInput.roleId({ target: 'crr' }),
+            carrierRoleDeleteId: UserInput.roleId({ target: 'crr', id: `delete-${carrierRoleId}` }),
             carrierRoleName: UserInput.roleName({ target: 'crr', class: inputClass }),
         }
         hbs.select = {
@@ -91,8 +95,12 @@ router.get('/users', User.verify, (req, res) => {
         }
         hbs.actionUrl = {
             user: '/resource/user',
-            deleteUser: '/data/user/delete',
-            userCondition: '/data/user/condition',
+            deleteUser: '/resource/user/delete',
+            userCondition: '/resource/user/modify/condition',
+            deleteRole: '/resource/role/delete',
+
+            //! will be more added
+            carrierRole: '/resource/role/carrier',
         }
 
         hbs.roleTables = {

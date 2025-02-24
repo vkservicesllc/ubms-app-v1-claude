@@ -27,7 +27,7 @@ import Query, { hash, matchHash } from '../tools/query.mjs'
 import recognizeApi from '../tools/api.mjs'
 import transporter, { sender } from '../tools/nodemailer.mjs'
 import { generateRandomString } from '../tools/string.mjs'
-import { processData } from '../tools/database.mjs'
+import { processData, logDeletion } from '../tools/database.mjs'
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
 import { numeric } from '../../client/global/modules/tools/number.mjs'
 import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
@@ -331,56 +331,6 @@ class User extends Person {
                     return data
                 }
             }
-
-
-/*            this.teams = async session => {
-                if (!session?.user?.DS && session?.user._id != this._id) return
-
-                const { DS } = this
-                const data = { all: [], available: [], applied: [] }
-
-                const teams = await Team.list(session)
-                teams.map(team => {
-                    const { _id, name } = team
-
-                    data.all.push({ _id, name, applied: DS })
-                    if (DS) data.applied.push({ _id, name })
-                })
-
-                if (!DS) {
-                    const userId = await this._id
-                    const appliedIds = []
-
-                    const batch = [
-                        {
-                            table: 'teams_users',
-                            match: { userId },
-                        },
-                        {
-                            table: 'teams',
-                            fields: [ Team.hashId(), 'name' ],
-                            join: [ 'id', 'teamId' ],
-                        },
-                    ]
-
-                    data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
-                    data.applied.forEach(team => appliedIds.push(team._id))
-
-                    teams.map((team, i) => {
-                        const { _id, name } = team
-    
-                        data.all.push({ _id, name, applied: false })
-                        if (appliedIds.includes(_id)) data.all[i].applied = true
-                        else data.available.push({ _id, name })
-                    })
-                }
-
-                data.all = sortArrayByObjectKey(data.all, 'name')
-                data.applied = sortArrayByObjectKey(data.applied, 'name')
-                data.available = sortArrayByObjectKey(data.available, 'name')
-
-                return data
-            }   */
 
 
             this.modify = async (session, data) => {
@@ -1203,6 +1153,63 @@ class Role {
                 return { unique, original, error }
             }
 
+
+            this.modify = async (session, data) => {
+                let modified = false, error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+                if (error) return { modified, error }
+
+                const { permissions } = data
+                delete data.permissions
+
+                const id = await this.id()
+                const modifiedBy = await session.user.id()
+                const currentData = { ...this }
+                if (this.location) currentData.location = this.location[0]
+
+                //! Permission change is NOT logged yet
+                data = processData(data, {
+                    modifiedBy,
+                    currentData,
+                    currentUpdateLog: await this.log('updateLog'),
+                })
+
+                data.permissions = JSON.stringify(permissions)
+
+                try {
+                    const [ result ] = await mysql.execute(query.roles.update(data, { id }))
+                    if (result.affectedRows == 1) modified = true
+                } catch (err) {
+                    console.error(err)
+                    error = 'DB Error: Failed to modify Role'
+                }
+
+                return { modified, error, data: await Role.data(session, { id }) }
+            }
+
+
+            this.delete = async session => {
+                let deleted = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { deleted, error }
+
+                const id = await this.id()
+                const log = await this.log()
+
+                try {
+                    const [ result ] = await mysql.execute(query.roles.delete({ id }))
+                    if (result.affectedRows > 0) deleted = true
+                } catch(err) {
+                    console.error(err)
+                    error = 'DB Error'
+                }
+
+                if (error) return { deleted, error }
+                for (const prop in log) this[prop] = log[prop]
+                
+                await logDeletion(session, 'roles', this, { id })
+
+                return { deleted }
+            }
+
         }
     }
 
@@ -1215,7 +1222,7 @@ class Role {
 
 
     static create = async (session, data) => {
-        let created = false, newUser, error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+        let created = false, error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
         if (error) return { created, error }
 
         data = processData(data)

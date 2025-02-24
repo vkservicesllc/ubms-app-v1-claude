@@ -153,6 +153,22 @@ export default class {
     }
 
 
+    static deleteRole = async (req, res) => {
+        try {
+            const { _id } = req.body
+            const role = await Role.data(res.session, { _id })
+
+            const { error } = await role.delete(res.session)
+
+            if (error) return throwErr.server(res, error)
+
+            res.redirect(`${url}?role=${role.catId}`)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
     static updateRole = async (req, res) => {}
 
 

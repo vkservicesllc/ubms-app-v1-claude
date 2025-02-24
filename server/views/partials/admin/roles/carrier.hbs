@@ -11,7 +11,10 @@
         <div class="column is-three-fifths">
             <div class="box role-form-section" id="carrier-roles-form-section">
                 <button class="delete close-role-section is-pulled-right" id="carrier-role-close"></button>
-                <form action="/resource/role/carrier" method="POST" autocomplete="off">
+                <form action="{{actionUrl.deleteRole}}" id="delete-carrier-role-form" method="POST">
+                    {{{input.carrierRoleDeleteId}}}
+                </form>
+                <form action="{{actionUrl.carrierRole}}" id="carrier-role-form" method="POST" autocomplete="off">
                     {{{input.carrierRoleId}}}
                     <div class="columns">
                         <div class="column is-one-third">

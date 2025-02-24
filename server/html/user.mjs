@@ -307,9 +307,9 @@ export class Input {
         }
 
         return formInput({
+            id,
             ...props,
             type: 'hidden',
-            id,
             name: '_id',
         })
     }

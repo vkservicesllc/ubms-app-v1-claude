@@ -29,6 +29,7 @@ router.post('/user/:_id/teams', User.verify, UserMW.updateTeams)
 
 /* User Role Resource */
 
+router.post('/role/delete', User.verify, superAdminUserOnly, UserMW.deleteRole)
 router.post('/role/:category?', User.verify, superAdminUserOnly, validateRole, UserMW.upsertRole)
 
 
