@@ -282,11 +282,7 @@
                 </section>
                 {{#if (eq user.DS true)}}
 
-                <section class="tab-section" id="default-roles-section">
-
-                    Default Roles
-
-                </section>
+                {{> admin/roles/default}}
 
                 {{> admin/roles/carrier}}
                 {{/if}}
