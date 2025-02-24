@@ -6,7 +6,7 @@ import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
 const { carrierRoleId, carrierRoleNameId, carrierRoleLocationId } = formSelectors.user
 
 
-const $section = $('#carrier-roles-from-section')
+const $section = $('#carrier-roles-form-section')
 const $list = $('#carrier-panel-list')
 const $button = {
     add: $('#carrier-role-add'),

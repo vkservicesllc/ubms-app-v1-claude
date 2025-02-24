@@ -4,6 +4,7 @@
             <style>
                 .panel {
                     min-width: 240px;
+                    margin-left: 8px;
                 }
                 .table thead .top-header  {
                     font-weight: normal;
@@ -17,12 +18,14 @@
                     max-height: 510px;
                     overflow-y: scroll;
                 }
-                .switch {
-                    {{!-- margin: 0 !important;
-                    padding: 0 !important; --}}
+                .switch[type=checkbox].is-small + label {
+                    font-size: .5rem;
                 }
-                #carrier-roles-from-section {
+                #carrier-roles-form-section {
                     display: none;
+                    position: fixed;
+                    margin-left: 8px;
+                    width: 960px;
                 }
                 #carrier-panel-list {
                     max-height: 650px;
@@ -37,7 +40,7 @@
             </div>
         </div>
         <div class="column is-three-fifths">
-            <div class="box" id="carrier-roles-from-section">
+            <div class="box" id="carrier-roles-form-section">
                 <button class="delete is-pulled-right" id="carrier-role-close"></button>
                 <form action="/resource/role/carrier" method="POST" autocomplete="off">
                     {{{input.carrierRoleId}}}
