@@ -1,4 +1,3 @@
-import escapeHTML from '/modules/assets/html.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { roleNameEvent, roleLocationEvent } from '/modules/events/user.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
@@ -7,14 +6,14 @@ const { carrierRoleId, carrierRoleNameId, carrierRoleLocationId } = formSelector
 
 
 const $section = $('#carrier-roles-form-section')
-const $list = $('#carrier-panel-list')
+const $list = $('#carrier-role-panel-list')
 const $button = {
     add: $('#carrier-role-add'),
     close: $('#carrier-role-close'),
     delete: $('#carrier-role-delete-button'),
     submit: $('#carrier-role-submit'),
 }
-const $warning = $('#name-unavailable-warning')
+const $warning = $('#carrier-name-unavailable-warning')
 
 const $id = $(`#${carrierRoleId}`)
 const $name = $(`#${carrierRoleNameId}`)
@@ -38,17 +37,6 @@ const unset = () => {
     $button.delete.hide()
     hideWarning()
 }
-
-$button.add.click(() => {
-    setTimeout(() => $('.tables').scrollTop(0), 0)
-    unset()
-    $section.show()
-})
-
-$button.close.click(() => {
-    $section.hide()
-    unset()
-})
 
 const ajaxData = {
     catId: 'crr',
@@ -94,29 +82,60 @@ $.ajax('/api/roles/carrier', {
 
                 list += `<a class="panel-block carrier-role" data-id="${_id}">`
                 list += name
-                if (location) list += `&nbsp; <span class="tag">${location} only</span>`
+                if (location) list += `&nbsp; <span class="tag has-text-weight-normal">${location} only</span>`
                 list += '</a>'
             })
 
             $list.html(list)
 
-            $('.carrier-role').on('click', function() {
+            const $role = $('.carrier-role')
+            const highlight = {
+                block: 'has-text-weight-bold has-background-dark has-text-light',
+                tag: 'is-dark',
+            }
+            const removeHighlight = () => {
+                $role.removeClass(highlight.block).find('.tag').removeClass(highlight.tag)
+            }
+
+            $button.add.click(() => {
+                $button.submit.removeClass('is-success').addClass('is-link').text('Create')
+                setTimeout(() => $('.tables').scrollTop(0), 0)
+                unset()
+                removeHighlight()
+                $section.show()
+            })
+            
+            $button.close.click(() => {
+                $section.hide()
+                removeHighlight()
+                unset()
+                $button.submit.removeClass('is-link is-success').text(null)
+            })
+
+            $role.on('click', function() {
                 unset()
                 $button.delete.show()
                 const _id = $(this).data('id')
 
+                removeHighlight()
+                $(this).addClass(highlight.block).find('.tag').addClass(highlight.tag)
+
                 $.ajax(`/api/role/${_id}`, {
                     method: 'POST',
-                    success(response) { console.log(response.data) //!temp
+                    success(response) {
                         const { _id, name, location, permissions } = response.data
 
                         $id.val(_id)
                         $name.val(name)
                         $location.val(location)
+                        $button.submit.removeClass('is-link').addClass('is-success').text('Update')
 
-                        for (const permission in permissions) { //! if all checkboxes are checked in a row, check the ALL checkbox as well
+                        for (const permission in permissions) {
                             permissions[permission]
                                 .forEach(value => $(`[name="permissions[${permission}][]"][value="${value}"]`).prop('checked', true))
+
+                            const row = permission.replace(/[:\/]/g, '-')
+                            if ($(`.${row}`).length == $(`.${row}:checked`).length) $(`#${row}`).prop('checked', true)
                         }
 
                         setTimeout(() => $('.tables').scrollTop(0), 0)
@@ -162,6 +181,8 @@ $('.carrier-role-checkbox[value="0"]').on('change', function() {
 $section.find('form').submit(function(e) {
     e.preventDefault()
 
-    console.log('submitting form')
-    //! make sure all at least one checkbox is checked
+    if (!$('.carrier-role-checkbox:checked').length)
+        return alert('At least 1 permission must be checked before saving!')
+
+    $(this).unbind().submit()
 })

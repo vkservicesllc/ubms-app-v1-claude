@@ -1,46 +1,15 @@
 <section class="tab-section" id="carrier-roles-section">
     <div class="columns is-1">
         <div class="column is-two-fifths">
-            <style>
-                .panel {
-                    min-width: 240px;
-                    margin-left: 8px;
-                }
-                .table thead .top-header  {
-                    font-weight: normal;
-                    font-style: oblique;
-                    font-size: .9em;
-                }
-                .table thead .checkbox-header {
-                    width: 90px;
-                }
-                .role-tables {
-                    max-height: 510px;
-                    overflow-y: scroll;
-                }
-                .switch[type=checkbox].is-small + label {
-                    font-size: .5rem;
-                }
-                #carrier-roles-form-section {
-                    display: none;
-                    position: fixed;
-                    margin-left: 8px;
-                    width: 960px;
-                }
-                #carrier-panel-list {
-                    max-height: 650px;
-                    overflow-y: scroll;
-                }
-            </style>
             <div class="panel">
                 <p class="panel-block">
                     <button class="button" id="carrier-role-add"><i class="fa fa-plus"></i></button>
                 </p>
-                <div id="carrier-panel-list"></div>
+                <div class="role-panel-list" id="carrier-role-panel-list"></div>
             </div>
         </div>
         <div class="column is-three-fifths">
-            <div class="box" id="carrier-roles-form-section">
+            <div class="box role-form-section" id="carrier-roles-form-section">
                 <button class="delete close-role-section is-pulled-right" id="carrier-role-close"></button>
                 <form action="/resource/role/carrier" method="POST" autocomplete="off">
                     {{{input.carrierRoleId}}}
@@ -66,13 +35,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="column" id="carrier-role-delete-button" style="max-width: 45px; display: none;">
+                        <div class="column role-delete-button" id="carrier-role-delete-button">
                             <a id="carrier-role-delete"><i class="fa fa-trash has-text-danger-70"></i></a>
                         </div>
-                        <div class="column" id="name-unavailable-warning" style="display: none;">
+                        <div class="column name-unavailable-warning" id="carrier-name-unavailable-warning">
                             <p class="help has-text-danger">
                                 <i class="fa fa-triangle-exclamation"></i>
-                                The name is not available for this location!<br/>
+                                The name is not available for this location!
                                 Please try:<br/>
                                 1) either changing location<br/>
                                 2) or picking a different name for this location
@@ -83,7 +52,7 @@
                     <section class="tables role-tables mb-5" id="carrier-permissions">{{{roleTables.carrier}}}
                     </section>
 
-                    <button type="submit" class="button is-link" id="carrier-role-submit">Create</button>
+                    <button type="submit" class="button" id="carrier-role-submit">Create</button>
                 </form>
             </div>
         </div>

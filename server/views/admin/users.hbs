@@ -8,6 +8,44 @@
                         <li class="tab-link" data-section="carrier-roles" data-role="crr"><a>Carrier Roles</a></li>
                     </ul>
                 </div>
+                <style>
+                    .panel {
+                        min-width: 240px;
+                        margin-left: 8px;
+                    }
+                    .table thead .top-header  {
+                        font-weight: normal;
+                        font-style: oblique;
+                        font-size: .9em;
+                    }
+                    .table thead .checkbox-header {
+                        width: 90px;
+                    }
+                    .role-tables {
+                        max-height: 510px;
+                        overflow-y: scroll;
+                    }
+                    .role-delete-button {
+                        display: block;
+                        max-width: 45px;
+                    }
+                    .name-unavailable-warning {
+                        display: none;
+                    }
+                    .switch[type=checkbox].is-small + label {
+                        font-size: .5rem;
+                    }
+                    .role-form-section {
+                        display: none;
+                        position: fixed;
+                        margin-left: 8px;
+                        width: 960px;
+                    }
+                    .role-panel-list {
+                        max-height: 650px;
+                        overflow-y: scroll;
+                    }
+                </style>
                 <script>
                     $(document).ready(() => {
                         const urlParams = new URLSearchParams(window.location.search)
