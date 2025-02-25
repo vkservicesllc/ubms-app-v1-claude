@@ -494,7 +494,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             const src = $(this).hasClass('edit-user') ? 'edit' : 'delete'
             const _id = $(this).data('id')
 
-            $.ajax(`/api/user/${_id}`, {
+            $.ajax(`/api/user/${_id}?count=roles&countFilter=location`, {
                 method: 'POST',
                 success(data) {
                     const { _id, name } = data
@@ -506,7 +506,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                         return $('#user-delete-modal').addClass('is-active')
                     }
 
-                    const { username, email, phone, firstName, lastName, alias, sex } = data
+                    const { username, email, phone, firstName, lastName, alias, sex, count } = data
                     let { status, location } = data
                     status = status[0]
                     location = location[0]
@@ -524,8 +524,10 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                         disabled = true
                         $status.prop('disabled', disabled)
                         $field.status.hide()
-                    } else
+                    } else {
                         $status.val(status)
+                        if (count.roles) disabled = true
+                    }
                     $location.val(location).prop('disabled', disabled)
                     $email.val(email)
                     $phone.val(formatTel(phone))

@@ -56,7 +56,6 @@ router.post('/flush/:env/:_id/:target?', User.verify, developerOnly, async (req,
 
 router.post('/users', User.verify, async (req, res) => {
     try {
-        //! It may be necessary to remove the branch restriction, since other branches may also need this info
         res.send({ data: await User.list(res.session) })
     } catch (err) {
         throwErr.server(res, null, err, false)
@@ -67,10 +66,23 @@ router.post('/users', User.verify, async (req, res) => {
 router.post('/user/:_id', User.verify, async (req, res) => {
     try {
         const { _id } = req.params
+        const { count, countFilter } = req.query
         const { status } = res.session.user
-        let data = await User.data(res.session, { _id })
+        const data = await User.data(res.session, { _id })
 
-        if (!data || (data.status[0] == 'D' && status[0] != 'D')) data = {}
+        if (!data || (data.status[0] == 'D' && status[0] != 'D'))
+            return res.send({})
+
+        if (count) {
+            let { applied } = await data[count](res.session)
+
+            if (countFilter == 'location')
+                applied = applied.filter(item => item.location == data.location[0])
+
+            data.count = {
+                [count]: applied.length,
+            }
+        }
 
         res.send(data)
     } catch (err) {

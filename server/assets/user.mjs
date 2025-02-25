@@ -73,8 +73,12 @@ class User extends Person {
             name: this.fullName('AL'),
             email: data.email,
             phone: data.phone,
+            count: {
+                roles: data.roleCount,
+                teams: data.teamCount,
+            },
         }
-
+        
         if (fails !== undefined) this.fails = fails
         if (settings !== undefined) this.settings = settings
         if (lastUrl !== undefined) this.lastUrl = lastUrl
