@@ -169,7 +169,23 @@ export default class {
     }
 
 
-    static updateRole = async (req, res) => {}
+    static updateRoles = async (req, res) => {
+        try {
+            const { _id } = req.params
+            const { action, roles: _roleIds } = req.body
+            const user = await User.data(res.session, { _id })
+
+            const { error } = await user.roles(res.session, action, _roleIds)
+            if (error) return throwErr.server(res, null, error)
+
+            const { username } = user
+            const identifier = username || _id
+
+            res.redirect(`/online/user/${identifier}`)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
 
 
     static updateTeams = async (req, res) => {

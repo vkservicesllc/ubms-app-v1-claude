@@ -25,6 +25,7 @@ router.post('/user/modify/condition', User.verify, [ validateCondition() ], vali
 router.post('/user/delete', User.verify, UserMW.delete)
 
 router.post('/user/:_id/teams', User.verify, UserMW.updateTeams)
+router.post('/user/:_id/roles', User.verify, UserMW.updateRoles)
 
 
 /* User Role Resource */

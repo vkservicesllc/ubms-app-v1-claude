@@ -43,7 +43,6 @@ if (_id)
                 method: 'POST',
                 success(response) {
                     const { data: roles } = response
-                    console.log('roles', roles) //!temp
                     const $roles = {
                         available: $('#available-roles'),
                         applied: $('#user-roles'),

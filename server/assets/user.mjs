@@ -222,7 +222,47 @@ class User extends Person {
             this.roles = async (session, action, roleIds) => {
                 const userId = await this.id()
 
-                if (action && roleIds) {} else {
+                if (action && roleIds) {
+                    //! NOT FINISHED
+                    //? Need to find the best solution for logging changes
+                    let modified = false,
+                        error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+                    if (error) return { modified, error }
+
+                    if (!Array.isArray(roleIds)) roleIds = [ roleIds ]
+                    error = []
+
+                    let i = 0, modCt = 0, createdBy
+                    if (action == '-') action = 'delete'
+                    else if (action == '+') {
+                        action = 'insert'
+                        createdBy = await session.user.id()
+                    }
+
+                    for (let roleId of roleIds) {
+                        if (!numeric(roleId))
+                            roleId = await (await Role.data(session, { _id: roleId })).id()
+
+                        try {
+                            const data = { userId, roleId }
+                            if (action == 'insert') data.createdBy = createdBy
+
+                            const [ result ] = await mysql.execute(query.userRoles[action](data))
+                            if (result.affectedRows == 1) modCt++
+                        } catch (err) {
+                            error.push('DB Error: idx ' + i)
+                        }
+
+                        i++
+                    }
+
+                    if (modCt === roleIds.length) {
+                        modified = true
+                        error = undefined
+                    } else error = error.join(' / ')
+
+                    return { modified, error }
+                } else {
                     if (!session?.user) return
 
                     const sessionUser = session.user
@@ -291,7 +331,8 @@ class User extends Person {
                 const userId = await this.id()
 
                 if (action && teamIds) {
-                    //! action not finished yet
+                    //! NOT FINISHED
+                    //? Need to find the best solution for logging changes
                     let modified = false,
                         error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
                     if (error) return { modified, error }
