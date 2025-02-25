@@ -79,12 +79,12 @@ router.post('/user/:_id', User.verify, async (req, res) => {
 })
 
 
-router.post('/user/:_id/teams', User.verify, async (req, res) => {
+router.post('/user/:_id/:target', User.verify, async (req, res) => {
     try {
-        const { _id } = req.params
+        const { _id, target } = req.params
         const user = await User.data(res.session, { _id })
 
-        res.send({ data: await user.teams(res.session) })
+        res.send({ data: await user[target](res.session) })
     } catch (err) {
         throwErr.server(res, null, err, false)
     }

@@ -219,6 +219,74 @@ class User extends Person {
             }
 
 
+            this.roles = async (session, action, roleIds) => {
+                const userId = await this.id()
+
+                if (action && roleIds) {} else {
+                    if (!session?.user) return
+
+                    const sessionUser = session.user
+                    const self = sessionUser._id == this._id
+                    if (!self && !sessionUser.DSA) return
+
+                    const data = { all: [], available: [], applied: [] }
+
+                    const batch = [
+                        {
+                            table: 'users_roles',
+                            match: { userId },
+                        },
+                        {
+                            table: 'user_roles',
+                            fields: [ Role.hashId(), 'name', 'location' ],
+                            join: [ 'id', 'roleId' ],
+                        },
+                    ]
+
+                    if (self) { /* Filter when SESSION USER in Special Branch */
+                        delete data.all
+                        delete data.available
+
+                        const { branch } = res.session
+                        const catId = Company.catId(branch)
+                        const roles = await Role.list(session, { catId })
+
+                        if (sessionUser.DS) {
+                            roles.map(role => {
+                                const { _id, name, location } = role
+                                data.applied.push({ _id, name, location })
+                            })
+                        } else {
+                            batch[1].match = { catId }
+
+                            data.applied = (await mysql.execute(Query.select(db.online, batch)))[0]
+                        }
+                    } else {
+                        batch[1].fields.push('catId')
+
+                        const roles = await Role.list(session, { location: [ null, this.location[0] ] })
+                        data.applied = (await mysql.execute(Query.select(db.online, batch)))[0]
+
+                        roles.map(role => {
+                            const { _id, name, catId } = role
+                            let { location } = role
+                            if (location) location = location[0]
+
+                            data.all.push({ _id, name, location, catId })
+                        })
+
+                        data.available = data.all.filter(role => !data.applied.some(appliedRole => appliedRole._id == role._id))
+
+                        data.all = sortArrayByObjectKey(data.all, 'name')
+                        data.applied = sortArrayByObjectKey(data.applied, 'name')
+                        data.available = sortArrayByObjectKey(data.available, 'name')
+                    }
+
+                    return data
+                }
+            }
+
+
             this.teams = async (session, action, teamIds) => {
                 const userId = await this.id()
 
@@ -281,13 +349,13 @@ class User extends Person {
                         },
                     ]
 
-                    if (self) { /* Filter when SESSION USER in Company Branch */
+                    if (self) { /* Filter when SESSION USER in Special Branch */
                         delete data.all
                         delete data.available
 
                         const { branch } = res.session
                         const catId = Company.catId(branch)
-                        const teams = await Team.data(session, { catId })
+                        const teams = await Team.list(session, { catId })
 
                         if (sessionUser.DS) {
                             teams.map(team => {
@@ -299,8 +367,6 @@ class User extends Person {
 
                             data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
                         }
-
-
                     } else {
                         batch[1].fields.push('catId')
 

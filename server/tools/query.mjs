@@ -421,7 +421,7 @@ class Query {
 
             if (empty(value)) continue
 
-            let operator = ' = '
+            let operator = ' = ', extension = ''
 
             if (field == 'route' || field == 'concat') {
                 const prop = field
@@ -433,7 +433,7 @@ class Query {
             }
 
             else if (Array.isArray(value))
-                [ value, operator ] = combine(value)
+                [ value, operator, extension ] = combine(value)
 
             else if (value !== null && typeof value == 'object') {
 
@@ -447,7 +447,7 @@ class Query {
                     if (empty(value)) continue
 
                     if (Array.isArray(value))
-                        [ value, operator ] = combine(value, false)
+                        [ value, operator, extension ] = combine(value, false)
                     else {
                         value = Query.#value(value)
                         operator = ' != '
@@ -494,8 +494,9 @@ class Query {
             field = Query.#field(field, table).split(' AS ')[0]
             if (value == 'NULL' || value == 'NOT NULL')
                 operator = ' IS '
+            if (extension) extension = extension.replace('[FIELD]', field)
 
-            chunks.push(field + operator + value)
+            chunks.push(field + operator + value + extension)
         }
 
         return chunks.join('\nAND ')
@@ -506,13 +507,21 @@ class Query {
         }
 
         function combine(originalValues, eq = true) {
-            const values = [ ...originalValues ]
+            let values = [ ...originalValues ]
+            const operator = eq ? ' ' : ' NOT '
+            const condition = eq ? 'OR' : 'AND'
+            let extension = ''
 
             values.forEach((value, idx) => {
-                values[idx] = Query.#value(value)
-            })
+                value = Query.#value(value)
 
-            return [ `IN (${values.join(', ')})`, eq ? ' ' : ' NOT ' ]
+                if (value == 'NULL') {
+                    if (!extension) extension = ` ${condition} [FIELD] IS${operator}NULL`
+                } else values[idx] = value
+            })
+            if (extension) values = values.filter(value => value !== null)
+
+            return [ `IN (${values.join(', ')})`, operator, extension ]
         }
 
     }
