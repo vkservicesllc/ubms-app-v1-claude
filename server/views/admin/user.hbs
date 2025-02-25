@@ -1,6 +1,12 @@
 {{> admin/nav.alpha}}
 
+                {{#if (
+                    and
+                        (eq data.DS false)
+                        (eq self false)
+                )}}
                 <div class="loader-wrapper is-active"><div class="loader is-loading"></div></div>
+                {{/if}}
                 <span class="subtitle is-5">User Configurations</span>
                 <p class="mt-5">{{{display.name}}}</p>
 
