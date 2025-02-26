@@ -125,7 +125,7 @@ const apps = {
         catId: 'crr',
         type: 'primary',
         name: `${alias} Carriers`,
-        active: false,
+        active: true,
         route: carrierRoute,
         session: {
             maxAge: 10,  /* in minutes */

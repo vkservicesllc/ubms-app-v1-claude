@@ -142,6 +142,15 @@ module.exports = {
         },
 
 
+        'materialize': {
+            css: [
+                '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" integrity="sha512-UJfAaOlIRtdR+0P6C3KUoTDAxVTuy3lnSXLyLKlHYJlcSU8Juge/mjeaxDNMlw9LgeIotgz5FP8eUQPhX1q10A==" crossorigin="anonymous" referrerpolicy="no-referrer" />',
+                '<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />',
+            ],
+            js: '<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" integrity="sha512-NiWqa2rceHnN3Z5j6mSAvbwwg3tiwVNxiAQaaSMSXnRRDh5C2mk/+sKQRw8qjV1vN4nf8iK2a0b048PnHbyx+Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>',
+        },
+
+
         'moment': {
             js: [
                 '<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>',
