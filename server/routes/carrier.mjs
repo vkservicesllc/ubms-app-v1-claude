@@ -31,6 +31,7 @@ router.use((req, res, next) => {
 
         hbs.title = `${titlePfx} - ${hbs.title}`
         hbs.includes = includer.render(includes[inclKey])
+        hbs.bodyAttrs = ' class="light-blue lighten-5"'
 
         return hbs
     }
@@ -54,12 +55,20 @@ router.get('/', (req, res) => {
             username: Label.username(),
             password: Label.password(),
         }
-        hbs.bodyAttrs = ' class="light-blue lighten-5"'
 
         res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }
+})
+
+
+router.get('/sketch', (req, res) => {
+    const key = 'sketch'
+    let { hbs } = res
+    hbs = hbs.set(key)
+
+    res.render(key, hbs)
 })
 
 

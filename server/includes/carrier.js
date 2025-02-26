@@ -21,7 +21,7 @@ const offline = {
 const online = {
     external: [ ...defaults.external, 'store', 'jquery.ui', 'jquery.idle-timeout-plus' ],
     internal: {
-        css: [ ...defaults.internal.css, 'nav' ],
+        css: [ ...defaults.internal.css ],
         js: [ ...defaults.internal.js, '^idle-timeout-plus' ],
         mjs: [ ...defaults.internal.mjs, 'no-mobile' ],
     },
@@ -36,6 +36,16 @@ module.exports = {
             css: [ ...offline.internal.css ],
             js: [ ...offline.internal.js ],
             mjs: [ ...offline.internal.mjs ],
+        },
+    },
+
+    //!TEMP (SKETCH)
+    sketch: {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
         },
     },
 
