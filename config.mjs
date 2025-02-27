@@ -61,16 +61,17 @@ const addrBook = {}
 import defaultRoute from './server/routes/default.mjs'
 
 import adminRoute from './server/routes/admin.mjs'
-import adminApiRoute from './server/routes/admin/api.mjs'
 import adminBusinessRoute from './server/routes/admin/business.mjs'
 import adminOnlineRoute from './server/routes/admin/online.mjs'
 import adminDevToolsRoute from './server/routes/admin/dev-tools.mjs'
+import adminApiRoute from './server/routes/admin/api.mjs'
 import adminResourceRoute from './server/routes/admin/resource.mjs'
 
 import userRoute from './server/routes/user.mjs'
 import userApiRoute from './server/routes/user/api.mjs'
 
 import carrierRoute from './server/routes/carrier.mjs'
+import carrierApiRoute from './server/routes/carrier/api.mjs'
 
 import driverRoute from './server/routes/driver.mjs'
 
@@ -124,9 +125,12 @@ const apps = {
     'carrier': {
         catId: 'crr',
         type: 'primary',
-        name: `${alias} Carriers`,
+        name: `${alias} Carrier App`,
         active: true,
         route: carrierRoute,
+        routes: [
+            { url: '/api', router: carrierApiRoute },
+        ],
         session: {
             maxAge: 10,  /* in minutes */
         },
@@ -146,7 +150,7 @@ const apps = {
     'school': {
         catId: 'scl',
         type: 'primary',
-        name: `${alias} CDL Schools`,
+        name: `${alias} CDL School App`,
         active: false,
         route: schoolRoute,
         session: {

@@ -398,7 +398,7 @@ class User extends Person {
                         delete data.all
                         delete data.available
 
-                        const { branch } = res.session
+                        const { branch } = session
                         const catId = Company.catId(branch)
                         const teams = await Team.list(session, { catId })
 
@@ -1124,6 +1124,11 @@ class User extends Person {
 
             if (user.DS && user.location[0] != 'US')
                 return await reject('Verification failed: Incorrect status in current location')
+
+            if (session.branch != 'admin' && session.branch != 'user') {
+                const { applied: teams } = await user.teams({ ...session, user })
+                if (!teams.length) return await reject('Verification failed: No teams assigned')
+            }
 
             if (query.refer) {
                 const newUrl = stripUrl(originalUrl, query, 'refer')

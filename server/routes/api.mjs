@@ -19,6 +19,20 @@ router.get('/session/keep-alive', User.verify, (req, res) => res.send('OK'))
 router.post('/login', User.login)
 
 
+router.post('/login/validation', async (req, res) => {
+    let validated = false
+    const { username } = req.body
+
+    const user = await User.data(res.session, { username })
+    if (user) {
+        const { applied: teams } = await user.teams({ user, ...res.session })
+        validated = teams.length > 0
+    }
+
+    res.send({ validated })
+})
+
+
 router.post('/session/:prop', User.verify, (req, res) => {
     try {
         const { prop } = req.params

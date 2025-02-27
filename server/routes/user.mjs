@@ -76,6 +76,7 @@ router.use((req, res, next) => {
 
             nav[navKey] = active
         }
+
         if (user) {
             hbs.user = {}
 
@@ -137,7 +138,7 @@ router.get('/login', async (req, res) => {
             password: Input.password(),
         }
         hbs.button = {
-            login: Button.login({ class: 'ui fluid teal submit button' }),
+            login: Button.login({ class: 'ui fluid big teal submit button' }),
         }
 
         hbs.formId = formSelectors.user.loginFormId

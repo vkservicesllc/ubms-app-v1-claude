@@ -1,5 +1,5 @@
 const defaults = {
-    external: [ 'jquery', 'jquery.cookie', 'jquery.caret', 'materialize' ],
+    external: [ 'jquery', 'jquery.cookie', 'jquery.caret', 'fomantic-ui' ],
     internal: {
         css: [],
         js: [],
@@ -33,14 +33,13 @@ module.exports = {
     'login': {
         external: [ ...offline.external ],
         internal: {
-            css: [ ...offline.internal.css ],
+            css: [ ...offline.internal.css, 'login' ],
             js: [ ...offline.internal.js ],
-            mjs: [ ...offline.internal.mjs ],
+            mjs: [ ...offline.internal.mjs, '^login' ],
         },
     },
 
-    //!TEMP (SKETCH)
-    sketch: {
+    'home': {
         external: [ ...online.external ],
         internal: {
             css: [ ...online.internal.css ],

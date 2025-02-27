@@ -1,60 +1,35 @@
 {{> head}}
 
-    <style>
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .login-card {
-            min-width: 420px;
-            padding: 0 15px 15px;
-            border-radius: 10px;
-        }
-        .login-card .divider {
-            margin-bottom: 30px;
-        }
-        .login-button {
-            margin: 30px 0;
-        }
-        .full-width-btn {
-            width: 100%;
-        }
-        .copyright {
-            font-size: 12px;
-        }
-    </style>
-    <div class="container">
-        <div class="card login-card grey lighten-5">
-            <div class="card-content">
-                <h5 class="center-align indigo-text text-lighten-1">{{appName}}</h5>
-                <div class="divider"></div>
-                <form>
-                    <div class="input-field">
-                        <i class="material-icons prefix teal-text text-darken-1">account_circle</i>
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            <h2 class="ui primary header">
+                <div class="content">{{appName}}</div>
+            </h2>
+            <div class="ui hidden divider"></div>
+            <form class="ui form" id="{{formId}}" action="{{loginUrl}}" method="POST" autocomplete="off">
+                <div class="field">
+                    <div class="ui fluid right labeled left icon input">
+                        <i class="user icon"></i>
                         {{{input.username}}}
                         {{{label.username}}}
                     </div>
-                    <div class="input-field">
-                        <i class="material-icons prefix teal-text text-darken-1">lock</i>
+                </div>
+                <div class="field">
+                    <div class="ui fluid right labeled left icon input">
+                        <i class="lock icon"></i>
                         {{{input.password}}}
                         {{{label.password}}}
                     </div>
-                    <div class="center-align login-button">
-                        <button type="submit" class="btn full-width-btn waves-effect waves-light indigo lighten-1">
-                            Sign In
-                            <i class="material-icons right">send</i>
-                        </button>
-                    </div>
-                    <p class="center-align teal-text text-lighten-1 copyright">{{{copyright}}}</p>
-                </form>
-            </div>
+                </div>
+                {{{button.login}}}
+            </form>
+            <div class="ui error message" id="error-message" style="display: none;"></div>
+            <div class="ui hidden divider"></div>
+            <p><span class="ui info text">{{{copyright}}}</span></p>
         </div>
     </div>
-    <script>
-        M.updateTextFields()
-        $('input').prop('disabled', false)
-    </script>
+    <div class="ui inverted dimmer">
+        <div class="ui text loader">Loading</div>
+    </div>
 
 {{> foot}}

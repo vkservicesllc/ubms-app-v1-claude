@@ -1,0 +1,59 @@
+{{> head}}
+
+    <style>
+        .ui.horizontal.segments {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Makes both segments equal width */
+            gap: 10px;
+        }
+    </style>
+
+    <div class="ui middle aligned center aligned grid" style="height: 100vh;">
+        <div class="row">
+            <div class="column" style="width: auto;">
+                <div class="ui horizontal basic segments">
+                    <div class="ui padded segment left aligned">
+                        <p><span class="ui large text">Welcome, {{user.name}}!</span></p>
+                        <p>
+                            <span class="ui large text">
+                                In order to proceed with {{appName}}<br/>
+                                please select the Team you're willing to work in:
+                            </span>
+                        </p>
+                        <div class="ui horizontal divider">
+                            <span>OR</span>
+                        </div>
+                        <p><a class="ui fluid large red button" href="{{logoutUrl}}">Sign out</a></p>
+                    </div>
+                    <div class="ui padded segment">
+                        <div class="ui massive dropdown labeled search icon fluid button" id="team-selector">
+                            <i class="people arrows icon"></i>
+                            <span class="text">Select Team</span>
+                            <div class="menu">{{{dropdown.menu.teams}}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form action="/session/team" id="team-form" method="POST" style="display: none;"><input type="hidden" id="team-id" name="_id"></form>
+
+    <script>
+        $('.ui.dropdown').dropdown({
+            onChange(_teamId) {
+                $(this).addClass('primary')
+                $('.people.arrows').removeClass('people arrows').addClass('loading spinner')
+
+                setTimeout(() => {
+                    $('#team-selector').addClass('disabled')
+                    $('#team-id').val(_teamId)
+                    setTimeout(() => {
+                        $('#team-form').submit()
+                    }, 400)
+                }, 100)
+            },
+        })
+    </script>
+
+{{> foot}}

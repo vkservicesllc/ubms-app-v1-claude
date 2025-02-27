@@ -136,7 +136,7 @@ export const loginEvent = (callback = {}) => {
                     method: 'POST',
                     data: { username, password },
                     success(response) {
-                        if (onAjax) onAjax(response, { $form, $username, $password })
+                        if (onAjax) onAjax(response, { username, $form, $username, $password })
                         else $form.unbind().submit()
                     },
                 })
