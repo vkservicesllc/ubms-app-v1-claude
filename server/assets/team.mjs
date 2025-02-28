@@ -8,10 +8,12 @@ import { sessionError } from './user.mjs'
 
 /* Tools */
 import Query, { hash, matchHash } from '../tools/query.mjs'
+import recognizeApi from '../tools/api.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
 import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 
 const mysql = require('../tools/mysql')
+const throwErr = require('../tools/error')
 
 
 const query = {
@@ -332,6 +334,29 @@ class Team {
         const data = (await mysql.execute(query.teams.select('id', { match: { name } })))[0]
 
         return { found: data.length == 1 }
+    }
+
+
+
+    /* Middleware */
+
+
+    static verify = async (req, res, next) => {
+        const { api, errKey } = recognizeApi(req)
+        const { method } = req
+
+        try {
+            const { team: _id } = req.session
+            if (!_id) return res.redirect('/')
+
+            const team = await Team.data(res.session, { _id })
+            if (team) res.session.team = team
+
+            next()
+        } catch (err) {
+            const msg = 'Team validation check failed: Server could not process the request'
+            throwErr[errKey].server(res, msg, err)
+        }
     }
 
 

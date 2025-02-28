@@ -71,6 +71,7 @@ import userRoute from './server/routes/user.mjs'
 import userApiRoute from './server/routes/user/api.mjs'
 
 import carrierRoute from './server/routes/carrier.mjs'
+import carrierDriversRoute from './server/routes/carrier/drivers.mjs'
 import carrierApiRoute from './server/routes/carrier/api.mjs'
 
 import driverRoute from './server/routes/driver.mjs'
@@ -129,6 +130,7 @@ const apps = {
         active: true,
         route: carrierRoute,
         routes: [
+            { url: '/drivers', router: carrierDriversRoute },
             { url: '/api', router: carrierApiRoute },
         ],
         session: {

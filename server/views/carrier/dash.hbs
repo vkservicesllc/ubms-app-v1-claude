@@ -1,0 +1,25 @@
+{{> head}}
+
+
+    <div class="ui top visible sidebar menu" id="top-nav">
+        <a class="item" href="{{logoutUrl}}">Sign out</a>
+    </div>
+    <div class="ui left visible vertical inverted labeled icon sidebar menu" id="left-nav">
+        <a class="item">
+            <i class="people arrows icon"></i>
+            {{team.name}}
+        </a>
+        <a class="item">
+            <i class="user alternate icon"></i>
+            Drivers
+        </a>
+        <a class="item">
+            <i class="truck icon"></i>
+            Vehicles
+        </a>
+    </div>
+    <script>
+        $('#top-nav').css('padding-left', `${$('#left-nav').outerWidth()}px`)
+    </script>
+
+{{> foot}}

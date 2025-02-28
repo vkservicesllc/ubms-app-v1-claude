@@ -435,9 +435,10 @@ class User extends Person {
                         data.available = data.all.filter(team => !data.applied.some(appliedTeam => appliedTeam._id == team._id))
 
                         data.all = sortArrayByObjectKey(data.all, 'name')
-                        data.applied = sortArrayByObjectKey(data.applied, 'name')
                         data.available = sortArrayByObjectKey(data.available, 'name')
                     }
+
+                    data.applied = sortArrayByObjectKey(data.applied, 'name')
 
                     return data
                 }
@@ -1061,6 +1062,8 @@ class User extends Person {
             if (!result.affectedRows) {
                 if (req.session.user) delete req.session.user
                 if (res.session.user) delete res.session.user
+                if (req.session.team) delete req.session.team
+                if (res.session.team) delete res.session.team
 
                 return req.session.destroy((err) => {
                     if (err) return res.status(500).send('Failed to log out')
@@ -1137,7 +1140,11 @@ class User extends Person {
                 return res.redirect(newUrl)
             }
 
-            if (method != 'POST') await user.url(session, originalUrl)
+            if (method != 'POST') {
+                //! SHOULD MAKE IT A CONFIG SETTING?
+                if (session.branch != 'carrier' || originalUrl != '/')
+                    await user.url(session, originalUrl)
+            }
 
             if (!next) return user
 
@@ -1153,6 +1160,8 @@ class User extends Person {
     static logout = (req, res) => {
         if (req.session.user) delete req.session.user
         if (res.session.user) delete res.session.user
+        if (req.session.team) delete req.session.team
+        if (res.session.team) delete res.session.team
 
         return req.session.destroy((err) => {
             if (err) return res.status(500).send('Failed to log out')
@@ -1506,14 +1515,18 @@ export const sessionError = (session, instructions = {}) => {
 
 
 function determineUrl(user, branch) {
-    let url = user.lastUrl || '/'
+    let defUrl = '/'
+    let url = user.lastUrl || defUrl
     const { settings } = user
+
+    //! SHOULD MAKE IT A CONFIG SETTING?
+    if (branch == 'carrier') defUrl = '/dash'
 
     if (
         settings && typeof settings == 'object' &&
         branch in settings && 'lastUrl' in settings[branch] &&
         settings[branch].lastUrl === 0
-    ) url = '/'
+    ) url = defUrl
 
     return url
 }

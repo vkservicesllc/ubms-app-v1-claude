@@ -19,7 +19,7 @@ import { capitalizeEach } from '../../client/global/modules/tools/string.mjs'
 
 router.use((req, res, next) => {
 
-    if (req.session.user) {}
+    if (req.session.user && req.session.team) {}
 
     res.hbs.set = function(key, params = {}) {
         let { inclKey, navKey, titlePfx } = params
@@ -27,7 +27,7 @@ router.use((req, res, next) => {
         const includer = require('../includes/src')
         const includes = require('../includes/carrier')
 
-        const { user } = res.session
+        const { user, team } = res.session
         const hbs = { ...this }
         const { nav } = hbs
 
@@ -51,6 +51,17 @@ router.use((req, res, next) => {
             ]
             for (const prop of props)
                 hbs.user[prop] = user[prop]
+        }
+
+        if (team) {
+            hbs.team = {}
+
+            const props = [
+                'name',
+                'description',
+            ]
+            for (const prop of props)
+                hbs.team[prop] = team[prop]
         }
 
         if (!inclKey) inclKey = key
@@ -98,6 +109,9 @@ router.get('/', (req, res, next) => {
 }, User.verify, async (req, res) => {
     try {
         const { user } = res.session
+        const { team } = req.session
+        if (team) return res.redirect(user.lastUrl)
+
         const key = 'home'
         let { hbs } = res
         hbs = hbs.set(key)
@@ -120,12 +134,34 @@ router.get('/', (req, res, next) => {
 })
 
 
-router.post('/session/team', User.verify, async (req, res) => {
+router.post('/session/team/enter', User.verify, async (req, res) => {
+    const { lastUrl } = res.session.user
     const { _id } = req.body
     const team = await Team.data(res.session, { _id })
-console.log(res.session) //!TEMP
-    res.send(team)
+
+    if (team) req.session.team = _id
+
+    res.redirect(lastUrl)
+})
+
+
+router.post('/session/team/enter', User.verify, (req, res) => {
+    if (req.session.team) delete req.session.team
+
     res.redirect('/')
+})
+
+
+router.get('/dashboard', User.verify, Team.verify, (req, res) => {
+    try {
+        const key = 'dash'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
 })
 
 
