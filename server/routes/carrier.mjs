@@ -135,17 +135,20 @@ router.get('/', (req, res, next) => {
 
 
 router.post('/session/team/enter', User.verify, async (req, res) => {
-    const { lastUrl } = res.session.user
+    let { lastUrl } = res.session.user
     const { _id } = req.body
     const team = await Team.data(res.session, { _id })
 
-    if (team) req.session.team = _id
+    if (team) {
+        if (!lastUrl || lastUrl == '/') lastUrl = 'dashboard'
+        req.session.team = _id
+    }
 
     res.redirect(lastUrl)
 })
 
 
-router.post('/session/team/enter', User.verify, (req, res) => {
+router.post('/session/team/exit', User.verify, (req, res) => {
     if (req.session.team) delete req.session.team
 
     res.redirect('/')
