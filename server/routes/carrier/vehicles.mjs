@@ -10,11 +10,11 @@ import { navBuilder } from './constants.mjs'
 
 
 
-router.get('/', User.verify, Team.verify, (req, res) => {
+router.get('/', User.verify, Team.verify, async (req, res) => {
     try {
         const key = 'vehicles'
         let { hbs } = res
-        hbs = hbs.set(key)
+        hbs = await hbs.set(key)
 
         const { active } = hbs.nav
         hbs.nav.left.vehicles = active

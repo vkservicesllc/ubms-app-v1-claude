@@ -496,7 +496,10 @@ class Query {
                 operator = ' IS '
             if (extension) extension = extension.replace('[FIELD]', field)
 
-            chunks.push(field + operator + value + extension)
+            let line = field + operator + value + extension
+            if (extension) line = `(${line})`
+
+            chunks.push(line)
         }
 
         return chunks.join('\nAND ')

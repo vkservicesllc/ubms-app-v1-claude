@@ -40,7 +40,7 @@ router.use((req, res, next) => {
         }
     }
 
-    res.hbs.set = function(key, params = {}) {
+    res.hbs.set = async function(key, params = {}) {
         let { inclKey, navKey, titlePfx } = params
 
         const includer = require('../includes/src')
@@ -70,6 +70,8 @@ router.use((req, res, next) => {
             ]
             for (const prop of props)
                 hbs.user[prop] = user[prop]
+
+            user.permissions = await user.permissions(res.session)
         }
 
         if (team) {
@@ -97,13 +99,13 @@ router.use((req, res, next) => {
 
 
 
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
     if (req.session.user) return next()
 
     try {
         const key = 'login'
         let { hbs } = res
-        hbs = hbs.set(key)
+        hbs = await hbs.set(key)
 
         const labelClass = 'ui primary tag label'
 
@@ -136,7 +138,7 @@ router.get('/', (req, res, next) => {
 
         const key = 'team'
         let { hbs } = res
-        hbs = hbs.set(key)
+        hbs = await hbs.set(key)
 
         const { applied: teams } = await user.teams(res.session)
         const t = `\t`.repeat(8)
@@ -148,6 +150,7 @@ router.get('/', (req, res, next) => {
                 teams: menu,
             },
         }
+console.log('teams', user.permissions)
 
         res.render(key, hbs)
     } catch (err) {
@@ -177,11 +180,11 @@ router.post('/session/team/exit', User.verify, (req, res) => {
 })
 
 
-router.get('/dashboard', User.verify, Team.verify, (req, res) => {
+router.get('/dashboard', User.verify, Team.verify, async (req, res) => {
     try {
         const key = 'dash'
         let { hbs } = res
-        hbs = hbs.set(key)
+        hbs = await hbs.set(key)
 
         const { active } = hbs.nav
         hbs.nav.left.dash = active

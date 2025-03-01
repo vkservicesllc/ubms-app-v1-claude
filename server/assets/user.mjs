@@ -223,6 +223,37 @@ class User extends Person {
             }
 
 
+            this.permissions = async session => {
+                if (!session?.user) return
+
+                const { branch } = session
+                const catId = Company.catId(branch) //! Check how it will work with default branch
+                const userId = await this.id()
+                const batch = [
+                    {
+                        table: 'users_roles',
+                        match: { userId },
+                    },
+                    {
+                        table: 'user_roles',
+                        fields: 'permissions',
+                        join: [ 'id', 'roleId' ],
+                        match: { catId, location: [ null, this.location[0] ] },
+                    },
+                ]
+
+                const [ result ] = await mysql.execute(Query.select(db.online, batch))
+
+                return result.reduce((acc, item) => {
+                    Object.entries(item.permissions).forEach(([ key, values ]) => {
+                        acc[key] = [ ...new Set([ ...(acc[key] || []), ...values ])]
+                    })
+
+                    return acc
+                }, {})
+            }
+
+
             this.roles = async (session, action, roleIds) => {
                 const userId = await this.id()
 
