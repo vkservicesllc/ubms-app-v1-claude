@@ -62,13 +62,34 @@
     <form action="/session/team/exit" id="team-form" method="POST" style="display: none;"></form>
     <div class="ui top visible inverted sidebar menu" id="top-nav">
         <span class="item" id="team-item">{{team.name}}</span>{{{nav.top.items}}}
-        <div class="ui right dropdown item">
-            {{user.name}}
+        <div class="ui right inline dropdown item">
+            <div class="text">
+                <img class="ui avatar image" src="{{user.avaSrc}}">
+                {{user.name}}
+            </div>
             <i class="dropdown icon"></i>
             <div class="menu">
-                <a class="item">Profile</a>
-                <a class="item">Settings</a>
-                <a class="item">Logout</a>
+                <div class="header">App</div>
+                <a class="item" href="/settings"><i class="cog icon"></i>Settings</a>
+                <div class="divider"></div>
+                <div class="header">User</div>
+                <a class="item" href="{{addrBook.user}}/profile?refer={{{user._id}}}" target="_blank">
+                    <i class="user circle icon"></i>
+                    Profile
+                </a>
+                <a class="item" href="{{addrBook.user}}/account?refer={{{user._id}}}" target="_blank">
+                    <i class="user shield icon"></i>
+                    Account
+                </a>
+                <a class="item" href="{{addrBook.user}}/security?refer={{{user._id}}}" target="_blank">
+                    <i class="key icon"></i>
+                    Security
+                </a>
+                <div class="divider"></div>
+                <a class="item" href="{{logoutUrl}}">
+                    <i class="sign out alternate red text icon"></i>
+                    <span class="ui red text">Sign out</span>
+                </a>
             </div>
         </div>
     </div>

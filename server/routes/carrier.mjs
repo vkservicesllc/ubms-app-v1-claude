@@ -116,7 +116,10 @@ router.get('/', (req, res, next) => {
             password: Input.password(),
         }
         hbs.button = {
-            login: Button.login({ class: 'ui fluid big primary submit button' }),
+            login: Button.login({
+                class: 'ui fluid big primary submit right labeled icon button',
+                content: 'Sign in <i class="sign in alternate icon"></i>',
+            }),
         }
 
         hbs.formId = formSelectors.user.loginFormId
