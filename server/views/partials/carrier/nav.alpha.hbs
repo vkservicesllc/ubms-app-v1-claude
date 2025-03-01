@@ -1,0 +1,47 @@
+{{> head}}
+
+    <style>
+        .ui.pusher {
+            padding: 20px;
+        }
+        #team-item {
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px !important;
+            font-size: 1.2em;
+            color: yellowgreen;
+        }
+    </style>
+    <div class="ui left visible vertical inverted labeled icon sidebar menu" id="left-nav">
+        <a class="item" id="team-link">
+            <i class="people arrows icon"></i>
+            Teams
+        </a>
+        <a class="{{nav.left.dash}}item" href="/dashboard">
+            <i class="chart pie icon"></i>
+            Dashboard
+        </a>
+        <a class="{{nav.left.vehicles}}item" href="/vehicles">
+            <i class="truck icon"></i>
+            Vehicles
+        </a>
+        <a class="{{nav.left.drivers}}item" href="/drivers">
+            <i class="tachometer alternate icon"></i>
+            Drivers
+        </a>
+        <a class="{{nav.left.dispatch}}item">
+            <i class="user tie icon"></i>
+            Dispatch
+        </a>
+        <a class="{{nav.left.payroll}}item">
+            <i class="dollar sign icon"></i>
+            Payroll
+        </a>
+    </div>
+    <form action="/session/team/exit" id="team-form" method="POST" style="display: none;"></form>
+    <div class="ui top visible inverted sidebar menu" id="top-nav">
+        <span class="item" id="team-item">{{team.name}}</span>
+        <a class="item right" href="{{logoutUrl}}">Sign out</a>
+    </div>
+
+    <div class="ui pusher">

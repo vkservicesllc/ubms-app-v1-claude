@@ -19,7 +19,22 @@ import { capitalizeEach } from '../../client/global/modules/tools/string.mjs'
 
 router.use((req, res, next) => {
 
-    if (req.session.user && req.session.team) {}
+    if (req.session.user && req.session.team) {
+        const active = 'active '
+        const inactive = ''
+
+        res.hbs.nav = {
+            active,
+
+            left: {
+                dash: inactive,
+                vehicles: inactive,
+                drivers: inactive,
+                dispatch: inactive,
+                payroll: inactive,
+            },
+        }
+    }
 
     res.hbs.set = function(key, params = {}) {
         let { inclKey, navKey, titlePfx } = params
@@ -112,7 +127,7 @@ router.get('/', (req, res, next) => {
         const { team } = req.session
         if (team) return res.redirect(user.lastUrl)
 
-        const key = 'home'
+        const key = 'team'
         let { hbs } = res
         hbs = hbs.set(key)
 
@@ -160,6 +175,9 @@ router.get('/dashboard', User.verify, Team.verify, (req, res) => {
         const key = 'dash'
         let { hbs } = res
         hbs = hbs.set(key)
+
+        const { active } = hbs.nav
+        hbs.nav.left.dash = active
 
         res.render(key, hbs)
     } catch (err) {

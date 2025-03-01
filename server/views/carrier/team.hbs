@@ -13,11 +13,11 @@
             <div class="column" style="width: auto;">
                 <div class="ui horizontal basic segments">
                     <div class="ui padded segment left aligned">
-                        <p><span class="ui large text">Welcome, {{user.name}}!</span></p>
+                        <p><span class="ui large text">Howdy, {{user.name}}!</span></p>
                         <p>
                             <span class="ui large text">
-                                In order to proceed with {{appName}}<br/>
-                                please select the Team you're willing to work in:
+                                To proceed with {{appName}},<br/>
+                                please select the team you'd like to work in:
                             </span>
                         </p>
                         <div class="ui horizontal divider">
@@ -26,7 +26,7 @@
                         <p><a class="ui fluid large red button" href="{{logoutUrl}}">Sign out</a></p>
                     </div>
                     <div class="ui padded segment">
-                        <div class="ui massive dropdown labeled search icon fluid button" id="team-selector">
+                        <div class="ui massive dropdown labeled icon fluid button" id="team-selector">
                             <i class="people arrows icon"></i>
                             <span class="text">Select Team</span>
                             <div class="menu">{{{dropdown.menu.teams}}}

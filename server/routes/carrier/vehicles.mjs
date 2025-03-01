@@ -9,27 +9,17 @@ import Team from '../../assets/team.mjs'
 
 router.get('/', User.verify, Team.verify, (req, res) => {
     try {
-        const key = 'drivers'
+        const key = 'vehicles'
         let { hbs } = res
         hbs = hbs.set(key)
 
         const { active } = hbs.nav
-        hbs.nav.left.drivers = active
+        hbs.nav.left.vehicles = active
 
         res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }
-})
-
-
-router.get('/pre-applications', User.verify, Team.verify, (req, res) => {
-    res.send('PRE-APPLICATIONS')
-})
-
-
-router.get('/applications', User.verify, Team.verify, (req, res) => {
-    res.send('APPLICATIONS')
 })
 
 

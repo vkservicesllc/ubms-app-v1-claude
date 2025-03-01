@@ -1,41 +1,6 @@
-{{> head}}
+{{> carrier/nav.alpha}}
 
-    <style>
-        #team-item {
-            align-items: center;
-            justify-content: center;
-            padding: 0 15px !important;
-            font-size: 1.2em;
-            color: yellowgreen;
-        }
-    </style>
-    <div class="ui left visible vertical inverted labeled icon sidebar menu" id="left-nav">
-        <a class="item" id="team-link">
-            <i class="people arrows icon"></i>
-            Teams
-        </a>
-        <a class="item" href="/vehicles">
-            <i class="truck icon"></i>
-            Vehicles
-        </a>
-        <a class="item" href="/drivers">
-            <i class="user alternate icon"></i>
-            Drivers
-        </a>
-        <a class="item" href="/payroll">
-            <i class="dollar sign icon"></i>
-            Payroll
-        </a>
-    </div>
-    <form action="/session/team/exit" id="team-form" method="POST" style="display: none;"></form>
-    <div class="ui top visible inverted sidebar menu" id="top-nav">
-        <span class="item" id="team-item">{{team.name}}</span>
-        <a class="item right" href="{{logoutUrl}}">Sign out</a>
-    </div>
-    <script>
-        $('#left-nav').css('padding-top', `${$('#top-nav').outerHeight()}px`)
-        $('#team-item').css('min-width', `${$('#left-nav').outerWidth()}px`)
-        $('#team-link').click(() => { $('#team-form').submit() })
-    </script>
+        <h4>Dashboard</h4>
+        <p>Charts and other cool stuff are coming up...</p>
 
-{{> foot}}
+{{> carrier/nav.omega}}

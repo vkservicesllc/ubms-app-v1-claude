@@ -39,7 +39,7 @@ module.exports = {
         },
     },
 
-    'home': {
+    'team': {
         external: [ ...online.external ],
         internal: {
             css: [ ...online.internal.css ],
@@ -49,6 +49,24 @@ module.exports = {
     },
 
     'dash': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'vehicles': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers': {
         external: [ ...online.external ],
         internal: {
             css: [ ...online.internal.css ],

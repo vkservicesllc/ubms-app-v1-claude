@@ -1,0 +1,25 @@
+    </div>
+    
+    <script>
+        const $nav = {
+            top: $('#top-nav'),
+            left: $('#left-nav'),
+        }
+        $item = { team: $('#team-item') }
+        const width = {
+            team: $item.team.innerWidth(),
+            left: $nav.left.outerWidth(),
+        }
+        const height = $nav.top.outerHeight()
+
+        $nav.left.css('padding-top', `${height}px`)
+        if (width.left > width.team) $item.team.css('min-width', `${width.left}px`)
+        else $nav.left.css('width', `${width.team}px`)
+
+        width.left = $nav.left.outerWidth()
+        $('.ui.pusher').css('margin-left', `${width.left}px`)
+
+        $('#team-link').click(() => { $('#team-form').submit() })
+    </script>
+
+{{> foot}}
