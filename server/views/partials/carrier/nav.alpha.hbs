@@ -2,7 +2,24 @@
 
     <style>
         .ui.pusher {
+            z-index: 0 !important;
             padding: 20px;
+        }
+        .ui.sidebar {
+            overflow: visible !important; /* Allows dropdown to be visible outside */
+            z-index: 1001 !important;
+        }
+        .ui.dropdown {
+            position: relative;
+            z-index: 1002 !important;
+        }
+        .ui.dropdown .menu {
+            position: absolute !important;
+            z-index: 1003 !important;
+            top: 100%;
+            left: 0;
+            right: 0;
+            width: max-content; /* ensures dropdown size is based on content */
         }
         #team-item {
             align-items: center;
@@ -37,11 +54,23 @@
             <i class="dollar sign icon"></i>
             Payroll
         </a>
+        <a class="{{nav.left.ifta}}item">
+            <i class="file invoice dollar icon"></i>
+            IFTA
+        </a>
     </div>
     <form action="/session/team/exit" id="team-form" method="POST" style="display: none;"></form>
     <div class="ui top visible inverted sidebar menu" id="top-nav">
-        <span class="item" id="team-item">{{team.name}}</span>
-        <a class="item right" href="{{logoutUrl}}">Sign out</a>
+        <span class="item" id="team-item">{{team.name}}</span>{{{nav.top.items}}}
+        <div class="ui right dropdown item">
+            {{user.name}}
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item">Profile</a>
+                <a class="item">Settings</a>
+                <a class="item">Logout</a>
+            </div>
+        </div>
     </div>
 
     <div class="ui pusher">

@@ -32,6 +32,10 @@ router.use((req, res, next) => {
                 drivers: inactive,
                 dispatch: inactive,
                 payroll: inactive,
+                ifta: inactive,
+            },
+            top: {
+                items: '',
             },
         }
     }

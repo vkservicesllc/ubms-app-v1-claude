@@ -16,6 +16,12 @@ router.get('/', User.verify, Team.verify, (req, res) => {
         const { active } = hbs.nav
         hbs.nav.left.drivers = active
 
+        const items = [
+            [ '/drivers/pre-applications', 'Pre-Applications' ],
+            [ '/drivers/applications', 'Applications' ],
+        ]
+        items.forEach(item => hbs.nav.top.items += `\n\t\t\t<a class="item" href="${item[0]}">${item[1]}</a>`)
+
         res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)

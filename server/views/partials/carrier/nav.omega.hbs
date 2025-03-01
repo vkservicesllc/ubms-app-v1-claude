@@ -20,6 +20,9 @@
         $('.ui.pusher').css('margin-left', `${width.left}px`)
 
         $('#team-link').click(() => { $('#team-form').submit() })
+        $('.ui.dropdown').dropdown({
+            action: 'hide', // ensures dropdown hides when clicked elsewhere
+        })
     </script>
 
 {{> foot}}
