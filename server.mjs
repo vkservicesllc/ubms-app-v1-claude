@@ -88,6 +88,7 @@ export default branch => {
     */
 
     server.use(async (req, res, next) => {
+        const { defUrl, excUrl } = app.session
         const { protocol, originalUrl } = req
         const host = req.get('host')
         const parsedUrl = new URL(`${protocol}://${host + originalUrl}`)
@@ -114,7 +115,7 @@ export default branch => {
             : req.socket?.remoteAddress || '::1'
 
         res.site = { ...site, type }
-        res.session = { branch, siteId: site.id, type, maxAge, logoutUrl }
+        res.session = { branch, siteId: site.id, type, maxAge, defUrl, excUrl, logoutUrl }
         res.hbs = {
             appName: name,
             title: name,

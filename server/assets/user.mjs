@@ -227,7 +227,6 @@ class User extends Person {
                 const userId = await this.id()
 
                 if (action && roleIds) {
-                    //! NOT FINISHED
                     //? Need to find the best solution for logging changes
                     let modified = false,
                         error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
@@ -335,7 +334,6 @@ class User extends Person {
                 const userId = await this.id()
 
                 if (action && teamIds) {
-                    //! NOT FINISHED
                     //? Need to find the best solution for logging changes
                     let modified = false,
                         error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
@@ -1025,7 +1023,7 @@ class User extends Person {
     static session = async (req, res) => {
         try {
             const { session } = res
-            const { branch, siteId } = session
+            const { branch, siteId, defUrl } = session
             const { user: _id, token: providedToken } = req.body
             const { clientIp } = req.session
             const user = await User.data(session, { _id })
@@ -1048,7 +1046,7 @@ class User extends Person {
 
             const _token = await Bun.password.hash(token)
             const userId = await user.id()
-            const url = determineUrl(user, branch)
+            const url = determineUrl(user, branch, defUrl)
 
             const data = {
                 userId,
@@ -1091,6 +1089,7 @@ class User extends Person {
         try {
             const { originalUrl, query } = req
             const { session } = res
+            const { excUrl } = session
             const { user: _id, clientIp } = req.session
             const reject = async apiErrMsg => {
                 if (api) throwErr.api.auth(res, apiErrMsg)
@@ -1100,7 +1099,8 @@ class User extends Person {
 
                     if (refer) {
                         const user = await User.data(session, { _id: refer })
-                        if (method != 'POST') await user.url(session, stripUrl(originalUrl, query, 'refer'))
+                        if (method != 'POST' && !excUrl.includes(originalUrl))
+                            await user.url(session, stripUrl(originalUrl, query, 'refer'))
                     }
 
                     if (!next) return false
@@ -1140,11 +1140,8 @@ class User extends Person {
                 return res.redirect(newUrl)
             }
 
-            if (method != 'POST') {
-                //! SHOULD MAKE IT A CONFIG SETTING?
-                if (session.branch != 'carrier' || originalUrl != '/')
-                    await user.url(session, originalUrl)
-            }
+            if (method != 'POST' && !excUrl.includes(originalUrl))
+                await user.url(session, originalUrl)
 
             if (!next) return user
 
@@ -1514,13 +1511,9 @@ export const sessionError = (session, instructions = {}) => {
 /* Supportive Functions */
 
 
-function determineUrl(user, branch) {
-    let defUrl = '/'
+function determineUrl(user, branch, defUrl) {
     let url = user.lastUrl || defUrl
     const { settings } = user
-
-    //! SHOULD MAKE IT A CONFIG SETTING?
-    if (branch == 'carrier') defUrl = '/dash'
 
     if (
         settings && typeof settings == 'object' &&

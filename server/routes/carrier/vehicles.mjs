@@ -5,6 +5,9 @@ const throwErr = require('../../tools/error').data
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
 
+/* Constants */
+import { navBuilder } from './constants.mjs'
+
 
 
 router.get('/', User.verify, Team.verify, (req, res) => {
@@ -15,6 +18,12 @@ router.get('/', User.verify, Team.verify, (req, res) => {
 
         const { active } = hbs.nav
         hbs.nav.left.vehicles = active
+
+        hbs.nav.top.items = navBuilder.simple([
+            [ '/vehicles/trucks', 'Trucks' ],
+            [ '/vehicles/trailer', 'Trailers' ],
+            [ '/vehicles/vans', 'Vans' ],
+        ])
 
         res.render(key, hbs)
     } catch (err) {

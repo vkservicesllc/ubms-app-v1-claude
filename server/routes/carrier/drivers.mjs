@@ -5,6 +5,9 @@ const throwErr = require('../../tools/error').data
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
 
+/* Constants */
+import { navBuilder } from './constants.mjs'
+
 
 
 router.get('/', User.verify, Team.verify, (req, res) => {
@@ -16,11 +19,10 @@ router.get('/', User.verify, Team.verify, (req, res) => {
         const { active } = hbs.nav
         hbs.nav.left.drivers = active
 
-        const items = [
+        hbs.nav.top.items = navBuilder.simple([
             [ '/drivers/pre-applications', 'Pre-Applications' ],
             [ '/drivers/applications', 'Applications' ],
-        ]
-        items.forEach(item => hbs.nav.top.items += `\n\t\t\t<a class="item" href="${item[0]}">${item[1]}</a>`)
+        ])
 
         res.render(key, hbs)
     } catch (err) {

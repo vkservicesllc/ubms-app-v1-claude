@@ -137,6 +137,8 @@ const apps = {
         ],
         session: {
             maxAge: 10,  /* in minutes */
+            defUrl: '/dashboard',
+            excUrl: '/',
         },
     },
 
@@ -180,13 +182,16 @@ for (const branch in apps) {
     if (!apps[branch].active) continue
 
     const port = env[`SERVER__PORT_${branch.toUpperCase()}`]
-    const { maxAge } = apps[branch].session
+    const { maxAge, defUrl, excUrl } = apps[branch].session
     let subdomain
     if (branch != 'default') subdomain = branch
 
     apps[branch].port = port
     apps[branch].address = setAddress(port, subdomain)
     apps[branch].session.maxAge = 1000 * 60 * maxAge
+    if (!defUrl) apps[branch].session.defUrl = '/'
+    if (typeof excUrl == 'string') apps[branch].session.excUrl = [ excUrl ]
+    else if (!excUrl || !Array.isArray(excUrl)) apps[branch].session.excUrl = []
     addrBook[branch] = apps[branch].address
 }
 
