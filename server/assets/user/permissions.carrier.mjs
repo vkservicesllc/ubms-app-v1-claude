@@ -1,5 +1,8 @@
 import { privileges } from './permissions.mjs'
 
+
+
+
 export default {
     'd:drv': {
         title: 'Drivers',
@@ -105,6 +108,36 @@ export default {
     // },
 }
 
+
+
+export const inPGroup = (searchGrp, permissions, DS) => {
+    if (DS) return true
+
+    let found = false
+    for (const grp in permissions) {
+        if (grp.split('/')[0] != searchGrp) continue
+
+        found = true
+        break
+    }
+
+    return found
+}
+
+
+export const inPEnvironment = (searchEnv, permissions, DS) => {
+    if (DS) return true
+
+    let found = false
+    for (const env in permissions) {
+        if (env != searchEnv) continue
+
+        found = true
+        break
+    }
+
+    return found
+}
 
 
 

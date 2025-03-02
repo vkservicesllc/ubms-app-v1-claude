@@ -38,26 +38,36 @@
             <i class="chart pie icon"></i>
             Dashboard
         </a>
+        {{#if (eq PG.vhl true)}}
         <a class="{{nav.left.vehicles}}item" href="/vehicles">
             <i class="truck icon"></i>
             Vehicles
         </a>
+        {{/if}}
+        {{#if (eq PG.drv true)}}
         <a class="{{nav.left.drivers}}item" href="/drivers">
             <i class="tachometer alternate icon"></i>
             Drivers
         </a>
+        {{/if}}
+        {{#if (eq PG.dsp true)}}
         <a class="{{nav.left.dispatch}}item">
             <i class="user tie icon"></i>
             Dispatch
         </a>
+        {{/if}}
+        {{#if (eq PG.prl true)}}
         <a class="{{nav.left.payroll}}item">
             <i class="dollar sign icon"></i>
             Payroll
         </a>
+        {{/if}}
+        {{#if (eq PG.rtx true)}}
         <a class="{{nav.left.ifta}}item">
             <i class="file invoice dollar icon"></i>
             IFTA
         </a>
+        {{/if}}
     </div>
     <form action="/session/team/exit" id="team-form" method="POST" style="display: none;"></form>
     <div class="ui top visible inverted sidebar menu" id="top-nav">

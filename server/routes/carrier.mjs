@@ -8,6 +8,7 @@ import { formSelectors } from '../../client/global/modules/registry/selectors.mj
 /* Assets */
 import User from '../assets/user.mjs'
 import Team from '../assets/team.mjs'
+import { inPGroup } from '../assets/user/permissions.carrier.mjs'
 
 /* HTML Builders */
 import { Label, Input, Button } from '../html/user.mjs'
@@ -71,7 +72,15 @@ router.use((req, res, next) => {
             for (const prop of props)
                 hbs.user[prop] = user[prop]
 
-            user.permissions = await user.permissions(res.session)
+            const permissions = await user.permissions(res.session)
+            const { DS } = user
+            hbs.PG = {
+                vhl: inPGroup('d:vhl', permissions, DS),
+                drv: inPGroup('d:drv', permissions, DS),
+                dsp: inPGroup('d:dsp', permissions, DS),
+                prl: inPGroup('d:prl', permissions, DS),
+                rtx: inPGroup('d:rtx', permissions, DS),
+            }
         }
 
         if (team) {
@@ -86,7 +95,7 @@ router.use((req, res, next) => {
         }
 
         if (!inclKey) inclKey = key
-        if (!titlePfx) titlePfx = capitalizeEach(key.replace(/\-/g, ' '))
+        if (!titlePfx) titlePfx = capitalizeEach(key.replace(/\./g, ' '))
 
         hbs.title = `${titlePfx} - ${hbs.title}`
         hbs.includes = includer.render(includes[inclKey])
@@ -150,7 +159,6 @@ router.get('/', async (req, res, next) => {
                 teams: menu,
             },
         }
-console.log('teams', user.permissions)
 
         res.render(key, hbs)
     } catch (err) {

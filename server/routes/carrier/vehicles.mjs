@@ -4,6 +4,10 @@ const throwErr = require('../../tools/error').data
 /* Assets */
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
+import { inPEnvironment } from '../../assets/user/permissions.carrier.mjs'
+
+/* Tools */
+import { respond404 } from '../../tools/response.mjs'
 
 /* Constants */
 import { navBuilder } from './constants.mjs'
@@ -15,6 +19,9 @@ router.get('/', User.verify, Team.verify, async (req, res) => {
         const key = 'vehicles'
         let { hbs } = res
         hbs = await hbs.set(key)
+        const { vhl } = hbs.PG
+
+        if (!vhl) return res.redirect(res.session.defUrl)
 
         const { active } = hbs.nav
         hbs.nav.left.vehicles = active

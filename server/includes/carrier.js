@@ -75,4 +75,13 @@ module.exports = {
         },
     },
 
+    'driver.applications': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
 }
