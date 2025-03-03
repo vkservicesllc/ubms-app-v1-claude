@@ -1,0 +1,27 @@
+.ui.pusher {
+    z-index: 0 !important;
+    padding: 20px;
+}
+.ui.sidebar {
+    overflow: visible !important; /* Allows dropdown to be visible outside */
+    z-index: 1001 !important;
+}
+.ui.dropdown {
+    position: relative;
+    z-index: 1002 !important;
+}
+.ui.dropdown .menu {
+    position: absolute !important;
+    z-index: 1003 !important;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: max-content; /* ensures dropdown size is based on content */
+}
+#team-item {
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px !important;
+    font-size: 1.2em;
+    color: yellowgreen;
+}

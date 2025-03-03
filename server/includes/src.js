@@ -75,6 +75,19 @@ module.exports = {
             ],
         },
 
+        'datatables.fomantic-ui': {
+            css: [
+                '<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.semanticui.css" />',
+                '<link rel="stylesheet" href="/styles/datatables.css" />',
+            ],
+            js: [
+                '<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>',
+                '<script src="https://cdn.datatables.net/2.2.2/js/dataTables.semanticui.js"></script>',
+                '<script src="/scripts/datatables.js"></script>',
+                '<script src="/scripts/datatables.defaults.js"></script>',
+            ],
+        },
+
         'datatables.date-time': {
             js: '<script src="https://cdn.datatables.net/datetime/1.5.3/js/dataTables.dateTime.min.js"></script>',
         },

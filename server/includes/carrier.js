@@ -21,7 +21,7 @@ const offline = {
 const online = {
     external: [ ...defaults.external, 'store', 'jquery.ui', 'jquery.idle-timeout-plus' ],
     internal: {
-        css: [ ...defaults.internal.css ],
+        css: [ ...defaults.internal.css, 'nav' ],
         js: [ ...defaults.internal.js, '^idle-timeout-plus' ],
         mjs: [ ...defaults.internal.mjs, 'no-mobile' ],
     },
@@ -76,7 +76,7 @@ module.exports = {
     },
 
     'driver.applications': {
-        external: [ ...online.external ],
+        external: [ ...online.external, 'datatables.fomantic-ui', 'moment' ],
         internal: {
             css: [ ...online.internal.css ],
             js: [ ...online.internal.js ],
