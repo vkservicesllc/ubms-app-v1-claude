@@ -879,9 +879,8 @@ export const companyByCategoryAndRoute = async (req, res) => {
 
             case 'crr':
                 company = await Carrier.data(res.session, { _companyId })
-                css.card = {
-                    minHeight: '455px',
-                }
+                css.card = { minHeight: '455px' }
+                css.multiSelect = { minHeight: '310px' }
                 break
 
         }
