@@ -9,7 +9,7 @@ const table = $('#driver-apl-table').DataTable({
 
     ajax: {
         url: '/api/drivers/applications',
-        dataSrc(response) {
+        dataSrc(response) { console.log(response) //!TEMP
             const { data } = response
             return data
         },
@@ -20,9 +20,22 @@ const table = $('#driver-apl-table').DataTable({
     columns: [
 
         {
+            title: 'Company',
+            searchable: false,
+            data(row) {
+                const { busName, coType } = row
+
+                return escapeHTML(`${busName}, ${coType}`)
+            },
+        },
+
+        {
             data: 'formId',
             title: 'Form ID',
             orderable: false,
+            render(data) {
+                return escapeHTML(data)
+            },
         },
 
         {
@@ -62,10 +75,33 @@ const table = $('#driver-apl-table').DataTable({
             searchable: false,
             type: 'string',
             data(row) {
+                row.dob = moment(row.dob).format('YYYY-MM-DD')
                 return new Person(row).age
             },
         },
 
+        {
+            data: 'phone',
+            title: 'Phone',
+            render(data) {
+                return formatTel(data)
+            },
+        },
+
+        {
+            data: null,
+            title: 'Address',
+            render(data, type, row) {
+                return null //! need to render address HTML
+            },
+        },
+
     ],
+
+    language: {
+        emptyTable: '<span class="ui red text">No applications at this time</span>',
+    },
+
+    order: [ 2, 'desc' ],
 
 })

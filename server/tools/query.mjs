@@ -245,6 +245,12 @@ class Query {
     }
 
 
+    static hashField(field = {}, table) {
+        if ('md5' in field || 'sha1' in field || 'sha2' in field)
+            return Query.#field(field, table)
+    }
+
+
     static #_table(table, db) {
         if (db) table = `${db}.${table}`
         if (db === false && table.indexOf('.') > -1) table = table.split('.')[1]

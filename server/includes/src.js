@@ -78,7 +78,7 @@ module.exports = {
         'datatables.fomantic-ui': {
             css: [
                 '<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.semanticui.css" />',
-                '<link rel="stylesheet" href="/styles/datatables.css" />',
+                // '<link rel="stylesheet" href="/styles/datatables.css" />',
             ],
             js: [
                 '<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>',
