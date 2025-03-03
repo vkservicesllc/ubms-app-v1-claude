@@ -85,9 +85,15 @@ class Application {
 
             if (search && search.value && searchableColumns.length) {
                 query = query.where(qb => {
-                    searchableColumns.forEach((field, idx) => {
-                        if (idx === 0) qb.where(field, 'like', `%${search.value}%`)
-                        else qb.orWhere(field, 'like', `%${search.value}%`)
+                    let i = 0
+
+                    searchableColumns.forEach(field => {
+                        if (field && field !== 'function') {
+                            if (i === 0) qb.where(field, 'like', `%${search.value}%`)
+                            else qb.orWhere(field, 'like', `%${search.value}%`)
+
+                            i++
+                        }
                     })
                 })
             }

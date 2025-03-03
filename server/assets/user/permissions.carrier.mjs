@@ -13,7 +13,7 @@ export default {
             },
             'apl': {
                 name: 'Applications',
-                privileges: [ 0, 1, 3, 5 ],
+                privileges: [ 0, 1, 2, 3, 5 ],
             },
             'drv': {
                 name: 'Hired Contractors',

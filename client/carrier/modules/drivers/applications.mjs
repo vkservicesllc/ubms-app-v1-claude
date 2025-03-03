@@ -4,6 +4,7 @@ import escapeHTML from '/modules/assets/html.mjs'
 import { tel as formatTel } from '/modules/tools/formatter.mjs'
 
 
+const interval = 60000
 
 const table = $('#driver-apl-table').DataTable({
 
@@ -105,3 +106,9 @@ const table = $('#driver-apl-table').DataTable({
     order: [ 2, 'desc' ],
 
 })
+
+
+
+setInterval(() => {
+    dtFnFilterData(table)
+}, interval)
