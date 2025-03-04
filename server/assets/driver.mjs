@@ -56,6 +56,15 @@ class Application {
             const teamId = await team.id()
             const { draw, start, length, search, order, columns } = req.body
 
+            let subquery = knex
+                .select('*')
+                .from(`${db.business}.company_names`)
+                .whereIn('since', function() {
+                    this.select(knex.raw('MAX(since)'))
+                        .from(`${db.business}.company_names`)
+                        .groupBy('companyId')
+                })
+
             const defaultFilters = { teamId }
             let query = knex(`${db.carrier}.applications AS apl`)
                 .select(
@@ -74,26 +83,24 @@ class Application {
                     'busName',
                     'coType',
                 )
-                .join(`${db.carrier}.carriers AS crr ON apl.carrierId = crr.id`)
-                .join(`${db.business}.companies AS cmp ON crr.companyId = cmp.id`)
-                .join(`${db.business}.company_names as cnm ON cnm.companyId = cmp.id`) //! need to filter out the most recent name by latest `since`
+                .join(knex.raw(`${db.carrier}.carriers AS crr ON apl.carrierId = crr.id`))
+                .join(knex.raw(`${db.business}.companies AS cmp ON crr.companyId = cmp.id`))
+                .join(
+                    knex.raw('? as cnm', [ subquery ]),
+                    'cnm.companyId',
+                    'cmp.id'
+                )
                 .where(defaultFilters)
 
             const searchableColumns = columns
-                .filter(column => column.searchable)
+                .filter(column => column.data && column.data !== 'function' && column.searchable === 'true')
                 .map(column => column.data)
 
             if (search && search.value && searchableColumns.length) {
                 query = query.where(qb => {
-                    let i = 0
-
-                    searchableColumns.forEach(field => {
-                        if (field && field !== 'function') {
-                            if (i === 0) qb.where(field, 'like', `%${search.value}%`)
-                            else qb.orWhere(field, 'like', `%${search.value}%`)
-
-                            i++
-                        }
+                    searchableColumns.forEach((field, i) => {
+                        if (i === 0) qb.where(field, 'like', `%${search.value}%`)
+                        else qb.orWhere(field, 'like', `%${search.value}%`)
                     })
                 })
             }
@@ -114,42 +121,6 @@ class Application {
                 recordsFiltered: data.length,
                 data,
             })
-        } catch(err) {
-            throwErr.server(res, null, err, false)
-        }
-    }
-
-    static dtList_RM = async (req, res) => { //* Datatables Server Side API
-        try {
-            let table = 'app_carrier.applications apl'
-            //* attach ' JOIN app_carrier.application_addresses adr on apl.id = adr.aplId'
-            //! make it select only the latest address
-
-            const query = dtQuery(mysql, table, [
-                Application.hashId(),
-                Carrier.hashId('carrierId'),
-                Team.hashId('teamId'),
-                'formId',
-                'appliedOn',
-                'firstName',
-                'middleName',
-                'lastName',
-                'suffix',
-                'dob',
-                'email',
-                'phone',
-            ])
-
-            const { sql, params } = dtQuery.createQuery(req.body)
-            const [ rows ] = await mysql.execute(sql, params)
-            const result = {
-                draw: req.body.draw,
-                recordsTotal: rows.length,
-                recordsFiltered: rows.length,
-                data: rows
-            }
-console.log(result)
-            res.json(result)
         } catch(err) {
             throwErr.server(res, null, err, false)
         }

@@ -49,15 +49,17 @@ const table = $('#driver-apl-table').DataTable({
         },
 
         {
+            data: 'lastName',
             title: 'Last Name',
-            data(row) {
+            render(data, type, row) {
                 return escapeHTML(new Person(row).fullLastName())
             },
         },
 
         {
+            data: 'firstName',
             title: 'First Name',
-            data(row) {
+            render(data, type, row) {
                 return escapeHTML(new Person(row).fullFirstName())
             },
         },
