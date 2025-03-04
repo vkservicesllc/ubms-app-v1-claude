@@ -17,9 +17,11 @@ const table = $('#driver-apl-table').DataTable({
     ajax: {
         url: '/api/drivers/applications',
         data(data) {
-            data.companyFilter = $('#company-filter').val()
-            data.conditionFilter = $('#condition-filter').val()
-            data.decisionFilter = $('#decision-filter').val()
+            data.filter = {
+                company: $('#company-filter').val(),
+                condition: $('#condition-filter').val(),
+                decision: $('#decision-filter').val(),
+            }
         },
         dataSrc(response) { console.log(response) //!TEMP
             const { data } = response

@@ -54,7 +54,7 @@ class Application {
         try {
             const team = await Team.data(res.session, { _id: req.session.team })
             const teamId = await team.id()
-            const { draw, start, length, search, order, columns } = req.body
+            const { draw, start, length, search, order, columns, filter } = req.body
 
             let subquery = knex
                 .select('*')
@@ -96,6 +96,14 @@ class Application {
             const searchableColumns = columns
                 .filter(column => column.data && column.data !== 'function' && column.searchable === 'true')
                 .map(column => column.data)
+
+            if (filter) {
+                if (filter?.condition) {
+                    filter.condition.map((value, i, arr) => arr[i] = value === 'false' ? false : true)
+                    query = query.whereIn('complete', filter.condition)
+                }
+                if (filter?.decision) query = query.whereIn('decision', filter.decision)
+            }
 
             if (search && search.value && searchableColumns.length) {
                 query = query.where(qb => {
