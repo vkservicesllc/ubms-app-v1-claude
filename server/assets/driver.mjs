@@ -82,6 +82,7 @@ class Application {
                     'phone',
                     'busName',
                     'coType',
+                    'alias',
                 )
                 .join(knex.raw(`${db.carrier}.carriers AS crr ON apl.carrierId = crr.id`))
                 .join(knex.raw(`${db.business}.companies AS cmp ON crr.companyId = cmp.id`))

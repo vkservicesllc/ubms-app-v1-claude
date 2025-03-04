@@ -5,13 +5,29 @@ import { tel as formatTel } from '/modules/tools/formatter.mjs'
 
 
 const interval = 60000
+const $filter = {
+    companies: $('#company-filter'),
+}
+const $filterOptions = {
+    companies: new Map(),
+}
 
 const table = $('#driver-apl-table').DataTable({
 
     ajax: {
         url: '/api/drivers/applications',
+        data(data) {
+            data.companyFilter = $filter.companies.val()
+        },
         dataSrc(response) { console.log(response) //!TEMP
             const { data } = response
+
+            data.forEach(row => $filterOptions.companies.set(row.alias, `${row.busName}, ${row.coType}`))
+            $filter.companies.empty().append('<option value="">Filter by Companies</options>')
+            $filterOptions.companies.forEach((name, alias) => {
+                $filter.companies.append(`<option value="${alias}">${name}</option>`)
+            })
+
             return data
         },
     },
@@ -100,6 +116,17 @@ const table = $('#driver-apl-table').DataTable({
         },
 
     ],
+
+    initComplete() {
+        // const companyFilterWrapper = $('<div class="company-filter-wrapper"></div>').insertBefore($('.dataTables_filter'))
+        // companyFilterWrapper.append($filter.companies)
+        const customFilters = $('<div class="custom-filters"></div>')
+            .insertBefore($('.dataTables_filter'))
+
+        customFilters.append('<select id="filterOne"><option value="">Filter 1</option></select>')
+
+        $filter.companies.on('change', () => table.ajax.reload() )
+    },
 
     language: {
         emptyTable: '<span class="ui red text">No applications at this time</span>',
