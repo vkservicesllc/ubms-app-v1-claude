@@ -17,16 +17,18 @@ const table = $('#driver-apl-table').DataTable({
     ajax: {
         url: '/api/drivers/applications',
         data(data) {
-            data.companyFilter = $filter.companies.val()
+            data.companyFilter = $('#company-filter').val()
+            data.conditionFilter = $('#condition-filter').val()
+            data.decisionFilter = $('#decision-filter').val()
         },
         dataSrc(response) { console.log(response) //!TEMP
             const { data } = response
 
-            data.forEach(row => $filterOptions.companies.set(row.alias, `${row.busName}, ${row.coType}`))
-            $filter.companies.empty().append('<option value="">Filter by Companies</options>')
-            $filterOptions.companies.forEach((name, alias) => {
-                $filter.companies.append(`<option value="${alias}">${name}</option>`)
-            })
+            // data.forEach(row => $filterOptions.companies.set(row.alias, `${row.busName}, ${row.coType}`))
+            // $filter.companies.empty().append('<option value="">Filter by Companies</options>')
+            // $filterOptions.companies.forEach((name, alias) => {
+            //     $filter.companies.append(`<option value="${alias}">${name}</option>`)
+            // })
 
             return data
         },
@@ -117,15 +119,47 @@ const table = $('#driver-apl-table').DataTable({
 
     ],
 
+    dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
+
     initComplete() {
-        // const companyFilterWrapper = $('<div class="company-filter-wrapper"></div>').insertBefore($('.dataTables_filter'))
-        // companyFilterWrapper.append($filter.companies)
-        const customFilters = $('<div class="custom-filters"></div>')
-            .insertBefore($('.dataTables_filter'))
+        const buildDropdown = (id, placeholder) =>
+            $(`<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div><select class="ui fluid clearable dropdown labeled icon custom-dt-dropdown" id="${id}" multiple><option value="">${placeholder}</option></select></div>`)
+        const toolbar = $('<div class="custom-dt-toolbar"></div>')
+        const dropdown = {
+            company: buildDropdown('company-filter', 'Company'),
+            condition: buildDropdown('condition-filter', 'Condition'),
+            decision: buildDropdown('decision-filter', 'Decision'),
+        }
 
-        customFilters.append('<select id="filterOne"><option value="">Filter 1</option></select>')
+        const conditions = [ { 'Complete': true } , { 'Incomplete': false } ]
+        const decisions = { p: 'Pending', a: 'Approved', r: 'Rejected' }
 
-        $filter.companies.on('change', () => table.ajax.reload() )
+        conditions.forEach(condition => {
+            const option = Object.keys(condition)[0]
+            const value = Object.values(condition)[0]
+
+            dropdown.condition.find('select').append(`<option value="${value}">${option}</option>`)
+        })
+        for (const value in decisions) {
+            const option = decisions[value]
+
+            dropdown.decision.find('select').append(`<option value="${value}">${option}</option>`)
+        }
+
+        toolbar.append(dropdown.company)
+        toolbar.append(dropdown.condition)
+        toolbar.append(dropdown.decision)
+
+        $('.dt-length').after(toolbar)
+
+        $('.custom-dt-dropdown')
+            .dropdown()
+            .on('change', function() {
+                const length = $(this).dropdown('get value').length
+                $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue')
+
+                table.ajax.reload()
+            })
     },
 
     language: {

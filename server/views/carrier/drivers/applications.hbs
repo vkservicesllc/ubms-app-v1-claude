@@ -1,6 +1,27 @@
 {{> carrier/nav.alpha}}
 
-        <select class="ui fluid search dropdown" id="company-filter" multiple></select>
+<style>
+.top-toolbar, .bottom-toolbar, .custom-dt-toolbar {
+    display: flex;
+    justify-content: space-between;
+}
+.top-toolbar > * {
+    {{!-- outline: 1px dotted red; --}}
+}
+.top-toolbar {
+    margin-bottom: 10px;
+}
+.bottom-toolbar {
+    margin-top: 10px;
+}
+.custom-dt-toolbar {
+    min-width: 55%;
+}
+.custom-dt-toolbar > * {
+    width: 32%;
+}
+</style>
+        {{!-- <select class="ui fluid search dropdown" id="company-filter" multiple></select> --}}
         <table class="ui compact small table" id="driver-apl-table" style="width: 100%;"></table>
         <script type="module" src="/modules/drivers/applications.mjs"></script>
 
