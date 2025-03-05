@@ -60,7 +60,7 @@ class User extends Person {
         if (!data?._id || !Object.keys(this).length)
             throw new Error('User instantiation failed: Invalid data')
 
-        const { _id, fails, settings, lastUrl, lastLogin, _hash } = data
+        const { _id, fails, settings, lastUrl, lastLogin, branch, siteId, _hash } = data
         const properties = {
             _id,
             username: data.username,
@@ -78,11 +78,13 @@ class User extends Person {
                 teams: data.teamCount,
             },
         }
-        
+
         if (fails !== undefined) this.fails = fails
         if (settings !== undefined) this.settings = settings
         if (lastUrl !== undefined) this.lastUrl = lastUrl
         if (lastLogin !== undefined) this.lastLogin = lastLogin
+        if (branch !== undefined) this.lastBranch = branch
+        if (siteId !== undefined) this.lastSiteId = siteId
         if (!light && _hash !== undefined) this._hash = _hash
         switch (this.sex) {
             case 1:
@@ -321,7 +323,7 @@ class User extends Person {
                         delete data.all
                         delete data.available
 
-                        const { branch } = res.session
+                        const { branch } = session
                         const catId = Company.catId(branch)
                         const roles = await Role.list(session, { catId })
 
@@ -858,9 +860,10 @@ class User extends Person {
 
             if (branch == 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
         } else {
-            batch[1].join[2] = {
-                max: [ 'lastLogin', { branch, siteId } ],
-            }
+            if (branch != 'admin')
+                batch[1].join[2] = {
+                    max: [ 'lastLogin', { branch, siteId } ],
+                }
 
             if (session?.user?.location) {
                 const location = session.user.location[0]

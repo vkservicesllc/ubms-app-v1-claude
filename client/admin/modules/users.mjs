@@ -1,6 +1,7 @@
 import escapeHTML from '/modules/assets/html.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { tel as formatTel } from '/modules/tools/formatter.mjs'
+import { capitalizeFirst } from '/modules/tools/string.mjs'
 import { nameEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 
@@ -309,10 +310,14 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 searchable: false,
                 orderable: false,
                 className: 'has-text-left',
-                render(data, type) {
+                render(data, type, row) {
                     if (!data) return ''
 
-                    return type == 'display' ? momentUTC2ET(data, 'llll') : data
+                    const { lastBranch } = row
+                    return type == 'display'
+                        ? momentUTC2ET(data, 'llll')
+                            + ` <small class="has-text-grey">(${capitalizeFirst(lastBranch)})</small>`
+                        : data
                 },
             },
 
@@ -413,7 +418,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
                     $.ajax(`/api/log/user/${_id}`, {
                         method: 'POST',
-                        success(data) { console.log(data)
+                        success(data) {
                             const { user, labels, log } = data
                             const { name } = user
                             const { createdBy, createdAt, deletedBy, deletedAt, updateLog } = log

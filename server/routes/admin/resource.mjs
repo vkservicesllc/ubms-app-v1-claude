@@ -20,7 +20,7 @@ import TeamMW from './mw/team.mjs'
 
 /* User Resource */
 
-router.post('/user', User.verify, UserMW.devLock, validateUser, validationCheck, UserMW.upsert)
+router.post('/user', User.verify, UserMW.resetValidation, validateUser, validationCheck, UserMW.upsert)
 router.post('/user/modify/condition', User.verify, [ validateCondition() ], validationCheck, UserMW.modifyCondition)
 router.post('/user/delete', User.verify, UserMW.delete)
 

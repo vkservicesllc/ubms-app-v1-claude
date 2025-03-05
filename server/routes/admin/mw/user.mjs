@@ -14,8 +14,8 @@ const errMsg = {
 export default class {
 
 
-    static devLock = async (req, res, next) => {
-        const { _id } = req.body
+    static resetValidation = async (req, res, next) => {
+        const { _id, location } = req.body
 
         if (_id) {
             const user = await User.data(res.session, { _id })
@@ -23,7 +23,8 @@ export default class {
             if (user.status[0] == 'D') {
                 req.body.status = 'D'
                 req.body.location = 'US'
-            }
+            } else if (!location)
+                req.body.location = user.location[0]
         }
 
         next()
