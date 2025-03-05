@@ -52,16 +52,6 @@ const table = $('#driver-apl-table').DataTable({
         },
 
         {
-            title: 'Company',
-            searchable: false,
-            data(row) {
-                const { busName, coType } = row
-
-                return escapeHTML(`${busName}, ${coType}`)
-            },
-        },
-
-        {
             data: 'formId',
             title: 'Form ID',
             orderable: false,
@@ -76,6 +66,16 @@ const table = $('#driver-apl-table').DataTable({
             searchable: false,
             render(data, type) {
                 return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
+            },
+        },
+
+        {
+            title: 'Company',
+            searchable: false,
+            data(row) {
+                const { busName, coType } = row
+
+                return escapeHTML(`${busName}, ${coType}`)
             },
         },
 
@@ -99,6 +99,7 @@ const table = $('#driver-apl-table').DataTable({
             data: 'dob',
             title: 'DOB',
             searchable: false,
+            orderable: false,
             render(data, type) {
                 return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
@@ -107,6 +108,7 @@ const table = $('#driver-apl-table').DataTable({
         {
             title: 'Age',
             searchable: false,
+            orderable: false,
             type: 'string',
             data(row) {
                 row.dob = moment(row.dob).format('YYYY-MM-DD')
@@ -117,6 +119,7 @@ const table = $('#driver-apl-table').DataTable({
         {
             data: 'phone',
             title: 'Phone',
+            orderable: false,
             render(data) {
                 return formatTel(data)
             },
@@ -125,6 +128,7 @@ const table = $('#driver-apl-table').DataTable({
         {
             data: null,
             title: 'Address',
+            orderable: false,
             render(data, type, row) {
                 return null //! need to render address HTML
             },
@@ -185,7 +189,7 @@ const table = $('#driver-apl-table').DataTable({
         emptyTable: '<span class="ui red text">No applications at this time</span>',
     },
 
-    order: [ 3, 'desc' ],
+    order: [ 2, 'desc' ],
 
 })
 
