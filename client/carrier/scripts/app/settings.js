@@ -1,6 +1,8 @@
 const $button = {
     reset: $('#reset-settings'),
+    submit: $('#save-settings'),
 }
+$form = $('#settings-form')
 
 const defaults = {
     lastUrl: 1,
@@ -30,11 +32,31 @@ const resetDefaults = () => {
 
 
 $button.reset.click(resetDefaults)
-resetDefaults()
+$button.submit.click(() => {
+    $form.submit()
+})
 
-$.ajax('/api/assets/user?filter=settings&self=true', {
+$.ajax('/api/assets/user?filter=settings&self=true&call=true', {
     method: 'POST',
     success(response) {
         console.log(response)
+        resetDefaults()
+
+        if (response?.carrier) {
+            for (const name in response.carrier) {
+                const settings = response.carrier
+                const input = settings[name]
+
+                if (typeof input === 'object') {
+                    for (const value of input)
+                        $(`[name="${name}[]"][value="${value}"]`).prop('checked', true)
+                } else {
+                    $(`[name="${name}"]`).prop('checked', false)
+                    $(`[name="${name}"][value="${settings[name]}"]`).prop('checked', true)
+                }
+
+                $form.fadeIn()
+            }
+        }
     }
 })

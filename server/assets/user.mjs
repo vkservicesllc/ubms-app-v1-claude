@@ -60,7 +60,7 @@ class User extends Person {
         if (!data?._id || !Object.keys(this).length)
             throw new Error('User instantiation failed: Invalid data')
 
-        const { _id, fails, settings, lastUrl, lastLogin, branch, siteId, _hash } = data
+        const { _id, fails, lastUrl, lastLogin, branch, siteId, _hash } = data
         const properties = {
             _id,
             username: data.username,
@@ -80,7 +80,6 @@ class User extends Person {
         }
 
         if (fails !== undefined) this.fails = fails
-        if (settings !== undefined) this.settings = settings
         if (lastUrl !== undefined) this.lastUrl = lastUrl
         if (lastLogin !== undefined) this.lastLogin = lastLogin
         if (branch !== undefined) this.lastBranch = branch
@@ -675,6 +674,26 @@ class User extends Person {
                 this.lastUrl = lastUrl
             }
 
+
+            this.settings = async (session, data) => {
+                if (this._id != session?.user?._id) return
+
+                const match = { id: User.matchIdHash(this._id) }
+                const [ result ] = await mysql.execute(query.users.select('settings', { match }))
+                let { settings }= result[0]
+
+                if (!data) return settings
+                else {
+                    if (settings === null) settings = {}
+                    const { branch } = session
+
+                    settings[branch] = data
+                    settings = JSON.stringify(settings)
+
+                    await mysql.execute(query.users.update({ settings }, match))
+                }
+            }
+
         }
     }
 
@@ -855,8 +874,6 @@ class User extends Person {
         if (_id || id || username) batch[1].fields.push('lastUrl')
 
         if (!('user' in session)) {
-            batch[0].fields.push('settings')
-
             if (username) {
                 batch[0].fields.push([ '_passKey', '_hash' ], 'fails')
                 batch[1].fields.push({ ip: 'clientIp' })
@@ -1084,7 +1101,8 @@ class User extends Person {
 
             const _token = await Bun.password.hash(token)
             const userId = await user.id()
-            const url = determineUrl(user, branch, defUrl)
+            const settings = await user.settings(res.session)
+            const url = determineUrl(branch, settings, user.lastUrl, defUrl)
 
             const data = {
                 userId,
@@ -1549,9 +1567,8 @@ export const sessionError = (session, instructions = {}) => {
 /* Supportive Functions */
 
 
-function determineUrl(user, branch, defUrl) {
-    let url = user.lastUrl || defUrl
-    const { settings } = user
+function determineUrl(branch, settings, lastUrl, defUrl) {
+    let url = lastUrl || defUrl
 
     if (
         settings && typeof settings == 'object' &&

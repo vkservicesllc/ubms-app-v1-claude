@@ -1,13 +1,13 @@
 {{> carrier/nav.alpha}}
 
         <h4>Settings</h4>
-        <div class="ui animated fade tiny button" tabindex="0" id="reset-settings">
+        <div class="ui animated fade tiny button" id="reset-settings">
             <div class="visible content"><i class="redo alternate icon"></i></div>
             <div class="hidden content">
                 Reset
             </div>
         </div>
-        <div class="ui eight column divided grid raised segment">
+        <form class="ui eight column divided grid raised segment" id="settings-form" action="/resource/user/{{user._id}}/app/settings" method="POST" style="display: none;">
             <div class="row">
                 <div class="column">
                     <div class="ui form">
@@ -73,7 +73,17 @@
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="row">
+                <div class="column">
+                    <div class="ui vertical animated tiny green button" id="save-settings">
+                        <div class="visible content"><i class="save icon"></i></div>
+                        <div class="hidden content">
+                            Save
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
 <style>
     .segment {
         {{!-- outline: 1px dotted blue; --}}

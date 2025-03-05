@@ -74,6 +74,7 @@ import carrierRoute from './server/routes/carrier.mjs'
 import carrierDriversRoute from './server/routes/carrier/drivers.mjs'
 import carrierVehiclesRoute from './server/routes/carrier/vehicles.mjs'
 import carrierApiRoute from './server/routes/carrier/api.mjs'
+import carrierResourceRoute from './server/routes/carrier/resource.mjs'
 
 import driverRoute from './server/routes/driver.mjs'
 
@@ -134,6 +135,7 @@ const apps = {
             { url: '/drivers', router: carrierDriversRoute },
             { url: '/vehicles', router: carrierVehiclesRoute },
             { url: '/api', router: carrierApiRoute },
+            { url: '/resource', router: carrierResourceRoute },
         ],
         session: {
             maxAge: 10,  /* in minutes */

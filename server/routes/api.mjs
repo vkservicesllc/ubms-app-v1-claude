@@ -102,7 +102,7 @@ router.post('/unique/original/:env', User.verify, async (req, res) => {
 
 
 router.post('/assets/:source/:_id?', User.verify, async (req, res) => {
-    const { filter, self } = req.query
+    const { filter, self, call } = req.query
     const { source } = req.params
     let{ _id } = req.params
     let Src, result
@@ -131,11 +131,13 @@ router.post('/assets/:source/:_id?', User.verify, async (req, res) => {
     if (filter) {
         if (_id && Src) {
             const instance = await Src.data(res.session, { _id })
-            result = instance[filter]
+            result = call == 'true'
+                ? await instance[filter](res.session)
+                : instance[filter]
         } else
             result = result[filter]
     }
-console.log(result)
+
     res.send(result)
 })
 
