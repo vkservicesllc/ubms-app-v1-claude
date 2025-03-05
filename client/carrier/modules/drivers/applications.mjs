@@ -23,7 +23,7 @@ const table = $('#driver-apl-table').DataTable({
                 decision: $('#decision-filter').val(),
             }
         },
-        dataSrc(response) { console.log(response) //!TEMP
+        dataSrc(response) {
             const { data } = response
 
             // data.forEach(row => $filterOptions.companies.set(row.alias, `${row.busName}, ${row.coType}`))
@@ -39,6 +39,17 @@ const table = $('#driver-apl-table').DataTable({
     serverSide: true,
 
     columns: [
+
+        {
+            orderable: false,
+            data(row) {
+                const { complete, decision } = row
+                if (!complete) return null
+
+                const icon = { a: 'dark green text thumbs up', r: 'red text thumbs down', p: 'blue text clock' }
+                return `<i class="${icon[decision]} icon"></i>`
+            },
+        },
 
         {
             title: 'Company',
@@ -121,6 +132,12 @@ const table = $('#driver-apl-table').DataTable({
 
     ],
 
+    createdRow(row, data) {
+        if (!data.complete) $(row).css('background-color', '#FFE9EC')
+        else if (data.decision == 'p') $(row).css('background-color', '#FFF9E6')
+        else if (data.decision == 'r') $(row).css('color', 'salmon')
+    },
+
     dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
 
     initComplete() {
@@ -168,7 +185,7 @@ const table = $('#driver-apl-table').DataTable({
         emptyTable: '<span class="ui red text">No applications at this time</span>',
     },
 
-    order: [ 2, 'desc' ],
+    order: [ 3, 'desc' ],
 
 })
 

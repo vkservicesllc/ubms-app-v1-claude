@@ -73,6 +73,8 @@ class Application {
                     knex.raw(Query.hashField(Team.hashId('teamId'))),
                     'formId',
                     'appliedOn',
+                    'complete',
+                    'decision',
                     'firstName',
                     'middleName',
                     'lastName',
