@@ -101,14 +101,25 @@ router.post('/unique/original/:env', User.verify, async (req, res) => {
 })
 
 
-router.post('/assets/:source', User.verify, (req, res) => {
+router.post('/assets/:source/:_id?', User.verify, async (req, res) => {
+    const { filter, self } = req.query
     const { source } = req.params
-    const { filter } = req.query
-    let result
+    let{ _id } = req.params
+    let Src, result
 
     switch (source) {
 
+        case 'user':
+            Src = User
+            result = {
+                statuses: User.statusList,
+                locations: User.locationList,
+            }
+            if (self == 'true') _id = req.session.user
+            break
+
         case 'company':
+            Src = Company
             result = {
                 categories: Company.categoryList,
                 types: Company.typeList,
@@ -117,8 +128,14 @@ router.post('/assets/:source', User.verify, (req, res) => {
 
     }
 
-    if (filter) result = result[filter]
-
+    if (filter) {
+        if (_id && Src) {
+            const instance = await Src.data(res.session, { _id })
+            result = instance[filter]
+        } else
+            result = result[filter]
+    }
+console.log(result)
     res.send(result)
 })
 

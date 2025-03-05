@@ -52,7 +52,7 @@ module.exports = {
         external: [ ...online.external ],
         internal: {
             css: [ ...online.internal.css ],
-            js: [ ...online.internal.js ],
+            js: [ ...online.internal.js, '^app/settings' ],
             mjs: [ ...online.internal.mjs ],
         },
     },

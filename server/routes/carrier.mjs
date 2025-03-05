@@ -55,6 +55,7 @@ router.use((req, res, next) => {
             hbs.user = {}
 
             const props = [
+                '_id',
                 'name',
                 'username',
                 'firstName',

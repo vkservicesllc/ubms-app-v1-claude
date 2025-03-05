@@ -15,14 +15,14 @@
                             <label>On logon, go to:</label>
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input type="radio" name="" />
-                                    <label>Dashboard</label>
+                                    <input type="radio" id="login-to-dash" name="lastUrl" value="0" />
+                                    <label for="login-to-dash">Dashboard</label>
                                 </div>
                             </div>
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input type="radio" name="" checked />
-                                    <label>Last visited page</label>
+                                    <input type="radio" id="login-to-last" name="lastUrl" value="1" />
+                                    <label for="login-to-last">Last visited page</label>
                                 </div>
                             </div>
                         </div>
@@ -34,14 +34,14 @@
                             <label>Team selection location:</label>
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input type="radio" name="" checked />
-                                    <label>Welcome Page</label>
+                                    <input type="radio" id="team-on-start" name="teamSelect" value="0" />
+                                    <label for="team-on-start">Welcome Page</label>
                                 </div>
                             </div>
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input type="radio" name="" />
-                                    <label>Navigation Bar</label>
+                                    <input type="radio" id="team-in-nav" name="teamSelect" value="1" />
+                                    <label for="team-in-nav">Navigation Bar</label>
                                 </div>
                             </div>
                         </div>
@@ -53,20 +53,20 @@
                             <label>Show companies in tables:</label>
                             <div class="field">
                                 <div class="ui checkbox">
-                                    <input type="radio" name="" />
-                                    <label>Excluded</label>
+                                    <input type="checkbox" id="excluded-team-companies" name="teamCompanies[]" value="e" />
+                                    <label for="excluded-team-companies">Excluded</label>
                                 </div>
                             </div>
                             <div class="field">
                                 <div class="ui checkbox">
-                                    <input type="radio" name="" />
-                                    <label>On hold</label>
+                                    <input type="checkbox" id="inactive-team-companies" name="teamCompanies[]" value="i" />
+                                    <label for="inactive-team-companies">On hold</label>
                                 </div>
                             </div>
                             <div class="field">
                                 <div class="ui checkbox">
-                                    <input type="radio" name="" />
-                                    <label>Closed</label>
+                                    <input type="checkbox" id="closed-team-companies" name="teamCompanies[]" value="c" />
+                                    <label for="closed-team-companies">Closed</label>
                                 </div>
                             </div>
                         </div>

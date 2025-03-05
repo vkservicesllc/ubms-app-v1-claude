@@ -854,11 +854,15 @@ class User extends Person {
 
         if (_id || id || username) batch[1].fields.push('lastUrl')
 
-        if (!('user' in session) && username) {
-            batch[0].fields.push([ '_passKey', '_hash' ], 'fails', 'settings')
-            batch[1].fields.push({ ip: 'clientIp' })
+        if (!('user' in session)) {
+            batch[0].fields.push('settings')
 
-            if (branch == 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
+            if (username) {
+                batch[0].fields.push([ '_passKey', '_hash' ], 'fails')
+                batch[1].fields.push({ ip: 'clientIp' })
+
+                if (branch == 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
+            }
         } else {
             if (branch != 'admin')
                 batch[1].join[2] = {
