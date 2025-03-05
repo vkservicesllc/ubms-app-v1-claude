@@ -204,5 +204,18 @@ router.get('/dashboard', User.verify, Team.verify, async (req, res) => {
 })
 
 
+router.get('/settings', User.verify, Team.verify, async (req, res) => {
+    try {
+        const key = 'settings'
+        let { hbs } = res
+        hbs = await hbs.set(key)
+
+        res.render(`app/${key}`, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
 
 export default router

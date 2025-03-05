@@ -48,6 +48,15 @@ module.exports = {
         },
     },
 
+    'settings': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
     'dash': {
         external: [ ...online.external ],
         internal: {
@@ -75,7 +84,7 @@ module.exports = {
         },
     },
 
-    'driver.applications': {
+    'drivers.applications': {
         external: [ ...online.external, 'datatables.fomantic-ui', 'moment' ],
         internal: {
             css: [ ...online.internal.css ],

@@ -71,7 +71,7 @@ router.get('/pre-applications', User.verify, Team.verify, async (req, res) => {
 
 
 router.get('/applications', User.verify, Team.verify, async (req, res) => {
-    const key = 'driver.applications'
+    const key = 'drivers.applications'
     let { hbs } = res
     hbs = await hbs.set(key)
 
@@ -86,7 +86,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
     hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-    res.render(`drivers/applications`, hbs)
+    res.render(key.replace('.', '/'), hbs)
 })
 
 

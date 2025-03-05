@@ -1,0 +1,91 @@
+{{> carrier/nav.alpha}}
+
+        <h4>Settings</h4>
+        <div class="ui animated fade tiny button" tabindex="0" id="reset-settings">
+            <div class="visible content"><i class="redo alternate icon"></i></div>
+            <div class="hidden content">
+                Reset
+            </div>
+        </div>
+        <div class="ui eight column divided grid raised segment">
+            <div class="row">
+                <div class="column">
+                    <div class="ui form">
+                        <div class="grouped fields">
+                            <label>On logon, go to:</label>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="" />
+                                    <label>Dashboard</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="" checked />
+                                    <label>Last visited page</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui form">
+                        <div class="grouped fields">
+                            <label>Team selection location:</label>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="" checked />
+                                    <label>Welcome Page</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input type="radio" name="" />
+                                    <label>Navigation Bar</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui form">
+                        <div class="grouped fields">
+                            <label>Show companies in tables:</label>
+                            <div class="field">
+                                <div class="ui checkbox">
+                                    <input type="radio" name="" />
+                                    <label>Excluded</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui checkbox">
+                                    <input type="radio" name="" />
+                                    <label>On hold</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui checkbox">
+                                    <input type="radio" name="" />
+                                    <label>Closed</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<style>
+    .segment {
+        {{!-- outline: 1px dotted blue; --}}
+    }
+    .grid .column {
+        min-width: 200px;
+        {{!-- outline: 1px dotted red; --}}
+    }
+    .grouped.fields > label {
+        display: block;
+        margin-bottom: 10px !important;
+    }
+</style>
+
+{{> carrier/nav.omega}}
