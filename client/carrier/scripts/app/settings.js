@@ -54,8 +54,9 @@ $.ajax('/api/assets/user?filter=settings&self=true&call=true', {
                     $(`[name="${name}"][value="${settings[name]}"]`).prop('checked', true)
                 }
 
-                $form.removeClass('loading')
             }
         }
+
+        $form.removeClass('loading')
     }
 })
