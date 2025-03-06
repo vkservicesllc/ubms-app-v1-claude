@@ -26,7 +26,24 @@ router.post('/session/team/:_id/switch', User.verify, async (req, res) => {
 })
 
 
-router.post('/drivers/applications', User.verify, Application.dtList)
+
+
+router.post('/drivers/applications', User.verify, Team.verify, Application.dtList)
+
+router.get('/drivers/applications/companies', User.verify, Team.verify, async (req, res) => {
+    try {
+        const settings = await res.session.user.settings(res.session)
+        const { teamCompanies } = settings?.carrier || {}
+        const filter = {}
+
+        if (teamCompanies && teamCompanies.includes('e'))
+            filter.excluded = true
+
+        res.send(await Application.companies(res.session, filter))
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
 
 
 

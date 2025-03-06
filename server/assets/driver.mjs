@@ -50,6 +50,18 @@ class Application {
     static matchIdHash = value => matchHash(value, Application.#algorithm)
 
 
+    static companies = async (session, filter = {}) => {
+        if (!session?.user || !session?.team) return
+
+        const { excluded } = filter
+        const companyIds = await session.team.ids(res.session, 'companies')
+        let companies = []
+        //! ... to be continued
+
+        return companies
+    }
+
+
     static dtList = async (req, res) => { /* API use only */
         try {
             const team = await Team.data(res.session, { _id: req.session.team })
