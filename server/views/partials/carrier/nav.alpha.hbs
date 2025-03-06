@@ -44,7 +44,18 @@
     </div>
     <form action="/session/team/exit" id="team-form" method="POST" style="display: none;"></form>
     <div class="ui top visible inverted sidebar menu" id="top-nav">
+        {{#if (eq teamSelect false)}}
         <span class="item" id="team-item">{{team.name}}</span>{{{nav.top.items}}}
+        {{/if}}
+        {{#if (eq teamSelect true)}}
+        {{{teamDropdown}}}{{{nav.top.items}}}
+        {{!-- <div class="ui inline dropdown item" id="team-item">
+            {{team.name}}
+            <i class="dropdown icon"></i>
+            <div class="menu">{{{teamDropdown}}}
+            </div>
+        </div> --}}
+        {{/if}}
         <div class="ui right inline dropdown item">
             <div class="text">
                 <img class="ui avatar image" src="{{user.avaSrc}}">

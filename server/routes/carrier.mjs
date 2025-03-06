@@ -82,24 +82,39 @@ router.use((req, res, next) => {
                 prl: inPGroup('d:prl', permissions, DS),
                 rtx: inPGroup('d:rtx', permissions, DS),
             }
-            hbs.teamSelect = false
 
-            const settings = await user.settings(res.session)
-            if (settings?.carrier?.teamSelect == '1') {
-                hbs.teamSelect = true
-                const { applied: teams } = await user.teams(res.session)
+            if (team) {
+                hbs.team = {}
+                hbs.teamSelect = false
+                hbs.teamDropdown = ''
+
+                const props = [
+                    'name',
+                    'description',
+                ]
+                for (const prop of props)
+                    hbs.team[prop] = team[prop]
+
+                const settings = await user.settings(res.session)
+                if (settings?.carrier?.teamSelect == '1') {
+                    hbs.teamSelect = true
+                    const { applied: teams } = await user.teams(res.session)
+                    const t = `\t`.repeat(2)
+
+                    hbs.teamDropdown = `<div class="ui inline dropdown item" id="team-item">`
+                    hbs.teamDropdown += `\n${t}\t${team.name}`
+                    if (teams.length) {
+                        hbs.teamDropdown += `\n${t}\t<i class="dropdown icon"></i>`
+                        hbs.teamDropdown += `\n${t}\t<div class="menu">`
+                        teams.forEach(item => {
+                            if (item._id != team._id)
+                                hbs.teamDropdown += `\n${t}\t\t<a class="item switch-team" data-team-id="${item._id}">${item.name}</a>`
+                        })
+                        hbs.teamDropdown += `\n${t}\t</div>`
+                    }
+                    hbs.teamDropdown += `\n${t}</div>`
+                }
             }
-        }
-
-        if (team) {
-            hbs.team = {}
-
-            const props = [
-                'name',
-                'description',
-            ]
-            for (const prop of props)
-                hbs.team[prop] = team[prop]
         }
 
         if (!inclKey) inclKey = key
