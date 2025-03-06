@@ -183,11 +183,15 @@ const table = $('#driver-apl-table').DataTable({
 
                 table.ajax.reload()
             })
+
+        $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
     },
 
     language: {
         emptyTable: '<span class="ui red text">No applications at this time</span>',
     },
+
+    lengthMenu,
 
     order: [ 2, 'desc' ],
 

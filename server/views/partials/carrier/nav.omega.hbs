@@ -21,8 +21,20 @@
 
         $('#team-link').click(() => { $('#team-form').submit() })
         $('.ui.dropdown').dropdown({
-            action: 'hide', // ensures dropdown hides when clicked elsewhere
+            action: 'hide',
         })
+        {{#if (eq teamSelect true)}}
+        $('.switch-team').click(function() {
+            const _id = $(this).data('team-id')
+
+            $.ajax(`/api/session/team/${_id}/switch`, {
+                method: 'POST',
+                success(switched) {
+                    if (switched) window.location.reload()
+                }
+            })
+        })
+        {{/if}}
     </script>
 
 {{> foot}}
