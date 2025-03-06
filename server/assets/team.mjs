@@ -377,15 +377,27 @@ class Team {
 
 
     static verify = async (req, res, next) => {
-        const { api, errKey } = recognizeApi(req)
-        const { method } = req
+        const { user } = res.session
+        const { errKey } = recognizeApi(req)
+
+        if (!user) return throwErr[errKey].auth(res, null, err)
 
         try {
             const { team: _id } = req.session
             if (!_id) return res.redirect('/')
 
             const team = await Team.data(res.session, { _id })
-            if (team) res.session.team = team
+            const userId = await user.id()
+            const teamId = await team.id()
+            const found = (await mysql.execute(query.users.select('teamId', {
+                match: { userId, teamId },
+            })))[0].length == 1
+
+            if (!found) {
+                delete req.session.team
+                return res.redirect('/')
+            } else
+                if (team) res.session.team = team
 
             next()
         } catch (err) {

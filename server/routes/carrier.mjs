@@ -101,9 +101,10 @@ router.use((req, res, next) => {
                     const { applied: teams } = await user.teams(res.session)
                     const t = `\t`.repeat(2)
 
-                    hbs.teamDropdown = `<div class="ui inline dropdown item" id="team-item">`
-                    hbs.teamDropdown += `\n${t}\t${team.name}`
-                    if (teams.length) {
+                    hbs.teamDropdown = `<span class="item" id="team-item">${team.name}</span>`
+                    if (teams.length > 1) {
+                        hbs.teamDropdown = `<div class="ui inline dropdown item" id="team-item">`
+                        hbs.teamDropdown += `\n${t}\t${team.name}`
                         hbs.teamDropdown += `\n${t}\t<i class="dropdown icon"></i>`
                         hbs.teamDropdown += `\n${t}\t<div class="menu">`
                         teams.forEach(item => {
@@ -111,8 +112,8 @@ router.use((req, res, next) => {
                                 hbs.teamDropdown += `\n${t}\t\t<a class="item switch-team" data-team-id="${item._id}">${item.name}</a>`
                         })
                         hbs.teamDropdown += `\n${t}\t</div>`
+                        hbs.teamDropdown += `\n${t}</div>`
                     }
-                    hbs.teamDropdown += `\n${t}</div>`
                 }
             }
         }
