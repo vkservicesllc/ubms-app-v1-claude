@@ -39,7 +39,6 @@ $button.submit.click(() => {
 $.ajax('/api/assets/user?filter=settings&self=true&call=true', {
     method: 'POST',
     success(response) {
-        console.log(response)
         resetDefaults()
 
         if (response?.carrier) {
@@ -55,7 +54,7 @@ $.ajax('/api/assets/user?filter=settings&self=true&call=true', {
                     $(`[name="${name}"][value="${settings[name]}"]`).prop('checked', true)
                 }
 
-                $form.fadeIn()
+                $form.removeClass('loading')
             }
         }
     }

@@ -1,10 +1,12 @@
 {{> head}}
 
     <div class="ui left visible vertical inverted labeled icon sidebar menu" id="left-nav">
+        {{#if (eq teamSelect false)}}
         <a class="item" id="team-link">
             <i class="people arrows icon"></i>
             Teams
         </a>
+        {{/if}}
         <a class="{{nav.left.dash}}item" href="/dashboard">
             <i class="chart pie icon"></i>
             Dashboard

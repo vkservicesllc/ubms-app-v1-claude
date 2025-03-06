@@ -82,6 +82,13 @@ router.use((req, res, next) => {
                 prl: inPGroup('d:prl', permissions, DS),
                 rtx: inPGroup('d:rtx', permissions, DS),
             }
+            hbs.teamSelect = false
+
+            const settings = await user.settings(res.session)
+            if (settings?.carrier?.teamSelect == '1') {
+                hbs.teamSelect = true
+                const { applied: teams } = await user.teams(res.session)
+            }
         }
 
         if (team) {
@@ -144,7 +151,15 @@ router.get('/', async (req, res, next) => {
     try {
         const { user } = res.session
         const { team } = req.session
-        if (team) return res.redirect(user.lastUrl)
+
+        if (team) {
+            const settings = await user.settings(res.session)
+            let url = user.lastUrl
+
+            if (settings?.carrier?.lastUrl == '0') url = '/dashboard'
+
+            return res.redirect(url)
+        }
 
         const key = 'team'
         let { hbs } = res
@@ -169,16 +184,12 @@ router.get('/', async (req, res, next) => {
 
 
 router.post('/session/team/enter', User.verify, async (req, res) => {
-    let { lastUrl } = res.session.user
     const { _id } = req.body
     const team = await Team.data(res.session, { _id })
 
-    if (team) {
-        if (!lastUrl || lastUrl == '/') lastUrl = 'dashboard'
-        req.session.team = _id
-    }
+    if (team) req.session.team = _id
 
-    res.redirect(lastUrl)
+    res.redirect('/')
 })
 
 

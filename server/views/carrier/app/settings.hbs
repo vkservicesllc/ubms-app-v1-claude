@@ -7,7 +7,7 @@
                 Reset
             </div>
         </div>
-        <form class="ui eight column divided grid raised segment" id="settings-form" action="/resource/user/{{user._id}}/app/settings" method="POST" style="display: none;">
+        <form class="ui eight column divided grid raised loading segment" id="settings-form" action="/resource/user/{{user._id}}/app/settings" method="POST">
             <div class="row">
                 <div class="column">
                     <div class="ui form">
@@ -85,12 +85,8 @@
             </div>
         </form>
 <style>
-    .segment {
-        {{!-- outline: 1px dotted blue; --}}
-    }
     .grid .column {
         min-width: 200px;
-        {{!-- outline: 1px dotted red; --}}
     }
     .grouped.fields > label {
         display: block;
