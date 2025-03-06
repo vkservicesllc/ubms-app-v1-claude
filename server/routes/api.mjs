@@ -13,8 +13,6 @@ import { capitalizeFirst } from '../../client/global/modules/tools/string.mjs'
 
 
 
-router.get('/session/keep-alive', User.verify, (req, res) => res.send('OK'))
-
 
 router.post('/login', User.login)
 
@@ -31,6 +29,9 @@ router.post('/login/validation', async (req, res) => {
 
     res.send({ validated })
 })
+
+
+router.get('/session/keep-alive', User.verify, (req, res) => res.send('OK'))
 
 
 router.post('/session/:prop', User.verify, (req, res) => {

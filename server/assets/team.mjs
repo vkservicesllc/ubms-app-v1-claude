@@ -55,6 +55,41 @@ class Team {
             }
 
 
+            this.ids = async (session, type) => {
+                if (!session.user) return
+
+                const teamId = await this.id()
+                let data = [], batch = []
+
+                switch (type) {
+
+                    case 'companies':
+                        const { catId } = this
+
+                        batch = [
+                            {
+                                table: 'teams_companies',
+                                match: { teamId },
+                            },
+                            {
+                                table: 'companies',
+                                fields: 'id',
+                                join: [ 'id', 'companyId' ],
+                                match: { catId },
+                            },
+                        ]
+
+                        break
+
+                }
+
+                data = (await mysql.execute(Query.select(db.business, batch)))[0]
+                data = data.map(row => row.id)
+
+                return data
+            }
+
+
             this.data = async (session, type) => {
                 if (!session?.user?.DS) return
 

@@ -50,11 +50,14 @@ class Application {
     static matchIdHash = value => matchHash(value, Application.#algorithm)
 
 
-    static dtList = async (req, res) => {
+    static dtList = async (req, res) => { /* API use only */
         try {
             const team = await Team.data(res.session, { _id: req.session.team })
             const teamId = await team.id()
             const { draw, start, length, search, order, columns, filter } = req.body
+            const settings = await res.session.user.settings(res.session)
+            const { teamCompanies } = settings?.carrier || {}
+            const companyIds = await team.ids(res.session, 'companies')
 
             let subquery = knex
                 .select('*')
@@ -65,7 +68,8 @@ class Application {
                         .groupBy('companyId')
                 })
 
-            const defaultFilters = { teamId }
+            const defaultFilters = { teamId, 'cmp.confirmed': true }
+
             let query = knex(`${db.carrier}.applications AS apl`)
                 .select(
                     knex.raw(Query.hashField(Application.hashId(), 'apl')),
@@ -94,6 +98,10 @@ class Application {
                     'cmp.id'
                 )
                 .where(defaultFilters)
+
+            if (!teamCompanies || !teamCompanies.includes('i')) query.where({ 'cmp.active': true })
+            if (!teamCompanies || !teamCompanies.includes('c')) query.where({ 'cmp.until': null })
+            if (!teamCompanies || !teamCompanies.includes('e')) query.whereIn('cmp.id', companyIds)
 
             const searchableColumns = columns
                 .filter(column => column.data && column.data !== 'function' && column.searchable === 'true')

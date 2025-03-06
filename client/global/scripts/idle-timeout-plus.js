@@ -6,7 +6,10 @@ jQuery(document).ready(() => {
         type: 'POST',
         success(response) {
             const { error, maxAge, logoutUrl } = response
-            if (error) return console.error({ error })
+            if (error) {
+                window.location.href = logoutUrl
+                return
+            }
 
             const warnTimeLimit = 30
             const idleTimeLimit = maxAge / 1000 - warnTimeLimit
