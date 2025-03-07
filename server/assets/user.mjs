@@ -33,9 +33,6 @@ import { numeric } from '../../client/global/modules/tools/number.mjs'
 import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 
-/* Support */
-// import permissions from './user/permissions.mjs'
-
 const { validationResult } = require('express-validator')
 const mysql = require('../tools/mysql')
 const throwErr = require('../tools/error')
@@ -873,8 +870,8 @@ class User extends Person {
             },
             {
                 table: 'sessions',
-                fields: [ 'siteId', 'branch', 'lastLogin' ],
-                join: [ 'userId', 'id', { max: 'lastLogin' }],
+                fields: [ 'siteId', 'branch', 'lastLogin' ], //* DEFAULT
+                join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],
             },
         ]
 
@@ -898,19 +895,12 @@ class User extends Person {
 
         if (_id || id || username) batch[1].fields.push('lastUrl')
 
-        if (!('user' in session)) {
-            if (username) {
-                batch[0].fields.push([ '_passKey', '_hash' ], 'fails')
-                batch[1].fields.push({ ip: 'clientIp' })
+        if (!('user' in session) && username) {
+            batch[0].fields.push([ '_passKey', '_hash' ], 'fails')
+            batch[1].fields.push({ ip: 'clientIp' })
 
-                if (branch == 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
-            }
+            if (branch == 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
         } else {
-            if (branch != 'admin')
-                batch[1].join[2] = {
-                    max: [ 'lastLogin', { branch, siteId } ],
-                }
-
             if (session?.user?.location) {
                 const location = session.user.location[0]
                 if (location != 'US') {
@@ -1106,7 +1096,7 @@ class User extends Person {
             const { branch, siteId, defUrl } = session
             const { user: _id, token: providedToken } = req.body
             const { clientIp } = req.session
-            const user = await User.data(session, { _id })
+            const user = await User.data(session, { _id }, 'User:session')
             const { token, verified, expired } = await user.token({ clientIp })
 
             if (!verified) {

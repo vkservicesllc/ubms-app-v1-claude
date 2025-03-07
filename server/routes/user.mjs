@@ -314,7 +314,7 @@ router.get('/authenticate', async (req, res) => {
             : token
 
         hbs.status = status
-        hbs.actionUrl = address + sessionUrl
+        hbs.actionUrl = address + sessionUrl    ;console.log('user.mjs:317', 'hbs.actionUrl', hbs.actionUrl)
         hbs.tokenAge = `${tokenAge} minute${tokenAge > 1 ? 's' : ''}`
         hbs.userValue = _id
         hbs.script = `$('.container').show()`
