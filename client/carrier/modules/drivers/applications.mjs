@@ -5,11 +5,20 @@ import { tel as formatTel } from '/modules/tools/formatter.mjs'
 
 
 const interval = 60000
-const $filter = {
-    companies: $('#company-filter'),
-}
-const $filterOptions = {
-    companies: new Map(),
+
+const styleSearch = () => {
+    $('.dt-search').find('label').remove()
+
+    const $search = $('.dt-search input[type="search"]')
+    const $preserved = $search.detach()
+    const $structure = $('<div class="ui labeled input"><div class="ui label"><i class="search icon"></i></div></div>')
+
+    $preserved
+        .addClass("ui input")
+        .removeClass("dt-search")
+        .appendTo($structure)
+
+    $('.dt-search').replaceWith($structure)
 }
 
 const table = $('#driver-apl-table').DataTable({
@@ -18,20 +27,13 @@ const table = $('#driver-apl-table').DataTable({
         url: '/api/drivers/applications',
         data(data) {
             data.filter = {
-                company: $('#company-filter').val(),
+                companies: $('#company-filter').val(),
                 condition: $('#condition-filter').val(),
                 decision: $('#decision-filter').val(),
             }
         },
         dataSrc(response) {
             const { data } = response
-
-            // data.forEach(row => $filterOptions.companies.set(row.alias, `${row.busName}, ${row.coType}`))
-            // $filter.companies.empty().append('<option value="">Filter by Companies</options>')
-            // $filterOptions.companies.forEach((name, alias) => {
-            //     $filter.companies.append(`<option value="${alias}">${name}</option>`)
-            // })
-
             return data
         },
     },
@@ -145,11 +147,13 @@ const table = $('#driver-apl-table').DataTable({
     dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
 
     initComplete() {
+        styleSearch()
+
         const buildDropdown = (id, placeholder) =>
             $(`<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div><select class="ui fluid clearable dropdown labeled icon custom-dt-dropdown" id="${id}" multiple><option value="">${placeholder}</option></select></div>`)
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
         const dropdown = {
-            company: buildDropdown('company-filter', 'Company'),
+            company: $('<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div><div class="ui fluid multiple clearable selection dropdown custom-dt-dropdown"><input type="hidden" id="company-filter"><i class="dropdown icon"></i><div class="default text">Companies</div><div class="menu"></div></div></div>'),
             condition: buildDropdown('condition-filter', 'Condition'),
             decision: buildDropdown('decision-filter', 'Decision'),
         }
@@ -169,22 +173,41 @@ const table = $('#driver-apl-table').DataTable({
             dropdown.decision.find('select').append(`<option value="${value}">${option}</option>`)
         }
 
-        toolbar.append(dropdown.company)
-        toolbar.append(dropdown.condition)
-        toolbar.append(dropdown.decision)
+        $.ajax('/api/drivers/applications/companies', {
+            method: 'POST',
+            success(companies) {
+                if (companies) {
+                    companies.forEach(company => {
+                        const { _carrierId, active, until, name, alias } = company
+                        let color = 'green'
+                        if (until) name += 'red'
+                        else if (!active) name += 'blue'
 
-        $('.dt-length').after(toolbar)
+                        dropdown.company.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
+                    })
+                }
 
-        $('.custom-dt-dropdown')
-            .dropdown()
-            .on('change', function() {
-                const length = $(this).dropdown('get value').length
-                $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue')
+                toolbar.append(dropdown.company)
+                toolbar.append(dropdown.condition)
+                toolbar.append(dropdown.decision)
 
-                table.ajax.reload()
-            })
+                $('.dt-length').after(toolbar)
 
-        $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
+                $('.custom-dt-dropdown')
+                    .dropdown()
+                    .on('change', function() {
+                        const length = $(this).dropdown('get value').length
+                        $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue')
+
+                        $(this).blur()
+                        table.ajax.reload()
+                    })
+
+                $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
+            },
+        })
+
+
     },
 
     language: {

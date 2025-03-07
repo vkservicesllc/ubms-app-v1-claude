@@ -628,9 +628,7 @@ class Company {
         ]
 
         if (!DS) {
-            const teams = await user.teams(session)
-            let teamId = []
-            teams.applied.forEach(team => teamId.push(team.id))
+            let teamId = await user.teamIds(session)
             if (!teamId.length) teamId = 0
 
             batch.push({

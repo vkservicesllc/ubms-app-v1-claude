@@ -30,7 +30,7 @@ router.post('/session/team/:_id/switch', User.verify, async (req, res) => {
 
 router.post('/drivers/applications', User.verify, Team.verify, Application.dtList)
 
-router.get('/drivers/applications/companies', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/applications/companies', User.verify, Team.verify, async (req, res) => {
     try {
         const settings = await res.session.user.settings(res.session)
         const { teamCompanies } = settings?.carrier || {}

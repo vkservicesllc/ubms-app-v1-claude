@@ -3,16 +3,23 @@ import db from '../settings/mysql.mjs'
 
 /* Assests */
 import Individual from './individual.mjs'
-import Carrier from './carrier.mjs'
 import Team from './team.mjs'
+import Company from './company.mjs'
+import Carrier from './carrier.mjs'
 
 /* Tools */
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
+import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 import Query, { hash, matchHash } from '../tools/query.mjs'
 
 const mysql = require('../tools/mysql')
 const knex = require('../tools/knex')
 const throwErr = require('../tools/error').api
+
+const query = {
+    drivers: new Query(db.carrier, 'drivers'),
+    applications: new Query(db.carrier, 'applications'),
+}
 
 
 
@@ -54,9 +61,36 @@ class Application {
         if (!session?.user || !session?.team) return
 
         const { excluded } = filter
-        const companyIds = await session.team.ids(res.session, 'companies')
-        let companies = []
-        //! ... to be continued
+        const companyId = await session.team.ids(session, 'companies')
+
+        const batch = [
+            {
+                table: 'applications',
+                fields: Carrier.hashId('carrierId'),
+            },
+            {
+                table: 'carriers',
+                fields: Company.hashId('companyId'),
+                join: [ 'id', 'carrierId' ],
+            },
+            {
+                db: db.business,
+                table: 'companies',
+                fields: [ 'active', 'until' ],
+                join: [ 'id', 'companyId', 1 ],
+                match: { confirmed: true },
+            },
+            {
+                db: db.business,
+                table: 'company_names',
+                fields: [ 'busName', 'coType', { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] }, 'alias' ],
+                join: [ 'companyId', 'id', 2 ],
+            },
+        ]
+        if (excluded !== true) batch[1].match = { companyId }
+
+        let companies = (await mysql.execute(Query.select(db.carrier, batch)))[0]
+        companies = sortArrayByObjectKey(companies, 'name')
 
         return companies
     }
@@ -66,7 +100,7 @@ class Application {
         try {
             const team = await Team.data(res.session, { _id: req.session.team })
             const teamId = await team.id()
-            const { draw, start, length, search, order, columns, filter } = req.body
+            const { draw, start, length, columns, search, filter, order } = req.body
             const settings = await res.session.user.settings(res.session)
             const { teamCompanies } = settings?.carrier || {}
             const companyIds = await team.ids(res.session, 'companies')
@@ -125,6 +159,20 @@ class Application {
                     query = query.whereIn('complete', filter.condition)
                 }
                 if (filter?.decision) query = query.whereIn('decision', filter.decision)
+
+                if (filter.companies) {
+                    const carrierIds = []
+                    filter.companies = filter.companies.split(',')
+
+                    await Promise.all(filter.companies.map(async (_id) => {
+                        const carrier = await Carrier.data(res.session, { _id })
+                        const id = await carrier.id()
+
+                        carrierIds.push(id)
+                    }))
+
+                    query.whereIn('apl.carrierId', carrierIds)
+                }
             }
 
             if (search && search.value && searchableColumns.length) {

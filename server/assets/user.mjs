@@ -362,6 +362,31 @@ class User extends Person {
             }
 
 
+            this.teamIds = async session => {
+                if (!session?.user) return
+
+                const { branch } = session
+                const catId = Company.catId(branch)
+
+                const batch = [
+                    {
+                        table: 'teams_users',
+                    },
+                    {
+                        table: 'teams',
+                        fields: 'id',
+                        join: [ 'id', 'teamId' ],
+                        match: { catId },
+                    },
+                ]
+                if (!this.DS) batch[0].match = { userId: await this.id() }
+
+                const [ result ] = await mysql.execute(Query.select(db.business, batch))
+
+                return result.map(row => row.id)
+            }
+
+
             this.teams = async (session, action, teamIds) => {
                 const userId = await this.id()
 
