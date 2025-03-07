@@ -33,7 +33,8 @@ const table = $('#driver-apl-table').DataTable({
             }
         },
         dataSrc(response) {
-            const { data } = response
+            const { data, permissions } = response
+            console.log(permissions) //!TEMP
             return data
         },
     },

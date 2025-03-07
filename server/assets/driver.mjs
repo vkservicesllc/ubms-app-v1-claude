@@ -98,10 +98,14 @@ class Application {
 
     static dtList = async (req, res) => { /* API use only */
         try {
+            const sessionsUser = res.session.user
+            const permissions = await sessionsUser.permissions(res.session)
+            if (!('d:drv/apl' in permissions)) return throwErr.auth(res, null, err, false)
+
+            const settings = await sessionsUser.settings(res.session)
             const team = await Team.data(res.session, { _id: req.session.team })
             const teamId = await team.id()
             const { draw, start, length, columns, search, filter, order } = req.body
-            const settings = await res.session.user.settings(res.session)
             const { teamCompanies } = settings?.carrier || {}
             const companyIds = await team.ids(res.session, 'companies')
 
@@ -199,6 +203,7 @@ class Application {
                 recordsTotal: count,
                 recordsFiltered: data.length,
                 data,
+                permissions,
             })
         } catch(err) {
             throwErr.server(res, null, err, false)
