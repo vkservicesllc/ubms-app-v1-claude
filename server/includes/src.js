@@ -78,7 +78,7 @@ module.exports = {
         'datatables.fomantic-ui': {
             css: [
                 '<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.semanticui.css" />',
-                // '<link rel="stylesheet" href="/styles/datatables.css" />',
+                '<link rel="stylesheet" href="/styles/datatables.fomantic-ui.css" />',
             ],
             js: [
                 '<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>',
@@ -94,7 +94,10 @@ module.exports = {
 
 
         'fomantic-ui': {
-            css: '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.css" integrity="sha512-3quBdRGJyLy79hzhDDcBzANW+mVqPctrGCfIPosHQtMKb3rKsCxfyslzwlz2wj1dT8A7UX+sEvDjaUv+WExQrA==" crossorigin="anonymous" referrerpolicy="no-referrer" />',
+            css: [
+                '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.css" integrity="sha512-3quBdRGJyLy79hzhDDcBzANW+mVqPctrGCfIPosHQtMKb3rKsCxfyslzwlz2wj1dT8A7UX+sEvDjaUv+WExQrA==" crossorigin="anonymous" referrerpolicy="no-referrer" />',
+                '<link rel="stylesheet" href="/styles/fomantic-ui.colors.css" />',
+            ],
             js: '<script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js" integrity="sha512-gnoBksrDbaMnlE0rhhkcx3iwzvgBGz6mOEj4/Y5ZY09n55dYddx6+WYc72A55qEesV8VX2iMomteIwobeGK1BQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>',
         },
 

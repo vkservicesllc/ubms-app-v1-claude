@@ -1,66 +1,9 @@
 {{> carrier/nav.alpha}}
 
-<style>
-.top-toolbar, .bottom-toolbar, .custom-dt-toolbar {
-    display: flex;
-    justify-content: space-between;
-}
-.top-toolbar > * {
-    {{!-- outline: 1px dotted red; --}}
-}
-.top-toolbar {
-    margin-bottom: 10px;
-}
-.bottom-toolbar {
-    margin-top: 10px;
-}
-.custom-dt-toolbar {
-    min-width: 55%;
-}
-.custom-dt-toolbar > * {
-    width: 32%;
-}
-.dt-length, .dt-search,
-.custom-dt-toolbar {
-    visibility: hidden;
-}
-
-.dt-column-order {
-    display: none;
-}
-
-.dt-container {
-    min-width: 960px;
-}
-
-.text.light.red { color: #FF695E !important; }
-.text.light.orange { color: #FF851B !important; }
-.text.light.yellow { color: #FFE21F !important; }
-.text.light.olive { color: #D9E778 !important; }
-.text.light.green { color: #2ECC40 !important; }
-.text.light.teal { color: #6DFFFF !important; }
-.text.light.blue { color: #54C8FF !important; }
-.text.light.violet { color: #A291FB !important; }
-.text.light.purple { color: #DC73FF !important; }
-.text.light.pink { color: #FF8EDF !important; }
-.text.light.brown { color: #D67C1C !important; }
-.text.light.grey { color: #DCDDDE !important; }
-
-.text.dark.red { color: #A32222 !important; }
-.text.dark.orange { color: #B5540D !important; }
-.text.dark.yellow { color: #B58105 !important; }
-.text.dark.olive { color: #798E12 !important; }
-.text.dark.green { color: #137A3F !important; }
-.text.dark.teal { color: #00857D !important; }
-.text.dark.blue { color: #1257A2 !important; }
-.text.dark.violet { color: #4727A5 !important; }
-.text.dark.purple { color: #7C199A !important; }
-.text.dark.pink { color: #9E2F6B !important; }
-.text.dark.brown { color: #573D29 !important; }
-.text.dark.grey { color: #5A5A5A !important; }
-
-</style>
-        {{!-- <select class="ui fluid search dropdown" id="company-filter" multiple></select> --}}
+        <style>
+            .custom-dt-toolbar { min-width: 55%; }
+            .custom-dt-toolbar > * { width: 32%; }
+        </style>
         <table class="ui compact table" id="driver-apl-table" style="width: 100%;"></table>
         <script type="module" src="/modules/drivers/applications.mjs"></script>
 

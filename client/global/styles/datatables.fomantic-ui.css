@@ -1,0 +1,22 @@
+.dt-container {
+    min-width: 960px;
+}
+
+.top-toolbar, .bottom-toolbar, .custom-dt-toolbar {
+    display: flex;
+    justify-content: space-between;
+}
+.top-toolbar {
+    margin-bottom: 10px;
+}
+.bottom-toolbar {
+    margin-top: 10px;
+}
+
+.dt-length, .dt-search,
+.custom-dt-toolbar {
+    visibility: hidden;
+}
+.dt-column-order {
+    display: none;
+}

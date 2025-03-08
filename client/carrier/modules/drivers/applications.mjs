@@ -147,14 +147,17 @@ const table = $('#driver-apl-table').DataTable({
             className: 'right aligned',
             render(data, type, row) {
                 return '{Button Panel}'
-            }
+            },
+            createdCell(cell) {
+                $(cell).css({ color: 'black', fontWeight: 'normal' })
+            },
         },
 
     ],
 
     createdRow(row, data) {
-        if (!data.complete) $(row).css('background-color', '#FFE9EC')
-        else if (data.decision == 'p') $(row).css('background-color', '#FFF9E6')
+        if (!data.complete) $(row).css({ backgroundColor: '#FFE9EC', color: 'grey' })
+        else if (data.decision == 'p') $(row).css({ backgroundColor: '#FFF9E6', color: '#4169E1', fontWeight: 'bold' })
         else if (data.decision == 'r') $(row).css('color', 'salmon')
     },
 
