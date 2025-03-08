@@ -66,6 +66,7 @@ const table = $('#driver-apl-table').DataTable({
             data: 'appliedOn',
             title: 'Applied on',
             searchable: false,
+            orderable: false,
             render(data, type) {
                 return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
@@ -74,6 +75,7 @@ const table = $('#driver-apl-table').DataTable({
         {
             title: 'Company',
             searchable: false,
+            orderable: false,
             data(row) {
                 const { busName, coType } = row
 
@@ -84,6 +86,7 @@ const table = $('#driver-apl-table').DataTable({
         {
             data: 'lastName',
             title: 'Last Name',
+            orderable: false,
             render(data, type, row) {
                 return escapeHTML(new Person(row).fullLastName())
             },
@@ -92,6 +95,7 @@ const table = $('#driver-apl-table').DataTable({
         {
             data: 'firstName',
             title: 'First Name',
+            orderable: false,
             render(data, type, row) {
                 return escapeHTML(new Person(row).fullFirstName())
             },
