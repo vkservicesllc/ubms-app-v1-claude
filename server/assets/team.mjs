@@ -387,13 +387,14 @@ class Team {
             if (!_id) return res.redirect('/')
 
             const team = await Team.data(res.session, { _id })
+
             const userId = await user.id()
             const teamId = await team.id()
             const found = (await mysql.execute(query.users.select('teamId', {
                 match: { userId, teamId },
             })))[0].length == 1
 
-            if (!found) {
+            if (!user.DS && !found) {
                 delete req.session.team
                 return res.redirect('/')
             } else

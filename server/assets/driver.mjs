@@ -99,8 +99,12 @@ class Application {
     static dtList = async (req, res) => { /* API use only */
         try {
             const sessionsUser = res.session.user
-            const permissions = await sessionsUser.permissions(res.session)
-            if (!('d:drv/apl' in permissions)) return throwErr.auth(res, null, err, false)
+            let permissions = sessionsUser.DS
+
+            if (!permissions) {
+                permissions = await sessionsUser.permissions(res.session)
+                if (!('d:drv/apl' in permissions)) return throwErr.auth(res, null, err, false)
+            }
 
             const settings = await sessionsUser.settings(res.session)
             const team = await Team.data(res.session, { _id: req.session.team })

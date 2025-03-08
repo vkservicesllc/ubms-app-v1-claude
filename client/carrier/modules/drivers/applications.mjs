@@ -162,7 +162,7 @@ const table = $('#driver-apl-table').DataTable({
         const { permissions } = data    ;console.log(permissions); //!TEMP
         const api = this.api()
 
-        if (permissions['d:drv/apl'].includes('2'))
+        if (permissions === true || permissions['d:drv/apl'].includes('2'))
             $(api.column(10).header())
                 .html('<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>')
 
