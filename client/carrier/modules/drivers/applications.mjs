@@ -25,17 +25,13 @@ const table = $('#driver-apl-table').DataTable({
 
     ajax: {
         url: '/api/drivers/applications',
-        data(data) {
-            data.filter = {
+        data(search) {
+            search.filter = {
                 companies: $('#company-filter').val(),
                 condition: $('#condition-filter').val(),
                 decision: $('#decision-filter').val(),
             }
         },
-        // dataSrc(response) {
-        //     const { data } = response
-        //     return data
-        // },
     },
     processing: true,
     serverSide: true,
@@ -48,7 +44,7 @@ const table = $('#driver-apl-table').DataTable({
                 const { complete, decision } = row
                 if (!complete) return null
 
-                const icon = { a: 'dark green text thumbs up', r: 'red text thumbs down', p: 'blue text clock' }
+                const icon = { a: 'dark green text thumbs up', r: 'red text thumbs down', p: 'blue text clock', h: 'truck moving' }
                 return `<i class="${icon[decision]} icon"></i>`
             },
         },
@@ -157,8 +153,10 @@ const table = $('#driver-apl-table').DataTable({
 
     createdRow(row, data) {
         if (!data.complete) $(row).css({ backgroundColor: '#FFE9EC', color: 'grey' })
-        else if (data.decision == 'p') $(row).css({ backgroundColor: '#FFF9E6', color: '#4169E1', fontWeight: 'bold' })
-        else if (data.decision == 'r') $(row).css('color', 'salmon')
+        else if (data.decision == 'p') $(row).css({ backgroundColor: '#FFF9E6', color: '#4169E1' })
+        else if (data.decision == 'r') $(row).css('color', '#FAA0A0')
+        else if (data.decision == 'a') $(row).css('color', 'green')
+        else [4, 5].forEach(idx => $('td', row).eq(idx).css({ fontWeight: 'bold', color: 'indigo' }))
     },
 
     dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
@@ -183,7 +181,7 @@ const table = $('#driver-apl-table').DataTable({
         }
 
         const conditions = [ { 'Complete': true } , { 'Incomplete': false } ]
-        const decisions = { p: 'Pending', a: 'Approved', r: 'Rejected' }
+        const decisions = { p: 'Pending', h: 'Hired', a: 'Approved', r: 'Rejected' }
 
         conditions.forEach(condition => {
             const option = Object.keys(condition)[0]
