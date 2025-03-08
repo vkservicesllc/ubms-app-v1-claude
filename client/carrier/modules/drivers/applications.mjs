@@ -32,11 +32,10 @@ const table = $('#driver-apl-table').DataTable({
                 decision: $('#decision-filter').val(),
             }
         },
-        dataSrc(response) {
-            const { data, permissions } = response
-            console.log(permissions) //!TEMP
-            return data
-        },
+        // dataSrc(response) {
+        //     const { data } = response
+        //     return data
+        // },
     },
     processing: true,
     serverSide: true,
@@ -137,6 +136,16 @@ const table = $('#driver-apl-table').DataTable({
             },
         },
 
+        {
+            data: null,
+            orderable: false,
+            searchable: false,
+            className: 'right aligned',
+            render(data, type, row) {
+                return '{Button Panel}'
+            }
+        },
+
     ],
 
     createdRow(row, data) {
@@ -147,8 +156,15 @@ const table = $('#driver-apl-table').DataTable({
 
     dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
 
-    initComplete() {
+    initComplete(settings, data) {
         styleSearch()
+
+        const { permissions } = data    ;console.log(permissions); //!TEMP
+        const api = this.api()
+
+        if (permissions['d:drv/apl'].includes('2'))
+            $(api.column(10).header())
+                .html('<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>')
 
         const buildDropdown = (id, placeholder) =>
             $(`<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div><select class="ui fluid clearable dropdown labeled icon custom-dt-dropdown" id="${id}" multiple><option value="">${placeholder}</option></select></div>`)
