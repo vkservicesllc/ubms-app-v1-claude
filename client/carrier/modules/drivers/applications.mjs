@@ -65,27 +65,6 @@ const table = $('#driver-apl-table').DataTable({
         },
 
         {
-            title: 'Company',
-            searchable: false,
-            orderable: false,
-            data(row) {
-                const { busName, coType } = row
-
-                return escapeHTML(`${busName}, ${coType}`)
-            },
-        },
-
-        {
-            data: 'appliedOn',
-            title: 'Applied on',
-            searchable: false,
-            orderable: false,
-            render(data, type) {
-                return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
-            },
-        },
-
-        {
             data: 'lastName',
             title: 'Last Name',
             orderable: false,
@@ -100,16 +79,6 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             render(data, type, row) {
                 return escapeHTML(new Person(row).fullFirstName())
-            },
-        },
-
-        {
-            data: 'dob',
-            title: 'DOB',
-            searchable: false,
-            orderable: false,
-            render(data, type) {
-                return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
         },
 
@@ -135,10 +104,42 @@ const table = $('#driver-apl-table').DataTable({
 
         {
             data: null,
-            title: 'Address',
+            title: 'State',
+            searchable: false,
             orderable: false,
             render(data, type, row) {
-                return null //! need to render address HTML
+                return null //! need to render state from address HTML
+            },
+        },
+
+        {
+            data: 'appliedOn',
+            title: 'Applied on',
+            searchable: false,
+            orderable: false,
+            render(data, type) {
+                return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
+            },
+        },
+
+        {
+            title: 'Company',
+            searchable: false,
+            orderable: false,
+            data(row) {
+                const { busName, coType } = row
+
+                return escapeHTML(`${busName}, ${coType}`)
+            },
+        },
+
+        {
+            data: null,
+            title: 'User',
+            searchable: false,
+            orderable: false,
+            render(data, type, row) {
+                return null //! need to render user First Name + Init of LastName
             },
         },
 
@@ -158,11 +159,23 @@ const table = $('#driver-apl-table').DataTable({
     ],
 
     createdRow(row, data) {
-        if (!data.complete) $(row).css({ backgroundColor: '#FFE9EC', color: 'grey' })
-        else if (data.decision == 'p') $(row).css({ backgroundColor: '#FFF9E6', color: '#4169E1' })
-        else if (data.decision == 'r') $(row).css('color', '#FAA0A0')
-        else if (data.decision == 'a') $(row).css('color', 'green')
-        else [4, 5].forEach(idx => $('td', row).eq(idx).css({ fontWeight: 'bold', color: 'indigo' }))
+        switch (data.condition) {
+            case 'p':
+                $(row).css({ backgroundColor: '#FFE9EC', color: 'grey' })
+                break
+            case 'c':
+                $(row).css({ backgroundColor: '#FFF9E6', color: '#4169E1' })
+                break
+            case 'a':
+                $(row).css('color', 'green')
+                break
+            case 'r':
+                $(row).css('color', '#FAA0A0')
+                break
+            case 'h':
+                [2, 3].forEach(idx => $('td', row).eq(idx).css({ fontWeight: 'bold', color: 'indigo' }))
+                break
+        }
     },
 
     dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
@@ -174,7 +187,7 @@ const table = $('#driver-apl-table').DataTable({
         const api = this.api()
 
         if (permissions === true || permissions['d:drv/apl'].includes('2'))
-            $(api.column(10).header())
+            $(api.column(api.columns().count() - 1).header())
                 .html('<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>')
 
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
@@ -233,7 +246,7 @@ const table = $('#driver-apl-table').DataTable({
 
     lengthMenu,
 
-    order: [ 3, 'desc' ],
+    order: [ 7, 'desc' ],
 
 })
 
