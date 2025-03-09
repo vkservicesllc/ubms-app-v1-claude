@@ -32,8 +32,9 @@ class Driver extends Individual {
 class Application {
     constructor(data = {}, light = false) {
         this._id = data._id
-        this._carrierId = data._carrierId
         this._teamId = data._teamId
+        this._userId = data._userId
+        this._carrierId = data._carrierId
         this.formId = data.formId
         this.appliedOn = data.appliedOn
         this.firstName = data.firstName
@@ -131,8 +132,7 @@ class Application {
                     knex.raw(Query.hashField(Team.hashId('teamId'))),
                     'formId',
                     'appliedOn',
-                    'complete',
-                    'decision',
+                    'condition',
                     'firstName',
                     'middleName',
                     'lastName',
@@ -162,23 +162,10 @@ class Application {
                 .map(column => column.data)
 
             if (filter) {
-                // if (filter?.condition) {
-                //     filter.condition.map((value, i, arr) => arr[i] = value === 'false' ? false : true)
-                //     query = query.whereIn('complete', filter.condition)
-                // }
-                // if (filter?.decision) query = query.whereIn('decision', filter.decision)
                 if (filter?.conditions) {
-                    if ([ 'p', 'c' ].some(val => filter.conditions.includes(val))) {
-                        const values = []
-                        if (filter.conditions.includes('p')) values.push(false)
-                        if (filter.conditions.includes('c')) values.push(true)
+                    filter.conditions = filter.conditions.split(',')
 
-                        query = query.whereIn('complete', values)
-                    }
-                    else if ([ 'a', 'r', 'h' ].some(val => filter.conditions.includes(val))) {
-                        filter.conditions = filter.conditions.filter(val => val != 'p' && val != 'c')
-                        query = query.whereIn('decision', filter.conditions)
-                    }
+                    query = query.whereIn('condition', filter.conditions)
                 }
 
                 if (filter.companies) {
