@@ -2,6 +2,7 @@ import Person from '/modules/assets/person.mjs'
 import Address from '/modules/assets/address.us.mjs'
 import escapeHTML from '/modules/assets/html.mjs'
 import { tel as formatTel } from '/modules/tools/formatter.mjs'
+import filterDropdown from '/modules/tools/filter-dropdown.mjs'
 
 
 const interval = 60000
@@ -28,8 +29,9 @@ const table = $('#driver-apl-table').DataTable({
         data(search) {
             search.filter = {
                 companies: $('#company-filter').val(),
-                condition: $('#condition-filter').val(),
-                decision: $('#decision-filter').val(),
+                user: $('#user-filter').val(),
+                conditions: $('#condition-filter').val(),
+                // decision: $('#decision-filter').val(),
             }
         },
     },
@@ -59,16 +61,6 @@ const table = $('#driver-apl-table').DataTable({
         },
 
         {
-            data: 'appliedOn',
-            title: 'Applied on',
-            searchable: false,
-            orderable: false,
-            render(data, type) {
-                return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
-            },
-        },
-
-        {
             title: 'Company',
             searchable: false,
             orderable: false,
@@ -76,6 +68,16 @@ const table = $('#driver-apl-table').DataTable({
                 const { busName, coType } = row
 
                 return escapeHTML(`${busName}, ${coType}`)
+            },
+        },
+
+        {
+            data: 'appliedOn',
+            title: 'Applied on',
+            searchable: false,
+            orderable: false,
+            render(data, type) {
+                return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
         },
 
@@ -171,29 +173,49 @@ const table = $('#driver-apl-table').DataTable({
             $(api.column(10).header())
                 .html('<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>')
 
-        const buildDropdown = (id, placeholder) =>
-            $(`<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div><select class="ui fluid clearable dropdown labeled icon custom-dt-dropdown" id="${id}" multiple><option value="">${placeholder}</option></select></div>`)
+        // const buildMSDR = (id, placeholder) =>
+        //     $(`<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div><select class="ui fluid clearable dropdown labeled icon custom-dt-dropdown" id="${id}" multiple><option value="">${placeholder}</option></select></div>`)
+        // const buildMDDR = (id, placeholder) =>
+        //     $(`<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div><div class="ui fluid multiple clearable selection dropdown custom-dt-dropdown"><input type="hidden" id="${id}"><i class="dropdown icon"></i><div class="default text">${placeholder}</div><div class="menu"></div></div></div>`)
+
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
         const dropdown = {
-            company: $('<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div><div class="ui fluid multiple clearable selection dropdown custom-dt-dropdown"><input type="hidden" id="company-filter"><i class="dropdown icon"></i><div class="default text">Companies</div><div class="menu"></div></div></div>'),
-            condition: buildDropdown('condition-filter', 'Condition'),
-            decision: buildDropdown('decision-filter', 'Decision'),
+            // company1: $('<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div><div class="ui fluid multiple clearable selection dropdown custom-dt-dropdown"><input type="hidden" id="company-filter"><i class="dropdown icon"></i><div class="default text">Companies</div><div class="menu"></div></div></div>'),
+            // condition: buildMSDR('condition-filter', 'Condition'),
+            // decision: buildMSDR('decision-filter', 'Decision'),
+            company: filterDropdown('company-filter', 'Companies', { multiple: true, clearable: true, element: 'div' }),
+            user: filterDropdown('user-filter', 'User', { clearable: true }),
+            condition: filterDropdown('condition-filter', 'Conditions', { multiple: true, clearable: true, element: 'div' })
         }
 
-        const conditions = [ { 'Complete': true } , { 'Incomplete': false } ]
-        const decisions = { p: 'Pending', h: 'Hired', a: 'Approved', r: 'Rejected' }
-
-        conditions.forEach(condition => {
-            const option = Object.keys(condition)[0]
-            const value = Object.values(condition)[0]
-
-            dropdown.condition.find('select').append(`<option value="${value}">${option}</option>`)
-        })
-        for (const value in decisions) {
-            const option = decisions[value]
-
-            dropdown.decision.find('select').append(`<option value="${value}">${option}</option>`)
+        // const conditions = [ { 'Completed': true } , { 'In progress': false } ]
+        // const decisions = { p: 'Pending', h: 'Hired', a: 'Approved', r: 'Rejected' }
+        const conditions = {
+            p: [ 'In progress...', 'spinner' ],
+            c: [ 'Completed', 'blue text clock' ],
+            a: [ 'Approved', 'dark green text thumbs up' ],
+            r: [ 'Rejected', 'red text thumbs down' ],
+            h: [ 'Hired', 'truck moving' ],
         }
+
+        for (const value in conditions) {
+            const option = conditions[value]
+
+            dropdown.condition.find('.menu').append(`<div class="item" data-value="${value}" data-text="<i class='${option[1]} icon'></i>">${option[0]}</div>`)
+            // dropdown.condition.find('select').append(`<option value="${value}">${option}</option>`)
+        }
+
+        // conditions.forEach(condition => {
+        //     const option = Object.keys(condition)[0]
+        //     const value = Object.values(condition)[0]
+
+        //     dropdown.condition.find('select').append(`<option value="${value}">${option}</option>`)
+        // })
+        // for (const value in decisions) {
+        //     const option = decisions[value]
+
+        //     dropdown.decision.find('select').append(`<option value="${value}">${option}</option>`)
+        // }
 
         $.ajax('/api/drivers/applications/companies', {
             method: 'POST',
@@ -210,8 +232,9 @@ const table = $('#driver-apl-table').DataTable({
                 }
 
                 toolbar.append(dropdown.company)
+                toolbar.append(dropdown.user) // USERS IN 'd:drv/apl' permission group for "Assign User" and USERS in applications by userId in Filter
                 toolbar.append(dropdown.condition)
-                toolbar.append(dropdown.decision)
+                // toolbar.append(dropdown.decision)
 
                 $('.dt-length').after(toolbar)
 
@@ -238,7 +261,7 @@ const table = $('#driver-apl-table').DataTable({
 
     lengthMenu,
 
-    order: [ 2, 'desc' ],
+    order: [ 3, 'desc' ],
 
 })
 

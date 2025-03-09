@@ -162,11 +162,24 @@ class Application {
                 .map(column => column.data)
 
             if (filter) {
-                if (filter?.condition) {
-                    filter.condition.map((value, i, arr) => arr[i] = value === 'false' ? false : true)
-                    query = query.whereIn('complete', filter.condition)
+                // if (filter?.condition) {
+                //     filter.condition.map((value, i, arr) => arr[i] = value === 'false' ? false : true)
+                //     query = query.whereIn('complete', filter.condition)
+                // }
+                // if (filter?.decision) query = query.whereIn('decision', filter.decision)
+                if (filter?.conditions) {
+                    if ([ 'p', 'c' ].some(val => filter.conditions.includes(val))) {
+                        const values = []
+                        if (filter.conditions.includes('p')) values.push(false)
+                        if (filter.conditions.includes('c')) values.push(true)
+
+                        query = query.whereIn('complete', values)
+                    }
+                    else if ([ 'a', 'r', 'h' ].some(val => filter.conditions.includes(val))) {
+                        filter.conditions = filter.conditions.filter(val => val != 'p' && val != 'c')
+                        query = query.whereIn('decision', filter.conditions)
+                    }
                 }
-                if (filter?.decision) query = query.whereIn('decision', filter.decision)
 
                 if (filter.companies) {
                     const carrierIds = []
