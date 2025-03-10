@@ -13,6 +13,12 @@ const conditions = {
     r: [ 'Rejected', 'red text thumbs down' ],
     h: [ 'Hired', 'truck moving' ],
 }
+const positions = {
+    'CD': 'Company Driver',
+    'OO': 'Owner Operator',
+    'OD': 'Driver for Owner',
+    'LP': 'Lease Purchaser',
+}
 
 const styleSearch = () => {
     $('.dt-search').find('label').remove()
@@ -38,6 +44,7 @@ const table = $('#driver-apl-table').DataTable({
                 user: $('#user-filter').val(),
                 companies: $('#company-filter').val(),
                 conditions: $('#condition-filter').val(),
+                positions: $('#position-filter').val(),
             }
         },
     },
@@ -109,6 +116,16 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             render(data, type, row) {
                 return null //! need to render state from address HTML
+            },
+        },
+
+        {
+            data: 'position',
+            title: 'Position',
+            searchable: false,
+            orderable: false,
+            render(data) {
+                return positions[data]
             },
         },
 
@@ -193,8 +210,9 @@ const table = $('#driver-apl-table').DataTable({
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
         const dropdown = {
             company: filterDropdown('company-filter', 'Companies', { multiple: true, clearable: true, element: 'div' }),
-            user: filterDropdown('user-filter', 'User', { clearable: true }),
-            condition: filterDropdown('condition-filter', 'Conditions', { multiple: true, clearable: true, element: 'div' })
+            user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
+            condition: filterDropdown('condition-filter', 'Conditions', { multiple: true, clearable: true, element: 'div' }),
+            position: filterDropdown('position-filter', 'Positions', { multiple: true, clearable: true, element: 'div' }),
         }
 
         for (const value in conditions) {
@@ -202,6 +220,15 @@ const table = $('#driver-apl-table').DataTable({
 
             dropdown.condition.find('.menu').append(`<div class="item" data-value="${value}" data-text="<i class='${option[1]} icon'></i>">${option[0]}</div>`)
         }
+
+        for (const value in positions) {
+            const option = positions[value]
+
+            dropdown.position.find('.menu').append(`<div class="item" data-value="${value}" data-text="${value}">${option}</div>`)
+        }
+
+        dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Unassigned</span></div>`)
+        dropdown.user.find('.menu').append(`<div class="item" data-value="null"><span class="ui red text">Unassigned</span></div>`)
 
         $.ajax('/api/drivers/applications/companies', {
             method: 'POST',
@@ -217,9 +244,10 @@ const table = $('#driver-apl-table').DataTable({
                     })
                 }
 
-                toolbar.append(dropdown.user) // USERS IN 'd:drv/apl' permission group for "Assign User" and USERS in applications by userId in Filter
-                toolbar.append(dropdown.company)
                 toolbar.append(dropdown.condition)
+                toolbar.append(dropdown.position)
+                toolbar.append(dropdown.company)
+                toolbar.append(dropdown.user) // USERS IN 'd:drv/apl' permission group for "Assign User" and USERS in applications by userId in Filter
 
                 $('.dt-length').after(toolbar)
 
@@ -246,7 +274,7 @@ const table = $('#driver-apl-table').DataTable({
 
     lengthMenu,
 
-    order: [ 7, 'desc' ],
+    order: [ 8, 'desc' ],
 
 })
 

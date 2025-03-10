@@ -5,6 +5,15 @@ $.extend(true, $.fn.dataTable.defaults, {
         method: 'POST',
     },
 
+    columnDefs: [
+
+        {
+            defaultContent: '<i style="color: pink; font-size: .8em;">N/A</i>',
+            targets: '_all',
+        },
+
+    ],
+
     fnDrawCallback,
 
     language: {

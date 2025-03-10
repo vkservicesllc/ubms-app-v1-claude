@@ -133,6 +133,7 @@ class Application {
                     'formId',
                     'appliedOn',
                     'condition',
+                    'position',
                     'firstName',
                     'middleName',
                     'lastName',
@@ -166,6 +167,11 @@ class Application {
                     filter.conditions = filter.conditions.split(',')
 
                     query = query.whereIn('condition', filter.conditions)
+                }
+                if (filter?.positions) {
+                    filter.positions = filter.positions.split(',')
+
+                    query = query.whereIn('position', filter.positions)
                 }
 
                 if (filter.companies) {
