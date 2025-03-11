@@ -5,7 +5,7 @@ import { tel as formatTel } from '/modules/tools/formatter.mjs'
 import filterDropdown from '/modules/tools/filter-dropdown.mjs'
 
 
-const interval = 60000
+const interval = 180000
 const conditions = {
     p: [ 'In progress...', 'spinner' ],
     c: [ 'Completed', 'blue text clock' ],
@@ -19,6 +19,7 @@ const positions = {
     'OD': 'Driver for Owner',
     'LP': 'Lease Purchaser',
 }
+const defaultContent = '<span style="color: pink; font-size: .9em;">Unassigned</span>'
 
 const styleSearch = () => {
     $('.dt-search').find('label').remove()
@@ -41,10 +42,10 @@ const table = $('#driver-apl-table').DataTable({
         url: '/api/drivers/applications',
         data(search) {
             search.filter = {
-                user: $('#user-filter').val(),
-                companies: $('#company-filter').val(),
                 conditions: $('#condition-filter').val(),
                 positions: $('#position-filter').val(),
+                companies: $('#company-filter').val(),
+                user: $('#user-filter').val(),
             }
         },
     },
@@ -124,6 +125,7 @@ const table = $('#driver-apl-table').DataTable({
             title: 'Position',
             searchable: false,
             orderable: false,
+            defaultContent: '<span style="color: pink; font-size: .9em;">Undecided</span>',
             render(data) {
                 return positions[data]
             },
@@ -143,8 +145,10 @@ const table = $('#driver-apl-table').DataTable({
             title: 'Company',
             searchable: false,
             orderable: false,
+            defaultContent,
             data(row) {
                 const { busName, coType } = row
+                if (!busName || !coType) return null
 
                 return escapeHTML(`${busName}, ${coType}`)
             },
@@ -155,8 +159,12 @@ const table = $('#driver-apl-table').DataTable({
             title: 'User',
             searchable: false,
             orderable: false,
+            defaultContent,
             render(data, type, row) {
-                return null //! need to render user First Name + Init of LastName
+                const { userFirstName: firstName, userLastName: lastName, userAlias: alias } = row
+                if (!lastName) return null
+                
+                return escapeHTML(new Person({ firstName: alias || firstName, lastName }).fullName('Fl'))
             },
         },
 
@@ -200,7 +208,7 @@ const table = $('#driver-apl-table').DataTable({
     initComplete(settings, data) {
         styleSearch()
 
-        const { permissions } = data    ;console.log(permissions); //!TEMP
+        const { permissions } = data    ;console.log(data.data); //!TEMP
         const api = this.api()
 
         if (permissions === true || permissions['d:drv/apl'].includes('2'))
@@ -209,11 +217,15 @@ const table = $('#driver-apl-table').DataTable({
 
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
         const dropdown = {
-            company: filterDropdown('company-filter', 'Companies', { multiple: true, clearable: true, element: 'div' }),
-            user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
             condition: filterDropdown('condition-filter', 'Conditions', { multiple: true, clearable: true, element: 'div' }),
             position: filterDropdown('position-filter', 'Positions', { multiple: true, clearable: true, element: 'div' }),
+            company: filterDropdown('company-filter', 'Companies', { multiple: true, clearable: true, element: 'div' }),
+            user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
         }
+
+        dropdown.position.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Uncertain</span></div><div class="divider"></div>`)
+        dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Unassigned</span></div><div class="divider"></div>`)
+        dropdown.user.find('.menu').append(`<div class="item" data-value="null"><span class="ui red text">Unassigned</span></div><div class="divider"></div>`)
 
         for (const value in conditions) {
             const option = conditions[value]
@@ -226,9 +238,6 @@ const table = $('#driver-apl-table').DataTable({
 
             dropdown.position.find('.menu').append(`<div class="item" data-value="${value}" data-text="${value}">${option}</div>`)
         }
-
-        dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Unassigned</span></div>`)
-        dropdown.user.find('.menu').append(`<div class="item" data-value="null"><span class="ui red text">Unassigned</span></div>`)
 
         $.ajax('/api/drivers/applications/companies', {
             method: 'POST',

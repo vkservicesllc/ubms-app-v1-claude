@@ -123,79 +123,100 @@ class Application {
                         .groupBy('companyId')
                 })
 
-            const defaultFilters = { teamId, 'cmp.confirmed': true }
-
             let query = knex(`${db.carrier}.applications AS apl`)
                 .select(
                     knex.raw(Query.hashField(Application.hashId(), 'apl')),
                     knex.raw(Query.hashField(Carrier.hashId('carrierId'))),
                     knex.raw(Query.hashField(Team.hashId('teamId'))),
-                    'formId',
-                    'appliedOn',
-                    'condition',
-                    'position',
-                    'firstName',
-                    'middleName',
-                    'lastName',
-                    'suffix',
-                    'dob',
-                    'email',
-                    'phone',
-                    'busName',
-                    'coType',
-                    'alias',
+                    'apl.formId',
+                    'apl.appliedOn',
+                    'apl.condition',
+                    'apl.position',
+                    'apl.firstName',
+                    'apl.middleName',
+                    'apl.lastName',
+                    'apl.suffix',
+                    'apl.dob',
+                    'apl.email',
+                    'apl.phone',
+                    'cnm.busName',
+                    'cnm.coType',
+                    'cnm.alias AS companyAlias',
+                    'usr.firstName AS userFirstName',
+                    'usr.lastName AS userLastName',
+                    'usr.alias AS userAlias',
                 )
-                .join(knex.raw(`${db.carrier}.carriers AS crr ON apl.carrierId = crr.id`))
-                .join(knex.raw(`${db.business}.companies AS cmp ON crr.companyId = cmp.id`))
-                .join(
+                .leftJoin(knex.raw(`${db.carrier}.carriers AS crr ON apl.carrierId = crr.id`))
+                .leftJoin(knex.raw(`${db.business}.companies AS cmp ON crr.companyId = cmp.id`))
+                .leftJoin(
                     knex.raw('? as cnm', [ subquery ]),
                     'cnm.companyId',
                     'cmp.id'
                 )
-                .where(defaultFilters)
+                .leftJoin(knex.raw(`${db.online}.users AS usr ON apl.userId = usr.id`))
+                .where({ teamId })
 
-            if (!teamCompanies || !teamCompanies.includes('i')) query.where({ 'cmp.active': true })
-            if (!teamCompanies || !teamCompanies.includes('c')) query.where({ 'cmp.until': null })
-            if (!teamCompanies || !teamCompanies.includes('e')) query.whereIn('cmp.id', companyIds)
+            const filterParams = {
+                company: {
+                    nullable: true,
+                    whereCond: 'orWhere',
+                    carrierIds: [],
+                },
+            }
+            if (filter?.companies) {
+                filter.companies = filter.companies.split(',')
 
-            const searchableColumns = columns
-                .filter(column => column.data && column.data !== 'function' && column.searchable === 'true')
-                .map(column => column.data)
-
-            if (filter) {
-                if (filter?.conditions) {
-                    filter.conditions = filter.conditions.split(',')
-
-                    query = query.whereIn('condition', filter.conditions)
-                }
-                if (filter?.positions) {
-                    filter.positions = filter.positions.split(',')
-
-                    query = query.whereIn('position', filter.positions)
+                if (filter.companies.length && !filter.companies.includes('null')) {
+                    filterParams.company.nullable = false
+                    filterParams.company.whereCond = 'where'
                 }
 
-                if (filter.companies) {
-                    const carrierIds = []
-                    filter.companies = filter.companies.split(',')
-
-                    await Promise.all(filter.companies.map(async (_id) => {
+                await Promise.all(filter.companies.map(async (_id) => {
+                    if (_id != 'null') {
                         const carrier = await Carrier.data(res.session, { _id })
                         const id = await carrier.id()
 
-                        carrierIds.push(id)
-                    }))
-
-                    query.whereIn('apl.carrierId', carrierIds)
-                }
+                        filterParams.company.carrierIds.push(id)
+                    }
+                }))
             }
 
-            if (search && search.value && searchableColumns.length) {
-                query = query.where(qb => {
-                    searchableColumns.forEach((field, i) => {
-                        if (i === 0) qb.where(field, 'like', `%${search.value}%`)
-                        else qb.orWhere(field, 'like', `%${search.value}%`)
+            query.where(async function() {
+                const { nullable, whereCond, carrierIds } = filterParams.company
+
+                if (nullable) this.whereNull('carrierId')
+                if (!filter?.companies || carrierIds.length)
+                    this[whereCond](function() {
+                        this.where('cmp.confirmed', true)
+
+                        if (!teamCompanies || !teamCompanies.includes('i')) this.where('cmp.active', true)
+                        if (!teamCompanies || !teamCompanies.includes('c')) this.where('cmp.until', null)
+                        if (!teamCompanies || !teamCompanies.includes('e')) this.whereIn('cmp.id', companyIds)
+
+                        if (carrierIds.length) this.whereIn('apl.carrierId', carrierIds)
                     })
-                })
+            })
+
+            if (filter?.conditions) {
+                filter.conditions = filter.conditions.split(',')
+
+                query.whereIn('condition', filter.conditions)
+            }
+            if (filter?.positions) {
+                filter.positions = filter.positions.split(',')
+                let nullable = false
+
+                if (filter.positions.includes('null')) {
+                    nullable = true
+                    filter.positions = filter.positions.filter(value => value != 'null')
+                }
+
+                if (filter.positions.length)
+                    query.where(function() {
+                        this.whereIn('position', filter.positions)
+                        if (nullable) this.orWhereNull('position')
+                    })
+                else query.whereNull('position')
             }
 
             const orderColumn = order?.[0]?.column
