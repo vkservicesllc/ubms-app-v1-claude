@@ -4,6 +4,7 @@ import db from '../settings/mysql.mjs'
 /* Assests */
 import Individual from './individual.mjs'
 import Team from './team.mjs'
+import User from './user.mjs'
 import Company from './company.mjs'
 import Carrier from './carrier.mjs'
 
@@ -97,6 +98,29 @@ class Application {
     }
 
 
+    static users = async (session, filter = {}) => {
+        if (!session?.user || !session?.team) return
+
+        const batch = [
+            {
+                table: 'applications',
+                match: { userId: { null: false } },
+            },
+            {
+                db: db.online,
+                table: 'users',
+                fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'condition', 'location', 'deletedAt' ],
+                join: [ 'id', 'userId' ],
+            },
+        ]
+
+        let users = (await mysql.execute(Query.select(db.carrier, batch)))[0]
+        users.forEach(user => user.self = user._id == session.user._id)
+
+        return users
+    }
+
+
     static dtList = async (req, res) => { /* API use only */
         try {
             const sessionsUser = res.session.user
@@ -145,6 +169,9 @@ class Application {
                     'usr.firstName AS userFirstName',
                     'usr.lastName AS userLastName',
                     'usr.alias AS userAlias',
+                    'usr.condition AS userCondition',
+                    'usr.location AS userLocation',
+                    'usr.deletedAt AS userDeletedAt',
                 )
                 .leftJoin(knex.raw(`${db.carrier}.carriers AS crr ON apl.carrierId = crr.id`))
                 .leftJoin(knex.raw(`${db.business}.companies AS cmp ON crr.companyId = cmp.id`))
@@ -200,7 +227,7 @@ class Application {
             if (filter?.conditions) {
                 filter.conditions = filter.conditions.split(',')
 
-                query.whereIn('condition', filter.conditions)
+                query.whereIn('apl.condition', filter.conditions)
             }
             if (filter?.positions) {
                 filter.positions = filter.positions.split(',')
@@ -217,6 +244,19 @@ class Application {
                         if (nullable) this.orWhereNull('position')
                     })
                 else query.whereNull('position')
+            }
+
+            const searchableColumns = columns
+                .filter(column => column.data && column.data !== 'function' && column.searchable === 'true')
+                .map(column => column.data)
+
+            if (search && search.value && searchableColumns.length) {
+                query = query.where(qb => {
+                    searchableColumns.forEach((field, i) => {
+                        if (i === 0) qb.where(`apl.${field}`, 'like', `%${search.value}%`)
+                        else qb.orWhere(`apl.${field}`, 'like', `%${search.value}%`)
+                    })
+                })
             }
 
             const orderColumn = order?.[0]?.column
@@ -236,7 +276,7 @@ class Application {
                 data,
                 permissions,
             })
-        } catch(err) {
+        } catch (err) {
             throwErr.server(res, null, err, false)
         }
     }
@@ -246,11 +286,11 @@ class Application {
 
 
 
-class User {
+class DriverUser {
     constructor() {}
 }
 
 
 
 export default Driver
-export { Application, User }
+export { Application, DriverUser }

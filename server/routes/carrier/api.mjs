@@ -30,16 +30,19 @@ router.post('/session/team/:_id/switch', User.verify, async (req, res) => {
 
 router.post('/drivers/applications', User.verify, Team.verify, Application.dtList)
 
-router.post('/drivers/applications/companies', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/applications/filters', User.verify, Team.verify, async (req, res) => {
     try {
         const settings = await res.session.user.settings(res.session)
         const { teamCompanies } = settings?.carrier || {}
-        const filter = {}
+        const filter = { companies: {}, users: {} }
 
         if (teamCompanies && teamCompanies.includes('e'))
-            filter.excluded = true
+            filter.companies.excluded = true
 
-        res.send(await Application.companies(res.session, filter))
+        res.send({
+            companies: await Application.companies(res.session, filter.companies),
+            users: await Application.users(res.session, filter.users)
+        })
     } catch (err) {
         throwErr.server(res, null, err)
     }

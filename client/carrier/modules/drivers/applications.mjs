@@ -3,14 +3,15 @@ import Address from '/modules/assets/address.us.mjs'
 import escapeHTML from '/modules/assets/html.mjs'
 import { tel as formatTel } from '/modules/tools/formatter.mjs'
 import filterDropdown from '/modules/tools/filter-dropdown.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
 
 
 const interval = 180000
 const conditions = {
-    p: [ 'In progress...', 'spinner' ],
-    c: [ 'Completed', 'blue text clock' ],
-    a: [ 'Approved', 'dark green text thumbs up' ],
-    r: [ 'Rejected', 'red text thumbs down' ],
+    p: [ '<span class="ui grey text">In progress...</small>', 'spinner' ],
+    c: [ '<span class="ui blue text">Completed</small>', 'blue text clock' ],
+    a: [ '<span class="ui dark green text">Approved</small>', 'dark green text thumbs up' ],
+    r: [ '<span class="ui red text">Rejected</small>', 'red text thumbs down' ],
     h: [ 'Hired', 'truck moving' ],
 }
 const positions = {
@@ -55,6 +56,7 @@ const table = $('#driver-apl-table').DataTable({
     columns: [
 
         {
+            searchable: false,
             orderable: false,
             data(row) {
                 const { condition } = row
@@ -170,8 +172,8 @@ const table = $('#driver-apl-table').DataTable({
 
         {
             data: null,
-            orderable: false,
             searchable: false,
+            orderable: false,
             className: 'right aligned',
             render(data, type, row) {
                 return '{Button Panel}'
@@ -208,7 +210,7 @@ const table = $('#driver-apl-table').DataTable({
     initComplete(settings, data) {
         styleSearch()
 
-        const { permissions } = data    ;console.log(data.data); //!TEMP
+        const { permissions } = data
         const api = this.api()
 
         if (permissions === true || permissions['d:drv/apl'].includes('2'))
@@ -223,9 +225,9 @@ const table = $('#driver-apl-table').DataTable({
             user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
         }
 
-        dropdown.position.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Uncertain</span></div><div class="divider"></div>`)
-        dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Unassigned</span></div><div class="divider"></div>`)
-        dropdown.user.find('.menu').append(`<div class="item" data-value="null"><span class="ui red text">Unassigned</span></div><div class="divider"></div>`)
+        dropdown.position.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Undecided</span></div>`)
+        dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Unassigned</span></div>`)
+        dropdown.user.find('.menu').append(`<div class="item" data-value="null"><span class="ui red text">Unassigned</span></div>`)
 
         for (const value in conditions) {
             const option = conditions[value]
@@ -239,9 +241,11 @@ const table = $('#driver-apl-table').DataTable({
             dropdown.position.find('.menu').append(`<div class="item" data-value="${value}" data-text="${value}">${option}</div>`)
         }
 
-        $.ajax('/api/drivers/applications/companies', {
+        $.ajax('/api/drivers/applications/filters', {
             method: 'POST',
-            success(companies) {
+            success(filters) {
+                const { companies, users } = filters
+
                 if (companies) {
                     companies.forEach(company => {
                         const { _carrierId, active, until, name, alias } = company
@@ -250,6 +254,24 @@ const table = $('#driver-apl-table').DataTable({
                         else if (!active) name += 'blue'
 
                         dropdown.company.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
+                    })
+                }
+                if (users) {
+                    users.forEach(user => {
+                        const { firstName, lastName, alias } = user
+
+                        user.name = new Person({ firstName, lastName, alias }).fullName('Al')
+                    })
+
+                    const self = users.filter(user => user.self === true)[0]
+                    const others = sortArrayByObjectKey(users.filter(user => user.self === false), 'name')
+
+                    if (self)
+                        dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="SELF">${self.name} <small>(self)</small></div>`)
+                    others.forEach(user => {
+                        const { _id, name } = user
+
+                        dropdown.user.find('.menu').append(`<div class="item" data-value="${_id}">${name}</div>`)
                     })
                 }
 

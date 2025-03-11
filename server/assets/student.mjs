@@ -24,11 +24,11 @@ class Application {
 
 
 
-class User {
+class StudentUser {
     constructor() {}
 }
 
 
 
 export default Student
-export { Application, User }
+export { Application, StudentUser }

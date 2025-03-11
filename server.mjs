@@ -8,8 +8,8 @@ import config, { apps, addrBook } from './config.mjs'
 /* Assets */
 import Site from './server/assets/site.mjs'
 import User from './server/assets/user.mjs'
-import { User as DriverUser } from './server/assets/driver.mjs'
-import { User as StudentUser } from './server/assets/student.mjs'
+import { DriverUser } from './server/assets/driver.mjs'
+import { StudentUser } from './server/assets/student.mjs'
 
 /* Tools */
 import hbsConditions from './server/tools/hbs.mjs'
