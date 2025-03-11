@@ -225,8 +225,8 @@ const table = $('#driver-apl-table').DataTable({
             user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
         }
 
-        dropdown.position.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Undecided</span></div>`)
-        dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Unassigned</span></div>`)
+        dropdown.position.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='red text user slash icon'></i>"><span class="ui red text">Undecided</span></div>`)
+        dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='red text handshake slash icon'></i>"><span class="ui red text">Unassigned</span></div>`)
         dropdown.user.find('.menu').append(`<div class="item" data-value="null" data-text="<span class='ui red text'><i>Not assigned to User</span>"><span class="ui red text">Unassigned</span></div>`)
 
         for (const value in conditions) {

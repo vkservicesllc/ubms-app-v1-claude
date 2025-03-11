@@ -26,6 +26,13 @@ class Application {
 
 class StudentUser {
     constructor() {}
+
+    static login = () => {}
+
+    static session = () => {}
+
+    static logout = () => {}
+
 }
 
 

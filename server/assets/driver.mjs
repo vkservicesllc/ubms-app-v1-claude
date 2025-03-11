@@ -298,6 +298,13 @@ class Application {
 
 class DriverUser {
     constructor() {}
+
+    static login = () => {}
+
+    static session = () => {}
+
+    static logout = () => {}
+
 }
 
 

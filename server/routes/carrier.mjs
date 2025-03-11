@@ -23,7 +23,7 @@ router.use((req, res, next) => {
     if (req.session.user && req.session.team) {
         const active = 'active '
         const inactive = ''
-
+console.log(req.session.team) //!TEMP
         res.hbs.nav = {
             active,
 
@@ -42,14 +42,13 @@ router.use((req, res, next) => {
     }
 
     res.hbs.set = async function(key, params = {}) {
-        let { inclKey, navKey, titlePfx } = params
+        let { inclKey, titlePfx } = params
 
         const includer = require('../includes/src')
         const includes = require('../includes/carrier')
 
         const { user, team } = res.session
         const hbs = { ...this }
-        const { nav } = hbs
 
         if (user) {
             hbs.user = {}

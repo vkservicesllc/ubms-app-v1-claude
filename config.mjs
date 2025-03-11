@@ -148,7 +148,7 @@ const apps = {
         catId: 'crr',
         type: 'secondary',
         name: `${alias} Driver Portal`,
-        active: false,
+        active: true,
         route: driverRoute,
         session: {
             maxAge: 10,  /* in minutes */
