@@ -208,6 +208,16 @@ class Application {
                 }))
             }
 
+            if (filter?.user) {
+                if (filter.user == 'null')
+                    query.whereNull('userId')
+                else {
+                    const userId = await (await User.data(res.session, { _id: filter.user })).id()
+
+                    query.where('userId', userId)
+                }
+            }
+
             query.where(async function() {
                 const { nullable, whereCond, carrierIds } = filterParams.company
 

@@ -166,7 +166,7 @@ const table = $('#driver-apl-table').DataTable({
                 const { userFirstName: firstName, userLastName: lastName, userAlias: alias } = row
                 if (!lastName) return null
                 
-                return escapeHTML(new Person({ firstName: alias || firstName, lastName }).fullName('Fl'))
+                return escapeHTML(new Person({ firstName, lastName, alias }).fullName('Al'))
             },
         },
 
@@ -227,7 +227,7 @@ const table = $('#driver-apl-table').DataTable({
 
         dropdown.position.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Undecided</span></div>`)
         dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='question icon'></i>"><span class="ui red text">Unassigned</span></div>`)
-        dropdown.user.find('.menu').append(`<div class="item" data-value="null"><span class="ui red text">Unassigned</span></div>`)
+        dropdown.user.find('.menu').append(`<div class="item" data-value="null" data-text="<span class='ui red text'><i>Not assigned to User</span>"><span class="ui red text">Unassigned</span></div>`)
 
         for (const value in conditions) {
             const option = conditions[value]
@@ -259,19 +259,21 @@ const table = $('#driver-apl-table').DataTable({
                 if (users) {
                     users.forEach(user => {
                         const { firstName, lastName, alias } = user
+                        const person = new Person({ firstName, lastName, alias })
 
-                        user.name = new Person({ firstName, lastName, alias }).fullName('Al')
+                        user.name = person.fullName('AL')
+                        user.shortName = person.fullName('Al')
                     })
 
                     const self = users.filter(user => user.self === true)[0]
                     const others = sortArrayByObjectKey(users.filter(user => user.self === false), 'name')
 
                     if (self)
-                        dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="SELF">${self.name} <small>(self)</small></div>`)
+                        dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="<span class='ui dark blue text'><i><b>My Applications</b></i></span>">${self.name} <small>(self)</small></div>`)
                     others.forEach(user => {
-                        const { _id, name } = user
+                        const { _id, name, shortName } = user
 
-                        dropdown.user.find('.menu').append(`<div class="item" data-value="${_id}">${name}</div>`)
+                        dropdown.user.find('.menu').append(`<div class="item" data-value="${_id}" data-text="<small>Assigned to</small> <b>${shortName}</b>">${name}</div>`)
                     })
                 }
 
