@@ -8,12 +8,27 @@
         </style>
         <table class="ui compact table" id="driver-apl-table" style="width: 100%;"></table>
         {{#if (eq permissions.create true)}}
-        <div class="ui large modal" id="new-apl-modal">
+        <div class="ui large active modal" id="new-apl-modal">
             <div class="header">New Application</div>
             <div class="content">
-                <div class="ui grid two column relaxed divided">
+                <p><span id="apl-url" style="display: inline-block;">{{applicationUrl}}</span> <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup></p>
+                <div class="ui grid two column relaxed divided" style="margin-top: 5px;">
                     <div class="five wide column">
                         <div class="ui form">
+                            <div class="field">
+                                <div class="ui selection clearable dropdown" id="new-apl-company">
+                                    <input type="hidden" name="pet">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Company</div>
+                                    <div class="scrollhint menu">
+                                        {{!-- TEMP --}}
+                                        <div class="item" data-value="0">Carolina Logistic, Inc</div>
+                                        <div class="item" data-value="1">Carolina Transportation, Inc</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui divider"></div>
+                            <p><span class="ui dark red text">Required Fields</span></p>
                             <div class="field">
                                 <div class="ui left icon corner labeled input">
                                     <input type="email" placeholder="Email" />
@@ -49,6 +64,34 @@
                 <div class="ui cancel button">Cancel</div>
                 <div class="ui primary button">Invite</div>
             </div>
+            <script>
+                const modalId = '#new-apl-modal'
+                const $aplUrl = $('#apl-url')
+
+                $('#copy-apl-url').click(function(evt) {
+                    evt.preventDefault()
+
+                    navigator.clipboard.writeText($aplUrl.text())
+                        .then(() => {
+                            $(modalId).toast({
+                                message: 'URL successfully copied!',
+                                class: 'success',
+                                showIcon: 'clipboard outline',
+                                context: modalId,
+                                position: 'top left',
+                            })
+
+                            $('.ui.toast-container').css({
+                                top: '75px',
+                                left: `${$aplUrl.outerWidth() + 50}px`
+                            })
+                        })
+                })
+
+                setTimeout(() => {
+                    $('#new-apl-company').dropdown()
+                }, 100)
+            </script>
         </div>
         {{/if}}
         <script type="module" src="/modules/drivers/applications.mjs"></script>

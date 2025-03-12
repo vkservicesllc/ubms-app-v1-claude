@@ -91,6 +91,10 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         create: DS || permissions['d:drv/apl'].includes('2'),
     }
 
+    if (hbs.permissions.create) {
+        hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=${req.session.team}`
+    }
+
     res.render(key.replace('.', '/'), hbs)
 })
 
