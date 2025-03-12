@@ -22,7 +22,7 @@ const filterDropdown = (id, placeholder, props = {}) => {
 
     if (element === 'select') dropdown += ` id="${id}"${attr}><option value="">${placeholder}</option>`
     else {
-        dropdown += `><input type="hidden" id="${id}"><i class="dropdown icon"></i>`
+        dropdown += `><input type="hidden" id="${id}" /><i class="dropdown icon"></i>`
         dropdown += `<div class="default text">${placeholder}</div><div class="menu"></div>`
     }
 
