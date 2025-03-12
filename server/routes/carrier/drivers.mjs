@@ -11,6 +11,7 @@ import { respond404 } from '../../tools/response.mjs'
 
 /* Constants */
 import { navBuilder } from './constants.mjs'
+import { title } from 'process'
 
 
 
@@ -73,7 +74,7 @@ router.get('/pre-applications', User.verify, Team.verify, async (req, res) => {
 router.get('/applications', User.verify, Team.verify, async (req, res) => {
     const key = 'drivers.applications'
     let { hbs } = res
-    hbs = await hbs.set(key)
+    hbs = await hbs.set(key, { titlePfx: 'Driver Applications' })
 
     const { user } = res.session
     const { DS } = user

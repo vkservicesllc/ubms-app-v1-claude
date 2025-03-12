@@ -124,12 +124,11 @@ class Application {
     static dtList = async (req, res) => { /* API use only */
         try {
             const sessionsUser = res.session.user
-            let permissions = sessionsUser.DS
+            const { DS } = sessionsUser
+            const permissions = await sessionsUser.permissions(res.session) || {}
 
-            if (!permissions) {
-                permissions = await sessionsUser.permissions(res.session)
-                if (!('d:drv/apl' in permissions)) return throwErr.auth(res, null, err, false)
-            }
+            if (!DS && !('d:drv/apl' in permissions))
+                return throwErr.auth(res, null, err, false)
 
             const settings = await sessionsUser.settings(res.session)
             const team = await Team.data(res.session, { _id: req.session.team })
@@ -239,6 +238,7 @@ class Application {
 
                 query.whereIn('apl.condition', filter.conditions)
             }
+
             if (filter?.positions) {
                 filter.positions = filter.positions.split(',')
                 let nullable = false
@@ -284,7 +284,17 @@ class Application {
                 recordsTotal: count,
                 recordsFiltered: data.length,
                 data,
-                permissions,
+                actions: {
+                    data: {
+                        comment: DS || permissions?.['d:drv/apl'].includes('1'),
+                        create: DS || permissions?.['d:drv/apl'].includes('2'),
+                        modify: DS || permissions?.['d:drv/apl'].includes('3'),
+                        delete: DS || permissions?.['d:drv/apl'].includes('5'),
+                    },
+                    file: {
+                        access: Object.keys(permissions).some(key => key.startsWith('f:drv')),
+                    },
+                },
             })
         } catch (err) {
             throwErr.server(res, null, err, false)

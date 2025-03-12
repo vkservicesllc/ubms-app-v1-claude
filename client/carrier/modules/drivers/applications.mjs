@@ -6,7 +6,7 @@ import filterDropdown from '/modules/tools/filter-dropdown.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
 
 
-const interval = 180000
+const interval = 60000
 const conditions = {
     p: [ '<span class="ui grey text">In progress...</small>', 'spinner' ],
     c: [ '<span class="ui blue text">Completed</small>', 'blue text clock' ],
@@ -49,6 +49,13 @@ const table = $('#driver-apl-table').DataTable({
                 companies: $('#company-filter').val(),
                 user: $('#user-filter').val(),
             }
+        },
+        dataSrc(response) {
+            const { data, actions } = response
+
+            data.forEach(row => row.actions = actions)
+
+            return data
         },
     },
     processing: true,
@@ -176,8 +183,26 @@ const table = $('#driver-apl-table').DataTable({
             searchable: false,
             orderable: false,
             className: 'right aligned',
+            width: '120px',
             render(data, type, row) {
-                return '{Button Panel}'
+                const { condition } = row
+                const { comment, modify, delete: remove } = row.actions.data
+                const { access } = row.actions.file
+
+                let panel = ''
+
+                if (condition != 'p') {
+                    if (modify) {
+                        panel += `<a class="modify-apl"><i class="black text edit outline icon"></i></a>`
+                        panel += `<a class="assign-apl"><i class="black clipboard outline icon"></i></a>`
+                    }
+                    if (access) panel += `<a class="assign-apl"><i class="black folder outline icon"></i></a>`
+                    if (comment) panel += `<a class="comment-apl"><i class="black text comment outline icon"></i></a>`
+                } else panel += `<a><i class="blue text external alternate icon"></i></a>`
+                if (remove && ['p', 'c'].includes(condition))
+                    panel += `<a class="delete-apl"><i class="red text trash alternate outline icon"></i></a>`
+
+                return panel
             },
             createdCell(cell) {
                 $(cell).css({ color: 'black', fontWeight: 'normal' })
@@ -192,16 +217,16 @@ const table = $('#driver-apl-table').DataTable({
                 $(row).css({ backgroundColor: '#FFE9EC', color: 'grey' })
                 break
             case 'c':
-                $(row).css({ backgroundColor: '#FFF9E6', color: '#4169E1' })
+                $(row).css('color', '#4169E1')
                 break
             case 'a':
                 $(row).css('color', 'green')
                 break
             case 'r':
-                $(row).css('color', '#FAA0A0')
+                $(row).css('color', '#DC143C')
                 break
             case 'h':
-                [2, 3].forEach(idx => $('td', row).eq(idx).css({ fontWeight: 'bold', color: 'indigo' }))
+                [2, 3].forEach(idx => $('td', row).eq(idx).css({ fontWeight: 'bold' }))
                 break
         }
     },
@@ -210,18 +235,6 @@ const table = $('#driver-apl-table').DataTable({
 
     initComplete(settings, data) {
         styleSearch()
-
-        const { permissions } = data
-        const api = this.api()
-
-        if (permissions === true || permissions['d:drv/apl'].includes('2')) {
-            $(api.column(api.columns().count() - 1).header())
-                .html('<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>')
-
-            $('#create-apl').on('click', function() {
-                $('#new-apl-modal').modal({ autofocus: false, closable: false }).modal('show')
-            })
-        }
 
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
         const dropdown = {
@@ -320,6 +333,21 @@ const table = $('#driver-apl-table').DataTable({
 
     order: [ 8, 'desc' ],
 
+})
+
+
+table.on('draw', function() {
+    const { actions } = table.ajax.json()
+    $('#create-apl').off('click')
+
+    if (actions.data.create === true) {
+        $(table.column(table.columns().count() - 1).header())
+            .html('<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>')
+
+        $('#create-apl').on('click', function() {
+            $('#new-apl-modal').modal({ autofocus: false, closable: false }).modal('show')
+        })
+    }
 })
 
 
