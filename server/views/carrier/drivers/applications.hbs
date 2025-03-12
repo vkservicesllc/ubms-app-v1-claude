@@ -11,32 +11,33 @@
         <div class="ui large active modal" id="new-apl-modal">
             <div class="header">New Application</div>
             <div class="content">
-                <p><span id="apl-url" style="display: inline-block;">{{applicationUrl}}</span> <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup></p>
+                <p><span id="apl-url">{{applicationUrl}}</span> <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup></p>
                 <div class="ui grid two column relaxed divided" style="margin-top: 5px;">
                     <div class="five wide column">
                         <div class="ui form">
                             <div class="field">
                                 <div class="ui labeled input">
-                                    <div class="ui label">
+                                    {{!-- <div class="ui label">
                                         <i class="truck moving icon"></i>
-                                    </div>
-                                    <div class="ui fluid selection dropdown" id="new-apl-company-dropdown">
+                                    </div> --}}
+                                    <div class="ui fluid clearable selection dropdown" id="new-apl-company-dropdown">
+                                        <input type="hidden" name="language" />
                                         <i class="dropdown icon"></i>
-                                        <input type="hidden" name="carrierId" id="new-apl-company" />
                                         <div class="default text">Company</div>
                                         <div class="menu">
+                                            <div class="item">Carolina Logistic, Inc</div>
                                             <div class="item">Carolina Transportation, Inc</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="field">
-                                <div class="ui left icon corner labeled input">
+                                <div class="ui left labeled input">
+                                    {{!-- <label class="ui label"><i class="envelope icon"></i></label> --}}
                                     <input type="email" placeholder="Email" />
-                                    <i class="envelope icon"></i>
-                                    <div class="ui corner label">
+                                    {{!-- <div class="ui corner label">
                                         <i class="asterisk icon"></i>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>
@@ -81,8 +82,13 @@
                 })
 
                 setTimeout(() => {
-                    $('#new-apl-company-dropdown').dropdown()
-                }, 100)
+                    $('#new-apl-company-dropdown')
+                        .dropdown().on('change', function() {
+                            const length = $(this).dropdown('get value').length
+
+                            console.log(length)
+                        })
+                }, 0)
             </script>
         </div>
         {{/if}}
