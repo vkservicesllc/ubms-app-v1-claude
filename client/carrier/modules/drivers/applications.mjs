@@ -275,7 +275,7 @@ const table = $('#driver-apl-table').DataTable({
                     const others = sortArrayByObjectKey(users.filter(user => user.self === false), 'name')
 
                     if (self)
-                        dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="<span class='ui dark blue text'><i><b>My Applications</b></i></span>">${self.name} <small>(self)</small></div>`)
+                        dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="<span class='ui dark blue text'><i><b>My Applicants</b></i></span>">${self.name} <small>(self)</small></div>`)
                     others.forEach(user => {
                         const { _id, name, shortName } = user
 
