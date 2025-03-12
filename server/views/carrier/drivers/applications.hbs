@@ -11,7 +11,7 @@
         <div class="ui large active modal" id="new-apl-modal">
             <div class="header">New Application</div>
             <div class="content">
-                <p><span id="apl-url">{{applicationUrl}}</span> <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup></p>
+                <p><a id="apl-url" href="{{applicationUrl}}" target="_blank">{{applicationUrl}}</a> <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup></p>
                 <div class="ui grid two column relaxed divided" style="margin-top: 5px;">
                     <div class="five wide column">
                         <div class="ui form">
@@ -24,9 +24,7 @@
                                         <input type="hidden" name="language" />
                                         <i class="dropdown icon"></i>
                                         <div class="default text">Company</div>
-                                        <div class="menu">
-                                            <div class="item">Carolina Logistic, Inc</div>
-                                            <div class="item">Carolina Transportation, Inc</div>
+                                        <div class="menu">{{{dropdown.newAplCompanies}}}
                                         </div>
                                     </div>
                                 </div>
@@ -84,9 +82,9 @@
                 setTimeout(() => {
                     $('#new-apl-company-dropdown')
                         .dropdown().on('change', function() {
-                            const length = $(this).dropdown('get value').length
+                            const value = $(this).dropdown('get value')
 
-                            console.log(length)
+                            console.log(value, _id)
                         })
                 }, 0)
             </script>

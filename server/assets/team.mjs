@@ -91,7 +91,7 @@ class Team {
 
 
             this.data = async (session, type) => {
-                if (!session?.user?.DS) return
+                if (!session?.user) return
 
                 const teamId = await this.id()
                 const data = {
@@ -119,7 +119,10 @@ class Team {
                             },
                             {
                                 table: 'company_names',
-                                fields: { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
+                                fields: [
+                                    { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
+                                    { route: [ [ 'busName', 'coType' ] ] },
+                                ],
                                 join: [ 'companyId', 'id', 1 ],
                             },
                         ]

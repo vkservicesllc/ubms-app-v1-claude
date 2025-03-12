@@ -87,12 +87,24 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
     hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
+    hbs.input = {}
+    hbs.dropdown = {}
+
     hbs.permissions = {
         create: DS || permissions['d:drv/apl'].includes('2'),
     }
 
     if (hbs.permissions.create) {
         hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=${req.session.team}`
+
+        const { applied: companies } = (await res.session.team.data(res.session, 'companies')).companies
+        hbs.dropdown.newAplCompanies = ''
+        companies.forEach(company => {
+            const { _id, route, name } = company
+            const t = `\t`.repeat(11)
+
+            hbs.dropdown.newAplCompanies += `\n${t}<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
+        })
     }
 
     res.render(key.replace('.', '/'), hbs)
