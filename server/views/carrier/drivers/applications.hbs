@@ -7,6 +7,50 @@
             .ui.dropdown .transition i.icon { margin-right: 2px !important; }
         </style>
         <table class="ui compact table" id="driver-apl-table" style="width: 100%;"></table>
+        {{#if (eq permissions.create true)}}
+        <div class="ui large modal" id="new-apl-modal">
+            <div class="header">New Application</div>
+            <div class="content">
+                <div class="ui grid two column relaxed divided">
+                    <div class="five wide column">
+                        <div class="ui form">
+                            <div class="field">
+                                <div class="ui left icon corner labeled input">
+                                    <input type="email" placeholder="Email" />
+                                    <i class="envelope icon"></i>
+                                    <div class="ui corner label">
+                                        <i class="asterisk icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui left icon corner labeled input">
+                                    <input type="tel" placeholder="Phone" />
+                                    <i class="phone icon"></i>
+                                    <div class="ui corner label">
+                                        <i class="asterisk icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui vertical divider"></div>
+                    <div class="eleven wide column">
+                        <h4 class="ui header">
+                            Applicant Registration
+                            <span class="ui grey text" style="font-weight: normal;">
+                                <small>(Optional)</small>
+                            </span>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui cancel button">Cancel</div>
+                <div class="ui primary button">Invite</div>
+            </div>
+        </div>
+        {{/if}}
         <script type="module" src="/modules/drivers/applications.mjs"></script>
 
 {{> carrier/nav.omega}}

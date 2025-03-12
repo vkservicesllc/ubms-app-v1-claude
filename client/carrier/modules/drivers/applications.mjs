@@ -36,6 +36,7 @@ const styleSearch = () => {
 
     $('.dt-search').replaceWith($structure)
 }
+const searchTag = '<sup><i class="small grey text search icon"></i></sup>'
 
 const table = $('#driver-apl-table').DataTable({
 
@@ -67,7 +68,7 @@ const table = $('#driver-apl-table').DataTable({
 
         {
             data: 'formId',
-            title: 'Form ID',
+            title: `Form ID ${searchTag}`,
             orderable: false,
             render(data) {
                 return escapeHTML(data)
@@ -76,7 +77,7 @@ const table = $('#driver-apl-table').DataTable({
 
         {
             data: 'lastName',
-            title: 'Last Name',
+            title: `Last Name ${searchTag}`,
             orderable: false,
             render(data, type, row) {
                 return escapeHTML(new Person(row).fullLastName())
@@ -85,7 +86,7 @@ const table = $('#driver-apl-table').DataTable({
 
         {
             data: 'firstName',
-            title: 'First Name',
+            title: `First Name ${searchTag}`,
             orderable: false,
             render(data, type, row) {
                 return escapeHTML(new Person(row).fullFirstName())
@@ -105,7 +106,7 @@ const table = $('#driver-apl-table').DataTable({
 
         {
             data: 'phone',
-            title: 'Phone',
+            title: `Phone ${searchTag}`,
             orderable: false,
             render(data) {
                 return formatTel(data)
@@ -213,9 +214,14 @@ const table = $('#driver-apl-table').DataTable({
         const { permissions } = data
         const api = this.api()
 
-        if (permissions === true || permissions['d:drv/apl'].includes('2'))
+        if (permissions === true || permissions['d:drv/apl'].includes('2')) {
             $(api.column(api.columns().count() - 1).header())
                 .html('<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>')
+
+            $('#create-apl').on('click', function() {
+                $('#new-apl-modal').modal({ autofocus: false, closable: false }).modal('show')
+            })
+        }
 
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
         const dropdown = {
@@ -280,7 +286,7 @@ const table = $('#driver-apl-table').DataTable({
                 toolbar.append(dropdown.condition)
                 toolbar.append(dropdown.position)
                 toolbar.append(dropdown.company)
-                toolbar.append(dropdown.user) // USERS IN 'd:drv/apl' permission group for "Assign User" and USERS in applications by userId in Filter
+                toolbar.append(dropdown.user)
 
                 $('.dt-length').after(toolbar)
 
@@ -292,6 +298,11 @@ const table = $('#driver-apl-table').DataTable({
 
                         $(this).blur()
                         table.ajax.reload()
+                    })
+
+                $('#dt-search-0')
+                    .on('input', function() {
+                        $(this).val($(this).val().replace(/\W/gi, ''))
                     })
 
                 $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')

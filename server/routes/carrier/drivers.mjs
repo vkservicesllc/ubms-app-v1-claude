@@ -86,6 +86,10 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
     hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
+    hbs.permissions = {
+        create: DS || permissions['d:drv/apl'].includes('2'),
+    }
+
     res.render(key.replace('.', '/'), hbs)
 })
 

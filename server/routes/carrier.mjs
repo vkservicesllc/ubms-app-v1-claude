@@ -23,7 +23,7 @@ router.use((req, res, next) => {
     if (req.session.user && req.session.team) {
         const active = 'active '
         const inactive = ''
-console.log(req.session.team) //!TEMP
+
         res.hbs.nav = {
             active,
 
