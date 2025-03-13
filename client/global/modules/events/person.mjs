@@ -1,4 +1,4 @@
-/* jQuery & jQuery Caret required */
+/* jQuery required */
 import { inputEvent } from './form.mjs'
 import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/string.mjs'
@@ -9,12 +9,12 @@ export const nameEvent = (id, options = {}) => {
 
     inputEvent(id, {
         strip: true,
-        onInput(name, $name, caret) {
+        onInput(name, $name) {
             name = patterns.replace(name, 'name')
             name = capitalizeEach(name)
 
-            $name.val(name).caret(caret || caret.end)
-            if (onInput) onInput(name, $name, caret)
+            $name.val(name)
+            if (onInput) onInput(name, $name)
         },
         onChange(name, $name) {
             if (sfxId) {

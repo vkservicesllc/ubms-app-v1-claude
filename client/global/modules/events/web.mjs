@@ -1,4 +1,4 @@
-/* jQuery & jQuery Caret required */
+/* jQuery required */
 import { inputEvent } from './form.mjs'
 import patterns from '../registry/patterns.mjs'
 
@@ -8,11 +8,11 @@ export const urlEvent = (id, callback = {}) => {
 
     inputEvent(id, {
         lower: true,
-        onInput(url, $url, caret) {
+        onInput(url, $url) {
             url = patterns.replace(url, 'url')
 
-            $url.val(url).caret(caret || caret.end)
-            if (onInput) onInput(url, $url, caret)
+            $url.val(url)
+            if (onInput) onInput(url, $url)
         },
         onChange(url, $url) {
             url = url.split('?')[0]

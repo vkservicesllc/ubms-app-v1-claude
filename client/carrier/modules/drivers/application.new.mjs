@@ -18,11 +18,11 @@ const message = {
 
 const $form = $('#new-apl-form-container')
 const $submit = $('#submit-new-apl')
-const $email = $(`${emailId}`)
+const $email = $(`#${emailId}`)
 
 
 emailEvent(emailId, {
-    oninput(email) {
+    onInput() {
         $message.email.html(message.email)
     },
     onChange(email, valid, $email) {
@@ -81,6 +81,7 @@ table.on('draw', function() {
                         onHidden() {
                             $aplUrl.text(aplUrl).attr('href', aplUrl)
                             $dropdown.dropdown('clear')
+                            console.log($email)
                             $email.val(null)
                             $message.email.html(message.email)
                         },

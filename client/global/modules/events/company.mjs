@@ -1,4 +1,4 @@
-/* jQuery & jQuery Caret required */
+/* jQuery required */
 import { inputEvent, selectEvent } from './form.mjs'
 import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/string.mjs'
@@ -33,12 +33,12 @@ export const busNameEvent = (id, coTypeId, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
-        onInput(busName, $busName, caret) {
+        onInput(busName, $busName) {
             busName = capitalizeEach(busName)
             busName = patterns.replace(busName, 'busName')
 
-            $busName.val(busName).caret(caret || caret.end)
-            if (onInput) onInput(busName, $busName, caret)
+            $busName.val(busName)
+            if (onInput) onInput(busName, $busName)
         },
         onChange(busName, $busName) {
             const $coType = $(`#${coTypeId}`)
@@ -90,11 +90,11 @@ export const aliasEvent = (id, callback = {}) => {
 
     inputEvent(id, {
         upper: true,
-        onInput(alias, $alias, caret) {
+        onInput(alias, $alias) {
             alias = alias.replace(/[^A-Z]/, '')
 
-            $alias.val(alias).caret(caret || caret.end)
-            if (onInput) onInput(alias, $alias, caret)
+            $alias.val(alias)
+            if (onInput) onInput(alias, $alias)
         },
         onChange,
         onFocus,

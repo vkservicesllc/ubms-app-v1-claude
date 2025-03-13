@@ -14,11 +14,11 @@ export const usernameEvent = (callback = {}) => {
     inputEvent(userId, {
         lower: true,
         strip: true,
-        onInput(username, $username, caret) {
+        onInput(username, $username) {
             username = patterns.replace(username, 'username')
 
-            $username.val(username).caret(caret || caret.end)
-            if (onInput) onInput(username, $username, caret)
+            $username.val(username)
+            if (onInput) onInput(username, $username)
         },
         onChange(username, $username) {
             if (onChange) {
@@ -55,8 +55,8 @@ export const passwordEvent = (flag, callback = {}) => {
     const key = { current: 'passId', new: 'newPassId', confirm: 'confPassId' }[flag]
 
     inputEvent(formSelectors.user[key], {
-        onInput(password, $password, caret) {
-            if (onInput) onInput($password, caret)
+        onInput(password, $password) {
+            if (onInput) onInput($password)
         },
         onChange(password, $password) {
             if (onChange) {
@@ -91,11 +91,11 @@ export const tokenEvent = (callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback
 
     inputEvent(tokenId, {
-        onInput(token, $token, caret) {
+        onInput(token, $token) {
             token = token.replace(/[\D]/g, '')
 
-            $token.val(token).caret(caret || caret.end)
-            if (onInput) onInput(token, $token, caret)
+            $token.val(token)
+            if (onInput) onInput(token, $token)
         },
         onChange(token, $token) {
             if (onChange) {
@@ -200,12 +200,12 @@ export const roleNameEvent = (id, ajaxData = {}, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
-        onInput(name, $name, caret) {
+        onInput(name, $name) {
             name = patterns.replace(name, 'roleName')
             name = capitalizeEach(name)
 
-            $name.val(name).caret(caret || caret.end)
-            if (onInput) onInput(name, $name, caret)
+            $name.val(name)
+            if (onInput) onInput(name, $name)
         },
         onChange(name, $name) {
             if (onChange) onChange(name, $name)

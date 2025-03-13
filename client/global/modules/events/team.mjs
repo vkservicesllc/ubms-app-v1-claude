@@ -1,4 +1,4 @@
-/* jQuery & jQuery Caret required */
+/* jQuery required */
 import { inputEvent, selectEvent } from './form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
 import patterns from '../registry/patterns.mjs'
@@ -12,12 +12,12 @@ export const teamNameEvent = (callback = {}) => {
 
     inputEvent(nameId, {
         strip: true,
-        onInput(name, $name, caret) {
+        onInput(name, $name) {
             name = patterns.replace(name, 'teamName')
             name = capitalizeEach(name)
 
-            $name.val(name).caret(caret || caret.end)
-            if (onInput) onInput(name, $name, caret)
+            $name.val(name)
+            if (onInput) onInput(name, $name)
         },
         onChange,
         onFocus,
@@ -31,11 +31,11 @@ export const teamDescEvent = (callback = {}) => {
 
     inputEvent(descId, {
         strip: true,
-        onInput(desc, $desc, caret) {
+        onInput(desc, $desc) {
             desc = capitalizeAfterPunctuation(desc)
 
-            $desc.val(desc).caret(caret || caret.end)
-            if (onInput) onInput(desc, $desc, caret)
+            $desc.val(desc)
+            if (onInput) onInput(desc, $desc)
         },
         onChange(desc, $desc) {
             desc = desc.trim()
