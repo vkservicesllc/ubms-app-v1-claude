@@ -336,22 +336,9 @@ const table = $('#driver-apl-table').DataTable({
 })
 
 
-table.on('draw', function() {
-    const { actions } = table.ajax.json()
-    $('#create-apl').off('click')
-
-    if (actions.data.create === true) {
-        $(table.column(table.columns().count() - 1).header())
-            .html('<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>')
-
-        $('#create-apl').on('click', function() {
-            $('#new-apl-modal').modal({ autofocus: false, closable: false }).modal('show')
-        })
-    }
-})
-
-
-
 setInterval(() => {
     dtFnFilterData(table)
 }, interval)
+
+
+export default table

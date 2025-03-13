@@ -70,7 +70,8 @@ export const inputEvent = (selector, options = {}) => {
             if (lower) value = value.toLowerCase()
             if (upper) value = value.toUpperCase()
 
-            $(this).val(value).caret(caret || caret.end)
+            $(this).val(value)
+            if (caret) $(this).caret(caret || caret.end)
             if (onInput) onInput(value, $(this), caret)
         })
         .on('change', function() {

@@ -5,37 +5,43 @@
             .custom-dt-toolbar { min-width: 67%; }
             .custom-dt-toolbar > * { width: 24.5%; }
             .ui.dropdown .transition i.icon { margin-right: 2px !important; }
+            .help { margin-top: 5px; padding-left: 2px; }
         </style>
         <table class="ui compact table" id="driver-apl-table" style="width: 100%;"></table>
         {{#if (eq permissions.create true)}}
-        <div class="ui large active modal" id="new-apl-modal">
+        <div class="ui large modal" id="new-apl-modal">
             <div class="header">New Application</div>
             <div class="content">
                 <p><a id="apl-url" href="{{applicationUrl}}" target="_blank">{{applicationUrl}}</a> <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup></p>
-                <div class="ui grid two column relaxed divided" style="margin-top: 5px;">
+                <form class="ui grid two column relaxed divided" id="new-apl-form" action="/resource/application/new" method="POST" autocomplete="off" style="margin-top: 5px;">
                     <div class="five wide column">
                         <div class="ui form">
                             <div class="field">
+                                <div class="ui left labeled input">
+                                    {{{input.email}}}
+                                    <div class="ui corner label">
+                                        <i class="asterisk icon"></i>
+                                    </div>
+                                </div>
+                                <p class="help" id="email-help">
+                                    <span class="ui grey text">Please enter valid email address</span>
+                                </p>
+                            </div>
+                            <div class="ui icon message">
+                                <i class="truck moving icon"></i>
+                                <div class="content">
+                                    <div class="header">Company</div>
+                                    <p>If you know which company is hiring the applicant, please select it below</p>
+                                </div>
+                            </div>
+                            <div class="field">
                                 <div class="ui labeled input">
-                                    {{!-- <div class="ui label">
-                                        <i class="truck moving icon"></i>
-                                    </div> --}}
                                     <div class="ui fluid clearable selection dropdown" id="new-apl-company-dropdown">
                                         <input type="hidden" name="language" />
                                         <i class="dropdown icon"></i>
                                         <div class="default text">Company</div>
-                                        <div class="menu">{{{dropdown.newAplCompanies}}}
-                                        </div>
+                                        <div class="menu"></div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="field">
-                                <div class="ui left labeled input">
-                                    {{!-- <label class="ui label"><i class="envelope icon"></i></label> --}}
-                                    <input type="email" placeholder="Email" />
-                                    {{!-- <div class="ui corner label">
-                                        <i class="asterisk icon"></i>
-                                    </div> --}}
                                 </div>
                             </div>
                         </div>
@@ -49,45 +55,13 @@
                             </span>
                         </h4>
                     </div>
-                </div>
+                </form>
             </div>
             <div class="actions">
                 <div class="ui cancel button">Cancel</div>
-                <div class="ui primary button">Invite</div>
+                <button type="submit" form="new-apl-form" class="ui primary button" id="submit-new-apl">Invite</button>
             </div>
-            <script>
-                const modalId = '#new-apl-modal'
-                const $aplUrl = $('#apl-url')
-
-                $('#copy-apl-url').click(function(evt) {
-                    evt.preventDefault()
-
-                    navigator.clipboard.writeText($aplUrl.text())
-                        .then(() => {
-                            $(modalId).toast({
-                                message: 'URL successfully copied!',
-                                class: 'success',
-                                showIcon: 'clipboard outline',
-                                context: modalId,
-                                position: 'top left',
-                            })
-
-                            $('.ui.toast-container').css({
-                                top: '75px',
-                                left: `${$aplUrl.outerWidth() + 50}px`
-                            })
-                        })
-                })
-
-                setTimeout(() => {
-                    $('#new-apl-company-dropdown')
-                        .dropdown().on('change', function() {
-                            const value = $(this).dropdown('get value')
-
-                            console.log(value, _id)
-                        })
-                }, 0)
-            </script>
+            <script type="module" src="/modules/drivers/application.new.mjs"></script>
         </div>
         {{/if}}
         <script type="module" src="/modules/drivers/applications.mjs"></script>

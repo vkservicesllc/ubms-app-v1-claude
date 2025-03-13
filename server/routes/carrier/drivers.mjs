@@ -1,17 +1,22 @@
 const router = require('express').Router()
 const throwErr = require('../../tools/error').data
 
+/* Registry */
+import { formSelectors } from '../../../client/global/modules/registry/selectors.mjs'
+
 /* Assets */
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
 import { inPEnvironment } from '../../assets/user/permissions.carrier.mjs'
+
+/* HTML Builders */
+import { Input as ContactInput } from '../../html/contacts.mjs'
 
 /* Tools */
 import { respond404 } from '../../tools/response.mjs'
 
 /* Constants */
 import { navBuilder } from './constants.mjs'
-import { title } from 'process'
 
 
 
@@ -97,14 +102,9 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
     if (hbs.permissions.create) {
         hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=${req.session.team}`
 
-        const { applied: companies } = (await res.session.team.data(res.session, 'companies')).companies
-        hbs.dropdown.newAplCompanies = ''
-        companies.forEach(company => {
-            const { _id, route, name } = company
-            const t = `\t`.repeat(11)
+        const { emailId } = formSelectors.driver
 
-            hbs.dropdown.newAplCompanies += `\n${t}<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
-        })
+        hbs.input.email = ContactInput.email({ id: emailId, placeholder: 'Email', required: true })
     }
 
     res.render(key.replace('.', '/'), hbs)

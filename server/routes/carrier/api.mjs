@@ -27,6 +27,18 @@ router.post('/session/team/:_id/switch', User.verify, async (req, res) => {
 
 
 
+router.post('/team/companies', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { applied: companies } = (await res.session.team.data(res.session, 'companies')).companies
+
+        res.send(companies)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+
 
 router.post('/drivers/applications', User.verify, Team.verify, Application.dtList)
 

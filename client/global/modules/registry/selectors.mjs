@@ -108,4 +108,20 @@ export const formSelectors = {
         transfloId: 'carrier-transflo',
     },
 
+    driver: {
+        class: 'driver',
+        id: 'driver-id',
+        aplId: 'driver-apl-id',
+        aplFormId: 'driver-apl-from-id',
+        prefixId: 'driver-pfx',
+        firstNameId: 'driver-fname',
+        middleNameId: 'driver-mname',
+        lastNameId: 'driver-lname',
+        suffixId: 'driver-sfx',
+        dobId: 'driver-dob',
+        ssnId: 'driver-ssn',
+        phoneId: 'driver-phone',
+        emailId: 'driver-email',
+    },
+
 }
