@@ -104,7 +104,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
         const { emailId } = formSelectors.driver
 
-        hbs.input.email = ContactInput.email({ id: emailId, placeholder: 'Email', required: true })
+        hbs.input.email = ContactInput.email({ id: emailId, placeholder: "Applicant's Email", required: true })
     }
 
     res.render(key.replace('.', '/'), hbs)
