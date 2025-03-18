@@ -47,8 +47,7 @@ class Application {
         this.phone = data.phone
         this.emPhone = data.emPhone
         this.emName = data.emName
-        this.legal = data.legal
-        this.legStatus = data.legStatus
+        this.legalStatus = [ data.legalStatus, data.LS_expiresOn ]
     }
 
 
