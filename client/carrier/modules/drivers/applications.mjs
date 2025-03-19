@@ -1,5 +1,4 @@
 import Person from '/modules/assets/person.mjs'
-import Address from '/modules/assets/address.us.mjs'
 import escapeHTML from '/modules/assets/html.mjs'
 import { tel as formatTel } from '/modules/tools/formatter.mjs'
 import filterDropdown from '/modules/tools/filter-dropdown.mjs'
@@ -14,12 +13,7 @@ const conditions = {
     r: [ '<span class="ui red text">Rejected</small>', 'red text thumbs down' ],
     h: [ 'Hired', 'truck moving' ],
 }
-const positions = {
-    'CD': 'Company Driver',
-    'OO': 'Owner Operator',
-    'OD': 'Driver for Owner',
-    'LP': 'Lease Purchaser',
-}
+const positions = $.ajax('/api/assets/driver?filter=positions', { method: 'POST', async: false }).responseJSON
 const defaultContent = '<span style="color: pink; font-size: .9em;">Unassigned</span>'
 
 const styleSearch = () => {

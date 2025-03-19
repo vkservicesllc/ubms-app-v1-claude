@@ -26,6 +26,16 @@ const query = {
 
 class Driver extends Individual {
     constructor(data = {}, light = false) {}
+
+
+    static positionList = {
+        'CD': 'Company Driver',
+        'OO': 'Owner Operator',
+        'OD': 'Driver for Owner',
+        'LP': 'Lease Purchaser',
+    }
+
+
 }
 
 

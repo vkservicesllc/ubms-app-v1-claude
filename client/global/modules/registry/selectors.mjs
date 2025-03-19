@@ -122,6 +122,7 @@ export const formSelectors = {
         ssnId: 'driver-ssn',
         phoneId: 'driver-phone',
         emailId: 'driver-email',
+        positionId: 'driver-position',
     },
 
 }

@@ -7,6 +7,7 @@ import User, { Role } from '../assets/user.mjs'
 import Team from '../assets/team.mjs'
 import Company, { Owner } from '../assets/company.mjs'
 import Carrier from '../assets/carrier.mjs'
+import Driver from '../assets/driver.mjs'
 
 /* Tools */
 import { capitalizeFirst } from '../../client/global/modules/tools/string.mjs'
@@ -127,9 +128,15 @@ router.post('/assets/:source/:_id?', User.verify, async (req, res) => {
             }
             break
 
+        case 'driver':
+            Src = Driver
+            result = {
+                positions: Driver.positionList,
+            }
+            break
     }
 
-    if (filter) {
+    if (filter) { console.log(filter, result)
         if (_id && Src) {
             const instance = await Src.data(res.session, { _id })
             result = call == 'true'
@@ -137,7 +144,7 @@ router.post('/assets/:source/:_id?', User.verify, async (req, res) => {
                 : instance[filter]
         } else
             result = result[filter]
-    }
+    } console.log(result)
 
     res.send(result)
 })

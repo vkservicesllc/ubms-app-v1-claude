@@ -8,6 +8,7 @@ import { formSelectors } from '../../../client/global/modules/registry/selectors
 import Person from '../../../client/global/modules/assets/person.mjs'
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
+import Driver from '../../assets/driver.mjs'
 import { inPEnvironment } from '../../assets/user/permissions.carrier.mjs'
 
 /* HTML Builders */
@@ -19,7 +20,6 @@ import { respond404 } from '../../tools/response.mjs'
 
 /* Constants */
 import { navBuilder } from './constants.mjs'
-import Driver from '../../assets/driver.mjs'
 
 
 
@@ -95,10 +95,12 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
     hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-    let suffixItems = ''
+    let suffixItems = '', positionItems = ''
     const t = `\t`.repeat(11)
     for (const sfx in Person.suffixList)
         suffixItems += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
+    for (const pos in Driver.positionList)
+        positionItems += `\n${t}<div class="item" data-value="${pos}" data-text="${pos}">${Driver.positionList[pos]}</div>`
 
     hbs.label = {
         firstName: DriverLabel.name('f'),
@@ -108,6 +110,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         dob: DriverLabel.dob(),
         ssn: DriverLabel.ssn(),
         phone: DriverLabel.phone(),
+        position: DriverLabel.position(),
     }
     hbs.input = {
         firstName: DriverInput.name('f'),
@@ -117,9 +120,11 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         dob: DriverInput.dob(),
         ssn: DriverInput.ssn({ placeholder: '###-##-####' }),
         phone: DriverInput.phone({ placeholder: '(###) ###-####' }),
+        position: DriverInput.position(),
     }
     hbs.dropdown = {
         suffix: suffixItems,
+        position: positionItems,
     }
 
     hbs.permissions = {

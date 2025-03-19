@@ -15,6 +15,7 @@ const {
     ssnId,
     phoneId,
     emailId,
+    positionId,
 } = formSelectors.driver
 
 
@@ -54,6 +55,12 @@ export class Label {
         ...props,
         for: phoneId,
         addClass: 'required',
+    })
+
+    static position = (props = {}) => formLabel({
+        content: 'Desired Position',
+        ...props,
+        for: positionId,
     })
 
 }
@@ -122,5 +129,12 @@ export class Input {
             required: true,
         })
     }
+
+    static position = (props = {}) => formInput({
+        ...props,
+        type: 'hidden',
+        id: positionId,
+        name: 'position',
+    })
 
 }

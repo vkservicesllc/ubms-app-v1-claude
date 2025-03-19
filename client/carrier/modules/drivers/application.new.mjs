@@ -32,7 +32,14 @@ const $form = $('#new-apl-form-container')
 const $submit = $('#submit-new-apl')
 const $email = $(`#${emailId}`)
 const $registerApl = $('#register-new-apl')
-const $suffixDropdown = $('#suffix-dropdown')
+// const $dropdown.suffix = $('#suffix-dropdown')
+// const $dropdown.position = $('#position-dropdown')
+
+const $dropdown = {
+    company: $('#new-apl-company-dropdown'),
+    suffix: $('#suffix-dropdown'),
+    position: $('#position-dropdown'),
+}
 
 
 emailEvent(emailId, {
@@ -76,7 +83,8 @@ const enableApplicant = () => {
 const disableApplicant = () => {
     $('.applicant-field').addClass('disabled')
     $(`.${aplClass}`).val(null)
-    $suffixDropdown.dropdown('clear')
+    $dropdown.suffix.dropdown('clear')
+    $dropdown.position.dropdown('clear')
     $submit.text('Invite')
 }
 
@@ -85,7 +93,9 @@ $registerApl.on('change', function() {
     else disableApplicant()
 })
 
-$suffixDropdown.dropdown()
+$dropdown.suffix.dropdown()
+$dropdown.position.dropdown()
+
 
 
 nameEvent(firstNameId)
@@ -96,7 +106,7 @@ nameEvent(lastNameId, {
     sfxId: suffixId,
     onChange(lastName, $lastName, suffix) {
         if (suffix)
-            $suffixDropdown.dropdown('set selected', suffix)
+            $dropdown.suffix.dropdown('set selected', suffix)
     },
 })
 
@@ -117,7 +127,7 @@ table.on('draw', function() {
             $.ajax('/api/team/companies', {
                 method: 'POST',
                 success(companies) {
-                    const $dropdown = $('#new-apl-company-dropdown')
+                    // const $dropdown = $('#new-apl-company-dropdown')
                     let items = ''
 
                     companies.forEach(company => {
@@ -126,9 +136,9 @@ table.on('draw', function() {
                         items += `<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
 
                     })
-                    $dropdown.find('.menu').html(items)
+                    $dropdown.company.find('.menu').html(items)
 
-                    $dropdown.dropdown().on('change', function() {
+                    $dropdown.company.dropdown().on('change', function() {
                         const route = $(this).dropdown('get value')
                         let url = aplUrl
 
@@ -147,7 +157,7 @@ table.on('draw', function() {
                         closable: false,
                         onHidden() {
                             $aplUrl.text(aplUrl).attr('href', aplUrl)
-                            $dropdown.dropdown('clear')
+                            $dropdown.company.dropdown('clear')
                             $email.val(null)
                             $message.email.html(message.email)
                             $registerApl.prop('checked', false)
