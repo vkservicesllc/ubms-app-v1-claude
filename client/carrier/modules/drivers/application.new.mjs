@@ -31,14 +31,18 @@ const message = {
 const $form = $('#new-apl-form-container')
 const $submit = $('#submit-new-apl')
 const $email = $(`#${emailId}`)
+const $expiration = $('#legal-status-expiration')
 const $registerApl = $('#register-new-apl')
-// const $dropdown.suffix = $('#suffix-dropdown')
-// const $dropdown.position = $('#position-dropdown')
 
 const $dropdown = {
     company: $('#new-apl-company-dropdown'),
     suffix: $('#suffix-dropdown'),
     position: $('#position-dropdown'),
+}
+const $field = {
+    applicant: $('.applicant-field'),
+    status: $('#applicant-legal-status-field'),
+    expiration: $('#applicant-legal-status-expiration-field'),
 }
 
 
@@ -76,15 +80,19 @@ $('#dob-calendar').calendar({
 
 
 const enableApplicant = () => {
-    $('.applicant-field').removeClass('disabled')
+    $field.applicant.removeClass('disabled')
     $submit.text('Register & Invite')
 }
 
 const disableApplicant = () => {
-    $('.applicant-field').addClass('disabled')
+    $field.applicant.addClass('disabled')
     $(`.${aplClass}`).val(null)
     $dropdown.suffix.dropdown('clear')
     $dropdown.position.dropdown('clear')
+    $('.new-apl-eligibility, .new-apl-legal-status').prop('checked', false)
+    $expiration.val(null)
+    $field.status.addClass('disabled')
+    $field.expiration.addClass('disabled')
     $submit.text('Invite')
 }
 
@@ -95,7 +103,6 @@ $registerApl.on('change', function() {
 
 $dropdown.suffix.dropdown()
 $dropdown.position.dropdown()
-
 
 
 nameEvent(firstNameId)
@@ -115,6 +122,25 @@ ssnEvent(ssnId)
 telEvent(phoneId)
 
 
+$('#legal-status-check').on('change', function() {
+    if ($(this).prop('checked')) $field.status.removeClass('disabled')
+    else {
+        $('.new-apl-legal-status').prop('checked', false)
+        $expiration.val(null)
+        $field.status.addClass('disabled')
+        $field.expiration.addClass('disabled')
+    }
+})
+
+$('.new-apl-legal-status').on('change', function() {
+    if ($(this).val() == 2) $field.expiration.removeClass('disabled')
+    else {
+        $expiration.val(null)
+        $field.expiration.addClass('disabled')
+    }
+})
+
+
 table.on('draw', function() {
     const { actions } = table.ajax.json()
     $('#create-apl').off('click')
@@ -127,7 +153,6 @@ table.on('draw', function() {
             $.ajax('/api/team/companies', {
                 method: 'POST',
                 success(companies) {
-                    // const $dropdown = $('#new-apl-company-dropdown')
                     let items = ''
 
                     companies.forEach(company => {

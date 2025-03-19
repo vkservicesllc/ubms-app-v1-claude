@@ -136,7 +136,7 @@ router.post('/assets/:source/:_id?', User.verify, async (req, res) => {
             break
     }
 
-    if (filter) { console.log(filter, result)
+    if (filter) {
         if (_id && Src) {
             const instance = await Src.data(res.session, { _id })
             result = call == 'true'
@@ -144,7 +144,7 @@ router.post('/assets/:source/:_id?', User.verify, async (req, res) => {
                 : instance[filter]
         } else
             result = result[filter]
-    } console.log(result)
+    }
 
     res.send(result)
 })

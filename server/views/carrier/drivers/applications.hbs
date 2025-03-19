@@ -109,43 +109,43 @@
                             </div>
                             <div class="disabled field applicant-field" style="margin-top: 30px;">
                                 <div class="ui checkbox">
-                                    <input type="checkbox" id="valid-dl-check" required />
+                                    <input type="checkbox" class="new-apl-eligibility" id="valid-dl-check" required />
                                     <label for="valid-dl-check">The Applicant has a valid US Driver License</label>
                                 </div>
                             </div>
                             <div class="disabled field applicant-field">
                                 <div class="ui checkbox">
-                                    <input type="checkbox" id="legal-status-check" required />
+                                    <input type="checkbox" class="new-apl-eligibility" id="legal-status-check" required />
                                     <label for="legal-status-check">The Applicant is authorized to work in the US</label>
                                 </div>
                             </div>
-                            <div class="inline disabled fields applicant-field">
+                            <div class="inline disabled fields" id="applicant-legal-status-field">
                                 <label>Legal Status</label>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" required />
-                                        <label>US Citizen</label>
+                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-0" name="legalStatus" value="0" required />
+                                        <label for="legal-status-0">US Citizen</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" required />
-                                        <label>Permanent Resident</label>
+                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-1" name="legalStatus" value="1" />
+                                        <label for="legal-status-1">Permanent Resident</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" required />
-                                        <label>Work Visa/Authorization</label>
+                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-2" name="legalStatus" value="2" />
+                                        <label for="legal-status-2">Work Visa/Authorization</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="fields">
-                                <div class="four wide disabled field">
-                                    <label>Status Expires on *</label>
+                                <div class="four wide disabled field" id="applicant-legal-status-expiration-field">
+                                    <label for="legal-status-expiration">Status Expires on *</label>
                                     <div class="ui calendar">
                                         <div class="ui fluid input left icon">
-                                            <input type="text" required />
+                                            <input type="text" id="legal-status-expiration" name="LS_expiresOn" required />
                                             <i class="calendar icon"></i>
                                         </div>
                                     </div>
