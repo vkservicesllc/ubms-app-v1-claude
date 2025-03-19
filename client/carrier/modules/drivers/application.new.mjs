@@ -80,16 +80,16 @@ $('#dob-calendar').calendar({
 
 
 const enableApplicant = () => {
-    $field.applicant.removeClass('disabled')
+    $field.applicant.removeClass('disabled').find('input').prop('disabled', false)
     $submit.text('Register & Invite')
 }
 
 const disableApplicant = () => {
-    $field.applicant.addClass('disabled')
+    $field.applicant.addClass('disabled').find('input').prop('disabled', true)
     $(`.${aplClass}`).val(null)
     $dropdown.suffix.dropdown('clear')
     $dropdown.position.dropdown('clear')
-    $('.new-apl-eligibility, .new-apl-legal-status').prop('checked', false)
+    $('.new-apl-eligibility, .new-apl-legal-status').prop('checked', false).prop('disabled', true)
     $expiration.val(null)
     $field.status.addClass('disabled')
     $field.expiration.addClass('disabled')
@@ -123,19 +123,19 @@ telEvent(phoneId)
 
 
 $('#legal-status-check').on('change', function() {
-    if ($(this).prop('checked')) $field.status.removeClass('disabled')
+    if ($(this).prop('checked')) $field.status.removeClass('disabled').find('input').prop('disabled', false)
     else {
         $('.new-apl-legal-status').prop('checked', false)
-        $expiration.val(null)
-        $field.status.addClass('disabled')
-        $field.expiration.addClass('disabled')
+        $expiration.val(null).prop('disabled', true)
+        $field.status.addClass('disabled').find('input').prop('disabled', true)
+        $field.expiration.addClass('disabled').find('input')
     }
 })
 
 $('.new-apl-legal-status').on('change', function() {
-    if ($(this).val() == 2) $field.expiration.removeClass('disabled')
+    if ($(this).val() == 2) $field.expiration.removeClass('disabled').find('input').prop('disabled', false)
     else {
-        $expiration.val(null)
+        $expiration.val(null).prop('disabled', true)
         $field.expiration.addClass('disabled')
     }
 })

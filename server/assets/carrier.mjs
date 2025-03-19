@@ -294,19 +294,20 @@ class Carrier extends Company {
         delete batch[0].match.id
         batch[0].match.catId = 'crr'
 
-        const { _id, _companyId, id, companyId } = params
+        const { _id, _companyId, id, companyId, route } = params
         const idx = batch.length - 3
         batch[0].match.id = companyId
         batch[idx].match = { id }
         if (!companyId) batch[0].match.id = Company.matchIdHash(_companyId)
         if (!id) batch[idx].match.id = Carrier.matchIdHash(_id)
+        if (route) batch[1].match.route = { route: [ [ 'busName', 'coType' ], route ] }
 
         return batch
     }
 
 
     static data = async (session, params = {}) => {
-        if (!params._id && !params.id && !params._companyId && !params.companyId) return
+        if (!params._id && !params.id && !params._companyId && !params.companyId && !params.route) return
 
         const batch = await Carrier.#batch(session, { params })
         if (!batch.length) return

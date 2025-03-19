@@ -14,7 +14,7 @@
             <div class="header">New Application</div>
             <div class="content">
                 <p><a id="apl-url" href="{{applicationUrl}}" target="_blank">{{applicationUrl}}</a> <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup></p>
-                <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/application/new" method="POST" autocomplete="off" style="margin-top: 5px;">
+                <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/driver/application/new" method="POST" autocomplete="off" style="margin-top: 5px;">
                     <div class="five wide column">
                         <div class="ui form">
                             <div class="field">
@@ -38,7 +38,7 @@
                             <div class="field">
                                 <div class="ui labeled input">
                                     <div class="ui fluid clearable selection dropdown" id="new-apl-company-dropdown">
-                                        <input type="hidden" name="language" />
+                                        <input type="hidden" name="company" />
                                         <i class="dropdown icon"></i>
                                         <div class="default text">Hiring Company</div>
                                         <div class="menu"></div>
@@ -109,13 +109,13 @@
                             </div>
                             <div class="disabled field applicant-field" style="margin-top: 30px;">
                                 <div class="ui checkbox">
-                                    <input type="checkbox" class="new-apl-eligibility" id="valid-dl-check" required />
+                                    <input type="checkbox" class="new-apl-eligibility" id="valid-dl-check" required disabled />
                                     <label for="valid-dl-check">The Applicant has a valid US Driver License</label>
                                 </div>
                             </div>
                             <div class="disabled field applicant-field">
                                 <div class="ui checkbox">
-                                    <input type="checkbox" class="new-apl-eligibility" id="legal-status-check" required />
+                                    <input type="checkbox" class="new-apl-eligibility" id="legal-status-check" required disabled />
                                     <label for="legal-status-check">The Applicant is authorized to work in the US</label>
                                 </div>
                             </div>
@@ -123,19 +123,19 @@
                                 <label>Legal Status</label>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-0" name="legalStatus" value="0" required />
+                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-0" name="legalStatus" value="0" required disabled />
                                         <label for="legal-status-0">US Citizen</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-1" name="legalStatus" value="1" />
+                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-1" name="legalStatus" value="1" disabled />
                                         <label for="legal-status-1">Permanent Resident</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-2" name="legalStatus" value="2" />
+                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-2" name="legalStatus" value="2" disabled />
                                         <label for="legal-status-2">Work Visa/Authorization</label>
                                     </div>
                                 </div>
@@ -145,7 +145,7 @@
                                     <label for="legal-status-expiration">Status Expires on *</label>
                                     <div class="ui calendar">
                                         <div class="ui fluid input left icon">
-                                            <input type="text" id="legal-status-expiration" name="LS_expiresOn" required />
+                                            <input type="text" id="legal-status-expiration" name="LS_expiresOn" required disabled />
                                             <i class="calendar icon"></i>
                                         </div>
                                     </div>

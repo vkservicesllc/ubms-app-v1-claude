@@ -1,5 +1,7 @@
 const { body, validationResult } = require('express-validator')
 
+import moment from 'moment'
+
 import inputLength from '../../client/global/modules/registry/length.mjs'
 import patterns from '../../client/global/modules/registry/patterns.mjs'
 
@@ -8,7 +10,6 @@ import Address from '../../client/global/modules/assets/address.us.mjs'
 
 import { calculateYearAge } from '../../client/global/modules/tools/date.mjs'
 import strip from '../../client/global/modules/tools/formatter.mjs'
-import { reformatDateString } from '../../client/global/modules/tools/date.mjs'
 import { capitalizeFirst, capitalizeEach } from '../../client/global/modules/tools/string.mjs'
 
 
@@ -44,7 +45,11 @@ export const validateDate = (field, required = false) => {
         .customSanitizer(date => {
             if (!date) return null
 
-            return reformatDateString(date)
+            return moment(date, [
+                "YYYY-MM-DD",
+                "MM/DD/YYYY",
+                "MMM D, YYYY",
+            ], true).format('YYYY-MM-DD')
         })
 
     if (!required) chain = chain.optional({ nullable: true })

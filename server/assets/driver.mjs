@@ -68,6 +68,16 @@ class Application {
     static matchIdHash = value => matchHash(value, Application.#algorithm)
 
 
+    static invite = async (session, email, options = {}) => {
+        //
+    }
+
+    
+    static create = async (session, data) => {
+        //
+    }
+
+
     static companies = async (session, filter = {}) => {
         if (!session?.user || !session?.team) return
 

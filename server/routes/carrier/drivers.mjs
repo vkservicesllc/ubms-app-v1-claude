@@ -102,6 +102,8 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
     for (const pos in Driver.positionList)
         positionItems += `\n${t}<div class="item" data-value="${pos}" data-text="${pos}">${Driver.positionList[pos]}</div>`
 
+    const inputProps = { disabled: true }
+
     hbs.label = {
         firstName: DriverLabel.name('f'),
         middleName: DriverLabel.name('m'),
@@ -113,14 +115,14 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         position: DriverLabel.position(),
     }
     hbs.input = {
-        firstName: DriverInput.name('f'),
-        middleName: DriverInput.name('m'),
-        lastName: DriverInput.name('l'),
-        suffix: DriverInput.name('s'),
-        dob: DriverInput.dob(),
-        ssn: DriverInput.ssn({ placeholder: '###-##-####' }),
-        phone: DriverInput.phone({ placeholder: '(###) ###-####' }),
-        position: DriverInput.position(),
+        firstName: DriverInput.name('f', inputProps),
+        middleName: DriverInput.name('m', inputProps),
+        lastName: DriverInput.name('l', inputProps),
+        suffix: DriverInput.name('s', inputProps),
+        dob: DriverInput.dob(inputProps),
+        ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
+        phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
+        position: DriverInput.position(inputProps),
     }
     hbs.dropdown = {
         suffix: suffixItems,
