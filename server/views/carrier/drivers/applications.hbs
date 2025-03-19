@@ -9,7 +9,7 @@
         </style>
         <table class="ui compact table" id="driver-apl-table" style="width: 100%;"></table>
         {{#if (eq permissions.create true)}}
-        <div class="ui large active modal" id="new-apl-modal">
+        <div class="ui large modal" id="new-apl-modal">
             <i class="close icon"></i>
             <div class="header">New Application</div>
             <div class="content">
@@ -54,57 +54,62 @@
                             <label>Register New Applicant</label>
                         </div>
                         <div class="ui form">
-                            <div class="disabled field">
-                                <label>Legal Name *</label>
-                                <div class="fields">
-                                    <div class="five wide field">
-                                        <input type="text" placeholder="First Name *" required />
-                                    </div>
-                                    <div class="four wide field">
-                                        <input type="text" placeholder="Middle Name" />
-                                    </div>
-                                    <div class="five wide field">
-                                        <input type="text" placeholder="Last Name *" required />
-                                    </div>
-                                    <div class="two wide field">
-                                        <select class="ui fluid dropdown">
-                                            <option value="">Suffix</option>
-                                        </select>
+                            <div class="disabled fields applicant-field" style="margin-top: 10px;">
+                                <div class="five wide field">
+                                    {{{label.firstName}}}
+                                    {{{input.firstName}}}
+                                </div>
+                                <div class="four wide field">
+                                    {{{label.middleName}}}
+                                    {{{input.middleName}}}
+                                </div>
+                                <div class="five wide field">
+                                    {{{label.lastName}}}
+                                    {{{input.lastName}}}
+                                </div>
+                                <div class="two wide field">
+                                    {{{label.suffix}}}
+                                    <div class="ui fluid clearable selection dropdown" id="suffix-dropdown">
+                                        {{{input.suffix}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.suffix}}}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="disabled fields">
+                            <div class="disabled fields applicant-field">
                                 <div class="four wide field">
-                                    <label>Date of Birth *</label>
+                                    {{{label.dob}}}
                                     <div class="ui calendar" id="dob-calendar">
                                         <div class="ui fluid input left icon">
-                                            <input type="text" required />
+                                            {{{input.dob}}}
                                             <i class="calendar icon"></i>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="five wide field">
-                                    <label>Social Security Number *</label>
-                                    <input type="text" placeholder="###-##-####" required />
+                                <div class="four wide field">
+                                    {{{label.ssn}}}
+                                    {{{input.ssn}}}
                                 </div>
-                                <div class="five wide field">
-                                    <label>Phone *</label>
-                                    <input type="text" placeholder="(###) ###-####" required />
+                                <div class="four wide field">
+                                    {{{label.phone}}}
+                                    {{{input.phone}}}
                                 </div>
                             </div>
-                            <div class="disabled field">
+                            <div class="disabled field applicant-field" style="margin-top: 30px;">
                                 <div class="ui checkbox">
-                                    <input type="checkbox" required />
-                                    <label>The Applicant has a valid US Driver License</label>
+                                    <input type="checkbox" id="valid-dl-check" required />
+                                    <label for="valid-dl-check">The Applicant has a valid US Driver License</label>
                                 </div>
                             </div>
-                            <div class="disabled field">
+                            <div class="disabled field applicant-field">
                                 <div class="ui checkbox">
-                                    <input type="checkbox" required />
-                                    <label>The Applicant is authorized to work in the US</label>
+                                    <input type="checkbox" id="legal-status-check" required />
+                                    <label for="legal-status-check">The Applicant is authorized to work in the US</label>
                                 </div>
                             </div>
-                            <div class="inline disabled fields">
+                            <div class="inline disabled fields applicant-field">
                                 <label>Legal Status</label>
                                 <div class="field">
                                     <div class="ui radio checkbox">
@@ -137,62 +142,6 @@
                                 </div>
                             </div>
                         </div>
-                        {{!-- <div class="ui two column relaxed grid">
-                            <div class="eleven wide column" style="outline: 0 dotted red; padding-right: 9px; padding-top: 15px;">
-                                <div class="ui form">
-                                    <div class="disabled field">
-                                        <label style="margin-bottom: 5px;">Legal Name *</label>
-                                    </div>
-                                    <div class="two fields">
-                                        <div class="disabled field">
-                                            <input type="text" placeholder="First Name *" required disabled />
-                                        </div>
-                                        <div class="disabled field">
-                                            <input type="text" placeholder="Middle Name" disabled />
-                                        </div>
-                                    </div>
-                                    <div class="two fields">
-                                        <div class="disabled field">
-                                            <input type="text" placeholder="Last Name *" required disabled />
-                                        </div>
-                                        <div class="disabled five wide field">
-                                            <input type="text" placeholder="Suffix" disabled />
-                                        </div>
-                                    </div>
-                                    <div class="two fields" style="margin-top: 25px;">
-                                        <div class="disabled field" style="outline: 0 dotted red;">
-                                            <label>The Applicant:</label>
-                                            <div class="ui checkbox" style="margin-top: 10px;">
-                                                <input type="checkbox" disabled />
-                                                <label style="margin-bottom: 10px;">is authorized to work in the US</label>
-                                                <input type="checkbox" disabled />
-                                                <label>has a valid Driver License</label>
-                                            </div>
-                                        </div>
-                                        <div class="disabled five wide field" style="outline: 0 dotted red;">
-                                            <label>US Legal Status *</label>
-                                            <input type="text" disabled />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="five wide column" style="outline: 0 dotted red; padding-left: 9px;">
-                                <div class="ui form">
-                                    <div class="disabled field">
-                                        <label>Date of Birth *</label>
-                                        <input type="text" required disabled />
-                                    </div>
-                                    <div class="disabled field">
-                                        <label>Social Security Number *</label>
-                                        <input type="text" required disabled />
-                                    </div>
-                                    <div class="disabled field">
-                                        <label>Phone *</label>
-                                        <input type="text" required disabled />
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
                     </div>
                 </form>
             </div>

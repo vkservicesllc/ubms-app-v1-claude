@@ -5,18 +5,21 @@ const throwErr = require('../../tools/error').data
 import { formSelectors } from '../../../client/global/modules/registry/selectors.mjs'
 
 /* Assets */
+import Person from '../../../client/global/modules/assets/person.mjs'
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
 import { inPEnvironment } from '../../assets/user/permissions.carrier.mjs'
 
 /* HTML Builders */
 import { Input as ContactInput } from '../../html/contacts.mjs'
+import { Label as DriverLabel, Input as DriverInput } from '../../html/driver.mjs'
 
 /* Tools */
 import { respond404 } from '../../tools/response.mjs'
 
 /* Constants */
 import { navBuilder } from './constants.mjs'
+import Driver from '../../assets/driver.mjs'
 
 
 
@@ -92,8 +95,32 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
     hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-    hbs.input = {}
-    hbs.dropdown = {}
+    let suffixItems = ''
+    const t = `\t`.repeat(11)
+    for (const sfx in Person.suffixList)
+        suffixItems += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
+
+    hbs.label = {
+        firstName: DriverLabel.name('f'),
+        middleName: DriverLabel.name('m'),
+        lastName: DriverLabel.name('l'),
+        suffix: DriverLabel.name('s'),
+        dob: DriverLabel.dob(),
+        ssn: DriverLabel.ssn(),
+        phone: DriverLabel.phone(),
+    }
+    hbs.input = {
+        firstName: DriverInput.name('f'),
+        middleName: DriverInput.name('m'),
+        lastName: DriverInput.name('l'),
+        suffix: DriverInput.name('s'),
+        dob: DriverInput.dob(),
+        ssn: DriverInput.ssn({ placeholder: '###-##-####' }),
+        phone: DriverInput.phone({ placeholder: '(###) ###-####' }),
+    }
+    hbs.dropdown = {
+        suffix: suffixItems,
+    }
 
     hbs.permissions = {
         create: DS || permissions['d:drv/apl'].includes('2'),

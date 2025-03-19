@@ -1,8 +1,20 @@
 import table from './applications.mjs'
-import { emailEvent } from '/modules/events/contacts.mjs'
+import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
+import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 
-const { emailId } = formSelectors.driver
+const {
+    class: aplClass,
+    id,
+    firstNameId,
+    middleNameId,
+    lastNameId,
+    suffixId,
+    dobId,
+    ssnId,
+    phoneId,
+    emailId,
+} = formSelectors.driver
 
 
 const modalId = '#new-apl-modal'
@@ -19,6 +31,8 @@ const message = {
 const $form = $('#new-apl-form-container')
 const $submit = $('#submit-new-apl')
 const $email = $(`#${emailId}`)
+const $registerApl = $('#register-new-apl')
+const $suffixDropdown = $('#suffix-dropdown')
 
 
 emailEvent(emailId, {
@@ -52,6 +66,43 @@ $('#dob-calendar').calendar({
     ...calSettings,
     maxDate: moment().subtract(18, 'years').toDate(),
 })
+
+
+const enableApplicant = () => {
+    $('.applicant-field').removeClass('disabled')
+    $submit.text('Register & Invite')
+}
+
+const disableApplicant = () => {
+    $('.applicant-field').addClass('disabled')
+    $(`.${aplClass}`).val(null)
+    $suffixDropdown.dropdown('clear')
+    $submit.text('Invite')
+}
+
+$registerApl.on('change', function() {
+    if ($(this).prop('checked')) enableApplicant()
+    else disableApplicant()
+})
+
+$suffixDropdown.dropdown()
+
+
+nameEvent(firstNameId)
+
+nameEvent(middleNameId)
+
+nameEvent(lastNameId, {
+    sfxId: suffixId,
+    onChange(lastName, $lastName, suffix) {
+        if (suffix)
+            $suffixDropdown.dropdown('set selected', suffix)
+    },
+})
+
+ssnEvent(ssnId)
+
+telEvent(phoneId)
 
 
 table.on('draw', function() {
@@ -97,9 +148,10 @@ table.on('draw', function() {
                         onHidden() {
                             $aplUrl.text(aplUrl).attr('href', aplUrl)
                             $dropdown.dropdown('clear')
-                            console.log($email)
                             $email.val(null)
                             $message.email.html(message.email)
+                            $registerApl.prop('checked', false)
+                            disableApplicant()
                         },
                     }).modal('show')
                 }

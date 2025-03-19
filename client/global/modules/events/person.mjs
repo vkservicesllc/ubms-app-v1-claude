@@ -17,9 +17,10 @@ export const nameEvent = (id, options = {}) => {
             if (onInput) onInput(name, $name)
         },
         onChange(name, $name) {
+            let suffix
             if (sfxId) {
                 const sfxPatt = patterns.match.suffix
-                let suffix = sfxPatt.test(name)
+                suffix = sfxPatt.test(name)
                     ? sfxPatt.exec(name)[0]
                     : null
                 name = name.replace(sfxPatt, '').trim()
@@ -33,7 +34,7 @@ export const nameEvent = (id, options = {}) => {
             }
 
             $name.val(name)
-            if (onChange) onChange(name, $name)
+            if (onChange) onChange(name, $name, suffix)
         },
         onFocus,
         onBlur,

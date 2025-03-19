@@ -85,7 +85,7 @@ module.exports = {
     },
 
     'drivers.applications': {
-        external: [ ...online.external, 'datatables.fomantic-ui', 'moment' ],
+        external: [ ...online.external, 'jquery.masked-input', 'datatables.fomantic-ui', 'moment' ],
         internal: {
             css: [ ...online.internal.css ],
             js: [ ...online.internal.js ],
