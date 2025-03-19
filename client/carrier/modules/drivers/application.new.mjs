@@ -37,6 +37,22 @@ emailEvent(emailId, {
     },
 })
 
+const calSettings = {
+    type: 'date',
+    formatter: {
+        date(date) {
+            if (!date) return ''
+
+            return moment(date).format('MMM D, YYYY')
+        },
+    },
+}
+$('.ui.calendar').calendar(calSettings)
+$('#dob-calendar').calendar({
+    ...calSettings,
+    maxDate: moment().subtract(18, 'years').toDate(),
+})
+
 
 table.on('draw', function() {
     const { actions } = table.ajax.json()
