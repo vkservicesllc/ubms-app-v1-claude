@@ -6,6 +6,7 @@ const ssnSecret = DB__MYSQL_AES_SSN
 import db from '../settings/mysql.mjs'
 
 /* Assests */
+import Person from '../../client/global/modules/assets/person.mjs'
 import Individual from './individual.mjs'
 import Team from './team.mjs'
 import User, { sessionError } from './user.mjs'
@@ -18,6 +19,7 @@ import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.m
 import Query, { hash, matchHash } from '../tools/query.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
 import { generateRandomString } from '../tools/string.mjs'
+import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 
 const moment = require('moment')
 const mysql = require('../tools/mysql')
@@ -49,22 +51,59 @@ class Driver extends Individual {
 
 class Application {
     constructor(data = {}) {
+        const { firstName, middleName, lastName, suffix } = data
+
         this._id = data._id
         this._teamId = data._teamId
         this._userId = data._userId
         this._carrierId = data._carrierId
         this.formId = data.formId
         this.appliedOn = data.appliedOn
-        this.firstName = data.firstName
-        this.middleName = data.middleName
-        this.lastName = data.lastName
-        this.suffix = data.suffix
+        this.position = data.position
+            ? [ data.position, Driver.positionList[data.position] ]
+            : null
+        this.firstName = firstName
+        this.middleName = middleName
+        this.lastName = lastName
+        this.suffix = suffix
+        this.fullName = new Person({ firstName, middleName, lastName, suffix }).fullName()
         this.dob = data.dob
+        this.ssn = stringifyBuffer(data.ssn)
         this.email = data.email
         this.phone = data.phone
         this.emPhone = data.emPhone
         this.emName = data.emName
         this.legalStatus = [ data.legalStatus, data.LS_expiresOn ]
+
+        if (data.userLastName) {
+            const {
+                userFirstName: firstName,
+                userLastName: lastName,
+                userAlias: alias,
+            } = data
+            const person = new Person({ firstName, lastName, alias })
+
+            this.user = {
+                firstName,
+                lastName,
+                alias,
+                name: person.fullName('AL'),
+                shortName: person.fullName('Al'),
+                fullName: person.fullName('FAL'),
+                location: data.userLocation,
+                condition: data.userCondition,
+                deleted: !!data.userDeletedAt,
+            }
+        }
+
+        if (data.busName) {
+            this.company = {
+                busName: data.busName,
+                coType: data.coType,
+                alias: data.companyAlias,
+                name: `${data.busName}, ${data.coType}`,
+            }
+        }
     }
 
 
@@ -146,8 +185,11 @@ class Application {
                     'lastName',
                     'suffix',
                     'dob',
+                    { aes: [ 'ssn', ssnSecret ] },
                     'email',
                     'phone',
+                    'legalStatus',
+                    'LS_expiresOn',
                 ],
                 match,
             },

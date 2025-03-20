@@ -40,6 +40,16 @@ router.post('/team/companies', User.verify, Team.verify, async (req, res) => {
 
 
 
+router.post('/drivers/application/:_id', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { _id } = req.params
+
+        res.send(await Application.data(res.session, { _id }))
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
 router.post('/drivers/applications', User.verify, Team.verify, Application.dtList)
 
 router.post('/drivers/applications/filters', User.verify, Team.verify, async (req, res) => {

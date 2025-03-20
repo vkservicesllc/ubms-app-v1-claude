@@ -179,7 +179,7 @@ const table = $('#driver-apl-table').DataTable({
             className: 'right aligned',
             width: '120px',
             render(data, type, row) {
-                const { condition } = row
+                const { _id, condition } = row
                 const { comment, modify, delete: remove } = row.actions.data
                 const { access } = row.actions.file
 
@@ -194,7 +194,7 @@ const table = $('#driver-apl-table').DataTable({
                     if (comment) panel += `<a class="comment-apl"><i class="black text comment outline icon"></i></a>`
                 } else panel += `<a><i class="blue text external alternate icon"></i></a>`
                 if (remove && ['p', 'c'].includes(condition))
-                    panel += `<a class="delete-apl"><i class="red text trash alternate outline icon"></i></a>`
+                    panel += `<a class="delete-apl" data-id="${_id}" href=""><i class="red text trash alternate outline icon"></i></a>`
 
                 return panel
             },

@@ -172,11 +172,14 @@
         </div>
         {{/if}}
         {{#if (eq permissions.create true)}}
-        <div class="ui active tiny modal" id="delete-apl-modal">
+        <div class="ui tiny modal" id="delete-apl-modal">
             <div class="ui dark red text header" id="delete-apl-header">Delete Application</div>
             <div class="content">
-                <h5 class="ui dark red text header" style="margin-bottom: 5px;">Notice</h5>
-                <p class="ui dark red text">The application has not yet been processed and<br/>may therefore become obsolete and subject to deletion</p>
+                <form id="delete-apl-form" action="/driver/application/delete" method="POST">
+                    <input type="hidden" id="delete-apl-id" name="_id" />
+                </form>
+                <h5 class="ui dark red text header" style="margin: 0 0 5px;">Notice</h5>
+                <p class="ui dark red text">The application has not yet been processed and<br/>may be subject to deletion if it becomes redundant</p>
                 <style>
                     .delete-apl-side-th {
                         width: 100px;
@@ -186,52 +189,67 @@
                 <table class="ui very basic compact table">
                     <tbody>
                         <tr>
-                            <td class="delete-apl-side-th">Form ID:</td>
-                            <td>I1OA63Y44A7F</td>
+                            <td class="delete-apl-side-th"><span class="ui grey text">Form ID:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:formId"></td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th">Applied on:</td>
-                            <td>Mar 15, 2025</td>
-                        </tr>
-                        <tr>
-                            <td class="delete-apl-side-th">Full Name:</td>
-                            <td>John J. Doe, Jr</td>
-                        </tr>
-                        <tr>
-                            <td class="delete-apl-side-th">DOB:</td>
-                            <td>Apr 24, 1985</td>
-                        </tr>
-                        <tr>
-                            <td class="delete-apl-side-th">SSN:</td>
-                            <td>123-45-6789</td>
-                        </tr>
-                        <tr>
-                            <td class="delete-apl-side-th">Phone:</td>
-                            <td>(874) 521-5255</td>
-                        </tr>
-                        <tr>
-                            <td class="delete-apl-side-th">Email:</td>
-                            <td>john-doe@email.com</td>
-                        </tr>
-                        <tr>
-                            <td class="delete-apl-side-th">Company:</td>
-                            <td><span class="ui dark red text"><small><i>N/A</i></small></span></td>
-                        </tr>
-                        <tr>
-                            <td class="delete-apl-side-th">Position:</td>
-                            <td><span class="ui dark red text"><small><i>N/A</i></small></span></td>
-                        </tr>
-                        <tr>
-                            <td class="delete-apl-side-th">Assigned to:</td>
-                            <td><span class="ui dark red text"><small><i>N/A</i></small></span></td>
+                            <td class="delete-apl-side-th"><span class="ui grey text">Applied on:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:appliedOn"></td>
                         </tr>
                     </tbody>
                 </table>
+                <table class="ui very basic compact table">
+                    <tbody>
+                        <tr>
+                            <td class="delete-apl-side-th"><span class="ui grey text">Full Name:</span></td>
+                            <td>
+                                <strong class="delete-apl-data" id="delete-apl:fullName" style="font-size: 1.1em;"></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th"><span class="ui grey text">DOB:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:dob"></td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th"><span class="ui grey text">SSN:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:ssn"></td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th"><span class="ui grey text">Phone:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:phone"></td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th"><span class="ui grey text">Email:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:email"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="ui very basic compact table">
+                    <tbody>
+                        <tr>
+                            <td class="delete-apl-side-th"><span class="ui grey text">Company:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:company"></td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th"><span class="ui grey text">Position:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:position"></td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th"><span class="ui grey text">Assigned to:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:user"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="ui checkbox">
+                    <input type="checkbox" id="delete-apl-confirm" />
+                    <label><i class="red text exclamation triangle icon"></i> I confirm that the application has become redundant</label>
+                </div>
             </div>
             <div class="actions">
                 <div class="ui cancel button">Cancel</div>
-                <button type="submit" class="ui red button">Delete Application</button>
+                <button type="submit" form="delete-apl-form" class="ui disabled red button" id="delete-apl-submit">Delete Application</button>
             </div>
+            <script type="module" src="/modules/drivers/application.delete.mjs"></script>
         </div>
         {{/if}}
         <script type="module" src="/modules/drivers/applications.mjs"></script>

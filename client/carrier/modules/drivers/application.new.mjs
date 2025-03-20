@@ -28,7 +28,6 @@ const message = {
     email: $message.email.html(),
 }
 
-const $form = $('#new-apl-form-container')
 const $submit = $('#submit-new-apl')
 const $email = $(`#${emailId}`)
 const $expiration = $('#legal-status-expiration')
