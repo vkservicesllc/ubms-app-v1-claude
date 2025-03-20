@@ -131,6 +131,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
     hbs.permissions = {
         create: DS || permissions['d:drv/apl'].includes('2'),
+        delete: DS || permissions['d:drv/apl'].includes('5'),
     }
 
     if (hbs.permissions.create) {

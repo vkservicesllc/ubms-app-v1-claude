@@ -171,6 +171,69 @@
             <script type="module" src="/modules/drivers/application.new.mjs"></script>
         </div>
         {{/if}}
+        {{#if (eq permissions.create true)}}
+        <div class="ui active tiny modal" id="delete-apl-modal">
+            <div class="ui dark red text header" id="delete-apl-header">Delete Application</div>
+            <div class="content">
+                <h5 class="ui dark red text header" style="margin-bottom: 5px;">Notice</h5>
+                <p class="ui dark red text">The application has not yet been processed and<br/>may therefore become obsolete and subject to deletion</p>
+                <style>
+                    .delete-apl-side-th {
+                        width: 100px;
+                        font-weight: bold;
+                    }
+                </style>
+                <table class="ui very basic compact table">
+                    <tbody>
+                        <tr>
+                            <td class="delete-apl-side-th">Form ID:</td>
+                            <td>I1OA63Y44A7F</td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th">Applied on:</td>
+                            <td>Mar 15, 2025</td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th">Full Name:</td>
+                            <td>John J. Doe, Jr</td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th">DOB:</td>
+                            <td>Apr 24, 1985</td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th">SSN:</td>
+                            <td>123-45-6789</td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th">Phone:</td>
+                            <td>(874) 521-5255</td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th">Email:</td>
+                            <td>john-doe@email.com</td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th">Company:</td>
+                            <td><span class="ui dark red text"><small><i>N/A</i></small></span></td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th">Position:</td>
+                            <td><span class="ui dark red text"><small><i>N/A</i></small></span></td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th">Assigned to:</td>
+                            <td><span class="ui dark red text"><small><i>N/A</i></small></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="actions">
+                <div class="ui cancel button">Cancel</div>
+                <button type="submit" class="ui red button">Delete Application</button>
+            </div>
+        </div>
+        {{/if}}
         <script type="module" src="/modules/drivers/applications.mjs"></script>
 
 {{> carrier/nav.omega}}
