@@ -4,7 +4,7 @@ const throwErr = require('../../tools/error').data
 /* Assets */
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
-import { inPEnvironment } from '../../assets/user/permissions.carrier.mjs'
+import { inPEnvironment } from '../../assets/user/permissions.mjs'
 
 /* Tools */
 import { respond404 } from '../../tools/response.mjs'

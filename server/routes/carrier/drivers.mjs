@@ -9,7 +9,7 @@ import Person from '../../../client/global/modules/assets/person.mjs'
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
 import Driver from '../../assets/driver.mjs'
-import { inPEnvironment } from '../../assets/user/permissions.carrier.mjs'
+import { inPEnvironment } from '../../assets/user/permissions.mjs'
 
 /* HTML Builders */
 import { Input as ContactInput } from '../../html/contacts.mjs'

@@ -8,7 +8,7 @@ import { formSelectors } from '../../client/global/modules/registry/selectors.mj
 /* Assets */
 import User from '../assets/user.mjs'
 import Team from '../assets/team.mjs'
-import { inPGroup } from '../assets/user/permissions.carrier.mjs'
+import { inPGroup } from '../assets/user/permissions.mjs'
 
 /* HTML Builders */
 import { Label, Input, Button } from '../html/user.mjs'

@@ -7,6 +7,7 @@ import Team from '../../assets/team.mjs'
 import Company from '../../assets/company.mjs'
 import Carrier from '../../assets/carrier.mjs'
 import Driver, { Application } from '../../assets/driver.mjs'
+import { inPEnvironment } from '../../assets/user/permissions.mjs'
 
 /* Validators */
 import validationCheck from '../../validators/default.mjs'
@@ -37,6 +38,12 @@ router.post('/user/:_id/app/settings', User.verify, async (req, res) => {
 
 router.post('/driver/application/new', User.verify, Team.verify, async (req, res, next) => {
     try {
+        const { user } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!DS && !inPEnvironment('d:drv/apl', permissions, DS) && !permissions['d:drv/apl'].includes('2'))
+            return throwErr.auth(res)
+
         const { company: route } = req.body
         delete req.body.company
 
