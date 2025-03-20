@@ -259,6 +259,7 @@ class Team {
                 }
 
                 if (error) return { deleted, error }
+
                 for (const prop in log) this[prop] = log[prop]
                 //? also may consider list of users and companies
 

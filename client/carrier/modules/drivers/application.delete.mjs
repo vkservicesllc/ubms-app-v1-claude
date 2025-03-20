@@ -37,13 +37,13 @@ table.on('draw', function() {
             method: 'POST',
             success(application) { console.log(application)
                 const na = '<span class="ui dark red text"><small><i>N/A</i></small></span>'
-                const { appliedOn, position, dob, phone, ssn, company, user } = application
+                const { appliedOn, position, dob, phone, ssn, carrier, user } = application
 
                 application.appliedOn = moment(appliedOn).format('ll')
                 application.dob = moment(dob).format('ll')
                 application.ssn = formatSsn(ssn)
                 application.phone = formatTel(phone)
-                if (company) application.company = company.name
+                if (carrier) application.company = carrier.name
                 if (position) application.position = position[1]
                 if (user) application.user = user.name
 

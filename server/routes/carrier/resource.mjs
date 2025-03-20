@@ -13,6 +13,12 @@ import { inPEnvironment } from '../../assets/user/permissions.mjs'
 import validationCheck from '../../validators/default.mjs'
 import { validateApplicant } from '../../validators/driver.mjs'
 
+const url = {
+    drivers: {
+        applications: '/drivers/applications',
+    },
+}
+
 
 
 /* User Resource */
@@ -57,7 +63,7 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
             const { email, carrierId } = req.body
             await Application.invite(res.session, email, { carrierId })
 
-            res.redirect('/drivers/applications')
+            res.redirect(url.drivers.applications)
         }
     } catch (err) {
         throwErr.server(res, null, err)
@@ -73,7 +79,27 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
         const { error } = await Application.create(res.session, req.body)
         if (error) return throwErr.server(res, error, err)
 
-        res.redirect('/drivers/applications')
+        res.redirect(url.drivers.applications)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+router.post('/driver/application/delete', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { user } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!DS && !inPEnvironment('d:drv/apl', permissions, DS) && !permissions['d:drv/apl'].includes('5'))
+            return throwErr.auth(res)
+
+        const { _id } = req.body
+        const application = await Application.data(res.session, { _id })
+
+        const { error } = await application.delete(res.session)
+        if (error) return throwErr.server(res, error)
+
+        res.redirect(url.drivers.applications)
     } catch (err) {
         throwErr.server(res, null, err)
     }

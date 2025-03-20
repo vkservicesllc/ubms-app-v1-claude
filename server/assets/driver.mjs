@@ -62,6 +62,7 @@ class Application {
         this.position = data.position
             ? [ data.position, Driver.positionList[data.position] ]
             : null
+        this.condition = data.condition
         this.firstName = firstName
         this.middleName = middleName
         this.lastName = lastName
@@ -74,6 +75,9 @@ class Application {
         this.emPhone = data.emPhone
         this.emName = data.emName
         this.legalStatus = [ data.legalStatus, data.LS_expiresOn ]
+        this.team = {
+            name: data.teamName,
+        }
 
         if (data.userLastName) {
             const {
@@ -97,13 +101,69 @@ class Application {
         }
 
         if (data.busName) {
-            this.company = {
+            this.carrier = {
                 busName: data.busName,
                 coType: data.coType,
                 alias: data.companyAlias,
                 name: `${data.busName}, ${data.coType}`,
             }
         }
+    }
+
+
+    id = async () => (await mysql.execute(query.applications.select('id', {
+        match: { id: Application.matchIdHash(this._id) },
+    })))[0][0].id
+
+
+    log = async field => {
+        const fields = [ 'createdBy', 'createdAt', 'createdIn', 'updateLog' ]
+
+        let log = (await mysql.execute(query.applications.select(fields, {
+            match: { id: Application.matchIdHash(this._id) },
+        })))[0][0]
+
+        if (fields.includes(field)) log = log[field]
+
+        return log
+    }
+
+
+    delete = async session => {
+        let deleted = false,
+            error = sessionError(session, { branches: [ 'carrier' ] })
+
+        if (!error && !['p', 'c'].includes(this.condition)) error = 'Permission Error: Application Locked'
+        if (error) return { deleted, error }
+
+        const id = await this.id()
+        const teamId = await (await Team.data(session, { _id: this._teamId })).id()
+        const carrierId = this._carrierId
+            ? await (await Carrier.data(session, { _id: this._carrierId } )).id()
+            : null
+        const userId = this._userId
+            ? await (await User.data(session, { _id: this._userId } )).id()
+            : null
+        const log = await this.log()
+
+        try {
+            const [ result ] = await mysql.execute(query.applications.delete({ id }))
+            if (result.affectedRows > 0) deleted = true
+        } catch(err) {
+            console.error(err)
+            error = 'DB Error'
+        }
+
+        if (error) return { deleted, error }
+
+        for (const prop in log) this[prop] = log[prop]
+
+        if (this.user) this.user = this.user.name
+        if (this.carrier) this.carrier = `${this.carrier.name} (${this.carrier.alias})`
+
+        await logDeletion(session, 'applications', this, { id, teamId, carrierId, userId })
+
+        return { deleted }
     }
 
 
@@ -220,6 +280,12 @@ class Application {
                     [ 'deletedAt', 'userDeletedAt' ],
                 ],
                 join: [ 'id', 'userId' ],
+            },
+            {
+                db: db.business,
+                table: 'teams',
+                fields: [ [ 'name', 'teamName' ] ],
+                join: [ 'id', 'teamId' ],
             },
         ]
 
