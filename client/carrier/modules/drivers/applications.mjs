@@ -325,8 +325,6 @@ const table = $('#driver-apl-table').DataTable({
 
     lengthMenu,
 
-    order: [ 8, 'desc' ],
-
 })
 
 

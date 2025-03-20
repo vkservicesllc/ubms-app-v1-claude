@@ -81,6 +81,7 @@ $('#dob-calendar').calendar({
 
 const enableApplicant = () => {
     $field.applicant.removeClass('disabled').find('input').prop('disabled', false)
+    $('#self-assign-field').removeClass('disabled').find('input').prop('disabled', false)
     $submit.text('Register & Invite')
 }
 
@@ -93,6 +94,7 @@ const disableApplicant = () => {
     $expiration.val(null)
     $field.status.addClass('disabled')
     $field.expiration.addClass('disabled')
+    $('#self-assign-field').addClass('disabled').find('input').prop('disabled', true).prop('checked', true)
     $submit.text('Invite')
 }
 

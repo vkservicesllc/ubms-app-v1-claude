@@ -49,9 +49,13 @@
                     </div>
                     <div class="ui vertical divider"></div>
                     <div class="eleven wide column">
-                        <div class="ui toggle checkbox" style="margin-bottom: 20px;">
-                            <input type="checkbox" id="register-new-apl" />
-                            <label>Register New Applicant</label>
+                        <div class="ui form" style="margin-bottom: 30px;">
+                            <div class="field">
+                                <div class="ui toggle checkbox">
+                                    <input type="checkbox" id="register-new-apl" />
+                                    <label>Register New Applicant</label>
+                                </div>
+                            </div>
                         </div>
                         <div class="ui form">
                             <div class="disabled fields applicant-field" style="margin-top: 10px;">
@@ -148,6 +152,12 @@
                                             <input type="text" id="legal-status-expiration" name="LS_expiresOn" required disabled />
                                             <i class="calendar icon"></i>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="disabled field" id="self-assign-field">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" name="selfAssign" id="self-assign" checked disabled />
+                                        <label for="self-assign">Self-assign to Application</label>
                                     </div>
                                 </div>
                             </div>

@@ -6,6 +6,7 @@ import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
 import Company from '../../assets/company.mjs'
 import Carrier from '../../assets/carrier.mjs'
+import Driver, { Application } from '../../assets/driver.mjs'
 
 /* Validators */
 import validationCheck from '../../validators/default.mjs'
@@ -45,10 +46,12 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
         }
 
         if (req.body.lastName) next()
-        else res.send({
-            mw: 'primary form',
-            body: req.body,
-        })
+        else {
+            const { email, carrierId } = req.body
+            await Application.invite(res.session, email, { carrierId })
+
+            res.redirect('/drivers/applications')
+        }
     } catch (err) {
         throwErr.server(res, null, err)
     }
@@ -58,10 +61,12 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
         if (legalStatus == 2 && !LS_expiresOn)
             return throwErr.server(res, 'DB Error: Invalid data provided', err)
 
-        res.send({
-            mw: 'extra form',
-            body: req.body,
-        })
+        req.body.selfAssign = !!req.body.selfAssign
+
+        const { error } = await Application.create(res.session, req.body)
+        if (error) return throwErr.server(res, error, err)
+
+        res.redirect('/drivers/applications')
     } catch (err) {
         throwErr.server(res, null, err)
     }
