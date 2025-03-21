@@ -1,7 +1,7 @@
 {{> head}}
 
-<style>
-    .container { outline: 1px dotted red; }
+{{!-- <style>
+    .container { outline: 0 dotted red; }
     .form-container {
         max-width: 540px; /* Narrower form */
         margin: auto;
@@ -67,11 +67,68 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
-<!-- Footer -->
+{{!-- <!-- Footer -->
 <footer class="footer mt-5">
     {{{copyright}}}
-</footer>
+</footer> --}}
+{{!-- <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+</style> --}}
+
+    <style>
+        .card {
+            width: 540px;
+            max-width: 100%;
+            margin: 10px;
+        }
+        .card-title {
+            font-weight: 600;
+            font-size: 1.18em;
+        }
+        .card-footer {
+            font-size: .87em;
+        }
+        .intro {
+            font-size: .92em;
+        }
+        #carrier-name {
+            font-weight: 500;
+        }
+    </style>
+
+    <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-secondary">Professional Driver Application</h5>
+                <p class="card-text">
+                    <div class="border-top border-bottom py-2">
+                        <span id="carrier-name">Carolina Transportation, Inc</span><br/>
+                        120 Dogwood Rd, Suite C<br/>Candler, NC 28715<br/>
+                        (828) 347-7749
+                    </div>
+                    <div class="text-start text-success mt-3 intro">
+                        <p>
+                            We're looking for experienced and reliable drivers to join our carrier team.
+                            If you meet the qualifications and are committed to safety, efficiency,
+                            and top-tier service, we'd love to have you on board.
+                        </p>
+                        Before you begin the application, please ensure you have:
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item text-success">A valid driver’s license</li>
+                            <li class="list-group-item text-success">A clean driving record</li>
+                            <li class="list-group-item text-success">Required permits and credentials</li>
+                            <li class="list-group-item text-success">The ability to meet DOT and company safety requirements</li>
+                        </ul>
+                    </div>
+                </p>
+                <a href="#" class="btn btn-primary">APPLY NOW</a>
+            </div>
+            <div class="card-footer text-black-50">
+                {{{copyright}}}
+            </div>
+        </div>
+    </div>
 
 {{> foot}}
