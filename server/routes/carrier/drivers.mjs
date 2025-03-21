@@ -113,6 +113,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         ssn: DriverLabel.ssn(),
         phone: DriverLabel.phone(),
         position: DriverLabel.position(),
+        statusExp: DriverLabel.statusExp({ addClass: 'required' }),
     }
     hbs.input = {
         firstName: DriverInput.name('f', inputProps),
@@ -123,6 +124,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
         phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
         position: DriverInput.position(inputProps),
+        statusExp: DriverInput.statusExp(inputProps),
     }
     hbs.dropdown = {
         suffix: suffixItems,

@@ -5,7 +5,6 @@ import { formSelectors } from '/modules/registry/selectors.mjs'
 
 const {
     class: aplClass,
-    id,
     firstNameId,
     middleNameId,
     lastNameId,
@@ -20,6 +19,7 @@ const {
 const $help = {
     dob: $('#dob-help'),
     email: $('#email-help'),
+    statusExp: $('#status-exp-help'),
 }
 const $expiration = $(`#${statusExpId}`)
 const $submit = $('[type=submit]')
@@ -50,7 +50,13 @@ $('.status-radio').click(function() {
         disabled = false
         action = 'addClass'
     }
-    $expiration.prop('disabled', disabled).prev()[action]('required')
+
+    $expiration
+        .val(null)
+        .prop('disabled', disabled)
+        .removeClass('is-valid is-invalid')
+        .prev()[action]('required')
+    $help.statusExp.text(null)
 })
 
 const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
@@ -83,7 +89,7 @@ emailEvent(emailId, {
 
 inputEvent(dobId, {
     ...dateOpts,
-    onInput(dob, $dob) { console.log(dob)
+    onInput(dob, $dob) {
         $help.dob.text(null)
         $dob.removeClass('is-valid is-invalid')
     },
@@ -96,7 +102,7 @@ inputEvent(dobId, {
                 $help.dob.text('* Invalid date')
             } else {
                 const today = moment()
-                const diff = today.subtract(18, 'years')
+                const diff = today.clone().subtract(18, 'years').startOf('day')
 
                 if (date.isAfter(diff)) {
                     $dob.addClass('is-invalid')
@@ -108,4 +114,40 @@ inputEvent(dobId, {
     },
 })
 
-inputEvent(statusExpId, dateOpts)
+inputEvent(statusExpId, {
+    ...dateOpts,
+    onInput() {
+        $help.statusExp.text(null)
+        $expiration.removeClass('is-valid is-invalid')
+    },
+    onChange(expiration) {
+        if (expiration) {
+            const date = moment(expiration, 'MM/DD/YYYY', true)
+
+            if (!date.isValid()) {
+                $expiration.addClass('is-invalid')
+                $help.statusExp.text('* Invalid date')
+            } else {
+                const today = moment()
+                const diff = {
+                    day: today.clone().add(1, 'days').startOf('day'),
+                    week: today.clone().add(1, 'weeks').startOf('day'),
+                    month: today.clone().add(1, 'months').startOf('day'),
+                }
+                let invalid
+
+                if (date.isSameOrBefore(today)) invalid = '* Expired'
+                else if (date.isSame(diff.day)) invalid = '* Expires tomorrow'
+                else if (date.isBefore(diff.week)) invalid = '* Expires less than a week'
+                else if (date.isSame(diff.week)) invalid = '* Expires in a week'
+                else if (date.isBefore(diff.month)) invalid = '* Expires in less than a month'
+                else $expiration.addClass('is-valid')
+
+                if (invalid) {
+                    $expiration.addClass('is-invalid')
+                    $help.statusExp.text(invalid)
+                }
+            }
+        }
+    },
+})

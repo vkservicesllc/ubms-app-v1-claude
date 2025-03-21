@@ -5,7 +5,6 @@ import { formSelectors } from '/modules/registry/selectors.mjs'
 
 const {
     class: aplClass,
-    id,
     firstNameId,
     middleNameId,
     lastNameId,
@@ -14,6 +13,7 @@ const {
     ssnId,
     phoneId,
     emailId,
+    statusExpId,
 } = formSelectors.driver
 
 
@@ -30,7 +30,7 @@ const message = {
 
 const $submit = $('#submit-new-apl')
 const $email = $(`#${emailId}`)
-const $expiration = $('#legal-status-expiration')
+const $expiration = $(`#${statusExpId}`)
 const $registerApl = $('#register-new-apl')
 
 const $dropdown = {
@@ -71,10 +71,14 @@ const calSettings = {
         },
     },
 }
-$('.ui.calendar').calendar(calSettings)
+
 $('#dob-calendar').calendar({
     ...calSettings,
     maxDate: moment().subtract(18, 'years').toDate(),
+})
+$('#status-exp-calendar').calendar({
+    ...calSettings,
+    minDate: moment().add(1, 'months').toDate(),
 })
 
 

@@ -146,10 +146,10 @@
                             </div>
                             <div class="fields">
                                 <div class="four wide disabled field" id="applicant-legal-status-expiration-field">
-                                    <label for="legal-status-expiration">Status Expires on *</label>
-                                    <div class="ui calendar">
+                                    {{{label.statusExp}}}
+                                    <div class="ui calendar" id="status-exp-calendar">
                                         <div class="ui fluid input left icon">
-                                            <input type="text" id="legal-status-expiration" name="LS_expiresOn" required disabled />
+                                            {{{input.statusExp}}}
                                             <i class="calendar icon"></i>
                                         </div>
                                     </div>
