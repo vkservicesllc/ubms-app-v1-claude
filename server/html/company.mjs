@@ -406,14 +406,14 @@ export class Select {
         }, data, options)
     }
 
-    static ownerSuffix = (props) => Person.formSelect('suffix', {
+    static ownerSuffix = (props = {}) => Person.formSelect('suffix', {
         ...props,
         addClass: ownerClass,
         id: suffixId,
         name: 'suffix',
     })
 
-    static ownerGender = (props) => Person.formSelect('gender', {
+    static ownerGender = (props = {}) => Person.formSelect('gender', {
         ...props,
         addClass: ownerClass,
         id: genderId,

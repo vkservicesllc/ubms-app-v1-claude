@@ -8,7 +8,7 @@ import escapeHTML from '../../client/global/modules/assets/html.mjs'
 
 /* HTML Builders */
 import { Input as ContactInput } from '../html/contacts.mjs'
-import { Label as DriverLabel, Input as DriverInput } from '../html/driver.mjs'
+import { Label as DriverLabel, Input as DriverInput, Select as DriverSelect } from '../html/driver.mjs'
 
 /* Tools */
 import { respond404 } from '../tools/response.mjs'
@@ -65,6 +65,7 @@ router.get('/application/:carrierRoute?', async (req, res) => {
 
         const labelProps = { class: 'form-label' }
         const inputProps = { class: 'form-control' }
+        const selectProps = { class: 'form-select', tabs: 8 }
 
         hbs.label = {
             firstName: DriverLabel.name('f', labelProps),
@@ -85,6 +86,15 @@ router.get('/application/:carrierRoute?', async (req, res) => {
             ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
             phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
             email: DriverInput.email(inputProps)
+        }
+        hbs.select = {
+            suffix: DriverSelect.suffix(selectProps),
+            position: DriverSelect.position({
+                ...selectProps,
+                options: {
+                    emptyOpt: 'Decide later...',
+                },
+            }),
         }
 
         res.render(key, hbs)

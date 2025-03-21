@@ -1,4 +1,5 @@
 import Person from '../../client/global/modules/assets/person.mjs'
+import Driver from '../assets/driver.mjs'
 import { formLabel, formInput, formSelect } from '../../client/global/modules/assets/html.mjs'
 import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
@@ -155,5 +156,24 @@ export class Input {
         id: positionId,
         name: 'position',
     })
+
+}
+
+
+export class Select {
+
+    static suffix = (props = {}) => Person.formSelect('suffix', {
+        ...props,
+        addClass: driverClass,
+        id: suffixId,
+        name: 'suffix',
+    })
+
+    static position = (props = {}) => formSelect({
+        ...props,
+        addClass: driverClass,
+        id: positionId,
+        name: 'position',
+    }, Driver.positionList, props.options || {})
 
 }
