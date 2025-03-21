@@ -123,6 +123,7 @@ export const formSelectors = {
         phoneId: 'driver-phone',
         emailId: 'driver-email',
         positionId: 'driver-position',
+        statusExpId: 'driver-status-expires',
     },
 
 }

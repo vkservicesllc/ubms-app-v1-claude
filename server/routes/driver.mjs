@@ -7,6 +7,7 @@ import Carrier from '../assets/carrier.mjs'
 import escapeHTML from '../../client/global/modules/assets/html.mjs'
 
 /* HTML Builders */
+import { formLabel, formInput } from '../../client/global/modules/assets/html.mjs'
 import { Input as ContactInput } from '../html/contacts.mjs'
 import { Label as DriverLabel, Input as DriverInput, Select as DriverSelect } from '../html/driver.mjs'
 
@@ -77,6 +78,7 @@ router.get('/application/:carrierRoute?', async (req, res) => {
             phone: DriverLabel.phone({ ...labelProps, content: 'US Phone' }),
             email: DriverLabel.email(labelProps),
             position: DriverLabel.position(labelProps),
+            statusExp: DriverLabel.statusExp(labelProps),
         }
         hbs.input = {
             firstName: DriverInput.name('f', inputProps),
@@ -85,7 +87,8 @@ router.get('/application/:carrierRoute?', async (req, res) => {
             dob: DriverInput.dob({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
             ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
             phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
-            email: DriverInput.email(inputProps)
+            email: DriverInput.email(inputProps),
+            statusExp: DriverInput.statusExp({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
         }
         hbs.select = {
             suffix: DriverSelect.suffix(selectProps),

@@ -33,18 +33,19 @@
                         {{carrier.phone}}
                     </div>
                     {{/if}}
-                    <div class="text-start text-success py-2" id="intro">
+                    <div class="text-start text-success pt-2" id="intro">
                         <p>
                             We're looking for experienced and reliable drivers to join our carrier team.
                             If you meet the qualifications and are committed to safety, efficiency,
                             and top-tier service, we'd love to have you on board.
                         </p>
-                        Before you begin the application, please ensure you have:
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item text-success">A valid driver's license</li>
-                            <li class="list-group-item text-success">A clean driving record</li>
-                            <li class="list-group-item text-success">Required permits and credentials</li>
-                            <li class="list-group-item text-success">The ability to meet DOT and company safety requirements</li>
+                        Before you begin the application, please ensure you:
+                        <ul>
+                            <li>are at least 18 years old</li>
+                            <li>have a valid driver's license</li>
+                            <li>have a clean driving record</li>
+                            <li>have required permits and credentials</li>
+                            <li>are able to meet DOT and company safety requirements</li>
                         </ul>
                     </div>
                     <button class="btn btn-success" id="apply">APPLY NOW</button>
@@ -75,6 +76,7 @@
                             <div class="col-md-6 text-start">
                                 {{{label.dob}}}
                                 {{{input.dob}}}
+                                <div class="form-text text-danger" id="dob-help"></div>
                             </div>
                             <div class="col-md-6 text-start">
                                 {{{label.ssn}}}
@@ -89,6 +91,7 @@
                             <div class="col-md-6 text-start">
                                 {{{label.email}}}
                                 {{{input.email}}}
+                                <div class="form-text text-danger" id="email-help"></div>
                             </div>
                         </div>
                         <div class="row g-3 my-1">
@@ -108,23 +111,24 @@
                                 </div>
                                 <label class="form-label mt-3 required">Immigration Status</label>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="legalStatus" id="legal-status-0" value="0" />
+                                    <input class="form-check-input status-radio" type="radio" name="legalStatus" id="legal-status-0" value="0" />
                                     <label class="form-check-label" for="legal-status-0">US Citizen</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="legalStatus" id="legal-status-1" value="1" />
+                                    <input class="form-check-input status-radio" type="radio" name="legalStatus" id="legal-status-1" value="1" />
                                     <label class="form-check-label" for="legal-status-1">Permanent Resident</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="legalStatus" id="legal-status-2" value="2" />
+                                    <input class="form-check-input status-radio" type="radio" name="legalStatus" id="legal-status-2" value="2" />
                                     <label class="form-check-label" for="legal-status-2">Work Visa/Authorization</label>
                                 </div>
                             </div>
                         </div>
                         <div class="row g-3 my-1">
                             <div class="col-md-6 text-start">
-                                <label class="form-label" for="status-expiration">Status Expires on</label>
-                                <input type="text" class="form-control" placeholder="MM/DD/YYYY" disabled />
+                                {{{label.statusExp}}}
+                                {{{input.statusExp}}}
+                                <div class="form-text text-danger">* Status is expired</div>
                             </div>
                             <div class="col-md-6 text-start">
                                 {{{label.position}}}
@@ -132,7 +136,7 @@
                             </div>
                         </div>
                         <div class="d-grid gap-2 mt-4 mb-2">
-                            <button class="btn btn-primary" type="button">Start Application</button>
+                            <button type="submit" class="btn btn-primary" disabled>Start Application</button>
                         </div>
                     </form>
                 </div>
@@ -142,16 +146,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        $('#apply').click(() => {
-            const time = 1000
-
-            $('#card-intro, #new-apl-card').fadeOut(time)
-            setTimeout(() => {
-                $('#card-form, #new-apl-card').fadeIn(time)
-            }, time)
-        })
-    </script>
+    <script type="module" src="/modules/application/start.mjs"></script>
 
 {{> foot}}

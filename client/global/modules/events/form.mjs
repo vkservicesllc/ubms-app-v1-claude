@@ -22,6 +22,7 @@ export const inputEvent = (selector, options = {}) => {
     if (mask) {
         if (!placeholder) placeholder = '#'
         if (!caret) caret = 0
+        const { onInput } = options
 
         $input
             .mask(mask, {
@@ -32,6 +33,13 @@ export const inputEvent = (selector, options = {}) => {
             })
             .click(reset)
             .focus(reset)
+
+        if (onInput)
+            $input.on('keydown', function() {
+                const value = slim(english($(this).val()))
+
+                onInput(value, $(this))
+            })
 
         function reset() {
             if ($(this).val() == mask.replace(/9/g, placeholder))

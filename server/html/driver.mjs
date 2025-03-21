@@ -17,6 +17,7 @@ const {
     phoneId,
     emailId,
     positionId,
+    statusExpId,
 } = formSelectors.driver
 
 
@@ -71,6 +72,12 @@ export class Label {
         for: positionId,
     })
 
+    static statusExp = (props = {}) => formLabel({
+        content: 'Status Expires on',
+        ...props,
+        for: statusExpId,
+    })
+
 }
 
 
@@ -101,60 +108,53 @@ export class Input {
         })
     }
 
-    static dob = (props = {}) => {
-        // const { value } = props
-        // if (value) props.value = reformatDateString(value, 'us')
+    static dob = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: dobId,
+        name: 'dob',
+        required: true,
+    })
 
-        return formInput({
-            ...props,
-            addClass: driverClass,
-            id: dobId,
-            name: 'dob',
-            required: true,
-        })
-    }
+    static ssn = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: ssnId,
+        name: 'ssn',
+        required: true,
+    })
 
-    static ssn = (props = {}) => {
-        //? will think of something on the way
+    static phone = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: phoneId,
+        name: 'phone',
+        required: true,
+    })
 
-        return formInput({
-            ...props,
-            addClass: driverClass,
-            id: ssnId,
-            name: 'ssn',
-            required: true,
-        })
-    }
-
-    static phone = (props = {}) => {
-        //? will think of something on the way
-
-        return formInput({
-            ...props,
-            addClass: driverClass,
-            id: phoneId,
-            name: 'phone',
-            required: true,
-        })
-    }
-
-    static email = (props = {}) => {
-        //? will think of something on the way
-
-        return formInput({
-            ...props,
-            addClass: driverClass,
-            id: emailId,
-            name: 'email',
-            required: true,
-        })
-    }
+    static email = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: emailId,
+        name: 'email',
+        required: true,
+    })
 
     static position = (props = {}) => formInput({
         ...props,
         type: 'hidden',
         id: positionId,
         name: 'position',
+    })
+
+
+    static statusExp = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: statusExpId,
+        name: 'LS_expiresOn',
+        required: true,
+        disabled: true,
     })
 
 }

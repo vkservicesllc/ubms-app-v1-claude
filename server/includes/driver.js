@@ -10,7 +10,7 @@ const defaults = {
 module.exports = {
 
     'application': {
-        external: [ ...defaults.external ],
+        external: [ ...defaults.external, 'jquery.masked-input', 'moment' ],
         internal: {
             css: [ ...defaults.internal.css ],
             js: [ ...defaults.internal.js ],
