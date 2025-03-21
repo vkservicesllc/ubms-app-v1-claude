@@ -57,6 +57,13 @@ export class Label {
         addClass: 'required',
     })
 
+    static email = (props = {}) => formLabel({
+        content: 'Email',
+        ...props,
+        for: emailId,
+        addClass: 'required',
+    })
+
     static position = (props = {}) => formLabel({
         content: 'Desired Position',
         ...props,
@@ -126,6 +133,18 @@ export class Input {
             addClass: driverClass,
             id: phoneId,
             name: 'phone',
+            required: true,
+        })
+    }
+
+    static email = (props = {}) => {
+        //? will think of something on the way
+
+        return formInput({
+            ...props,
+            addClass: driverClass,
+            id: emailId,
+            name: 'email',
             required: true,
         })
     }

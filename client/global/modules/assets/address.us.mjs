@@ -17,17 +17,20 @@ export default class Address {
         const { address1, address2, city, state, zip } = this
         if (!address1 || !city || !state || !zip) return
 
-        let { inline, stateIdx } = options
+        let { inline, singleLine, stateIdx } = options
         if (inline === undefined || typeof inline != 'boolean')
             inline = true
+        if (singleLine === undefined || typeof singleLine != 'boolean')
+            singleLine = true
         if (stateIdx === undefined || ![0, 1].includes(stateIdx))
             stateIdx = 0
 
-        const divider = !inline ? '<br/>' : ', '
+        const _ = ', '
+        const divider = !inline ? '<br/>' : _
 
         let html = `<span class="us-address us-addr1">${escapeHTML(address1)}</span>`
         if (address2)
-            html += `${divider}<span class="us-address us-addr2">${escapeHTML(address2)}</span>`
+            html += `${singleLine ? _ : divider}<span class="us-address us-addr2">${escapeHTML(address2)}</span>`
         html += `${divider}<span class="us-address us-city">${escapeHTML(city)}</span>,`
         html += ` <span class="us-address us-state">${state[stateIdx]}</span>`
         html += ` <span class="us-address us-zip">${escapeHTML(zip)}</span>`

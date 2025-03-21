@@ -627,7 +627,7 @@ class Company {
             },
         ]
 
-        if (!DS) {
+        if (user !== true && !DS) {
             let teamId = await user.teamIds(session)
             if (!teamId.length) teamId = 0
 

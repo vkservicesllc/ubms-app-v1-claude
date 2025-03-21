@@ -69,14 +69,6 @@
     </div>
 </div> --}}
 
-{{!-- <!-- Footer -->
-<footer class="footer mt-5">
-    {{{copyright}}}
-</footer> --}}
-{{!-- <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
-</style> --}}
-
     <style>
         .card {
             width: 540px;
@@ -90,11 +82,11 @@
         .card-footer {
             font-size: .87em;
         }
-        .intro {
-            font-size: .92em;
-        }
         #carrier-name {
             font-weight: 500;
+        }
+        #intro {
+            font-size: .92em;
         }
     </style>
 
@@ -102,13 +94,15 @@
         <div class="card text-center">
             <div class="card-body">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
-                <p class="card-text">
+                <div class="card-text" id="card-intro" style="display: none;">
+                    {{#if (ne carrier false)}}
                     <div class="border-top border-bottom py-2">
-                        <span id="carrier-name">Carolina Transportation, Inc</span><br/>
-                        120 Dogwood Rd, Suite C<br/>Candler, NC 28715<br/>
-                        (828) 347-7749
+                        <span id="carrier-name">{{carrier.name}}</span><br/>
+                        {{{carrier.address}}}<br/>
+                        {{carrier.phone}}
                     </div>
-                    <div class="text-start text-success mt-3 intro">
+                    {{/if}}
+                    <div class="text-start text-success py-2" id="intro">
                         <p>
                             We're looking for experienced and reliable drivers to join our carrier team.
                             If you meet the qualifications and are committed to safety, efficiency,
@@ -122,13 +116,78 @@
                             <li class="list-group-item text-success">The ability to meet DOT and company safety requirements</li>
                         </ul>
                     </div>
-                </p>
-                <a href="#" class="btn btn-primary">APPLY NOW</a>
+                    <button class="btn btn-primary" id="apply">APPLY NOW</button>
+                </div>
+                <div class="card-text px-2" id="card-form">
+                    <form action="" method="POST">
+                        <div class="row g-3 my-1">
+                            <div class="col-md-6 text-start">
+                                {{{label.firstName}}}
+                                {{{input.firstName}}}
+                            </div>
+                            <div class="col-md-6 text-start">
+                                {{{label.middleName}}}
+                                {{{input.middleName}}}
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-6 text-start">
+                                {{{label.lastName}}}
+                                {{{input.lastName}}}
+                            </div>
+                            <div class="col-md-6 text-start">
+                                {{{label.suffix}}}
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-6 text-start">
+                                {{{label.dob}}}
+                                {{{input.dob}}}
+                            </div>
+                            <div class="col-md-6 text-start">
+                                {{{label.ssn}}}
+                                {{{input.ssn}}}
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-6 text-start">
+                                {{{label.phone}}}
+                                {{{input.phone}}}
+                            </div>
+                            <div class="col-md-6 text-start">
+                                {{{label.email}}}
+                                {{{input.email}}}
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-6 text-start">
+                                {{{label.position}}}
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="card-footer text-black-50">
                 {{{copyright}}}
             </div>
         </div>
     </div>
+
+    <script>
+        $('#apply').click(() => {
+            const time = 1000
+            const $intro = $('#card-intro')
+            const $form = $('#card-form')
+            const introHeight = $intro.height(),
+                  formHeight = $form.css('display', 'block').height()
+            const height = Math.max(introHeight, formHeight)
+
+            $form.css('display', 'none').height(height)
+            $intro.height(height).fadeOut(time)
+            setTimeout(() => {
+                $form.fadeIn(time)
+            }, time)
+        })
+    </script>
 
 {{> foot}}
