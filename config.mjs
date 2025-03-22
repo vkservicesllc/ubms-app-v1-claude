@@ -6,6 +6,7 @@ const author = 'VK Services, LLC'
 const domain = env.SERVER__DOMAIN || null
 const name = env.SITE__APP_NAME
 const alias = env.SITE__APP_ALIAS || env.SITE__APP_NAME
+const description = env.SITE__APP_DESC || null
 
 
 const config = {
@@ -45,6 +46,7 @@ const config = {
         name,
         alias,
     },
+    description,
     storage: {
         path: env.DIR_PATH,
     },
@@ -56,6 +58,7 @@ const config = {
 }
 
 const addrBook = {}
+const userApps = {}
 
 
 import defaultRoute from './server/routes/default.mjs'
@@ -91,6 +94,7 @@ const apps = {
         active: true,
         route: defaultRoute,
         session: {
+            userApp: 'def',
             maxAge: 10,  /* in minutes */
         },
     },
@@ -108,6 +112,7 @@ const apps = {
             { url: '/resource', router: adminResourceRoute },
         ],
         session: {
+            userApp: 'adm',
             maxAge: 5,  /* in minutes */
         },
     },
@@ -121,6 +126,7 @@ const apps = {
             { url: '/api', router: userApiRoute },
         ],
         session: {
+            userApp: 'usr',
             maxAge: 5,  /* in minutes */
         },
     },
@@ -138,6 +144,7 @@ const apps = {
             { url: '/resource', router: carrierResourceRoute },
         ],
         session: {
+            userApp: 'crr',
             maxAge: 10,  /* in minutes */
             defUrl: '/dashboard',
             excUrl: '/',
@@ -162,6 +169,7 @@ const apps = {
         active: false,
         route: schoolRoute,
         session: {
+            userApp: 'scl',
             maxAge: 10,  /* in minutes */
         },
     },
@@ -195,11 +203,16 @@ for (const branch in apps) {
     if (typeof excUrl == 'string') apps[branch].session.excUrl = [ excUrl ]
     else if (!excUrl || !Array.isArray(excUrl)) apps[branch].session.excUrl = []
     addrBook[branch] = apps[branch].address
+    if (apps[branch].session.userApp) userApps[branch] = {
+        env: apps[branch].session.userApp,
+        name: apps[branch].name,
+        address: apps[branch].address,
+    }
 }
 
 
 export default config
-export { apps, addrBook }
+export { apps, userApps, addrBook }
 
 
 

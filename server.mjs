@@ -3,7 +3,7 @@ import session from 'express-session'
 import cookieParser from 'cookie-parser'
 import hbs from 'hbs'
 
-import config, { apps, addrBook } from './config.mjs'
+import config, { apps, userApps, addrBook } from './config.mjs'
 
 /* Assets */
 import Site from './server/assets/site.mjs'
@@ -119,6 +119,7 @@ export default branch => {
         res.hbs = {
             appName: name,
             title: name,
+            userApps,
             addrBook,
             copyright: config.copyright.html(),
         }
