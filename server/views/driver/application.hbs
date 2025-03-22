@@ -16,7 +16,7 @@
         #carrier-name {
             font-weight: 500;
         }
-        #intro {
+        #intro, #privacy {
             font-size: .92em;
         }
     </style>
@@ -25,7 +25,7 @@
         <div class="card text-center" id="new-apl-card">
             <div class="card-body pt-4">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
-                <div class="card-text" id="card-intro">
+                <div class="card-text" id="intro-card">
                     {{#if (ne carrier false)}}
                     <div class="border-top border-bottom py-2">
                         <span id="carrier-name">{{carrier.name}}</span><br/>
@@ -50,7 +50,23 @@
                     </div>
                     <button class="btn btn-success" id="apply">APPLY NOW</button>
                 </div>
-                <div class="card-text px-2" id="card-form" style="display: none;">
+                <div class="card-text" id="privacy-card" style="display: none;">
+                    <div class="text-start pt-2" id="privacy">
+                        <h6>Privacy & Data Security Notice</h6>
+                        <p>
+                            We understand that the application process requires you to provide sensitive personal information.
+                            Your privacy and security are our top priorities.
+                        </p>
+                        <p>
+                            We guarantee that all information you submit will be securely stored, with the most sensitive data—such as Social Security numbers—being encrypted for maximum protection.
+                            We will not share your information with any third party under any circumstances, except as required by law.
+                        </p>
+                        <p>Our commitment is to handle your data with the highest level of confidentiality and security.</p>
+                        <p>If you have any questions about our data protection practices, please feel free to contact us.</p>
+                    </div>
+                    <button class="btn btn-success" id="confirm">I Understand & Agree</button>
+                </div>
+                <div class="card-text px-2" id="form-card" style="display: none;">
                     <form action="" method="POST">
                         <div class="row g-3 my-1">
                             <div class="col-md-6 text-start">

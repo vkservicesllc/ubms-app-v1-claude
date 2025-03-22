@@ -33,15 +33,20 @@ $('.form-check-input').prop('checked', false)
 $expiration.prop('disabled', true)
 $submit.prop('disabled', true)
 
-
+const duration = 1000
 $('#apply').click(() => {
-    const time = 1000
-
-    $('#card-intro, #new-apl-card').fadeOut(time)
+    $('#intro-card, #new-apl-card').fadeOut(duration)
     setTimeout(() => {
-        $('#card-form, #new-apl-card').fadeIn(time)
-    }, time)
+        $('#privacy-card, #new-apl-card').fadeIn(duration)
+    }, duration)
 })
+$('#confirm').click(() => {
+    $('#privacy-card, #new-apl-card').fadeOut(duration)
+    setTimeout(() => {
+        $('#form-card, #new-apl-card').fadeIn(duration)
+    }, duration)
+})
+
 
 $('.status-radio').click(function() {
     let disabled = true, action = 'removeClass'
