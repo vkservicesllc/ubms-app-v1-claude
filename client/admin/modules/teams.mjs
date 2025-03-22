@@ -162,6 +162,8 @@ const displayTeams = () => {
                 html += `<a class="tag team-relationship ${userStyle}" data-relationship="users" data-team-id="${_id}">${users}</a>`
                 html += '</div></div>'
 
+                html += `<div class="ml-2"><a class="has-text-grey team-config" data-team-id="${_id}"><i class="fas fa-gear"></i></a></div>`
+
                 html += '</div></div></div></div>'
 
                 if (i === 4 || idx === data.length) {
