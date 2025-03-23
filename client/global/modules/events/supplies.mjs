@@ -33,7 +33,7 @@ export const word = str => {
     if (!str) return ''
 
     const words = str.split(' ')
-    const patt = /[^A-Za-z\d\s]/g
+    const patt = /[^A-Za-z\d\s\'\"\&]/g
 
     for (let i = 0; i < words.length; i++) {
         let j = 0, word = words[i]

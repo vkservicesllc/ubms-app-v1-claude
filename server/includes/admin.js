@@ -130,7 +130,7 @@ module.exports = {
     },
 
     'teams': {
-        external: [ ...online.external ],
+        external: [ ...online.external, 'jquery.masked-input' ],
         internal: {
             css: [ ...online.internal.css, 'form' ],
             js: [ ...online.internal.js ],

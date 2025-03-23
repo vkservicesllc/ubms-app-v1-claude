@@ -27,15 +27,15 @@ export class Label {
 
     static busName = (props = {}) => formLabel({
         content: 'Business Name',
-        ...props,
         for: busNameId,
+        ...props,
         addClass: 'required',
     })
 
     static coType = (props = {}) => formLabel({
         content: 'Type',
-        ...props,
         for: coTypeId,
+        ...props,
         addClass: 'required',
     })
 
@@ -173,9 +173,9 @@ export class Input {
         }
 
         return formInput({
+            id,
             ...props,
             type,
-            id,
             name,
             maxLength,
             required: current === false,
@@ -356,8 +356,8 @@ export class Select {
         }
 
         return formSelect({
-            ...props,
             id: coTypeId,
+            ...props,
             name: 'coType',
             required: true,
         }, data, options)

@@ -1,7 +1,10 @@
 import Tip from './assets/tip.mjs'
 import escapeHTML from '/modules/assets/html.mjs'
 import { teamNameEvent, teamDescEvent } from '/modules/events/team.mjs'
-import { catIdEvent } from '/modules/events/company.mjs'
+import { catIdEvent, busNameEvent, coTypeEvent } from '/modules/events/company.mjs'
+import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
+import { urlEvent } from '/modules/events/web.mjs'
+import { addr1Event, addr2Event, cityEvent, zipEvent } from '/modules/events/address.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import inputLength from '/modules/registry/length.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
@@ -111,6 +114,13 @@ teamDescEvent({
         countDescChars(desc)
     },
 })
+
+busNameEvent(busNameId, coTypeId)
+
+coTypeEvent(coTypeId, busNameId)
+
+telEvent(phoneId)
+
 
 const closeUpsert = () => {
     const $catId = $(`#${catId}`)
