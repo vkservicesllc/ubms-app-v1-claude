@@ -25,11 +25,12 @@ const $modal = {
     all: $('.modal'),
     upsert: $('#team-upsert-modal'),
     relationship: $('#team-relationship-modal'),
-    config: $('#team-config-modal'),
+    profile: $('#team-profile-modal'),
 }
 const $title = {
     upsert: $('#team-upsert-title'),
     relationship: $('#team-relationship-title'),
+    profile: $('#team-profile-title'),
 }
 const $tip = {
     name: $('#team-name-tip'),
@@ -128,7 +129,7 @@ const closeUpsert = () => {
 }
 
 const displayTeams = () => {
-    $('.team-edit, .team-config').off('click')
+    $('.team-edit, .team-profile').off('click')
     $('.team-relationship').off('click')
 
     $.ajax({
@@ -165,8 +166,8 @@ const displayTeams = () => {
                 html += `<a class="tag team-relationship ${userStyle}" data-relationship="users" data-team-id="${_id}">${users}</a>`
                 html += '</div></div>'
 
-                html += `<div><a class="has-text-grey team-config" data-team-id="${_id}"><i class="fas fa-gear"></i></a></div>`
-                html += `<div><a class="has-text-grey team-cat-config" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
+                html += `<div><a class="has-text-grey team-profile" data-team-id="${_id}"><i class="fas fa-briefcase"></i></a></div>`
+                html += `<div><a class="has-text-grey team-cat-profile" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
 
                 html += '</div></div></div></div>'
 
@@ -178,18 +179,18 @@ const displayTeams = () => {
 
             $('#team-list').html(html)
 
-            $('.team-edit, .team-config').on('click', function() {
+            $('.team-edit, .team-profile').on('click', function() {
                 const _id = $(this).data('team-id')
                 let target = 'edit'
-                if ($(this).hasClass('team-config')) target = 'config'
+                if ($(this).hasClass('team-profile')) target = 'profile'
 
                 $.ajax({
                     url: `/api/team/${_id}`,
                     method: 'POST',
                     success(response) {
-                        const { _id } = response.data
+                        const { _id, name } = response.data
                         if (target == 'edit') {
-                            const { catId: category, name, description, count } = response.data
+                            const { catId: category, description, count } = response.data
                             const { companies, users } = count
                             const $catId = $(`#${catId}`)
 
@@ -206,17 +207,18 @@ const displayTeams = () => {
                             if (!companies && !users) $button.delete.show()
                             countDescChars(description)
                             $modal.upsert.addClass('is-active')
-                        } else if (target == 'config') {
+                        } else if (target == 'profile') {
                             const {
                                 busName, coType, phone, email, website,
                                 address1, address2, city, state, zip,
                             } = response.data
 
-                            $(`#config-${id}`).val(_id)
+                            $(`#profile-${id}`).val(_id)
                             // if (busName && coType) ...set current company
                             //! unfinished
+                            $title.profile.html(`<strong>${escapeHTML(name)}</strong> <small>Profile</small>`)
 
-                            $modal.config.addClass('is-active')
+                            $modal.profile.addClass('is-active')
                         }
                     },
                 })

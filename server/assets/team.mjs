@@ -19,6 +19,7 @@ const throwErr = require('../tools/error')
 
 const query = {
     teams: new Query(db.business, 'teams'),
+    profiles: new Query(db.business, 'team_profiles'),
     companies: new Query(db.business, 'teams_companies'),
     users: new Query(db.business, 'teams_users'),
 }
@@ -31,20 +32,22 @@ class Team {
         this.catId = data.catId
         this.name = data.name
         this.description = data.description
-        this.company = null
         if (data.busName && data.coType)
-            this.company = `${data.busName}, ${coType}`
-        this.phone = data.phone
-        this.email = data.email
-        this.website = data.website
-        if (data.address1 && data.city && data.state && data.zip)
-            this.address = new Address({
-                address1: data.address1,
-                address2: data.address2,
-                city: data.city,
-                state: data.state,
-                zip: data.zip,
-            })
+            this.profile = {
+                busName: data.busName,
+                coType: data.coType,
+                company: data.company,
+                phone: data.phone,
+                email: data.email,
+                website: data.website,
+                address: new Address({
+                    address1: data.address1,
+                    address2: data.address2,
+                    city: data.city,
+                    state: data.state,
+                    zip: data.zip,
+                })
+            }
         this.count = {
             companies: data.companyCount,
             users: data.userCount,
@@ -333,28 +336,33 @@ class Team {
         const match = { id, name, catId }
         if (!id) match.id = Team.matchIdHash(_id)
 
+        const join = [ 'teamId', 'id' ]
         const batch = [
             {
                 table: 'teams',
-                fields: [
-                    Team.hashId(), 'catId', 'name', 'description',
-                    'busName', 'coType',
-                    'phone', 'email', 'website',
-                    'address1', 'address2', 'city', 'state', 'zip',
-                    'settings',
-                ],
+                fields: [ Team.hashId(), 'catId', 'name', 'description', 'settings' ],
                 match,
                 group: 'id',
             },
             {
+                table: 'team_profiles',
+                fields: [
+                    'busName', 'coType',
+                    { concat: [ [ 'busName', '^, ', 'coType' ], 'company' ] },
+                    'phone', 'email', 'website',
+                    'address1', 'address2', 'city', 'state', 'zip',
+                ],
+                join,
+            },
+            {
                 table: 'teams_companies',
                 fields: [ { countDist: [ 'companyId', 'companyCount' ] } ],
-                join: [ 'teamId', 'id' ],
+                join,
             },
             {
                 table: 'teams_users',
                 fields: [ { countDist: [ 'userId', 'userCount' ] } ],
-                join: [ 'teamId', 'id' ],
+                join,
             },
         ]
 

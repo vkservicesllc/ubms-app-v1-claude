@@ -79,16 +79,16 @@
                     </div>
                 </div>
 
-                <div class="modal" id="team-config-modal">
+                <div class="modal" id="team-profile-modal">
                     <div class="modal-background"></div>
                     <div class="modal-card" style="min-width: 720px;">
                         <header class="modal-card-head">
-                            <p class="modal-card-title" id="team-config-title">Team Preferences</p>
+                            <p class="modal-card-title" id="team-profile-title"></p>
                             <button class="delete"></button>
                         </header>
-                        <section class="modal-card-body" id="team-config">
-                            <form id="team-config-form" action="" method="POST" autocomplete="off">
-                                {{{input.configId}}}
+                        <section class="modal-card-body" id="team-profile">
+                            <form id="team-profile-form" action="" method="POST" autocomplete="off">
+                                {{{input.profileId}}}
                                 {{{input.current.company}}}
                                 <div class="columns">
                                     <div class="column is-two-fifths">
@@ -185,7 +185,7 @@
                             </form>
                         </section>
                         <footer class="modal-card-foot">
-                            <button type="submit" class="button is-success">Save</button>
+                            <button type="submit" form="team-profile-form" class="button is-success">Save</button>
                         </footer>
                     </div>
                 </div>

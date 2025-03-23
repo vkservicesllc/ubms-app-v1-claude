@@ -183,14 +183,14 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
             description: TeamLabel.description({ class: labelClass }),
             busName: CompanyLabel.busName({ class: labelClassRequired, for: busNameId, content: 'Company Name' }),
             coType: CompanyLabel.coType({ class: labelClassRequired, for: coTypeId }),
-            phone: ContactLabel.tel('phone', { class: labelClass, for: phoneId }),
+            phone: ContactLabel.tel('phone', { class: labelClassRequired, addClass: 'required', for: phoneId }),
             email: ContactLabel.email({ class: labelClass, for: emailId }),
             website: CompanyLabel.website({ class: labelClass, for: websiteId }),
-            address1: AddrLabel.address1({ class: labelClass, for: addr1Id, addClass: '' }),
+            address1: AddrLabel.address1({ class: labelClassRequired, for: addr1Id }),
             address2: AddrLabel.address2({ class: labelClass, for: addr2Id }, true),
-            city: AddrLabel.city({ class: labelClass, for: cityId, addClass: '' }),
-            state: AddrLabel.state({ class: labelClass, for: stateId, addClass: '' }),
-            zip: AddrLabel.zip({ class: labelClass, for: zipId, addClass: '' }),
+            city: AddrLabel.city({ class: labelClassRequired, for: cityId }),
+            state: AddrLabel.state({ class: labelClassRequired, for: stateId }),
+            zip: AddrLabel.zip({ class: labelClassRequired, for: zipId }),
         }
 
         hbs.input = {
@@ -201,21 +201,21 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
             id: TeamInput.id(),
             name: TeamInput.name({ class: 'input' }),
             description: TeamInput.description({ class: 'textarea' }),
-            configId: TeamInput.id({ id: `#config-${id}` }),
+            profileId: TeamInput.id({ id: `#profile-${id}` }),
             busName: CompanyInput.busName({ class: 'input', id: busNameId }),
-            phone: ContactInput.tel('phone', { class: 'input', id: phoneId }),
+            phone: ContactInput.tel('phone', { class: 'input', id: phoneId, required: true }),
             email: ContactInput.email({ class: 'input', id: emailId }),
             website: CompanyInput.website({ class: 'input', id: websiteId }),
-            address1: AddrInput.address1({ class: 'input', id: addr1Id }),
-            address2: AddrInput.address2({ class: 'input', id: addr2Id }),
-            city: AddrInput.city({ class: 'input', id: cityId }),
-            zip: AddrInput.zip({ class: 'input', id: zipId }),
+            address1: AddrInput.address1({ class: 'input', id: addr1Id, name: 'address1' }),
+            address2: AddrInput.address2({ class: 'input', id: addr2Id, name: 'address2' }),
+            city: AddrInput.city({ class: 'input', id: cityId, name: 'city' }),
+            zip: AddrInput.zip({ class: 'input', id: zipId, name: 'zip' }),
         }
 
         hbs.select = {
             category: TeamSelect.catId({ tabs: 13, options: { emptyOpt: '--' } }),
             coType: CompanySelect.coType({ tabs: 13, options: { emptyOpt: '--' }, id: coTypeId }),
-            state: AddrSelect.stateUS({ tabs: 13, options: { emptyOpt: '--', valOpt: true }, id: stateId }),
+            state: AddrSelect.stateUS({ tabs: 13, options: { emptyOpt: '--', valOpt: true }, id: stateId, name: 'state' }),
         }
 
         hbs.descMaxChars = inputLength.team.desc.max
