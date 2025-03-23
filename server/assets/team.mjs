@@ -4,6 +4,7 @@ import db from '../settings/mysql.mjs'
 /* Assets */
 import User from './user.mjs'
 import Company from './company.mjs'
+import Address from '../../client/global/modules/assets/address.us.mjs'
 import { sessionError } from './user.mjs'
 
 /* Tools */
@@ -30,6 +31,20 @@ class Team {
         this.catId = data.catId
         this.name = data.name
         this.description = data.description
+        this.company = null
+        if (data.busName && data.coType)
+            this.company = `${data.busName}, ${coType}`
+        this.phone = data.phone
+        this.email = data.email
+        this.website = data.website
+        if (data.address1 && data.city && data.state && data.zip)
+            this.address = new Address({
+                address1: data.address1,
+                address2: data.address2,
+                city: data.city,
+                state: data.state,
+                zip: data.zip,
+            })
         this.count = {
             companies: data.companyCount,
             users: data.userCount,
@@ -321,7 +336,13 @@ class Team {
         const batch = [
             {
                 table: 'teams',
-                fields: [ Team.hashId(), 'catId', 'name', 'description' ],
+                fields: [
+                    Team.hashId(), 'catId', 'name', 'description',
+                    'busName', 'coType',
+                    'phone', 'email', 'website',
+                    'address1', 'address2', 'city', 'state', 'zip',
+                    'settings',
+                ],
                 match,
                 group: 'id',
             },

@@ -9,6 +9,10 @@ import carrierPermissions from '../../assets/user/permissions.carrier.mjs'
 /* HTML Builders */
 import { Label as UserLabel, Input as UserInput, Select as UserSelect } from '../../html/user.mjs'
 import { Label as TeamLabel, Input as TeamInput, Select as TeamSelect } from '../../html/team.mjs'
+import { Label as CompanyLabel, Input as CompanyInput, Select as CompanySelect } from '../../html/company.mjs'
+import { Label as AddrLabel, Input as AddrInput, Select as AddrSelect } from '../../html/address.us.mjs'
+import { Label as ContactLabel, Input as ContactInput } from '../../html/contacts.mjs'
+
 
 /* Registry */
 import { formSelectors } from '../../../client/global/modules/registry/selectors.mjs'
@@ -168,23 +172,50 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key)
 
+        const {
+            id, busNameId, coTypeId, phoneId, emailId, websiteId,
+            addr1Id, addr2Id, cityId, stateId, zipId,
+        } = formSelectors.team
+
         hbs.label = {
             name: TeamLabel.name({ class: labelClassRequired }),
             category: TeamLabel.catId({ class: labelClassRequired }),
             description: TeamLabel.description({ class: labelClass }),
+            busName: CompanyLabel.busName({ class: labelClassRequired, for: busNameId, content: 'Company Name' }),
+            coType: CompanyLabel.coType({ class: labelClassRequired, for: coTypeId }),
+            phone: ContactLabel.tel('phone', { class: labelClass, for: phoneId }),
+            email: ContactLabel.email({ class: labelClass, for: emailId }),
+            website: CompanyLabel.website({ class: labelClass, for: websiteId }),
+            address1: AddrLabel.address1({ class: labelClass, for: addr1Id, addClass: '' }),
+            address2: AddrLabel.address2({ class: labelClass, for: addr2Id }, true),
+            city: AddrLabel.city({ class: labelClass, for: cityId, addClass: '' }),
+            state: AddrLabel.state({ class: labelClass, for: stateId, addClass: '' }),
+            zip: AddrLabel.zip({ class: labelClass, for: zipId, addClass: '' }),
         }
 
         hbs.input = {
             current: {
                 name: TeamInput.name({}, true),
+                company: '',
             },
             id: TeamInput.id(),
             name: TeamInput.name({ class: 'input' }),
             description: TeamInput.description({ class: 'textarea' }),
+            configId: TeamInput.id({ id: `#config-${id}` }),
+            busName: CompanyInput.busName({ class: 'input', id: busNameId }),
+            phone: ContactInput.tel('phone', { class: 'input', id: phoneId }),
+            email: ContactInput.email({ class: 'input', id: emailId }),
+            website: CompanyInput.website({ class: 'input', id: websiteId }),
+            address1: AddrInput.address1({ class: 'input', id: addr1Id }),
+            address2: AddrInput.address2({ class: 'input', id: addr2Id }),
+            city: AddrInput.city({ class: 'input', id: cityId }),
+            zip: AddrInput.zip({ class: 'input', id: zipId }),
         }
 
         hbs.select = {
-            category: TeamSelect.catId({ tabs: 12, options: { emptyOpt: '--' } }),
+            category: TeamSelect.catId({ tabs: 13, options: { emptyOpt: '--' } }),
+            coType: CompanySelect.coType({ tabs: 13, options: { emptyOpt: '--' }, id: coTypeId }),
+            state: AddrSelect.stateUS({ tabs: 13, options: { emptyOpt: '--', valOpt: true }, id: stateId }),
         }
 
         hbs.descMaxChars = inputLength.team.desc.max

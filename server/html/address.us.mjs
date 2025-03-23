@@ -10,8 +10,8 @@ export class Label {
 
     static address1 = (props = {}, mail = false) => formLabel({
         content: 'Street Address' + (mail ? ' / PO Box' : ''),
-        ...props,
         addClass: 'required',
+        ...props,
         for: props.for || props.id,
     })
 
@@ -23,22 +23,22 @@ export class Label {
 
     static zip = (props = {}) => formLabel({
         content: 'Zip',
-        ...props,
         addClass: 'required',
+        ...props,
         for: props.for || props.id,
     })
 
     static city = (props = {}) => formLabel({
         content: 'City',
-        ...props,
         addClass: 'required',
+        ...props,
         for: props.for || props.id,
     })
 
     static state = (props = {}) => formLabel({
         content: 'State',
-        ...props,
         addClass: 'required',
+        ...props,
         for: props.for || props.id,
     })
 

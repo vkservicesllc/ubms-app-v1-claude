@@ -93,6 +93,16 @@ export const formSelectors = {
         catId: 'team-category',
         nameId: 'team-name',
         descId: 'team-description',
+        busNameId: 'team-busname',
+        coTypeId: 'team-cotype',
+        websiteId: 'team-website',
+        phoneId: 'team-phone',
+        emailId: 'team-email',
+        addr1Id: 'team-address1',
+        addr2Id: 'team-address2',
+        zipId: 'team-zip',
+        cityId: 'team-city',
+        stateId: 'team-state',
     },
 
     carrier: {

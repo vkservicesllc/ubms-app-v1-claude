@@ -9,7 +9,11 @@ import { capitalizeFirst } from '/modules/tools/string.mjs'
 
 const categories = $.ajax('/api/assets/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 const interval = 30000
-const { class: teamClass, id, catId, nameId, descId } = formSelectors.team
+const {
+    class: teamClass, id, catId, nameId, descId,
+    busNameId, coTypeId, phoneId, emailId, websiteId,
+    addr1Id, addr2Id, cityId, stateId, zipId,
+} = formSelectors.team
 
 const ids = {
     catIdIcon: 'team-category-select-icon',
@@ -21,6 +25,7 @@ const $modal = {
     all: $('.modal'),
     upsert: $('#team-upsert-modal'),
     relationship: $('#team-relationship-modal'),
+    config: $('#team-config-modal'),
 }
 const $title = {
     upsert: $('#team-upsert-title'),
@@ -123,7 +128,7 @@ const closeUpsert = () => {
 }
 
 const displayTeams = () => {
-    $('.team-edit').off('click')
+    $('.team-edit, .team-config').off('click')
     $('.team-relationship').off('click')
 
     $.ajax({
@@ -150,8 +155,6 @@ const displayTeams = () => {
 
                 html += '<div class="field is-grouped is-grouped-multiline">'
 
-                html += `<div>${categories[catId].icon || defaults.catIdIcon}</div>`
-
                 html += '<div class="control"><div class="tags has-addons">'
                 html += `<span class="tag">${categories[catId].item[0]}</span>`
                 html += `<a class="tag team-relationship ${companyStyle}" data-relationship="companies" data-team-id="${_id}">${companies}</a>`
@@ -162,7 +165,8 @@ const displayTeams = () => {
                 html += `<a class="tag team-relationship ${userStyle}" data-relationship="users" data-team-id="${_id}">${users}</a>`
                 html += '</div></div>'
 
-                html += `<div class="ml-2"><a class="has-text-grey team-config" data-team-id="${_id}"><i class="fas fa-gear"></i></a></div>`
+                html += `<div><a class="has-text-grey team-config" data-team-id="${_id}"><i class="fas fa-gear"></i></a></div>`
+                html += `<div><a class="has-text-grey team-cat-config" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
 
                 html += '</div></div></div></div>'
 
@@ -174,30 +178,46 @@ const displayTeams = () => {
 
             $('#team-list').html(html)
 
-            $('.team-edit').on('click', function() {
+            $('.team-edit, .team-config').on('click', function() {
                 const _id = $(this).data('team-id')
+                let target = 'edit'
+                if ($(this).hasClass('team-config')) target = 'config'
 
                 $.ajax({
                     url: `/api/team/${_id}`,
                     method: 'POST',
                     success(response) {
-                        const { _id, catId: category, name, description, count } = response.data
-                        const { companies, users } = count
-                        const $catId = $(`#${catId}`)
+                        const { _id } = response.data
+                        if (target == 'edit') {
+                            const { catId: category, name, description, count } = response.data
+                            const { companies, users } = count
+                            const $catId = $(`#${catId}`)
 
-                        $(`#${id}`).val(_id)
-                        $(`#current-${nameId}, #${nameId}`).val(name)
-                        $catId.val(category).find('option[value=""]').remove()
-                        if (companies) $catId.attr('disabled', true)
-                        $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)
-                        $(`#${descId}`).val(description)
+                            $(`#${id}`).val(_id)
+                            $(`#current-${nameId}, #${nameId}`).val(name)
+                            $catId.val(category).find('option[value=""]').remove()
+                            if (companies) $catId.attr('disabled', true)
+                            $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)
+                            $(`#${descId}`).val(description)
 
-                        $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
-                        setTip.passed('name')
-                        $button.upsert.html('Update').addClass('is-success')
-                        if (!companies && !users) $button.delete.show()
-                        countDescChars(description)
-                        $modal.upsert.addClass('is-active')
+                            $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
+                            setTip.passed('name')
+                            $button.upsert.html('Update').addClass('is-success')
+                            if (!companies && !users) $button.delete.show()
+                            countDescChars(description)
+                            $modal.upsert.addClass('is-active')
+                        } else if (target == 'config') {
+                            const {
+                                busName, coType, phone, email, website,
+                                address1, address2, city, state, zip,
+                            } = response.data
+
+                            $(`#config-${id}`).val(_id)
+                            // if (busName && coType) ...set current company
+                            //! unfinished
+
+                            $modal.config.addClass('is-active')
+                        }
                     },
                 })
             })

@@ -25,15 +25,13 @@
                                         </div>
                                         <div class="field">
                                             {{{label.category}}}
-                                            <div class="contol has-icons-left">
-                                                <div class="control has-icons-left">
-                                                    <div class="select is-fullwidth">
-                                                        {{{select.category}}}
-                                                    </div>
-                                                    <span class="icon is-small is-left" id="team-category-select-icon">
-                                                        <i class="fas fa-file-circle-question"></i>
-                                                    </span>
+                                            <div class="control has-icons-left">
+                                                <div class="select is-fullwidth">
+                                                    {{{select.category}}}
                                                 </div>
+                                                <span class="icon is-small is-left" id="team-category-select-icon">
+                                                    <i class="fas fa-file-circle-question"></i>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -77,6 +75,117 @@
                         <section class="modal-card-body" id="team-relationship"></section>
                         <footer class="modal-card-foot">
                             <button class="button" id="team-relationship-close-button">Done</button>
+                        </footer>
+                    </div>
+                </div>
+
+                <div class="modal" id="team-config-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card" style="min-width: 720px;">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title" id="team-config-title">Team Preferences</p>
+                            <button class="delete"></button>
+                        </header>
+                        <section class="modal-card-body" id="team-config">
+                            <form id="team-config-form" action="" method="POST" autocomplete="off">
+                                {{{input.configId}}}
+                                {{{input.current.company}}}
+                                <div class="columns">
+                                    <div class="column is-two-fifths">
+                                        <div class="field">
+                                            {{{label.busName}}}
+                                            <div class="control">
+                                                {{{input.busName}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column is-one-fifths">
+                                        <div class="field">
+                                            {{{label.coType}}}
+                                            <div class="control">
+                                                <div class="select is-fullwidth">
+                                                    {{{select.coType}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column is-two-fifths">
+                                        <div class="field">
+                                            {{{label.phone}}}
+                                            <div class="control">
+                                                {{{input.phone}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-half">
+                                        <div class="field">
+                                            {{{label.email}}}
+                                            <div class="control">
+                                                {{{input.email}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column is-half">
+                                        <div class="field">
+                                            {{{label.website}}}
+                                            <div class="control">
+                                                {{{input.website}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-half">
+                                        <div class="field">
+                                            {{{label.address1}}}
+                                            <div class="control">
+                                                {{{input.address1}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column is-one-quarter">
+                                        <div class="field">
+                                            {{{label.address2}}}
+                                            <div class="control">
+                                                {{{input.address2}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column is-one-quarter">
+                                        <div class="field">
+                                            {{{label.zip}}}
+                                            <div class="control">
+                                                {{{input.zip}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-half">
+                                        <div class="field">
+                                            {{{label.city}}}
+                                            <div class="control">
+                                                {{{input.city}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column is-one-quarter">
+                                        <div class="field">
+                                            {{{label.state}}}
+                                            <div class="control">
+                                                <div class="select is-fullwidth">
+                                                    {{{select.state}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button type="submit" class="button is-success">Save</button>
                         </footer>
                     </div>
                 </div>
