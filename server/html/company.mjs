@@ -208,9 +208,9 @@ export class Input {
     }
 
     static website = (props = {}) => formInput({
+        id: websiteId,
         ...props,
         // type: 'url',
-        id: websiteId,
         name: 'website',
         maxLength: inputLength.web.url.max,
     })

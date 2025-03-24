@@ -37,6 +37,8 @@ const $title = {
 }
 const $tip = {
     name: $('#team-name-tip'),
+    email: $('#team-email-tip'),
+    website: $('#team-website-tip'),
 }
 const tipDefs = {
     name: null,
@@ -120,6 +122,34 @@ busNameEvent(busNameId, coTypeId)
 coTypeEvent(coTypeId, busNameId)
 
 telEvent(phoneId)
+
+emailEvent(emailId, {
+    onInput() {
+        $tip.email.html(null)
+    },
+    onChange(email, valid) {
+        if (email && !valid)
+            $tip.email.html('<i class="fa fa-triangle-exclamation"></i> Invalid email')
+    },
+})
+
+urlEvent(websiteId, {
+    onInput() {
+        $tip.website.html(null)
+    },
+    onChange(website, valid) {
+        if (website && !valid)
+            $tip.website.html('<i class="fa fa-triangle-exclamation"></i> Invalid website')
+    },
+})
+
+addr1Event(addr1Id, { addr2Id })
+
+addr2Event(addr2Id)
+
+zipEvent(zipId, { cityId, stateId })
+
+cityEvent(cityId)
 
 
 const closeUpsert = () => {

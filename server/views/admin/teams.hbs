@@ -87,9 +87,8 @@
                             <button class="delete"></button>
                         </header>
                         <section class="modal-card-body" id="team-profile">
-                            <form id="team-profile-form" action="" method="POST" autocomplete="off">
+                            <form id="team-profile-form" action="/resource/team/profile" method="POST" autocomplete="off">
                                 {{{input.profileId}}}
-                                {{{input.current.company}}}
                                 <div class="columns">
                                     <div class="column is-two-fifths">
                                         <div class="field">
@@ -125,6 +124,7 @@
                                             <div class="control">
                                                 {{{input.email}}}
                                             </div>
+                                            <p class="help has-text-danger" id="team-email-tip"></p>
                                         </div>
                                     </div>
                                     <div class="column is-half">
@@ -133,6 +133,7 @@
                                             <div class="control">
                                                 {{{input.website}}}
                                             </div>
+                                            <p class="help has-text-danger" id="team-website-tip"></p>
                                         </div>
                                     </div>
                                 </div>

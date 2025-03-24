@@ -1,5 +1,9 @@
 import inputLength from '../../client/global/modules/registry/length.mjs'
-import { validateCatId } from './company.mjs'
+import { validateCatId, validateBusName, validateCoType } from './company.mjs'
+import {
+    validateEmail, validateUrl, validateTel,
+    validateAddr1, validateAddr2, validateCity, validateStateUS, validateZip,
+} from './default.mjs'
 
 const { body } = require('express-validator')
 
@@ -34,4 +38,18 @@ export const validateTeam = [
     validateName(),
     validateCatId(),
     validateDesc(),
+]
+
+
+export const validateTeamProfile = [
+    validateBusName(),
+    validateCoType(),
+    validateTel('phone', true),
+    validateEmail(),
+    validateUrl('website'),
+    validateAddr1('address1'),
+    validateAddr2('address2'),
+    validateZip('zip'),
+    validateCity('city'),
+    validateStateUS('state'),
 ]

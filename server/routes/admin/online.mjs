@@ -196,7 +196,6 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
         hbs.input = {
             current: {
                 name: TeamInput.name({}, true),
-                company: '',
             },
             id: TeamInput.id(),
             name: TeamInput.name({ class: 'input' }),

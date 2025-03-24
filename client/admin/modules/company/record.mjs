@@ -144,7 +144,7 @@ urlEvent(websiteId, {
     onInput() {
         $tip.website.html(null)
     },
-    onChange(website, valid, $website) {
+    onChange(website, valid) {
         if (website && !valid)
             $tip.website.html('<i class="fa fa-triangle-exclamation"></i> Invalid website')
     },

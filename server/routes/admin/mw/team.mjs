@@ -37,6 +37,23 @@ export default class {
     }
 
 
+    static upsertProfile = async (req, res) => {
+        try {
+            const { _id } = req.body
+            delete req.body._id
+
+            const team = await Team.data(res.session, { _id })
+            const { error } = await team.profile(res.session, req.body)
+
+            if (error) return throwErr.server(res, error)
+
+            res.redirect(url)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
     static delete = async (req, res) => {
         try {
             const { _id } = req.body

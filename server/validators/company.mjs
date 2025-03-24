@@ -49,7 +49,7 @@ const validateDuns = () => body('duns')
     .isLength({ min: 9, max: 9 })
         .withMessage('DUNS must be 9 digits long')
 
-const validateBusName = () => {
+export const validateBusName = () => {
     const { busName } = inputLength.company
     const { min, max } = busName
 
@@ -62,7 +62,7 @@ const validateBusName = () => {
             .withMessage(`Busness name must be between ${min} and ${max} characters long`)
 }
 
-const validateCoType = () => body('coType')
+export const validateCoType = () => body('coType')
     .trim()
     .notEmpty()
         .withMessage('Company type can not be empty')

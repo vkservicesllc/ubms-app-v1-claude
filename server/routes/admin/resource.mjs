@@ -8,7 +8,7 @@ import validationCheck from '../../validators/default.mjs'
 import { validateUser, validateCondition, validateRole } from '../../validators/user.mjs'
 import { validateCompany, validateCompanyOwner, validateCompanyOwnerUpdate, validateCompanyAddress, validateCompanyContacts } from '../../validators/company.mjs'
 import { validateCarrier } from '../../validators/carrier.mjs'
-import { validateTeam } from '../../validators/team.mjs'
+import { validateTeam, validateTeamProfile } from '../../validators/team.mjs'
 
 /* Middleware */
 import UserMW from './mw/user.mjs'
@@ -67,6 +67,7 @@ router.post('/carrier/:_id/:target/update', User.verify, superAdminUserOnly) //!
 
 /* Company Resource */
 router.post('/team', User.verify, superAdminUserOnly, validateTeam, TeamMW.upsert)
+router.post('/team/profile', User.verify, superAdminUserOnly, validateTeamProfile, TeamMW.upsertProfile)
 router.post('/team/delete', User.verify, superAdminUserOnly, TeamMW.delete) //! unused, deleted through api DELETE method
 
 

@@ -60,11 +60,14 @@ class Team {
             })))[0][0].id
 
 
-            this.log = async field => {
+            this.log = async (field, target) => {
+                if (!['teams', 'profiles'].includes(target)) target = 'teams'
+
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+                const idProp = target == 'teams' ? 'id' : 'teamId'
 
                 let log = (await mysql.execute(query.teams.select(fields, {
-                    match: { id: Team.matchIdHash(this._id) },
+                    match: { [idProp]: Team.matchIdHash(this._id) },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
@@ -203,6 +206,47 @@ class Team {
                 data[type].available = sortArrayByObjectKey(data[type].available, 'name')
 
                 return data
+            }
+
+
+            this.profile = async (session, data) => {
+                let error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                const userId = await session.user.id()
+                const teamId = await this.id()
+
+                if (!this.profile) {
+                    data = processData(data)
+                    data.teamId = teamId
+                    data.createdBy = userId
+
+                    const [ result ] = await mysql.execute(query.profiles.insert(data))
+                    if (result.affectedRows != 1) error = 'DB Error: Could not create Team Profile'
+                } else {
+                    const { profile } = this
+                    const { address1, address2, city, state, zip } = profile.address
+                    profile.address1 = address1
+                    profile.address2 = address2
+                    profile.city = city
+                    profile.state = state
+                    profile.zip = zip
+
+                    data = processData(data, {
+                        modifiedBy: userId,
+                        currentData: this.profile,
+                        currentUpdateLog: this.log('updateLog', 'profiles'),
+                    })
+
+                    if (Object.keys(data).length) {
+                        try {
+                            const [ result ] = await mysql.execute(query.profiles.update(data, { teamId }))
+                            if (result.affectedRows != 1) error = 'DB Error: Could not update Team Profile'
+                        } catch (err) {
+                            error = 'DB Error'
+                        }
+                    }
+                }
+
+                return { error, data: await Team.data(session, { id: teamId }) }
             }
 
 
