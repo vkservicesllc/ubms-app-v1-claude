@@ -191,4 +191,22 @@
                     </div>
                 </div>
 
+                <div class="modal" id="team-settings-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title" id="team-settings-title"></p>
+                            <button class="delete"></button>
+                        </header>
+                        <section class="modal-card-body" id="team-settings">
+                            <form id="team-settings-form" action="/resource/team/settings" method="POST" autocomplete="off">
+                                {{{input.settingsId}}}
+                            </form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button type="submit" form="team-settings-form" class="button is-success">Save</button>
+                        </footer>
+                    </div>
+                </div>
+
 {{> admin/nav.omega}}

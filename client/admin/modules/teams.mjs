@@ -30,11 +30,13 @@ const $modal = {
     upsert: $('#team-upsert-modal'),
     relationship: $('#team-relationship-modal'),
     profile: $('#team-profile-modal'),
+    settings: $('#team-settings-modal'),
 }
 const $title = {
     upsert: $('#team-upsert-title'),
     relationship: $('#team-relationship-title'),
     profile: $('#team-profile-title'),
+    settings: $('#team-settings-title'),
 }
 const $tip = {
     name: $('#team-name-tip'),
@@ -170,8 +172,7 @@ const closeUpsert = () => {
 }
 
 const displayTeams = () => {
-    $('.team-edit, .team-profile').off('click')
-    $('.team-relationship').off('click')
+    $('.team-edit, .team-relationship, .team-profile, .team-settings').off('click')
 
     $.ajax({
         url: '/api/teams',
@@ -208,7 +209,7 @@ const displayTeams = () => {
                 html += '</div></div>'
 
                 html += `<div><a class="has-text-grey team-profile" data-team-id="${_id}"><i class="fas fa-briefcase"></i></a></div>`
-                html += `<div><a class="has-text-grey team-cat-profile" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
+                html += `<div><a class="has-text-grey team-settings" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
 
                 html += '</div></div></div></div>'
 
@@ -220,10 +221,11 @@ const displayTeams = () => {
 
             $('#team-list').html(html)
 
-            $('.team-edit, .team-profile').on('click', function() {
+            $('.team-edit, .team-profile, .team-settings').on('click', function() {
                 const _id = $(this).data('team-id')
                 let target = 'edit'
                 if ($(this).hasClass('team-profile')) target = 'profile'
+                if ($(this).hasClass('team-settings')) target = 'settings'
 
                 $.ajax({
                     url: `/api/team/${_id}`,
@@ -274,6 +276,12 @@ const displayTeams = () => {
                             $title.profile.html(`<strong>${escapeHTML(name)}</strong> <small>Profile</small>`)
 
                             $modal.profile.addClass('is-active')
+                        } else if (target == 'settings') {
+                            $(`#settings-${id}`).val(_id)
+
+                            $title.settings.html(`<strong>${escapeHTML(name)}</strong> <small>Settings</small>`)
+
+                            $modal.settings.addClass('is-active')
                         }
                     },
                 })
