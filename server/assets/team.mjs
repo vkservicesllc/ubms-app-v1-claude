@@ -4,6 +4,7 @@ import db from '../settings/mysql.mjs'
 /* Assets */
 import User from './user.mjs'
 import Company from './company.mjs'
+import Driver from './driver.mjs'
 import Address from '../../client/global/modules/assets/address.us.mjs'
 import { sessionError } from './user.mjs'
 
@@ -52,9 +53,27 @@ class Team {
             companies: data.companyCount,
             users: data.userCount,
         }
+        this.settings = data.settings?.[catId] || null
 
         if (!light) {
-        
+
+            this.list = {
+                drivers: {
+                    positions: Driver.positionList,
+                },
+            }
+
+            {
+               const settings = this.settings?.[this.catId] || {}
+                const positions = settings?.drivers?.positions
+
+                if (positions)
+                    for (const item in Driver.positionList)
+                        if (positions.includes(item))
+                            this.list.drivers.positions[item] = Driver.positionList[item] 
+            }
+
+
             this.id = async () => (await mysql.execute(query.teams.select('id', {
                 match: { id: Team.matchIdHash(this._id) },
             })))[0][0].id

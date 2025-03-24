@@ -84,7 +84,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
     let { hbs } = res
     hbs = await hbs.set(key, { titlePfx: 'Driver Applications' })
 
-    const { user } = res.session
+    const { user, team } = res.session
     const { DS } = user
     const permissions = await user.permissions(res.session)
     if (!inPEnvironment('d:drv/apl', permissions, DS))
@@ -95,12 +95,13 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
     hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
+    const driverPositions = team.list.drivers.positions
     let suffixItems = '', positionItems = ''
     const t = `\t`.repeat(11)
     for (const sfx in Person.suffixList)
         suffixItems += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
-    for (const pos in Driver.positionList)
-        positionItems += `\n${t}<div class="item" data-value="${pos}" data-text="${pos}">${Driver.positionList[pos]}</div>`
+    for (const pos in driverPositions)
+        positionItems += `\n${t}<div class="item" data-value="${pos}" data-text="${pos}">${driverPositions[pos]}</div>`
 
     const inputProps = { disabled: true }
 

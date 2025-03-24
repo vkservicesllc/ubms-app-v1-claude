@@ -102,7 +102,7 @@ router.get('/application/:carrierRoute?', async (req, res) => {
                 options: {
                     emptyOpt: 'Decide later...',
                 },
-            }),
+            }, team.list.drivers.positions),
         }
 
         res.render(key, hbs)

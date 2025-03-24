@@ -169,11 +169,11 @@ export class Select {
         name: 'suffix',
     })
 
-    static position = (props = {}) => formSelect({
+    static position = (props = {}, altData) => formSelect({
         ...props,
         addClass: driverClass,
         id: positionId,
         name: 'position',
-    }, Driver.positionList, props.options || {})
+    }, altData || Driver.positionList, props.options || {})
 
 }

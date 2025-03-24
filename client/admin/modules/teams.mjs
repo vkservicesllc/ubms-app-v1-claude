@@ -12,6 +12,8 @@ import { capitalizeFirst } from '/modules/tools/string.mjs'
 import { tel as formatTel } from '/modules/tools/formatter.mjs'
 
 const categories = $.ajax('/api/assets/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+const driverPositions = $.ajax('/api/assets/driver?filter=positions', { async: false, method: 'POST' }).responseJSON
+
 const interval = 30000
 const {
     class: teamClass, id, catId, nameId, descId,
@@ -61,6 +63,7 @@ const $button = {
     closeRel: $('#team-relationship-close-button'),
 }
 const $relationship = $('#team-relationship')
+const $settings = $('#team-settings')
 
 const setTip = new Tip($tip, tipDefs, message)
 
@@ -169,6 +172,7 @@ const closeUpsert = () => {
         $catId.prepend('<option value="">--</option>').val(null)
     $(`#${ids.catIdIcon}`).html(defaults.catIdIcon)
     countDescChars()
+    $settings.html(null)
 }
 
 const displayTeams = () => {
@@ -231,10 +235,10 @@ const displayTeams = () => {
                     url: `/api/team/${_id}`,
                     method: 'POST',
                     success(response) {
-                        const { _id, name } = response.data
+                        const { _id, catId: category, name } = response.data
 
                         if (target == 'edit') {
-                            const { catId: category, description, count } = response.data
+                            const { description, count } = response.data
                             const { companies, users } = count
                             const $catId = $(`#${catId}`)
 
@@ -274,13 +278,28 @@ const displayTeams = () => {
                             }
 
                             $title.profile.html(`<strong>${escapeHTML(name)}</strong> <small>Profile</small>`)
-
                             $modal.profile.addClass('is-active')
                         } else if (target == 'settings') {
                             $(`#settings-${id}`).val(_id)
+                            const { settings } = response.data
+                            const applied = {
+                                driverPositions: settings?.drivers?.positions || Object.keys(driverPositions).map(position => position),
+                            }
+                            let list = ''
 
+                            if (category == 'crr') {
+                                list += '<div class="container"><label class="label">Driver Positions</label>'
+                                for (const value in driverPositions) {
+                                    const checked = applied.driverPositions.includes(value) ? ' checked' : ''
+                                    list += '<div class="field"><label class="checkbox">'
+                                    list += `<input type="checkbox" name="${category}[drivers][positions]" value="${value}" ${checked} /> ${driverPositions[value]}`
+                                    list += '</label></div>'
+                                }
+                                list += '</div>'
+                            }
+
+                            $settings.html(list)
                             $title.settings.html(`<strong>${escapeHTML(name)}</strong> <small>Settings</small>`)
-
                             $modal.settings.addClass('is-active')
                         }
                     },

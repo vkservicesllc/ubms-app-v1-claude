@@ -325,7 +325,7 @@ class Application {
                 join: [ 'companyId', 'id', 2 ],
             },
         ]
-        if (excluded !== true) batch[1].match = { companyId }
+        if (excluded !== true && companyId.length) batch[1].match = { companyId }
 
         let companies = (await mysql.execute(Query.select(db.carrier, batch)))[0]
         companies = sortArrayByObjectKey(companies, 'name')
