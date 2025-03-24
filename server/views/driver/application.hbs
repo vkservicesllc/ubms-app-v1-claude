@@ -13,7 +13,7 @@
         .card-footer {
             font-size: .87em;
         }
-        #carrier-name {
+        #company-name {
             font-weight: 500;
         }
         #intro, #privacy {
@@ -26,11 +26,11 @@
             <div class="card-body pt-4">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
                 <div class="card-text" id="intro-card">
-                    {{#if (ne carrier false)}}
+                    {{#if (ne company false)}}
                     <div class="border-top border-bottom py-2">
-                        <span id="carrier-name">{{carrier.name}}</span><br/>
-                        {{{carrier.address}}}<br/>
-                        {{carrier.phone}}
+                        <span id="company-name">{{company.name}}</span><br/>
+                        {{{company.address}}}<br/>
+                        {{company.phone}}
                     </div>
                     {{/if}}
                     <div class="text-start text-success pt-2" id="intro">
@@ -62,7 +62,9 @@
                             We will not share your information with any third party under any circumstances, except as required by law.
                         </p>
                         <p>Our commitment is to handle your data with the highest level of confidentiality and security.</p>
-                        <p>If you have any questions about our data protection practices, please feel free to contact us.</p>
+                        {{#if (ne company false)}}
+                        <p>If you have any questions about our data protection practices, please feel free to contact us at {{company.phone}}.</p>
+                        {{/if}}
                     </div>
                     <button class="btn btn-success" id="confirm">I Understand & Agree</button>
                 </div>

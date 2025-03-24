@@ -50,19 +50,24 @@ router.get('/application/:carrierRoute?', async (req, res) => {
         const key = 'application'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
-        hbs.carrier = false
+        hbs.company = false
 
         const { carrierRoute: route } = req.params
         if (route) {
             const carrier = await Carrier.data({ ...res.session, user: true }, { route })
 
             if (!carrier) return respond404(res)
-            hbs.carrier = {
-                name: escapeHTML(carrier.name),
+            hbs.company = {
+                name: carrier.name,
                 address: carrier.address.physical.html({ inline: false }),
-                phone: formatTel(escapeHTML(carrier.phone)),
+                phone: formatTel(carrier.phone),
             }
-        }
+        } else if (team.profile) 
+            hbs.company = {
+                name: team.profile.company,
+                address: team.profile.address.html({ inline: false }),
+                phone: formatTel(team.profile.phone),
+            }
 
         const labelProps = { class: 'form-label' }
         const inputProps = { class: 'form-control' }
