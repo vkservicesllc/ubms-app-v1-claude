@@ -43,7 +43,7 @@ export default class {
             delete req.body._id
 
             const team = await Team.data(res.session, { _id })
-            const { error } = await team.profile(res.session, req.body)
+            const { error } = await team.profileData(res.session, req.body)
 
             if (error) return throwErr.server(res, error)
 

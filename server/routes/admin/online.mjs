@@ -200,7 +200,7 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
             id: TeamInput.id(),
             name: TeamInput.name({ class: 'input' }),
             description: TeamInput.description({ class: 'textarea' }),
-            profileId: TeamInput.id({ id: `#profile-${id}` }),
+            profileId: TeamInput.id(null, { id: `profile-${id}` }),
             busName: CompanyInput.busName({ class: 'input', id: busNameId }),
             phone: ContactInput.tel('phone', { class: 'input', id: phoneId, required: true }),
             email: ContactInput.email({ class: 'input', id: emailId }),

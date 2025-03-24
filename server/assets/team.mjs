@@ -66,7 +66,7 @@ class Team {
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
                 const idProp = target == 'teams' ? 'id' : 'teamId'
 
-                let log = (await mysql.execute(query.teams.select(fields, {
+                let log = (await mysql.execute(query[target].select(fields, {
                     match: { [idProp]: Team.matchIdHash(this._id) },
                 })))[0][0]
 
@@ -209,7 +209,7 @@ class Team {
             }
 
 
-            this.profile = async (session, data) => {
+            this.profileData = async (session, data) => {
                 let error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 const userId = await session.user.id()
                 const teamId = await this.id()
@@ -227,13 +227,13 @@ class Team {
                     profile.address1 = address1
                     profile.address2 = address2
                     profile.city = city
-                    profile.state = state
+                    profile.state = state[0]
                     profile.zip = zip
 
                     data = processData(data, {
                         modifiedBy: userId,
                         currentData: this.profile,
-                        currentUpdateLog: this.log('updateLog', 'profiles'),
+                        currentUpdateLog: await this.log('updateLog', 'profiles'),
                     })
 
                     if (Object.keys(data).length) {

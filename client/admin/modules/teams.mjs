@@ -9,6 +9,7 @@ import { formSelectors } from '/modules/registry/selectors.mjs'
 import inputLength from '/modules/registry/length.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
 import { capitalizeFirst } from '/modules/tools/string.mjs'
+import { tel as formatTel } from '/modules/tools/formatter.mjs'
 
 const categories = $.ajax('/api/assets/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 const interval = 30000
@@ -229,6 +230,7 @@ const displayTeams = () => {
                     method: 'POST',
                     success(response) {
                         const { _id, name } = response.data
+
                         if (target == 'edit') {
                             const { catId: category, description, count } = response.data
                             const { companies, users } = count
@@ -248,14 +250,27 @@ const displayTeams = () => {
                             countDescChars(description)
                             $modal.upsert.addClass('is-active')
                         } else if (target == 'profile') {
-                            const {
-                                busName, coType, phone, email, website,
-                                address1, address2, city, state, zip,
-                            } = response.data
-
                             $(`#profile-${id}`).val(_id)
-                            // if (busName && coType) ...set current company
-                            //! unfinished
+                            const { profile } = response.data
+
+                            if (profile) {
+                                const { busName, coType, phone, email, website } = profile
+                                const { address1, address2, city, state, zip } = profile.address
+
+                                if (busName && coType) {
+                                    $(`#${busNameId}`).val(busName)
+                                    $(`#${coTypeId}`).val(coType)
+                                    $(`#${phoneId}`).val(formatTel(phone))
+                                    $(`#${emailId}`).val(email)
+                                    $(`#${websiteId}`).val(website)
+                                    $(`#${addr1Id}`).val(address1)
+                                    $(`#${addr2Id}`).val(address2)
+                                    $(`#${zipId}`).val(zip)
+                                    $(`#${cityId}`).val(city)
+                                    $(`#${stateId}`).val(state)
+                                }
+                            }
+
                             $title.profile.html(`<strong>${escapeHTML(name)}</strong> <small>Profile</small>`)
 
                             $modal.profile.addClass('is-active')
