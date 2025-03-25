@@ -68,6 +68,7 @@ router.post('/carrier/:_id/:target/update', User.verify, superAdminUserOnly) //!
 /* Company Resource */
 router.post('/team', User.verify, superAdminUserOnly, validateTeam, TeamMW.upsert)
 router.post('/team/profile', User.verify, superAdminUserOnly, validateTeamProfile, TeamMW.upsertProfile)
+router.post('/team/settings', User.verify, superAdminUserOnly, TeamMW.upsertSettings)
 router.post('/team/delete', User.verify, superAdminUserOnly, TeamMW.delete) //! unused, deleted through api DELETE method
 
 

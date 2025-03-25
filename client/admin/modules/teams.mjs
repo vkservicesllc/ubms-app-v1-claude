@@ -292,7 +292,7 @@ const displayTeams = () => {
                                 for (const value in driverPositions) {
                                     const checked = applied.driverPositions.includes(value) ? ' checked' : ''
                                     list += '<div class="field"><label class="checkbox">'
-                                    list += `<input type="checkbox" name="${category}[drivers][positions]" value="${value}" ${checked} /> ${driverPositions[value]}`
+                                    list += `<input type="checkbox" name="${category}[drivers][positions]" value="${value}" ${checked} /> &nbsp;${driverPositions[value]}`
                                     list += '</label></div>'
                                 }
                                 list += '</div>'

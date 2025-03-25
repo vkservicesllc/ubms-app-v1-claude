@@ -104,7 +104,7 @@ router.get('/application/:carrierRoute?', async (req, res) => {
                 },
             }, team.list.drivers.positions),
         }
-
+console.log(team.list)
         res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)

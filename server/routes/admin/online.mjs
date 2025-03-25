@@ -210,7 +210,7 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
             address2: AddrInput.address2({ class: `input ${teamClass}`, id: addr2Id, name: 'address2' }),
             city: AddrInput.city({ class: `input ${teamClass}`, id: cityId, name: 'city' }),
             zip: AddrInput.zip({ class: `input ${teamClass}`, id: zipId, name: 'zip' }),
-            settings: TeamInput.id(null, { id: `settings-${id}` }),
+            settingsId: TeamInput.id(null, { id: `settings-${id}` }),
         }
 
         hbs.select = {

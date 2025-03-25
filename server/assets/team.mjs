@@ -53,7 +53,7 @@ class Team {
             companies: data.companyCount,
             users: data.userCount,
         }
-        this.settings = data.settings?.[catId] || null
+        this.settings = data.settings?.[this.catId] || null
 
         if (!light) {
 
@@ -64,13 +64,15 @@ class Team {
             }
 
             {
-               const settings = this.settings?.[this.catId] || {}
+                const settings = this.settings || {}
                 const positions = settings?.drivers?.positions
 
-                if (positions)
+                if (positions) {
+                    this.list.drivers.positions = {}
                     for (const item in Driver.positionList)
                         if (positions.includes(item))
-                            this.list.drivers.positions[item] = Driver.positionList[item] 
+                            this.list.drivers.positions[item] = Driver.positionList[item]
+                }
             }
 
 
@@ -230,6 +232,8 @@ class Team {
 
             this.profileData = async (session, data) => {
                 let error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { error }
+
                 const userId = await session.user.id()
                 const teamId = await this.id()
 
@@ -266,6 +270,28 @@ class Team {
                 }
 
                 return { error, data: await Team.data(session, { id: teamId }) }
+            }
+
+
+            this.settingsData = async (session, data) => {
+                let error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { error }
+
+                const id = await this.id()
+                let settings = (await mysql.execute(query.teams.select('settings', {
+                    match: { id },
+                })))[0][0].settings || {}
+
+                settings[this.catId] = data[this.catId]
+                settings = JSON.stringify(settings)
+
+                try {
+                    const [ result ] = await mysql.execute(query.teams.update({ settings }, { id }))
+                } catch (err) {
+                    error = 'DB Error'
+                }
+
+                return { error, data: await Team.data(session, { id }) }
             }
 
 
