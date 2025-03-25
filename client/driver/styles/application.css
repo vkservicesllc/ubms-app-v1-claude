@@ -1,0 +1,12 @@
+.card {
+    width: 540px;
+    max-width: 100%;
+    margin: 10px;
+}
+.card-title {
+    font-weight: 600;
+    font-size: 1.18em;
+}
+.card-footer {
+    font-size: .87em;
+}

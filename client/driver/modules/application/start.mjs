@@ -1,4 +1,4 @@
-import { inputEvent } from '/modules/events/form.mjs'
+import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
@@ -13,9 +13,11 @@ const {
     ssnId,
     phoneId,
     emailId,
+    positionId,
     statusExpId,
 } = formSelectors.driver
 
+const $card = $('#new-apl-card')
 const $help = {
     dob: $('#dob-help'),
     email: $('#email-help'),
@@ -23,6 +25,7 @@ const $help = {
 }
 const $expiration = $(`#${statusExpId}`)
 const $submit = $('[type=submit]')
+const $form = $('#apl-start-form')
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
@@ -31,19 +34,55 @@ const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 $(`.${aplClass}`).val(null)
 $('.form-check-input').prop('checked', false)
 $expiration.prop('disabled', true)
-$submit.prop('disabled', true)
 
-const duration = 1000
+const aplStatus = sessionStorage.getItem('aplStatus')
+if (aplStatus == 'started') {
+    $('#intro-card').hide()
+    $('#privacy-card').show()
+} else if (aplStatus == 'confirmed') {
+    $('#intro-card').hide()
+    $('#form-card').show()
+}
+
+[
+    firstNameId,
+    middleNameId,
+    lastNameId,
+    suffixId,
+    dobId,
+    phoneId,
+    emailId,
+    positionId,
+].forEach(id => {
+    const value = sessionStorage.getItem(id)
+
+    if (value) {
+        const $el = $(`#${id}`)
+        const required = $el.prop('required')
+
+        $el.val(value)
+        if (required) $el.addClass('is-valid')
+    }
+})
+
+const duration = 750
+$card.fadeIn(duration)
+
 $('#apply').click(() => {
     $('#intro-card, #new-apl-card').fadeOut(duration)
+
     setTimeout(() => {
         $('#privacy-card, #new-apl-card').fadeIn(duration)
+        sessionStorage.setItem('aplStatus', 'started')
     }, duration)
 })
+
 $('#confirm').click(() => {
     $('#privacy-card, #new-apl-card').fadeOut(duration)
+
     setTimeout(() => {
         $('#form-card, #new-apl-card').fadeIn(duration)
+        sessionStorage.setItem('aplStatus', 'confirmed')
     }, duration)
 })
 
@@ -66,14 +105,21 @@ $('.status-radio').click(function() {
 
 const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
 const onChange = (value, $el) => {
-    if (value) $el.addClass('is-valid')
+    const required = $el.prop('required')
+    if (value && required) $el.addClass('is-valid')
+
+    const id = $el.attr('id')
+    if (id != ssnId && id != statusExpId)
+        sessionStorage.setItem(id, value)
 }
 
 nameEvent(firstNameId, { onInput, onChange })
 
-nameEvent(middleNameId)
+nameEvent(middleNameId, { onChange })
 
 nameEvent(lastNameId, { sfxId: suffixId, onInput, onChange })
+
+selectEvent(suffixId, { onChange })
 
 ssnEvent(ssnId, { onInput, onChange })
 
@@ -85,10 +131,13 @@ emailEvent(emailId, {
         $email.removeClass('is-valid is-invalid')
     },
     onChange(email, valid, $email) {
-        if (!valid) {
-            $help.email.text('* Invalid email address')
-            $email.addClass('is-invalid')
-        } else $email.addClass('is-valid')
+        if (!email || (email && valid)) sessionStorage.setItem(emailId, email)
+
+        if (email)
+            if (!valid) {
+                $help.email.text('* Invalid email address')
+                $email.addClass('is-invalid')
+            } else $email.addClass('is-valid')
     },
 })
 
@@ -99,6 +148,8 @@ inputEvent(dobId, {
         $dob.removeClass('is-valid is-invalid')
     },
     onChange(dob, $dob) {
+        sessionStorage.setItem(dobId, dob)
+
         if (dob) {
             const date = moment(dob, 'MM/DD/YYYY', true)
 
@@ -155,4 +206,18 @@ inputEvent(statusExpId, {
             }
         }
     },
+})
+
+selectEvent(positionId, { onChange })
+
+
+$form.submit(function(evt) {
+    evt.preventDefault()
+
+    $submit
+        .prop('disabled', true)
+        .html('<span class="spinner-border spinner-border-sm"></span> Submitting...')
+    sessionStorage.clear()
+    $card.fadeOut(duration)
+    setTimeout(() => $form.unbind().submit(), duration)
 })

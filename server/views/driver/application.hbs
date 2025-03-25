@@ -1,18 +1,6 @@
 {{> head}}
 
     <style>
-        .card {
-            width: 540px;
-            max-width: 100%;
-            margin: 10px;
-        }
-        .card-title {
-            font-weight: 600;
-            font-size: 1.18em;
-        }
-        .card-footer {
-            font-size: .87em;
-        }
         #company-name {
             font-weight: 500;
         }
@@ -22,7 +10,7 @@
     </style>
 
     <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
-        <div class="card text-center" id="new-apl-card">
+        <div class="card text-center" id="new-apl-card" style="display: none;">
             <div class="card-body pt-4">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
                 <div class="card-text" id="intro-card">
@@ -69,7 +57,7 @@
                     <button class="btn btn-success" id="confirm">I Understand & Agree</button>
                 </div>
                 <div class="card-text px-2" id="form-card" style="display: none;">
-                    <form action="" method="POST">
+                    <form id="apl-start-form" action="" method="POST">
                         <div class="row g-3 my-1">
                             <div class="col-md-6 text-start">
                                 {{{label.firstName}}}
@@ -91,7 +79,7 @@
                             </div>
                         </div>
                         <div class="row g-3 my-1">
-                            <div class="col-md-6 text-start">
+                            <div class="col-md-5 text-start">
                                 {{{label.dob}}}
                                 {{{input.dob}}}
                                 <div class="form-text text-danger" id="dob-help"></div>
@@ -102,11 +90,11 @@
                             </div>
                         </div>
                         <div class="row g-3 my-1">
-                            <div class="col-md-6 text-start">
+                            <div class="col-md-5 text-start">
                                 {{{label.phone}}}
                                 {{{input.phone}}}
                             </div>
-                            <div class="col-md-6 text-start">
+                            <div class="col-md-7 text-start">
                                 {{{label.email}}}
                                 {{{input.email}}}
                                 <div class="form-text text-danger" id="email-help"></div>
@@ -116,20 +104,20 @@
                             <div class="col-md-12 text-start">
                                 <label class="form-label">I certify under penalty of law that:</label>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="confirm-dl" />
+                                    <input class="form-check-input" type="checkbox" id="confirm-dl" required />
                                     <label class="form-check-label required" for="confirm-dl">
                                         I have a valid and genuine driver's license
                                     </label>
                                 </div>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="confirm-status" />
+                                    <input class="form-check-input" type="checkbox" id="confirm-status" required />
                                     <label class="form-check-label required" for="confirm-status">
                                         I am legally authorized to work in the United States
                                     </label>
                                 </div>
                                 <label class="form-label mt-3 required">Immigration Status</label>
                                 <div class="form-check">
-                                    <input class="form-check-input status-radio" type="radio" name="legalStatus" id="legal-status-0" value="0" />
+                                    <input class="form-check-input status-radio" type="radio" name="legalStatus" id="legal-status-0" value="0" required />
                                     <label class="form-check-label" for="legal-status-0">US Citizen</label>
                                 </div>
                                 <div class="form-check">
@@ -154,7 +142,7 @@
                             </div>
                         </div>
                         <div class="d-grid gap-2 mt-4 mb-2">
-                            <button type="submit" class="btn btn-primary" disabled>Start Application</button>
+                            <button type="submit" class="btn btn-primary">Start Application</button>
                         </div>
                     </form>
                 </div>

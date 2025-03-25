@@ -12,7 +12,7 @@ module.exports = {
     'application': {
         external: [ ...defaults.external, 'jquery.masked-input', 'moment' ],
         internal: {
-            css: [ ...defaults.internal.css ],
+            css: [ ...defaults.internal.css, 'application' ],
             js: [ ...defaults.internal.js ],
             mjs: [ ...defaults.internal.mjs ],
         },
