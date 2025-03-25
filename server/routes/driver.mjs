@@ -53,10 +53,14 @@ router.get('/application/:carrierRoute?', async (req, res) => {
         hbs.company = false
 
         const { carrierRoute: route } = req.params
+        let _carrierId
+
         if (route) {
             const carrier = await Carrier.data({ ...res.session, user: true }, { route })
 
             if (!carrier) return respond404(res)
+
+            _carrierId = carrier._id
             hbs.company = {
                 name: carrier.name,
                 address: carrier.address.physical.html({ inline: false }),
@@ -104,7 +108,9 @@ router.get('/application/:carrierRoute?', async (req, res) => {
                 },
             }, team.list.drivers.positions),
         }
-console.log(team.list)
+        hbs.formUrl = `/resource/application/${team._id}`
+        if (_carrierId) hbs.formUrl += `/${_carrierId}`
+
         res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)

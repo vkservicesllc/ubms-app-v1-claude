@@ -80,6 +80,7 @@ import carrierApiRoute from './server/routes/carrier/api.mjs'
 import carrierResourceRoute from './server/routes/carrier/resource.mjs'
 
 import driverRoute from './server/routes/driver.mjs'
+import driverResourceRoute from './server/routes/driver/resource.mjs'
 
 import schoolRoute from './server/routes/school.mjs'
 
@@ -157,6 +158,9 @@ const apps = {
         name: `${alias} Driver Portal`,
         active: true,
         route: driverRoute,
+        routes: [
+            { url: '/resource', router: driverResourceRoute },
+        ],
         session: {
             maxAge: 10,  /* in minutes */
         },

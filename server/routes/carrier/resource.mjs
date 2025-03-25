@@ -68,7 +68,7 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
     } catch (err) {
         throwErr.server(res, null, err)
     }
-}, validateApplicant, async (req, res) => {
+}, validateApplicant, validationCheck, async (req, res) => {
     try {
         const { legalStatus, LS_expiresOn } = req.body
         if (legalStatus == 2 && !LS_expiresOn)

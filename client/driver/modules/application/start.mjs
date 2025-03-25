@@ -22,6 +22,7 @@ const $help = {
     dob: $('#dob-help'),
     email: $('#email-help'),
     statusExp: $('#status-exp-help'),
+    form: $('#form-help'),
 }
 const $expiration = $(`#${statusExpId}`)
 const $submit = $('[type=submit]')
@@ -36,10 +37,10 @@ $('.form-check-input').prop('checked', false)
 $expiration.prop('disabled', true)
 
 const aplStatus = sessionStorage.getItem('aplStatus')
-if (aplStatus == 'started') {
+if (aplStatus === 'started') {
     $('#intro-card').hide()
     $('#privacy-card').show()
-} else if (aplStatus == 'confirmed') {
+} else if (aplStatus === 'confirmed') {
     $('#intro-card').hide()
     $('#form-card').show()
 }
@@ -112,18 +113,25 @@ const onChange = (value, $el) => {
     if (id != ssnId && id != statusExpId)
         sessionStorage.setItem(id, value)
 }
+const onBlur = (value, $el) => onChange(value, $el)
 
 nameEvent(firstNameId, { onInput, onChange })
 
 nameEvent(middleNameId, { onChange })
 
-nameEvent(lastNameId, { sfxId: suffixId, onInput, onChange })
+nameEvent(lastNameId, { sfxId: suffixId, onInput,
+    onChange(lastName, $lastName, suffix, $suffix) {
+        onChange(lastName, $lastName)
+
+        if (suffix) onChange(suffix, $suffix)
+    },
+})
 
 selectEvent(suffixId, { onChange })
 
-ssnEvent(ssnId, { onInput, onChange })
+ssnEvent(ssnId, { onInput, onChange, onBlur })
 
-telEvent(phoneId, { onInput, onChange })
+telEvent(phoneId, { onInput, onChange, onBlur })
 
 emailEvent(emailId, {
     onInput(email, $email) {
@@ -168,6 +176,7 @@ inputEvent(dobId, {
             }
         }
     },
+    onBlur,
 })
 
 inputEvent(statusExpId, {
@@ -214,6 +223,13 @@ selectEvent(positionId, { onChange })
 $form.submit(function(evt) {
     evt.preventDefault()
 
+    const valid = $('input[required]').filter('.is-invalid').length === 0
+    if (!valid)
+        return $help.form
+            .html('<i class="fas fa-triangle-exclamation"></i> Some of the provided information is invalid')
+            .show()
+
+    $help.form.hide().html(null)
     $submit
         .prop('disabled', true)
         .html('<span class="spinner-border spinner-border-sm"></span> Submitting...')
