@@ -29,10 +29,12 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
             req.body.carrierId = await carrier.id()
         }
 
-        const { error, data: application } = await Application.create(res.session, req.body)
+        const { error, url, data: application } = await Application.create(res.session, req.body)
         if (error) return throwErr.server(res, error, err)
 
-        res.send(application)
+        req.session.application = application._id
+
+        res.redirect(res.hbs.addrBook.driver + url)
     } catch (err) {
         throwErr.server(res, null, err)
     }

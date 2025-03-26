@@ -14,3 +14,8 @@ export default nodemailer.createTransport({
 })
 
 export const sender = `"${name}" <${user}>`
+export const senderParams = {
+    from: sender,
+    name,
+    email: user,
+}

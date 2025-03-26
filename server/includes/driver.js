@@ -18,4 +18,13 @@ module.exports = {
         },
     },
 
+    'application.login': {
+        external: [ ...defaults.external, 'jquery.masked-input' ],
+        internal: {
+            css: [ ...defaults.internal.css, 'application' ],
+            js: [ ...defaults.internal.js ],
+            mjs: [ ...defaults.internal.mjs ],
+        },
+    },
+
 }

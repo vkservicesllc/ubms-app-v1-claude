@@ -3,6 +3,7 @@ const { DB__MYSQL_AES_SSN } = process.env
 const ssnSecret = DB__MYSQL_AES_SSN
 
 /* Settings */
+import { addrBook } from '../../config.mjs'
 import db from '../settings/mysql.mjs'
 
 /* Assests */
@@ -14,12 +15,13 @@ import Company from './company.mjs'
 import Carrier from './carrier.mjs'
 
 /* Tools */
-import { reSuper } from '../../client/global/modules/tools/object.mjs'
-import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 import Query, { hash, matchHash } from '../tools/query.mjs'
+import transporter, { senderParams } from '../tools/nodemailer.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
 import { generateRandomString } from '../tools/string.mjs'
 import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
+import { reSuper } from '../../client/global/modules/tools/object.mjs'
+import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 
 const moment = require('moment')
 const mysql = require('../tools/mysql')
@@ -63,6 +65,7 @@ class Application {
             ? [ data.position, Driver.positionList[data.position] ]
             : null
         this.condition = data.condition
+        this.step = data.step
         this.firstName = firstName
         this.middleName = middleName
         this.lastName = lastName
@@ -194,6 +197,7 @@ class Application {
         data = processData(data)
         data.ssn = { aes: [ data.ssn, ssnSecret ] }
         data.appliedOn = moment().format('YYYY-MM-DD')
+        data.step = 'driver-license'
         data.teamId = await team.id()
         if (user) {
             data.createdBy = await user.id()
@@ -217,7 +221,50 @@ class Application {
         if (id) created = true
         else return { error: 'DB Error' }
 
-        return { created, data: await Application.data(session, { id }) }
+        let application, url
+        if (created) {
+            application = await Application.data(session, { id })
+
+            const { carrierId } = data
+            const { fullName, email, formId } = application
+            let { from } = senderParams
+            let companyName
+
+            url = `/application/${formId}`
+
+            if (carrierId) {
+                if (!user) session = { ...session, user: true }
+                const carrier = await Carrier.data(session, { id })
+
+                companyName = carrier.name
+            } else if (team.profile)
+                companyName = team.profile.company
+
+            if (companyName) from = `"${companyName}" <${senderParams.email}>`
+
+            const options = {
+                from,
+                to: email,
+                subject: 'Professional Driver Application',
+                html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                    Dear ${fullName},<br/>
+                    ${
+                        companyName
+                            ? `Thank you for your interest in joining ${companyName} as a professional driver.`
+                            : 'Welcome aboard! Thank you for your interest in joining our professional driver team!'
+                    }<br/><br/>
+                    To proceed with your application, please click the link below and complete the required information:<br/>
+                    <a href="${addrBook.driver + url}" target="_blank">Continue Your Application</a><br/><br/>
+                    We look forward to your completed application!
+                </div>`,
+            }
+
+            transporter.sendMail(options, error => {
+                if (error) console.error(error)
+            })
+        }
+
+        return { created, data: application, url }
     }
 
 
@@ -240,6 +287,7 @@ class Application {
                     'appliedOn',
                     'position',
                     'condition',
+                    'step',
                     'firstName',
                     'middleName',
                     'lastName',

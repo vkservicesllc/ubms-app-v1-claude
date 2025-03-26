@@ -4,6 +4,7 @@ const throwErr = require('../tools/error').data
 /* Assets */
 import Team from '../assets/team.mjs'
 import Carrier from '../assets/carrier.mjs'
+import Driver, { Application } from '../assets/driver.mjs'
 import escapeHTML from '../../client/global/modules/assets/html.mjs'
 
 /* HTML Builders */
@@ -41,18 +42,46 @@ router.use((req, res, next) => {
 
 
 
-router.get('/application/:carrierRoute?', async (req, res) => {
+router.get('/application/:param?', async (req, res) => {
     try {
         const { env } = req.query
+        let { hbs } = res
+
+        const labelProps = { class: 'form-label' }
+        const inputProps = { class: 'form-control' }
+        const selectProps = { class: 'form-select', tabs: 8 }
+
         const team = await Team.data({ ...res.session, user: true }, { _id: env })
-        if (!team) return respond404(res)
+        if (!team) {
+            const { param: formId } = req.params
+
+            const application = await Application.data(res.session, { formId })
+            if (!application) return respond404(res)
+
+            if (req.session.application) return res.redirect(`/application/${formId}/${application.step}`)
+
+            const key = 'application.login'
+            hbs = hbs.set(key, { title: 'Driver Application Sign-in' })
+
+            hbs.label = {
+                phone: DriverLabel.phone(labelProps),
+                dob: DriverLabel.dob(labelProps),
+                ssn: DriverLabel.ssn({ ...labelProps, content: 'Last 4 of SSN' }),
+            }
+            hbs.input = {
+                phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
+                dob: DriverInput.dob({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
+                ssn: DriverInput.ssn({ ...inputProps, placeholder: '####' }),
+            }
+
+            return res.render('application/login', hbs)
+        }
 
         const key = 'application'
-        let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
         hbs.company = false
 
-        const { carrierRoute: route } = req.params
+        const { param: route } = req.params
         let _carrierId
 
         if (route) {
@@ -72,10 +101,6 @@ router.get('/application/:carrierRoute?', async (req, res) => {
                 address: team.profile.address.html({ inline: false }),
                 phone: formatTel(team.profile.phone),
             }
-
-        const labelProps = { class: 'form-label' }
-        const inputProps = { class: 'form-control' }
-        const selectProps = { class: 'form-select', tabs: 8 }
 
         hbs.label = {
             firstName: DriverLabel.name('f', labelProps),
@@ -115,6 +140,26 @@ router.get('/application/:carrierRoute?', async (req, res) => {
     } catch (err) {
         throwErr.server(res, null, err)
     }
+})
+
+
+router.get('/application/:formId/:step', async (req, res) => {
+    if (req.session.application) {
+        // redirect else proceed with apl login
+
+        return res.send({
+            session: true,
+            application: await Application.data(res.session, { _id: req.session.application }),
+        })
+    }
+
+    const { formId } = req.params
+    const application = await Application.data(res.session, { formId })
+
+    res.send({
+        session: false,
+        application,
+    })
 })
 
 

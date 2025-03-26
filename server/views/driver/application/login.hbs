@@ -1,0 +1,39 @@
+{{> head}}
+
+    <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
+        <div class="card text-center" id="apl-login-card" style="display: none;">
+            <div class="card-body pt-4">
+                <h5 class="card-title text-secondary">Professional Driver Application</h5>
+                <div class="card-text px-2" id="form-card">
+                    <p class="text-success border-top py-2">Sign in to proceed...</p>
+                    <form id="apl-login-form" action="{{formUrl}}" method="POST" autocomplete="off">
+                        <div class="row g-3 mb-1">
+                            <div class="col-md-5 text-start">
+                                {{{label.phone}}}
+                                {{{input.phone}}}
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-5 text-start">
+                                {{{label.dob}}}
+                                {{{input.dob}}}
+                            </div>
+                            <div class="col-md-4 text-start">
+                                {{{label.ssn}}}
+                                {{{input.ssn}}}
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 mt-4 mb-2">
+                            <button type="submit" class="btn btn-primary">Continue Application</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card-footer text-black-50">
+                {{{copyright}}}
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/modules/application/login.mjs"></script>
+
+{{> foot}}
