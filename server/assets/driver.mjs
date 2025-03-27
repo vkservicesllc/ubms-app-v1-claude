@@ -589,6 +589,7 @@ class Application {
                         access: Object.keys(permissions).some(key => key.startsWith('f:drv')),
                     },
                 },
+                aplAddress: `${res.hbs.addrBook.driver}/application/`,
             })
         } catch (err) {
             throwErr.server(res, null, err, false)

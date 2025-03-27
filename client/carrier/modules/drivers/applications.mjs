@@ -45,9 +45,13 @@ const table = $('#driver-apl-table').DataTable({
             }
         },
         dataSrc(response) {
-            const { data, actions } = response
+            const { data, actions, aplAddress } = response
 
-            data.forEach(row => row.actions = actions)
+            data.forEach(row => {
+                row.actions = actions
+                if (row.condition = 'p')
+                    row.aplAddress = aplAddress + row.formId
+            })
 
             return data
         },
@@ -192,7 +196,7 @@ const table = $('#driver-apl-table').DataTable({
                     }
                     if (access) panel += `<a class="assign-apl"><i class="black folder outline icon"></i></a>`
                     if (comment) panel += `<a class="comment-apl"><i class="black text comment outline icon"></i></a>`
-                } else panel += `<a><i class="blue text external alternate icon"></i></a>`
+                } else panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank"><i class="blue text external alternate icon"></i></a>`
                 if (remove && ['p', 'c'].includes(condition))
                     panel += `<a class="delete-apl" data-id="${_id}" href=""><i class="red text trash alternate outline icon"></i></a>`
 
