@@ -21,7 +21,7 @@
                         {{company.phone}}
                     </div>
                     {{/if}}
-                    <div class="text-start text-success pt-2" id="intro">
+                    <div class="text-start text-success pt-3" id="intro">
                         <p>
                             We're looking for experienced and reliable drivers to join our carrier team.
                             If you meet the qualifications and are committed to safety, efficiency,
@@ -40,16 +40,21 @@
                 </div>
                 <div class="card-text" id="privacy-card" style="display: none;">
                     <div class="text-start pt-2" id="privacy">
-                        <h6>Privacy & Data Security Notice</h6>
+                        <h6 class="mb-3">Privacy & Data Security Notice</h6>
                         <p>
-                            We understand that the application process requires you to provide sensitive personal information.
-                            Your privacy and security are our top priorities.
+                            To proceed with the application process,
+                            we are required by the Department of Transportation to obtain your Motor Vehicle Report.
+                            To access this report, we will need your Social Security Number.
                         </p>
                         <p>
-                            We guarantee that all information you submit will be securely stored, with the most sensitive data—such as Social Security numbers—being encrypted for maximum protection.
+                            Please rest assured that all information you submit will be securely stored,
+                            with the most sensitive data — such as Social Security numbers — being encrypted for maximum protection.
                             We will not share your information with any third party under any circumstances, except as required by law.
                         </p>
-                        <p>Our commitment is to handle your data with the highest level of confidentiality and security.</p>
+                        <p>
+                            Your privacy and security are our top priorities.
+                            Our commitment is to handle your data with the highest level of confidentiality and security.
+                        </p>
                         {{#if (ne company false)}}
                         <p>If you have any questions about our data protection practices, please feel free to contact us at {{company.phone}}.</p>
                         {{/if}}

@@ -146,7 +146,23 @@ router.get('/application/:param?', async (req, res) => {
 
 router.get('/application/:formId/:step', Application.verify, async (req, res) => {
     try {
-        res.send(res.session.application)
+        const { application } = res.session
+        const { step } = req.params
+        let { hbs } = res
+
+        let key, file
+
+        switch (step) {
+
+            case 'driver-license':
+                key = 'application.driver-license'
+                hbs = hbs.set(key, { title: 'Driver License Form' })
+                file = 'application/driver-license'
+                break
+
+        }
+
+        res.render(file, hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }

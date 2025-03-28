@@ -18,6 +18,8 @@ export default (req, res, next) => {
     let { errors } = validationFails
 
     if (!validationFails.isEmpty()) {
+        const referer = req.headers.referer || req.headers.referrer
+
         let errorList = '<pre>Validation Errors:<ol>'
         errors.forEach(error => {
             errorList += `<li>{ ${error.path}: "${error.value}" } ${error.msg}</li>`
@@ -31,6 +33,8 @@ export default (req, res, next) => {
         //     errorList += `<li>${field}: ${value}</li>`
         // }
         // errorList += '</ul></pre>'
+
+        errorList += `<p><a href="${referer}">Return to Application</a></p>`
 
         return res.status(400).send(errorList)
     }
@@ -181,6 +185,20 @@ export const validateSsn = (field, required = false) => {
             .withMessage('SSN must contain digits only')
         .isLength({ min: 9, max: 9 })
             .withMessage('SSN must be 9 digits long')
+        .custom(value => {
+            if (/^(\d)\1{8}$/.test(value)) {
+                throw new Error('Repeating digits are not allowed in SSN')
+            }
+
+            const incrPatt = "01234567890123456789"
+            const decrPatt = "98765432109876543210"
+
+            if (incrPatt.includes(value) || decrPatt.includes(value)) {
+                throw new Error('Sequential digits are not allowed in SSN')
+            }
+
+            return true
+        })
 
     return chain
 }

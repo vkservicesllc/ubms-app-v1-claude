@@ -17,8 +17,10 @@ export const telEvent = (id, callback = {}) => {
 }
 
 
-export const emailEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const emailEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur } = options
+    let { multiple } = options
+    if (typeof multiple != 'boolean') multiple = false
 
     inputEvent(id, {
         lower: true,
@@ -29,6 +31,8 @@ export const emailEvent = (id, callback = {}) => {
             if (onInput) onInput(email, $email)
         },
         onChange(email, $email) {
+            if (!multiple) $email.val(email.replace(',', ''))
+
             if (onChange) {
                 const valid = email
                     ? patterns.match.email.test(email)
