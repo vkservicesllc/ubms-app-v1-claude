@@ -8,11 +8,30 @@ import Driver, { Application } from '../../assets/driver.mjs'
 
 /* Validators */
 import validationCheck from '../../validators/default.mjs'
-import { validateApplicant } from '../../validators/driver.mjs'
+import { validateApplicant, validateApplicantLogin } from '../../validators/driver.mjs'
 
 
 
 /* Application Resource */
+
+router.post('/application/login/:formId', validateApplicantLogin, validationCheck, async (req, res) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.data({ ...res.session, user: true }, { formId })
+        if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
+
+        const { phone, dob, pin } = req.body
+
+        if (phone == application.phone && dob == application.dob && pin == application.ssn.slice(-4)) {
+            const referer = req.headers.referer || req.headers.referrer
+            req.session.application = application._id
+
+            res.redirect(referer)
+        } else throwErr.auth(res, 'Auth Error: Incorrect credentials used')
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
 
 router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationCheck, async (req, res) => {
     try {

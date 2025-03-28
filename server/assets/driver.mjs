@@ -26,7 +26,7 @@ import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.m
 const moment = require('moment')
 const mysql = require('../tools/mysql')
 const knex = require('../tools/knex')
-const throwErr = require('../tools/error').api
+const throwErr = require('../tools/error')
 
 const query = {
     drivers: new Query(db.carrier, 'drivers'),
@@ -253,7 +253,8 @@ class Application {
                             ? `Thank you for your interest in joining ${companyName} as a professional driver.`
                             : 'Welcome aboard! Thank you for your interest in joining our professional driver team!'
                     }<br/><br/>
-                    To proceed with your application, please click the link below and complete the required information:<br/>
+                    Your application has been successfully registered. If you interrupted the process, you can continue from where you left off.<br/>
+                    To log in and proceed, use the requested credentials — your PIN is the last four digits of your Social Security number.<br/>
                     <a href="${addrBook.driver + url}" target="_blank">Continue Your Application</a><br/><br/>
                     We look forward to your completed application!
                 </div>`,
@@ -412,7 +413,7 @@ class Application {
             const permissions = await sessionsUser.permissions(res.session) || {}
 
             if (!DS && !('d:drv/apl' in permissions))
-                return throwErr.auth(res, null, err, false)
+                return throwErr.api.auth(res, null, err, false)
 
             const settings = await sessionsUser.settings(res.session)
             const team = await Team.data(res.session, { _id: req.session.team })
@@ -592,7 +593,34 @@ class Application {
                 aplAddress: `${res.hbs.addrBook.driver}/application/`,
             })
         } catch (err) {
-            throwErr.server(res, null, err, false)
+            throwErr.api.server(res, null, err, false)
+        }
+    }
+
+
+
+    /* Middleware */
+
+
+    static verify = async (req, res, next) => {
+        try {
+            const { formId } = req.params
+            const application = await Application.data({ ...res.session, user: true }, { formId })
+            if (!application) return throwErr.data.server(res, 'Internal Server Error: Application not found')
+
+            const { application: _id } = req.session
+            if (!_id || _id != application._id) {
+                delete req.session.application
+
+                return res.redirect(`/application/${formId}`)
+            }
+
+            res.session.application = application
+
+            next()
+        } catch (err) {
+            const msg = 'Application validation check failed: Server could not process the request'
+            throwErr.data.server(res, msg, err)
         }
     }
 

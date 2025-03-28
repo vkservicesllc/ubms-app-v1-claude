@@ -66,13 +66,14 @@ router.get('/application/:param?', async (req, res) => {
             hbs.label = {
                 phone: DriverLabel.phone(labelProps),
                 dob: DriverLabel.dob(labelProps),
-                ssn: DriverLabel.ssn({ ...labelProps, content: 'Last 4 of SSN' }),
+                ssn: DriverLabel.pin(labelProps),
             }
             hbs.input = {
                 phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
                 dob: DriverInput.dob({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
-                ssn: DriverInput.ssn({ ...inputProps, placeholder: '####' }),
+                ssn: DriverInput.pin(inputProps),
             }
+            hbs.formUrl = `/resource/application/login/${formId}`
 
             return res.render('application/login', hbs)
         }
@@ -143,23 +144,12 @@ router.get('/application/:param?', async (req, res) => {
 })
 
 
-router.get('/application/:formId/:step', async (req, res) => {
-    if (req.session.application) {
-        // redirect else proceed with apl login
-
-        return res.send({
-            session: true,
-            application: await Application.data(res.session, { _id: req.session.application }),
-        })
+router.get('/application/:formId/:step', Application.verify, async (req, res) => {
+    try {
+        res.send(res.session.application)
+    } catch (err) {
+        throwErr.server(res, null, err)
     }
-
-    const { formId } = req.params
-    const application = await Application.data(res.session, { formId })
-
-    res.send({
-        session: false,
-        application,
-    })
 })
 
 

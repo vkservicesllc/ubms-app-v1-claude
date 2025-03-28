@@ -80,6 +80,7 @@ import carrierApiRoute from './server/routes/carrier/api.mjs'
 import carrierResourceRoute from './server/routes/carrier/resource.mjs'
 
 import driverRoute from './server/routes/driver.mjs'
+import driverApiRoute from './server/routes/driver/api.mjs'
 import driverResourceRoute from './server/routes/driver/resource.mjs'
 
 import schoolRoute from './server/routes/school.mjs'
@@ -159,6 +160,7 @@ const apps = {
         active: true,
         route: driverRoute,
         routes: [
+            { url: '/api', router: driverApiRoute },
             { url: '/resource', router: driverResourceRoute },
         ],
         session: {

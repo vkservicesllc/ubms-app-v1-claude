@@ -18,6 +18,7 @@ const {
     emailId,
     positionId,
     statusExpId,
+    aplPinId,
 } = formSelectors.driver
 
 
@@ -76,6 +77,13 @@ export class Label {
         content: 'Status Expires on',
         ...props,
         for: statusExpId,
+    })
+
+    static pin = (props = {}) => formLabel({
+        content: 'PIN',
+        ...props,
+        for: aplPinId,
+        addClass: 'required',
     })
 
 }
@@ -153,6 +161,17 @@ export class Input {
         addClass: driverClass,
         id: statusExpId,
         name: 'LS_expiresOn',
+        required: true,
+        disabled: true,
+    })
+
+    static pin = (props = {}) => formInput({
+        ...props,
+        type: 'password',
+        addClass: driverClass,
+        id: aplPinId,
+        name: 'pin',
+        maxLength: 4,
         required: true,
         disabled: true,
     })

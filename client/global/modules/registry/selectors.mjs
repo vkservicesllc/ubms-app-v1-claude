@@ -123,6 +123,7 @@ export const formSelectors = {
         id: 'driver-id',
         aplId: 'driver-apl-id',
         aplFormId: 'driver-apl-from-id',
+        aplPinId: 'driver-apl-pin',
         prefixId: 'driver-pfx',
         firstNameId: 'driver-fname',
         middleNameId: 'driver-mname',

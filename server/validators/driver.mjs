@@ -28,6 +28,15 @@ const validateLegalStatus = () => body('legalStatus')
     .isIn(['0', '1', '2'])
         .withMessage('Incorrect legal status provided')
 
+const validatePin = () => body('pin')
+    .trim()
+    .notEmpty()
+        .withMessage("Applicant's PIN can not be empty")
+    .isNumeric()
+        .withMessage("Applicant's PIN must be numberic")
+    .isLength({ min: 4, max: 4 })
+        .withMessage('Incorrect PIN length')
+
 
 export const validateApplicant = [
     validateName('firstName'),
@@ -40,4 +49,10 @@ export const validateApplicant = [
     validatePosition(),
     validateLegalStatus(),
     validateDate('LS_expiresOn'),
+]
+
+export const validateApplicantLogin = [
+    validateDob(),
+    validateTel('phone', true),
+    validatePin(),
 ]
