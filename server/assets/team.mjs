@@ -282,7 +282,16 @@ class Team {
                     match: { id },
                 })))[0][0].settings || {}
 
+                switch (this.catId) {
+                    case 'crr':
+                        data[this.catId].drivers.cdl = data[this.catId].drivers.cdl
+                            ? true
+                            : false
+                        break
+                }
+
                 settings[this.catId] = data[this.catId]
+                console.log(settings)
                 settings = JSON.stringify(settings)
 
                 try {

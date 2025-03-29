@@ -78,6 +78,7 @@ router.get('/application/:param?', async (req, res) => {
             return res.render('application/login', hbs)
         }
 
+        const { settings } = team
         const key = 'application'
         hbs = hbs.set(key, { title: 'Driver Application' })
         hbs.company = false
@@ -103,6 +104,11 @@ router.get('/application/:param?', async (req, res) => {
                 phone: formatTel(team.profile.phone),
             }
 
+        hbs.text = {
+            requiredDL: "driver's license",
+        }
+        if (settings?.drivers?.cdl) hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
+
         hbs.label = {
             firstName: DriverLabel.name('f', labelProps),
             middleName: DriverLabel.name('m', labelProps),
@@ -115,6 +121,7 @@ router.get('/application/:param?', async (req, res) => {
             position: DriverLabel.position(labelProps),
             statusExp: DriverLabel.statusExp(labelProps),
         }
+
         hbs.input = {
             firstName: DriverInput.name('f', inputProps),
             middleName: DriverInput.name('m', inputProps),
@@ -125,6 +132,7 @@ router.get('/application/:param?', async (req, res) => {
             email: DriverInput.email(inputProps),
             statusExp: DriverInput.statusExp({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
         }
+
         hbs.select = {
             suffix: DriverSelect.suffix(selectProps),
             position: DriverSelect.position({
@@ -134,6 +142,7 @@ router.get('/application/:param?', async (req, res) => {
                 },
             }, team.list.drivers.positions),
         }
+
         hbs.formUrl = `/resource/application/${team._id}`
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
 
@@ -148,6 +157,11 @@ router.get('/application/:formId/:step', Application.verify, async (req, res) =>
     try {
         const { application } = res.session
         const { step } = req.params
+
+        const team = await Team.data({ ...res.session, user: true }, { _id: application._teamId })
+        if (!team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
+
+        const { settings } = team
         let { hbs } = res
 
         let key, file
@@ -155,9 +169,13 @@ router.get('/application/:formId/:step', Application.verify, async (req, res) =>
         switch (step) {
 
             case 'driver-license':
+                const commercial = settings?.drivers?.cdl === true
                 key = 'application.driver-license'
                 hbs = hbs.set(key, { title: 'Driver License Form' })
                 file = 'application/driver-license'
+                hbs.text = {
+                    title: (commercial ? 'COMMERCIAL ' : '') + 'DRIVER LICENSE', 
+                }
                 break
 
         }

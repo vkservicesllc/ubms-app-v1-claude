@@ -282,19 +282,26 @@ const displayTeams = () => {
                         } else if (target == 'settings') {
                             $(`#settings-${id}`).val(_id)
                             const { settings } = response.data
+
                             const applied = {
+                                driverCDL: settings?.drivers?.cdl || false,
                                 driverPositions: settings?.drivers?.positions || Object.keys(driverPositions).map(position => position),
                             }
                             let list = ''
 
                             if (category == 'crr') {
-                                list += '<div class="container"><label class="label">Driver Positions</label>'
+                                list += '<div class="columns">'
+                                list += '<div class="column"><div class="field><label class="checkbox">'
+                                list += `<input type="checkbox" name="${category}[drivers][cdl]"${applied.driverCDL ? ' checked' : ''} /> &nbsp;CDL Required`
+                                list += '</label></div></div>'
+                                list += '<div class="column"><label class="label">Driver Positions</label>'
                                 for (const value in driverPositions) {
                                     const checked = applied.driverPositions.includes(value) ? ' checked' : ''
                                     list += '<div class="field"><label class="checkbox">'
-                                    list += `<input type="checkbox" name="${category}[drivers][positions]" value="${value}" ${checked} /> &nbsp;${driverPositions[value]}`
+                                    list += `<input type="checkbox" name="${category}[drivers][positions]" value="${value}"${checked} /> &nbsp;${driverPositions[value]}`
                                     list += '</label></div>'
                                 }
+                                list += '</div>'
                                 list += '</div>'
                             }
 
