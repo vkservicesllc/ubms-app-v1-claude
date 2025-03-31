@@ -79,7 +79,7 @@ router.get('/application/:param?', async (req, res) => {
         }
 
         const { settings } = team
-        const key = 'application'
+        const key = 'application.registration'
         hbs = hbs.set(key, { title: 'Driver Application' })
         hbs.company = false
 
@@ -146,45 +146,45 @@ router.get('/application/:param?', async (req, res) => {
         hbs.formUrl = `/resource/application/${team._id}`
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
 
-        res.render(key, hbs)
+        res.render('application/registration', hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }
 })
 
 
-router.get('/application/:formId/:step', Application.verify, async (req, res) => {
-    try {
-        const { application } = res.session
-        const { step } = req.params
+// router.get('/application/:formId/:step', Application.verify, async (req, res) => {
+//     try {
+//         const { application } = res.session
+//         const { step } = req.params
 
-        const team = await Team.data({ ...res.session, user: true }, { _id: application._teamId })
-        if (!team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
+//         const team = await Team.data({ ...res.session, user: true }, { _id: application._teamId })
+//         if (!team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
 
-        const { settings } = team
-        let { hbs } = res
+//         const { settings } = team
+//         let { hbs } = res
 
-        let key, file
+//         let key, file
 
-        switch (step) {
+//         switch (step) {
 
-            case 'driver-license':
-                const commercial = settings?.drivers?.cdl === true
-                key = 'application.driver-license'
-                hbs = hbs.set(key, { title: 'Driver License Form' })
-                file = 'application/driver-license'
-                hbs.text = {
-                    title: (commercial ? 'COMMERCIAL ' : '') + 'DRIVER LICENSE', 
-                }
-                break
+//             case 'driver-license':
+//                 const commercial = settings?.drivers?.cdl === true
+//                 key = 'application.driver-license'
+//                 hbs = hbs.set(key, { title: 'Driver License Form' })
+//                 file = 'application/driver-license'
+//                 hbs.text = {
+//                     title: (commercial ? 'COMMERCIAL ' : '') + 'DRIVER LICENSE', 
+//                 }
+//                 break
 
-        }
+//         }
 
-        res.render(file, hbs)
-    } catch (err) {
-        throwErr.server(res, null, err)
-    }
-})
+//         res.render(file, hbs)
+//     } catch (err) {
+//         throwErr.server(res, null, err)
+//     }
+// })
 
 
 

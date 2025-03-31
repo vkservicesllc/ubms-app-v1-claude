@@ -9,7 +9,7 @@ const defaults = {
 
 module.exports = {
 
-    'application': {
+    'application.registration': {
         external: [ ...defaults.external, 'jquery.masked-input', 'font-awesome', 'moment' ],
         internal: {
             css: [ ...defaults.internal.css, 'application' ],
@@ -27,7 +27,7 @@ module.exports = {
         },
     },
 
-    'application.driver-license': {
+    'application': {
         external: [ ...defaults.external ],
         internal: {
             css: [ ...defaults.internal.css, 'application' ],

@@ -1,155 +1,13 @@
 {{> head}}
 
-    <style>
-        #company-name {
-            font-weight: 500;
-        }
-        #intro, #privacy {
-            font-size: .92em;
-        }
-    </style>
-
     <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
-        <div class="card text-center" id="new-apl-card" style="display: none;">
+        <div class="card text-center" id="apl-dl-card" style="display: none;">
             <div class="card-body pt-4">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
-                <div class="card-text" id="intro-card">
-                    {{#if (ne company false)}}
-                    <div class="border-top border-bottom py-2">
-                        <span id="company-name">{{company.name}}</span><br/>
-                        {{{company.address}}}<br/>
-                        {{company.phone}}
-                    </div>
-                    {{/if}}
-                    <div class="text-start text-success pt-3" id="intro">
-                        <p>
-                            We're looking for experienced and reliable drivers to join our carrier team.
-                            If you meet the qualifications and are committed to safety, efficiency,
-                            and top-tier service, we'd love to have you on board.
-                        </p>
-                        Before you begin the application, please ensure you:
-                        <ul>
-                            <li>are at least 18 years old</li>
-                            <li>have a valid {{text.requiredDL}}</li>
-                            <li>have a clean driving record</li>
-                            <li>have required permits and credentials</li>
-                            <li>are able to meet DOT and company safety requirements</li>
-                        </ul>
-                    </div>
-                    <button class="btn btn-success" id="apply">APPLY NOW</button>
-                </div>
-                <div class="card-text" id="privacy-card" style="display: none;">
-                    <div class="text-start pt-2" id="privacy">
-                        <h6 class="mb-3">Privacy & Data Security Notice</h6>
-                        <p>
-                            To proceed with the application process,
-                            we are required by the Department of Transportation to obtain your Motor Vehicle Report.
-                            To access this report, we will need your Social Security Number.
-                        </p>
-                        <p>
-                            Please rest assured that all information you submit will be securely stored,
-                            with the most sensitive data — such as Social Security numbers — being encrypted for maximum protection.
-                            We will not share your information with any third party under any circumstances, except as required by law.
-                        </p>
-                        <p>
-                            Your privacy and security are our top priorities.
-                            Our commitment is to handle your data with the highest level of confidentiality and security.
-                        </p>
-                        {{#if (ne company false)}}
-                        <p>If you have any questions about our data protection practices, please feel free to contact us at {{company.phone}}.</p>
-                        {{/if}}
-                    </div>
-                    <button class="btn btn-success" id="confirm">I Understand & Agree</button>
-                </div>
-                <div class="card-text px-2" id="form-card" style="display: none;">
-                    <form id="apl-start-form" action="{{formUrl}}" method="POST" autocomplete="off">
-                        <div class="row g-3 my-1">
-                            <div class="col-md-6 text-start">
-                                {{{label.firstName}}}
-                                {{{input.firstName}}}
-                            </div>
-                            <div class="col-md-6 text-start">
-                                {{{label.middleName}}}
-                                {{{input.middleName}}}
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-6 text-start">
-                                {{{label.lastName}}}
-                                {{{input.lastName}}}
-                            </div>
-                            <div class="col-md-3 text-start">
-                                {{{label.suffix}}}
-                                {{{select.suffix}}}
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-5 text-start">
-                                {{{label.dob}}}
-                                {{{input.dob}}}
-                                <div class="form-text text-danger" id="dob-help"></div>
-                            </div>
-                            <div class="col-md-6 text-start">
-                                {{{label.ssn}}}
-                                {{{input.ssn}}}
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-5 text-start">
-                                {{{label.phone}}}
-                                {{{input.phone}}}
-                            </div>
-                            <div class="col-md-7 text-start">
-                                {{{label.email}}}
-                                {{{input.email}}}
-                                <div class="form-text text-danger" id="email-help"></div>
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-12 text-start">
-                                <label class="form-label">I certify under penalty of law that:</label>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="confirm-dl" required />
-                                    <label class="form-check-label required" for="confirm-dl">
-                                        I have a valid and genuine driver's license
-                                    </label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="confirm-status" required />
-                                    <label class="form-check-label required" for="confirm-status">
-                                        I am legally authorized to work in the United States
-                                    </label>
-                                </div>
-                                <label class="form-label mt-3 required">Immigration Status</label>
-                                <div class="form-check">
-                                    <input class="form-check-input status-radio" type="radio" name="legalStatus" id="legal-status-0" value="0" required />
-                                    <label class="form-check-label" for="legal-status-0">US Citizen</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input status-radio" type="radio" name="legalStatus" id="legal-status-1" value="1" />
-                                    <label class="form-check-label" for="legal-status-1">Permanent Resident</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input status-radio" type="radio" name="legalStatus" id="legal-status-2" value="2" />
-                                    <label class="form-check-label" for="legal-status-2">Work Visa/Authorization</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-6 text-start">
-                                {{{label.statusExp}}}
-                                {{{input.statusExp}}}
-                                <div class="form-text text-danger" id="status-exp-help"></div>
-                            </div>
-                            <div class="col-md-6 text-start">
-                                {{{label.position}}}
-                                {{{select.position}}}
-                            </div>
-                        </div>
-                        <p class="form-text text-danger mt-4" id="form-help" style="display: none;"></p>
-                        <div class="d-grid gap-2 mt-4 mb-2">
-                            <button type="submit" class="btn btn-primary">Start Application</button>
-                        </div>
+                <div class="card-text px-2" id="form-card">
+                    <h6 class="text-success border-top py-3">{{text.title}}</h6>
+                    <form id="apl-dl-form" action="{{formUrl}}" method="POST" autocomplete="off">
+                        FORM
                     </form>
                 </div>
             </div>
@@ -158,6 +16,6 @@
             </div>
         </div>
     </div>
-    <script type="module" src="/modules/application/start.mjs"></script>
+    <script type="module" src="/modules/application/driver-license.mjs"></script>
 
 {{> foot}}
