@@ -112,6 +112,19 @@ class Application {
                 name: `${data.busName}, ${data.coType}`,
             }
         }
+
+        if (data.driverLic)
+            this.dl = {
+                commercial: data.commercial,
+                number: data.driverLic,
+                class: data.DL_class,
+                state: data.DL_state,
+                issuedOn: data.DL_issuedOn,
+                expiresOn: data.DL_expiresOn,
+                endorsement: data.DL_endorsement,
+                restriction: data.DL_restriction,
+            }
+
     }
 
 
@@ -169,6 +182,13 @@ class Application {
 
         return { deleted }
     }
+
+
+    static stepList = [
+        'Identification / Contacts',
+        'Driver License',
+        'MVR / PSP',
+    ]
 
 
     static #algorithm = 'SHA-224'
@@ -245,7 +265,6 @@ class Application {
         data = processData(data)
         data.ssn = { aes: [ data.ssn, ssnSecret ] }
         data.appliedOn = moment().format('YYYY-MM-DD')
-        data.step = 'driver-license'
         data.teamId = await team.id()
         if (user) {
             data.createdBy = await user.id()
@@ -347,6 +366,14 @@ class Application {
                     'phone',
                     'legalStatus',
                     'LS_expiresOn',
+                    'commercial',
+                    'driverLic',
+                    'DL_class',
+                    'DL_state',
+                    'DL_issuedOn',
+                    'DL_expiresOn',
+                    'DL_endorsement',
+                    'DL_restriction',
                 ],
                 match,
             },
@@ -496,6 +523,7 @@ class Application {
                     'apl.dob',
                     'apl.email',
                     'apl.phone',
+                    'apl.DL_state as dlState',
                     'cnm.busName',
                     'cnm.coType',
                     'cnm.alias AS companyAlias',
@@ -642,33 +670,6 @@ class Application {
             })
         } catch (err) {
             throwErr.api.server(res, null, err, false)
-        }
-    }
-
-
-
-    /* Middleware */
-
-
-    static verify = async (req, res, next) => {
-        try {
-            const { formId } = req.params
-            const application = await Application.data({ ...res.session, user: true }, { formId })
-            if (!application) return throwErr.data.server(res, 'Internal Server Error: Application not found')
-
-            const { application: _id } = req.session
-            if (!_id || _id != application._id) {
-                delete req.session.application
-
-                return res.redirect(`/application/${formId}`)
-            }
-
-            res.session.application = application
-
-            next()
-        } catch (err) {
-            const msg = 'Application validation check failed: Server could not process the request'
-            throwErr.data.server(res, msg, err)
         }
     }
 

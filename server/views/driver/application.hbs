@@ -4,11 +4,45 @@
         <div class="card text-center" id="apl-dl-card" style="display: none;">
             <div class="card-body pt-4">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
-                <div class="card-text px-2" id="form-card">
-                    <h6 class="text-success border-top py-3">{{text.title}}</h6>
-                    <form id="apl-dl-form" action="{{formUrl}}" method="POST" autocomplete="off">
-                        FORM
-                    </form>
+                <div class="card-text py-2" id="form-card">
+                    <p class="text-success">Application ID: {{formId}}</p>
+
+
+                    <div class="accordion" id="apl-accordion">
+
+                        <!-- First Item -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-0">
+                                    {{idx steps 0}}
+                                </button>
+                            </h2>
+                            <div id="collapse-0" class="text-start accordion-collapse collapse" data-bs-parent="#apl-accordion">
+                                <div class="accordion-body">
+                                    IDENTITY INFO / FORM
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Last Item (Expanded by Default) -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1">
+                                    {{idx steps 1}}
+                                </button>
+                            </h2>
+                            <div id="collapse-1" class="text-start accordion-collapse collapse show" data-bs-parent="#apl-accordion">
+                                <div class="accordion-body">
+                                    DRIVER LICENSE FORM
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <script>$('.accordion-button').click(function() { $(this).blur() })</script>
+
+
+
                 </div>
             </div>
             <div class="card-footer text-black-50">
@@ -16,6 +50,6 @@
             </div>
         </div>
     </div>
-    <script type="module" src="/modules/application/driver-license.mjs"></script>
+    <script type="module" src="/modules/application.mjs"></script>
 
 {{> foot}}

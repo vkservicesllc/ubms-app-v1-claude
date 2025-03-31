@@ -42,44 +42,23 @@ router.use((req, res, next) => {
 
 
 
-router.get('/application/:param?', async (req, res) => {
+router.get('/application/:param?', async (req, res, next) => {
+    res.constants = {
+        labelProps: { class: 'form-label' },
+        inputProps: { class: 'form-control' },
+        selectProps: { class: 'form-select', tabs: 8 },
+    }
+
     try {
         const { env } = req.query
-        let { hbs } = res
-
-        const labelProps = { class: 'form-label' }
-        const inputProps = { class: 'form-control' }
-        const selectProps = { class: 'form-select', tabs: 8 }
+        if (!env) return next()
 
         const team = await Team.data({ ...res.session, user: true }, { _id: env })
-        if (!team) {
-            const { param: formId } = req.params
-
-            const application = await Application.data(res.session, { formId })
-            if (!application) return respond404(res)
-
-            if (req.session.application) return res.redirect(`/application/${formId}/${application.step}`)
-
-            const key = 'application.login'
-            hbs = hbs.set(key, { title: 'Driver Application Sign-in' })
-
-            hbs.label = {
-                phone: DriverLabel.phone(labelProps),
-                dob: DriverLabel.dob(labelProps),
-                ssn: DriverLabel.pin(labelProps),
-            }
-            hbs.input = {
-                phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
-                dob: DriverInput.dob({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
-                ssn: DriverInput.pin(inputProps),
-            }
-            hbs.formUrl = `/resource/application/login/${formId}`
-
-            return res.render('application/login', hbs)
-        }
+        if (!team) return respond404(res)
 
         const { settings } = team
         const key = 'application.registration'
+        let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
         hbs.company = false
 
@@ -108,6 +87,8 @@ router.get('/application/:param?', async (req, res) => {
             requiredDL: "driver's license",
         }
         if (settings?.drivers?.cdl) hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
+
+        const { labelProps, inputProps, selectProps } = res.constants
 
         hbs.label = {
             firstName: DriverLabel.name('f', labelProps),
@@ -150,41 +131,76 @@ router.get('/application/:param?', async (req, res) => {
     } catch (err) {
         throwErr.server(res, null, err)
     }
+}, async (req, res, next) => {
+    try {
+        const { param: formId } = req.params
+
+        const application = await Application.data(res.session, { formId })
+        if (!application) return respond404(res)
+
+        res.session.application = application
+        if (req.session.application) return next()
+
+        const key = 'application.login'
+        let { hbs } = res
+        hbs = hbs.set(key, { title: 'Driver Application Sign-in' })
+
+        const { labelProps, inputProps } = res.constants
+
+        hbs.label = {
+            phone: DriverLabel.phone(labelProps),
+            dob: DriverLabel.dob(labelProps),
+            ssn: DriverLabel.pin(labelProps),
+        }
+        hbs.input = {
+            phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
+            dob: DriverInput.dob({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
+            ssn: DriverInput.pin(inputProps),
+        }
+        hbs.formUrl = `/resource/application/login/${formId}`
+
+        return res.render('application/login', hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+}, async (req, res) => {
+    try {
+        const { application } = res.session
+
+        const { application: _id } = req.session
+        if (!_id || _id != application._id) {
+            delete req.session.application
+
+            return res.redirect(`/application/${application.formId}`)
+        }
+
+        const team = await Team.data({ ...res.session, user: true }, { _id: application._teamId })
+        if (!team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
+
+        const { step } = application
+        const { settings } = team
+        const steps = Application.stepList
+        const key = 'application'
+        let { hbs } = res
+        hbs = hbs.set(key, { title: 'Driver Application' })
+
+        switch (step) {
+
+            case 1:
+                const commercial = settings?.drivers?.cdl === true
+                if (commercial) steps[step] = 'Commercial ' + steps[step]
+                break
+
+        }
+
+        hbs.steps = steps
+        hbs.formId = application.formId
+
+        res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
 })
-
-
-// router.get('/application/:formId/:step', Application.verify, async (req, res) => {
-//     try {
-//         const { application } = res.session
-//         const { step } = req.params
-
-//         const team = await Team.data({ ...res.session, user: true }, { _id: application._teamId })
-//         if (!team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
-
-//         const { settings } = team
-//         let { hbs } = res
-
-//         let key, file
-
-//         switch (step) {
-
-//             case 'driver-license':
-//                 const commercial = settings?.drivers?.cdl === true
-//                 key = 'application.driver-license'
-//                 hbs = hbs.set(key, { title: 'Driver License Form' })
-//                 file = 'application/driver-license'
-//                 hbs.text = {
-//                     title: (commercial ? 'COMMERCIAL ' : '') + 'DRIVER LICENSE', 
-//                 }
-//                 break
-
-//         }
-
-//         res.render(file, hbs)
-//     } catch (err) {
-//         throwErr.server(res, null, err)
-//     }
-// })
 
 
 

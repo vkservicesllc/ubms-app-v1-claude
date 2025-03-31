@@ -124,7 +124,9 @@ const table = $('#driver-apl-table').DataTable({
             searchable: false,
             orderable: false,
             render(data, type, row) {
-                return null //! need to render state from address HTML
+                let state = row.dlState || null
+
+                return state
             },
         },
 
