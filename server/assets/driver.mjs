@@ -22,6 +22,7 @@ import { generateRandomString } from '../tools/string.mjs'
 import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
 import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
+import { tel as formatTel } from '../../client/global/modules/tools/formatter.mjs'
 
 const moment = require('moment')
 const mysql = require('../tools/mysql')
@@ -177,8 +178,55 @@ class Application {
     static matchIdHash = value => matchHash(value, Application.#algorithm)
 
 
-    static invite = async (session, email, options = {}) => {
-        //
+    static invite = async (session, email, carrierId) => {
+        if (!session.team || !session.user) return
+
+        const { team, user } = session
+        let { from } = senderParams
+        let companyName, phone, url = '/application'
+
+        if (carrierId) {
+            const carrier = await Carrier.data(session, { id: carrierId })
+
+            if (carrier) {
+                companyName = carrier.name
+                phone = carrier.phone
+                url += `/${carrier.route}`
+            }
+        } else if (team.profile) {
+            companyName = team.profile.company
+            phone = team.profile.phone
+        }
+
+        if (companyName) from = `"${companyName}" <${senderParams.email}>`
+        url += `?env=${team._id}`
+
+        const options = {
+            from,
+            to: email,
+            replyTo: user.email,
+            subject: 'Invitation to Apply – Professional Driver Position',
+            html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                Dear Friend,<br/>
+                ${
+                    companyName
+                        ? `${companyName} invites you`
+                        : 'You are invited'
+                } to apply for a Professional Driver position!
+                We are looking for dedicated and skilled drivers to join our team and would love for you to be part of it.<br/><br/>
+                To learn more and submit your application, please visit the link below:<br/>
+                <a href="${addrBook.driver + url}" target="_blank">APPLY TODAY</a><br/><br/>
+                If you have any questions, feel free to reach out. We look forward to your application!<br/><br/>
+                Best regards,<br/>
+                ${user.name}<br/>
+                Driver Recruiter<br/>
+                ${companyName && phone ? `${companyName}<br/>${formatTel(phone)}` : user.email}
+            </div>`,
+        }
+
+        transporter.sendMail(options, error => {
+            if (error) console.error(error)
+        })
     }
 
     
@@ -234,9 +282,9 @@ class Application {
 
             if (carrierId) {
                 if (!user) session = { ...session, user: true }
-                const carrier = await Carrier.data(session, { id })
+                const carrier = await Carrier.data(session, { id: carrierId })
 
-                companyName = carrier.name
+                if (carrier) companyName = carrier.name
             } else if (team.profile)
                 companyName = team.profile.company
 
