@@ -20,6 +20,9 @@
                     <p class="text-start my-0 px-1"><small class="text-muted apl-label">Application ID:</small> {{formId}}</p>
                     <p class="text-start my-0 px-1"><small class="text-muted apl-label">Applicant:</small> {{applicantName}}</p>
                     <p class="text-start my-0 px-1"><small class="text-muted apl-label">Started on:</small> {{startedAt}}</p>
+                    <div class="progress mt-2">
+                        <div class="progress-bar bg-success" style="width: {{progress}}%;">{{progress}}%</div>
+                    </div>
 
                     <div class="accordion mt-3" id="apl-accordion">
 
@@ -86,7 +89,7 @@
                                         <div class="row g-3 my-2">
                                             <div class="col-md-4">
                                                 <div class="d-grid">
-                                                    <button type="submit" class="btn btn-success" id="profile-submit">Save Changes</button>
+                                                    <button type="submit" class="btn btn-{{button.profile.class}}" id="profile-submit">{{button.profile.text}}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -106,7 +109,62 @@
                             </h2>
                             <div id="collapse-1" class="text-start accordion-collapse collapse show" data-bs-parent="#apl-accordion">
                                 <div class="accordion-body">
-                                    <form id="dl-form" action="" method="POST" autocomplete="off"></form>
+                                    <form id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
+                                        <div class="row g-3 my-1">
+                                            <div class="col-md-6 text-start">
+                                                {{{label.dlState}}}
+                                                {{{select.dlState}}}
+                                            </div>
+                                            <div class="col-md-6 text-start">
+                                                {{{label.dlNum}}}
+                                                {{{input.dlNum}}}
+                                            </div>
+                                        </div>
+                                        <div class="row g-3 my-1">
+                                            <div class="col-md-4 text-start">
+                                                {{{label.dlClass}}}
+                                                {{{select.dlClass}}}
+                                            </div>
+                                            <div class="col-md-8 text-start">
+                                                {{{label.dlDesc}}}
+                                                {{{input.dlDesc}}}
+                                            </div>
+                                        </div>
+                                        <div class="row g-3 my-1">
+                                            <div class="col-md-4 text-start">
+                                                {{{label.gender}}}
+                                                {{{select.gender}}}
+                                            </div>
+                                            <div class="col-md-4 text-start">
+                                                {{{label.dlIss}}}
+                                                {{{input.dlIss}}}
+                                                <div class="form-text text-danger" id="dl-iss-help"></div>
+                                            </div>
+                                            <div class="col-md-4 text-start">
+                                                {{{label.dlExp}}}
+                                                {{{input.dlExp}}}
+                                                <div class="form-text text-danger" id="dl-exp-help"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-3 my-1">
+                                            <div class="col-md-6 text-start">
+                                                {{{label.dlEndorse}}}
+                                                {{{input.dlEndorse}}}
+                                            </div>
+                                            <div class="col-md-6 text-start">
+                                                {{{label.dlRestr}}}
+                                                {{{input.dlRestr}}}
+                                            </div>
+                                        </div>
+                                        <p class="form-text text-danger mt-4" id="dl-form-help" style="display: none;"></p>
+                                        <div class="row g-3 my-2">
+                                            <div class="col-md-4">
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-{{button.dl.class}}" id="dl-submit">{{button.dl.text}}</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>

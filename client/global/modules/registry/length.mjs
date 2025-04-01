@@ -67,4 +67,10 @@ export default {
         zip: { min: 3, max: 5 },
     },
 
+    driverLicense: {
+        number: { max: 25 },
+        endorsement: { max: 65 },
+        restriction: { max: 65 },
+    },
+
 }

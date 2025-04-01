@@ -131,10 +131,18 @@ export const formSelectors = {
         suffixId: 'driver-sfx',
         dobId: 'driver-dob',
         ssnId: 'driver-ssn',
+        sexId: 'driver-sex',
         phoneId: 'driver-phone',
         emailId: 'driver-email',
         positionId: 'driver-position',
         statusExpId: 'driver-status-expires',
+        dlNumId: 'driver-dl-number',
+        dlClassId: 'driver-dl-class',
+        dlStateId: 'driver-dl-state',
+        dlIssId: 'driver-dl-issued',
+        dlExpId: 'driver-dl-expires',
+        dlEndorseId: 'driver-dl-endorsement',
+        dlRestrId: 'driver-dl-restriction',
     },
 
 }

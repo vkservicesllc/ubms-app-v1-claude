@@ -47,7 +47,7 @@ router.get('/application/:param?', async (req, res, next) => {
     res.constants = {
         labelProps: { class: 'form-label' },
         inputProps: { class: 'form-control' },
-        selectProps: { class: 'form-select', tabs: 8 },
+        selectProps: { class: 'form-select', tabs: 8, options: { emptyOpt: '--' } },
     }
 
     try {
@@ -187,6 +187,10 @@ router.get('/application/:param?', async (req, res, next) => {
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
 
+        const buttonProps = {
+            next: { class: 'primary', text: 'Next' },
+            save: { class: 'success', text: 'Save Changes' }
+        }
         const { labelProps, inputProps, selectProps } = res.constants
         selectProps.tabs = 12
 
@@ -225,19 +229,60 @@ router.get('/application/:param?', async (req, res, next) => {
 
         hbs.actionUrl = {
             profile: `/resource/application/form/${formId}/profile`,
+            dl: `/resource/application/form/${formId}/driver-license`,
+        }
+
+        hbs.button = {
+            profile: buttonProps.save,
+            dl: buttonProps.next,
         }
 
         const commercial = settings?.drivers?.cdl === true
         if (commercial) steps[1] = 'CDL'
 
         if (step >= 1) {
-            // add license
+            hbs.label.dlState = DriverLabel.dlState(labelProps),
+            hbs.label.dlNum = DriverLabel.dlNum(labelProps),
+            hbs.label.dlClass = DriverLabel.dlClass(labelProps),
+            hbs.label.dlDesc = formLabel({ ...labelProps, content: 'Class Description'})
+            hbs.label.gender = DriverLabel.gender(labelProps)
+            hbs.label.dlIss = DriverLabel.dlIss(labelProps)
+            hbs.label.dlExp = DriverLabel.dlExp(labelProps)
+            hbs.label.dlEndorse = DriverLabel.dlEndorse({
+                ...labelProps,
+                content: 'Endorsements <small class="text-muted">(if any)</small>',
+            })
+            hbs.label.dlRestr = DriverLabel.dlRestr({
+                ...labelProps,
+                content: 'Restrictions <small class="text-muted">(if any)</small>',
+            })
+
+            hbs.input.dlNum = DriverInput.dlNum({ ...inputProps, value: application?.dl?.number })
+            hbs.input.dlDesc = formInput({ ...inputProps, id: 'apl-dl-desc', readOnly: true })
+            hbs.input.dlIss = DriverInput.dlIss({
+                ...inputProps,
+                placeholder: 'MM/DD/YYYY',
+                value: application?.dl?.issuedOn,
+            })
+            hbs.input.dlExp = DriverInput.dlExp({
+                ...inputProps,
+                placeholder: 'MM/DD/YYYY',
+                value: application?.dl?.expiresOn,
+            })
+            hbs.input.dlEndorse = DriverInput.dlEndorse({ ...inputProps, value: application?.dl?.endorsement })
+            hbs.input.dlRestr = DriverInput.dlRestr({ ...inputProps, value: application?.dl?.restriction })
+
+            hbs.select.dlState = DriverSelect.dlState({ ...selectProps, value: application?.dl?.state })
+            hbs.select.dlClass = DriverSelect.dlClass({ ...selectProps, value: application?.dl?.class }, commercial)
+            hbs.select.gender = DriverSelect.gender({ ...selectProps, value: application.sex })
         }
 
         if (step >= 2) {
+            hbs.button.dl = buttonProps.save
             // add next step
         }
 
+        hbs.progress = Math.round(step / steps.length * 100)
         hbs.steps = steps
         hbs.formId = formId
         hbs.applicantName = application.fullName

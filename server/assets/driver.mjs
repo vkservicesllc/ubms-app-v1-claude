@@ -47,6 +47,39 @@ class Driver extends Individual {
         'LP': 'Lease Purchaser',
     }
 
+    static dlClassList = [
+        {
+            commercial: true,
+            id: 'A',
+            name: 'A',
+            desc: 'Combination vehicles (26,001+ lbs, towing 10,000+ lbs): Large Tractor-Trailers, Semis',
+        },
+        {
+            commercial: true,
+            id: 'B',
+            name: 'B',
+            desc: 'Single vehicles (26,001+ lbs, towing under 10,000 lbs): Large Buses, Box Trucks, Dump Trucks',
+        },
+        {
+            commercial: true,
+            id: 'C',
+            name: 'C (CDL)',
+            desc: 'Passenger (16+ people) or Hazardous Materials: Small Buses, HazMat Vehicles',
+        },
+        {
+            commercial: false,
+            id: 'C*',
+            name: 'C (Non-CDL)',
+            desc: 'Standard Vehicles (some states): Regular Cars, SUVs, Vans, Small Trucks',
+        },
+        {
+            commercial: false,
+            id: 'D',
+            name: 'D',
+            desc: 'Standard Vehicles: Regular Cars, SUVs, Vans, Small Trucks',
+        },
+    ]
+
 
 }
 
@@ -75,6 +108,7 @@ class Application {
         this.fullName = new Person({ firstName, middleName, lastName, suffix }).fullName()
         this.dob = data.dob
         this.ssn = stringifyBuffer(data.ssn)
+        this.sex = data.sex
         this.email = data.email
         this.phone = data.phone
         this.emPhone = data.emPhone
@@ -400,6 +434,7 @@ class Application {
                     'suffix',
                     'dob',
                     { aes: [ 'ssn', ssnSecret ] },
+                    'sex',
                     'email',
                     'phone',
                     'legalStatus',
@@ -559,6 +594,7 @@ class Application {
                     'apl.lastName',
                     'apl.suffix',
                     'apl.dob',
+                    'apl.sex',
                     'apl.email',
                     'apl.phone',
                     'apl.DL_state as dlState',
