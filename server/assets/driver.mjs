@@ -270,6 +270,9 @@ class Application {
         'Profile',
         'Driver License',
         'MVR / PSP',
+        'Residence Address',
+        'Pre-Employment',
+        'Beneficiary',
     ]
 
 

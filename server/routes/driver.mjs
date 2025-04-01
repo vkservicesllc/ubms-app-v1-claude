@@ -309,7 +309,7 @@ router.get('/application/:param?', async (req, res, next) => {
             // add next step
         }
 
-        hbs.progress = Math.round(step / steps.length * 100)
+        hbs.progress = Math.round((step + 1) / steps.length * 100)
         hbs.steps = steps
         hbs.formId = formId
         hbs.applicantName = application.fullName
