@@ -185,7 +185,7 @@ class Application {
 
 
     static stepList = [
-        'Identification / Contacts',
+        'Profile',
         'Driver License',
         'MVR / PSP',
     ]

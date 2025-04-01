@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const moment = require('moment')
 const throwErr = require('../tools/error').data
 
 /* Assets */
@@ -15,7 +16,7 @@ import { Label as DriverLabel, Input as DriverInput, Select as DriverSelect } fr
 /* Tools */
 import { respond404 } from '../tools/response.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/string.mjs'
-import { tel as formatTel } from '../../client/global/modules/tools/formatter.mjs'
+import { tel as formatTel, ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
 
 
 
@@ -166,12 +167,13 @@ router.get('/application/:param?', async (req, res, next) => {
 }, async (req, res) => {
     try {
         const { application } = res.session
+        const { formId } = application
 
         const { application: _id } = req.session
         if (!_id || _id != application._id) {
             delete req.session.application
 
-            return res.redirect(`/application/${application.formId}`)
+            return res.redirect(`/application/${formId}`)
         }
 
         const team = await Team.data({ ...res.session, user: true }, { _id: application._teamId })
@@ -179,10 +181,50 @@ router.get('/application/:param?', async (req, res, next) => {
 
         const { step } = application
         const { settings } = team
-        const steps = Application.stepList
+        const steps = [ ...Application.stepList ]
         const key = 'application'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
+
+        const { labelProps, inputProps, selectProps } = res.constants
+        selectProps.tabs = 12
+
+        hbs.label = {
+            firstName: DriverLabel.name('f', labelProps),
+            middleName: DriverLabel.name('m', labelProps),
+            lastName: DriverLabel.name('l', labelProps),
+            suffix: DriverLabel.name('s', labelProps),
+            dob: DriverLabel.dob(labelProps),
+            ssn: DriverLabel.ssn({ ...labelProps, content: 'SSN' }),
+            phone: DriverLabel.phone({ ...labelProps }),
+            email: DriverLabel.email(labelProps),
+            position: DriverLabel.position(labelProps),
+        }
+
+        hbs.input = {
+            firstName: DriverInput.name('f', { ...inputProps, value: application.firstName }),
+            middleName: DriverInput.name('m', { ...inputProps, value: application.middleName }),
+            lastName: DriverInput.name('l', { ...inputProps, value: application.lastName }),
+            dob: DriverInput.dob({ ...inputProps, placeholder: 'MM/DD/YYYY', value: moment(application.dob).format('MM/DD/YYYY') }),
+            ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####', value: formatSsn(application.ssn) }),
+            phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####', value: formatTel(application.phone) }),
+            email: DriverInput.email({ ...inputProps, value: application.email }),
+        }
+
+        hbs.select = {
+            suffix: DriverSelect.suffix({ ...selectProps, value: application.suffix }),
+            position: DriverSelect.position({
+                ...selectProps,
+                value: application.position?.[0],
+                options: {
+                    emptyOpt: 'Decide later...',
+                },
+            }, team.list.drivers.positions),
+        }
+
+        hbs.actionUrl = {
+            profile: `/resource/application/form/${formId}/profile`,
+        }
 
         switch (step) {
 
@@ -194,7 +236,9 @@ router.get('/application/:param?', async (req, res, next) => {
         }
 
         hbs.steps = steps
-        hbs.formId = application.formId
+        hbs.formId = formId
+        hbs.applicantName = application.fullName
+        hbs.applicantPosition = application.position?.[1] || null
 
         res.render(key, hbs)
     } catch (err) {

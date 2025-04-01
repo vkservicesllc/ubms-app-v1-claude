@@ -1,5 +1,5 @@
 .card {
-    width: 540px;
+    width: 600px;
     max-width: 100%;
     margin: 10px;
 }
@@ -9,4 +9,11 @@
 }
 .card-footer {
     font-size: .87em;
+}
+.form-label {
+    font-size: .9em;
+    font-weight: 500;
+}
+.form-control, .form-select {
+    font-size: .95em;
 }
