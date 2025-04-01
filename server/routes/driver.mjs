@@ -226,19 +226,21 @@ router.get('/application/:param?', async (req, res, next) => {
             profile: `/resource/application/form/${formId}/profile`,
         }
 
-        switch (step) {
+        const commercial = settings?.drivers?.cdl === true
+        if (commercial) steps[step] = 'CDL'
 
-            case 1:
-                const commercial = settings?.drivers?.cdl === true
-                if (commercial) steps[step] = 'Commercial ' + steps[step]
-                break
+        if (step >= 1) {
+            // add license
+        }
 
+        if (step >= 2) {
+            // add next step
         }
 
         hbs.steps = steps
         hbs.formId = formId
         hbs.applicantName = application.fullName
-        hbs.applicantPosition = application.position?.[1] || null
+        hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') //! Test time accuracy on live server
 
         res.render(key, hbs)
     } catch (err) {

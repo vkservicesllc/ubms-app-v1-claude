@@ -62,6 +62,7 @@ class Application {
         this._carrierId = data._carrierId
         this.formId = data.formId
         this.appliedOn = data.appliedOn
+        this.appliedAt = data.createdAt
         this.position = data.position
             ? [ data.position, Driver.positionList[data.position] ]
             : null
@@ -353,6 +354,7 @@ class Application {
                     User.hashId('userId'),
                     'formId',
                     'appliedOn',
+                    'createdAt',
                     'position',
                     'condition',
                     'step',

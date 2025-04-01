@@ -1,16 +1,16 @@
 {{> head}}
 
-<style>
-    .apl-label {
-        display: inline-block;
-        width: 95px;
-        font-size: .8em;
-    }
-    .accordion-button-state {
-        display: inline-block;
-        margin-right: 10px;
-    }
-</style>
+    <style>
+        .apl-label {
+            display: inline-block;
+            width: 95px;
+            font-size: .8em;
+        }
+        .accordion-button-state {
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
 
     <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
         <div class="card text-center" id="apl-card" style="display: none;">
@@ -19,6 +19,7 @@
                 <div class="card-text py-2" id="form-card">
                     <p class="text-start my-0 px-1"><small class="text-muted apl-label">Application ID:</small> {{formId}}</p>
                     <p class="text-start my-0 px-1"><small class="text-muted apl-label">Applicant:</small> {{applicantName}}</p>
+                    <p class="text-start my-0 px-1"><small class="text-muted apl-label">Started on:</small> {{startedAt}}</p>
 
                     <div class="accordion mt-3" id="apl-accordion">
 
@@ -83,7 +84,7 @@
                                         </div>
                                         <p class="form-text text-danger mt-4" id="profile-form-help" style="display: none;"></p>
                                         <div class="row g-3 my-2">
-                                            <div class="col-md-4 text-start">
+                                            <div class="col-md-4">
                                                 <div class="d-grid">
                                                     <button type="submit" class="btn btn-success">Save Changes</button>
                                                 </div>
