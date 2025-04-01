@@ -8,11 +8,16 @@ import Driver, { Application } from '../../assets/driver.mjs'
 
 /* Validators */
 import validationCheck from '../../validators/default.mjs'
-import { validateApplicant, validateApplicantLogin } from '../../validators/driver.mjs'
+import {
+    validateApplicant,
+    validateApplicantLogin,
+    validateApplicantProfile,
+} from '../../validators/driver.mjs'
 
 
 
 /* Application Resource */
+
 
 router.post('/application/login/:formId', validateApplicantLogin, validationCheck, async (req, res) => {
     try {
@@ -32,6 +37,24 @@ router.post('/application/login/:formId', validateApplicantLogin, validationChec
         throwErr.server(res, null, err)
     }
 })
+
+
+router.post('/application/form/:formId/profile', validateApplicantProfile, validationCheck, async (req, res) => {
+    try {
+        const session = { ...res.session, user: true }
+        const { formId } = req.params
+        const application = await Application.data(session, { formId })
+        if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
+
+        const { error } = await application.modify(session, 'profile', req.body)
+        if (error) return throwErr.server(res, error, err)
+
+        res.redirect(`/application/${formId}`)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
 
 router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationCheck, async (req, res) => {
     try {

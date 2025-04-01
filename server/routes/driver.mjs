@@ -227,7 +227,7 @@ router.get('/application/:param?', async (req, res, next) => {
         }
 
         const commercial = settings?.drivers?.cdl === true
-        if (commercial) steps[step] = 'CDL'
+        if (commercial) steps[1] = 'CDL'
 
         if (step >= 1) {
             // add license

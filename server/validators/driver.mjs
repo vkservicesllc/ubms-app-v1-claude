@@ -56,3 +56,14 @@ export const validateApplicantLogin = [
     validateTel('phone', true),
     validatePin(),
 ]
+
+export const validateApplicantProfile = [
+    validateName('firstName'),
+    validateName('middleName'),
+    validateName('lastName'),
+    validateSuffix(),
+    validateDob('dob', 18, 'The Applicant must be at least 18 years of age'),
+    validateSsn('ssn', true),
+    validateTel('phone', true),
+    validatePosition(),
+]

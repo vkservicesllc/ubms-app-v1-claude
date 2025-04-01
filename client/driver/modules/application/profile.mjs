@@ -22,6 +22,7 @@ const $help = {
     email: $('#profile-email-help'),
     form: $('#profile-form-help'),
 }
+const $submit = $('#profile-submit')
 const $form = $('#profile-form')
 
 const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')

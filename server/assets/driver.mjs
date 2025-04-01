@@ -134,7 +134,7 @@ class Application {
     })))[0][0].id
 
 
-    log = async field => {
+    log = async (field, target) => {
         const fields = [ 'createdBy', 'createdAt', 'createdIn', 'updateLog' ]
 
         let log = (await mysql.execute(query.applications.select(fields, {
@@ -144,6 +144,42 @@ class Application {
         if (fields.includes(field)) log = log[field]
 
         return log
+    }
+
+
+    modify = async (session, step, data) => {
+        let modified = false,
+            error = sessionError(session, { branches: [ 'carrier', 'driver' ] })
+
+        if (!error && !['p', 'c'].includes(this.condition)) error = 'Permission Error: Application Locked'
+        if (error) return { modified, error }
+
+        const id = await this.id()
+        let modifiedBy = null, currentData, currentUpdateLog, target = 'applications', idProp = 'id'
+        if (session.user && session.user !== true)
+            modifiedBy = await session.user.id()
+
+        switch (step) {
+            case 'profile':
+                currentData = { ...this }
+                if (currentData.position)
+                    currentData.position = currentData.position[0]
+                currentUpdateLog = await this.log('updateLog')
+            break
+        }
+
+        data = processData(data, {
+            modifiedBy,
+            currentData,
+            currentUpdateLog,
+        })
+
+        if (Object.keys(data).length) {
+            const [ result ] = await mysql.execute(query[target].update(data, { [idProp]: id }))
+            if (result.affectedRows == 1) modified = true
+        }
+
+        return { modified }
     }
 
 
