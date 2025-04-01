@@ -41,9 +41,9 @@ export class Label {
 
     static dob = (props = {}) => formLabel({
         content: 'Date of Birth',
+        addClass: 'required',
         ...props,
         for: dobId,
-        addClass: 'required',
     })
 
     static ssn = (props = {}) => formLabel({
@@ -55,9 +55,9 @@ export class Label {
 
     static phone = (props = {}) => formLabel({
         content: 'Phone',
+        addClass: 'required',
         ...props,
         for: phoneId,
-        addClass: 'required',
     })
 
     static email = (props = {}) => formLabel({
@@ -83,7 +83,6 @@ export class Label {
         content: 'PIN',
         ...props,
         for: aplPinId,
-        addClass: 'required',
     })
 
 }

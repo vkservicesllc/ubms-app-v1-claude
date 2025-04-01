@@ -8,17 +8,23 @@
                     <h6 class="text-success border-top py-3">Sign in to proceed</h6>
                     <form id="apl-login-form" action="{{formUrl}}" method="POST" autocomplete="off">
                         <div class="row g-3 mb-1">
-                            <div class="col-md-5 text-start">
-                                {{{label.phone}}}
-                                {{{input.phone}}}
+                            <div class="col-md-5">
+                                <div class="form-floating">
+                                    {{{input.phone}}}
+                                    {{{label.phone}}}
+                                </div>
                             </div>
-                            <div class="col-md-4 text-start">
-                                {{{label.dob}}}
-                                {{{input.dob}}}
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    {{{input.dob}}}
+                                    {{{label.dob}}}
+                                </div>
                             </div>
-                            <div class="col-md-3 text-start">
-                                {{{label.ssn}}}
-                                {{{input.ssn}}}
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    {{{input.pin}}}
+                                    {{{label.pin}}}
+                                </div>
                             </div>
                         </div>
                         <p class="form-text text-danger mt-4" id="form-help" style="display: none;"></p>

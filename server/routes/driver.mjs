@@ -147,16 +147,17 @@ router.get('/application/:param?', async (req, res, next) => {
         hbs = hbs.set(key, { title: 'Driver Application Sign-in' })
 
         const { labelProps, inputProps } = res.constants
+        labelProps.addClass = ''
 
         hbs.label = {
             phone: DriverLabel.phone(labelProps),
             dob: DriverLabel.dob(labelProps),
-            ssn: DriverLabel.pin(labelProps),
+            pin: DriverLabel.pin(labelProps),
         }
         hbs.input = {
-            phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
-            dob: DriverInput.dob({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
-            ssn: DriverInput.pin(inputProps),
+            phone: DriverInput.phone({ ...inputProps, placeholder: 'Phone' }),
+            dob: DriverInput.dob({ ...inputProps, placeholder: 'Date of Birth' }),
+            pin: DriverInput.pin({ ...inputProps, placeholder: 'PIN' }),
         }
         hbs.formUrl = `/resource/application/login/${formId}`
 
