@@ -148,10 +148,10 @@ class Application {
             }
         }
 
-        if (data.driverLic)
+        if (data.driverLicense)
             this.dl = {
                 commercial: data.commercial,
-                number: data.driverLic,
+                number: data.driverLicense,
                 class: data.DL_class,
                 state: data.DL_state,
                 issuedOn: data.DL_issuedOn,
@@ -440,7 +440,7 @@ class Application {
                     'legalStatus',
                     'LS_expiresOn',
                     'commercial',
-                    'driverLic',
+                    'driverLicense',
                     'DL_class',
                     'DL_state',
                     'DL_issuedOn',
