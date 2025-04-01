@@ -87,6 +87,10 @@ export default {
         ],
         zip: [ [ /\D/g, '' ] ],
         city: [ [ /[^\sA-Za-z]/g, '' ] ],
+        driverLicense: [
+            [ /[^A-Za-z0-9-]/g, '' ],
+            [ /-+/g, '-' ],
+        ],
         teamName: [
             [ /[^\sA-Za-z0-9\-&']/g, '' ],
             [ /\s+/g, ' ' ],

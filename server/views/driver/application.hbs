@@ -102,32 +102,26 @@
                         <!-- Last Item (Expanded by Default) -->
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1">
-                                    <i class="far fa-clock accordion-button-state"></i>
+                                <button class="accordion-button{{accordion.dl.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1">
+                                    <i class="{{accordion.dl.state}} accordion-button-state"></i>
                                     <strong>{{idx steps 1}}</strong>
                                 </button>
                             </h2>
-                            <div id="collapse-1" class="text-start accordion-collapse collapse show" data-bs-parent="#apl-accordion">
+                            <div id="collapse-1" class="text-start accordion-collapse collapse{{accordion.dl.body}}" data-bs-parent="#apl-accordion">
                                 <div class="accordion-body">
                                     <form id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-6 text-start">
+                                            <div class="col-md-3 text-start">
                                                 {{{label.dlState}}}
                                                 {{{select.dlState}}}
                                             </div>
-                                            <div class="col-md-6 text-start">
+                                            <div class="col-md-5 text-start">
                                                 {{{label.dlNum}}}
                                                 {{{input.dlNum}}}
                                             </div>
-                                        </div>
-                                        <div class="row g-3 my-1">
                                             <div class="col-md-4 text-start">
                                                 {{{label.dlClass}}}
                                                 {{{select.dlClass}}}
-                                            </div>
-                                            <div class="col-md-8 text-start">
-                                                {{{label.dlDesc}}}
-                                                {{{input.dlDesc}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
@@ -165,6 +159,7 @@
                                             </div>
                                         </div>
                                     </form>
+                                    <script type="module" src="/modules/application/driver-license.mjs"></script>
                                 </div>
                             </div>
                         </div>

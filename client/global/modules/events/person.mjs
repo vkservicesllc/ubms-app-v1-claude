@@ -33,7 +33,7 @@ export const nameEvent = (id, options = {}) => {
                 }
             }
 
-            $name.val(name)
+            $name.val(name.replace(/^'|'$/g, ''))
             if (onChange) onChange(name, $name, suffix, $suffix)
         },
         onFocus,
@@ -51,6 +51,25 @@ export const ssnEvent = (id, options = {}) => {
     inputEvent(id, {
         mask,
         onInput,
+        onChange,
+        onFocus,
+        onBlur,
+    })
+}
+
+
+export const driverLicenseEvent = (id, callback = {}) => {
+    const { onInput, onChange, onFocus, onBlur } = callback
+
+    inputEvent(id, {
+        strip: true,
+        onInput(dl, $dl) {
+            dl = patterns.replace(dl, 'driverLicense')
+            dl = dl.toUpperCase()
+
+            $dl.val(dl)
+            if (onInput) onInput(dl, $dl)
+        },
         onChange,
         onFocus,
         onBlur,

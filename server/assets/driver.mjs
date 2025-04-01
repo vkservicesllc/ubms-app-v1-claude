@@ -109,6 +109,17 @@ class Application {
         this.dob = data.dob
         this.ssn = stringifyBuffer(data.ssn)
         this.sex = data.sex
+        this.gender = null
+        switch (this.sex) {
+            case 0:
+            case '0':
+                this.gender = [ 'F', 'Female' ]
+                break
+            case 1:
+            case '1':
+                this.gender = [ 'M', 'Male' ]
+                break
+        }
         this.email = data.email
         this.phone = data.phone
         this.emPhone = data.emPhone

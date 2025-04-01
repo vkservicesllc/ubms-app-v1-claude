@@ -194,6 +194,19 @@ router.get('/application/:param?', async (req, res, next) => {
         const { labelProps, inputProps, selectProps } = res.constants
         selectProps.tabs = 12
 
+        const accordionProps = {
+            pending: {
+                state: 'far fa-clock',
+                head: '',
+                body: ' show',
+            },
+            finished: {
+                state: 'fa fa-check',
+                head: ' collapsed',
+                body: '',
+            },
+        }
+
         hbs.label = {
             firstName: DriverLabel.name('f', labelProps),
             middleName: DriverLabel.name('m', labelProps),
@@ -237,14 +250,17 @@ router.get('/application/:param?', async (req, res, next) => {
             dl: buttonProps.next,
         }
 
+        hbs.accordion = {
+            dl: accordionProps.pending,
+        }
+
         const commercial = settings?.drivers?.cdl === true
-        if (commercial) steps[1] = 'CDL'
+        // if (commercial) steps[1] = 'Commercial ' + steps[1]
 
         if (step >= 1) {
             hbs.label.dlState = DriverLabel.dlState(labelProps),
             hbs.label.dlNum = DriverLabel.dlNum(labelProps),
             hbs.label.dlClass = DriverLabel.dlClass(labelProps),
-            hbs.label.dlDesc = formLabel({ ...labelProps, content: 'Class Description'})
             hbs.label.gender = DriverLabel.gender(labelProps)
             hbs.label.dlIss = DriverLabel.dlIss(labelProps)
             hbs.label.dlExp = DriverLabel.dlExp(labelProps)
@@ -258,7 +274,6 @@ router.get('/application/:param?', async (req, res, next) => {
             })
 
             hbs.input.dlNum = DriverInput.dlNum({ ...inputProps, value: application?.dl?.number })
-            hbs.input.dlDesc = formInput({ ...inputProps, id: 'apl-dl-desc', readOnly: true })
             hbs.input.dlIss = DriverInput.dlIss({
                 ...inputProps,
                 placeholder: 'MM/DD/YYYY',
@@ -272,9 +287,21 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.input.dlEndorse = DriverInput.dlEndorse({ ...inputProps, value: application?.dl?.endorsement })
             hbs.input.dlRestr = DriverInput.dlRestr({ ...inputProps, value: application?.dl?.restriction })
 
-            hbs.select.dlState = DriverSelect.dlState({ ...selectProps, value: application?.dl?.state })
-            hbs.select.dlClass = DriverSelect.dlClass({ ...selectProps, value: application?.dl?.class }, commercial)
-            hbs.select.gender = DriverSelect.gender({ ...selectProps, value: application.sex })
+            hbs.select.dlState = DriverSelect.dlState({
+                ...selectProps,
+                value: application?.dl?.state,
+                options: { valOpt: true, emptyOpt: !application?.dl?.state ? '--' : null },
+            })
+            hbs.select.dlClass = DriverSelect.dlClass({
+                ...selectProps,
+                value: application?.dl?.class,
+                options: { emptyOpt: !application?.dl?.class ? '--' : null },
+            }, commercial)
+            hbs.select.gender = DriverSelect.gender({
+                ...selectProps,
+                value: application.gender?.[0],
+                options: { emptyOpt: !application.gender ? '--' : null },
+            })
         }
 
         if (step >= 2) {
