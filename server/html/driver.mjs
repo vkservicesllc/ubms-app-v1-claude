@@ -314,7 +314,7 @@ export class Input {
         if (!['yes', 'no', 'expl'].includes(tag)) return
 
         let id, name, value
-        if (tag != 'expl') value = { yes: 1, no: 0 }[tag]
+        if (tag != 'expl') value = { yes: '1', no: '0' }[tag]
         const required = tag == 'yes'
 
         switch (target) {

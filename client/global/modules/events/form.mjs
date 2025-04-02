@@ -1,5 +1,5 @@
 /* jQuery required; jQuery Caret, jQuery Masked Input & jQuery UI optional */
-import { slim, word, english } from './supplies.mjs'
+import { slim, strip as _strip, word as _word, english } from './supplies.mjs'
 
 
 export const inputEvent = (selector, options = {}) => {
@@ -16,7 +16,7 @@ export const inputEvent = (selector, options = {}) => {
     if (!selection) return
 
     const $input = $(selection)
-    const { onFocus, onBlur, mask, strip } = options
+    const { onFocus, onBlur, mask, strip, word } = options
     let { placeholder, caret, lower, upper, datepicker } = options
 
     if (mask) {
@@ -83,7 +83,8 @@ export const inputEvent = (selector, options = {}) => {
         .on('change', function() {
             const { onChange } = options
             let value = $(this).val()
-            if (strip) value = word(value)
+            if (word) value = _word(value)
+            if (strip) value = _strip(value)
 
             $(this).val(value)
             if (onChange) onChange(value, $(this))

@@ -49,3 +49,10 @@ export const word = str => {
 
     return words.join(' ').trim()
 }
+
+
+export const strip = str => {
+    if (!str) return ''
+
+    return slim(str).trim().replace(/^[\p{P}\p{S}]+|[\p{P}\p{S}]+$/gu, '')
+}

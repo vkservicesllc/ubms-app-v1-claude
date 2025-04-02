@@ -1,7 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { driverLicenseEvent } from '/modules/events/person.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
-import { onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
 
 const {
     class: aplClass,
@@ -13,23 +13,146 @@ const {
     dlExpId,
     dlEndorseId,
     dlRestrId,
+    dlDeniedId,
+    dlDeniedExplId,
+    dlRevokedId,
+    dlRevokedExplId,
 } = formSelectors.driver
 
 const $card = $('#apl-card')
 const $help = {
     issued: $('#dl-iss-help'),
     expires: $('#dl-exp-help'),
-    form: $('#pdl-form-help'),
+    form: $('#dl-form-help'),
 }
 const $submit = $('#dl-submit')
 const $form = $('#dl-form')
 
+const $issued = $(`#${dlIssId}`)
+const $expires = $(`#${dlExpId}`)
+
+const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
+
+
 selectEvent(dlStateId, { fill: true, onChange })
 
-driverLicenseEvent(dlNumId, { onChange })
+driverLicenseEvent(dlNumId, { onInput, onChange })
 
 selectEvent(dlClassId, { fill: true, onChange })
 
 selectEvent(sexId, { fill: true, onChange })
+
+inputEvent(dlIssId, {
+    ...dateOpts,
+    onInput(issued, $issued) {
+        $help.issued.text(null)
+        $issued.removeClass('is-valid is-invalid')
+    },
+    onChange(issued, $issued) {
+        if (issued) {
+            issued = moment(issued, 'MM/DD/YYYY', true)
+
+            if (!issued.isValid()) {
+                $issued.addClass('is-invalid')
+                $help.issued.text('* Invalid date')
+            } else {
+                const today = moment()
+                let expires = $expires.val() 
+
+                if (issued.isAfter(today)) {
+                    $issued.addClass('is-invalid')
+                    $help.issued.text('* Future date forbidden')
+                } else if (expires) {
+                    expires = moment(expires, 'MM/DD/YYYY', true)
+
+                    if (issued.isSameOrAfter(expires)) {
+                        $issued.addClass('is-invalid')
+                        $help.issued.text('* Issued when expires')
+                    } else $issued.addClass('is-valid')
+                } else $issued.addClass('is-valid')
+            }
+        }
+
+        if (check($form)) $help.form.hide().html(null)
+    },
+    onBlur,
+})
+
+inputEvent(dlExpId, {
+    ...dateOpts,
+    onInput(expires, $expires) {
+        $help.expires.text(null).removeClass('text-danger text-warning')
+        $expires.removeClass('is-valid is-invalid')
+    },
+    onChange(expires, $expires) {
+        if (expires) {
+            expires = moment(expires, 'MM/DD/YYYY', true)
+
+            if (!expires.isValid()) {
+                $expires.addClass('is-invalid')
+                $help.expires.addClass('text-danger').text('* Invalid date')
+            } else {
+                const today = moment()
+                let issued = $issued.val()
+
+                const diff = {
+                    day: today.clone().add(1, 'days').startOf('day'),
+                    week: today.clone().add(1, 'weeks').startOf('day'),
+                    month: today.clone().add(1, 'months').startOf('day'),
+                }
+                let invalid, valid
+
+                if (expires.isSameOrBefore(today)) invalid = '* Expired'
+                else if (expires.isSame(diff.day)) invalid = '* Expires tomorrow'
+                else if (expires.isBefore(diff.week)) invalid = '* Almost expired'
+                else if (expires.isSame(diff.week)) invalid = '* Expires in a week'
+                else if (expires.isBefore(diff.month)) valid = '<i class="fas fa-triangle-exclamation"></i> Expires soon'
+                else if (issued) {
+                    issued = moment(issued, 'MM/DD/YYYY', true)
+
+                    if (expires.isSameOrBefore(issued)) invalid = '* Expired when issued'
+                }
+
+                if (invalid) {
+                    $help.expires.addClass('text-danger').text(invalid)
+                    $expires.addClass('is-invalid')
+                } else {
+                    if (valid) $help.expires.addClass('text-warning').html(valid)
+                    $expires.addClass('is-valid')
+                }
+            }
+        }
+
+        if (check($form)) $help.form.hide().html(null)
+    },
+    onBlur,
+})
+
+inputEvent(dlEndorseId, { strip: true })
+
+inputEvent(dlRestrId, { strip: true })
+
+
+const onRadioChange = (id, explId) => {
+    const $radio = $(`#${id}-yes, #${id}-no`)
+    const $expl = $(`#${explId}`)
+
+    $radio.on('change', function() {
+        const value = $(this).val()
+        const action = value == 1 ? 'show' : 'hide'
+        const required = value == 1
+
+        $expl.prop('required', required).parent()[action]()
+    })
+}
+
+onRadioChange(dlDeniedId, dlDeniedExplId)
+
+onRadioChange(dlRevokedId, dlRevokedExplId)
+
+inputEvent(dlDeniedExplId, { strip: true })
+
+inputEvent(dlRevokedExplId, { strip: true })
+
 
 onSubmit($form, $help, $submit, $card)

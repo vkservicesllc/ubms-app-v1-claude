@@ -13,6 +13,7 @@ export const usernameEvent = (callback = {}) => {
 
     inputEvent(userId, {
         lower: true,
+        word: true,
         strip: true,
         onInput(username, $username) {
             username = patterns.replace(username, 'username')
@@ -200,6 +201,7 @@ export const roleNameEvent = (id, ajaxData = {}, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
+        word: true,
         onInput(name, $name) {
             name = patterns.replace(name, 'roleName')
             name = capitalizeEach(name)

@@ -11,6 +11,7 @@ export const addr1Event = (id, options = {}) => {
 
     inputEvent(id, {
         strip: true,
+        word: true,
         onInput(addr1, $addr1) {
             addr1 = capitalizeEach(addr1)
 
@@ -51,6 +52,7 @@ export const addr2Event = (id, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
+        word: true,
         onInput(addr2, $addr2) {
             addr2 = capitalizeEach(addr2)
 
@@ -110,6 +112,7 @@ export const cityEvent = (id, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
+        word: true,
         onInput(city, $city) {
             city = capitalizeEach(city)
             city = patterns.replace(city, 'city')

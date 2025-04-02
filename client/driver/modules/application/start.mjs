@@ -2,6 +2,7 @@ import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
+import { check } from './support.mjs'
 
 const {
     class: aplClass,
@@ -110,7 +111,7 @@ const onChange = (value, $el) => {
     if (value && required) $el.addClass('is-valid')
 
     const id = $el.attr('id')
-    if (id != ssnId && id != statusExpId)
+    if (id != ssnId && id != dobId && id != statusExpId)
         sessionStorage.setItem(id, value)
 }
 const onBlur = (value, $el) => onChange(value, $el)
@@ -146,6 +147,8 @@ emailEvent(emailId, {
                 $help.email.text('* Invalid email address')
                 $email.addClass('is-invalid')
             } else $email.addClass('is-valid')
+
+        if (check($form)) $help.form.hide().html(null)
     },
 })
 
@@ -156,25 +159,29 @@ inputEvent(dobId, {
         $dob.removeClass('is-valid is-invalid')
     },
     onChange(dob, $dob) {
-        sessionStorage.setItem(dobId, dob)
-
         if (dob) {
             const date = moment(dob, 'MM/DD/YYYY', true)
+            let invalid
 
             if (!date.isValid()) {
                 $dob.addClass('is-invalid')
-                $help.dob.text('* Invalid date')
+                invalid = '* Invalid date'
             } else {
                 const today = moment()
                 const diff = today.clone().subtract(18, 'years').startOf('day')
 
                 if (date.isAfter(diff)) {
                     $dob.addClass('is-invalid')
-                    $help.dob.text("* You're too young to apply")
+                    invalid = "* You're too young to apply"
                 } else
                     $dob.addClass('is-valid')
             }
+
+            if (invalid) $help.dob.text(invalid)
+            else sessionStorage.setItem(dobId, dob)
         }
+
+        if (check($form)) $help.form.hide().html(null)
     },
     onBlur,
 })
@@ -214,6 +221,8 @@ inputEvent(statusExpId, {
                 }
             }
         }
+
+        if (check($form)) $help.form.hide().html(null)
     },
 })
 

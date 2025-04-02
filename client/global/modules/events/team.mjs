@@ -12,6 +12,7 @@ export const teamNameEvent = (callback = {}) => {
 
     inputEvent(nameId, {
         strip: true,
+        word: true,
         onInput(name, $name) {
             name = patterns.replace(name, 'teamName')
             name = capitalizeEach(name)

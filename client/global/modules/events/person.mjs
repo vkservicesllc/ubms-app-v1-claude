@@ -9,6 +9,7 @@ export const nameEvent = (id, options = {}) => {
 
     inputEvent(id, {
         strip: true,
+        word: true,
         onInput(name, $name) {
             name = patterns.replace(name, 'name')
             name = capitalizeEach(name)
@@ -63,6 +64,7 @@ export const driverLicenseEvent = (id, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
+        word: true,
         onInput(dl, $dl) {
             dl = patterns.replace(dl, 'driverLicense')
             dl = dl.toUpperCase()

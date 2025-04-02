@@ -33,6 +33,7 @@ export const busNameEvent = (id, coTypeId, callback = {}) => {
 
     inputEvent(id, {
         strip: true,
+        word: true,
         onInput(busName, $busName) {
             busName = capitalizeEach(busName)
             busName = patterns.replace(busName, 'busName')
@@ -90,6 +91,7 @@ export const aliasEvent = (id, callback = {}) => {
 
     inputEvent(id, {
         upper: true,
+        word: true,
         onInput(alias, $alias) {
             alias = alias.replace(/[^A-Z]/, '')
 

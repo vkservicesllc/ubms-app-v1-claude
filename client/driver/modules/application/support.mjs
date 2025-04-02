@@ -1,3 +1,5 @@
+export const check = $form => $form.find('input[required]').filter('.is-invalid').length === 0
+
 export const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
 
 export const onChange = (value, $el) => {
@@ -11,7 +13,7 @@ export const onSubmit = ($form, $help, $submit, $card) => {
     $form.submit(function(evt) {
         evt.preventDefault()
     
-        const valid = $(this).find('input[required]').filter('.is-invalid').length === 0
+        const valid = check($(this))
         if (!valid)
             return $help.form
                 .html('<i class="fas fa-triangle-exclamation"></i> Some of the provided information is invalid')
