@@ -28,6 +28,10 @@ const {
     dlExpId,
     dlEndorseId,
     dlRestrId,
+    dlDeniedId,
+    dlDeniedExplId,
+    dlRevokedId,
+    dlRevokedExplId,
 } = formSelectors.driver
 
 
@@ -147,6 +151,31 @@ export class Label {
         ...props,
         for: dlRestrId,
     })
+
+    static problem = (target, tag, props = {}) => {
+        if (!['dl-denied', 'dl-revoked'].includes(target)) return
+        if (!['yes', 'no', 'expl'].includes(tag)) return
+
+        let id
+        const content = { yes: 'Yes', no: 'No', expl: 'Explain what happened' }[tag]
+
+        switch (target) {
+            case 'dl-denied':
+                if (tag == 'expl') id = dlDeniedExplId
+                else id = `${dlDeniedId}-${tag}`
+                break
+            case 'dl-revoked':
+                if (tag == 'expl') id = dlRevokedExplId
+                else id = `${dlRevokedId}-${tag}`
+                break
+        }
+
+        return formLabel({
+            content,
+            ...props,
+            for: id,
+        })
+    }
 
 }
 
@@ -279,6 +308,48 @@ export class Input {
         name: 'DL_restriction',
         maxLength: inputLength.driverLicense.restriction.max,
     })
+
+    static problem = ( target, tag, props = {}) => {
+        if (!['dl-denied', 'dl-revoked'].includes(target)) return
+        if (!['yes', 'no', 'expl'].includes(tag)) return
+
+        let id, name, value
+        if (tag != 'expl') value = { yes: 1, no: 0 }[tag]
+        const required = tag == 'yes'
+
+        switch (target) {
+            case 'dl-denied':
+                if (tag == 'expl') {
+                    id = dlDeniedExplId
+                    name = 'DL_deniedExpl'
+                } else {
+                    id = `${dlDeniedId}-${tag}`
+                    name = 'DL_denied'
+                }
+                break
+            case 'dl-revoked':
+                if (tag == 'expl') {
+                    id = dlRevokedExplId
+                    name = 'DL_revokedExpl'
+                } else {
+                    id = `${dlRevokedId}-${tag}`
+                    name = 'DL_revoked'
+                }
+                break
+        }
+
+        props = { ...props, id, name, value, required }
+
+        if (tag == 'expl') {
+            props.maxLength = inputLength.driverLicense.problemExpl.max
+
+            return formTextArea(props)
+        } else {
+            props.type = 'radio'
+
+            return formInput(props)
+        }
+    }
 
 }
 

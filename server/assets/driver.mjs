@@ -169,6 +169,14 @@ class Application {
                 expiresOn: data.DL_expiresOn,
                 endorsement: data.DL_endorsement,
                 restriction: data.DL_restriction,
+                denied: [
+                    data.DL_denied,
+                    data.DL_deniedExpl,
+                ],
+                revoked: [
+                    data.DL_revoked,
+                    data.DL_revokedExpl,
+                ],
             }
 
     }

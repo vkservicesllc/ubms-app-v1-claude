@@ -272,6 +272,8 @@ router.get('/application/:param?', async (req, res, next) => {
                 ...labelProps,
                 content: 'Restrictions <small class="text-muted">(if any)</small>',
             })
+            hbs.label.dlDenied = {}
+            hbs.label.dlRevoked = {}
 
             hbs.input.dlNum = DriverInput.dlNum({ ...inputProps, value: application?.dl?.number })
             hbs.input.dlIss = DriverInput.dlIss({
@@ -286,6 +288,8 @@ router.get('/application/:param?', async (req, res, next) => {
             })
             hbs.input.dlEndorse = DriverInput.dlEndorse({ ...inputProps, value: application?.dl?.endorsement })
             hbs.input.dlRestr = DriverInput.dlRestr({ ...inputProps, value: application?.dl?.restriction })
+            hbs.input.dlDenied = {}
+            hbs.input.dlRevoked = {}
 
             hbs.select.dlState = DriverSelect.dlState({
                 ...selectProps,
@@ -301,6 +305,21 @@ router.get('/application/:param?', async (req, res, next) => {
                 ...selectProps,
                 value: application.gender?.[0],
                 options: { emptyOpt: !application.gender ? '--' : null },
+            })
+
+            const tags = ['yes', 'no', 'expl']
+            tags.forEach(tag => {
+                const props = { label: labelProps, input: inputProps }
+                if (tag != 'expl') {
+                    props.label = { class: 'form-check-label' }
+                    props.input = { class: 'form-check-input' }
+                }
+
+                hbs.label.dlDenied[tag] = DriverLabel.problem('dl-denied', tag, props.label)
+                hbs.label.dlRevoked[tag] = DriverLabel.problem('dl-revoked', tag, props.label)
+
+                hbs.input.dlDenied[tag] = DriverInput.problem('dl-denied', tag, props.input)
+                hbs.input.dlRevoked[tag] = DriverInput.problem('dl-revoked', tag, props.input)
             })
         }
 

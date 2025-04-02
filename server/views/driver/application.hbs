@@ -150,51 +150,44 @@
                                                 {{{input.dlRestr}}}
                                             </div>
                                         </div>
-
-
-
                                         <div class="row g-3 my-1">
                                             <label class="form-label required">
                                                 Have you ever been denied a License, Permit or Privilege to operate a Motor Vehicle?
                                             </label>
                                             <div class="col-md-4">
                                                 <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="DL_denied" id="dl-denied-yes" value="1" required />
-                                                    <label class="form-check-label" for="dl-denied-yes">Yes</label>
+                                                    {{{input.dlDenied.yes}}}
+                                                    {{{label.dlDenied.yes}}}
                                                 </div>
                                                 <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="DL_denied" id="dl-denied-no" value="0" />
-                                                    <label class="form-check-label" for="dl-denied-no">No</label>
+                                                    {{{input.dlDenied.no}}}
+                                                    {{{label.dlDenied.no}}}
                                                 </div>
                                             </div>
                                             <div class="col-md-8" id="dl-denied-expl-col" style="display: none;">
-                                                <label class="form-label required" for="dl-denied-expl">Explain what happened</label>
-                                                <textarea class="form-control" name="DL_deniedExpl" id="dl-denied-expl" maxlength="100"></textarea>
+                                                {{{label.dlDenied.expl}}}
+                                                {{{input.dlDenied.expl}}}
                                             </div>
                                         </div>
-
                                         <div class="row g-3 my-1">
                                             <label class="form-label required">
                                                 Has any of your License, Permit or Privilege ever been suspended or revoked?
                                             </label>
                                             <div class="col-md-4">
                                                 <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="DL_revoked" id="dl-revoked-yes" value="1" required />
-                                                    <label class="form-check-label" for="dl-revoked-yes">Yes</label>
+                                                    {{{input.dlRevoked.yes}}}
+                                                    {{{label.dlRevoked.yes}}}
                                                 </div>
                                                 <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="DL_revoked" id="dl-revoked-no" value="0" />
-                                                    <label class="form-check-label" for="dl-revoked-no">No</label>
+                                                    {{{input.dlRevoked.no}}}
+                                                    {{{label.dlRevoked.no}}}
                                                 </div>
                                             </div>
-                                            <div class="col-md-8" id="dl-revoked-expl-col" style="display: none;">
-                                                <label class="form-label required" for="dl-revoked-expl">Explain what happened</label>
-                                                <textarea class="form-control" name="DL_revokedExpl" id="dl-revoked-expl" maxlength="100"></textarea>
+                                            <div class="col-md-8" id="dl-denied-expl-col" style="display: none;">
+                                                {{{label.dlRevoked.expl}}}
+                                                {{{input.dlRevoked.expl}}}
                                             </div>
                                         </div>
-
-
-
                                         <p class="form-text text-danger mt-4" id="dl-form-help" style="display: none;"></p>
                                         <div class="row g-3 my-2">
                                             <div class="col-md-4">

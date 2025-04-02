@@ -71,6 +71,7 @@ export default {
         number: { max: 25 },
         endorsement: { max: 65 },
         restriction: { max: 65 },
+        problemExpl: { max: 100 },
     },
 
 }
