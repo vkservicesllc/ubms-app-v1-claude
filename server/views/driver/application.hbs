@@ -38,49 +38,49 @@
                                 <div class="accordion-body">
                                     <form id="profile-form" action="{{actionUrl.profile}}" method="POST" autocomplete="off">
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-6 text-start">
+                                            <div class="col-md-6">
                                                 {{{label.firstName}}}
                                                 {{{input.firstName}}}
                                             </div>
-                                            <div class="col-md-6 text-start">
+                                            <div class="col-md-6">
                                                 {{{label.middleName}}}
                                                 {{{input.middleName}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-6 text-start">
+                                            <div class="col-md-6">
                                                 {{{label.lastName}}}
                                                 {{{input.lastName}}}
                                             </div>
-                                            <div class="col-md-3 text-start">
+                                            <div class="col-md-3">
                                                 {{{label.suffix}}}
                                                 {{{select.suffix}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-5 text-start">
+                                            <div class="col-md-5">
                                                 {{{label.dob}}}
                                                 {{{input.dob}}}
                                                 <div class="form-text text-danger" id="profile-dob-help"></div>
                                             </div>
-                                            <div class="col-md-5 text-start">
+                                            <div class="col-md-5">
                                                 {{{label.ssn}}}
                                                 {{{input.ssn}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-5 text-start">
+                                            <div class="col-md-5">
                                                 {{{label.phone}}}
                                                 {{{input.phone}}}
                                             </div>
-                                            <div class="col-md-7 text-start">
+                                            <div class="col-md-7">
                                                 {{{label.email}}}
                                                 {{{input.email}}}
                                                 <div class="form-text text-danger" id="profile-email-help"></div>
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-5 text-start">
+                                            <div class="col-md-5">
                                                 {{{label.position}}}
                                                 {{{select.position}}}
                                             </div>
@@ -111,45 +111,90 @@
                                 <div class="accordion-body">
                                     <form id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-3 text-start">
+                                            <div class="col-md-3">
                                                 {{{label.dlState}}}
                                                 {{{select.dlState}}}
                                             </div>
-                                            <div class="col-md-5 text-start">
+                                            <div class="col-md-5">
                                                 {{{label.dlNum}}}
                                                 {{{input.dlNum}}}
                                             </div>
-                                            <div class="col-md-4 text-start">
+                                            <div class="col-md-4">
                                                 {{{label.dlClass}}}
                                                 {{{select.dlClass}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-4 text-start">
+                                            <div class="col-md-4">
                                                 {{{label.gender}}}
                                                 {{{select.gender}}}
                                             </div>
-                                            <div class="col-md-4 text-start">
+                                            <div class="col-md-4">
                                                 {{{label.dlIss}}}
                                                 {{{input.dlIss}}}
                                                 <div class="form-text text-danger" id="dl-iss-help"></div>
                                             </div>
-                                            <div class="col-md-4 text-start">
+                                            <div class="col-md-4">
                                                 {{{label.dlExp}}}
                                                 {{{input.dlExp}}}
                                                 <div class="form-text text-danger" id="dl-exp-help"></div>
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-6 text-start">
+                                            <div class="col-md-6">
                                                 {{{label.dlEndorse}}}
                                                 {{{input.dlEndorse}}}
                                             </div>
-                                            <div class="col-md-6 text-start">
+                                            <div class="col-md-6">
                                                 {{{label.dlRestr}}}
                                                 {{{input.dlRestr}}}
                                             </div>
                                         </div>
+
+
+
+                                        <div class="row g-3 my-1">
+                                            <label class="form-label required">
+                                                Have you ever been denied a License, Permit or Privilege to operate a Motor Vehicle?
+                                            </label>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="DL_denied" id="dl-denied-yes" value="1" required />
+                                                    <label class="form-check-label" for="dl-denied-yes">Yes</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="DL_denied" id="dl-denied-no" value="0" />
+                                                    <label class="form-check-label" for="dl-denied-no">No</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8" id="dl-denied-expl-col" style="display: none;">
+                                                <label class="form-label required" for="dl-denied-expl">Explain what happened</label>
+                                                <textarea class="form-control" name="DL_deniedExpl" id="dl-denied-expl" maxlength="100"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 my-1">
+                                            <label class="form-label required">
+                                                Has any of your License, Permit or Privilege ever been suspended or revoked?
+                                            </label>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="DL_revoked" id="dl-revoked-yes" value="1" required />
+                                                    <label class="form-check-label" for="dl-revoked-yes">Yes</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="DL_revoked" id="dl-revoked-no" value="0" />
+                                                    <label class="form-check-label" for="dl-revoked-no">No</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8" id="dl-revoked-expl-col" style="display: none;">
+                                                <label class="form-label required" for="dl-revoked-expl">Explain what happened</label>
+                                                <textarea class="form-control" name="DL_revokedExpl" id="dl-revoked-expl" maxlength="100"></textarea>
+                                            </div>
+                                        </div>
+
+
+
                                         <p class="form-text text-danger mt-4" id="dl-form-help" style="display: none;"></p>
                                         <div class="row g-3 my-2">
                                             <div class="col-md-4">

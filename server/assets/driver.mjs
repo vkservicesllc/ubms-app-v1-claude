@@ -161,8 +161,8 @@ class Application {
 
         if (data.driverLicense)
             this.dl = {
-                commercial: data.commercial,
                 number: data.driverLicense,
+                commercial: data.DL_commercial,
                 class: data.DL_class,
                 state: data.DL_state,
                 issuedOn: data.DL_issuedOn,
@@ -270,9 +270,12 @@ class Application {
         'Profile',
         'Driver License',
         'MVR / PSP',
+        'Accidents',
+        'Citations',
         'Residence Address',
         'Pre-Employment',
         'Beneficiary',
+        'Business',
     ]
 
 
@@ -442,6 +445,8 @@ class Application {
                     'position',
                     'condition',
                     'step',
+
+                    /* Profile */
                     'firstName',
                     'middleName',
                     'lastName',
@@ -453,14 +458,21 @@ class Application {
                     'phone',
                     'legalStatus',
                     'LS_expiresOn',
-                    'commercial',
+
+                    /* Driver License */
                     'driverLicense',
+                    'DL_commercial',
                     'DL_class',
                     'DL_state',
                     'DL_issuedOn',
                     'DL_expiresOn',
                     'DL_endorsement',
                     'DL_restriction',
+                    'DL_denied',
+                    'DL_deniedExpl',
+                    'DL_revoked',
+                    'DL_revokedExpl',
+
                 ],
                 match,
             },
