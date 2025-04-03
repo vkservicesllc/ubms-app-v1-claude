@@ -39,14 +39,14 @@ router.post('/application/login/:formId', validateApplicantLogin, validationChec
 })
 
 
-router.post('/application/form/:formId/profile', validateApplicantProfile, validationCheck, async (req, res) => {
+router.post('/application/form/:formId/:step', validateApplicantProfile, validationCheck, async (req, res) => {
     try {
         const session = { ...res.session, user: true }
-        const { formId } = req.params
+        const { formId, step } = req.params
         const application = await Application.data(session, { formId })
         if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
 
-        const { error } = await application.modify(session, 'profile', req.body)
+        const { error } = await application.modify(session, step, req.body)
         if (error) return throwErr.server(res, error, err)
 
         res.redirect(`/application/${formId}`)

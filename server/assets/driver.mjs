@@ -63,13 +63,13 @@ class Driver extends Individual {
         {
             commercial: true,
             id: 'C',
-            name: 'C (CDL)',
+            name: 'C CDL',
             desc: 'Passenger (16+ people) or Hazardous Materials: Small Buses, HazMat Vehicles',
         },
         {
             commercial: false,
             id: 'C*',
-            name: 'C (Non-CDL)',
+            name: 'C Non-CDL',
             desc: 'Standard Vehicles (some states): Regular Cars, SUVs, Vans, Small Trucks',
         },
         {
@@ -213,19 +213,26 @@ class Application {
             modifiedBy = await session.user.id()
 
         switch (step) {
+
             case 'profile':
                 currentData = { ...this }
                 if (currentData.position)
                     currentData.position = currentData.position[0]
                 currentUpdateLog = await this.log('updateLog')
-            break
-        }
 
-        data = processData(data, {
-            modifiedBy,
-            currentData,
-            currentUpdateLog,
-        })
+                data = processData(data, {
+                    modifiedBy,
+                    currentData,
+                    currentUpdateLog,
+                })
+                break
+
+            case 'driver-license':
+                //? when first created, add without update log
+                //? when modified, add with update log
+                break
+
+        }
 
         if (Object.keys(data).length) {
             const [ result ] = await mysql.execute(query[target].update(data, { [idProp]: id }))

@@ -106,7 +106,7 @@ export class Label {
     })
 
     static dlNum = (props = {}) => formLabel({
-        content: 'Driver License #',
+        content: 'ID #',
         ...props,
         addClass: 'required',
         for: dlNumId,
