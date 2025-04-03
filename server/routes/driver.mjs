@@ -12,6 +12,7 @@ import escapeHTML from '../../client/global/modules/assets/html.mjs'
 import { formLabel, formInput } from '../../client/global/modules/assets/html.mjs'
 import { Input as ContactInput } from '../html/contacts.mjs'
 import { Label as DriverLabel, Input as DriverInput, Select as DriverSelect } from '../html/driver.mjs'
+import { Label as AddrLabel, Input as AddrInput, Select as AddrSelect } from '../html/address.us.mjs'
 
 /* Tools */
 import { respond404 } from '../tools/response.mjs'
@@ -356,6 +357,14 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.button.one = buttonProps.save
             hbs.accordion.one = accordionProps.finished
             // add next step
+
+            hbs.label.address1 = AddrLabel.address1(labelProps)
+            hbs.label.address2 = AddrLabel.address2(labelProps)
+            hbs.label.zip = AddrLabel.zip(labelProps)
+
+            hbs.input.address1 = AddrInput.address1(inputProps)
+            hbs.input.address2 = AddrInput.address2(inputProps)
+            hbs.input.zip = AddrInput.zip(inputProps)
         }
 
         hbs.progress = Math.round(step / steps.length * 100)

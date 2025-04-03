@@ -21,12 +21,25 @@ $card.fadeIn(duration)
 
 const onInput = () => $help.hide().html(null)
 
-telEvent(phoneId, { onInput })
+const onBlur = (value, $el) => {
+    if (value) {
+        const $next = $el.parent().parent().next().find('input')
+
+        if ($next.length) {
+            const next = $next.val()
+            if (!next) $next.focus()
+        } else $submit.focus()
+    }
+}
+
+
+telEvent(phoneId, { onInput, onBlur })
 
 inputEvent(dobId, {
     mask: '99/99/9999',
     placeholder: 'MM/DD/YYYY',
     onInput,
+    onBlur,
 })
 
 inputEvent(aplPinId, {
@@ -36,7 +49,9 @@ inputEvent(aplPinId, {
         const length = $pin.attr('maxlength')
         if (pin.length == length) $pin.blur()
     },
+    onBlur,
 })
+
 
 $form.submit(function(evt) {
     evt.preventDefault()

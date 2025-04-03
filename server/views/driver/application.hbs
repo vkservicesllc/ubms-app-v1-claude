@@ -210,7 +210,22 @@
                             </h2>
                             <div id="collapse-2" class="text-start accordion-collapse collapse{{accordion.two.body}}" data-bs-parent="#apl-accordion">
                                 <div class="accordion-body">
-                                    NEXT STEP
+                                    <form id="address-form" action="{{actionUrl.address}}" method="POST" autocomplete="off">
+                                        <div class="row g-3 my-1">
+                                            <div class="col-md-6">
+                                                {{{label.address1}}}
+                                                {{{input.address1}}}
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{{label.address2}}}
+                                                {{{input.address2}}}
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{{label.zip}}}
+                                                {{{input.zip}}}
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
