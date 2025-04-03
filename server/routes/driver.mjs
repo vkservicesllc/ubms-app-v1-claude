@@ -246,12 +246,15 @@ router.get('/application/:param?', async (req, res, next) => {
         }
 
         hbs.button = {
-            profile: buttonProps.save,
-            dl: buttonProps.next,
+            one: buttonProps.save,
+            two: buttonProps.next,
+            three: buttonProps.next,
         }
 
         hbs.accordion = {
-            dl: accordionProps.pending,
+            one: accordionProps.pending,
+            two: accordionProps.pending,
+            three: accordionProps.pending,
         }
 
         const commercial = settings?.drivers?.cdl === true
@@ -279,12 +282,12 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.input.dlIss = DriverInput.dlIss({
                 ...inputProps,
                 placeholder: 'MM/DD/YYYY',
-                value: application?.dl?.issuedOn,
+                value: application?.dl?.issuedOn ? moment(application.dl.issuedOn).format('MM/DD/YYYY') : null,
             })
             hbs.input.dlExp = DriverInput.dlExp({
                 ...inputProps,
                 placeholder: 'MM/DD/YYYY',
-                value: application?.dl?.expiresOn,
+                value: application?.dl?.expiresOn ? moment(application.dl.expiresOn).format('MM/DD/YYYY') : null,
             })
             hbs.input.dlEndorse = DriverInput.dlEndorse({ ...inputProps, value: application?.dl?.endorsement })
             hbs.input.dlRestr = DriverInput.dlRestr({ ...inputProps, value: application?.dl?.restriction })
@@ -309,26 +312,54 @@ router.get('/application/:param?', async (req, res, next) => {
 
             const tags = ['yes', 'no', 'expl']
             tags.forEach(tag => {
-                const props = { label: labelProps, input: inputProps }
+                const props = {
+                    label: labelProps,
+                    input: {
+                        denied: { ...inputProps },
+                        revoked: { ...inputProps },
+                    },
+                }
+
                 if (tag != 'expl') {
                     props.label = { class: 'form-check-label' }
-                    props.input = { class: 'form-check-input' }
+                    props.input = {
+                        denied: { class: 'form-check-input' },
+                        revoked: { class: 'form-check-input' },
+                    }
+
+                    if (application.dl) {
+                        const { denied, revoked } = application.dl
+
+                        if ((denied && tag == 'yes') || (!denied && tag == 'no'))
+                            props.input.denied.checked = true
+                        if ((revoked && tag == 'yes') || (!revoked && tag == 'no'))
+                            props.input.revoked.checked = true
+                    }
+                } else {
+                    if (application.dl) {
+                        const { deniedExpl, revokedExpl } = application.dl
+
+                        if (deniedExpl) props.input.denied.value = deniedExpl
+                        if (revokedExpl) props.input.revoked.value = revokedExpl
+                    }
                 }
 
                 hbs.label.dlDenied[tag] = DriverLabel.problem('dl-denied', tag, props.label)
                 hbs.label.dlRevoked[tag] = DriverLabel.problem('dl-revoked', tag, props.label)
 
-                hbs.input.dlDenied[tag] = DriverInput.problem('dl-denied', tag, props.input)
-                hbs.input.dlRevoked[tag] = DriverInput.problem('dl-revoked', tag, props.input)
+                hbs.input.dlDenied[tag] = DriverInput.problem('dl-denied', tag, props.input.denied)
+                hbs.input.dlRevoked[tag] = DriverInput.problem('dl-revoked', tag, props.input.revoked)
             })
         }
 
         if (step >= 2) {
-            hbs.button.dl = buttonProps.save
+            hbs.button.one = buttonProps.save
+            hbs.accordion.one = accordionProps.finished
             // add next step
         }
 
         hbs.progress = Math.round(step / steps.length * 100)
+        hbs.step = step
         hbs.steps = steps
         hbs.formId = formId
         hbs.applicantName = application.fullName

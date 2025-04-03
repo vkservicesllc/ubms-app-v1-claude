@@ -31,6 +31,13 @@ const $form = $('#dl-form')
 const $issued = $(`#${dlIssId}`)
 const $expires = $(`#${dlExpId}`)
 
+const $expl = {
+    denied: $(`#${dlDeniedExplId}`),
+    revoked: $(`#${dlRevokedExplId}`),
+}
+for (const key in $expl)
+    if ($expl[key].val()) $expl[key].parent().show()
+
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
 

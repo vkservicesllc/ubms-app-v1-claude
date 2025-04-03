@@ -338,7 +338,7 @@ export class Input {
                 break
         }
 
-        props = { ...props, id, name, value, required }
+        props = { value, ...props, id, name, required } //* order is important
 
         if (tag == 'expl') {
             props.maxLength = inputLength.driverLicense.problemExpl.max

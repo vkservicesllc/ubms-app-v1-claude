@@ -23,6 +23,7 @@ import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
 import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 import { tel as formatTel } from '../../client/global/modules/tools/formatter.mjs'
+import { application } from '../includes/driver'
 
 const moment = require('moment')
 const mysql = require('../tools/mysql')
@@ -94,8 +95,8 @@ class Application {
         this._userId = data._userId
         this._carrierId = data._carrierId
         this.formId = data.formId
-        this.appliedOn = data.appliedOn
         this.appliedAt = data.createdAt
+        this.finishedAt = data.finishedAt
         this.position = data.position
             ? [ data.position, Driver.positionList[data.position] ]
             : null
@@ -162,21 +163,17 @@ class Application {
         if (data.driverLicense)
             this.dl = {
                 number: data.driverLicense,
-                commercial: data.DL_commercial,
+                commercial: Driver.dlClassList.filter(dlClass => dlClass.id === data.DL_class)[0].commercial,
                 class: data.DL_class,
                 state: data.DL_state,
                 issuedOn: data.DL_issuedOn,
                 expiresOn: data.DL_expiresOn,
                 endorsement: data.DL_endorsement,
                 restriction: data.DL_restriction,
-                denied: [
-                    data.DL_denied,
-                    data.DL_deniedExpl,
-                ],
-                revoked: [
-                    data.DL_revoked,
-                    data.DL_revokedExpl,
-                ],
+                denied: data.DL_denied,
+                deniedExpl: data.DL_deniedExpl,
+                revoked: data.DL_revoked,
+                revokedExpl: data.DL_revokedExpl,
             }
 
     }
@@ -187,11 +184,17 @@ class Application {
     })))[0][0].id
 
 
-    log = async (field, target) => {
-        const fields = [ 'createdBy', 'createdAt', 'createdIn', 'updateLog' ]
+    log = async (field, target = 'applications') => {
+        const fields = [ 'updateLog' ]
+        let idProp = 'aplId'
 
-        let log = (await mysql.execute(query.applications.select(fields, {
-            match: { id: Application.matchIdHash(this._id) },
+        if (target == 'applications') {
+            idProp = 'id'
+            fields.unshift('createdBy', 'createdAt', 'createdIn', 'finishedAt')
+        }
+
+        let log = (await mysql.execute(query[target].select(fields, {
+            match: { [idProp]: Application.matchIdHash(this._id) },
         })))[0][0]
 
         if (fields.includes(field)) log = log[field]
@@ -208,11 +211,13 @@ class Application {
         if (error) return { modified, error }
 
         const id = await this.id()
-        let modifiedBy = null, currentData, currentUpdateLog, target = 'applications', idProp = 'id'
+        const { branch, siteId } = session
+        let modifiedBy = null, currentData = {}, currentUpdateLog, target = 'applications', idProp = 'id'
         if (session.user && session.user !== true)
             modifiedBy = await session.user.id()
 
         switch (step) {
+
 
             case 'profile':
                 currentData = { ...this }
@@ -222,24 +227,65 @@ class Application {
 
                 data = processData(data, {
                     modifiedBy,
+                    branch,
+                    siteId,
                     currentData,
                     currentUpdateLog,
                 })
+                if (data.ssn)
+                    data.ssn = { aes: [ data.ssn, ssnSecret ] }
                 break
 
+
             case 'driver-license':
-                //? when first created, add without update log
-                //? when modified, add with update log
+                const checkExpl = data => {
+                    if (
+                        (data['DL_denied'] == '1' && !data['DL_deniedExpl']) ||
+                        (data['DL_revoked'] == '1' && !data['DL_revokedExpl'])
+                    ) return 'Data Submission Error: Explanation not provided'
+                }
+
+                if (data['DL_denied'] == '0') data['DL_deniedExpl'] = null
+                if (data['DL_revoked'] == '0') data['DL_revokedExpl'] = null
+
+                if (!this.dl) {
+                    data = processData(data)
+                    data.step = 2
+
+                    error = checkExpl(data)
+                } else {
+                    currentData.driverLicense = this.dl.number
+                    const props = [
+                        'class', 'state',
+                        'issuedOn', 'expiresOn',
+                        'endorsement', 'restriction',
+                        'denied', 'deniedExpl',
+                        'revoked', 'revokedExpl',
+                    ]
+                    props.forEach(prop => currentData[`DL_${prop}`] = this.dl[prop])
+                    currentUpdateLog = await this.log('updateLog')
+
+                    data = processData(data, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData,
+                        currentUpdateLog,
+                    })
+
+                    error = checkExpl(data)
+                }
                 break
+
 
         }
 
-        if (Object.keys(data).length) {
+        if (!error && Object.keys(data).length) {
             const [ result ] = await mysql.execute(query[target].update(data, { [idProp]: id }))
             if (result.affectedRows == 1) modified = true
         }
 
-        return { modified }
+        return { modified, error }
     }
 
 
@@ -367,7 +413,6 @@ class Application {
 
         data = processData(data)
         data.ssn = { aes: [ data.ssn, ssnSecret ] }
-        data.appliedOn = moment().format('YYYY-MM-DD')
         data.teamId = await team.id()
         if (user) {
             data.createdBy = await user.id()
@@ -455,11 +500,11 @@ class Application {
                     Carrier.hashId('carrierId'),
                     User.hashId('userId'),
                     'formId',
-                    'appliedOn',
-                    'createdAt',
-                    'position',
                     'condition',
+                    'createdAt',
+                    'finishedAt',
                     'step',
+                    'position',
 
                     /* Profile */
                     'firstName',
@@ -476,7 +521,6 @@ class Application {
 
                     /* Driver License */
                     'driverLicense',
-                    'DL_commercial',
                     'DL_class',
                     'DL_state',
                     'DL_issuedOn',
@@ -627,8 +671,9 @@ class Application {
                     knex.raw(Query.hashField(Carrier.hashId('carrierId'))),
                     knex.raw(Query.hashField(User.hashId('userId'))),
                     'apl.formId',
-                    'apl.appliedOn',
                     'apl.condition',
+                    'apl.createdAt', //! will return ISO 8601 UTC timestamp (YYYY-MM-DDTHH:mm:ss.sssZ)
+                    'apl.finishedAt',
                     'apl.position',
                     'apl.firstName',
                     'apl.middleName',
@@ -755,7 +800,7 @@ class Application {
 //             if (orderField) query = query.orderBy(orderField, orderDir)
 //             else
             query = query.orderBy([
-                { column: 'appliedOn', order: 'desc' },
+                { column: 'createdAt', order: 'desc' },
                 { column: 'lastName', order: 'asc' },
                 { column: 'firstName', order: 'asc' },
             ])

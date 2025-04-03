@@ -7,8 +7,11 @@ import {
     validateSuffix,
     validateDob,
     validateSsn,
+    validateGender,
     validateTel,
     validateDate,
+    validateStateUS,
+    validateYesNo,
 } from './default.mjs'
 
 const { body } = require('express-validator')
@@ -36,6 +39,29 @@ const validatePin = () => body('pin')
         .withMessage("Applicant's PIN must be numberic")
     .isLength({ min: 4, max: 4 })
         .withMessage('Incorrect PIN length')
+
+const validateDlNum = field => {
+    const { min, max } = inputLength.driverLicense.number
+
+    return body(field)
+        .trim()
+        .matches(/^[A-Za-z0-9-]+$/)
+            .withMessage('Driver License must be alphanumeric with optional hyphens')
+        .isLength({ min, max })
+            .withMessage(`Driver License must be between ${min} and ${max} characters`)
+}
+
+const validateDlClass = field => {
+    const list = []
+    Driver.dlClassList.map(dlClass => list.push(dlClass.id))
+
+    return body(field)
+        .trim()
+        .notEmpty()
+            .withMessage('Driver License Class can not be empty')
+        .isIn(list)
+            .withMessage('Incorrect Driver License Class')
+}
 
 
 export const validateApplicant = [
@@ -66,4 +92,15 @@ export const validateApplicantProfile = [
     validateSsn('ssn', true),
     validateTel('phone', true),
     validatePosition(),
+]
+
+export const validateApplicantDL = [
+    validateDlNum('driverLicense'),
+    validateStateUS('DL_state', true),
+    validateDlClass('DL_class'),
+    validateGender(), //! optional for now
+    validateDate('DL_issuedOn'),
+    validateDate('DL_expiresOn'),
+    validateYesNo('DL_denied'),
+    validateYesNo('DL_revoked'),
 ]

@@ -142,11 +142,13 @@ const table = $('#driver-apl-table').DataTable({
         },
 
         {
-            data: 'appliedOn',
+            data: null,
             title: 'Applied on',
             searchable: false,
             orderable: false,
-            render(data, type) {
+            render(data, type, row) {
+                data = row.finishedAt || row.createdAt
+
                 return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
         },

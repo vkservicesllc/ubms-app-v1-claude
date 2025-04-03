@@ -376,3 +376,11 @@ export const validateStateUS = (field, required = true) => {
 
     return chain
 }
+
+
+export const validateYesNo = (field) => body(field)
+    .trim()
+    .notEmpty()
+        .withMessage('Yes or No not specified')
+    .isIn([0, 1, '0', '1', 'Yes', 'No', 'Y', 'N', 'yes', 'no', 'y', 'n', true, false])
+        .withMessage('Incorrect values used')

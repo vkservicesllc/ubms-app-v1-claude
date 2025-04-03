@@ -12,7 +12,29 @@ import {
     validateApplicant,
     validateApplicantLogin,
     validateApplicantProfile,
+    validateApplicantDL,
 } from '../../validators/driver.mjs'
+
+
+const dynamicValidator = {
+    applications: (req, res, next) => {
+        const { step } = req.params
+        let validators
+
+        switch (step) {
+            case 'profile':
+                validators = validateApplicantProfile
+                break
+            case 'driver-license':
+                validators = validateApplicantDL
+                break
+        }
+
+        Promise.all(validators.map(validator => validator.run(req)))
+            .then(() => next())
+            .catch(next)
+    }
+}
 
 
 
@@ -39,7 +61,7 @@ router.post('/application/login/:formId', validateApplicantLogin, validationChec
 })
 
 
-router.post('/application/form/:formId/:step', validateApplicantProfile, validationCheck, async (req, res) => {
+router.post('/application/form/:formId/:step', dynamicValidator.applications, validationCheck, async (req, res) => {
     try {
         const session = { ...res.session, user: true }
         const { formId, step } = req.params
@@ -47,7 +69,7 @@ router.post('/application/form/:formId/:step', validateApplicantProfile, validat
         if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
 
         const { error } = await application.modify(session, step, req.body)
-        if (error) return throwErr.server(res, error, err)
+        if (error) return throwErr.server(res, error)
 
         res.redirect(`/application/${formId}`)
     } catch (err) {
@@ -72,7 +94,7 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
         }
 
         const { error, url, data: application } = await Application.create(res.session, req.body)
-        if (error) return throwErr.server(res, error, err)
+        if (error) return throwErr.server(res, error)
 
         req.session.application = application._id
 
