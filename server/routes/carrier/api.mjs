@@ -5,6 +5,7 @@ const throwErr = require('../../tools/error').api
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
 import Driver, { Application } from '../../assets/driver.mjs'
+import { application } from '../../includes/driver'
 
 
 
@@ -44,7 +45,10 @@ router.post('/drivers/application/:_id', User.verify, Team.verify, async (req, r
     try {
         const { _id } = req.params
 
-        res.send(await Application.data(res.session, { _id }))
+        const data = await Application.data(res.session, { _id })
+        if (!data) return res.send({ error: 'Internal Server Error: Applicant not found' })
+
+        res.send({ data, log: await data.log() })
     } catch (err) {
         throwErr.server(res, null, err)
     }

@@ -1,6 +1,7 @@
 import table from './applications.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
+import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 
 const {
@@ -12,6 +13,11 @@ const {
     ssnId,
     phoneId,
     emailId,
+    addrSinceId,
+    addr1Id,
+    addr2Id,
+    zipId,
+    cityId,
     statusExpId,
 } = formSelectors.driver
 
@@ -78,6 +84,10 @@ $('#dob-calendar').calendar({
     ...calSettings,
     maxDate: moment().subtract(18, 'years').toDate(),
 })
+$('#addr-since-calendar').calendar({
+    ...calSettings,
+    maxDate: moment().toDate(),
+})
 $('#status-exp-calendar').calendar({
     ...calSettings,
     minDate: moment().add(1, 'months').toDate(),
@@ -131,6 +141,19 @@ nameEvent(lastNameId, {
 ssnEvent(ssnId)
 
 telEvent(phoneId)
+
+addr1Event(addr1Id, { addr2Id })
+
+addr2Event(addr2Id)
+
+zipEvent(zipId, {
+    cityId,
+    onChange(zip, $zip, city, state) {
+        if (state) $dropdown.addrState.dropdown('set selected', state)
+    },
+})
+
+cityEvent(cityId)
 
 
 $('#legal-status-check').on('change', function() {
@@ -233,6 +256,9 @@ $form.submit(function(evt) {
 
     if (!$dropdown.gender.dropdown('get value'))
         return alert("Applicant's gender is required")
+
+    if (!$dropdown.addrState.dropdown('get value'))
+        return alert("Applicant's address state is required")
 
     this.submit()
 })

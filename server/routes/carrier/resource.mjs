@@ -70,8 +70,8 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
     }
 }, validateApplicant, validationCheck, async (req, res) => {
     try {
-        const { legalStatus, LS_expiresOn } = req.body
-        if (legalStatus == 2 && !LS_expiresOn)
+        const { status, statusExpiresOn } = req.body
+        if (status == 2 && !statusExpiresOn)
             return throwErr.server(res, 'DB Error: Invalid data provided', err)
 
         req.body.selfAssign = !!req.body.selfAssign

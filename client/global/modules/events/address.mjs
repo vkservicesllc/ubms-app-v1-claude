@@ -96,10 +96,11 @@ export const zipEvent = (id, options = {}) => {
                             if (cityId) $(`#${cityId}`).val(city)
                             if (stateId) $(`#${stateId}`).val(state)
                         }
+
+                        if (onChange) onChange(zip, $zip, city, state)
                     },
                 })
-
-            if (onChange) onChange(zip, $zip)
+            else if (onChange) onChange(zip, $zip)
         },
         onFocus,
         onBlur,

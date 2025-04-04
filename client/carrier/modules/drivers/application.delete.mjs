@@ -35,27 +35,30 @@ table.on('draw', function() {
 
         $.ajax(`/api/drivers/application/${_id}`, {
             method: 'POST',
-            success(application) { console.log(application)
+            success(response) {
+                const { data, log } = response
+                const { position, dob, ssn, phone, address, carrier, user } = data
+                const { createdAt, finishedAt } = log
                 const na = '<span class="ui dark red text"><small><i>N/A</i></small></span>'
-                const { appliedOn, position, dob, phone, ssn, carrier, user } = application
 
-                application.appliedOn = moment(appliedOn).format('ll')
-                application.dob = moment(dob).format('ll')
-                application.ssn = formatSsn(ssn)
-                application.phone = formatTel(phone)
-                if (carrier) application.company = carrier.name
-                if (position) application.position = position[1]
-                if (user) application.user = user.name
+                data.appliedOn = moment(finishedAt || createdAt).format('ll')
+                data.dob = moment(dob).format('ll')
+                data.ssn = formatSsn(ssn)
+                data.phone = formatTel(phone)
+                data.residence = `${address.city}, ${address.state[1]}`
+                if (carrier) data.company = carrier.name
+                if (position) data.position = position[1]
+                if (user) data.user = user.name
 
                 const items = [
                     'formId', 'appliedOn',
                     'fullName', 'dob','ssn',
-                    'phone', 'email',
+                    'phone', 'email', 'residence',
                     'company', 'position', 'user',
                 ]
 
-                items.forEach(item => $(`#delete-apl\\:${item}`).html(escapeHTML(application[item]) || na))
-                $id.val(application._id)
+                items.forEach(item => $(`#delete-apl\\:${item}`).html(escapeHTML(data[item]) || na))
+                $id.val(data._id)
 
                 $modal.modal('show')
             },

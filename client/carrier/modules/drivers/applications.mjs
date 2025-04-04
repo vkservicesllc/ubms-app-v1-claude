@@ -119,14 +119,14 @@ const table = $('#driver-apl-table').DataTable({
         },
 
         {
-            data: null,
+            data: 'state',
             title: 'State',
             searchable: false,
             orderable: false,
             render(data, type, row) {
-                let state = row.dlState || null
+                //? data = row.dlState || data
 
-                return state
+                return data
             },
         },
 

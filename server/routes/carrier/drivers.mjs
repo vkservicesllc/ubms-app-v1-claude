@@ -112,7 +112,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         addrStateItems += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
 
     const inputProps = { disabled: true }
-    const { addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
+    const { class: aplClass, addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
 
     hbs.label = {
         firstName: DriverLabel.name('f'),
@@ -123,6 +123,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         gender: DriverLabel.gender(),
         ssn: DriverLabel.ssn(),
         phone: DriverLabel.phone(),
+        addrSince: DriverLabel.addrSince(),
         address1: AddrLabel.address1({ for: addr1Id }),
         address2: AddrLabel.address2({ for: addr2Id }),
         zip: AddrLabel.zip({ for: zipId }),
@@ -140,10 +141,11 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         gender: DriverInput.gender(inputProps),
         ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
         phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
-        address1: AddrInput.address1({ ...inputProps, id: addr1Id }),
-        address2: AddrInput.address2({ ...inputProps, id: addr2Id }),
-        zip: AddrInput.zip({ ...inputProps, id: zipId }),
-        city: AddrInput.city({ ...inputProps, id: cityId }),
+        addrSince: DriverInput.addrSince(inputProps),
+        address1: AddrInput.address1({ ...inputProps, id: addr1Id, class: aplClass, name: 'address1' }),
+        address2: AddrInput.address2({ ...inputProps, id: addr2Id, class: aplClass, name: 'address2' }),
+        zip: AddrInput.zip({ ...inputProps, id: zipId, class: aplClass, name: 'zip' }),
+        city: AddrInput.city({ ...inputProps, id: cityId, class: aplClass, name: 'city' }),
         state: DriverInput.state(inputProps),
         position: DriverInput.position(inputProps),
         statusExp: DriverInput.statusExp(inputProps),

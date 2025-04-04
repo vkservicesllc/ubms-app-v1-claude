@@ -10,7 +10,11 @@ import {
     validateGender,
     validateTel,
     validateDate,
+    validateAddr1,
+    validateAddr2,
+    validateCity,
     validateStateUS,
+    validateZip,
     validateYesNo,
 } from './default.mjs'
 
@@ -24,7 +28,7 @@ const validatePosition = () => body('position')
     .isIn(Object.keys(Driver.positionList))
         .withMessage('Incorrect driver position provided')
 
-const validateLegalStatus = () => body('legalStatus')
+const validateLegalStatus = () => body('status')
     .trim()
     .notEmpty()
         .withMessage("Applicant's legal status can not be empty")
@@ -70,11 +74,18 @@ export const validateApplicant = [
     validateName('lastName'),
     validateSuffix(),
     validateDob('dob', 18, 'The Applicant must be at least 18 years of age'),
+    validateGender(), //! optional for now
     validateSsn('ssn', true),
     validateTel('phone', true),
-    validatePosition(),
+    validateDate('addrSince'),
+    validateAddr1('address1'),
+    validateAddr2('address2'),
+    validateZip('zip'),
+    validateCity('city'),
+    validateStateUS('state'),
     validateLegalStatus(),
-    validateDate('LS_expiresOn'),
+    validateDate('statusExpiresOn'),
+    validatePosition(),
 ]
 
 export const validateApplicantLogin = [
@@ -89,8 +100,15 @@ export const validateApplicantProfile = [
     validateName('lastName'),
     validateSuffix(),
     validateDob('dob', 18, 'The Applicant must be at least 18 years of age'),
+    validateGender(), //! optional for now
     validateSsn('ssn', true),
     validateTel('phone', true),
+    validateDate('addrSince'),
+    validateAddr1('address1'),
+    validateAddr2('address2'),
+    validateZip('zip'),
+    validateCity('city'),
+    validateStateUS('state'),
     validatePosition(),
 ]
 
@@ -98,7 +116,6 @@ export const validateApplicantDL = [
     validateDlNum('driverLicense'),
     validateStateUS('DL_state', true),
     validateDlClass('DL_class'),
-    validateGender(), //! optional for now
     validateDate('DL_issuedOn'),
     validateDate('DL_expiresOn'),
     validateYesNo('DL_denied'),

@@ -8,6 +8,7 @@ import db from '../settings/mysql.mjs'
 
 /* Assests */
 import Person from '../../client/global/modules/assets/person.mjs'
+import Address from '../../client/global/modules/assets/address.us.mjs'
 import Individual from './individual.mjs'
 import Team from './team.mjs'
 import User, { sessionError } from './user.mjs'
@@ -33,6 +34,8 @@ const throwErr = require('../tools/error')
 const query = {
     drivers: new Query(db.carrier, 'drivers'),
     applications: new Query(db.carrier, 'applications'),
+    aplDLs: new Query(db.carrier, 'application_DLs'),
+    aplAddresses: new Query(db.carrier, 'application_addresses'),
 }
 
 
@@ -95,12 +98,11 @@ class Application {
         this._userId = data._userId
         this._carrierId = data._carrierId
         this.formId = data.formId
-        this.appliedAt = data.createdAt
-        this.finishedAt = data.finishedAt
         this.position = data.position
             ? [ data.position, Driver.positionList[data.position] ]
             : null
         this.condition = data.condition
+        this.legalStatus = [ data.legalStatus, data.LS_expiresOn ]
         this.step = data.step
         this.firstName = firstName
         this.middleName = middleName
@@ -123,9 +125,8 @@ class Application {
         }
         this.email = data.email
         this.phone = data.phone
-        this.emPhone = data.emPhone
-        this.emName = data.emName
-        this.legalStatus = [ data.legalStatus, data.LS_expiresOn ]
+        this.address = new Address(data)
+        this.address.since = data.addrSince
         this.team = {
             name: data.teamName,
         }
@@ -160,20 +161,20 @@ class Application {
             }
         }
 
-        if (data.driverLicense)
+        if (data.dlNumber)
             this.dl = {
-                number: data.driverLicense,
-                commercial: Driver.dlClassList.filter(dlClass => dlClass.id === data.DL_class)[0].commercial,
-                class: data.DL_class,
-                state: data.DL_state,
-                issuedOn: data.DL_issuedOn,
-                expiresOn: data.DL_expiresOn,
-                endorsement: data.DL_endorsement,
-                restriction: data.DL_restriction,
-                denied: data.DL_denied,
-                deniedExpl: data.DL_deniedExpl,
-                revoked: data.DL_revoked,
-                revokedExpl: data.DL_revokedExpl,
+                number: data.dlNumber,
+                commercial: Driver.dlClassList.filter(dlClass => dlClass.id === data.dlClass)[0].commercial,
+                class: data.dlClass,
+                state: data.dlState,
+                issuedOn: data.dlIssuedOn,
+                expiresOn: data.dlExpiresOn,
+                endorsement: data.dlEndors,
+                restriction: data.dlRestr,
+                denied: data.dlDenied,
+                deniedExpl: data.dlDeniedExpl,
+                revoked: data.dlRevoked,
+                revokedExpl: data.dlRevokedExpl,
             }
 
     }
@@ -190,7 +191,7 @@ class Application {
 
         if (target == 'applications') {
             idProp = 'id'
-            fields.unshift('createdBy', 'createdAt', 'createdIn', 'finishedAt')
+            fields.unshift('createdBy', 'createdAt', 'createdIn', 'finishedAt', 'reviewedBy', 'reviewedAt')
         }
 
         let log = (await mysql.execute(query[target].select(fields, {
@@ -501,12 +502,10 @@ class Application {
                     User.hashId('userId'),
                     'formId',
                     'condition',
-                    'createdAt',
-                    'finishedAt',
                     'step',
+                    'status',
+                    'statusExpiresOn',
                     'position',
-
-                    /* Profile */
                     'firstName',
                     'middleName',
                     'lastName',
@@ -516,24 +515,31 @@ class Application {
                     'sex',
                     'email',
                     'phone',
-                    'legalStatus',
-                    'LS_expiresOn',
-
-                    /* Driver License */
-                    'driverLicense',
-                    'DL_class',
-                    'DL_state',
-                    'DL_issuedOn',
-                    'DL_expiresOn',
-                    'DL_endorsement',
-                    'DL_restriction',
-                    'DL_denied',
-                    'DL_deniedExpl',
-                    'DL_revoked',
-                    'DL_revokedExpl',
-
+                    'addrSince',
+                    'address1',
+                    'address2',
+                    'city',
+                    'state',
+                    'zip',
                 ],
                 match,
+            },
+            {
+                table: 'application_DLs',
+                fields: [
+                    [ 'number', 'dlNumber' ],
+                    [ 'class', 'dlClass' ],
+                    [ 'state', 'dlState' ],
+                    [ 'issuedOn', 'dlIssuedOn' ],
+                    [ 'expiresOn', 'dlExpiresOn' ],
+                    [ 'endorsement', 'dlEndors' ],
+                    [ 'restriction', 'dlRestr' ],
+                    [ 'denied', 'dlDenied' ],
+                    [ 'deniedExpl', 'dlDeniedExpl' ],
+                    [ 'revoked', 'dlRevoked' ],
+                    [ 'revokedExpl', 'dlRevokedExpl' ],
+                ],
+                join: [ 'aplId', 'id' ],
             },
             {
                 table: 'carriers',
@@ -542,7 +548,7 @@ class Application {
             {
                 db: db.business,
                 table: 'companies',
-                join: [ 'id', 'companyId', 1 ],
+                join: [ 'id', 'companyId', 2 ],
             },
             {
                 db: db.business,
@@ -683,7 +689,8 @@ class Application {
                     'apl.sex',
                     'apl.email',
                     'apl.phone',
-                    'apl.DL_state as dlState',
+                    'apl.state',
+                    'adl.state as dlState',
                     'cnm.busName',
                     'cnm.coType',
                     'cnm.alias AS companyAlias',
@@ -694,8 +701,9 @@ class Application {
                     'usr.location AS userLocation',
                     'usr.deletedAt AS userDeletedAt',
                 )
-                .leftJoin(knex.raw(`${db.carrier}.carriers AS crr ON apl.carrierId = crr.id`))
-                .leftJoin(knex.raw(`${db.business}.companies AS cmp ON crr.companyId = cmp.id`))
+                .leftJoin(`${db.carrier}.application_DLs AS adl`, 'adl.aplId', 'apl.id')
+                .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
+                .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
                 .leftJoin(
                     knex.raw('? as cnm', [ subquery ]),
                     'cnm.companyId',

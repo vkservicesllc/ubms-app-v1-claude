@@ -110,18 +110,20 @@
                                     {{{label.phone}}}
                                     {{{input.phone}}}
                                 </div>
-                                {{!-- <div class="four wide field">
-                                    {{{label.position}}}
-                                    <div class="ui fluid clearable selection dropdown" id="position-dropdown">
-                                        {{{input.position}}}
-                                        <i class="dropdown icon"></i>
-                                        <div class="default text">Undecided</div>
-                                        <div class="menu">{{{dropdown.position}}}
-                                        </div>
-                                    </div>
-                                </div> --}}
+                            </div>
+                            <div class="disabled field applicant-field" style="margin-top: 25px;">
+                                <h5 class="ui blue text header">Current US Address</h5>
                             </div>
                             <div class="disabled fields applicant-field">
+                                <div class="four wide field">
+                                    {{{label.addrSince}}}
+                                    <div class="ui calendar" id="addr-since-calendar">
+                                        <div class="ui fluid input left icon">
+                                            {{{input.addrSince}}}
+                                            <i class="calendar icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="five wide field">
                                     {{{label.address1}}}
                                     {{{input.address1}}}
@@ -151,7 +153,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="disabled field applicant-field" style="margin-top: 30px;">
+                            <div class="disabled field applicant-field" style="margin-top: 25px;">
+                                <h5 class="ui blue text header">Qualification / Properties</h5>
+                            </div>
+                            <div class="disabled field applicant-field">
                                 <div class="ui checkbox">
                                     <input type="checkbox" class="new-apl-eligibility" id="valid-dl-check" required disabled />
                                     <label for="valid-dl-check">The Applicant has a valid US Driver License</label>
@@ -167,19 +172,19 @@
                                 <label>Legal Status</label>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-0" name="legalStatus" value="0" required disabled />
+                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-0" name="status" value="0" required disabled />
                                         <label for="legal-status-0">US Citizen</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-1" name="legalStatus" value="1" disabled />
+                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-1" name="status" value="1" disabled />
                                         <label for="legal-status-1">Permanent Resident</label>
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-2" name="legalStatus" value="2" disabled />
+                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-2" name="status" value="2" disabled />
                                         <label for="legal-status-2">Work Visa/Authorization</label>
                                     </div>
                                 </div>
@@ -191,6 +196,16 @@
                                         <div class="ui fluid input left icon">
                                             {{{input.statusExp}}}
                                             <i class="calendar icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide disabled field applicant-field">
+                                    {{{label.position}}}
+                                    <div class="ui fluid clearable selection dropdown" id="position-dropdown">
+                                        {{{input.position}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text">Undecided</div>
+                                        <div class="menu">{{{dropdown.position}}}
                                         </div>
                                     </div>
                                 </div>
@@ -261,6 +276,10 @@
                         <tr>
                             <td class="delete-apl-side-th"><span class="ui grey text">Email:</span></td>
                             <td class="delete-apl-data" id="delete-apl:email"></td>
+                        </tr>
+                        <tr>
+                            <td class="delete-apl-side-th"><span class="ui grey text">Residence:</span></td>
+                            <td class="delete-apl-data" id="delete-apl:residence"></td>
                         </tr>
                     </tbody>
                 </table>

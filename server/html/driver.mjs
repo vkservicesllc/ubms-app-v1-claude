@@ -8,7 +8,6 @@ import inputLength from '../../client/global/modules/registry/length.mjs'
 
 const {
     class: driverClass,
-    id,
     firstNameId,
     middleNameId,
     lastNameId,
@@ -18,6 +17,7 @@ const {
     sexId,
     phoneId,
     emailId,
+    addrSinceId,
     stateId,
     positionId,
     statusExpId,
@@ -75,7 +75,7 @@ export class Label {
     })
 
     static phone = (props = {}) => formLabel({
-        content: 'Phone',
+        content: 'US Phone',
         addClass: 'required',
         ...props,
         for: phoneId,
@@ -85,6 +85,13 @@ export class Label {
         content: 'Email',
         ...props,
         for: emailId,
+        addClass: 'required',
+    })
+
+    static addrSince = (props = {}) => formLabel({
+        content: 'Living since',
+        ...props,
+        for: addrSinceId,
         addClass: 'required',
     })
 
@@ -249,11 +256,19 @@ export class Input {
         required: true,
     })
 
+    static addrSince = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: addrSinceId,
+        name: 'addrSince',
+        required: true,
+    })
+
     static state = (props = {}) => formInput({
         ...props,
         type: 'hidden',
         id: stateId,
-        name: 'sex',
+        name: 'state',
         required: true,
     })
 
@@ -268,7 +283,7 @@ export class Input {
         ...props,
         addClass: driverClass,
         id: statusExpId,
-        name: 'LS_expiresOn',
+        name: 'statusExpiresOn',
         required: true,
         disabled: true,
     })
@@ -288,7 +303,7 @@ export class Input {
         ...props,
         addClass: driverClass,
         id: dlNumId,
-        name: 'driverLicense',
+        name: 'number',
         maxLength: inputLength.driverLicense.number.max,
         required: true,
     })
@@ -297,7 +312,7 @@ export class Input {
         ...props,
         addClass: driverClass,
         id: dlIssId,
-        name: 'DL_issuedOn',
+        name: 'issuedOn',
         required: true,
     })
 
@@ -305,7 +320,7 @@ export class Input {
         ...props,
         addClass: driverClass,
         id: dlExpId,
-        name: 'DL_expiresOn',
+        name: 'expiresOn',
         required: true,
     })
 
@@ -313,7 +328,7 @@ export class Input {
         ...props,
         addClass: driverClass,
         id: dlEndorseId,
-        name: 'DL_endorsement',
+        name: 'endorsement',
         maxLength: inputLength.driverLicense.endorsement.max,
     })
 
@@ -321,7 +336,7 @@ export class Input {
         ...props,
         addClass: driverClass,
         id: dlRestrId,
-        name: 'DL_restriction',
+        name: 'restriction',
         maxLength: inputLength.driverLicense.restriction.max,
     })
 
@@ -337,19 +352,19 @@ export class Input {
             case 'dl-denied':
                 if (tag == 'expl') {
                     id = dlDeniedExplId
-                    name = 'DL_deniedExpl'
+                    name = 'deniedExpl'
                 } else {
                     id = `${dlDeniedId}-${tag}`
-                    name = 'DL_denied'
+                    name = 'denied'
                 }
                 break
             case 'dl-revoked':
                 if (tag == 'expl') {
                     id = dlRevokedExplId
-                    name = 'DL_revokedExpl'
+                    name = 'revokedExpl'
                 } else {
                     id = `${dlRevokedId}-${tag}`
-                    name = 'DL_revoked'
+                    name = 'revoked'
                 }
                 break
         }
@@ -408,7 +423,7 @@ export class Select {
             ...props,
             addClass: driverClass,
             id: dlClassId,
-            name: 'DL_class',
+            name: 'class',
             required: true,
         }, data, props.options || {})
     }
@@ -417,7 +432,7 @@ export class Select {
         ...props,
         addClass: driverClass,
         id: dlStateId,
-        name: 'DL_state',
+        name: 'state',
         required: true,
     }, Address.stateList, props.options || {})
 
