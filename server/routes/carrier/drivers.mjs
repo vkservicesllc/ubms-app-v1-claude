@@ -6,6 +6,7 @@ import { formSelectors } from '../../../client/global/modules/registry/selectors
 
 /* Assets */
 import Person from '../../../client/global/modules/assets/person.mjs'
+import Address from '../../../client/global/modules/assets/address.us.mjs'
 import User from '../../assets/user.mjs'
 import Team from '../../assets/team.mjs'
 import Driver from '../../assets/driver.mjs'
@@ -14,8 +15,10 @@ import { inPEnvironment } from '../../assets/user/permissions.mjs'
 /* HTML Builders */
 import { Input as ContactInput } from '../../html/contacts.mjs'
 import { Label as DriverLabel, Input as DriverInput } from '../../html/driver.mjs'
+import { Label as AddrLabel, Input as AddrInput } from '../../html/address.us.mjs'
 
 /* Tools */
+import { sortObjectByKey } from '../../../client/global/modules/tools/sorter.mjs'
 import { respond404 } from '../../tools/response.mjs'
 
 /* Constants */
@@ -96,14 +99,20 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
     hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
     const driverPositions = team.list.drivers.positions
-    let suffixItems = '', positionItems = ''
+    let suffixItems = '', genderItems = '', positionItems = '', addrStateItems = ''
     const t = `\t`.repeat(11)
+
     for (const sfx in Person.suffixList)
         suffixItems += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
+    for (const sex in Person.genderList)
+        genderItems += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
     for (const pos in driverPositions)
         positionItems += `\n${t}<div class="item" data-value="${pos}" data-text="${pos}">${driverPositions[pos]}</div>`
+    for (const state in Address.stateList)
+        addrStateItems += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
 
     const inputProps = { disabled: true }
+    const { addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
 
     hbs.label = {
         firstName: DriverLabel.name('f'),
@@ -111,8 +120,14 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         lastName: DriverLabel.name('l'),
         suffix: DriverLabel.name('s'),
         dob: DriverLabel.dob(),
+        gender: DriverLabel.gender(),
         ssn: DriverLabel.ssn(),
         phone: DriverLabel.phone(),
+        address1: AddrLabel.address1({ for: addr1Id }),
+        address2: AddrLabel.address2({ for: addr2Id }),
+        zip: AddrLabel.zip({ for: zipId }),
+        city: AddrLabel.city({ for: cityId }),
+        state: AddrLabel.state({ for: stateId }),
         position: DriverLabel.position(),
         statusExp: DriverLabel.statusExp({ addClass: 'required' }),
     }
@@ -122,14 +137,22 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         lastName: DriverInput.name('l', inputProps),
         suffix: DriverInput.name('s', inputProps),
         dob: DriverInput.dob(inputProps),
+        gender: DriverInput.gender(inputProps),
         ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
         phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
+        address1: AddrInput.address1({ ...inputProps, id: addr1Id }),
+        address2: AddrInput.address2({ ...inputProps, id: addr2Id }),
+        zip: AddrInput.zip({ ...inputProps, id: zipId }),
+        city: AddrInput.city({ ...inputProps, id: cityId }),
+        state: DriverInput.state(inputProps),
         position: DriverInput.position(inputProps),
         statusExp: DriverInput.statusExp(inputProps),
     }
     hbs.dropdown = {
         suffix: suffixItems,
+        gender: genderItems,
         position: positionItems,
+        addrState: addrStateItems,
     }
 
     hbs.permissions = {

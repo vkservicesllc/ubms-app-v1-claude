@@ -9,7 +9,6 @@ const {
     middleNameId,
     lastNameId,
     suffixId,
-    dobId,
     ssnId,
     phoneId,
     emailId,
@@ -28,7 +27,8 @@ const message = {
     email: $message.email.html(),
 }
 
-const $submit = $('#submit-new-apl')
+const $submit = $('#new-apl-submit')
+const $form = $('#new-apl-form')
 const $email = $(`#${emailId}`)
 const $expiration = $(`#${statusExpId}`)
 const $registerApl = $('#register-new-apl')
@@ -36,6 +36,8 @@ const $registerApl = $('#register-new-apl')
 const $dropdown = {
     company: $('#new-apl-company-dropdown'),
     suffix: $('#suffix-dropdown'),
+    gender: $('#gender-dropdown'),
+    addrState: $('#addr-state-dropdown'),
     position: $('#position-dropdown'),
 }
 const $field = {
@@ -92,6 +94,8 @@ const disableApplicant = () => {
     $field.applicant.addClass('disabled').find('input').prop('disabled', true)
     $(`.${aplClass}`).val(null)
     $dropdown.suffix.dropdown('clear')
+    $dropdown.gender.dropdown('clear')
+    $dropdown.addrState.dropdown('clear')
     $dropdown.position.dropdown('clear')
     $('.new-apl-eligibility, .new-apl-legal-status').prop('checked', false).prop('disabled', true)
     $expiration.val(null)
@@ -107,6 +111,8 @@ $registerApl.on('change', function() {
 })
 
 $dropdown.suffix.dropdown()
+$dropdown.gender.dropdown()
+$dropdown.addrState.dropdown()
 $dropdown.position.dropdown()
 
 
@@ -219,4 +225,14 @@ $('#copy-apl-url').click(function(evt) {
                 left: `${$aplUrl.outerWidth() + 50}px`
             })
         })
+})
+
+
+$form.submit(function(evt) {
+    evt.preventDefault()
+
+    if (!$dropdown.gender.dropdown('get value'))
+        return alert("Applicant's gender is required")
+
+    this.submit()
 })

@@ -17,17 +17,6 @@
                 <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/driver/application/new" method="POST" autocomplete="off" style="margin-top: 5px;">
                     <div class="five wide column">
                         <div class="ui form">
-                            <div class="field">
-                                <div class="ui left labeled input">
-                                    {{{input.email}}}
-                                    <div class="ui corner label">
-                                        <i class="asterisk icon"></i>
-                                    </div>
-                                </div>
-                                <p class="help" id="email-help">
-                                    <span class="ui grey text">Please enter valid email address</span>
-                                </p>
-                            </div>
                             <div class="ui icon message">
                                 <i class="truck moving icon"></i>
                                 <div class="content">
@@ -45,6 +34,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="field">
+                                <div class="ui left labeled input">
+                                    {{{input.email}}}
+                                    <div class="ui corner label">
+                                        <i class="asterisk icon"></i>
+                                    </div>
+                                </div>
+                                <p class="help" id="email-help">
+                                    <span class="ui grey text">Please enter valid email address</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="ui vertical divider"></div>
@@ -53,7 +53,7 @@
                             <div class="field">
                                 <div class="ui toggle checkbox">
                                     <input type="checkbox" id="register-new-apl" />
-                                    <label>Register New Applicant</label>
+                                    <label>New Applicant Profile</label>
                                 </div>
                             </div>
                         </div>
@@ -93,6 +93,16 @@
                                     </div>
                                 </div>
                                 <div class="four wide field">
+                                    {{{label.gender}}}
+                                    <div class="ui fluid clearable selection required dropdown" id="gender-dropdown">
+                                        {{{input.gender}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.gender}}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
                                     {{{label.ssn}}}
                                     {{{input.ssn}}}
                                 </div>
@@ -100,13 +110,43 @@
                                     {{{label.phone}}}
                                     {{{input.phone}}}
                                 </div>
-                                <div class="four wide field">
+                                {{!-- <div class="four wide field">
                                     {{{label.position}}}
                                     <div class="ui fluid clearable selection dropdown" id="position-dropdown">
                                         {{{input.position}}}
                                         <i class="dropdown icon"></i>
                                         <div class="default text">Undecided</div>
                                         <div class="menu">{{{dropdown.position}}}
+                                        </div>
+                                    </div>
+                                </div> --}}
+                            </div>
+                            <div class="disabled fields applicant-field">
+                                <div class="five wide field">
+                                    {{{label.address1}}}
+                                    {{{input.address1}}}
+                                </div>
+                                <div class="three wide field">
+                                    {{{label.address2}}}
+                                    {{{input.address2}}}
+                                </div>
+                            </div>
+                            <div class="disabled fields applicant-field">
+                                <div class="three wide field">
+                                    {{{label.zip}}}
+                                    {{{input.zip}}}
+                                </div>
+                                <div class="five wide field">
+                                    {{{label.city}}}
+                                    {{{input.city}}}
+                                </div>
+                                <div class="four wide field">
+                                    {{{label.state}}}
+                                    <div class="ui fluid clearable selection required dropdown" id="addr-state-dropdown">
+                                        {{{input.state}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.addrState}}}
                                         </div>
                                     </div>
                                 </div>
@@ -166,7 +206,7 @@
                 </form>
             </div>
             <div class="actions">
-                <button type="submit" form="new-apl-form" class="ui primary button" id="submit-new-apl">Invite</button>
+                <button type="submit" form="new-apl-form" class="ui primary button" id="new-apl-submit">Invite</button>
             </div>
             <script type="module" src="/modules/drivers/application.new.mjs"></script>
         </div>

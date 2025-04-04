@@ -262,9 +262,9 @@ router.get('/application/:param?', async (req, res, next) => {
         // if (commercial) steps[1] = 'Commercial ' + steps[1]
 
         if (step >= 1) {
-            hbs.label.dlState = DriverLabel.dlState(labelProps),
-            hbs.label.dlNum = DriverLabel.dlNum(labelProps),
-            hbs.label.dlClass = DriverLabel.dlClass(labelProps),
+            hbs.label.dlState = DriverLabel.dlState(labelProps)
+            hbs.label.dlNum = DriverLabel.dlNum(labelProps)
+            hbs.label.dlClass = DriverLabel.dlClass(labelProps)
             hbs.label.gender = DriverLabel.gender(labelProps)
             hbs.label.dlIss = DriverLabel.dlIss(labelProps)
             hbs.label.dlExp = DriverLabel.dlExp(labelProps)
@@ -361,10 +361,18 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.label.address1 = AddrLabel.address1(labelProps)
             hbs.label.address2 = AddrLabel.address2(labelProps)
             hbs.label.zip = AddrLabel.zip(labelProps)
+            hbs.label.city = AddrLabel.city(labelProps)
+            hbs.label.state = AddrLabel.state(labelProps)
 
-            hbs.input.address1 = AddrInput.address1(inputProps)
-            hbs.input.address2 = AddrInput.address2(inputProps)
-            hbs.input.zip = AddrInput.zip(inputProps)
+            hbs.input.address1 = AddrInput.address1({ ...inputProps })
+            hbs.input.address2 = AddrInput.address2({ ...inputProps })
+            hbs.input.zip = AddrInput.zip({ ...inputProps })
+            hbs.input.city = AddrInput.zip({ ...inputProps })
+
+            hbs.select.state = AddrSelect.stateUS({
+                ...selectProps,
+                options: { valOpt: true, emptyOpt: '--' },
+            })
         }
 
         hbs.progress = Math.round(step / steps.length * 100)

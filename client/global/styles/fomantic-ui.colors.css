@@ -23,3 +23,16 @@
 .text.dark.pink { color: #9E2F6B !important; }
 .text.dark.brown { color: #573D29 !important; }
 .text.dark.grey { color: #5A5A5A !important; }
+
+.field:not(.disabled) .required.dropdown:has(.default.text),
+.fields:not(.disabled) .required.dropdown:has(.default.text) {
+    background-color: #fff6f6 !important; /* light pink */
+    border-color: #e0b4b4 !important;
+}
+.field.disabled .dropdown:has(.default.text),
+.fields.disabled .dropdown:has(.default.text),
+.field.disabled .required.dropdown:has(.default.text),
+.fields.disabled .required.dropdown:has(.default.text) {
+    background-color: initial !important;  /* Reset to default */
+    border-color: rgba(34, 36, 38, .07) !important;
+}

@@ -18,6 +18,7 @@ const {
     sexId,
     phoneId,
     emailId,
+    stateId,
     positionId,
     statusExpId,
     aplPinId,
@@ -215,6 +216,14 @@ export class Input {
         required: true,
     })
 
+    static gender = (props = {}) => formInput({
+        ...props,
+        type: 'hidden',
+        id: sexId,
+        name: 'sex',
+        required: true,
+    })
+
     static ssn = (props = {}) => formInput({
         ...props,
         addClass: driverClass,
@@ -240,13 +249,20 @@ export class Input {
         required: true,
     })
 
+    static state = (props = {}) => formInput({
+        ...props,
+        type: 'hidden',
+        id: stateId,
+        name: 'sex',
+        required: true,
+    })
+
     static position = (props = {}) => formInput({
         ...props,
         type: 'hidden',
         id: positionId,
         name: 'position',
     })
-
 
     static statusExp = (props = {}) => formInput({
         ...props,
