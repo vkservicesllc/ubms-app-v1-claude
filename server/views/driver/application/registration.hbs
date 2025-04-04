@@ -61,52 +61,87 @@
                     </div>
                     <button class="btn btn-success" id="confirm">I Understand & Agree</button>
                 </div>
-                <div class="card-text px-2" id="form-card" style="display: none;">
+                <div class="card-text text-start px-2" id="form-card" style="display: none;">
                     <form id="apl-start-form" action="{{formUrl}}" method="POST" autocomplete="off">
                         <div class="row g-3 my-1">
-                            <div class="col-md-6 text-start">
+                            <div class="col-md-6">
                                 {{{label.firstName}}}
                                 {{{input.firstName}}}
                             </div>
-                            <div class="col-md-6 text-start">
+                            <div class="col-md-6">
                                 {{{label.middleName}}}
                                 {{{input.middleName}}}
                             </div>
                         </div>
                         <div class="row g-3 my-1">
-                            <div class="col-md-6 text-start">
+                            <div class="col-md-6">
                                 {{{label.lastName}}}
                                 {{{input.lastName}}}
                             </div>
-                            <div class="col-md-3 text-start">
+                            <div class="col-md-3">
                                 {{{label.suffix}}}
                                 {{{select.suffix}}}
                             </div>
                         </div>
                         <div class="row g-3 my-1">
-                            <div class="col-md-5 text-start">
+                            <div class="col-md-3">
+                                {{{label.gender}}}
+                                {{{select.gender}}}
+                            </div>
+                            <div class="col-md-4">
                                 {{{label.dob}}}
                                 {{{input.dob}}}
                                 <div class="form-text text-danger" id="dob-help"></div>
                             </div>
-                            <div class="col-md-6 text-start">
+                            <div class="col-md-5">
                                 {{{label.ssn}}}
                                 {{{input.ssn}}}
                             </div>
                         </div>
                         <div class="row g-3 my-1">
-                            <div class="col-md-5 text-start">
+                            <div class="col-md-5">
                                 {{{label.phone}}}
                                 {{{input.phone}}}
                             </div>
-                            <div class="col-md-7 text-start">
+                            <div class="col-md-7">
                                 {{{label.email}}}
                                 {{{input.email}}}
                                 <div class="form-text text-danger" id="email-help"></div>
                             </div>
                         </div>
+                        <h6 class="text-secondary mt-4 mb-1">Current Address</h6>
                         <div class="row g-3 my-1">
-                            <div class="col-md-12 text-start">
+                            <div class="col-md-6">
+                                {{{label.address1}}}
+                                {{{input.address1}}}
+                            </div>
+                            <div class="col-md-3">
+                                {{{label.address2}}}
+                                {{{input.address2}}}
+                            </div>
+                            <div class="col-md-3">
+                                {{{label.zip}}}
+                                {{{input.zip}}}
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-5">
+                                {{{label.city}}}
+                                {{{input.city}}}
+                            </div>
+                            <div class="col-md-3">
+                                {{{label.state}}}
+                                {{{select.state}}}
+                            </div>
+                            <div class="col-md-4">
+                                {{{label.addrSince}}}
+                                {{{input.addrSince}}}
+                                <div class="form-text text-danger" id="addr-since-help"></div>
+                            </div>
+                        </div>
+                        <h6 class="text-secondary mt-4 mb-1">Qualification</h6>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-12">
                                 <label class="form-label">I certify under penalty of law that:</label>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="confirm-dl" required />
@@ -136,12 +171,12 @@
                             </div>
                         </div>
                         <div class="row g-3 my-1">
-                            <div class="col-md-6 text-start">
+                            <div class="col-md-6">
                                 {{{label.statusExp}}}
                                 {{{input.statusExp}}}
                                 <div class="form-text text-danger" id="status-exp-help"></div>
                             </div>
-                            <div class="col-md-6 text-start">
+                            <div class="col-md-6">
                                 {{{label.position}}}
                                 {{{select.position}}}
                             </div>

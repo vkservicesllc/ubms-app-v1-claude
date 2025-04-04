@@ -2,6 +2,9 @@ const router = require('express').Router()
 const moment = require('moment')
 const throwErr = require('../tools/error').data
 
+/* Registry */
+import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
+
 /* Assets */
 import Team from '../assets/team.mjs'
 import Carrier from '../assets/carrier.mjs'
@@ -91,16 +94,24 @@ router.get('/application/:param?', async (req, res, next) => {
         if (settings?.drivers?.cdl) hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
 
         const { labelProps, inputProps, selectProps } = res.constants
+        const { class: aplClass, addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
 
         hbs.label = {
             firstName: DriverLabel.name('f', labelProps),
             middleName: DriverLabel.name('m', labelProps),
             lastName: DriverLabel.name('l', labelProps),
             suffix: DriverLabel.name('s', labelProps),
+            gender: DriverLabel.gender(labelProps),
             dob: DriverLabel.dob(labelProps),
             ssn: DriverLabel.ssn(labelProps),
-            phone: DriverLabel.phone({ ...labelProps, content: 'US Phone' }),
+            phone: DriverLabel.phone({ ...labelProps }),
             email: DriverLabel.email(labelProps),
+            address1: AddrLabel.address1({ ...labelProps, for: addr1Id }),
+            address2: AddrLabel.address2({ ...labelProps, for: addr2Id }),
+            zip: AddrLabel.zip({ ...labelProps, for: zipId }),
+            city: AddrLabel.city({ ...labelProps, for: cityId }),
+            state: AddrLabel.state({ ...labelProps, for: stateId }),
+            addrSince: DriverLabel.addrSince(labelProps),
             position: DriverLabel.position(labelProps),
             statusExp: DriverLabel.statusExp(labelProps),
         }
@@ -113,11 +124,23 @@ router.get('/application/:param?', async (req, res, next) => {
             ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
             phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
             email: DriverInput.email(inputProps),
+            address1: AddrInput.address1({ ...inputProps, id: addr1Id, name: 'address1' }),
+            address2: AddrInput.address2({ ...inputProps, id: addr2Id, name: 'address2' }),
+            zip: AddrInput.zip({ ...inputProps, id: zipId, name: 'zip' }),
+            city: AddrInput.city({ ...inputProps, id: cityId, name: 'city' }),
+            addrSince: DriverInput.addrSince({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
             statusExp: DriverInput.statusExp({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
         }
 
         hbs.select = {
             suffix: DriverSelect.suffix(selectProps),
+            gender: DriverSelect.gender(selectProps),
+            state: AddrSelect.stateUS({
+                ...selectProps,
+                id: stateId,
+                name: 'state',
+                options: { valOpt: true, emptyOpt: '--' },
+            }),
             position: DriverSelect.position({
                 ...selectProps,
                 options: {
@@ -188,6 +211,7 @@ router.get('/application/:param?', async (req, res, next) => {
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
 
+        const { class: aplClass, addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
         const buttonProps = {
             next: { class: 'primary', text: 'Next' },
             save: { class: 'success', text: 'Save Changes' }
@@ -217,6 +241,12 @@ router.get('/application/:param?', async (req, res, next) => {
             ssn: DriverLabel.ssn({ ...labelProps, content: 'SSN' }),
             phone: DriverLabel.phone({ ...labelProps }),
             email: DriverLabel.email(labelProps),
+            address1: AddrLabel.address1({ ...labelProps, for: addr1Id }),
+            address2: AddrLabel.address2({ ...labelProps, for: addr2Id }),
+            zip: AddrLabel.zip({ ...labelProps, for: zipId }),
+            city: AddrLabel.city({ ...labelProps, for: cityId }),
+            state: AddrLabel.state({ ...labelProps, for: stateId }),
+            addrSince: DriverLabel.addrSince(labelProps),
             position: DriverLabel.position(labelProps),
         }
 
@@ -228,10 +258,19 @@ router.get('/application/:param?', async (req, res, next) => {
             ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####', value: formatSsn(application.ssn) }),
             phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####', value: formatTel(application.phone) }),
             email: DriverInput.email({ ...inputProps, value: application.email }),
+            address1: AddrInput.address1({ ...inputProps, value: application.address.address1 }),
+            address2: AddrInput.address2({ ...inputProps, value: application.address.address2 }),
+            zip: AddrInput.zip({ ...inputProps, value: application.address.zip }),
+            city: AddrInput.city({ ...inputProps, value: application.address.city }),
         }
 
         hbs.select = {
             suffix: DriverSelect.suffix({ ...selectProps, value: application.suffix }),
+            state: AddrSelect.stateUS({
+                ...selectProps,
+                value: application.address.state[0],
+                options: { valOpt: true },
+            }),
             position: DriverSelect.position({
                 ...selectProps,
                 value: application.position?.[0],
