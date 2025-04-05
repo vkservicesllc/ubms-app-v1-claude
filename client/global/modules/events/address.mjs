@@ -21,14 +21,15 @@ export const addr1Event = (id, options = {}) => {
         onChange(addr1, $addr1) {
             addr1 = patterns.replace(addr1, 'addr1')
             const poBox = /\bPO Box\b/gi.test(addr1)
+            let addr2, $addr2
 
             if (!mail && poBox) addr1 = null
             else if (addr2Id) {
-                const $addr2 = $(`#${addr2Id}`)
+                $addr2 = $(`#${addr2Id}`)
                 if (poBox) $addr2.val(null)
                 else {
                     const addr2Patt = patterns.match.addr2
-                    let addr2 = addr2Patt.test(addr1)
+                    addr2 = addr2Patt.test(addr1)
                         ? addr2Patt.exec(addr1)[0].toUpperCase()
                         : null
                     addr1 = addr1.replace(addr2Patt, '').trim()
@@ -39,7 +40,7 @@ export const addr1Event = (id, options = {}) => {
             }
 
             $addr1.val(addr1)
-            if (onChange) onChange(addr1, $addr1)
+            if (onChange) onChange(addr1, $addr1, addr2, $addr2)
         },
         onFocus,
         onBlur,
@@ -91,13 +92,15 @@ export const zipEvent = (id, options = {}) => {
                     success(response) {
                         if (!('data' in response)) return
                         const { city, state } = response.data
+                        const $city = $(`#${cityId}`)
+                        const $state = $(`#${stateId}`)
 
                         if (city && state) {
-                            if (cityId) $(`#${cityId}`).val(city)
-                            if (stateId) $(`#${stateId}`).val(state)
+                            if (cityId) $city.val(city)
+                            if (stateId) $state.val(state)
                         }
 
-                        if (onChange) onChange(zip, $zip, city, state)
+                        if (onChange) onChange(zip, $zip, city, state, $city, $state)
                     },
                 })
             else if (onChange) onChange(zip, $zip)

@@ -1,6 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
+import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { check } from './support.mjs'
 
@@ -14,6 +15,12 @@ const {
     ssnId,
     phoneId,
     emailId,
+    addr1Id,
+    addr2Id,
+    zipId,
+    cityId,
+    stateId,
+    addrSinceId,
     positionId,
     statusExpId,
 } = formSelectors.driver
@@ -22,9 +29,11 @@ const $card = $('#new-apl-card')
 const $help = {
     dob: $('#dob-help'),
     email: $('#email-help'),
+    addrSince: $('#addr-since-help'),
     statusExp: $('#status-exp-help'),
     form: $('#form-help'),
 }
+const $addrState = $(`#${stateId}`)
 const $expiration = $(`#${statusExpId}`)
 const $submit = $('[type=submit]')
 const $form = $('#apl-start-form')
@@ -54,6 +63,12 @@ if (aplStatus === 'started') {
     dobId,
     phoneId,
     emailId,
+    addr1Id,
+    addr2Id,
+    zipId,
+    cityId,
+    stateId,
+    addrSinceId,
     positionId,
 ].forEach(id => {
     const value = sessionStorage.getItem(id)
@@ -66,6 +81,8 @@ if (aplStatus === 'started') {
         if (required) $el.addClass('is-valid')
     }
 })
+
+if ($addrState.val()) $addrState.find('option[value=""]').remove()
 
 const duration = 750
 $card.fadeIn(duration)
@@ -172,7 +189,7 @@ inputEvent(dobId, {
 
                 if (date.isAfter(diff)) {
                     $dob.addClass('is-invalid')
-                    invalid = "* You're too young to apply"
+                    invalid = "* Too young to apply"
                 } else
                     $dob.addClass('is-valid')
             }
@@ -184,6 +201,60 @@ inputEvent(dobId, {
         if (check($form)) $help.form.hide().html(null)
     },
     onBlur,
+})
+
+addr1Event(addr1Id, {
+    addr2Id,
+    onChange(addr1, $addr1, addr2, $addr2) {
+        onChange(addr1, $addr1)
+        onChange(addr2, $addr2)
+    },
+})
+
+addr2Event(addr2Id, { onChange })
+
+zipEvent(zipId, {
+    cityId,
+    stateId,
+    onChange(zip, $zip, city, state, $city, $state) {
+        onChange(zip, $zip)
+        onChange(city, $city)
+        onChange(state, $state)
+    },
+})
+
+cityEvent(cityId, { onChange })
+
+selectEvent(stateId, { fill: true, onChange })
+
+inputEvent(addrSinceId, {
+    ...dateOpts,
+    onInput(since, $since) {
+        $help.addrSince.text(null)
+        $since.removeClass('is-valid is-invalid')
+    },
+    onChange(since, $since) {
+        if (since) {
+            const date = moment(since, 'MM/DD/YYYY', true)
+
+            if (!date.isValid()) {
+                $since.addClass('is-invalid')
+                $help.addrSince.text('* Invalid date')
+            } else {
+                const today = moment()
+
+                if (date.isAfter(today)) {
+                    $since.addClass('is-invalid')
+                    $help.addrSince.text('* Future date forbidden')
+                } else {
+                    $since.addClass('is-valid')
+                    sessionStorage.setItem(addrSinceId, since)
+                }
+            }
+        }
+
+        if (check($form)) $help.form.hide().html(null)
+    },
 })
 
 inputEvent(statusExpId, {
