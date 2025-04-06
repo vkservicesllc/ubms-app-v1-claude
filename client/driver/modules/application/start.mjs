@@ -13,6 +13,7 @@ const {
     suffixId,
     dobId,
     ssnId,
+    sexId,
     phoneId,
     emailId,
     addr1Id,
@@ -63,6 +64,7 @@ if (aplStatus === 'started') {
     dobId,
     phoneId,
     emailId,
+    sexId,
     addr1Id,
     addr2Id,
     zipId,
@@ -146,6 +148,8 @@ nameEvent(lastNameId, { sfxId: suffixId, onInput,
 })
 
 selectEvent(suffixId, { onChange })
+
+selectEvent(sexId, { onChange })
 
 ssnEvent(ssnId, { onInput, onChange, onBlur })
 

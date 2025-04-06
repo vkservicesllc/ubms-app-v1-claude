@@ -28,13 +28,13 @@
 
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-0">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-0.0">
                                     <i class="fa fa-check accordion-button-state"></i>
                                     <strong>{{idx steps 0}}</strong>
                                 </button>
                             </h2>
-                            <div id="collapse-0" class="text-start accordion-collapse collapse" data-bs-parent="#apl-accordion">
-                                <div class="accordion-body">
+                            <div id="collapse-0.0" class="text-start accordion-collapse collapse" data-bs-parent="#apl-accordion">
+                                <div class="accordion-body pt-1">
                                     <form id="profile-form" action="{{actionUrl.profile}}" method="POST" autocomplete="off">
                                         <div class="row g-3 my-1">
                                             <div class="col-md-6">
@@ -57,12 +57,16 @@
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-5">
+                                            <div class="col-md-4">
+                                                {{{label.gender}}}
+                                                {{{select.gender}}}
+                                            </div>
+                                            <div class="col-md-4">
                                                 {{{label.dob}}}
                                                 {{{input.dob}}}
                                                 <div class="form-text text-danger" id="profile-dob-help"></div>
                                             </div>
-                                            <div class="col-md-5">
+                                            <div class="col-md-4">
                                                 {{{label.ssn}}}
                                                 {{{input.ssn}}}
                                             </div>
@@ -88,12 +92,63 @@
                                         <div class="row g-3 my-2">
                                             <div class="col-md-4">
                                                 <div class="d-grid">
-                                                    <button type="submit" class="btn btn-{{button.profile.class}}" id="profile-submit">{{button.profile.text}}</button>
+                                                    <button type="submit" class="btn btn-{{button.one.class}}" id="profile-submit">{{button.one.text}}</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
                                     <script type="module" src="/modules/application/profile.mjs"></script>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-0.1">
+                                    <i class="fa fa-check accordion-button-state"></i>
+                                    <strong>Address</strong>
+                                </button>
+                            </h2>
+                            <div id="collapse-0.1" class="text-start accordion-collapse collapse" data-bs-parent="#apl-accordion">
+                                <div class="accordion-body pt-1">
+                                    <form id="address-form" action="{{actionUrl.address}}" method="POST" autocomplete="off">
+                                        <div class="row g-3 my-1">
+                                            <div class="col-md-6">
+                                                {{{label.address1}}}
+                                                {{{input.address1}}}
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{{label.address2}}}
+                                                {{{input.address2}}}
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{{label.zip}}}
+                                                {{{input.zip}}}
+                                            </div>
+                                        </div>
+                                        <div class="row g-3 my-1">
+                                            <div class="col-md-5">
+                                                {{{label.city}}}
+                                                {{{input.city}}}
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{{label.state}}}
+                                                {{{select.state}}}
+                                            </div>
+                                            <div class="col-md-4">
+                                                {{{label.addrSince}}}
+                                                {{{input.addrSince}}}
+                                                <div class="form-text text-danger" id="addr-since-help"></div>
+                                            </div>
+                                            <div class="row g-3 my-2">
+                                            <div class="col-md-4">
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-{{button.one.class}}" id="address-submit">{{button.one.text}}</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +161,7 @@
                                 </button>
                             </h2>
                             <div id="collapse-1" class="text-start accordion-collapse collapse{{accordion.one.body}}" data-bs-parent="#apl-accordion">
-                                <div class="accordion-body">
+                                <div class="accordion-body pt-1">
                                     <form id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
                                         <div class="row g-3 my-1">
                                             <div class="col-md-3">
@@ -123,10 +178,6 @@
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
-                                            <div class="col-md-4">
-                                                {{{label.gender}}}
-                                                {{{select.gender}}}
-                                            </div>
                                             <div class="col-md-4">
                                                 {{{label.dlIss}}}
                                                 {{{input.dlIss}}}
