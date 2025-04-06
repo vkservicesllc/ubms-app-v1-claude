@@ -127,6 +127,7 @@ class Application {
         this.phone = data.phone
         this.address = new Address(data)
         this.address.since = data.addrSince
+        this.address.enough = data.addrEnough //? should i use realtime comparison with finishedAt date or today?
         this.team = {
             name: data.teamName,
         }
@@ -515,6 +516,7 @@ class Application {
                     'sex',
                     'email',
                     'phone',
+                    'addrEnough', //? could be redundant
                     'addrSince',
                     'address1',
                     'address2',
