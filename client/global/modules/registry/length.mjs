@@ -74,4 +74,8 @@ export default {
         problemExpl: { max: 100 },
     },
 
+    medicalCard: {
+        number: { max: 10 },
+    },
+
 }

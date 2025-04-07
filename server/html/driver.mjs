@@ -33,6 +33,9 @@ const {
     dlDeniedExplId,
     dlRevokedId,
     dlRevokedExplId,
+    mecNumId,
+    mecIssId,
+    mecExpId,
 } = formSelectors.driver
 
 
@@ -184,6 +187,26 @@ export class Label {
             for: id,
         })
     }
+
+    static mecNum = (props = {}) => formLabel({
+        content: '<span title="National Registry Number">NRCME #</span>',
+        ...props,
+        for: mecNumId,
+    })
+
+    static mecIss = (props = {}) => formLabel({
+        content: 'Exam Date',
+        ...props,
+        addClass: 'required',
+        for: mecIssId,
+    })
+
+    static mecExp = (props = {}) => formLabel({
+        content: 'Expires on',
+        ...props,
+        addClass: 'required',
+        for: mecExpId,
+    })
 
 }
 
@@ -381,6 +404,30 @@ export class Input {
             return formInput(props)
         }
     }
+
+    static mecNum = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: mecNumId,
+        name: 'nrcme',
+        maxLength: inputLength.medicalCard.number.max,
+    })
+
+    static mecIss = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: mecIssId,
+        name: 'issuedOn',
+        required: true,
+    })
+
+    static mecExp = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: mecExpId,
+        name: 'expiresOn',
+        required: true,
+    })
 
 }
 

@@ -177,6 +177,13 @@ class Application {
                 revokedExpl: data.dlRevokedExpl,
             }
 
+        if (data.nrcme)
+            this.mec = {
+                nrcme: data.nrcme,
+                issuedOn: data.mecIssuedOn,
+                expiresOn: data.mecExpiresOn,
+            }
+
     }
 
 
@@ -373,13 +380,13 @@ class Application {
     static stepList = [
         [ 'Profile', 'Address', 'Previous Addresses' ],
         'Driver License',
-        'Driving History',
-        'Accidents',
-        'Citations',
-        'MVR / PSP',
-        'Pre-Employment',
-        'Beneficiary',
-        'Business',
+        'Medical Card',
+        // 'Accidents',
+        // 'Citations',
+        // 'MVR / PSP',
+        // 'Pre-Employment',
+        // 'Beneficiary',
+        // 'Business',
     ]
 
 
@@ -591,13 +598,22 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
+                table: 'application_MECs',
+                fields: [
+                    'nrcme',
+                    [ 'issuedOn', 'mecIssuedOn' ],
+                    [ 'expiresOn', 'mecExpiresOn' ],
+                ],
+                join: [ 'aplId', 'id' ],
+            },
+            {
                 table: 'carriers',
                 join: [ 'id', 'carrierId' ],
             },
             {
                 db: db.business,
                 table: 'companies',
-                join: [ 'id', 'companyId', 2 ],
+                join: [ 'id', 'companyId', 'carriers' ],
             },
             {
                 db: db.business,

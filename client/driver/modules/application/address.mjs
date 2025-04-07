@@ -11,7 +11,6 @@ const {
     stateId,
     addrSinceId,
 } = formSelectors.driver
-console.log(cityId)
 
 const $card = $('#apl-card')
 const $help = {

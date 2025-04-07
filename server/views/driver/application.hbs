@@ -212,7 +212,7 @@
                                         </div>
                                         <div class="row g-3 my-1">
                                             <label class="form-label required">
-                                                Have you ever been denied a License, Permit or Privilege to operate a Motor Vehicle?
+                                                Have you ever been denied a license, permit, or privilege to operate a motor vehicle?
                                             </label>
                                             <div class="col-md-4">
                                                 <div class="form-check form-check-inline">
@@ -231,7 +231,7 @@
                                         </div>
                                         <div class="row g-3 my-1">
                                             <label class="form-label required">
-                                                Has any of your License, Permit or Privilege ever been suspended or revoked?
+                                                Has your license, permit, or driving privilege ever been suspended or revoked?
                                             </label>
                                             <div class="col-md-4">
                                                 <div class="form-check form-check-inline">
@@ -273,8 +273,31 @@
                             </h2>
                             <div id="collapse-2" class="text-start accordion-collapse collapse{{accordion.two.body}}" data-bs-parent="#apl-accordion">
                                 <div class="accordion-body">
-                                    <form id="address-form" action="{{actionUrl.drHist}}" method="POST" autocomplete="off">
-                                        DRIVING HISTORY
+                                    <form id="address-form" action="{{actionUrl.mec}}" method="POST" autocomplete="off">
+                                        <div class="row g-3 my-1">
+                                            <div class="col-md-4">
+                                                {{{label.mecIss}}}
+                                                {{{input.mecIss}}}
+                                                <div class="form-text text-danger" id="mec-iss-help"></div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                {{{label.mecExp}}}
+                                                {{{input.mecExp}}}
+                                                <div class="form-text" id="mec-exp-help"></div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                {{{label.mecNum}}}
+                                                {{{input.mecNum}}}
+                                            </div>
+                                        </div>
+                                        <p class="form-text text-danger mt-4" id="mec-form-help" style="display: none;"></p>
+                                        <div class="row g-3 my-2">
+                                            <div class="col-md-4">
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-{{button.two.class}}" id="mec-submit">{{button.two.text}}</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>

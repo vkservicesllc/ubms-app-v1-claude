@@ -220,6 +220,7 @@ router.get('/application/:param?', async (req, res, next) => {
         }
         const { labelProps, inputProps, selectProps, addrInputProps, addrSelectProps } = res.constants
         selectProps.tabs = 12
+        addrSelectProps.tabs = 12
 
         const accordionProps = {
             pending: {
@@ -284,10 +285,12 @@ router.get('/application/:param?', async (req, res, next) => {
             }),
         }
 
+        const recUrl = `/resource/application/form/${formId}`
         hbs.actionUrl = {
-            profile: `/resource/application/form/${formId}/profile`,
-            address: `/resource/application/form/${formId}/address`,
-            dl: `/resource/application/form/${formId}/driver-license`,
+            profile: `${recUrl}/profile`,
+            address: `${recUrl}/address`,
+            dl: `${recUrl}/driver-license`,
+            mec: `${recUrl}/medical-card`
         }
 
         hbs.button = {
@@ -399,22 +402,23 @@ router.get('/application/:param?', async (req, res, next) => {
         if (step >= 2) {
             hbs.button.one = buttonProps.save
             hbs.accordion.one = accordionProps.finished
-            // add next step
 
-            hbs.label.address1 = AddrLabel.address1(labelProps)
-            hbs.label.address2 = AddrLabel.address2(labelProps)
-            hbs.label.zip = AddrLabel.zip(labelProps)
-            hbs.label.city = AddrLabel.city(labelProps)
-            hbs.label.state = AddrLabel.state(labelProps)
+            // if CDL Class C (Non-CDL), D, then applicant should be able to select No Medical Card
 
-            hbs.input.address1 = AddrInput.address1({ ...inputProps })
-            hbs.input.address2 = AddrInput.address2({ ...inputProps })
-            hbs.input.zip = AddrInput.zip({ ...inputProps })
-            hbs.input.city = AddrInput.zip({ ...inputProps })
+            hbs.label.mecNum = DriverLabel.mecNum(labelProps)
+            hbs.label.mecIss = DriverLabel.mecIss(labelProps)
+            hbs.label.mecExp = DriverLabel.mecExp(labelProps)
 
-            hbs.select.state = AddrSelect.stateUS({
-                ...selectProps,
-                options: { valOpt: true, emptyOpt: '--' },
+            hbs.input.mecNum = DriverInput.mecNum({ ...inputProps, value: application?.mec?.nrcme })
+            hbs.input.mecIss = DriverInput.mecIss({
+                ...inputProps,
+                placeholder: 'MM/DD/YYYY',
+                value: application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('MM/DD/YYYY') : null,
+            })
+            hbs.input.mecExp = DriverInput.mecExp({
+                ...inputProps,
+                placeholder: 'MM/DD/YYYY',
+                value: application?.mec?.expiresOn ? moment(application.mec.expiresOn).format('MM/DD/YYYY') : null,
             })
         }
 
