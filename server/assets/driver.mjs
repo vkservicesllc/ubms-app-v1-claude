@@ -213,7 +213,13 @@ class Application {
 
         const id = await this.id()
         const { branch, siteId } = session
-        let modifiedBy = null, currentData = {}, currentUpdateLog, target = 'applications', idProp = 'id'
+        let modifiedBy = null,
+            currentData = {},
+            currentUpdateLog,
+            action = 'update',
+            target = 'applications',
+            idProp = 'id',
+            mainData = {}
         if (session.user && session.user !== true)
             modifiedBy = await session.user.id()
 
@@ -268,6 +274,8 @@ class Application {
 
 
             case 'driver-license':
+                target = 'aplDLs'
+                idProp = 'aplId'
                 const checkExpl = data => {
                     if (
                         (data['DL_denied'] == '1' && !data['DL_deniedExpl']) ||
@@ -280,12 +288,12 @@ class Application {
 
                 if (!this.dl) {
                     data = processData(data)
-                    data.step = 2
+                    data.aplId = await this.id()
+                    mainData.step = 2
+                    action = 'insert'
 
                     error = checkExpl(data)
                 } else {
-                    target = 'aplDLs'
-                    idProp = 'aplId'
                     currentData.driverLicense = this.dl.number
                     const props = [
                         'class', 'state',
@@ -313,8 +321,11 @@ class Application {
         }
 
         if (!error && Object.keys(data).length) {
-            const [ result ] = await mysql.execute(query[target].update(data, { [idProp]: id }))
+            const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
             if (result.affectedRows == 1) modified = true
+
+            if (Object.keys(mainData).length)
+                await mysql.execute(query.applications.update(mainData, { id }))
         }
 
         return { modified, error }

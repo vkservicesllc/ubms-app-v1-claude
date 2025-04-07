@@ -116,11 +116,11 @@ export const validateApplicantAddress = [
 ]
 
 export const validateApplicantDL = [
-    validateDlNum('driverLicense'),
-    validateStateUS('DL_state', true),
-    validateDlClass('DL_class'),
-    validateDate('DL_issuedOn'),
-    validateDate('DL_expiresOn'),
-    validateYesNo('DL_denied'),
-    validateYesNo('DL_revoked'),
+    validateDlNum('number'),
+    validateStateUS('state', true),
+    validateDlClass('class'),
+    validateDate('issuedOn'),
+    validateDate('expiresOn'),
+    validateYesNo('denied'),
+    validateYesNo('revoked'),
 ]

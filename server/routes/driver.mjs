@@ -48,11 +48,14 @@ router.use((req, res, next) => {
 
 
 router.get('/application/:param?', async (req, res, next) => {
-    res.constants = {
-        labelProps: { class: 'form-label' },
-        inputProps: { class: 'form-control' },
-        selectProps: { class: 'form-select', tabs: 8, options: { emptyOpt: '--' } },
-    }
+    const { class: aplClass } = formSelectors.driver
+    const labelProps = { class: 'form-label' }
+    const inputProps = { class: 'form-control' }
+    const addrInputProps = { ...inputProps, class: `${inputProps.class} ${aplClass}` }
+    const selectProps = { class: 'form-select', tabs: 8, options: { emptyOpt: '--' } }
+    const addrSelectProps = { ...selectProps, class: `${inputProps.class} ${aplClass}` }
+
+    res.constants = { labelProps, inputProps, addrInputProps, selectProps, addrSelectProps }
 
     try {
         const { env } = req.query
@@ -93,8 +96,8 @@ router.get('/application/:param?', async (req, res, next) => {
         }
         if (settings?.drivers?.cdl) hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
 
-        const { labelProps, inputProps, selectProps } = res.constants
-        const { class: aplClass, addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
+        const { labelProps, inputProps, selectProps, addrInputProps, addrSelectProps } = res.constants
+        const { addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
 
         hbs.label = {
             firstName: DriverLabel.name('f', labelProps),
@@ -124,10 +127,10 @@ router.get('/application/:param?', async (req, res, next) => {
             ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
             phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
             email: DriverInput.email(inputProps),
-            address1: AddrInput.address1({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: addr1Id }),
-            address2: AddrInput.address2({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: addr2Id }),
-            zip: AddrInput.zip({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: zipId }),
-            city: AddrInput.city({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: cityId }),
+            address1: AddrInput.address1({ ...addrInputProps, id: addr1Id }),
+            address2: AddrInput.address2({ ...addrInputProps, id: addr2Id }),
+            zip: AddrInput.zip({ ...addrInputProps, id: zipId }),
+            city: AddrInput.city({ ...addrInputProps, id: cityId }),
             addrSince: DriverInput.addrSince({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
             statusExp: DriverInput.statusExp({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
         }
@@ -136,8 +139,7 @@ router.get('/application/:param?', async (req, res, next) => {
             suffix: DriverSelect.suffix(selectProps),
             gender: DriverSelect.gender(selectProps),
             state: AddrSelect.stateUS({
-                ...selectProps,
-                class: `${selectProps.class} ${aplClass}`,
+                ...addrSelectProps,
                 id: stateId,
                 options: { valOpt: true, emptyOpt: '--' },
             }),
@@ -211,12 +213,12 @@ router.get('/application/:param?', async (req, res, next) => {
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
 
-        const { class: aplClass, addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
+        const { addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
         const buttonProps = {
             next: { class: 'primary', text: 'Next' },
             save: { class: 'success', text: 'Save Changes' }
         }
-        const { labelProps, inputProps, selectProps } = res.constants
+        const { labelProps, inputProps, selectProps, addrInputProps, addrSelectProps } = res.constants
         selectProps.tabs = 12
 
         const accordionProps = {
@@ -258,10 +260,10 @@ router.get('/application/:param?', async (req, res, next) => {
             ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####', value: formatSsn(application.ssn) }),
             phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####', value: formatTel(application.phone) }),
             email: DriverInput.email({ ...inputProps, value: application.email }),
-            address1: AddrInput.address1({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: addr1Id, value: application.address.address1 }),
-            address2: AddrInput.address2({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: addr2Id, value: application.address.address2 }),
-            zip: AddrInput.zip({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: zipId, value: application.address.zip }),
-            city: AddrInput.city({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: cityId, value: application.address.city }),
+            address1: AddrInput.address1({ ...addrInputProps, id: addr1Id, value: application.address.address1 }),
+            address2: AddrInput.address2({ ...addrInputProps, id: addr2Id, value: application.address.address2 }),
+            zip: AddrInput.zip({ ...addrInputProps, id: zipId, value: application.address.zip }),
+            city: AddrInput.city({ ...addrInputProps, id: cityId, value: application.address.city }),
             addrSince: DriverInput.addrSince({ ...inputProps, value: moment(application.address.since).format('MM/DD/YYYY') })
         }
 
@@ -275,8 +277,7 @@ router.get('/application/:param?', async (req, res, next) => {
                 },
             }, team.list.drivers.positions),
             state: AddrSelect.stateUS({
-                ...selectProps,
-                class: `${selectProps.class} ${aplClass}`,
+                ...addrSelectProps,
                 id: stateId,
                 value: application.address.state[0],
                 options: { valOpt: true },
@@ -302,7 +303,6 @@ router.get('/application/:param?', async (req, res, next) => {
         }
 
         const commercial = settings?.drivers?.cdl === true
-        // if (commercial) steps[1] = 'Commercial ' + steps[1]
 
         if (step >= 1) {
             hbs.label.dlState = DriverLabel.dlState(labelProps)
