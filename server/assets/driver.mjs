@@ -127,7 +127,7 @@ class Application {
         this.phone = data.phone
         this.address = new Address(data)
         this.address.since = data.addrSince
-        this.address.enough = data.addrEnough //? should i use realtime comparison with finishedAt date or today?
+        this.address.enough = data.addrEnough
         this.team = {
             name: data.teamName,
         }
@@ -330,12 +330,12 @@ class Application {
 
 
     static stepList = [
-        'Profile',
+        [ 'Profile', 'Address', 'Previous Addresses' ],
         'Driver License',
         'Driving History',
-        'MVR / PSP',
         'Accidents',
         'Citations',
+        'MVR / PSP',
         'Pre-Employment',
         'Beneficiary',
         'Business',
@@ -347,6 +347,15 @@ class Application {
     static hashId = (field = 'id') => hash(field, Application.#algorithm)
 
     static matchIdHash = value => matchHash(value, Application.#algorithm)
+
+
+    static #dateAfter = (firstDate, num, units, lastDate) => {
+        firstDate = moment(firstDate)
+        lastDate = lastDate ? moment(lastDate) : moment()
+        const diff = lastDate.clone().subtract(num, units).startOf('day')
+
+        return firstDate.isAfter(diff)
+    }
 
 
     static invite = async (session, email, carrierId) => {
@@ -421,6 +430,12 @@ class Application {
             if (selfAssign) data.userId = data.createdBy
         }
         data.createdIn = JSON.stringify(createdIn)
+        
+        if (this.#dateAfter(data.addrSince, 3, 'years')) {
+            /* Database has default values for the else condition */
+            data.addrEnough = false
+            data.step = 0
+        }
 
         let found = true
         do {

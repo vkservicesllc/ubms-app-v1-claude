@@ -241,13 +241,13 @@ router.get('/application/:param?', async (req, res, next) => {
             ssn: DriverLabel.ssn({ ...labelProps, content: 'SSN' }),
             phone: DriverLabel.phone({ ...labelProps }),
             email: DriverLabel.email(labelProps),
+            position: DriverLabel.position(labelProps),
             address1: AddrLabel.address1({ ...labelProps, for: addr1Id }),
             address2: AddrLabel.address2({ ...labelProps, for: addr2Id }),
             zip: AddrLabel.zip({ ...labelProps, for: zipId }),
             city: AddrLabel.city({ ...labelProps, for: cityId }),
             state: AddrLabel.state({ ...labelProps, for: stateId }),
             addrSince: DriverLabel.addrSince(labelProps),
-            position: DriverLabel.position(labelProps),
         }
 
         hbs.input = {
@@ -262,15 +262,11 @@ router.get('/application/:param?', async (req, res, next) => {
             address2: AddrInput.address2({ ...inputProps, value: application.address.address2 }),
             zip: AddrInput.zip({ ...inputProps, value: application.address.zip }),
             city: AddrInput.city({ ...inputProps, value: application.address.city }),
+            addrSince: DriverInput.addrSince({ ...inputProps, value: moment(application.address.since).format('MM/DD/YYYY') })
         }
 
         hbs.select = {
             suffix: DriverSelect.suffix({ ...selectProps, value: application.suffix }),
-            state: AddrSelect.stateUS({
-                ...selectProps,
-                value: application.address.state[0],
-                options: { valOpt: true },
-            }),
             position: DriverSelect.position({
                 ...selectProps,
                 value: application.position?.[0],
@@ -278,10 +274,16 @@ router.get('/application/:param?', async (req, res, next) => {
                     emptyOpt: 'Decide later...',
                 },
             }, team.list.drivers.positions),
+            state: AddrSelect.stateUS({
+                ...selectProps,
+                value: application.address.state[0],
+                options: { valOpt: true },
+            }),
         }
 
         hbs.actionUrl = {
             profile: `/resource/application/form/${formId}/profile`,
+            address: `/resource/application/form/${formId}/address`,
             dl: `/resource/application/form/${formId}/driver-license`,
         }
 
@@ -329,8 +331,8 @@ router.get('/application/:param?', async (req, res, next) => {
                 placeholder: 'MM/DD/YYYY',
                 value: application?.dl?.expiresOn ? moment(application.dl.expiresOn).format('MM/DD/YYYY') : null,
             })
-            hbs.input.dlEndorse = DriverInput.dlEndorse({ ...inputProps, value: application?.dl?.endorsement })
-            hbs.input.dlRestr = DriverInput.dlRestr({ ...inputProps, value: application?.dl?.restriction })
+            hbs.input.dlEndorse = DriverInput.dlEndorse({ ...inputProps, value: application?.dl?.endorsement, placeholder: 'None' })
+            hbs.input.dlRestr = DriverInput.dlRestr({ ...inputProps, value: application?.dl?.restriction, placeholder: 'None' })
             hbs.input.dlDenied = {}
             hbs.input.dlRevoked = {}
 
@@ -418,6 +420,7 @@ router.get('/application/:param?', async (req, res, next) => {
         hbs.step = step
         hbs.steps = steps
         hbs.formId = formId
+        hbs.addrEnough = application.address.enough
         hbs.applicantName = application.fullName
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') //! Test time accuracy on live server
 

@@ -63,6 +63,7 @@
                 </div>
                 <div class="card-text text-start px-2" id="form-card" style="display: none;">
                     <form id="apl-start-form" action="{{formUrl}}" method="POST" autocomplete="off">
+                        <h6 class="text-secondary mt-4 my-1">Legal Name (per Government ID)</h6>
                         <div class="row g-3 my-1">
                             <div class="col-md-6">
                                 {{{label.firstName}}}
@@ -83,6 +84,7 @@
                                 {{{select.suffix}}}
                             </div>
                         </div>
+                        <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Personal Identifiers</h6>
                         <div class="row g-3 my-1">
                             <div class="col-md-3">
                                 {{{label.gender}}}
@@ -98,6 +100,7 @@
                                 {{{input.ssn}}}
                             </div>
                         </div>
+                        <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Contacts</h6>
                         <div class="row g-3 my-1">
                             <div class="col-md-5">
                                 {{{label.phone}}}
@@ -109,7 +112,7 @@
                                 <div class="form-text text-danger" id="email-help"></div>
                             </div>
                         </div>
-                        <h6 class="text-secondary mt-4 mb-1">Current or most recent address in the US</h6>
+                        <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Current / Most Recent Address in the US</h6>
                         <div class="row g-3 my-1">
                             <div class="col-md-6">
                                 {{{label.address1}}}
@@ -139,7 +142,7 @@
                                 <div class="form-text text-danger" id="addr-since-help"></div>
                             </div>
                         </div>
-                        <h6 class="text-secondary mt-4 mb-1">Qualification</h6>
+                        <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Qualification</h6>
                         <div class="row g-3 my-1">
                             <div class="col-md-12">
                                 <label class="form-label">I certify under penalty of law that:</label>
@@ -155,7 +158,11 @@
                                         I am legally authorized to work in the United States
                                     </label>
                                 </div>
-                                <label class="form-label mt-3 required">Immigration Status</label>
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-6">
+                                <label class="form-label required">Immigration Status</label>
                                 <div class="form-check">
                                     <input class="form-check-input status-radio" type="radio" name="status" id="legal-status-0" value="0" required />
                                     <label class="form-check-label" for="legal-status-0">US Citizen</label>
@@ -169,14 +176,12 @@
                                     <label class="form-check-label" for="legal-status-2">Work Visa/Authorization</label>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-6">
+                            <div class="col-md-4" style="display: none;">
                                 {{{label.statusExp}}}
                                 {{{input.statusExp}}}
                                 <div class="form-text text-danger" id="status-exp-help"></div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 {{{label.position}}}
                                 {{{select.position}}}
                             </div>

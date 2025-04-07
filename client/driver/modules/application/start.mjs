@@ -109,11 +109,12 @@ $('#confirm').click(() => {
 
 
 $('.status-radio').click(function() {
-    let disabled = true, action = 'removeClass'
+    let disabled = true, action = 'removeClass', parentAction = 'hide'
 
     if ($(this).val() == '2') {
         disabled = false
         action = 'addClass'
+        parentAction = 'show'
     }
 
     $expiration
@@ -121,6 +122,7 @@ $('.status-radio').click(function() {
         .prop('disabled', disabled)
         .removeClass('is-valid is-invalid')
         .prev()[action]('required')
+        .parent()[parentAction]()
     $help.statusExp.text(null)
 })
 
