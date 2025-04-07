@@ -206,17 +206,17 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
             phone: ContactInput.tel('phone', { class: 'input', id: phoneId, addClass: teamClass, required: true }),
             email: ContactInput.email({ class: 'input', id: emailId, addClass: teamClass }),
             website: CompanyInput.website({ class: 'input', id: websiteId, addClass: teamClass }),
-            address1: AddrInput.address1({ class: `input ${teamClass}`, id: addr1Id, name: 'address1' }),
-            address2: AddrInput.address2({ class: `input ${teamClass}`, id: addr2Id, name: 'address2' }),
-            city: AddrInput.city({ class: `input ${teamClass}`, id: cityId, name: 'city' }),
-            zip: AddrInput.zip({ class: `input ${teamClass}`, id: zipId, name: 'zip' }),
+            address1: AddrInput.address1({ class: `input ${teamClass}`, id: addr1Id }),
+            address2: AddrInput.address2({ class: `input ${teamClass}`, id: addr2Id }),
+            city: AddrInput.city({ class: `input ${teamClass}`, id: cityId }),
+            zip: AddrInput.zip({ class: `input ${teamClass}`, id: zipId }),
             settingsId: TeamInput.id(null, { id: `settings-${id}` }),
         }
 
         hbs.select = {
             category: TeamSelect.catId({ tabs: 13, options: { emptyOpt: '--' } }),
             coType: CompanySelect.coType({ tabs: 13, options: { emptyOpt: '--' }, id: coTypeId, addClass: teamClass }),
-            state: AddrSelect.stateUS({ tabs: 13, options: { emptyOpt: '--', valOpt: true }, id: stateId, class: teamClass, name: 'state' }),
+            state: AddrSelect.stateUS({ tabs: 13, options: { emptyOpt: '--', valOpt: true }, id: stateId, class: teamClass }),
         }
 
         hbs.descMaxChars = inputLength.team.desc.max

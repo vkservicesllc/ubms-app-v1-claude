@@ -3,7 +3,7 @@ import { formLabel, formInput, formSelect } from '../../client/global/modules/as
 import inputLength from '../../client/global/modules/registry/length.mjs'
 
 
-const name = (prop, mail = false) => mail !== null
+const name = (prop, mail) => mail !== null
     ? `${mail ? 'mail' : 'physical'}[${prop}]`
     : prop
 
@@ -49,7 +49,7 @@ export class Label {
 
 export class Input {
 
-    static address1 = (props = {}, mail = false) => formInput({
+    static address1 = (props = {}, mail = null) => formInput({
         name: name('address1', mail),
         id: props.id || `${mail ? 'mail-' : ''}address1`,
         ...props,
@@ -58,7 +58,7 @@ export class Input {
         required: true,
     })
 
-    static address2 = (props = {}, mail = false) => formInput({
+    static address2 = (props = {}, mail = null) => formInput({
         name: name('address2', mail),
         id: props.id || `${mail ? 'mail-' : ''}address2`,
         ...props,
@@ -67,7 +67,7 @@ export class Input {
         required: false,
     })
 
-    static zip = (props = {}, mail = false) => formInput({
+    static zip = (props = {}, mail = null) => formInput({
         name: name('zip', mail),
         id: props.id || `${mail ? 'mail-' : ''}zip`,
         ...props,
@@ -76,7 +76,7 @@ export class Input {
         required: true,
     })
 
-    static city = (props = {}, mail = false) => formInput({
+    static city = (props = {}, mail = null) => formInput({
         name: name('city', mail),
         id: props.id || `${mail ? 'mail-' : ''}city`,
         ...props,
@@ -90,7 +90,7 @@ export class Input {
 
 export class Select {
 
-    static stateUS = (props = {}, mail = false) => {
+    static stateUS = (props = {}, mail = null) => {
         const data = Address.stateList
         let { options } = props
         if (!options) options = {}
