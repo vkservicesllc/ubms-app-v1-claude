@@ -12,6 +12,7 @@ import {
     validateApplicant,
     validateApplicantLogin,
     validateApplicantProfile,
+    validateApplicantAddress,
     validateApplicantDL,
 } from '../../validators/driver.mjs'
 
@@ -24,6 +25,9 @@ const dynamicValidator = {
         switch (step) {
             case 'profile':
                 validators = validateApplicantProfile
+                break
+            case 'address':
+                validators = validateApplicantAddress
                 break
             case 'driver-license':
                 validators = validateApplicantDL

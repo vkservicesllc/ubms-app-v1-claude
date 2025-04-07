@@ -16,6 +16,7 @@ console.log(cityId)
 const $card = $('#apl-card')
 const $help = {
     addrSince: $('#addr-since-help'),
+    form: $('#address-form-help'),
 }
 const $submit = $('#address-submit')
 const $form = $('#address-form')

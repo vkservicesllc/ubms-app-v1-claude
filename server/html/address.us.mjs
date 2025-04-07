@@ -3,7 +3,9 @@ import { formLabel, formInput, formSelect } from '../../client/global/modules/as
 import inputLength from '../../client/global/modules/registry/length.mjs'
 
 
-const name = (prop, mail) => `${mail ? 'mail' : 'physical'}[${prop}]`
+const name = (prop, mail = false) => mail !== null
+    ? `${mail ? 'mail' : 'physical'}[${prop}]`
+    : prop
 
 
 export class Label {

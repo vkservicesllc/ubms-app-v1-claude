@@ -103,13 +103,16 @@ export const validateApplicantProfile = [
     validateGender(), //! optional for now
     validateSsn('ssn', true),
     validateTel('phone', true),
+    validatePosition(),
+]
+
+export const validateApplicantAddress = [
     validateDate('addrSince'),
     validateAddr1('address1'),
     validateAddr2('address2'),
     validateZip('zip'),
     validateCity('city'),
     validateStateUS('state'),
-    validatePosition(),
 ]
 
 export const validateApplicantDL = [
