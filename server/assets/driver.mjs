@@ -20,13 +20,12 @@ import Query, { hash, matchHash } from '../tools/query.mjs'
 import transporter, { senderParams } from '../tools/nodemailer.mjs'
 import { processData, logDeletion } from '../tools/database.mjs'
 import { generateRandomString } from '../tools/string.mjs'
+import { dateAfter } from '../tools/date.mjs'
 import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
 import { reSuper } from '../../client/global/modules/tools/object.mjs'
 import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
 import { tel as formatTel } from '../../client/global/modules/tools/formatter.mjs'
-import { application } from '../includes/driver'
 
-const moment = require('moment')
 const mysql = require('../tools/mysql')
 const knex = require('../tools/knex')
 const throwErr = require('../tools/error')
@@ -238,6 +237,35 @@ class Application {
                     data.ssn = { aes: [ data.ssn, ssnSecret ] }
                 break
 
+            
+            case 'address':
+                currentData = { ...this.address }
+                currentData.state = currentData.state[0]
+                currentData.addrSince = currentData.since
+                currentUpdateLog = await this.log('updateLog')
+
+                data = processData(data, {
+                    modifiedBy,
+                    branch,
+                    siteId,
+                    currentData,
+                    currentUpdateLog,
+                })
+                if (data.addrSince) {
+                    if (dateAfter(data.addrSince, 3, 'years', this.finishedAt)) {
+                        if (this.step == 1) data.step = 0
+                        data.addrEnough = false
+                    } else {
+                        if (this.step == 0) data.step = 1
+                        data.addrEnough = true
+                    }
+                }
+                break
+
+
+            case 'prev-address':
+                break
+
 
             case 'driver-license':
                 const checkExpl = data => {
@@ -256,6 +284,8 @@ class Application {
 
                     error = checkExpl(data)
                 } else {
+                    target = 'aplDLs'
+                    idProp = 'aplId'
                     currentData.driverLicense = this.dl.number
                     const props = [
                         'class', 'state',
@@ -265,7 +295,7 @@ class Application {
                         'revoked', 'revokedExpl',
                     ]
                     props.forEach(prop => currentData[`DL_${prop}`] = this.dl[prop])
-                    currentUpdateLog = await this.log('updateLog')
+                    currentUpdateLog = await this.log('updateLog', target)
 
                     data = processData(data, {
                         modifiedBy,
@@ -349,15 +379,6 @@ class Application {
     static matchIdHash = value => matchHash(value, Application.#algorithm)
 
 
-    static #dateAfter = (firstDate, num, units, lastDate) => {
-        firstDate = moment(firstDate)
-        lastDate = lastDate ? moment(lastDate) : moment()
-        const diff = lastDate.clone().subtract(num, units).startOf('day')
-
-        return firstDate.isAfter(diff)
-    }
-
-
     static invite = async (session, email, carrierId) => {
         if (!session.team || !session.user) return
 
@@ -431,7 +452,7 @@ class Application {
         }
         data.createdIn = JSON.stringify(createdIn)
         
-        if (this.#dateAfter(data.addrSince, 3, 'years')) {
+        if (dateAfter(data.addrSince, 3, 'years')) {
             /* Database has default values for the else condition */
             data.addrEnough = false
             data.step = 0

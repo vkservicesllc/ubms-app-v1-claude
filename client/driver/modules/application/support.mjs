@@ -3,6 +3,8 @@ export const check = $form => $form.find('input[required]').filter('.is-invalid'
 export const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
 
 export const onChange = (value, $el) => {
+    if (!$el) return
+
     const required = $el.prop('required')
     if (value && required) $el.addClass('is-valid')
 }

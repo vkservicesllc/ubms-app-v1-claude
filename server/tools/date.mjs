@@ -1,3 +1,6 @@
+import moment from 'moment'
+
+
 export const utcTimeStamp = () => {
     const now = new Date
 
@@ -9,4 +12,13 @@ export const utcTimeStamp = () => {
     const seconds = String(now.getUTCSeconds()).padStart(2, '0')
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+}
+
+
+export const dateAfter = (firstDate, num, units, lastDate) => {
+    firstDate = moment(firstDate)
+    lastDate = (lastDate ? moment(lastDate) : moment()).startOf('day')
+    const difference = lastDate.clone().subtract(num, units).startOf('day')
+
+    return firstDate.isAfter(difference)
 }

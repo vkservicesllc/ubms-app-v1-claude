@@ -1,12 +1,10 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
-import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { onInput, onChange, onBlur, onSubmit } from './support.mjs'
 
 const {
-    class: aplClass,
     firstNameId,
     middleNameId,
     lastNameId,
@@ -15,12 +13,6 @@ const {
     ssnId,
     phoneId,
     emailId,
-    addr1Id,
-    addr2Id,
-    zipId,
-    cityId,
-    stateId,
-    addrSinceId,
     positionId,
 } = formSelectors.driver
 
@@ -93,18 +85,6 @@ inputEvent(dobId, {
     },
     onBlur,
 })
-
-//! NOT FINISHED
-
-addr1Event(addr1Id, { addr2Id })
-
-addr2Event(addr2Id)
-
-zipEvent(zipId, { cityId, stateId })
-
-cityEvent(cityId)
-
-selectEvent(stateId, { onChange })
 
 selectEvent(positionId, { onChange })
 

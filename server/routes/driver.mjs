@@ -124,10 +124,10 @@ router.get('/application/:param?', async (req, res, next) => {
             ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
             phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
             email: DriverInput.email(inputProps),
-            address1: AddrInput.address1({ ...inputProps, id: addr1Id, name: 'address1' }),
-            address2: AddrInput.address2({ ...inputProps, id: addr2Id, name: 'address2' }),
-            zip: AddrInput.zip({ ...inputProps, id: zipId, name: 'zip' }),
-            city: AddrInput.city({ ...inputProps, id: cityId, name: 'city' }),
+            address1: AddrInput.address1({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: addr1Id, name: 'address1' }),
+            address2: AddrInput.address2({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: addr2Id, name: 'address2' }),
+            zip: AddrInput.zip({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: zipId, name: 'zip' }),
+            city: AddrInput.city({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: cityId, name: 'city' }),
             addrSince: DriverInput.addrSince({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
             statusExp: DriverInput.statusExp({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
         }
@@ -137,6 +137,7 @@ router.get('/application/:param?', async (req, res, next) => {
             gender: DriverSelect.gender(selectProps),
             state: AddrSelect.stateUS({
                 ...selectProps,
+                class: `${selectProps.class} ${aplClass}`,
                 id: stateId,
                 name: 'state',
                 options: { valOpt: true, emptyOpt: '--' },
@@ -258,10 +259,10 @@ router.get('/application/:param?', async (req, res, next) => {
             ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####', value: formatSsn(application.ssn) }),
             phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####', value: formatTel(application.phone) }),
             email: DriverInput.email({ ...inputProps, value: application.email }),
-            address1: AddrInput.address1({ ...inputProps, value: application.address.address1 }),
-            address2: AddrInput.address2({ ...inputProps, value: application.address.address2 }),
-            zip: AddrInput.zip({ ...inputProps, value: application.address.zip }),
-            city: AddrInput.city({ ...inputProps, value: application.address.city }),
+            address1: AddrInput.address1({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: addr1Id, value: application.address.address1 }),
+            address2: AddrInput.address2({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: addr2Id, value: application.address.address2 }),
+            zip: AddrInput.zip({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: zipId, value: application.address.zip }),
+            city: AddrInput.city({ ...inputProps, class: `${inputProps.class} ${aplClass}`, id: cityId, value: application.address.city }),
             addrSince: DriverInput.addrSince({ ...inputProps, value: moment(application.address.since).format('MM/DD/YYYY') })
         }
 
@@ -276,6 +277,8 @@ router.get('/application/:param?', async (req, res, next) => {
             }, team.list.drivers.positions),
             state: AddrSelect.stateUS({
                 ...selectProps,
+                class: `${selectProps.class} ${aplClass}`,
+                id: stateId,
                 value: application.address.state[0],
                 options: { valOpt: true },
             }),

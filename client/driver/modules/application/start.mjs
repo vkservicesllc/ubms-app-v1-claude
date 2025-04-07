@@ -128,11 +128,13 @@ $('.status-radio').click(function() {
 
 const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
 const onChange = (value, $el) => {
+    if (!$el) return
+
     const required = $el.prop('required')
     if (value && required) $el.addClass('is-valid')
 
     const id = $el.attr('id')
-    if (id != ssnId && id != dobId && id != statusExpId)
+    if (value !== null && id != ssnId && id != dobId && id != statusExpId)
         sessionStorage.setItem(id, value)
 }
 const onBlur = (value, $el) => onChange(value, $el)
@@ -211,17 +213,19 @@ inputEvent(dobId, {
 
 addr1Event(addr1Id, {
     addr2Id,
+    onInput,
     onChange(addr1, $addr1, addr2, $addr2) {
         onChange(addr1, $addr1)
         onChange(addr2, $addr2)
     },
 })
 
-addr2Event(addr2Id, { onChange })
+addr2Event(addr2Id, { onInput, onChange })
 
 zipEvent(zipId, {
     cityId,
     stateId,
+    onInput,
     onChange(zip, $zip, city, state, $city, $state) {
         onChange(zip, $zip)
         onChange(city, $city)
@@ -229,7 +233,7 @@ zipEvent(zipId, {
     },
 })
 
-cityEvent(cityId, { onChange })
+cityEvent(cityId, { onInput, onChange })
 
 selectEvent(stateId, { fill: true, onChange })
 

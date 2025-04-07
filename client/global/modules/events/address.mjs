@@ -87,10 +87,18 @@ export const zipEvent = (id, options = {}) => {
             if (onInput) onInput(zip, $zip)
         },
         onChange(zip, $zip) {
-            if (cityId || stateId)
+            const { length } = zip
+            const maxLength = $zip.attr('maxlength')
+            if (length < maxLength) zip = null
+
+            $zip.val(zip)
+
+            if (zip && (cityId || stateId))
                 $.ajax(`/api/public/us-zips/${zip}`, {
                     success(response) {
-                        if (!('data' in response)) return
+                        if (!('data' in response))
+                            return onChange(zip, $zip)
+
                         const { city, state } = response.data
                         const $city = $(`#${cityId}`)
                         const $state = $(`#${stateId}`)
