@@ -1,7 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
-import { onInput, onChange, onSubmit } from './support.mjs'
+import { check, onInput, onChange, onSubmit } from './support.mjs'
 
 const {
     addr1Id,

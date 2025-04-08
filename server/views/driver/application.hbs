@@ -273,8 +273,18 @@
                             </h2>
                             <div id="collapse-2" class="text-start accordion-collapse collapse{{accordion.two.body}}" data-bs-parent="#apl-accordion">
                                 <div class="accordion-body">
-                                    <form id="address-form" action="{{actionUrl.mec}}" method="POST" autocomplete="off">
+                                    <form id="mec-form" action="{{actionUrl.mec}}" method="POST" autocomplete="off">
+                                        {{#if (eq medCard true)}}
                                         <div class="row g-3 my-1">
+                                            <div class="col-md-12">
+                                                <div class="form-check">
+                                                    {{{input.medCard}}}
+                                                    {{{label.medCard}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{/if}}
+                                        <div class="row g-3 my-1" id="driver-med-card-fields"{{medCardDisplay}}>
                                             <div class="col-md-4">
                                                 {{{label.mecIss}}}
                                                 {{{input.mecIss}}}
@@ -290,6 +300,25 @@
                                                 {{{input.mecNum}}}
                                             </div>
                                         </div>
+                                        <div class="row g-3 my-1">
+                                            <label class="form-label required">
+                                                Are you currently taking any medication that may impair your ability to safely operate a commercial motor vehicle?
+                                            </label>
+                                            <div class="col-md-4">
+                                                <div class="form-check form-check-inline">
+                                                    {{{input.underMeds.yes}}}
+                                                    {{{label.underMeds.yes}}}
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    {{{input.underMeds.no}}}
+                                                    {{{label.underMeds.no}}}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8" style="display: none;">
+                                                {{{label.medList}}}
+                                                {{{input.medList}}}
+                                            </div>
+                                        </div>
                                         <p class="form-text text-danger mt-4" id="mec-form-help" style="display: none;"></p>
                                         <div class="row g-3 my-2">
                                             <div class="col-md-4">
@@ -299,6 +328,7 @@
                                             </div>
                                         </div>
                                     </form>
+                                    <script type="module" src="/modules/application/medical-card.mjs"></script>
                                 </div>
                             </div>
                         </div>

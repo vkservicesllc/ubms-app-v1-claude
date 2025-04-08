@@ -33,9 +33,12 @@ const {
     dlDeniedExplId,
     dlRevokedId,
     dlRevokedExplId,
+    medCardId,
     mecNumId,
     mecIssId,
     mecExpId,
+    medId,
+    medListId,
 } = formSelectors.driver
 
 
@@ -164,11 +167,12 @@ export class Label {
     })
 
     static problem = (target, tag, props = {}) => {
-        if (!['dl-denied', 'dl-revoked'].includes(target)) return
+        if (!['dl-denied', 'dl-revoked', 'med'].includes(target)) return
         if (!['yes', 'no', 'expl'].includes(tag)) return
 
-        let id
+        let id, addClass
         const content = { yes: 'Yes', no: 'No', expl: 'Explain what happened' }[tag]
+        if (tag == 'expl') addClass = 'required'
 
         switch (target) {
             case 'dl-denied':
@@ -179,14 +183,25 @@ export class Label {
                 if (tag == 'expl') id = dlRevokedExplId
                 else id = `${dlRevokedId}-${tag}`
                 break
+            case 'med':
+                if (tag == 'expl') id= medListId
+                else id = `${medId}-${tag}`
+                break
         }
 
         return formLabel({
             content,
             ...props,
+            addClass,
             for: id,
         })
     }
+
+    static medCard = (props = {}) => formLabel({
+        content: 'Medical card not held — will obtain if required',
+        ...props,
+        for: medCardId,
+    })
 
     static mecNum = (props = {}) => formLabel({
         content: '<span title="National Registry Number">NRCME #</span>',
@@ -364,10 +379,10 @@ export class Input {
     })
 
     static problem = ( target, tag, props = {}) => {
-        if (!['dl-denied', 'dl-revoked'].includes(target)) return
+        if (!['dl-denied', 'dl-revoked', 'med'].includes(target)) return
         if (!['yes', 'no', 'expl'].includes(tag)) return
 
-        let id, name, value
+        let id, name, value, maxLength
         if (tag != 'expl') value = { yes: '1', no: '0' }[tag]
         const required = tag == 'yes'
 
@@ -376,6 +391,7 @@ export class Input {
                 if (tag == 'expl') {
                     id = dlDeniedExplId
                     name = 'deniedExpl'
+                    maxLength = inputLength.driverLicense.problemExpl.max
                 } else {
                     id = `${dlDeniedId}-${tag}`
                     name = 'denied'
@@ -388,6 +404,17 @@ export class Input {
                 } else {
                     id = `${dlRevokedId}-${tag}`
                     name = 'revoked'
+                    maxLength = inputLength.driverLicense.problemExpl.max
+                }
+                break
+            case 'med':
+                if (tag == 'expl') {
+                    id = medListId
+                    name = 'medList'
+                    maxLength = inputLength.medicalCard.medList.max
+                } else {
+                    id = `${medId}-${tag}`
+                    name = 'underMeds'
                 }
                 break
         }
@@ -395,7 +422,7 @@ export class Input {
         props = { value, ...props, id, name, required } //* order is important
 
         if (tag == 'expl') {
-            props.maxLength = inputLength.driverLicense.problemExpl.max
+            props.maxLength = maxLength
 
             return formTextArea(props)
         } else {
@@ -404,6 +431,13 @@ export class Input {
             return formInput(props)
         }
     }
+
+    static medCard = (props = {}) => formInput({
+        ...props,
+        type: 'checkbox',
+        id: medCardId,
+        name: 'medCard',
+    })
 
     static mecNum = (props = {}) => formInput({
         ...props,

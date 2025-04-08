@@ -76,6 +76,7 @@ export default {
 
     medicalCard: {
         number: { max: 10 },
+        medList: { max: 100 },
     },
 
 }

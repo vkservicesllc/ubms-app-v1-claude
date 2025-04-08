@@ -177,12 +177,15 @@ class Application {
                 revokedExpl: data.dlRevokedExpl,
             }
 
-        if (data.nrcme)
+        this.medCard = data.medCard
+        if (this.medCard && data.mecExpiresOn)
             this.mec = {
                 nrcme: data.nrcme,
                 issuedOn: data.mecIssuedOn,
                 expiresOn: data.mecExpiresOn,
             }
+        this.underMeds = data.underMeds
+        this.medList = data.medList
 
     }
 
@@ -381,12 +384,14 @@ class Application {
         [ 'Profile', 'Address', 'Previous Addresses' ],
         'Driver License',
         'Medical Card',
-        // 'Accidents',
-        // 'Citations',
-        // 'MVR / PSP',
-        // 'Pre-Employment',
-        // 'Beneficiary',
-        // 'Business',
+        'Accidents',
+        'Citations',
+        'Pre-Employment',
+        'Work Hours',
+        'Business',
+        'Beneficiary',
+        'Emergency Contact',
+        'Feedback',
     ]
 
 
@@ -577,6 +582,9 @@ class Application {
                     'city',
                     'state',
                     'zip',
+                    'medCard',
+                    'underMeds',
+                    'medList',
                 ],
                 match,
             },

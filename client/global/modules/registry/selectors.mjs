@@ -153,9 +153,12 @@ export const formSelectors = {
         dlDeniedExplId: 'driver-dl-denied-expl',
         dlRevokedId: 'driver-dl-revoked',
         dlRevokedExplId: 'driver-dl-revoked-expl',
+        medCardId: 'driver-med-card',
         mecNumId: 'driver-mec-number',
         mecIssId: 'driver-mec-exam-date',
         mecExpId: 'driver-mec-expires',
+        medId: 'driver-med',
+        medListId: 'driver-med-list',
     },
 
 }

@@ -403,23 +403,44 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.button.one = buttonProps.save
             hbs.accordion.one = accordionProps.finished
 
+            let disabled = false
+
             // if CDL Class C (Non-CDL), D, then applicant should be able to select No Medical Card
+            hbs.medCard = application.dl.commercial === false
+            if (hbs.medCard) {
+                disabled = application.medCard === false
+                hbs.label.medCard = DriverLabel.medCard({ class: 'form-check-label' })
+                hbs.input.medCard = DriverInput.medCard({ class: 'form-check-input', checked: disabled })
+            }
+            hbs.medCardDisplay = disabled ? ' style="display: none;"' : ''
 
             hbs.label.mecNum = DriverLabel.mecNum(labelProps)
             hbs.label.mecIss = DriverLabel.mecIss(labelProps)
             hbs.label.mecExp = DriverLabel.mecExp(labelProps)
+            hbs.label.underMeds = {
+                yes: DriverLabel.problem('med', 'yes', { class: 'form-check-label' }),
+                no: DriverLabel.problem('med', 'no', { class: 'form-check-label' }),
+            }
+            hbs.label.medList = DriverLabel.problem('med', 'expl', { ...labelProps, content: 'List medications <small class="text-muted">(names only)</small>' })
 
-            hbs.input.mecNum = DriverInput.mecNum({ ...inputProps, value: application?.mec?.nrcme })
+            hbs.input.mecNum = DriverInput.mecNum({ ...inputProps, value: application?.mec?.nrcme, disabled })
             hbs.input.mecIss = DriverInput.mecIss({
                 ...inputProps,
                 placeholder: 'MM/DD/YYYY',
                 value: application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('MM/DD/YYYY') : null,
+                disabled,
             })
             hbs.input.mecExp = DriverInput.mecExp({
                 ...inputProps,
                 placeholder: 'MM/DD/YYYY',
                 value: application?.mec?.expiresOn ? moment(application.mec.expiresOn).format('MM/DD/YYYY') : null,
+                disabled,
             })
+            hbs.input.underMeds = {
+                yes: DriverInput.problem('med', 'yes', { class: 'form-check-input', checked: application.underMeds === true }),
+                no: DriverInput.problem('med', 'no', { class: 'form-check-input', checked: application.underMeds === false }),
+            }
+            hbs.input.medList = DriverInput.problem('med', 'expl', { ...inputProps, value: application.medList })
         }
 
         hbs.progress = Math.round(step / steps.length * 100)

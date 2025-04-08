@@ -1,52 +1,45 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { driverLicenseEvent } from '/modules/events/person.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
 
 const {
-    dlNumId,
-    dlClassId,
-    dlStateId,
-    dlIssId,
-    dlExpId,
-    dlEndorseId,
-    dlRestrId,
-    dlDeniedId,
-    dlDeniedExplId,
-    dlRevokedId,
-    dlRevokedExplId,
+    medCardId,
+    mecNumId,
+    mecIssId,
+    mecExpId,
+    medId,
+    medListId,
 } = formSelectors.driver
 
 const $card = $('#apl-card')
 const $help = {
-    issued: $('#dl-iss-help'),
-    expires: $('#dl-exp-help'),
-    form: $('#dl-form-help'),
+    issued: $('#mec-iss-help'),
+    expires: $('#mec-exp-help'),
+    form: $('#mec-form-help'),
 }
-const $submit = $('#dl-submit')
-const $form = $('#dl-form')
+const $mecRow = $('#driver-med-card-fields')
+const $submit = $('#mec-submit')
+const $form = $('#mec-form')
 
-const $issued = $(`#${dlIssId}`)
-const $expires = $(`#${dlExpId}`)
-
-const $expl = {
-    denied: $(`#${dlDeniedExplId}`),
-    revoked: $(`#${dlRevokedExplId}`),
-}
-for (const key in $expl)
-    if ($expl[key].val()) $expl[key].parent().show()
+const $issued = $(`#${mecIssId}`)
+const $expires = $(`#${mecExpId}`)
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
+$(`#${medCardId}`).on('change', function() {
+    const checked = $(this).prop('checked')
+    let action = 'show', disabled = false
 
-selectEvent(dlStateId, { fill: true, onChange })
+    if (checked) {
+        action = 'hide'
+        disabled = true
+    }
 
-driverLicenseEvent(dlNumId, { onInput, onChange })
-
-selectEvent(dlClassId, { fill: true, onChange })
+    $mecRow[action]().find('input').prop('disabled', disabled)
+})
 
 //! repetative
-inputEvent(dlIssId, {
+inputEvent(mecIssId, {
     ...dateOpts,
     onInput(issued, $issued) {
         $help.issued.text(null)
@@ -83,7 +76,7 @@ inputEvent(dlIssId, {
 })
 
 //! repetative
-inputEvent(dlExpId, {
+inputEvent(mecExpId, {
     ...dateOpts,
     onInput(expires, $expires) {
         $help.expires.text(null).removeClass('text-danger text-warning')
@@ -133,9 +126,12 @@ inputEvent(dlExpId, {
     onBlur,
 })
 
-inputEvent(dlEndorseId, { strip: true })
-
-inputEvent(dlRestrId, { strip: true })
+inputEvent(mecNumId, {
+    onInput(number, $number) {
+        number = number.replace(/\D/, '')
+        $number.val(number)
+    },
+})
 
 
 //! repetative
@@ -152,13 +148,9 @@ const onRadioChange = (id, explId) => {
     })
 }
 
-onRadioChange(dlDeniedId, dlDeniedExplId)
+onRadioChange(medId, medListId)
 
-onRadioChange(dlRevokedId, dlRevokedExplId)
-
-inputEvent(dlDeniedExplId, { strip: true })
-
-inputEvent(dlRevokedExplId, { strip: true })
+inputEvent(medListId, { strip: true })
 
 
 onSubmit($form, $help, $submit, $card)
