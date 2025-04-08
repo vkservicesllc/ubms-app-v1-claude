@@ -77,3 +77,23 @@ export const driverLicenseEvent = (id, callback = {}) => {
         onBlur,
     })
 }
+
+
+export const dlClassEvent = (id, callback = {}) => {
+    const { onInput, onChange, onFocus, onBlur } = callback
+
+    inputEvent(id, {
+        strip: true,
+        word: true,
+        onInput(dlClass, $dlClass) {
+            dlClass = patterns.replace(dlClass, 'dlClass')
+            dlClass = dlClass.toUpperCase()
+
+            $dlClass.val(dlClass)
+            if (onInput) onInput(dlClass, $dlClass)
+        },
+        onChange,
+        onFocus,
+        onBlur,
+    })
+}

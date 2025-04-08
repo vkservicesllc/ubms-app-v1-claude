@@ -49,7 +49,7 @@ const table = $('#driver-apl-table').DataTable({
 
             data.forEach(row => {
                 row.actions = actions
-                if (row.condition = 'p')
+                if (row.condition == 'p')
                     row.aplAddress = aplAddress + row.formId
             })
 

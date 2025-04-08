@@ -326,6 +326,7 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.label.dlRevoked = {}
 
             hbs.input.dlNum = DriverInput.dlNum({ ...inputProps, value: application?.dl?.number })
+            hbs.input.dlClass = DriverInput.dlClass({ ...inputProps, value: application?.dl?.class })
             hbs.input.dlIss = DriverInput.dlIss({
                 ...inputProps,
                 placeholder: 'MM/DD/YYYY',
@@ -346,11 +347,11 @@ router.get('/application/:param?', async (req, res, next) => {
                 value: application?.dl?.state,
                 options: { valOpt: true, emptyOpt: !application?.dl?.state ? '--' : null },
             })
-            hbs.select.dlClass = DriverSelect.dlClass({
-                ...selectProps,
-                value: application?.dl?.class,
-                options: { emptyOpt: !application?.dl?.class ? '--' : null },
-            }, commercial)
+            // hbs.select.dlClass = DriverSelect.dlClass({
+            //     ...selectProps,
+            //     value: application?.dl?.class,
+            //     options: { emptyOpt: !application?.dl?.class ? '--' : null },
+            // }, commercial)
             hbs.select.gender = DriverSelect.gender({
                 ...selectProps,
                 value: application.gender?.[0],

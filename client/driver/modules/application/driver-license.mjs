@@ -1,5 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { driverLicenseEvent } from '/modules/events/person.mjs'
+import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
 
@@ -43,7 +43,8 @@ selectEvent(dlStateId, { fill: true, onChange })
 
 driverLicenseEvent(dlNumId, { onInput, onChange })
 
-selectEvent(dlClassId, { fill: true, onChange })
+// selectEvent(dlClassId, { fill: true, onChange })
+dlClassEvent(dlClassId)
 
 //! repetative
 inputEvent(dlIssId, {

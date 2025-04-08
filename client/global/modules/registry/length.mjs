@@ -69,6 +69,7 @@ export default {
 
     driverLicense: {
         number: { min: 6, max: 15 },
+        class: { max: 5 },
         endorsement: { max: 65 },
         restriction: { max: 65 },
         problemExpl: { max: 100 },

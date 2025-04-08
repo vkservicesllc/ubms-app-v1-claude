@@ -50,38 +50,38 @@ class Driver extends Individual {
         'LP': 'Lease Purchaser',
     }
 
-    static dlClassList = [
-        {
-            commercial: true,
-            id: 'A',
-            name: 'A',
-            desc: 'Combination vehicles (26,001+ lbs, towing 10,000+ lbs): Large Tractor-Trailers, Semis',
-        },
-        {
-            commercial: true,
-            id: 'B',
-            name: 'B',
-            desc: 'Single vehicles (26,001+ lbs, towing under 10,000 lbs): Large Buses, Box Trucks, Dump Trucks',
-        },
-        {
-            commercial: true,
-            id: 'C',
-            name: 'C CDL',
-            desc: 'Passenger (16+ people) or Hazardous Materials: Small Buses, HazMat Vehicles',
-        },
-        {
-            commercial: false,
-            id: 'C*',
-            name: 'C Non-CDL',
-            desc: 'Standard Vehicles (some states): Regular Cars, SUVs, Vans, Small Trucks',
-        },
-        {
-            commercial: false,
-            id: 'D',
-            name: 'D',
-            desc: 'Standard Vehicles: Regular Cars, SUVs, Vans, Small Trucks',
-        },
-    ]
+    // static dlClassList = [
+    //     {
+    //         commercial: true,
+    //         id: 'A',
+    //         name: 'A',
+    //         desc: 'Combination vehicles (26,001+ lbs, towing 10,000+ lbs): Large Tractor-Trailers, Semis',
+    //     },
+    //     {
+    //         commercial: true,
+    //         id: 'B',
+    //         name: 'B',
+    //         desc: 'Single vehicles (26,001+ lbs, towing under 10,000 lbs): Large Buses, Box Trucks, Dump Trucks',
+    //     },
+    //     {
+    //         commercial: true,
+    //         id: 'C',
+    //         name: 'C CDL',
+    //         desc: 'Passenger (16+ people) or Hazardous Materials: Small Buses, HazMat Vehicles',
+    //     },
+    //     {
+    //         commercial: false,
+    //         id: 'C*',
+    //         name: 'C Non-CDL',
+    //         desc: 'Standard Vehicles (some states): Regular Cars, SUVs, Vans, Small Trucks',
+    //     },
+    //     {
+    //         commercial: false,
+    //         id: 'D',
+    //         name: 'D',
+    //         desc: 'Standard Vehicles: Regular Cars, SUVs, Vans, Small Trucks',
+    //     },
+    // ]
 
 
 }
@@ -164,7 +164,8 @@ class Application {
         if (data.dlNumber)
             this.dl = {
                 number: data.dlNumber,
-                commercial: Driver.dlClassList.filter(dlClass => dlClass.id === data.dlClass)[0].commercial,
+                // commercial: Driver.dlClassList.filter(dlClass => dlClass.id === data.dlClass)[0].commercial,
+                commercial: data.commercial,
                 class: data.dlClass,
                 state: data.dlState,
                 issuedOn: data.dlIssuedOn,

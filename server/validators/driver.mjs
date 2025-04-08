@@ -57,14 +57,14 @@ const validateDlNum = field => {
 
 const validateDlClass = field => {
     const list = []
-    Driver.dlClassList.map(dlClass => list.push(dlClass.id))
+    // Driver.dlClassList.map(dlClass => list.push(dlClass.id))
 
     return body(field)
         .trim()
         .notEmpty()
             .withMessage('Driver License Class can not be empty')
-        .isIn(list)
-            .withMessage('Incorrect Driver License Class')
+        // .isIn(list)
+        //     .withMessage('Incorrect Driver License Class')
 }
 
 

@@ -129,7 +129,6 @@ export class Label {
     static dlClass = (props = {}) => formLabel({
         content: 'Class',
         ...props,
-        addClass: 'required',
         for: dlClassId,
     })
 
@@ -346,6 +345,14 @@ export class Input {
         required: true,
     })
 
+    static dlClass = (props = {}) => formInput({
+        ...props,
+        addClass: driverClass,
+        id: dlClassId,
+        name: 'class',
+        maxLength: inputLength.driverLicense.class.max,
+    })
+
     static dlIss = (props = {}) => formInput({
         ...props,
         addClass: driverClass,
@@ -490,24 +497,24 @@ export class Select {
         name: 'position',
     }, altData || Driver.positionList, props.options || {})
 
-    static dlClass = (props = {}, commercial = false) => {
-        let list = Driver.dlClassList
-        if (commercial) list = list.filter(dlClass => dlClass.commercial === true)
+    // static dlClass = (props = {}, commercial = false) => {
+    //     let list = Driver.dlClassList
+    //     if (commercial) list = list.filter(dlClass => dlClass.commercial === true)
 
-        const data = {}
-        list.forEach(dlClass => {
-            const { id, name } = dlClass
-            data[id] = name
-        })
+    //     const data = {}
+    //     list.forEach(dlClass => {
+    //         const { id, name } = dlClass
+    //         data[id] = name
+    //     })
 
-        return formSelect({
-            ...props,
-            addClass: driverClass,
-            id: dlClassId,
-            name: 'class',
-            required: true,
-        }, data, props.options || {})
-    }
+    //     return formSelect({
+    //         ...props,
+    //         addClass: driverClass,
+    //         id: dlClassId,
+    //         name: 'class',
+    //         required: true,
+    //     }, data, props.options || {})
+    // }
 
     static dlState = (props) => formSelect({
         ...props,
