@@ -68,7 +68,7 @@ const createPasswordForm = flag => {
             target = 'createPassword'
             label: 'Create Password'
             validator = {
-                length: { min: 12 },
+                length: { min: length.user.password.min },
                 //! add more...
             }
             break
@@ -89,7 +89,7 @@ const createPasswordForm = flag => {
         target,
         type: 'password',
         name,
-        maxLength: 24,
+        maxLength: length.user.password.max,
         autoComplete,
         required,
         label,

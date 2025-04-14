@@ -1,4 +1,5 @@
 import { body } from 'express-validator'
+import length from '../../../client/global/modules/registry/length.mjs'
 import { formLabel, formInput, formTextArea, formSelect, formRadio, formCheckbox } from '../../../../client/global/modules/tools/html/form.mjs'
 
 const types = ['hidden', 'text', 'textarea', 'select', 'radio', 'checkbox', 'select/radio', 'select/checkbox']
@@ -351,8 +352,11 @@ export const createPersonNameForm = (flag, props = {}) => {
         ...props,
         type,
         data,
-        maxLength: 25, //* Ignored when type is 'select'
+        maxLength: length.person[name].max, //* Ignored when type is 'select'
         required,
+        validator: {
+            length: { min: length.person[name].min },
+        },
     })
 }
 
@@ -389,7 +393,7 @@ export const createEmailForm = (props = {}) => createForm({
     label: 'Email',
     ...props,
     type: 'email',
-    maxLength: 100,
+    maxLength: length.contact.email.max,
     validator: {
         rule: 'email',
     },
