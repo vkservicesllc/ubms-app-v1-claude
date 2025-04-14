@@ -1,17 +1,15 @@
 /* jQuery required */
 import { inputEvent, selectEvent } from './form.mjs'
-import { formSelectors } from '../registry/selectors.mjs'
+import selector from '../registry/selectors/user.mjs'
 import patterns from '../registry/patterns.mjs'
-import { capitalizeEach } from '../tools/string.mjs'
-
-
-const { class: userClass, id, userId, passId, confPassId, newPassId, tokenId } = formSelectors.user
+import { capitalizeEach } from '../tools/utils/string.mjs'
 
 
 export const usernameEvent = (callback = {}) => {
     const { onInput, onChange, onAjax, onFocus, onBlur } = callback
+    const { username , newUsername } = selector.id.text
 
-    inputEvent(userId, {
+    inputEvent(`${username}, ${newUsername}`, {
         lower: true,
         word: true,
         strip: true,
@@ -53,9 +51,9 @@ export const usernameEvent = (callback = {}) => {
 export const passwordEvent = (flag, callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback
     if (!flag || ![ 'current', 'new', 'confirm' ].includes(flag)) return
-    const key = { current: 'passId', new: 'newPassId', confirm: 'confPassId' }[flag]
+    const key = { current: 'password', new: 'createPassword', confirm: 'confirmPassword' }[flag]
 
-    inputEvent(formSelectors.user[key], {
+    inputEvent(selector.id.text[key], {
         onInput(password, $password) {
             if (onInput) onInput($password)
         },
@@ -67,11 +65,11 @@ export const passwordEvent = (flag, callback = {}) => {
 
                     case 'new':
                         if (password) valid = patterns.match.password.test(password)
-                        onChange(valid, $password, $(`#${confPassId}`))
+                        onChange(valid, $password, $(selector.id.text.confirmPassword))
                         break
 
                     case 'confirm':
-                        const original = $(`#${newPassId}`).val()
+                        const original = $(selector.id.text.createPassword).val()
                         if (password && original) valid = password === original
                         onChange(valid, $password)
                         break
@@ -91,7 +89,7 @@ export const passwordEvent = (flag, callback = {}) => {
 export const tokenEvent = (callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback
 
-    inputEvent(tokenId, {
+    inputEvent(selector.id.text.token, {
         onInput(token, $token) {
             token = token.replace(/[\D]/g, '')
 
@@ -116,10 +114,10 @@ export const tokenEvent = (callback = {}) => {
 export const loginEvent = (callback = {}) => {
     const { onSubmit, onAjax } = callback
     const { loginFormId } = formSelectors.user
-    const $form = $(`#${loginFormId}`)
+    const $form = $('#login-form, #sign-in-form')
     const
-        $username = $(`#${userId}`),
-        $password = $(`#${passId}`)
+        $username = $(selector.id.text.username),
+        $password = $(selector.id.text.password)
 
     $form.on('submit', event => {
         event.preventDefault()
@@ -145,15 +143,15 @@ export const loginEvent = (callback = {}) => {
     })
 
     setTimeout(() => {
-        $(`.${userClass}`).removeAttr('disabled')
+        $(selector.class.text.signIn).removeAttr('disabled')
     }, 750)
 }
 
 
 export const authEvent = onSubmit => {
     const { authFormId } = formSelectors.user
-    const $form = $(`#${authFormId}`)
-    const $token = $(`#${tokenId}`)
+    const $form = $('#auth-form')
+    const $token = $(selector.id.text.token)
 
     $form.on('submit', event => {
         event.preventDefault()
@@ -171,9 +169,9 @@ export const authEvent = onSubmit => {
 
 export const registerEvent = onSubmit => {
     const { registerFormId } = formSelectors.user
-    const $form = $(`#${registerFormId}`)
-    const $username = $(`#${userId}`)
-    const $password = $(`#${newPassId}`)
+    const $form = $('#register-form, #sign-up-form')
+    const $username = $(selector.id.text.newUsername)
+    const $password = $(selector.id.text.createPassword)
 
     $form.on('submit', event => {
         event.preventDefault()
@@ -190,16 +188,16 @@ export const registerEvent = onSubmit => {
     })
 
     setTimeout(() => {
-        $(`.${userClass}`).removeAttr('disabled')
+        $(selector.class.text.signUp).removeAttr('disabled')
     }, 750)
 }
 
 
-export const roleNameEvent = (id, ajaxData = {}, callback = {}) => {
+export const roleNameEvent = (ajaxData = {}, callback = {}) => {
     const { catId, $id, $location } = ajaxData
     const { onInput, onChange, onAjax, onFocus, onBlur } = callback
 
-    inputEvent(id, {
+    inputEvent(selector.class.text.roleName, {
         strip: true,
         word: true,
         onInput(name, $name) {
@@ -234,11 +232,11 @@ export const roleNameEvent = (id, ajaxData = {}, callback = {}) => {
 }
 
 
-export const roleLocationEvent = (id, ajaxData = {}, callback = {}) => {
+export const roleLocationEvent = (ajaxData = {}, callback = {}) => {
     const { catId, $id, $name } = ajaxData
     const { onChange, onAjax, onFocus, onBlur } = callback
 
-    selectEvent(id, {
+    selectEvent(selector.class.select.roleLocation, {
         onChange(location, $location) {
             if (onChange) onChange(location, $location)
 

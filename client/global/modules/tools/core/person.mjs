@@ -1,5 +1,5 @@
-import { calculateYearAge } from '../tools/date.mjs'
-import { formSelect } from './html.mjs'
+import { calculateYearAge } from '../utils/date.mjs'
+import { formSelect } from '../utils/html.mjs'
 
 
 
@@ -8,7 +8,7 @@ class Person {
         if (data?.firstName && data?.lastName) {
 
             this.sex = data.sex !== undefined ? data.sex : data.gender
-            if (typeof this.sex == 'string') {
+            if (typeof this.sex === 'string') {
                 this.sex = this.sex.toLowerCase()
                 if (!['male', 'female', 'm', 'f', '1', '0'].includes(this.sex))
                     this.sex = null
@@ -79,7 +79,7 @@ class Person {
         let lname = ''
         let sfx = ''
 
-        if (placeholder[0] == 'p' && this.prefix)
+        if (placeholder[0] === 'p' && this.prefix)
             pfx = `${this.prefix}.`
 
         if (placeholder.includes('F')) fname = this.firstName
@@ -101,7 +101,7 @@ class Person {
         if (placeholder.includes('L')) lname = this.lastName
         else if (placeholder.includes('l')) lname = `${this.lastName[0]}.`
 
-        if (placeholder[placeholder.length - 1] == 's' && this.suffix)
+        if (placeholder[placeholder.length - 1] === 's' && this.suffix)
             sfx = `, ${this.suffix}`
 
         const chunks = chars.map(char => {
@@ -147,14 +147,14 @@ class Person {
 
 
     static formSelect(target, props) {
-        if (target != 'prefix' && target != 'suffix' && target != 'gender') return
+        if (target !== 'prefix' && target !== 'suffix' && target !== 'gender') return
 
         let data = Person[`${target}List`]
         const options = props.options ? { ...props.options } : {}
 
         if (!options.emptyOpt) options.emptyOpt = ''
         if (!options.valOpt) options.valOpt = true
-        if (target == 'gender') options.valOpt = false
+        if (target === 'gender') options.valOpt = false
 
         return formSelect(props, data, options)
     }

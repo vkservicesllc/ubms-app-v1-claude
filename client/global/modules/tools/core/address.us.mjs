@@ -1,4 +1,4 @@
-import escapeHTML from './html.mjs'
+import escapeHTML from '../utils/html.mjs'
 
 
 
@@ -18,9 +18,9 @@ export default class Address {
         if (!address1 || !city || !state || !zip) return
 
         let { inline, singleLine, stateIdx } = options
-        if (inline === undefined || typeof inline != 'boolean')
+        if (inline === undefined || typeof inline !== 'boolean')
             inline = true
-        if (singleLine === undefined || typeof singleLine != 'boolean')
+        if (singleLine === undefined || typeof singleLine !== 'boolean')
             singleLine = true
         if (stateIdx === undefined || ![0, 1].includes(stateIdx))
             stateIdx = 0

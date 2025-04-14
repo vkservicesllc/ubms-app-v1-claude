@@ -3,19 +3,9 @@ import { slim, strip as _strip, word as _word, english } from './supplies.mjs'
 
 
 export const inputEvent = (selector, options = {}) => {
-    let selection = ''
+    if (!selector) return
 
-    if (Array.isArray(selector)) {
-        for (const id of selector) selection += `#${id}, `
-        selection = selection.slice(0, -2)
-    } else if (typeof selector == 'string') {
-        if (selector[0] != '#') selection = `#${selector}`
-        else selection = selector
-    }
-
-    if (!selection) return
-
-    const $input = $(selection)
+    const $input = $(selector)
     const { onFocus, onBlur, mask, strip, word } = options
     let { placeholder, caret, lower, upper, datepicker } = options
 
@@ -42,7 +32,7 @@ export const inputEvent = (selector, options = {}) => {
             })
 
         function reset() {
-            if ($(this).val() == mask.replace(/9/g, placeholder))
+            if ($(this).val() === mask.replace(/9/g, placeholder))
                 $(this).caret(caret)
         }
     }

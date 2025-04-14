@@ -1,16 +1,14 @@
 /* jQuery required */
-import { inputEvent, selectEvent } from './form.mjs'
-import { formSelectors } from '../registry/selectors.mjs'
+import { inputEvent } from './form.mjs'
+import selector from '../registry/selectors/team.mjs'
 import patterns from '../registry/patterns.mjs'
-import { capitalizeEach, capitalizeAfterPunctuation } from '../tools/string.mjs'
-
-const { nameId, descId } = formSelectors.team
+import { capitalizeEach, capitalizeAfterPunctuation } from '../tools/utils/string.mjs'
 
 
 export const teamNameEvent = (callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback
 
-    inputEvent(nameId, {
+    inputEvent(selector.id.text.name, {
         strip: true,
         word: true,
         onInput(name, $name) {
@@ -30,7 +28,7 @@ export const teamNameEvent = (callback = {}) => {
 export const teamDescEvent = (callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback
 
-    inputEvent(descId, {
+    inputEvent(selector.id.text.desc, {
         strip: true,
         onInput(desc, $desc) {
             desc = capitalizeAfterPunctuation(desc)
