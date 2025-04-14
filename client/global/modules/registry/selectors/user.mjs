@@ -1,6 +1,6 @@
 import initialize from './support.mjs'
 
-const prefix = 'app-user'
+const prefix = 'user'
 
 const selector = {
     class: {
@@ -76,7 +76,6 @@ const selector = {
         },
     },
 }
-
 
 initialize(prefix, selector)
 

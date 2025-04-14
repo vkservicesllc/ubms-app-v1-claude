@@ -1,6 +1,6 @@
 import initialize from './support.mjs'
 
-const prefix = 'team'
+const prefix = 'company'
 
 const selector = {
     class: {
@@ -13,24 +13,35 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
-            name: 'name',
+            busName: 'business-name',
+            coType: 'company-type',
+            name: 'name',  //? full company name: perfect for matching
         },
         text: {
-            name: 'name',
-            desc: 'description',
+            since: 'start-date',
+            ein: 'ein',
+            duns: 'duns',
             busName: 'business-name',
+            alias: 'alias',
             website: 'website',
-            email: 'email',
-            phone: 'phone',
+            ownership: 'ownership',
             address1: 'address-1',
             address2: 'address-2',
             addrCity: 'address-city',
             addrZip: 'address-zip',
+            mailAddress1: 'mail-address-1',
+            mailAddress2: 'mail-address-2',
+            mailAddrCity: 'mail-address-city',
+            mailAddrZip: 'mail-address-zip',
+            phone: 'phone',
+            fax: 'fax',
+            email: 'email',
         },
         select: {
             category: 'category',
             coType: 'company-type',
             addrState: 'address-state',
+            mailAddrState: 'mail-address-state',
         },
     },
 }
