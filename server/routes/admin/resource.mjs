@@ -1,7 +1,7 @@
 const router = require('express').Router()
 
-/* Assests */
-import User, { superAdminUserOnly } from '../../assets/user.mjs'
+/* Tools */
+import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
 
 /* Validators */
 import validationCheck from '../../validators/default.mjs'

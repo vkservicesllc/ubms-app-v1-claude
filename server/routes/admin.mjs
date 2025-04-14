@@ -1,11 +1,9 @@
 const router = require('express').Router()
-const throwErr = require('../tools/error').data
-
-/* Assets */
-import User from '../assets/user.mjs'
+const throwErr = require('../tools/utils/error').data
 
 /* Tools */
-import { capitalizeEach } from '../../client/global/modules/tools/string.mjs'
+import User from '../tools/core/user.mjs'
+import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
 /* Middleware */
 import login from './admin/mw/login.mjs'

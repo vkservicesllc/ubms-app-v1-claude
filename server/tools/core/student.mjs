@@ -1,14 +1,14 @@
 /* Settings */
-import db from '../settings/mysql.mjs'
+import db from '../../settings/mysql.mjs'
 
 /* Assests */
 import Individual from './individual.mjs'
 
 /* Tools */
-import { reSuper } from '../../client/global/modules/tools/object.mjs'
-import Query, { hash, matchHash } from '../tools/query.mjs'
+import { reSuper } from '../../client/global/modules/tools/utils/object.mjs'
+import Query, { hash, matchHash } from '../tools/utils/query.mjs'
 
-const mysql = require('../tools/mysql')
+const mysql = require('../tools/utils/mysql')
 
 
 

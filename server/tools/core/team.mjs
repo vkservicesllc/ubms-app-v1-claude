@@ -1,21 +1,21 @@
 /* Settings */
-import db from '../settings/mysql.mjs'
+import db from '../../settings/mysql.mjs'
 
 /* Assets */
 import User from './user.mjs'
 import Company from './company.mjs'
 import Driver from './driver.mjs'
-import Address from '../../client/global/modules/assets/address.us.mjs'
+import Address from '../../client/global/modules/tools/core/address.us.mjs'
 import { sessionError } from './user.mjs'
 
 /* Tools */
-import Query, { hash, matchHash } from '../tools/query.mjs'
-import recognizeApi from '../tools/api.mjs'
-import { processData, logDeletion } from '../tools/database.mjs'
-import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
+import Query, { hash, matchHash } from '../tools/utils/query.mjs'
+import recognizeApi from '../tools/utils/api.mjs'
+import { processData, logDeletion } from '../tools/utils/database.mjs'
+import { sortArrayByObjectKey } from '../../client/global/modules/tools/utils/sorter.mjs'
 
-const mysql = require('../tools/mysql')
-const throwErr = require('../tools/error')
+const mysql = require('../tools/utils/mysql')
+const throwErr = require('../tools/utils/error')
 
 
 const query = {

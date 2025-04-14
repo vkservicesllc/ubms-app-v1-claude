@@ -1,6 +1,6 @@
 const router = require('express').Router()
-const mysql = require('../tools/mysql')
-const throwErr = require('../tools/error').data
+const mysql = require('../tools/utils/mysql')
+const throwErr = require('../tools/utils/error').data
 
 /* Settings */
 import config from '../../config.mjs'
@@ -10,16 +10,14 @@ import db from '../settings/mysql.mjs'
 import length from '../../client/global/modules/registry/length.mjs'
 import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
 
-/* Assets */
-import Site from '../assets/site.mjs'
-import User from '../assets/user.mjs'
-import { formInput } from '../../client/global/modules/assets/html.mjs'
-
 /* Tools */
-import Query from '../tools/query.mjs'
-import { respond404 } from '../tools/response.mjs'
-import { calculateHourAge } from '../../client/global/modules/tools/date.mjs'
-import { capitalizeEach } from '../../client/global/modules/tools/string.mjs'
+import Site from '../tools/core/site.mjs'
+import User from '../tools/core/user.mjs'
+import { formInput } from '../../client/global/modules/tools/core/html.mjs'
+import Query from '../tools/utils/query.mjs'
+import { respond404 } from '../tools/utils/response.mjs'
+import { calculateHourAge } from '../../client/global/modules/tools/utils/date.mjs'
+import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
 /* HTML Builders */
 import { Label, Input, Button } from '../html/user.mjs'

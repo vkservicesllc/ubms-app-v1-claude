@@ -2,21 +2,21 @@ require('dotenv').config({ path: '../../.env' })
 const { DB__MYSQL_AES_SSN: secret } = process.env
 
 /* Settings */
-import db from '../settings/mysql.mjs'
+import db from '../../settings/mysql.mjs'
 
 /* Assests */
-import Person from '../../client/global/modules/assets/person.mjs'
+import Person from '../../client/global/modules/tools/core/person.mjs'
 import { sessionError } from './user.mjs'
 
 /* Tools */
-import { reSuper } from '../../client/global/modules/tools/object.mjs'
-import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
-import { ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
-import Query, { hash, matchHash } from '../tools/query.mjs'
-import { processData, logDeletion } from '../tools/database.mjs'
-import { encrypt } from '../tools/crypto.mjs'
+import { reSuper } from '../../client/global/modules/tools/utils/object.mjs'
+import { stringifyBuffer } from '../../client/global/modules/tools/utils/buffer.mjs'
+import { ssn as formatSsn } from '../../client/global/modules/tools/utils/formatter.mjs'
+import Query, { hash, matchHash } from '../tools/utils/query.mjs'
+import { processData, logDeletion } from '../tools/utils/database.mjs'
+import { encrypt } from '../tools/utils/crypto.mjs'
 
-const mysql = require('../tools/mysql')
+const mysql = require('../tools/utils/mysql')
 
 
 const query = {

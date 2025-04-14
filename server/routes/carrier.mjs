@@ -1,20 +1,18 @@
 const router = require('express').Router()
-const throwErr = require('../tools/error').data
+const throwErr = require('../tools/utils/error').data
 
 /* Registry */
 import length from '../../client/global/modules/registry/length.mjs'
 import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
 
-/* Assets */
-import User from '../assets/user.mjs'
-import Team from '../assets/team.mjs'
-import { inPGroup } from '../assets/user/permissions.mjs'
-
 /* HTML Builders */
 import { Label, Input, Button } from '../html/user.mjs'
 
 /* Tools */
-import { capitalizeEach } from '../../client/global/modules/tools/string.mjs'
+import User from '../tools/core/user.mjs'
+import Team from '../tools/core/team.mjs'
+import { inPGroup } from '../tools/core/user/permissions.mjs'
+import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
 
 

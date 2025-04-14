@@ -1,16 +1,8 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/error').data
+const throwErr = require('../../tools/utils/error').data
 
 /* Registry */
 import { formSelectors } from '../../../client/global/modules/registry/selectors.mjs'
-
-/* Assets */
-import Person from '../../../client/global/modules/assets/person.mjs'
-import Address from '../../../client/global/modules/assets/address.us.mjs'
-import User from '../../assets/user.mjs'
-import Team from '../../assets/team.mjs'
-import Driver from '../../assets/driver.mjs'
-import { inPEnvironment } from '../../assets/user/permissions.mjs'
 
 /* HTML Builders */
 import { Input as ContactInput } from '../../html/contacts.mjs'
@@ -18,11 +10,17 @@ import { Label as DriverLabel, Input as DriverInput } from '../../html/driver.mj
 import { Label as AddrLabel, Input as AddrInput } from '../../html/address.us.mjs'
 
 /* Tools */
-import { sortObjectByKey } from '../../../client/global/modules/tools/sorter.mjs'
-import { respond404 } from '../../tools/response.mjs'
+import Person from '../../../client/global/modules/tools/core/person.mjs'
+import Address from '../../../client/global/modules/tools/core/address.us.mjs'
+import User from '../../tools/core/user.mjs'
+import Team from '../../tools/core/team.mjs'
+import Driver from '../../tools/core/driver.mjs'
+import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
+import { sortObjectByKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+import { respond404 } from '../../tools/utils/response.mjs'
 
-/* Constants */
-import { navBuilder } from './constants.mjs'
+/* Assets */
+import { navBuilder } from './assets.mjs'
 
 
 

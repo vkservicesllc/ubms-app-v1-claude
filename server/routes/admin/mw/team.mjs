@@ -1,7 +1,7 @@
 /* Assets */
-import Team from '../../../assets/team.mjs'
+import Team from '../../../tools/core/team.mjs'
 
-const throwErr = require('../../../tools/error').data
+const throwErr = require('../../../tools/utils/error').data
 
 const url = '/online/teams'
 const errMsg = 'Server Internal Error: Team not found'

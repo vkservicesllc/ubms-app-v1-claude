@@ -1,26 +1,24 @@
 const router = require('express').Router()
 const moment = require('moment')
-const throwErr = require('../tools/error').data
+const throwErr = require('../tools/utils/error').data
 
 /* Registry */
 import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
 
-/* Assets */
-import Team from '../assets/team.mjs'
-import Carrier from '../assets/carrier.mjs'
-import Driver, { Application } from '../assets/driver.mjs'
-import escapeHTML from '../../client/global/modules/assets/html.mjs'
-
 /* HTML Builders */
-import { formLabel, formInput } from '../../client/global/modules/assets/html.mjs'
+import { formLabel, formInput } from '../../client/global/modules/tools/utils/html.mjs'
 import { Input as ContactInput } from '../html/contacts.mjs'
 import { Label as DriverLabel, Input as DriverInput, Select as DriverSelect } from '../html/driver.mjs'
 import { Label as AddrLabel, Input as AddrInput, Select as AddrSelect } from '../html/address.us.mjs'
 
 /* Tools */
-import { respond404 } from '../tools/response.mjs'
-import { capitalizeEach } from '../../client/global/modules/tools/string.mjs'
-import { tel as formatTel, ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
+import Team from '../tools/core/team.mjs'
+import Carrier from '../tools/core/carrier.mjs'
+import Driver, { Application } from '../tools/core/driver.mjs'
+import escapeHTML from '../../client/global/modules/tools/utils/html.mjs'
+import { respond404 } from '../tools/utils/response.mjs'
+import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
+import { tel as formatTel, ssn as formatSsn } from '../../client/global/modules/tools/utils/formatter.mjs'
 
 
 

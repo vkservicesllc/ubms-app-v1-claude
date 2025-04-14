@@ -12,8 +12,8 @@ import { DriverUser } from './server/assets/driver.mjs'
 import { StudentUser } from './server/assets/student.mjs'
 
 /* Tools */
-import hbsConditions from './server/tools/hbs.mjs'
-import { respond404 } from './server/tools/response.mjs'
+import hbsConditions from './server/tools/utils/hbs.mjs'
+import { respond404 } from './server/tools/utils/response.mjs'
 
 /* Validators */
 import validationCheck from './server/validators/default.mjs'
@@ -22,9 +22,6 @@ import { validateLocalAuth, validateSession } from './server/validators/user.mjs
 /* Routes */
 import apiRoute from './server/routes/api.mjs'
 import publicApiRoute from './server/routes/api.public.mjs'
-
-/* Registry */
-import { formSelectors } from './client/global/modules/registry/selectors.mjs'
 
 
 const MySQLStore = require('express-mysql-session')(session)
@@ -36,7 +33,6 @@ hbs.registerHelper('author', config.author)
 hbs.registerHelper('siteName', config.site.name)
 hbs.registerHelper('loginUrl', loginUrl)
 hbs.registerHelper('logoutUrl', logoutUrl)
-hbs.registerHelper('logoutId', formSelectors.user.logoutLinkId)
 hbs.registerHelper(hbsConditions)
 hbs.registerHelper('idx', (arr, idx) => arr[idx])
 

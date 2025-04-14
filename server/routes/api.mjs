@@ -1,16 +1,14 @@
 const router = require('express').Router()
-const throwErr = require('../tools/error').api
-
-/* Assets */
-import Individual from '../assets/individual.mjs'
-import User, { Role } from '../assets/user.mjs'
-import Team from '../assets/team.mjs'
-import Company, { Owner } from '../assets/company.mjs'
-import Carrier from '../assets/carrier.mjs'
-import Driver from '../assets/driver.mjs'
+const throwErr = require('../tools/utils/error').api
 
 /* Tools */
-import { capitalizeFirst } from '../../client/global/modules/tools/string.mjs'
+import Individual from '../tools/core/individual.mjs'
+import User, { Role } from '../tools/core/user.mjs'
+import Team from '../tools/core/team.mjs'
+import Company, { Owner } from '../tools/core/company.mjs'
+import Carrier from '../tools/core/carrier.mjs'
+import Driver from '../tools/core/driver.mjs'
+import { capitalizeFirst } from '../../client/global/modules/tools/utils/string.mjs'
 
 
 
@@ -103,7 +101,7 @@ router.post('/unique/original/:env', User.verify, async (req, res) => {
 })
 
 
-router.post('/assets/:source/:_id?', User.verify, async (req, res) => {
+router.post('/tools/core/:source/:_id?', User.verify, async (req, res) => {
     const { filter, self, call } = req.query
     const { source } = req.params
     let{ _id } = req.params

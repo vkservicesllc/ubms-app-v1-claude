@@ -6,25 +6,25 @@ const secret = {
 }
 
 /* Settings */
-import db from '../settings/mysql.mjs'
+import db from '../../settings/mysql.mjs'
 
 /* Assets */
 import Individual from './individual.mjs'
 import Team from './team.mjs'
-import Address from '../../client/global/modules/assets/address.us.mjs'
+import Address from '../../client/global/modules/tools/core/address.us.mjs'
 import { sessionError } from './user.mjs'
 
 /* Tools */
-import Query, { hash, matchHash } from '../tools/query.mjs'
-import { processData, logDeletion } from '../tools/database.mjs'
-import { encrypt } from '../tools/crypto.mjs'
-import { reSuper } from '../../client/global/modules/tools/object.mjs'
-import { numeric } from '../../client/global/modules/tools/number.mjs'
-import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
-import strip, { ein as formatEin, ssn as formatSsn } from '../../client/global/modules/tools/formatter.mjs'
-import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
+import Query, { hash, matchHash } from '../tools/utils/query.mjs'
+import { processData, logDeletion } from '../tools/utils/database.mjs'
+import { encrypt } from '../tools/utils/crypto.mjs'
+import { reSuper } from '../../client/global/modules/tools/utils/object.mjs'
+import { numeric } from '../../client/global/modules/tools/utils/number.mjs'
+import { stringifyBuffer } from '../../client/global/modules/tools/utils/buffer.mjs'
+import strip, { ein as formatEin, ssn as formatSsn } from '../../client/global/modules/tools/utils/formatter.mjs'
+import { sortArrayByObjectKey } from '../../client/global/modules/tools/utils/sorter.mjs'
 
-const mysql = require('../tools/mysql')
+const mysql = require('../tools/utils/mysql')
 
 
 const { sqlMode } = Query

@@ -113,7 +113,6 @@ export const tokenEvent = (callback = {}) => {
 
 export const loginEvent = (callback = {}) => {
     const { onSubmit, onAjax } = callback
-    const { loginFormId } = formSelectors.user
     const $form = $('#login-form, #sign-in-form')
     const
         $username = $(selector.id.text.username),
@@ -149,7 +148,6 @@ export const loginEvent = (callback = {}) => {
 
 
 export const authEvent = onSubmit => {
-    const { authFormId } = formSelectors.user
     const $form = $('#auth-form')
     const $token = $(selector.id.text.token)
 
@@ -168,8 +166,7 @@ export const authEvent = onSubmit => {
 
 
 export const registerEvent = onSubmit => {
-    const { registerFormId } = formSelectors.user
-    const $form = $('#register-form, #sign-up-form')
+    const $form = $('#sign-up-form')
     const $username = $(selector.id.text.newUsername)
     const $password = $(selector.id.text.createPassword)
 

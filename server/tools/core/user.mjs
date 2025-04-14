@@ -11,31 +11,31 @@ const {
 } = process.env
 
 /* Registry */
-import inputLength from '../../client/global/modules/registry/length.mjs'
+import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Settings */
-import config, { addrBook } from '../../config.mjs'
-import db from '../settings/mysql.mjs'
+import config, { addrBook } from '../../../config.mjs'
+import db from '../../settings/mysql.mjs'
 
 /* Assets */
-import Person from '../../client/global/modules/assets/person.mjs'
+import Person from '../../client/global/modules/tools/core/person.mjs'
 import Team from './team.mjs'
 import Company from './company.mjs'
 
 /* Tools */
-import Query, { hash, matchHash } from '../tools/query.mjs'
-import recognizeApi from '../tools/api.mjs'
-import transporter, { sender } from '../tools/nodemailer.mjs'
-import { generateRandomString } from '../tools/string.mjs'
-import { processData, logDeletion } from '../tools/database.mjs'
-import { reSuper } from '../../client/global/modules/tools/object.mjs'
-import { numeric } from '../../client/global/modules/tools/number.mjs'
-import { stringifyBuffer } from '../../client/global/modules/tools/buffer.mjs'
-import { sortArrayByObjectKey } from '../../client/global/modules/tools/sorter.mjs'
+import Query, { hash, matchHash } from '../tools/utils/query.mjs'
+import recognizeApi from '../tools/utils/api.mjs'
+import transporter, { sender } from '../tools/utils/nodemailer.mjs'
+import { generateRandomString } from '../tools/utils/string.mjs'
+import { processData, logDeletion } from '../tools/utils/database.mjs'
+import { reSuper } from '../../client/global/modules/tools/utils/object.mjs'
+import { numeric } from '../../client/global/modules/tools/utils/number.mjs'
+import { stringifyBuffer } from '../../client/global/modules/tools/utils/buffer.mjs'
+import { sortArrayByObjectKey } from '../../client/global/modules/tools/utils/sorter.mjs'
 
 const { validationResult } = require('express-validator')
-const mysql = require('../tools/mysql')
-const throwErr = require('../tools/error')
+const mysql = require('../tools/utils/mysql')
+const throwErr = require('../tools/utils/error')
 
 
 const query = {

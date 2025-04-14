@@ -1,16 +1,14 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/error').data
-
-/* Assets */
-import User from '../../assets/user.mjs'
-import Team from '../../assets/team.mjs'
-import { inPEnvironment } from '../../assets/user/permissions.mjs'
+const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
-import { respond404 } from '../../tools/response.mjs'
+import User from '../../tools/core/user.mjs'
+import Team from '../../tools/core/team.mjs'
+import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
+import { respond404 } from '../../tools/utils/response.mjs'
 
-/* Constants */
-import { navBuilder } from './constants.mjs'
+/* Assets */
+import { navBuilder } from './assets.mjs'
 
 
 

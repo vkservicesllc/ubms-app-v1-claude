@@ -1,13 +1,13 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/error').data
+const throwErr = require('../../tools/utils/error').data
 
-/* Assests */
-import User from '../../assets/user.mjs'
-import Team from '../../assets/team.mjs'
-import Company from '../../assets/company.mjs'
-import Carrier from '../../assets/carrier.mjs'
-import Driver, { Application } from '../../assets/driver.mjs'
-import { inPEnvironment } from '../../assets/user/permissions.mjs'
+/* Tools */
+import User from '../../tools/core/user.mjs'
+import Team from '../../tools/core/team.mjs'
+import Company from '../../tools/core/company.mjs'
+import Carrier from '../../tools/core/carrier.mjs'
+import Driver, { Application } from '../../tools/core/driver.mjs'
+import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
 
 /* Validators */
 import validationCheck from '../../validators/default.mjs'

@@ -1,8 +1,8 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/error').data
+const throwErr = require('../../tools/utils/error').data
 
-/* Assets */
-import User, { superAdminUserOnly } from '../../assets/user.mjs'
+/* Tools */
+import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
 
 /* HTML Builders */
 import { Label as CompanyLabel, Input as CompanyInput, Select as CompanySelect } from '../../html/company.mjs'
@@ -13,8 +13,8 @@ import { formSelectors } from '../../../client/global/modules/registry/selectors
 /* Middleware */
 import { companyById, companyByCategoryAndRoute } from './mw/company.mjs'
 
-/* Local Constants */
-import { labelClass, labelClassRequired } from './constants.mjs'
+/* Assets */
+import { labelClass, labelClassRequired } from './assets.mjs'
 
 
 

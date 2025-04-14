@@ -1,20 +1,20 @@
 /* Settings */
-import db from '../settings/mysql.mjs'
+import db from '../../settings/mysql.mjs'
 
 /* Registry */
-import inputLength from '../../client/global/modules/registry/length.mjs'
+import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Assets */
 import Company from './company.mjs'
 import { sessionError } from './user.mjs'
 
 /* Tools */
-import Query, { hash, matchHash }  from '../tools/query.mjs'
-import { reSuper } from '../../client/global/modules/tools/object.mjs'
-import { utcTimeStamp } from '../tools/date.mjs'
-import { processData } from '../tools/database.mjs'
+import Query, { hash, matchHash }  from '../tools/utils/query.mjs'
+import { reSuper } from '../../client/global/modules/tools/utils/object.mjs'
+import { utcTimeStamp } from '../tools/utils/date.mjs'
+import { processData } from '../tools/utils/database.mjs'
 
-const mysql = require('../tools/mysql')
+const mysql = require('../tools/utils/mysql')
 
 
 const query = {

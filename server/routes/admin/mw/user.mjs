@@ -1,7 +1,7 @@
-import User, { Role } from '../../../assets/user.mjs'
-import Company from '../../../assets/company.mjs'
+import User, { Role } from '../../../tools/core/user.mjs'
+import Company from '../../../tools/core/company.mjs'
 
-const throwErr = require('../../../tools/error').data
+const throwErr = require('../../../tools/utils/error').data
 
 const url = '/online/users'
 const errMsg = {

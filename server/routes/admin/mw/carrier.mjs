@@ -1,7 +1,7 @@
 /* Assets */
-import Carrier from '../../../assets/carrier.mjs'
+import Carrier from '../../../tools/core/carrier.mjs'
 
-const throwErr = require('../../../tools/error').data
+const throwErr = require('../../../tools/utils/error').data
 
 const url = {
     company: '/business/company/',

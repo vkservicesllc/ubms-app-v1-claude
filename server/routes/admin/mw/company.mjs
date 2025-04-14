@@ -1,11 +1,5 @@
 import moment from 'moment'
 
-/* Assets */
-import Company, { Owner } from '../../../assets/company.mjs'
-import Carrier from '../../../assets/carrier.mjs'
-import Address from '../../../../client/global/modules/assets/address.us.mjs'
-import escapeHTML, { button as formButton, formLabel, formInput } from '../../../../client/global/modules/assets/html.mjs'
-
 /* HTML Builders */
 import { Label, Input, Select } from '../../../html/company.mjs'
 import { Label as CarrierLabel, Input as CarrierInput, Select as CarrierSelect } from '../../../html/carrier.mjs'
@@ -20,13 +14,17 @@ import { formSelectors } from '../../../../client/global/modules/registry/select
 import inputLength from '../../../../client/global/modules/registry/length.mjs'
 
 /* Tools */
-import { ein as formatEin, duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/formatter.mjs'
-import { respond404 } from '../../../tools/response.mjs'
+import Company, { Owner } from '../../../tools/core/company.mjs'
+import Carrier from '../../../tools/core/carrier.mjs'
+import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
+import escapeHTML, { button as formButton, formLabel, formInput } from '../../../../client/global/modules/tools/core/html.mjs'
+import { ein as formatEin, duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/utils/formatter.mjs'
+import { respond404 } from '../../../tools/utils/response.mjs'
 
-/* Constants */
-import { labelClass, labelClassRequired } from '../constants.mjs'
+/* Assets */
+import { labelClass, labelClassRequired } from '../assets.mjs'
 
-const throwErr = require('../../../tools/error').data
+const throwErr = require('../../../tools/utils/error').data
 
 const url = {
     company: '/business/company/',

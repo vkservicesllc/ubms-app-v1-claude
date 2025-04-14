@@ -1,11 +1,10 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/error').api
+const throwErr = require('../../tools/utils/error').api
 
-/* Assets */
-import User from '../../assets/user.mjs'
-import Team from '../../assets/team.mjs'
-import Driver, { Application } from '../../assets/driver.mjs'
-import { application } from '../../includes/driver'
+/* Tools */
+import User from '../../tools/core/user.mjs'
+import Team from '../../tools/core/team.mjs'
+import Driver, { Application } from '../../tools/core/driver.mjs'
 
 
 

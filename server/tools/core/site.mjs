@@ -1,7 +1,7 @@
-import config, { apps } from '../../config.mjs'
-import Query from '../tools/query.mjs'
+import config, { apps } from '../../../config.mjs'
+import Query from '../tools/utils/query.mjs'
 
-const mysql = require('../tools/mysql')
+const mysql = require('../tools/utils/mysql')
 const query = new Query('app_online', 'sites')
 
 
