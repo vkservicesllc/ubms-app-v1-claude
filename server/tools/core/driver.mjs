@@ -7,8 +7,8 @@ import { addrBook } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
 /* Assests */
-import Person from '../../client/global/modules/tools/core/person.mjs'
-import Address from '../../client/global/modules/tools/core/address.us.mjs'
+import Person from '../../../client/global/modules/tools/core/person.mjs'
+import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Individual from './individual.mjs'
 import Team from './team.mjs'
 import User, { sessionError } from './user.mjs'
@@ -16,19 +16,19 @@ import Company from './company.mjs'
 import Carrier from './carrier.mjs'
 
 /* Tools */
-import Query, { hash, matchHash } from '../tools/utils/query.mjs'
-import transporter, { senderParams } from '../tools/utils/nodemailer.mjs'
-import { processData, logDeletion } from '../tools/utils/database.mjs'
-import { generateRandomString } from '../tools/utils/string.mjs'
-import { dateAfter } from '../tools/utils/date.mjs'
-import { stringifyBuffer } from '../../client/global/modules/tools/utils/buffer.mjs'
-import { reSuper } from '../../client/global/modules/tools/utils/object.mjs'
-import { sortArrayByObjectKey } from '../../client/global/modules/tools/utils/sorter.mjs'
-import { tel as formatTel } from '../../client/global/modules/tools/utils/formatter.mjs'
+import Query, { hash, matchHash } from '../utils/query.mjs'
+import transporter, { senderParams } from '../utils/nodemailer.mjs'
+import { processData, logDeletion } from '../utils/database.mjs'
+import { generateRandomString } from '../utils/string.mjs'
+import { dateAfter } from '../utils/date.mjs'
+import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
+import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+import { tel as formatTel } from '../../../client/global/modules/tools/utils/formatter.mjs'
 
-const mysql = require('../tools/utils/mysql')
-const knex = require('../tools/utils/knex')
-const throwErr = require('../tools/utils/error')
+const mysql = require('../utils/mysql')
+const knex = require('../utils/knex')
+const throwErr = require('../utils/error')
 
 const query = {
     drivers: new Query(db.carrier, 'drivers'),

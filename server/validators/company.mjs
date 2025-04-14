@@ -1,7 +1,7 @@
-import Company from '../assets/company.mjs'
+import Company from '../tools/core/company.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
 import patterns from '../../client/global/modules/registry/patterns.mjs'
-import strip from '../../client/global/modules/tools/formatter.mjs'
+import strip from '../../client/global/modules/tools/utils/formatter.mjs'
 import {
     validateDate,
     validateName,

@@ -5,18 +5,18 @@ const { DB__MYSQL_AES_SSN: secret } = process.env
 import db from '../../settings/mysql.mjs'
 
 /* Assests */
-import Person from '../../client/global/modules/tools/core/person.mjs'
+import Person from '../../../client/global/modules/tools/core/person.mjs'
 import { sessionError } from './user.mjs'
 
 /* Tools */
-import { reSuper } from '../../client/global/modules/tools/utils/object.mjs'
-import { stringifyBuffer } from '../../client/global/modules/tools/utils/buffer.mjs'
-import { ssn as formatSsn } from '../../client/global/modules/tools/utils/formatter.mjs'
-import Query, { hash, matchHash } from '../tools/utils/query.mjs'
-import { processData, logDeletion } from '../tools/utils/database.mjs'
-import { encrypt } from '../tools/utils/crypto.mjs'
+import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
+import { ssn as formatSsn } from '../../../client/global/modules/tools/utils/formatter.mjs'
+import Query, { hash, matchHash } from '../utils/query.mjs'
+import { processData, logDeletion } from '../utils/database.mjs'
+import { encrypt } from '../utils/crypto.mjs'
 
-const mysql = require('../tools/utils/mysql')
+const mysql = require('../utils/mysql')
 
 
 const query = {

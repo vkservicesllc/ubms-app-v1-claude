@@ -5,6 +5,7 @@ const throwErr = require('../../tools/utils/error').data
 import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
 import permissions, { html as roleHtml } from '../../tools/core/user/permissions.mjs'
 import carrierPermissions from '../../tools/core/user/permissions.carrier.mjs'
+import { respond404 } from '../../tools/utils/response.mjs'
 
 /* HTML Builders */
 import { Label as UserLabel, Input as UserInput, Select as UserSelect } from '../../html/user.mjs'
@@ -20,7 +21,6 @@ import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Local Constants */
 import { labelClass, labelClassRequired } from './assets.mjs'
-import { respond404 } from '../../tools/response.mjs'
 
 
 

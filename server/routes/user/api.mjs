@@ -7,7 +7,7 @@ import db from '../../settings/mysql.mjs'
 
 /* Tools */
 import User from '../../tools/core/user.mjs'
-import transporter, { sender } from '../../tools/utils/'
+import transporter, { sender } from '../../tools/utils/nodemailer.mjs'
 
 
 

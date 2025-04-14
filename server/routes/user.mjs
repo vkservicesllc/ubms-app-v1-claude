@@ -13,7 +13,7 @@ import { formSelectors } from '../../client/global/modules/registry/selectors.mj
 /* Tools */
 import Site from '../tools/core/site.mjs'
 import User from '../tools/core/user.mjs'
-import { formInput } from '../../client/global/modules/tools/core/html.mjs'
+import { formInput } from '../../client/global/modules/tools/utils/html/form.mjs'
 import Query from '../tools/utils/query.mjs'
 import { respond404 } from '../tools/utils/response.mjs'
 import { calculateHourAge } from '../../client/global/modules/tools/utils/date.mjs'

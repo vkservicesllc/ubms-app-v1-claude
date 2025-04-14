@@ -1,7 +1,7 @@
-import Driver from '../assets/driver.mjs'
+import Driver from '../tools/core/driver.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
 import patterns from '../../client/global/modules/registry/patterns.mjs'
-import strip from '../../client/global/modules/tools/formatter.mjs'
+import strip from '../../client/global/modules/tools/utils/formatter.mjs'
 import {
     validateName,
     validateSuffix,

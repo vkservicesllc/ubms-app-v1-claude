@@ -1,6 +1,6 @@
-import { formLabel, formInput } from '../../client/global/modules/assets/html.mjs'
+import { formLabel, formInput } from '../../client/global/modules/tools/utils/html/form.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
-import { capitalizeFirst } from '../../client/global/modules/tools/string.mjs'
+import { capitalizeFirst } from '../../client/global/modules/tools/utils/string.mjs'
 
 
 export class Label {

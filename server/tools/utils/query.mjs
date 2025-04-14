@@ -1,5 +1,5 @@
-import { formatDateToString } from '../../client/global/modules/tools/date.mjs'
-import { capitalizeFirst } from '../../client/global/modules/tools/string.mjs'
+import { formatDateToString } from '../../../client/global/modules/tools/utils/date.mjs'
+import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
 
 
 

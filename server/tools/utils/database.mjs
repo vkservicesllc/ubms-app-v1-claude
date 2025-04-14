@@ -5,7 +5,7 @@ import { mkdirSync, existsSync } from 'fs'
 import path from 'path'
 import { utcTimeStamp } from './date.mjs'
 import { encrypt } from './crypto.mjs'
-import { resetProto } from '../../client/global/modules/tools/object.mjs'
+import { resetProto } from '../../../client/global/modules/tools/utils/object.mjs'
 
 
 

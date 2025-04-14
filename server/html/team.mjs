@@ -1,4 +1,4 @@
-import { formLabel, formInput, formTextArea } from '../../client/global/modules/assets/html.mjs'
+import { formLabel, formInput, formTextArea } from '../../client/global/modules/tools/utils/html/form.mjs'
 import { Label as CompanyLabel, Select as CompanySelect } from './company.mjs'
 import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'

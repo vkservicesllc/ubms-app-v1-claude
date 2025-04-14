@@ -1,4 +1,4 @@
-import User from '../assets/user.mjs'
+import User from '../tools/core/user.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
 import patterns from '../../client/global/modules/registry/patterns.mjs'
 import { validateName, validateGender, validateEmail, validateTel } from './default.mjs'

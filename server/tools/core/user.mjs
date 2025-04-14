@@ -18,24 +18,24 @@ import config, { addrBook } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
 /* Assets */
-import Person from '../../client/global/modules/tools/core/person.mjs'
-import Team from './team.mjs'
-import Company from './company.mjs'
 
 /* Tools */
-import Query, { hash, matchHash } from '../tools/utils/query.mjs'
-import recognizeApi from '../tools/utils/api.mjs'
-import transporter, { sender } from '../tools/utils/nodemailer.mjs'
-import { generateRandomString } from '../tools/utils/string.mjs'
-import { processData, logDeletion } from '../tools/utils/database.mjs'
-import { reSuper } from '../../client/global/modules/tools/utils/object.mjs'
-import { numeric } from '../../client/global/modules/tools/utils/number.mjs'
-import { stringifyBuffer } from '../../client/global/modules/tools/utils/buffer.mjs'
-import { sortArrayByObjectKey } from '../../client/global/modules/tools/utils/sorter.mjs'
+import Team from './team.mjs'
+import Company from './company.mjs'
+import Person from '../../../client/global/modules/tools/core/person.mjs'
+import Query, { hash, matchHash } from '../utils/query.mjs'
+import recognizeApi from '../utils/api.mjs'
+import transporter, { sender } from '../utils/nodemailer.mjs'
+import { generateRandomString } from '../utils/string.mjs'
+import { processData, logDeletion } from '../utils/database.mjs'
+import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import { numeric } from '../../../client/global/modules/tools/utils/number.mjs'
+import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
+import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 const { validationResult } = require('express-validator')
-const mysql = require('../tools/utils/mysql')
-const throwErr = require('../tools/utils/error')
+const mysql = require('../utils/mysql')
+const throwErr = require('../utils/error')
 
 
 const query = {

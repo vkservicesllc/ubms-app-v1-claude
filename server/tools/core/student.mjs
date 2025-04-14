@@ -5,10 +5,10 @@ import db from '../../settings/mysql.mjs'
 import Individual from './individual.mjs'
 
 /* Tools */
-import { reSuper } from '../../client/global/modules/tools/utils/object.mjs'
-import Query, { hash, matchHash } from '../tools/utils/query.mjs'
+import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import Query, { hash, matchHash } from '../utils/query.mjs'
 
-const mysql = require('../tools/utils/mysql')
+const mysql = require('../utils/mysql')
 
 
 

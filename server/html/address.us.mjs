@@ -1,5 +1,5 @@
-import Address from '../../client/global/modules/assets/address.us.mjs'
-import { formLabel, formInput, formSelect } from '../../client/global/modules/assets/html.mjs'
+import Address from '../../client/global/modules/tools/core/address.us.mjs'
+import { formLabel, formInput, formSelect } from '../../client/global/modules/tools/utils/html/form.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
 
 

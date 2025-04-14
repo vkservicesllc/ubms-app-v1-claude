@@ -5,12 +5,12 @@ import moment from 'moment'
 import inputLength from '../../client/global/modules/registry/length.mjs'
 import patterns from '../../client/global/modules/registry/patterns.mjs'
 
-import Person from '../../client/global/modules/assets/person.mjs'
-import Address from '../../client/global/modules/assets/address.us.mjs'
+import Person from '../../client/global/modules/tools/core/person.mjs'
+import Address from '../../client/global/modules/tools/core/address.us.mjs'
 
-import { calculateYearAge } from '../../client/global/modules/tools/date.mjs'
-import strip from '../../client/global/modules/tools/formatter.mjs'
-import { capitalizeFirst, capitalizeEach } from '../../client/global/modules/tools/string.mjs'
+import { calculateYearAge } from '../../client/global/modules/tools/utils/date.mjs'
+import strip from '../../client/global/modules/tools/utils/formatter.mjs'
+import { capitalizeFirst, capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
 
 export default (req, res, next) => {

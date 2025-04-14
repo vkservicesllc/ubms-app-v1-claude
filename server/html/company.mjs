@@ -1,11 +1,12 @@
-import Person from '../../client/global/modules/assets/person.mjs'
-import { formLabel, formInput, formSelect } from '../../client/global/modules/assets/html.mjs'
+
 import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
-import { sortObjectByValue } from '../../client/global/modules/tools/sorter.mjs'
-import { reformatDateString } from '../../client/global/modules/tools/date.mjs'
 
-import Company, { Owner } from '../assets/company.mjs'
+import Company, { Owner } from '../tools/core/company.mjs'
+import Person from '../../client/global/modules/tools/core/person.mjs'
+import { formLabel, formInput, formSelect } from '../../client/global/modules/tools/utils/html/form.mjs'
+import { sortObjectByValue } from '../../client/global/modules/tools/utils/sorter.mjs'
+import { reformatDateString } from '../../client/global/modules/tools/utils/date.mjs'
 
 
 const { id, busNameId, coTypeId, aliasId, websiteId, einId, dunsId, sinceId, catId, ownershipId } = formSelectors.company

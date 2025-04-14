@@ -1,4 +1,4 @@
-import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
+import { capitalizeFirst } from '../../../../client/global/modules/tools/utils/string.mjs'
 
 
 

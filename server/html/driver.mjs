@@ -1,7 +1,7 @@
-import Person from '../../client/global/modules/assets/person.mjs'
-import Address from '../../client/global/modules/assets/address.us.mjs'
-import Driver from '../assets/driver.mjs'
-import { formLabel, formInput, formTextArea, formSelect } from '../../client/global/modules/assets/html.mjs'
+import Person from '../../client/global/modules/tools/core/person.mjs'
+import Address from '../../client/global/modules/tools/core/address.us.mjs'
+import Driver from '../tools/core/driver.mjs'
+import { formLabel, formInput, formTextArea, formSelect } from '../../client/global/modules/tools/utils/html/form.mjs'
 import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
 

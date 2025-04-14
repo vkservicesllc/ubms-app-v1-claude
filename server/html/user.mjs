@@ -1,8 +1,9 @@
-import User from '../assets/user.mjs'
-import { formLabel, formInput, formSelect, button } from '../../client/global/modules/assets/html.mjs'
+import User from '../tools/core/user.mjs'
+import { formLabel, formInput, formSelect } from '../../client/global/modules/tools/utils/html/form.mjs'
 import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
 import inputLength from '../../client/global/modules/registry/length.mjs'
 
+const button = () => false
 
 const {
     class: userClass,

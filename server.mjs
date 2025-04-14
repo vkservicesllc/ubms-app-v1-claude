@@ -6,10 +6,10 @@ import hbs from 'hbs'
 import config, { apps, userApps, addrBook } from './config.mjs'
 
 /* Assets */
-import Site from './server/assets/site.mjs'
-import User from './server/assets/user.mjs'
-import { DriverUser } from './server/assets/driver.mjs'
-import { StudentUser } from './server/assets/student.mjs'
+import Site from './server/tools/core/site.mjs'
+import User from './server/tools/core/user.mjs'
+import { DriverUser } from './server/tools/core/driver.mjs'
+import { StudentUser } from './server/tools/core/student.mjs'
 
 /* Tools */
 import hbsConditions from './server/tools/utils/hbs.mjs'
