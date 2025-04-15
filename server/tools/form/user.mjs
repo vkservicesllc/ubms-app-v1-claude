@@ -102,7 +102,8 @@ const createPasswordForm = flag => {
 
 class UserForm {
     constructor(options = {}) {
-        getStaticProps(UserForm).forEach(target => this[target] = constructForm(UserForm, target, options))
+        getStaticProps(UserForm)
+            .forEach(target => this[target] = constructForm(UserForm, target, options))
     }
 
     static id = createIdForm({ selector })
@@ -125,6 +126,7 @@ class UserForm {
         maxLength: length.user.token.max,
         contextMenu: true,
         required,
+        label: 'Token',
         validator: {
             rule: 'numeric',
             length: { min: length.user.token.min },
@@ -142,10 +144,3 @@ class UserForm {
 }
 
 export default UserForm
-
-
-console.log(UserForm.username.text.input())
-console.log(UserForm.newUsername.text.input())
-console.log(UserForm.password.text.input())
-console.log(UserForm.createPassword.text.input())
-console.log(UserForm.confirmPassword.text.input())

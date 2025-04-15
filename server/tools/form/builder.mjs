@@ -188,7 +188,9 @@ const createForm = (input = {}) => {
             chain = chain
                 .notEmpty()
                 .withMessage(`"${name}" field can not be empty`)
-        else chain = chain.optional({ nullable: true })
+        else chain = chain
+            .customSanitizer(value => value || null)
+            .optional({ nullable: true })
 
         if (typeof validator === 'object') {
             const { caps, sanitizer, rule, length, custom } = validator
