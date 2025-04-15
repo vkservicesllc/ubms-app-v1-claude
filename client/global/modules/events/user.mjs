@@ -185,7 +185,7 @@ export const registerEvent = onSubmit => {
     })
 
     setTimeout(() => {
-        $(selector.class.text.signUp).removeAttr('disabled')
+        $(`${selector.class.text.signUp}, [type=submit]`).removeAttr('disabled')
     }, 750)
 }
 

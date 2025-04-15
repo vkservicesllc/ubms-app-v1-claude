@@ -2,7 +2,7 @@ import { body } from 'express-validator'
 import patterns from '../../../client/global/modules/registry/patterns.mjs'
 import { formLabel, formInput, formTextArea, formSelect, formRadio, formCheckbox } from '../../../client/global/modules/tools/utils/html/form.mjs'
 
-const types = ['hidden', 'text', 'textarea', 'select', 'radio', 'checkbox', 'select/radio', 'select/checkbox']
+const types = ['hidden', 'text', 'textarea', 'password', 'email', 'url', 'select', 'radio', 'checkbox', 'select/radio', 'select/checkbox']
 const valueTypes = ['hidden', 'text', 'select']
 const redundantInputProps = ['type', 'label', 'selector', 'target', 'group', 'data', 'keys', 'defaultClass', 'id', 'name', 'required']
 const lockedLabelProps = ['defaultClass', 'for']
@@ -95,21 +95,19 @@ const createForm = (input = {}) => {
     }
 
     if (['hidden', 'text', 'textarea', 'password', 'email', 'url'].includes(type)) {
-        let formTextInput = formInput
-        
-        if (type === 'textarea') {
-            type = 'text'
-            formTextInput = formTextArea
-        }
+        let formTextInput = formInput, keyType = 'text'
 
-        form[type] = {}
-        initializeInput(type)
-        initializeLabel(type)
-        if (type !== 'textarea') lockedInput[type].type = type
+        if (type === 'hidden') keyType = 'hidden'
+        else if (type === 'textarea') formTextInput = formTextArea
 
-        form[type].input = props => formTextInput({ ...input, ...props, ...lockedInput[type] })
-        form[type].label = label
-            ? props => formLabel({ ...label, ...props, ...lockedLabel[type] })
+        form[keyType] = {}
+        initializeInput(keyType)
+        initializeLabel(keyType)
+        if (type !== 'textarea') lockedInput[keyType].type = type
+
+        form[keyType].input = props => formTextInput({ ...input, ...props, ...lockedInput[keyType] })
+        form[keyType].label = label
+            ? props => formLabel({ ...label, ...props, ...lockedLabel[keyType] })
             : () => ''
     }
 

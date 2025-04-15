@@ -12,7 +12,7 @@ import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
 
-const required = true
+const required = true, disabled = true
 
 const propsData = {
     status: { 'U': 'User', 'A': 'Admin', 'S': 'Super Admin' },
@@ -39,12 +39,13 @@ const createPropsForm = (flag, props = {}) => createForm({
 
 const createUsernameForm = flag => createForm({
     selector,
-    target: flag === 'new' ? 'username' : 'newUsername',
+    target: flag === 'new' ? 'newUsername' : 'username',
     group: flag === 'new' ? 'signUp' : 'signIn',
     name: 'username',
     maxLength: length.user.username.max,
     autoComplete: 'off',
     required,
+    disabled,
     label: 'Username',
     validator: flag === 'new'
         ? {
@@ -65,7 +66,7 @@ const createPasswordForm = flag => {
 
         case 'new':
             target = 'createPassword'
-            label: 'Create Password'
+            label = 'Create Password'
             validator = {
                 length: { min: length.user.password.min },
                 //! add more...
@@ -79,18 +80,20 @@ const createPasswordForm = flag => {
             break
 
         default:
-            autoComplete: 'off'
+            autoComplete = 'off'
 
     }
 
     return createForm({
         selector,
         target,
+        group: flag === 'new' ? 'signUp' : 'signIn',
         type: 'password',
         name,
         maxLength: length.user.password.max,
         autoComplete,
         required,
+        disabled,
         label,
         validator,
     })
@@ -113,7 +116,7 @@ class UserForm {
 
     static password = createPasswordForm()
     static createPassword = createPasswordForm('new')
-    static comfirmPassword = createPasswordForm('confirm')
+    static confirmPassword = createPasswordForm('confirm')
 
     static token = createForm({
         selector,
@@ -139,3 +142,10 @@ class UserForm {
 }
 
 export default UserForm
+
+
+console.log(UserForm.username.text.input())
+console.log(UserForm.newUsername.text.input())
+console.log(UserForm.password.text.input())
+console.log(UserForm.createPassword.text.input())
+console.log(UserForm.confirmPassword.text.input())
