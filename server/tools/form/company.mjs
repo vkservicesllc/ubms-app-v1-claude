@@ -8,7 +8,7 @@ import {
     // createEmailForm,
 } from './reusable.mjs'
 
-import Company from '../core/company.mjs'
+import Company, { Owner } from '../core/company.mjs'
 import selector from '../../../client/global/modules/registry/selectors/company.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
@@ -75,7 +75,15 @@ class CompanyForm {
     static busName = createBusNameForm(selector)
     static coType = createCoTypeForm(selector)
 
-    static ownership = createForm() //! must be async/await
+    static ownership = createForm({
+        selector,
+        target: 'ownership',
+        name: 'ownerId',
+        type: 'select',
+        emptyOpt,
+        required,
+        validate: false,
+    })
 
 }
 

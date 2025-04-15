@@ -1,5 +1,6 @@
 import createForm, { constructForm } from './builder.mjs'
 import {
+    emptyOpt,
     createIdForm,
     createPersonNameForm,
     createGenderForm,
@@ -31,6 +32,7 @@ const createPropsForm = (flag, props = {}) => createForm({
     type: flag === 'condition' ? 'select/radio' : 'select',
     name: flag,
     data: propsData[flag],
+    emptyOpt: flag !== 'condition' ? emptyOpt : null,
     keys: flag === 'condition' ? conditionKeys : null,
     required,
     label: capitalizeFirst(flag),

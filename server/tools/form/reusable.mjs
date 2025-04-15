@@ -16,6 +16,7 @@ export const createIdForm = (props = {}) => createForm({
     ...props,
     type : 'hidden',
     name: '_id',
+    validate: false,
 })
 
 

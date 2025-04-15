@@ -119,7 +119,7 @@ const createForm = (input = {}) => {
         form.select.input = props => {
             const options = props?.options || input.options || {}
 
-            return formSelect({ ...input, ...props, ...lockedInput.select }, data || {}, options)
+            return formSelect({ ...input, ...props, ...lockedInput.select }, props?.data || data || {}, options)
         }
 
         form.select.label = label

@@ -89,11 +89,11 @@ export const formTextArea = (props = {}) => {
         readOnly,
     } = props
     const classes = initializeClass(props)
-    const tabs = props.tabs || 0
+    const tabs = props.tabs || -1
     let value = props.value || ''
 
     let nl = ''
-    if (tabs && !isNaN(tabs) && value) {
+    if (tabs && !isNaN(tabs) && tabs > -1) {
         nl = `\n${'\t'.repeat(tabs)}`
         value = `\n${'\t'.repeat(tabs - 1) + value}`
     }
@@ -134,7 +134,7 @@ const formSelectOptions = (data = {}, options = {}) => {
     let { value, tabs, valOpt, emptyOpt, order, disabled } = options
 
     if (!value) value = null
-    if (!tabs) tabs = 0
+    if (tabs === undefined || isNaN(tabs) || tabs < 0) tabs = 0
     valOpt = valOpt === true
     if (!emptyOpt && emptyOpt !== '') emptyOpt = null
     if (!order || (order !== 'asc' && order !== 'desc')) order = null
@@ -219,7 +219,7 @@ export const formSelect = (props = {}, data = {}, options = {}) => {
         disabled,
     } = props
     const classes = initializeClass(props)
-    const tabs = props.tabs || 0
+    const tabs = props.tabs >= -1 ? props.tabs : -1
 
     const classAttr = initializeAttr('class', classes)
     const idAttr = initializeAttr('id', id)
@@ -234,7 +234,7 @@ export const formSelect = (props = {}, data = {}, options = {}) => {
         if (required === true) options.emptyOpt = null
     }
 
-    const nl = tabs ? `\n${'\t'.repeat(tabs)}` : ''
+    const nl = tabs > -1 ? `\n${'\t'.repeat(tabs)}` : ''
     const attrs = classAttr
         + idAttr
         + nameAttr
@@ -245,7 +245,7 @@ export const formSelect = (props = {}, data = {}, options = {}) => {
 
     let html = `<select${attrs}>`
 
-    html += formSelectOptions(data, { ...options, tabs: tabs && tabs + 1, emptyOpt })
+    html += formSelectOptions(data, { ...options, tabs: tabs + 1, emptyOpt })
     html += `${nl}</select>`
 
     return html
