@@ -1,5 +1,4 @@
 import { body } from 'express-validator'
-import length from '../../../client/global/modules/registry/length.mjs'
 import patterns from '../../../client/global/modules/registry/patterns.mjs'
 import { formLabel, formInput, formTextArea, formSelect, formRadio, formCheckbox } from '../../../client/global/modules/tools/utils/html/form.mjs'
 
@@ -217,23 +216,6 @@ const createForm = (input = {}) => {
 
             switch (rule) {
 
-                case 'date':
-                    chain = chain
-                        .customSanitizer(date => {
-                            if (!date) return null
-
-                            return moment(date, [
-                                "YYYY-MM-DD",
-                                "MM/DD/YYYY",
-                                "MMM D, YYYY",
-                            ], true).format('YYYY-MM-DD')
-                        })
-                        .isDate()
-                        .withMessage(`"${name}" must be a valid date`)
-                        .matches(/^\d{4}-\d{2}-\d{2}$/)
-                        .withMessage(`Invalid date format provided in "${name}"`)
-                    break
-
                 case 'numeric':
                     chain = chain
                         .isNumeric()
@@ -257,6 +239,46 @@ const createForm = (input = {}) => {
                         .isBoolean()
                         .withMessage(`"${name}" must be of boolean type`)
                     break
+
+                case 'date':
+                    chain = chain
+                        .customSanitizer(date => {
+                            if (!date) return null
+
+                            return moment(date, [
+                                "YYYY-MM-DD",
+                                "MM/DD/YYYY",
+                                "MMM D, YYYY",
+                            ], true).format('YYYY-MM-DD')
+                        })
+                        .isDate()
+                        .withMessage(`"${name}" must be a valid date`)
+                        .matches(/^\d{4}-\d{2}-\d{2}$/)
+                        .withMessage(`Invalid date format provided in "${name}"`)
+                    break
+
+                case 'email':
+                    chain = chain
+                            .customSanitizer(value => {
+                                value = value ? patterns.replace(value, 'email') : null
+                                if (value && !patterns.match.email.test(value)) value = null
+
+                                return value
+                            })
+                        .isEmail()
+                        .withMessage(`"${name}" must be a valid email address`)
+                    break
+
+                case 'url':
+                    chain = chain
+                        .customSanitizer(value => {
+                            value = value ? patterns.replace(value, 'url') : null
+                            if (value && !patterns.match.url.test(value)) value = null
+
+                            return value
+                        })
+                        .isURL()
+                        .withMessage(`"${name}" must be a valid URL`)
 
             }
 
@@ -348,108 +370,3 @@ export const constructForm = (Src, target, options) => {
 
     return form
 }
-
-
-export const emptyOpt = '--'
-
-const nameData = {
-    prefix: { 'Mr': 'Mr', 'Mrs': 'Mrs', 'Ms': 'Ms' },
-    suffix: { 'Jr': 'Jr', 'Sr': 'Sr', 'II': 'II', 'III': 'III' }
-}
-
-
-export const createIdForm = (props = {}) => createForm({
-    target: 'id',
-    ...props,
-    type : 'hidden',
-    name: '_id',
-})
-
-
-export const createPersonNameForm = (flag, props = {}) => {
-    let name = flag, type, data, sanitizer
-    const required = ['first', 'last'].includes(flag)
-    const label = {
-        prefix: 'Prefix',
-        first: 'First Name',
-        alias: 'Alias',
-        middle: 'Middle Name',
-        last: 'Last Name',
-        suffix: 'Suffix',
-    }[flag]
-
-    switch (flag) {
-        case 'first':
-        case 'middle':
-        case 'last':
-            name += 'Name'
-            sanitizer = [
-                value => patterns.replace(value, 'name'),
-                value => value || null,
-            ]
-            break
-        case 'prefix':
-        case 'suffix':
-            type = 'select'
-            data = nameData[flag]
-            break
-    }
-
-    return createForm({
-        target: name,
-        label,
-        name,
-        ...props,
-        type,
-        data,
-        maxLength: length.person[name].max, //* Ignored when type is 'select'
-        required,
-        validator: {
-            sanitizer,
-            length: { min: length.person?.[name]?.min },
-        },
-    })
-}
-
-
-export const createGenderForm = (props = {}) => createForm({
-    target: 'gender',
-    name: 'sex',
-    label: 'Gender',
-    ...props,
-    type: 'select/radio',
-    data: { 'M': 'Male', 'F': 'Female' },
-    keys: ['male', 'female'],
-    emptyOpt,
-    validator: {
-        rule: 'boolean',
-        sanitizer: value => value === 'M',
-    },
-})
-
-
-export const createPhoneForm = (props = {}) => createForm({
-    target: 'phone',
-    name: 'phone',
-    label: 'Phone',
-    ...props,
-    maxLength: 10,
-    validator: {
-        rule: 'numeric',
-        length: { min: 10 },
-        //! add more
-    },
-})
-
-
-export const createEmailForm = (props = {}) => createForm({
-    target: 'email',
-    name: 'email',
-    label: 'Email',
-    ...props,
-    type: 'email',
-    maxLength: length.contact.email.max,
-    validator: {
-        rule: 'email',
-    },
-})

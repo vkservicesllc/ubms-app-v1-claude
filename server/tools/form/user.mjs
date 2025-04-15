@@ -1,11 +1,11 @@
-import createForm, {
-    constructForm,
+import createForm, { constructForm } from './builder.mjs'
+import {
     createIdForm,
     createPersonNameForm,
     createGenderForm,
     createPhoneForm,
     createEmailForm,
-} from './supplies.mjs'
+} from './reusable.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/user.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
@@ -51,7 +51,7 @@ const createUsernameForm = flag => createForm({
             length: { min: length.user.username.min },
             //! add more...
         }
-        : false
+        : true
 })
 
 
@@ -60,7 +60,7 @@ const createPasswordForm = flag => {
         name = 'password',
         autoComplete = 'new-password',
         label = 'Password',
-        validator = false
+        validator = true
 
     switch (flag) {
 
@@ -140,3 +140,13 @@ class UserForm {
 }
 
 export default UserForm
+
+
+export const validateLocalAuth = [
+    UserForm.username.validate(),
+    UserForm.password.validate(),
+]
+
+export const validateSession = [
+    UserForm.token.validate(),
+]

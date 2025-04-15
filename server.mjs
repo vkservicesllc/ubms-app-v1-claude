@@ -5,19 +5,17 @@ import hbs from 'hbs'
 
 import config, { apps, userApps, addrBook } from './config.mjs'
 
-/* Assets */
+/* Tools */
 import Site from './server/tools/core/site.mjs'
 import User from './server/tools/core/user.mjs'
 import { DriverUser } from './server/tools/core/driver.mjs'
 import { StudentUser } from './server/tools/core/student.mjs'
-
-/* Tools */
 import hbsConditions from './server/tools/utils/hbs.mjs'
 import { respond404 } from './server/tools/utils/response.mjs'
 
 /* Validators */
 import validationCheck from './server/tools/form/validator.mjs'
-import { validateLocalAuth, validateSession } from './server/validators/user.mjs'
+import { validateLocalAuth, validateSession } from './server/tools/form/user.mjs'
 
 /* Routes */
 import apiRoute from './server/routes/api.mjs'
