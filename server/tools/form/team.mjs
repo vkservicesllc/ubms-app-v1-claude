@@ -6,6 +6,7 @@ import {
     createPhoneForm,
     createEmailForm,
 } from './reusable.mjs'
+import { createCategoryForm, createBusNameForm, createCoTypeForm } from './company.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/team.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
@@ -21,6 +22,7 @@ class TeamForm {
     }
 
     static id = createIdForm({ selector })
+    static category = createCategoryForm(selector)
 
     static name = createForm({
         selector,
@@ -42,6 +44,9 @@ class TeamForm {
         maxLength: length.team.desc.max,
         label: 'Description',
     })
+
+    static busName = createBusNameForm(selector)
+    static coType = createCoTypeForm(selector)
 
 }
 

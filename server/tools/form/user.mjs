@@ -36,7 +36,6 @@ const createPropsForm = (flag, props = {}) => createForm({
     label: capitalizeFirst(flag),
 })
 
-
 const createUsernameForm = flag => createForm({
     selector,
     target: flag === 'new' ? 'newUsername' : 'username',
@@ -53,7 +52,6 @@ const createUsernameForm = flag => createForm({
         }
         : true
 })
-
 
 const createPasswordForm = flag => {
     let target = 'password',

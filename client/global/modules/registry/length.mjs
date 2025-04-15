@@ -24,8 +24,8 @@ export default {
     },
 
     company: {
-        busName: { min: 1, max: 30 },
-        alias: { min: 1, max: 6 },
+        busName: { max: 30 },
+        alias: { max: 6 },
     },
 
     team: {
