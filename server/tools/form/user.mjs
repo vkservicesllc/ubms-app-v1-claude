@@ -49,7 +49,6 @@ const createUsernameForm = flag => createForm({
     validator: flag === 'new'
         ? {
             length: { min: length.user.username.min },
-            //! add more...
         }
         : true
 })
@@ -140,13 +139,3 @@ class UserForm {
 }
 
 export default UserForm
-
-
-export const validateLocalAuth = [
-    UserForm.username.validate(),
-    UserForm.password.validate(),
-]
-
-export const validateSession = [
-    UserForm.token.validate(),
-]

@@ -22,9 +22,9 @@ import { capitalizeEach } from '../../client/global/modules/tools/utils/string.m
 /* HTML Builders */
 import { Label, Input, Button } from '../html/user.mjs'
 
-/* Validators */
-import validationCheck, { validateName, validateGender, validateEmail, validateTel } from '../validators/default.mjs'
-import { validateUsername, validatePassword, validateLocalReg } from '../validators/user.mjs'
+/* Forms && Validators */
+import UserForm from '../tools/form/user.mjs'
+import validationCheck from '../tools/form/validator.mjs'
 
 
 const query = {
@@ -175,10 +175,10 @@ router.get('/profile', User.verify, (req, res) => {
 
 
 router.post('/profile', User.verify, [
-    validateName('firstName'),
-    validateName('lastName'),
-    validateName('alias'),
-    validateGender(),
+    UserForm.firstName.validate(),
+    UserForm.lastName.validate(),
+    UserForm.alias.validate(),
+    UserForm.gender.validate(),
 ], validationCheck, async (req, res) => {
     try {
         const { error } = await res.session.user.modify(res.session, req.body)
@@ -221,9 +221,9 @@ router.get('/account', User.verify, (req, res) => {
 
 
 router.post('/account', User.verify, [
-    validateUsername(),
-    validateEmail(),
-    validateTel('phone'),
+    UserForm.newUsername.validate(),
+    UserForm.email.validate(),
+    UserForm.phone.validate(),
 ], validationCheck, async(req, res) => {
     try {
         const { error } = await res.session.user.modify(res.session, req.body)
@@ -262,7 +262,10 @@ router.get('/security', User.verify, (req, res) => {
 })
 
 
-router.post('/security', User.verify, [ validatePassword() ], validationCheck, async(req, res) => {
+router.post('/security', User.verify, [
+    UserForm.password.validate(),
+    UserForm.createPassword.validate(),
+], validationCheck, async(req, res) => {
     try {
         //
     } catch (err) {
@@ -409,7 +412,10 @@ router.get('/register/:_id', async (req, res) => {
 })
 
 
-router.post('/register', validateLocalReg, validationCheck, User.register)
+router.post('/register', [
+    UserForm.newUsername.validate(),
+    UserForm.createPassword.validate(),
+], validationCheck, User.register)
 
 
 

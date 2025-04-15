@@ -7,40 +7,40 @@ const { body } = require('express-validator')
 
 
 
-const validateUsername = () => {
-    const { username } = inputLength.user
-    const { min, max } = username
+// const validateUsername = () => {
+//     const { username } = inputLength.user
+//     const { min, max } = username
 
-    return body('username')
-        .trim()
-        .notEmpty()
-            .withMessage('Username can not be empty')
-        .customSanitizer(value => patterns.replace(value, 'username'))
-        .isLength(username)
-            .withMessage(`Username must be between ${min} and ${max} characters long`)
-}
-
-
-const validatePassword = () => {
-    const { password } = patterns.match
-
-    return body('password')
-        .notEmpty()
-            .withMessage('Password can not be empty')
-        .not().matches(/\s/)
-        .matches(password)
-            .withMessage(`Password rules violated`)
-}
+//     return body('username')
+//         .trim()
+//         .notEmpty()
+//             .withMessage('Username can not be empty')
+//         .customSanitizer(value => patterns.replace(value, 'username'))
+//         .isLength(username)
+//             .withMessage(`Username must be between ${min} and ${max} characters long`)
+// }
 
 
-const validateToken = () => body('token')
-    .trim()
-    .notEmpty()
-        .withMessage('Token can not be empty')
-    .isNumeric()
-        .withMessage('Token contains illegal characters')
-    .isLength(inputLength.user.token)
-        .withMessage(`Incorrect token length provided`)
+// const validatePassword = () => {
+//     const { password } = patterns.match
+
+//     return body('password')
+//         .notEmpty()
+//             .withMessage('Password can not be empty')
+//         .not().matches(/\s/)
+//         .matches(password)
+//             .withMessage(`Password rules violated`)
+// }
+
+
+// const validateToken = () => body('token')
+//     .trim()
+//     .notEmpty()
+//         .withMessage('Token can not be empty')
+//     .isNumeric()
+//         .withMessage('Token contains illegal characters')
+//     .isLength(inputLength.user.token)
+//         .withMessage(`Incorrect token length provided`)
 
 
 const validateStatus = () => {
@@ -97,24 +97,24 @@ const validateRoleLocation = () => body('location')
 
 
 export {
-    validateUsername,
-    validatePassword,
+    // validateUsername,
+    // validatePassword,
     validateCondition,
 }
 
-export const validateLocalAuth = [
-    validateUsername(),
-    validatePassword(),
-]
+// export const validateLocalAuth = [
+//     validateUsername(),
+//     validatePassword(),
+// ]
 
-export const validateSession = [
-    validateToken(),
-]
+// export const validateSession = [
+//     validateToken(),
+// ]
 
-export const validateLocalReg = [
-    validateUsername(),
-    validatePassword(),
-]
+// export const validateLocalReg = [
+//     validateUsername(),
+//     validatePassword(),
+// ]
 
 
 export const validateUser = [

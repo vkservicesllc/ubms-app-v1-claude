@@ -13,9 +13,9 @@ import { StudentUser } from './server/tools/core/student.mjs'
 import hbsConditions from './server/tools/utils/hbs.mjs'
 import { respond404 } from './server/tools/utils/response.mjs'
 
-/* Validators */
+/* Forms & Validators */
+import UserForm from './server/tools/form/user.mjs'
 import validationCheck from './server/tools/form/validator.mjs'
-import { validateLocalAuth, validateSession } from './server/tools/form/user.mjs'
 
 /* Routes */
 import apiRoute from './server/routes/api.mjs'
@@ -25,6 +25,9 @@ import publicApiRoute from './server/routes/api.public.mjs'
 const MySQLStore = require('express-mysql-session')(session)
 const { storeOptions, loginUrl, sessionUrl, logoutUrl, secret } = config.session
 const store = new MySQLStore(storeOptions)
+
+const validateLocalAuth = [ UserForm.username.validate(), UserForm.password.validate() ]
+const validateSession = [ UserForm.token.validate() ]
 
 hbs.registerPartials('./server/views/partials')
 hbs.registerHelper('author', config.author)
