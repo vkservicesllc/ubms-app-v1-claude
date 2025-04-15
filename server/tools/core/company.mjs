@@ -8,13 +8,11 @@ const secret = {
 /* Settings */
 import db from '../../settings/mysql.mjs'
 
-/* Assets */
+/* Tools */
 import Individual from './individual.mjs'
 import Team from './team.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import { sessionError } from './user.mjs'
-
-/* Tools */
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { encrypt } from '../utils/crypto.mjs'

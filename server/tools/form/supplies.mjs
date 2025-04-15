@@ -1,5 +1,6 @@
 import { body } from 'express-validator'
 import length from '../../../client/global/modules/registry/length.mjs'
+import patterns from '../../../client/global/modules/registry/patterns.mjs'
 import { formLabel, formInput, formTextArea, formSelect, formRadio, formCheckbox } from '../../../client/global/modules/tools/utils/html/form.mjs'
 
 const types = ['hidden', 'text', 'textarea', 'select', 'radio', 'checkbox', 'select/radio', 'select/checkbox']
@@ -193,28 +194,74 @@ const createForm = (input = {}) => {
         else chain = chain.optional({ nullable: true })
 
         if (typeof validator === 'object') {
-            const { rule, length } = validator
+            const { caps, sanitizer, rule, length, custom } = validator
+
+            if (data) {
+                const values = Object.keys(data)
+
+                chain = chain
+                    .isIn(values)
+                    .withMessage(`Incorrect value provided in "${name}"`)
+            }
+
+            if (caps === true)
+                chain = customSanitizer(value => value.toUpperCase())
+
+            if (sanitizer) {
+                const sanitizers = Array.isArray(sanitizer) ? sanitizer : [ sanitizer ]
+
+                for (const fn of sanitizers)
+                    if (typeof fn === 'function')
+                        chain = chain.customSanitizer(fn)
+            }
 
             switch (rule) {
 
                 case 'date':
-                    chain = chain.customSanitizer(date => {
-                        if (!date) return null
+                    chain = chain
+                        .customSanitizer(date => {
+                            if (!date) return null
 
-                        return moment(date, [
-                            "YYYY-MM-DD",
-                            "MM/DD/YYYY",
-                            "MMM D, YYYY",
-                        ], true).format('YYYY-MM-DD')
-                    })
+                            return moment(date, [
+                                "YYYY-MM-DD",
+                                "MM/DD/YYYY",
+                                "MMM D, YYYY",
+                            ], true).format('YYYY-MM-DD')
+                        })
+                        .isDate()
+                        .withMessage(`"${name}" must be a valid date`)
+                        .matches(/^\d{4}-\d{2}-\d{2}$/)
+                        .withMessage(`Invalid date format provided in "${name}"`)
                     break
 
                 case 'numeric':
                     chain = chain
                         .isNumeric()
                         .withMessage(`"${name}" field must be numeric`)
+                    break
+
+                case 'alphanumeric':
+                    chain = chain
+                        .isAlphanumeric()
+                        .withMessage(`"${name}" field must be alphanumeric`)
+                    break
+
+                case 'boolean':
+                    chain = chain
+                        .customSanitizer(value => {
+                            if (value === '1' || value === 1) return true
+                            if (value === '0' || value === 0) return false
+
+                            return value
+                        })
+                        .isBoolean()
+                        .withMessage(`"${name}" must be of boolean type`)
+                    break
 
             }
+
+            if (typeof custom === 'function')
+                chain = chain.custom(custom)
 
             if (length) {
                 const { min } = length
@@ -231,10 +278,9 @@ const createForm = (input = {}) => {
                 }
             }
 
-            //! ...not finished
-
         }
 
+        return chain
     }
 
     return form
@@ -321,7 +367,7 @@ export const createIdForm = (props = {}) => createForm({
 
 
 export const createPersonNameForm = (flag, props = {}) => {
-    let name = flag, type, data
+    let name = flag, type, data, sanitizer
     const required = ['first', 'last'].includes(flag)
     const label = {
         prefix: 'Prefix',
@@ -337,6 +383,10 @@ export const createPersonNameForm = (flag, props = {}) => {
         case 'middle':
         case 'last':
             name += 'Name'
+            sanitizer = [
+                value => patterns.replace(value, 'name'),
+                value => value || null,
+            ]
             break
         case 'prefix':
         case 'suffix':
@@ -355,7 +405,8 @@ export const createPersonNameForm = (flag, props = {}) => {
         maxLength: length.person[name].max, //* Ignored when type is 'select'
         required,
         validator: {
-            length: { min: length.person[name].min },
+            sanitizer,
+            length: { min: length.person?.[name]?.min },
         },
     })
 }
@@ -367,9 +418,13 @@ export const createGenderForm = (props = {}) => createForm({
     label: 'Gender',
     ...props,
     type: 'select/radio',
-    data: { "M": "Male", 'F': 'Female' },
+    data: { 'M': 'Male', 'F': 'Female' },
     keys: ['male', 'female'],
     emptyOpt,
+    validator: {
+        rule: 'boolean',
+        sanitizer: value => value === 'M',
+    },
 })
 
 

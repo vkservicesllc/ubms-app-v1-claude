@@ -1,14 +1,12 @@
 /* Settings */
 import db from '../../settings/mysql.mjs'
 
-/* Assets */
+/* Tools */
 import User from './user.mjs'
 import Company from './company.mjs'
 import Driver from './driver.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import { sessionError } from './user.mjs'
-
-/* Tools */
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import recognizeApi from '../utils/api.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'

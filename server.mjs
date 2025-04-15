@@ -16,7 +16,7 @@ import hbsConditions from './server/tools/utils/hbs.mjs'
 import { respond404 } from './server/tools/utils/response.mjs'
 
 /* Validators */
-import validationCheck from './server/validators/default.mjs'
+import validationCheck from './server/tools/form/validator.mjs'
 import { validateLocalAuth, validateSession } from './server/validators/user.mjs'
 
 /* Routes */

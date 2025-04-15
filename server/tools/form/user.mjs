@@ -116,6 +116,19 @@ class UserForm {
     static createPassword = createPasswordForm('new')
     static comfirmPassword = createPasswordForm('confirm')
 
+    static token = createForm({
+        selector,
+        target: 'token',
+        name: 'token',
+        maxLength: length.user.token.max,
+        contextMenu: true,
+        required,
+        validator: {
+            rule: 'numeric',
+            length: { min: length.user.token.min },
+        },
+    })
+
     static firstName = createPersonNameForm('first', { selector, group: 'name' })
     static lastName = createPersonNameForm('last', { selector, group: 'name' })
     static alias = createPersonNameForm('alias', { selector, group: 'name' })

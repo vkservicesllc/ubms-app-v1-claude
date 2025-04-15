@@ -1,10 +1,8 @@
 /* Settings */
 import db from '../../settings/mysql.mjs'
 
-/* Assests */
-import Individual from './individual.mjs'
-
 /* Tools */
+import Individual from './individual.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 

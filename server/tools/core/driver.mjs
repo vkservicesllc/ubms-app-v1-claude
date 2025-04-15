@@ -6,7 +6,7 @@ const ssnSecret = DB__MYSQL_AES_SSN
 import { addrBook } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
-/* Assests */
+/* Tools */
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Individual from './individual.mjs'
@@ -14,8 +14,6 @@ import Team from './team.mjs'
 import User, { sessionError } from './user.mjs'
 import Company from './company.mjs'
 import Carrier from './carrier.mjs'
-
-/* Tools */
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import transporter, { senderParams } from '../utils/nodemailer.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'

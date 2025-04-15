@@ -4,11 +4,9 @@ import db from '../../settings/mysql.mjs'
 /* Registry */
 import inputLength from '../../../client/global/modules/registry/length.mjs'
 
-/* Assets */
+/* Tools */
 import Company from './company.mjs'
 import { sessionError } from './user.mjs'
-
-/* Tools */
 import Query, { hash, matchHash }  from '../utils/query.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { utcTimeStamp } from '../utils/date.mjs'

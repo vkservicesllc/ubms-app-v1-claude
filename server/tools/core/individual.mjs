@@ -4,11 +4,9 @@ const { DB__MYSQL_AES_SSN: secret } = process.env
 /* Settings */
 import db from '../../settings/mysql.mjs'
 
-/* Assests */
+/* Tools */
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import { sessionError } from './user.mjs'
-
-/* Tools */
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { ssn as formatSsn } from '../../../client/global/modules/tools/utils/formatter.mjs'

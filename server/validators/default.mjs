@@ -62,11 +62,11 @@ export const validateDate = (field, required = false) => {
             .notEmpty()
                 .withMessage('Date input is required')
 
-        chain = chain
-            .isDate()
-                .withMessage('Input must be a valid date')
-            .matches(/^\d{4}-\d{2}-\d{2}$/)
-                .withMessage('Invalid date format')
+    chain = chain
+        .isDate()
+            .withMessage('Input must be a valid date')
+        .matches(/^\d{4}-\d{2}-\d{2}$/)
+            .withMessage('Invalid date format')
 
     return chain
 }

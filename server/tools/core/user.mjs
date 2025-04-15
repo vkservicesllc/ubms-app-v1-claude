@@ -17,8 +17,6 @@ import inputLength from '../../../client/global/modules/registry/length.mjs'
 import config, { addrBook } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
-/* Assets */
-
 /* Tools */
 import Team from './team.mjs'
 import Company from './company.mjs'
