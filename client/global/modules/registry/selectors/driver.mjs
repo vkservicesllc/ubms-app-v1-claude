@@ -4,7 +4,19 @@ import initialize from './support.mjs'
 const prefix = 'driver'
 
 const selector = {
-    class: {},
+    class: {
+        combo: {
+            gender: 'gender',
+            address: 'address',
+            since: 'update-date',
+        },
+        select: {
+            gender: 'gender',
+        },
+        radio: {
+            gender: 'gender',
+        },
+    },
     id: {
         hidden: {
             id: 'id',
@@ -21,6 +33,7 @@ const selector = {
             ssn: 'ssn',
             phone: 'phone',
             email: 'email',
+            addrSince: 'address-start-date',
             address1: 'address-1',
             address2: 'address-2',
             addrCity: 'address-city',
