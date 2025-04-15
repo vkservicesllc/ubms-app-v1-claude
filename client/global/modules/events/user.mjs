@@ -142,7 +142,7 @@ export const loginEvent = (callback = {}) => {
     })
 
     setTimeout(() => {
-        $(selector.class.text.signIn).removeAttr('disabled')
+        $(`${selector.class.text.signIn}, [type=submit]`).removeAttr('disabled')
     }, 750)
 }
 

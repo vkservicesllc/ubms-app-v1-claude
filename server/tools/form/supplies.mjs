@@ -1,6 +1,6 @@
 import { body } from 'express-validator'
 import length from '../../../client/global/modules/registry/length.mjs'
-import { formLabel, formInput, formTextArea, formSelect, formRadio, formCheckbox } from '../../../../client/global/modules/tools/html/form.mjs'
+import { formLabel, formInput, formTextArea, formSelect, formRadio, formCheckbox } from '../../../client/global/modules/tools/utils/html/form.mjs'
 
 const types = ['hidden', 'text', 'textarea', 'select', 'radio', 'checkbox', 'select/radio', 'select/checkbox']
 const valueTypes = ['hidden', 'text', 'select']

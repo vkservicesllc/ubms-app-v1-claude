@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../../.env' })
+require('dotenv').config({ path: '../../../.env' })
 const {
     DB__MYSQL_HOST: host,
     DB__MYSQL_USER: user,

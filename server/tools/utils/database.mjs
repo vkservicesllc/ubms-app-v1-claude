@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../../.env' })
+require('dotenv').config({ path: '../../../.env' })
 const { DIR__PATH: directory } = process.env
 
 import { mkdirSync, existsSync } from 'fs'

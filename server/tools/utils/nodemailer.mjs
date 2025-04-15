@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../../.env' })
+require('dotenv').config({ path: '../../../.env' })
 const {
     EMAIL__SENDER: name,
     SMTP__AUTH_USER: user,

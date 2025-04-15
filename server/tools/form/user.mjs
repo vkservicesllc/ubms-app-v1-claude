@@ -5,12 +5,12 @@ import createForm, {
     createGenderForm,
     createPhoneForm,
     createEmailForm,
-} from './support/creator.mjs'
+} from './supplies.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/user.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
-import { capitalizeFirst } from '../../../client/global/modules/tools/string.mjs'
+import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
 
 const required = true
 
