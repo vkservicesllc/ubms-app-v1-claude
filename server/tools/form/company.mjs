@@ -8,10 +8,11 @@ import {
     createAddrZipForm,
     createAddrCityForm,
     createAddrStateForm,
-    createPersonNameForm,
-    createGenderForm,
     createPhoneForm,
     createEmailForm,
+    createPersonNameForm,
+    createDobForm,
+    createGenderForm,
 } from './reusable.mjs'
 
 import Company, { Owner } from '../core/company.mjs'
@@ -174,6 +175,8 @@ class OwnerForm {
     }
 
     static id = createIdForm({ selector: ownerSelector })
+
+    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince', required }}
 
 }
 
