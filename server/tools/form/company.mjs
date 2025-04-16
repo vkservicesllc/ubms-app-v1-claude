@@ -160,6 +160,10 @@ class CompanyForm {
     static mailAddrCity = createAddrCityForm({ selector: companySelector }, true)
     static mailAddrState = createAddrStateForm({ selector: companySelector }, true)
 
+    static phone = createPhoneForm({ selector: companySelector, required })
+    static fax = createPhoneForm({ selector: companySelector, target: 'fax', name: 'fax', label: 'Fax' })
+    static email = createEmailForm({ selector: companySelector})
+
 }
 
 
