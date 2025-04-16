@@ -9,7 +9,8 @@ import {
 } from './reusable.mjs'
 
 import Company, { Owner } from '../core/company.mjs'
-import selector from '../../../client/global/modules/registry/selectors/company.mjs'
+import companySelector from '../../../client/global/modules/registry/selectors/company.mjs'
+import ownerSelector from '../../../client/global/modules/registry/selectors/company-owner.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 
@@ -69,14 +70,14 @@ class CompanyForm {
             .forEach(target => this[target] = constructForm(CompanyForm, target, options))
     }
 
-    static id = createIdForm({ selector })
-    static category = createCategoryForm(selector)
+    static id = createIdForm({ selector: companySelector })
+    static category = createCategoryForm(companySelector)
 
-    static busName = createBusNameForm(selector)
-    static coType = createCoTypeForm(selector)
+    static busName = createBusNameForm(companySelector)
+    static coType = createCoTypeForm(companySelector)
 
     static ownership = createForm({
-        selector,
+        selector: companySelector,
         target: 'ownership',
         name: 'ownerId',
         type: 'select',
@@ -93,6 +94,9 @@ class OwnerForm {
         getStaticProps(OwnerForm)
             .forEach(target => this[target] = constructForm(OwnerForm, target, options))
     }
+
+    static id = createIdForm({ selector: ownerSelector })
+
 }
 
 
