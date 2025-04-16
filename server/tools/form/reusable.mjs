@@ -1,14 +1,21 @@
 import createForm from './builder.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
+import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import patterns from '../../../client/global/modules/registry/patterns.mjs'
+import { capitalizeEach } from '../../../client/global/modules/tools/utils/string.mjs'
 
 export const emptyOpt = '--'
+const required = true
 
 const nameData = {
     prefix: Person.prefixList,
     suffix: Person.suffixList,
 }
+
+const addrField = (prop, mail) => mail !== null
+    ? `${mail ? 'mail' : 'physical'}[${prop}]`
+    : prop
 
 
 export const createIdForm = (props = {}) => createForm({
@@ -87,11 +94,93 @@ export const createPhoneForm = (props = {}) => createForm({
     name: 'phone',
     label: 'Phone',
     ...props,
-    maxLength: 10,
     validator: {
         rule: 'numeric',
-        length: { min: 10 },
+        length: { min: 10, max: 10 },
     },
+})
+
+
+export const createUsStateForm = (props = {}) => createForm({
+    ...props,
+    type: 'select',
+    data: Address.stateList,
+})
+
+
+export const createAddressForm = (props = {}, options) => {
+    const idx = options?.idx || 1
+    const mail = options?.mail || null
+    const business = options?.business || false
+
+    return createForm({
+        target: mail === true ? `mailAddress${idx}` : `address${idx}`,
+        group: 'address',
+        name: addrField(`address${idx}`, mail),
+        required: n === 1,
+        label: n === 1
+            ? 'Street Address' + (mail === true ? ' / PO Box' : '')
+            : business ? 'Suite/Unit' : 'Apt/Unit',
+        ...props,
+        maxLength: length.address[`address${idx}`].max,
+        validator: {
+            sanitizer: value => {
+                if (!value) return null
+
+                value = capitalizeEach(value)
+                value = patterns.replace(value, `addr${idx}`)
+                if (idx === 1)
+                    value = value.replace(patterns.match.addr2, '').trim()
+
+                return value
+            },
+        },
+    })
+}
+
+
+export const createAddrZipForm = (props = {}, mail = null) => createForm({
+    target: mail === true ? 'mailAddrZip' : 'addrZip',
+    group: 'address',
+    name: addrField('zip', mail),
+    required,
+    label: 'Zip',
+    ...props,
+    maxLength: length.address.zip.max,
+    validator: {
+        rule: 'numeric',
+        length: { min: length.address.zip.min },
+    },
+})
+
+
+export const createAddrCityForm = (props = {}, mail = null) => createForm({
+    target: mail === true ? 'mailAddrCity' : 'addrCity',
+    group: 'address',
+    name: addrField('city', mail),
+    required,
+    label: 'City',
+    ...props,
+    maxLength: length.address.city.max,
+    validator: {
+        sanitizer: value => {
+            if (!value) return null
+
+            value = patterns.replace(value, 'city')
+
+            return value
+        },
+    },
+})
+
+
+export const createAddrStateForm = (props = {}, mail = null) => createUsStateForm({
+    target: mail === true ? 'mailAddrState' : 'addrState',
+    group: 'address',
+    name: addrField('state', mail),
+    required,
+    label: 'State',
+    ...props,
 })
 
 
@@ -118,4 +207,20 @@ export const createWebsiteForm = (props = {}) => createForm({
     validator: {
         rule: 'url',
     },
+})
+
+
+export const createDateForm = (props = {}) => createForm({
+    type: 'date',
+    ...props,
+    validator: { rule: 'date' },
+})
+
+
+export const createSinceForm = (props = {}) => createDateForm({
+    target: 'since',
+    name: 'since',
+    label: props.label || 'Effective Date',
+    required,
+    ...props,
 })

@@ -2,10 +2,16 @@ import createForm, { constructForm } from './builder.mjs'
 import {
     emptyOpt,
     createIdForm,
-    // createPersonNameForm,
-    // createGenderForm,
-    // createPhoneForm,
-    // createEmailForm,
+    createSinceForm,
+    createWebsiteForm,
+    createAddressForm,
+    createAddrZipForm,
+    createAddrCityForm,
+    createAddrStateForm,
+    createPersonNameForm,
+    createGenderForm,
+    createPhoneForm,
+    createEmailForm,
 } from './reusable.mjs'
 
 import Company, { Owner } from '../core/company.mjs'
@@ -72,9 +78,55 @@ class CompanyForm {
 
     static id = createIdForm({ selector: companySelector })
     static category = createCategoryForm(companySelector)
+    static since = createSinceForm({
+        selector: companySelector,
+        label: 'Launch Date',
+    })
 
     static busName = createBusNameForm(companySelector)
     static coType = createCoTypeForm(companySelector)
+
+    static alias = createForm({
+        selector: companySelector,
+        target: 'alias',
+        name: 'alias',
+        maxLength: length.company.alias.max,
+        required,
+        label: 'Alias',
+    })
+
+    static ein = createForm({
+        selector: companySelector,
+        target: 'ein',
+        name: 'ein',
+        required,
+        label: {
+            content: 'EIN',
+            title: 'Employer Identification Number',
+        },
+        validator: {
+            rule: 'numeric',
+            sanitizer: value => value.replace(/-/g, ''),
+        },
+    })
+
+    static duns = createForm({
+        selector: companySelector,
+        target: 'duns',
+        name: 'duns',
+        required,
+        label: {
+            content: 'DUNS',
+            title: 'Data Universal Numbering System',
+        },
+        validator: {
+            rule: 'numeric',
+            sanitizer: value => value.replace(/-/g, ''),
+            length: { min: 9, max: 9 },
+        },
+    })
+
+    static website = createWebsiteForm({ selector: companySelector })
 
     static ownership = createForm({
         selector: companySelector,
@@ -85,6 +137,28 @@ class CompanyForm {
         required,
         validate: false,
     })
+
+    static address1 = createAddressForm({ selector: companySelector }, { mail: false })
+
+    static address2 = createAddressForm(
+        { selector: companySelector },
+        { idx: 2, mail: false, business: true }
+    )
+
+    static addrZip = createAddrZipForm({ selector: companySelector }, false)
+    static addrCity = createAddrCityForm({ selector: companySelector }, false)
+    static addrState = createAddrStateForm({ selector: companySelector }, false)
+
+    static mailAddress1 = createAddressForm({ selector: companySelector }, { mail: true })
+
+    static mailAddress2 = createAddressForm(
+        { selector: companySelector },
+        { idx: 2, mail: true, business: true }
+    )
+
+    static mailAddrZip = createAddrZipForm({ selector: companySelector }, true)
+    static mailAddrCity = createAddrCityForm({ selector: companySelector }, true)
+    static mailAddrState = createAddrStateForm({ selector: companySelector }, true)
 
 }
 

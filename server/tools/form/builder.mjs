@@ -291,8 +291,10 @@ const createForm = (input = {}) => {
                 
                 if (max) {
                     let message = `"${name}" must `
-                    if (min) message += `be between ${min} and ${max} characters long`
-                    else message += ` not exceed ${max} characters in length`
+                    if (min) {
+                        if (min === max) message += `be exactly ${max} characters long`
+                        else message += `be between ${min} and ${max} characters long`
+                    } else message += ` not exceed ${max} characters in length`
 
                     chain = chain
                         .isLength({ min, max })
