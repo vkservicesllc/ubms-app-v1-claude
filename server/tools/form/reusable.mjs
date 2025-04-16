@@ -212,7 +212,7 @@ export const createWebsiteForm = (props = {}) => createForm({
 
 export const createDateForm = (props = {}) => createForm({
     type: 'date',
-    ...props,
+    ...props,  //* When "min" and/or "max" are supplied, the validator will check as well
     validator: { rule: 'date' },
 })
 
@@ -222,7 +222,7 @@ export const createDobForm = (props = {}) => createDateForm({
     name: 'dob',
     label: 'Date of Birth',
     required,
-    ...props,  //! need to add ability to check on minimum age
+    ...props,
 })
 
 

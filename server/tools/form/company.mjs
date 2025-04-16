@@ -20,6 +20,7 @@ import companySelector from '../../../client/global/modules/registry/selectors/c
 import ownerSelector from '../../../client/global/modules/registry/selectors/company-owner.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
+import strip from '../../../client/global/modules/tools/utils/formatter.mjs'
 
 const required = true, disabled = true
 
@@ -107,7 +108,7 @@ class CompanyForm {
         },
         validator: {
             rule: 'numeric',
-            sanitizer: value => value.replace(/-/g, ''),
+            sanitizer: value => strip(value),
         },
     })
 
@@ -115,14 +116,13 @@ class CompanyForm {
         selector: companySelector,
         target: 'duns',
         name: 'duns',
-        required,
         label: {
             content: 'DUNS',
             title: 'Data Universal Numbering System',
         },
         validator: {
             rule: 'numeric',
-            sanitizer: value => value.replace(/-/g, ''),
+            sanitizer: value => strip(value),
             length: { min: 9, max: 9 },
         },
     })
@@ -176,7 +176,14 @@ class OwnerForm {
 
     static id = createIdForm({ selector: ownerSelector })
 
-    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince', required }}
+    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince', required })
+    static firstName = createPersonNameForm('first', { selector: ownerSelector, group: 'name' })
+    static middleName = createPersonNameForm('middle', { selector: ownerSelector, group: 'name' })
+    static lastName = createPersonNameForm('last', { selector: ownerSelector, group: 'name' })
+    static suffix = createPersonNameForm('suffix', { selector: ownerSelector, group: 'name' })
+
+    static gender = createGenderForm({ selector: ownerSelector })
+    static dob = createDobForm({ selector: ownerSelector, required })
 
 }
 

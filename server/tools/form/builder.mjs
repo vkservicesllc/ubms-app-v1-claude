@@ -1,4 +1,5 @@
 import { body } from 'express-validator'
+import moment from 'moment'
 import patterns from '../../../client/global/modules/registry/patterns.mjs'
 import { formLabel, formInput, formTextArea, formSelect, formRadio, formCheckbox } from '../../../client/global/modules/tools/utils/html/form.mjs'
 
@@ -255,6 +256,23 @@ const createForm = (input = {}) => {
                         .withMessage(`"${name}" must be a valid date`)
                         .matches(/^\d{4}-\d{2}-\d{2}$/)
                         .withMessage(`Invalid date format provided in "${name}"`)
+
+                    if (input.max || input.min)
+                        chain = chain
+                            .custom(value => {
+                                const date = moment(value, 'YYYY-MM-DD', true)
+                                const { min, max } = input
+
+                                if (min && !date.isSameOrAfter(moment(min, 'YYYY-MM-DD'))) {
+                                    throw new Error(`${name} must be on or after ${min}`)
+                                }
+
+                                if (max && !date.isSameOrBefore(moment(max, 'YYYY-MM-DD'))) {
+                                    throw new Error(`${name} must be on or before ${max}`)
+                                }
+
+                                return true
+                            })
                     break
 
                 case 'email':
