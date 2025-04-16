@@ -217,10 +217,19 @@ export const createDateForm = (props = {}) => createForm({
 })
 
 
+export const createDobForm = (props = {}) => createDateForm({
+    target: 'dob',
+    name: 'dob',
+    label: 'Date of Birth',
+    required,
+    ...props,  //! need to add ability to check on minimum age
+})
+
+
 export const createSinceForm = (props = {}) => createDateForm({
     target: 'since',
     name: 'since',
-    label: props.label || 'Effective Date',
+    label: 'Effective Date',
     required,
     ...props,
 })
