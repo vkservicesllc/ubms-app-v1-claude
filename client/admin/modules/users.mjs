@@ -1,4 +1,4 @@
-import escapeHTML from '/modules/assets/html.mjs'
+import escapeHTML from '/modules/tools/utils/html.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { tel as formatTel } from '/modules/tools/formatter.mjs'
 import { capitalizeFirst } from '/modules/tools/string.mjs'

@@ -2,17 +2,16 @@ const router = require('express').Router()
 const throwErr = require('../tools/utils/error').data
 
 /* Registry */
-import length from '../../client/global/modules/registry/length.mjs'
 import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
-
-/* HTML Builders */
-import { Label, Input, Button } from '../html/user.mjs'
 
 /* Tools */
 import User from '../tools/core/user.mjs'
 import Team from '../tools/core/team.mjs'
 import { inPGroup } from '../tools/core/user/permissions.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
+
+/* Forms */
+import UserForm from '../tools/form/user.mjs'
 
 
 
@@ -140,18 +139,12 @@ router.get('/', async (req, res, next) => {
         const labelClass = 'ui primary tag label'
 
         hbs.label = {
-            username: Label.username({ class: labelClass }),
-            password: Label.password({ class: labelClass }),
+            username: UserForm.username.text.label({ class: labelClass }),
+            password: UserForm.password.text.label({ class: labelClass }),
         }
         hbs.input = {
-            username: Input.username(),
-            password: Input.password(),
-        }
-        hbs.button = {
-            login: Button.login({
-                class: 'ui fluid big primary submit right labeled icon button',
-                content: 'Sign in <i class="sign in alternate icon"></i>',
-            }),
+            username: UserForm.username.text.input(),
+            password: UserForm.password.text.input(),
         }
 
         hbs.formId = formSelectors.user.loginFormId

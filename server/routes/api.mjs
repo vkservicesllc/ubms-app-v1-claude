@@ -101,7 +101,7 @@ router.post('/unique/original/:env', User.verify, async (req, res) => {
 })
 
 
-router.post('/tools/core/:source/:_id?', User.verify, async (req, res) => {
+router.post('/source/:source/:_id?', User.verify, async (req, res) => {
     const { filter, self, call } = req.query
     const { source } = req.params
     let{ _id } = req.params

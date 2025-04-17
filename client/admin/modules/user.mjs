@@ -2,7 +2,7 @@ import { formSelectors } from '/modules/registry/selectors.mjs'
 
 const { id } = formSelectors.user
 const _id = $(`#${id}`).val()
-const categories = $.ajax('/api/assets/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 
 if (_id)
     $.ajax(`/api/user/${_id}/teams`, {

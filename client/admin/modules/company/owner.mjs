@@ -1,5 +1,5 @@
-import Person from '../assets/person.mjs'
-import escapeHTML from '../assets/html.mjs'
+import Person from '../tools/core/person.mjs'
+import escapeHTML from '../tools/utils/html.mjs'
 import { nameEvent, ssnEvent } from '../events/person.mjs'
 import { inputEvent, selectEvent } from '../events/form.mjs'
 import { formSelectors } from '../registry/selectors.mjs'

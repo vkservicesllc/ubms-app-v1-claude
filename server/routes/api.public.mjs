@@ -6,7 +6,6 @@ const throwErr = require('../tools/utils/error').api
 import db from '../settings/mysql.mjs'
 
 /* Tools */
-import User from '../tools/core/user.mjs'
 import Query from '../tools/utils/query.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 

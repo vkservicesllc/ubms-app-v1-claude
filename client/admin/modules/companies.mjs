@@ -1,6 +1,6 @@
-import Person from './assets/person.mjs'
-import Address from './assets/address.us.mjs'
-import escapeHTML from './assets/html.mjs'
+import Person from './tools/core/person.mjs'
+import Address from './tools/core/address.us.mjs'
+import escapeHTML from './tools/utils/html.mjs'
 import { tel as formatTel } from './tools/formatter.mjs'
 
 
