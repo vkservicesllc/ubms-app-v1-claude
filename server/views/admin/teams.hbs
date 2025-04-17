@@ -12,22 +12,21 @@
                         </header>
                         <section class="modal-card-body">
                             <form id="team-upsert-form" action="/resource/team" method="POST" autocomplete="off">
-                                {{{input.id}}}
-                                {{{input.current.name}}}
+                                {{{form.id.hidden.input}}}
                                 <div class="columns">
                                     <div class="column">
                                         <div class="field">
-                                            {{{label.name}}}
+                                            {{{form.teamName.text.label}}}
                                             <div class="control">
-                                                {{{input.name}}}
+                                                {{{form.teamName.text.input}}}
                                             </div>
                                             <p class="help" id="team-name-tip"></p>
                                         </div>
                                         <div class="field">
-                                            {{{label.category}}}
+                                            {{{form.category.select.label}}}
                                             <div class="control has-icons-left">
                                                 <div class="select is-fullwidth">
-                                                    {{{select.category}}}
+                                                    {{{form.category.select.input}}}
                                                 </div>
                                                 <span class="icon is-small is-left" id="team-category-select-icon">
                                                     <i class="fas fa-file-circle-question"></i>
@@ -37,9 +36,9 @@
                                     </div>
                                     <div class="column">
                                         <div class="field">
-                                            {{{label.description}}}
+                                            {{{form.desc.text.label}}}
                                             <div class="control">
-                                                {{{input.description}}}
+                                                {{{form.desc.text.input}}}
                                             </div>
                                             <p class="help">
                                                 Characters: <span id="desc-char-used">0</span> used /
@@ -88,31 +87,31 @@
                         </header>
                         <section class="modal-card-body" id="team-profile">
                             <form id="team-profile-form" action="/resource/team/profile" method="POST" autocomplete="off">
-                                {{{input.profileId}}}
+                                {{{form.profileId.hidden.input}}}
                                 <div class="columns">
                                     <div class="column is-two-fifths">
                                         <div class="field">
-                                            {{{label.busName}}}
+                                            {{{form.busName.text.label}}}
                                             <div class="control">
-                                                {{{input.busName}}}
+                                                {{{form.busName.text.input}}}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="column is-one-fifths">
                                         <div class="field">
-                                            {{{label.coType}}}
+                                            {{{form.coType.select.label}}}
                                             <div class="control">
                                                 <div class="select is-fullwidth">
-                                                    {{{select.coType}}}
+                                                    {{{form.coType.select.input}}}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="column is-two-fifths">
                                         <div class="field">
-                                            {{{label.phone}}}
+                                            {{{form.phone.text.label}}}
                                             <div class="control">
-                                                {{{input.phone}}}
+                                                {{{form.phone.text.input}}}
                                             </div>
                                         </div>
                                     </div>
@@ -120,18 +119,18 @@
                                 <div class="columns">
                                     <div class="column is-half">
                                         <div class="field">
-                                            {{{label.email}}}
+                                            {{{form.email.text.label}}}
                                             <div class="control">
-                                                {{{input.email}}}
+                                                {{{form.email.text.input}}}
                                             </div>
                                             <p class="help has-text-danger" id="team-email-tip"></p>
                                         </div>
                                     </div>
                                     <div class="column is-half">
                                         <div class="field">
-                                            {{{label.website}}}
+                                            {{{form.website.text.label}}}
                                             <div class="control">
-                                                {{{input.website}}}
+                                                {{{form.website.text.input}}}
                                             </div>
                                             <p class="help has-text-danger" id="team-website-tip"></p>
                                         </div>

@@ -13,7 +13,8 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
-            delId: 'delete-id',
+            // delId: 'delete-id',
+            profileId: 'profile-id',
         },
         text: {
             name: 'name',

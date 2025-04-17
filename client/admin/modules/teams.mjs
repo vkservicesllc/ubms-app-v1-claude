@@ -1,5 +1,4 @@
 import Tip from './tools/tip.mjs'
-import escapeHTML from '/modules/tools/utils/html.mjs'
 import { teamNameEvent, teamDescEvent } from '/modules/events/team.mjs'
 import { catIdEvent, busNameEvent, coTypeEvent } from '/modules/events/company.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
@@ -7,9 +6,10 @@ import { urlEvent } from '/modules/events/web.mjs'
 import { addr1Event, addr2Event, cityEvent, zipEvent } from '/modules/events/address.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import inputLength from '/modules/registry/length.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
-import { capitalizeFirst } from '/modules/tools/string.mjs'
-import { tel as formatTel } from '/modules/tools/formatter.mjs'
+import escapeHTML from '/modules/tools/utils/html.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+import { capitalizeFirst } from '/modules/tools/utils/string.mjs'
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 
 const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 const driverPositions = $.ajax('/api/source/driver?filter=positions', { async: false, method: 'POST' }).responseJSON

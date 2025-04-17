@@ -1,10 +1,10 @@
 import createForm, { constructForm } from './builder.mjs'
 import {
+    emptyOpt,
     createIdForm,
-    createPersonNameForm,
-    createGenderForm,
     createPhoneForm,
     createEmailForm,
+    createWebsiteForm,
 } from './reusable.mjs'
 import { createCategoryForm, createBusNameForm, createCoTypeForm } from './company.mjs'
 
@@ -22,10 +22,11 @@ class TeamForm {
     }
 
     static id = createIdForm({ selector })
-    static delId = createIdForm({ selector, target: 'delId' })
+    static profileId = createIdForm({ selector, target: 'profileId' })
     static category = createCategoryForm(selector)
 
-    static name = createForm({
+    //* "name" can not be used as an own property
+    static teamName = createForm({
         selector,
         target: 'name',
         maxLength: length.team.name.max,
@@ -47,7 +48,11 @@ class TeamForm {
     })
 
     static busName = createBusNameForm(selector)
-    static coType = createCoTypeForm(selector)
+    static coType = createCoTypeForm(selector, { emptyOpt })
+
+    static phone = createPhoneForm({ selector, required })
+    static email = createEmailForm({ selector })
+    static website = createWebsiteForm({ selector })
 
 }
 

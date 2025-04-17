@@ -117,8 +117,8 @@ export const createAddressForm = (props = {}, options) => {
         target: mail === true ? `mailAddress${idx}` : `address${idx}`,
         group: 'address',
         name: addrField(`address${idx}`, mail),
-        required: n === 1,
-        label: n === 1
+        required: idx === 1,
+        label: idx === 1
             ? 'Street Address' + (mail === true ? ' / PO Box' : '')
             : business ? 'Suite/Unit' : 'Apt/Unit',
         ...props,

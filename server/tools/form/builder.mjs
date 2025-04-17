@@ -13,7 +13,6 @@ const createForm = (input = {}) => {
     const { selector, target, group, data, keys, defaultClass, id, required } = input
     let { type, label, name, validator } = input
 
-    const form = {}
     const lockedInput = {}, lockedLabel = {}
 
     redundantInputProps.forEach(prop => delete input[prop])
@@ -22,6 +21,8 @@ const createForm = (input = {}) => {
     if (type === 'select/checkbox') input.multiple = true
     if (name && (input.multiple === true || (type === 'checkbox' && data)))
         name += '[]'
+
+    const form = { properties: { required: required === true, initialType: type } }
 
     const initializeInput = (type, key, i) => {
         if (!key) lockedInput[type] = { defaultClass, id, name, required }
@@ -96,12 +97,13 @@ const createForm = (input = {}) => {
     }
 
     if (['hidden', 'text', 'textarea', 'password', 'email', 'url'].includes(type)) {
+        const initialType = type
         let formTextInput = formInput, keyType = 'text'
 
         if (type === 'hidden') keyType = 'hidden'
         else if (type === 'textarea') formTextInput = formTextArea
 
-        form[keyType] = {}
+        form[keyType] = { properties: { initialType } }
         initializeInput(keyType)
         initializeLabel(keyType)
         if (type !== 'textarea') lockedInput[keyType].type = type
@@ -113,7 +115,7 @@ const createForm = (input = {}) => {
     }
 
     if (type.includes('select')) {
-        form.select = {}
+        form.select = { properties: { initialType: type } }
         initializeInput('select')
         initializeLabel('select')
 
@@ -129,7 +131,7 @@ const createForm = (input = {}) => {
     }
 
     if (type.includes('radio') && data) {
-        form.radio = {}
+        form.radio = { properties: { initialType: type } }
 
         const dataKeys = Object.keys(data)
         const propKeys = keys || dataKeys
@@ -153,7 +155,7 @@ const createForm = (input = {}) => {
     }
 
     if (type.includes('checkbox')) {
-        form.checkbox = {}
+        form.checkbox = { properties: { initialType: type } }
 
         if (data) {
             const dataKeys = Object.keys(data)

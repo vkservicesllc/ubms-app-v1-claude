@@ -1,7 +1,7 @@
 /* jQuery & jQuery Caret required */
 import { inputEvent } from './form.mjs'
 import patterns from '../registry/patterns.mjs'
-import { capitalizeEach } from '../tools/string.mjs'
+import { capitalizeEach } from '../tools/utils/string.mjs'
 
 
 export const addr1Event = (id, options = {}) => {

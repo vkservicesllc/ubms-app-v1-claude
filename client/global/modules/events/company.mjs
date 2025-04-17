@@ -1,10 +1,10 @@
 /* jQuery required */
 import { inputEvent, selectEvent } from './form.mjs'
 import patterns from '../registry/patterns.mjs'
-import { capitalizeEach } from '../tools/string.mjs'
-import strip from '../tools/formatter.mjs'
+import { capitalizeEach } from '../tools/utils/string.mjs'
+import strip from '../tools/utils/formatter.mjs'
 
-const categories = $.ajax('/api/assets/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 
 
 export const catIdEvent = (id, iconId, onChange, callback = {}) => {
