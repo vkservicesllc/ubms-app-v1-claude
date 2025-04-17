@@ -3,7 +3,7 @@ import initialize from './support.mjs'
 const prefix = 'company-owner'
 
 
-const select = {
+const selector = {
     class: {
         combo: {
             gender: 'gender',

@@ -31,10 +31,6 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
-            username: 'username',
-            email: 'email',
-            roleId: 'role-id',
-            carrierRoleId: 'carrier-role-id',
         },
         text: {
             username: 'username',
@@ -48,8 +44,8 @@ const selector = {
             alias: 'alias',
             email: 'email',
             phone: 'phone',
-            roleName: 'role-name',
-            carrierRoleName: 'carrier-role-name',
+            // roleName: 'role-name',
+            // carrierRoleName: 'carrier-role-name',
         },
         select: {
             gender: 'gender',

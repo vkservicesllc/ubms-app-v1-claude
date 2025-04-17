@@ -36,6 +36,12 @@ const selector = {
             phone: 'phone',
             fax: 'fax',
             email: 'email',
+            addrSince: 'address-update-date',
+            mailAddrSince: 'mail-address-update-date',
+            phoneSince: 'phone-update-date',
+            faxSince: 'fax-update-date',
+            emailSince: 'email-update-date',
+            until: 'end-date',
         },
         select: {
             category: 'category',

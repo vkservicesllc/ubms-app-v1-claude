@@ -15,14 +15,14 @@ import {
     createGenderForm,
 } from './reusable.mjs'
 
-import Company, { Owner } from '../core/company.mjs'
+import Company from '../core/company.mjs'
 import companySelector from '../../../client/global/modules/registry/selectors/company.mjs'
 import ownerSelector from '../../../client/global/modules/registry/selectors/company-owner.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 import strip from '../../../client/global/modules/tools/utils/formatter.mjs'
 
-const required = true, disabled = true
+const required = true
 
 
 const createCategoryForm = (selector, props = {}) => {
@@ -165,6 +165,12 @@ class CompanyForm {
     static fax = createPhoneForm({ selector: companySelector, target: 'fax', name: 'fax', label: 'Fax' })
     static email = createEmailForm({ selector: companySelector})
 
+    static addrSince = createSinceForm({ selector: companySelector, target: 'addrSince' })
+    static mailAddrSince = createSinceForm({ selector: companySelector, target: 'mailAddrSince' })
+    static phoneSince = createSinceForm({ selector: companySelector, target: 'phoneSince' })
+    static faxSince = createSinceForm({ selector: companySelector, target: 'faxSince' })
+    static emailSince = createSinceForm({ selector: companySelector, target: 'emailSince' })
+
 }
 
 
@@ -176,7 +182,7 @@ class OwnerForm {
 
     static id = createIdForm({ selector: ownerSelector })
 
-    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince', required })
+    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince' })
     static firstName = createPersonNameForm('first', { selector: ownerSelector, group: 'name' })
     static middleName = createPersonNameForm('middle', { selector: ownerSelector, group: 'name' })
     static lastName = createPersonNameForm('last', { selector: ownerSelector, group: 'name' })

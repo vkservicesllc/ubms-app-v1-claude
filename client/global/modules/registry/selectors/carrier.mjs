@@ -3,7 +3,11 @@ import initialize from './support.mjs'
 const prefix = 'carrier'
 
 const selector = {
-    class: {},
+    class: {
+        text: {
+            permit: 'permit',
+        },
+    },
     id: {
         hidden: {
             id: 'id',
@@ -13,11 +17,14 @@ const selector = {
             usdot: 'usdot',
             scac: 'scac',
             ifta: 'ifta',
-            iftaJur: 'ifta-jurisdiction',
+            
             irp: 'irp',
             efs: 'efs',
             fleetOne: 'fleet-one',
             transflo: 'transflo',
+        },
+        select: {
+            iftaJur: 'ifta-jurisdiction',
         },
     },
 }
