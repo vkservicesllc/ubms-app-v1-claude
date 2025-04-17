@@ -9,6 +9,7 @@ import {
 } from './reusable.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/user.mjs'
+import roleSelector from '../../../client/global/modules/registry/selectors/user-role.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
@@ -99,6 +100,28 @@ const createPasswordForm = flag => {
     })
 }
 
+const createRoleNameForm = target => createForm({
+    selector: roleSelector,
+    target,
+    name: 'name',
+    maxLength: length.user.roleName.max,
+    required,
+    label: 'Role Name',
+    validator: {
+        sanitizer: value => value.replace('&amp;', '&').replace('&#x27;', "'"),
+    },
+})
+
+const createRoleLocationForm = target => createForm({
+    selector: roleSelector,
+    target,
+    type: 'select',
+    name: 'location',
+    data: propsData.location,
+    emptyOpt: 'All',
+    label: 'Location',
+})
+
 
 class UserForm {
     constructor(options = {}) {
@@ -143,4 +166,24 @@ class UserForm {
 
 }
 
+
+class RoleForm {
+    constructor(options = {}) {
+        getStaticProps(RoleForm)
+            .forEach(target => this[target] = constructForm(RoleForm, target, options))
+    }
+
+    static roleId = createIdForm({ selector: roleSelector, target: 'roleId' })
+    static carrierRoleId = createIdForm({ selector: roleSelector, target: 'carrierRoleId' })
+
+    static roleName = createRoleNameForm('roleName')
+    static carrierRoleName = createRoleNameForm('carrierRoleName')
+
+    static roleLocation = createRoleLocationForm('roleLocation')
+    static carrierRoleLocation = createRoleLocationForm('carrierRoleLocation')
+
+}
+
+
 export default UserForm
+export { RoleForm }

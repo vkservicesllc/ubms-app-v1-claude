@@ -1,7 +1,7 @@
 import selector from './company.mjs'
 import initialize from './support.mjs'
 
-const prefix = 'driver'
+const prefix = 'driver-application'
 
 const selector = {
     class: {
@@ -20,8 +20,11 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
+            delId: 'delete-id',
         },
         text: {
+            formId: 'form',
+            pin: 'pin',
             firstName: 'first-name',
             middleName: 'middle-name',
             lastName: 'last-name',
