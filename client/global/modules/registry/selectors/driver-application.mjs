@@ -1,4 +1,3 @@
-import selector from './company.mjs'
 import initialize from './support.mjs'
 
 const prefix = 'driver-application'

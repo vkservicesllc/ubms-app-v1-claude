@@ -9,7 +9,7 @@ import {
 } from './reusable.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
-import appSelector from '../../../client/global/modules/registry/selectors/driver.mjs'
+import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 

@@ -11,7 +11,7 @@ export default (prefix, selector) => {
         const item = selector.id[i]
 
         for (const j in item) {
-            if (i === 'radio' || i === 'checkbox')
+            if (typeof item[j] === 'object')
                 for (const k in item[j])
                     item[j][k] = `#${prefix}-${item[j][k]}-${i}-input`
             else item[j] = `#${prefix}-${item[j]}-${i}-input`
