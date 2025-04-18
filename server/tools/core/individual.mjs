@@ -62,7 +62,7 @@ class Individual extends Person {
             this.log = async (target, field) => {
                 if (!targets.includes(target)) target = targets[0]
                 const fields = [ 'createdBy', 'createdAt', 'createdIn', 'updateLog' ]
-                const idProp = target == targets[0] ? 'id' : 'personId'
+                const idProp = target === targets[0] ? 'id' : 'personId'
 
                 let log = (await mysql.execute(query[target].select(fields, {
                     match: { [idProp]: Individual.matchIdHash(this._id) },
@@ -76,7 +76,7 @@ class Individual extends Person {
 
             this.flush = async target => {
                 if (!targets.includes(target)) target = targets[0]
-                const idProp = target == targets[0] ? 'id' : 'personId'
+                const idProp = target === targets[0] ? 'id' : 'personId'
 
                 await mysql.execute(query[target].update({ updateLog: null }, {
                     [idProp]: Individual.matchIdHash(this._id),
@@ -134,7 +134,7 @@ class Individual extends Person {
                             if (error) return { modified, error }
                             if (found === true) return { modified, error: 'Invalid Data: SSN exists' }
                         }
-                        if (typeof sex == 'string' && !isNaN(sex)) sex = +sex
+                        if (typeof sex === 'string' && !isNaN(sex)) sex = +sex
 
                         currentData.ssn = await this.ssn(session)
 
@@ -173,7 +173,7 @@ class Individual extends Person {
 
                         const [ result1 ] = await mysql.execute(query.individuals.update(update.individuals, { id }))
                         const [ result2 ] = await mysql.execute(query.names.update(update.names, { personId: id, max: 'since' }))
-                        if (result1.affectedRows == 1 || result2.affectedRows == 1) modified = true
+                        if (result1.affectedRows === 1 || result2.affectedRows === 1) modified = true
                 }
 
                 return { modified, data: await Individual.data(session, { id }) }
@@ -208,7 +208,7 @@ class Individual extends Person {
                 data.createdIn = JSON.stringify(createdIn)
 
                 const [ result ] = await mysql.execute(query[target].insert(data))
-                if (result.affectedRows == 1) updated = true
+                if (result.affectedRows === 1) updated = true
 
                 return { updated, data: await Individual.data(session, { id }) }
             }
@@ -291,7 +291,7 @@ class Individual extends Person {
              * * -- Correct spelling, the name was legally changed
              * ? Ask for the date when the name was changed
              */
-            if (firstName != person.firstName || lastName != person.lastName)
+            if (firstName !== person.firstName || lastName !== person.lastName)
                 return { created, error: 'Invalid Name: SSN Found', data: person }
 
             return { created, ...await person.modify(session, data) }
@@ -327,7 +327,7 @@ class Individual extends Person {
                     createdBy,
                     createdIn,
                 }))
-                if (result.affectedRows == 1) created = true
+                if (result.affectedRows === 1) created = true
             }
 
             return { created, data: await Individual.data(session, { id }) }
@@ -411,7 +411,7 @@ class Individual extends Person {
         const data = (await mysql.execute(query.individuals.select('id', {
             match: { ssn: { aes: [ ssn, secret ] } },
         })))[0]
-        found = data.length == 1
+        found = data.length === 1
         if (found) personId = data[0].id
 
         return { found, personId }

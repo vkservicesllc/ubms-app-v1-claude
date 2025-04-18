@@ -60,6 +60,10 @@ const $button = {
 const $relationship = $('#team-relationship')
 const $settings = $('#team-settings')
 
+const $id = {
+    main: $(selector.id.hidden.id),
+}
+
 const setTip = new Tip($tip, tipDefs, message)
 
 const countDescChars = desc => {
@@ -83,20 +87,20 @@ teamNameEvent({
         setTip.default('name')
         $button.upsert.prop('disabled', false)
     },
-    onChange(name, $name) {
-        const currentName = '' //! $(`#current-${nameId}`).val() -- need to change logic here
+    onChange(name) {
         let action = name ? 'passed' : 'default'
+        const _id = $id.main.val()
 
         if (name)
             $.ajax('/api/unique/team', {
                 method: 'POST',
-                data: { name },
+                data: { name, exclude: { _id } },
                 success(response) {
                     const { unique, error } = response
                     if (error) alert(error)
 
                     let disabled = false
-                    if (name && (!currentName || name != currentName) && !unique) {
+                    if (name && !unique) {
                         action = 'failed'
                         disabled = true
                     }
@@ -107,3 +111,306 @@ teamNameEvent({
             })
     },
 })
+
+catIdEvent(selector.id.select.category, ids.catIdIcon)
+
+teamDescEvent({
+    onInput(desc) {
+        countDescChars(desc)
+    },
+    onChange(desc) {
+        countDescChars(desc)
+    },
+})
+
+
+busNameEvent(selector.id.text.busName, selector.id.select.coType)
+
+coTypeEvent(selector.id.select.coType, selector.id.text.busName)
+
+
+telEvent(selector.id.text.phone)
+
+emailEvent(selector.id.text.email, {
+    onInput() {
+        $tip.email.html(null)
+    },
+    onChange(email, valid) {
+        if (email && !valid)
+            $tip.email.html('<i class="fa fa-triangle-exclamation"></i> Invalid email')
+    },
+})
+
+urlEvent(selector.id.text.website, {
+    onInput() {
+        $tip.website.html(null)
+    },
+    onChange(website, valid) {
+        if (website && !valid)
+            $tip.website.html('<i class="fa fa-triangle-exclamation"></i> Invalid website')
+    },
+})
+
+
+addr1Event(selector.id.text.address1, { addr2Id: selector.id.text.address2 })
+
+addr2Event(selector.id.text.address2)
+
+zipEvent(selector.id.text.addrZip, { cityId: selector.id.text.addrCity, stateId: selector.id.select.addrState })
+
+cityEvent(selector.id.text.addrCity)
+
+
+const closeUpsert = () => {
+    const $catId = $(selector.id.select.category)
+
+    $modal.all.removeClass('is-active')
+    $(selector.class.global).val(null)
+    setTip.default('name')
+    $button.delete.hide()
+    $button.upsert.html(null).removeClass('is-link is-success').prop('disabled', false)
+    $title.upsert.html(null)
+    $catId.attr('disabled', false)
+    if (!$catId.find('option[value=""]').length)
+        $catId.prepend('<option value="">--</option>').val(null)
+    $(`#${ids.catIdIcon}`).html(defaults.catIdIcon)
+    countDescChars()
+    $settings.html(null)
+}
+
+const displayTeams = () => {
+    $('.team-edit, .team-relationship, .team-profile, .team-settings').off('click')
+
+    $.ajax({
+        url: '/api/teams',
+        method: 'POST',
+        success(response) {
+            const data = sortArrayByObjectKey(response.data, 'name')
+            let i = 0, html = ''
+
+            for (const [ idx, row ] of data.entries()) {
+                const { _id, name, description, catId, count } = row
+                const { companies, users } = count
+                const companyStyle = `is-${companies ? 'primary' : 'danger'}`
+                const userStyle = `is-${users ? 'primary' : 'danger'}`
+
+                if (i === 0) html += '<div class="columns">'
+
+                html += '<div class="column is-one-fifth">'
+                html += '<div class="card">'
+                html += '<div class="card-content">'
+
+                html += `<p class="title"><a class="team-edit" data-team-id="${_id}">${escapeHTML(name)}</a></p>`
+                if (description) html += `<p class="subtitle has-text-primary-30 mt-2">${escapeHTML(description)}</p>`
+
+                html += '<div class="field is-grouped is-grouped-multiline">'
+
+                html += '<div class="control"><div class="tags has-addons">'
+                html += `<span class="tag">${categories[catId].item[0]}</span>`
+                html += `<a class="tag team-relationship ${companyStyle}" data-relationship="companies" data-team-id="${_id}">${companies}</a>`
+                html += '</div></div>'
+
+                html += '<div class="control"><div class="tags has-addons">'
+                html += `<span class="tag">Users</span>`
+                html += `<a class="tag team-relationship ${userStyle}" data-relationship="users" data-team-id="${_id}">${users}</a>`
+                html += '</div></div>'
+
+                html += `<div><a class="has-text-grey team-profile" data-team-id="${_id}"><i class="fas fa-briefcase"></i></a></div>`
+                html += `<div><a class="has-text-grey team-settings" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
+
+                html += '</div></div></div></div>'
+
+                if (i === 4 || idx === data.length) {
+                    html += '</div>'
+                    i = 0
+                } else i++
+            }
+
+            $('#team-list').html(html)
+            
+            $('.team-edit, .team-profile, .team-settings').on('click', function() {
+                const _id = $(this).data('team-id')
+                let target = 'edit'
+                if ($(this).hasClass('team-profile')) target = 'profile'
+                if ($(this).hasClass('team-settings')) target = 'settings'
+
+                $.ajax({
+                    url: `/api/team/${_id}`,
+                    method: 'POST',
+                    success(response) {
+                        const { _id, catId: category, name } = response.data
+
+                        if (target == 'edit') {
+                            const { description, count } = response.data
+                            const { companies, users } = count
+                            const $catId = $(selector.id.select.category)
+
+                            $id.main.val(_id)
+                            $(`${selector.id.hidden.name}, ${selector.id.text.name}`).val(name)
+                            $catId.val(category).find('option[value=""]').remove()
+                            if (companies) $catId.attr('disabled', true)
+                            $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)
+                            $(selector.id.text.desc).val(description)
+
+                            $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
+                            setTip.passed('name')
+                            $button.upsert.html('Update').addClass('is-success')
+                            if (!companies && !users) $button.delete.show()
+                            countDescChars(description)
+                            $modal.upsert.addClass('is-active')
+                        } else if (target == 'profile') {
+                            $(selector.id.hidden.profileId).val(_id)
+                            const { profile } = response.data
+
+                            if (profile) {
+                                const { busName, coType, phone, email, website } = profile
+                                const { address1, address2, city, state, zip } = profile.address
+
+                                if (busName && coType) {
+                                    $(selector.id.text.busName).val(busName)
+                                    $(selector.id.select.coType).val(coType)
+                                    $(selector.id.text.phone).val(formatTel(phone))
+                                    $(selector.id.text.email).val(email)
+                                    $(selector.id.text.website).val(website)
+                                    $(selector.id.text.address1).val(address1)
+                                    $(selector.id.text.address2).val(address2)
+                                    $(selector.id.text.addrZip).val(zip)
+                                    $(selector.id.text.addrCity).val(city)
+                                    $(selector.id.select.addrState).val(state)
+                                }
+                            }
+
+                            $title.profile.html(`<strong>${escapeHTML(name)}</strong> <small>Profile</small>`)
+                            $modal.profile.addClass('is-active')
+                        } else if (target == 'settings') {
+                            $(selector.id.hidden.settingsId).val(_id)
+                            const { settings } = response.data
+
+                            const applied = {
+                                driverCDL: settings?.drivers?.cdl || false,
+                                driverPositions: settings?.drivers?.positions || Object.keys(driverPositions).map(position => position),
+                            }
+                            let list = ''
+
+                            if (category == 'crr') {
+                                list += '<div class="columns">'
+                                list += '<div class="column"><div class="field><label class="checkbox">'
+                                list += `<input type="checkbox" name="${category}[drivers][cdl]"${applied.driverCDL ? ' checked' : ''} /> &nbsp;CDL Required`
+                                list += '</label></div></div>'
+                                list += '<div class="column"><label class="label">Driver Positions</label>'
+                                for (const value in driverPositions) {
+                                    const checked = applied.driverPositions.includes(value) ? ' checked' : ''
+                                    list += '<div class="field"><label class="checkbox">'
+                                    list += `<input type="checkbox" name="${category}[drivers][positions]" value="${value}"${checked} /> &nbsp;${driverPositions[value]}`
+                                    list += '</label></div>'
+                                }
+                                list += '</div>'
+                                list += '</div>'
+                            }
+
+                            $settings.html(list)
+                            $title.settings.html(`<strong>${escapeHTML(name)}</strong> <small>Settings</small>`)
+                            $modal.settings.addClass('is-active')
+                        }
+                    },
+                })
+            })
+            
+            $('.team-relationship').on('click', function() {
+                const relType = $(this).data('relationship')
+                const _id = $(this).data('team-id')
+
+                $.ajax({
+                    url: `/api/team/${_id}/${relType}`,
+                    method: 'POST',
+                    success(response) {
+                        const { team, data } = response.data
+                        const { _id, name } = team
+
+                        $title.relationship.html(`<small>Assign ${capitalizeFirst(relType)} to</small> <strong>${escapeHTML(name)}</strong>`)
+
+                        let list = '<div class="checkboxes">'
+                        data[relType].all.forEach(item => {
+                            let attr = ` data-type="${relType}" data-id="${item._id}"`
+                            if (item.applied) attr += ' checked'
+
+                            list += '<p><label class="checkbox">'
+                            list += `<input type="checkbox" class="modify-team-relationship"${attr} />&nbsp; ${escapeHTML(item.name)}`
+                            if (item.desc) list += ` <small><i>(${escapeHTML(item.desc)})</i></small>`
+                            list += '</label></p>'
+                        })
+                        list += '</div>'
+
+                        $relationship.html(list)
+
+                        $('.modify-team-relationship').on('change', function() {
+                            const $checkbox = $(this)
+                            const relType = $checkbox.data('type')
+                            const _relId = $checkbox.data('id')
+                            const checked = $checkbox.prop('checked')
+                            const action = checked ? '+' : '-'
+
+                            $.ajax(`/api/team/${_id}/${relType}/${_relId}`, {
+                                method: 'POST',
+                                data: { action },
+                                success(response) {
+                                    const { modified, error } = response
+
+                                    if (error || !modified) {
+                                        if (error) alert(error)
+
+                                            $checkbox.prop('checked', !checked)
+                                    }
+                                },
+                            })
+                        })
+
+                        $modal.relationship.addClass('is-active')
+                    },
+                })
+            })
+        },
+    })
+}
+
+
+$('.delete').click(closeUpsert)
+
+$button.add.click(() => {
+    $title.upsert.html('<small>New Team</small>')
+    $button.upsert.html('Create').addClass('is-link')
+    $modal.upsert.addClass('is-active')
+})
+
+//! TEST VERSION: Deleting via API
+$button.delete.click(function() {
+    const name = $(selector.id.hidden.name).val()
+
+    if (confirm(`Confirm deletion: Are you sure you want to delete "${name}"!`)) {
+        const _id = $id.main.val()
+
+        $.ajax({
+            url: `/api/team/${_id}`,
+            method: 'DELETE',
+            success(response) {
+                if (response.deleted) { //? location.reload()
+                    displayTeams()
+                    closeUpsert()
+                }
+            },
+        })
+    }
+})
+
+$button.closeRel.click(() => {
+    $('.modify-team-relationship').off('change')
+    $modal.relationship.removeClass('is-active')
+    $title.relationship.html(null)
+    $relationship.html(null)
+
+    displayTeams() //? location.reload()
+})
+
+
+displayTeams()
+setInterval(displayTeams, interval)

@@ -62,8 +62,8 @@ class User extends Person {
             status: [ data.status, User.statusList[data.status] ],
             condition: [ data.condition, User.conditionList[data.condition] ],
             location: [ data.location, User.locationList[data.location] ],
-            DS: data.status == 'S' || data.status == 'D',
-            DSA: data.status != 'U',
+            DS: data.status === 'S' || data.status === 'D',
+            DSA: data.status !== 'U',
             decliner: data.decliner,
             name: this.fullName('AL'),
             email: data.email,
@@ -263,8 +263,8 @@ class User extends Person {
                     error = []
 
                     let i = 0, modCt = 0, createdBy
-                    if (action == '-') action = 'delete'
-                    else if (action == '+') {
+                    if (action === '-') action = 'delete'
+                    else if (action === '+') {
                         action = 'insert'
                         createdBy = await session.user.id()
                     }
@@ -275,10 +275,10 @@ class User extends Person {
 
                         try {
                             const data = { userId, roleId }
-                            if (action == 'insert') data.createdBy = createdBy
+                            if (action === 'insert') data.createdBy = createdBy
 
                             const [ result ] = await mysql.execute(query.userRoles[action](data))
-                            if (result.affectedRows == 1) modCt++
+                            if (result.affectedRows === 1) modCt++
                         } catch (err) {
                             error.push('DB Error: idx ' + i)
                         }
@@ -296,7 +296,7 @@ class User extends Person {
                     if (!session?.user) return
 
                     const sessionUser = session.user
-                    const self = sessionUser._id == this._id
+                    const self = sessionUser._id === this._id
                     if (!self && !sessionUser.DSA) return
 
                     const data = { all: [], available: [], applied: [] }
@@ -345,7 +345,7 @@ class User extends Person {
                             data.all.push({ _id, name, location, catId })
                         })
 
-                        data.available = data.all.filter(role => !data.applied.some(appliedRole => appliedRole._id == role._id))
+                        data.available = data.all.filter(role => !data.applied.some(appliedRole => appliedRole._id === role._id))
 
                         data.all = sortArrayByObjectKey(data.all, 'name')
                         data.applied = sortArrayByObjectKey(data.applied, 'name')
@@ -395,8 +395,8 @@ class User extends Person {
                     error = []
 
                     let i = 0, modCt = 0, createdBy
-                    if (action == '-') action = 'delete'
-                    else if (action == '+') {
+                    if (action === '-') action = 'delete'
+                    else if (action === '+') {
                         action = 'insert'
                         createdBy = await session.user.id()
                     }
@@ -407,10 +407,10 @@ class User extends Person {
 
                         try {
                             const data = { userId, teamId }
-                            if (action == 'insert') data.createdBy = createdBy
+                            if (action === 'insert') data.createdBy = createdBy
 
                             const [ result ] = await mysql.execute(query.userTeams[action](data))
-                            if (result.affectedRows == 1) modCt++
+                            if (result.affectedRows === 1) modCt++
                         } catch (err) {
                             error.push('DB Error: idx ' + i)
                         }
@@ -428,7 +428,7 @@ class User extends Person {
                     if (!session?.user) return
 
                     const sessionUser = session.user
-                    const self = sessionUser._id == this._id
+                    const self = sessionUser._id === this._id
                     if (!self && !sessionUser.DSA) return
 
                     const data = { all: [], available: [], applied: [] }
@@ -468,7 +468,7 @@ class User extends Person {
                         const teams = await Team.list(session)
                         data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
 
-                        if (sessionUser.status[0] == 'A') {
+                        if (sessionUser.status[0] === 'A') {
                             batch[0].match.userId = await sessionUser.id()
 
                             const teamIds = []
@@ -482,7 +482,7 @@ class User extends Person {
                             })
                         }
 
-                        data.available = data.all.filter(team => !data.applied.some(appliedTeam => appliedTeam._id == team._id))
+                        data.available = data.all.filter(team => !data.applied.some(appliedTeam => appliedTeam._id === team._id))
 
                         data.all = sortArrayByObjectKey(data.all, 'name')
                         data.available = sortArrayByObjectKey(data.available, 'name')
@@ -497,24 +497,24 @@ class User extends Person {
 
             this.modify = async (session, data) => {
                 let modified = false, modifiedUser, error = sessionError(session, { branches: [ 'admin', 'user' ] })
-                if (!error && this.status[0] == 'D' && session.user.status[0] != 'D') error = 'Invalid Target: Immune User'
+                if (!error && this.status[0] === 'D' && session.user.status[0] !== 'D') error = 'Invalid Target: Immune User'
 
                 const id = await this.id()
                 const { branch, user: sessionUser } = session
                 const sessionUserId = await sessionUser.id()
 
                 if (!error) {
-                    if (branch == 'user' && id !== sessionUserId) error = 'Invalid Target'
+                    if (branch === 'user' && id !== sessionUserId) error = 'Invalid Target'
                     else {
                         const { status, location } = sessionUser
 
-                        if (status[0] == 'A') {
-                            if (this.status[0] == 'S') error = 'Invalid Target: Immune User'
-                            else if (location[0] != 'US' && location[0] != this.location[0])
+                        if (status[0] === 'A') {
+                            if (this.status[0] === 'S') error = 'Invalid Target: Immune User'
+                            else if (location[0] !== 'US' && location[0] !== this.location[0])
                                 error = 'Invalid Region'
-                        } else if (this.status[0] == 'D') {
-                            if (data.status != 'D') error = 'Invalid Target: Immune User'
-                            else if (data.location != 'US') error = 'Invalid Region'
+                        } else if (this.status[0] === 'D') {
+                            if (data.status !== 'D') error = 'Invalid Target: Immune User'
+                            else if (data.location !== 'US') error = 'Invalid Region'
                         }
                     }
                 }
@@ -533,21 +533,21 @@ class User extends Person {
                     branch,
                 })
 
-                if (this.status[0] == 'US') {
+                if (this.status[0] === 'US') {
                     if (update.firstName) delete update.firstName
                     if (update.lastName) delete update.lastName
                     if (update.alias) delete update.alias
                 }
-                if ((this.location[0] != 'US' && update.location != 'US') && update.phone)
+                if ((this.location[0] !== 'US' && update.location !== 'US') && update.phone)
                     update.phone = null
 
                 try {
                     const [ result ] = await mysql.execute(query.users.update(update, { id }))
-                    if (result.affectedRows == 1) {
+                    if (result.affectedRows === 1) {
                         modified = true
                         modifiedUser = await User.data(session, { id })
 
-                        if (!this.username && this.email != data.email) {
+                        if (!this.username && this.email !== data.email) {
                             const [ rows ] = await mysql.execute(query.registration.select('formId', { match: { userId: id } }))
 
                             if (rows.length) {
@@ -559,7 +559,7 @@ class User extends Person {
                                     userId: id,
                                     formId,
                                 }))
-                                if (result.affectedRows == 0) error = 'DB Error: Registration Not Updated'
+                                if (result.affectedRows === 0) error = 'DB Error: Registration Not Updated'
                             }
                         }
                     }
@@ -587,7 +587,7 @@ class User extends Person {
                 update.deletedAt = Query.timeStamp
 
                 const [ result ] = await mysql.execute(query.users.update(update, { id: User.matchIdHash(this._id) }))
-                if (result.affectedRows == 1) {
+                if (result.affectedRows === 1) {
                     deleted = true
                     const match = { userId: User.matchIdHash(this._id) }
 
@@ -606,7 +606,7 @@ class User extends Person {
                 const { tokenAge } = config.session
                 
                 if (clientIp) {  // Retrieve Token
-                    if (clientIp != this.clientIp) this.clientIp = clientIp
+                    if (clientIp !== this.clientIp) this.clientIp = clientIp
 
                     clientIp = { ip: clientIp }
 
@@ -680,7 +680,7 @@ class User extends Person {
 
 
             this.url = async (session, lastUrl) => {
-                if (lastUrl.slice(0, 5) == '/api/') return
+                if (lastUrl.slice(0, 5) === '/api/') return
 
                 const { branch, siteId } = session
                 const userId = await this.id()
@@ -696,7 +696,7 @@ class User extends Person {
 
 
             this.settings = async (session, data) => {
-                if (this._id != session?.user?._id) return
+                if (this._id !== session?.user?._id) return
 
                 const match = { id: User.matchIdHash(this._id) }
                 const [ result ] = await mysql.execute(query.users.select('settings', { match }))
@@ -779,7 +779,7 @@ class User extends Person {
                 invitedBy: data.createdBy,
             }))
 
-            if (result.affectedRows == 0) {
+            if (result.affectedRows === 0) {
                 try {
                     // await mysql.execute(query.users.delete({ id }))
                     error = 'DB Error: Unregistered User Deleted'
@@ -897,11 +897,11 @@ class User extends Person {
             batch[0].fields.push([ '_passKey', '_hash' ], 'fails')
             batch[1].fields.push({ ip: 'clientIp' })
 
-            if (branch == 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
+            if (branch === 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
         } else {
             if (session?.user?.location) {
                 const location = session.user.location[0]
-                if (location != 'US') {
+                if (location !== 'US') {
                     batch[0].match.location = location
                 }
             }
@@ -939,7 +939,7 @@ class User extends Person {
 
         const match = { username, email }
         if (exclude?._id) {
-            const user = await User.data(session, { _id })
+            const user = await User.data(session, { _id: exclude._id })
             const id = await user.id()
 
             match.not = { id }
@@ -1002,7 +1002,7 @@ class User extends Person {
             if (!user) {
                 if (api) {
                     apiRes.username = false
-                    apiRes.error.username = `${branch == 'admin' ? 'Admin' : 'User'} not found`
+                    apiRes.error.username = `${branch === 'admin' ? 'Admin' : 'User'} not found`
 
                     return res.send(apiRes)
                 } else return throwErr.data.auth(res, 'Authentication failed: User not found')
@@ -1025,11 +1025,11 @@ class User extends Person {
                     apiRes.password = false
                     apiRes.error.password = 'Incorrect password'
 
-                    if (fails < loginAttempts && condition != 'L') {
+                    if (fails < loginAttempts && condition !== 'L') {
                         fails++
                         let update = { fails }
 
-                        if (fails == loginAttempts) {
+                        if (fails === loginAttempts) {
                             update.condition = 'L'
                             user = await User.data(session, { _id })
 
@@ -1051,7 +1051,7 @@ class User extends Person {
 
             /* Step 3: Check User's Condition if Password verified */
 
-            if (condition != 'A') {
+            if (condition !== 'A') {
                 const conditions = User.conditionList
                 if (api) {
                     apiRes.condition = condition
@@ -1171,7 +1171,7 @@ class User extends Person {
 
                     if (refer) {
                         const user = await User.data(session, { _id: refer })
-                        if (method != 'POST' && !excUrl.includes(originalUrl))
+                        if (method !== 'POST' && !excUrl.includes(originalUrl))
                             await user.url(session, stripUrl(originalUrl, query, 'refer'))
                     }
 
@@ -1194,13 +1194,13 @@ class User extends Person {
             if (!connectToken || !token || !(await Bun.password.verify(token, connectToken)))
                 return await reject('Authentication check failed: Token verification failed')
 
-            if (session.branch == 'admin' && user.status[0] == 'U')
+            if (session.branch === 'admin' && user.status[0] === 'U')
                 return await reject('Authentication check failed: Unauthorized Environment')
 
-            if (user.DS && user.location[0] != 'US')
+            if (user.DS && user.location[0] !== 'US')
                 return await reject('Verification failed: Incorrect status in current location')
 
-            if (session.branch != 'admin' && session.branch != 'user') {
+            if (session.branch !== 'admin' && session.branch !== 'user') {
                 const { applied: teams } = await user.teams({ ...session, user })
                 if (!teams.length) return await reject('Verification failed: No teams assigned')
             }
@@ -1208,11 +1208,11 @@ class User extends Person {
             if (query.refer) {
                 const newUrl = stripUrl(originalUrl, query, 'refer')
 
-                if (method != 'POST') await user.url(session, newUrl)
+                if (method !== 'POST') await user.url(session, newUrl)
                 return res.redirect(newUrl)
             }
 
-            if (method != 'POST' && !excUrl.includes(originalUrl))
+            if (method !== 'POST' && !excUrl.includes(originalUrl))
                 await user.url(session, originalUrl)
 
             if (!next) return user
@@ -1266,7 +1266,7 @@ class User extends Person {
                 _passKey: await Bun.password.hash(password),
             }, { id: User.matchIdHash(_id) }))
 
-            if (result.affectedRows == 1)
+            if (result.affectedRows === 1)
                 await mysql.execute(query.registration.delete({ userId: User.matchIdHash(_id) }))
 
             res.redirect(addrBook.default)
@@ -1332,9 +1332,9 @@ class Role {
                     const { name, catId, location } = params
 
                     if (
-                        (name != this.name) ||
-                        (name == this.name && catId != this.catId) ||
-                        (name == this.name && catId == this.catId && location != this.location[0])
+                        (name !== this.name) ||
+                        (name === this.name && catId !== this.catId) ||
+                        (name === this.name && catId === this.catId && location !== this.location[0])
                     ) {
                         original = false
 
@@ -1371,7 +1371,7 @@ class Role {
 
                 try {
                     const [ result ] = await mysql.execute(query.roles.update(data, { id }))
-                    if (result.affectedRows == 1) modified = true
+                    if (result.affectedRows === 1) modified = true
                 } catch (err) {
                     console.error(err)
                     error = 'DB Error: Failed to modify Role'
@@ -1489,19 +1489,22 @@ class Role {
     static find = async (session, params = {}) => {
         if (!session?.user) return { error: 'Invalid User' }
 
-        const { name, catId } = params
+        const { name, catId, exclude } = params
         if (!name && !catId) return { error: 'Invalid Parameters' }
         let { location } = params
         if (location !== undefined && !location) location = null
 
-        let found = false
+        const match = { username, email }
+        if (exclude?._id) {
+            const role = await Role.data(session, { _id: exclude._id })
+            const id = await role.id()
 
-        const data = (await mysql.execute(query.roles.select('id', {
-            match: { name, catId, location },
-        })))[0]
-        found = data.length == 1
+            match.not = { id }
+        }
 
-        return { found }
+        const data = (await mysql.execute(query.roles.select('id', { match: { name, catId, location } })))[0]
+
+        return { found: data.length === 1 }
     }
 
 
@@ -1513,7 +1516,7 @@ export { Role }
 
 
 export const adminBranchOnly = (req, res, next) => {
-    if (res.session.branch != 'admin') {
+    if (res.session.branch !== 'admin') {
         const { errKey } = recognizeApi(req)
 
         return throwErr[errKey].auth(res, 'Error: Access allowed in Admin Environment only')
@@ -1524,7 +1527,7 @@ export const adminBranchOnly = (req, res, next) => {
 
 
 export const superAdminUserOnly = (req, res, next) => {
-    if (res.session.branch != 'admin' || res.session.user.status[0] == 'A') {
+    if (res.session.branch !== 'admin' || res.session.user.status[0] === 'A') {
         const { errKey } = recognizeApi(req)
 
         return throwErr[errKey].auth(res, 'Error: Access to this path is granted to Super Admin only<br><a href="/">Dashboard</a>')
@@ -1534,7 +1537,7 @@ export const superAdminUserOnly = (req, res, next) => {
 
 
 export const developerOnly = (req, res, next) => {
-    if (res.session.branch != 'admin' || res.session.user.status[0] != 'D') {
+    if (res.session.branch !== 'admin' || res.session.user.status[0] !== 'D') {
         const { errKey } = recognizeApi(req)
 
         return throwErr[errKey].auth(res, 'Error: Access to this path is granted to Developer only<br><a href="/">Dashboard</a>')
@@ -1551,8 +1554,8 @@ export const sessionError = (session, instructions = {}) => {
         const { user } = session
         let { status, branches, usOnly } = instructions
         if (!Array.isArray(branches)) branches = []
-        if (typeof usOnly != 'boolean') usOnly = false
-        if (status == 'DS') usOnly = true
+        if (typeof usOnly !== 'boolean') usOnly = false
+        if (status === 'DS') usOnly = true
 
         if (['DS', 'DSA'].includes(status)) {
             switch (status) {
@@ -1571,7 +1574,7 @@ export const sessionError = (session, instructions = {}) => {
             if (!branches.includes(branch)) error = 'Invalid Branch'
         }
 
-        if (error === undefined && usOnly === true && user.location[0] != 'US')
+        if (error === undefined && usOnly === true && user.location[0] !== 'US')
             error = 'Invalid User Location: US Users only' 
     }
 
@@ -1587,7 +1590,7 @@ function determineUrl(branch, settings, lastUrl, defUrl) {
     let url = lastUrl || defUrl
 
     if (
-        settings && typeof settings == 'object' &&
+        settings && typeof settings === 'object' &&
         branch in settings && 'lastUrl' in settings[branch] &&
         settings[branch].lastUrl === 0
     ) url = defUrl

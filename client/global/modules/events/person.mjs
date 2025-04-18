@@ -18,7 +18,7 @@ export const nameEvent = (id, options = {}) => {
             if (onInput) onInput(name, $name)
         },
         onChange(name, $name) {
-            const $suffix = $(`#${sfxId}`)
+            const $suffix = $(sfxId)
             let suffix
             if (sfxId) {
                 const sfxPatt = patterns.match.suffix

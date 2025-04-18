@@ -27,6 +27,7 @@ class TeamForm {
 
     static id = createIdForm({ selector })
     static profileId = createIdForm({ selector, target: 'profileId' })
+    static settingsId = createIdForm({ selector, target: 'settingsId' })
     static category = createCategoryForm(selector)
 
     //* "name" can not be used as an own property
@@ -40,6 +41,13 @@ class TeamForm {
             length: { min: length.team.name.min },
             sanitizer: value => value.replace('&amp;', '&').replace('&#x27;', "'"),
         },
+    })
+
+    static currentName = createForm({
+        selector,
+        target: 'name',
+        type: 'hidden',
+        validator: false,
     })
 
     static desc = createForm({

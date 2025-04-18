@@ -20,8 +20,8 @@ export default class {
 
             let { id, _id, domain } = site
 
-            if (typeof identifier == 'number') id = identifier
-            else if (typeof identifier == 'object') ({id, _id, domain} = identifier)
+            if (typeof identifier === 'number') id = identifier
+            else if (typeof identifier === 'object') ({id, _id, domain} = identifier)
             else domain = identifier
 
             const fields = [
@@ -40,7 +40,7 @@ export default class {
 
             site = rows[0]
             site.address = 'https://'
-            if (type == 'secondary') site.address += branch + '.'
+            if (type === 'secondary') site.address += branch + '.'
             site.address += site.domain
 
             return site

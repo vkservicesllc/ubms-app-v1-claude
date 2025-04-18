@@ -329,7 +329,7 @@ class Carrier extends Company {
     static find = async (session, params = {}) => {
         if (!session?.user) return { error: 'Invalid User' }
 
-        const { mc, usdot, scac, irp, efs, fleetOne, transflo, ifta, stateTax } = params
+        const { mc, usdot, scac, irp, efs, fleetOne, transflo, ifta, stateTax, exclude } = params
         if (!mc && !usdot && !scac && !irp && !efs && !fleetOne && !transflo && !ifta && !stateTax)
             return { error: 'Invalid Parameters' }
 
@@ -344,6 +344,13 @@ class Carrier extends Company {
             target = targets[2], idProp = 'carrierId'
             const keys = Object.keys(stateTax)
             match = { [keys[0]]: stateTax[keys[0]] }
+        }
+
+        if (exclude?._id) {
+            const carrier = await Carrier.data(session, { _id: exclude._id })
+            const id = await carrier.id()
+
+            data.not = { [idProp]: id }
         }
 
         const data = (await mysql.execute(query[target].select(idProp, { match })))[0]

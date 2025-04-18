@@ -87,8 +87,8 @@ export const inputEvent = (selector, options = {}) => {
 }
 
 
-export const selectEvent = (id, options = {}) => {
-    const $select = $(`#${id}`)
+export const selectEvent = (selector, options = {}) => {
+    const $select = $(selector)
     const { fill, onChange, onFocus, onBlur } = options
 
     if (fill || onChange)

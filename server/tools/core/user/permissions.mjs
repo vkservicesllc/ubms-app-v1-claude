@@ -17,7 +17,7 @@ export const inPGroup = (searchGrp, permissions, DS) => {
 
     let found = false
     for (const grp in permissions) {
-        if (grp.split('/')[0] != searchGrp) continue
+        if (grp.split('/')[0] !== searchGrp) continue
 
         found = true
         break
@@ -32,7 +32,7 @@ export const inPEnvironment = (searchEnv, permissions, DS) => {
 
     let found = false
     for (const env in permissions) {
-        if (env != searchEnv) continue
+        if (env !== searchEnv) continue
 
         found = true
         break
@@ -58,12 +58,12 @@ export const html = (branch, permissions, tabs = 0) => {
         head += `\n${t}\t\t\t<th>${permission.title}</th>`
         body += `\n${t}\t<tbody>`
 
-        if (src == 'file') head += `\n${t}\t\t\t<th class="top-header">Format</th>`
+        if (src === 'file') head += `\n${t}\t\t\t<th class="top-header">Format</th>`
         head += headers
 
         for (const prop in permission.groups) {
             const group = permission.groups[prop]
-            const all = group.privileges == '*'
+            const all = group.privileges === '*'
             const row = target.replace(':', '-') + '-' + prop
             let { name } = group
             let title = ''
@@ -74,7 +74,7 @@ export const html = (branch, permissions, tabs = 0) => {
             if (title) title = ` title="${title}"`
 
             body += `\n${t}\t\t<tr>\n${t}\t\t\t<td${title}>${name}</td>`
-            if (src == 'file') body += `\n${t}\t\t\t<td class="has-text-grey is-size-7">${group.format}</td>`
+            if (src === 'file') body += `\n${t}\t\t\t<td class="has-text-grey is-size-7">${group.format}</td>`
             body += `\n${t}\t\t\t<td><input type="checkbox" class="${branch}-role-checkbox-all switch is-rounded is-success is-small" id="${row}" /><label for="${row}"></td>`
             for (let i = 0; i < length; i++) {
                 if (all || group.privileges.includes(i))

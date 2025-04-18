@@ -13,7 +13,7 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
-            // delId: 'delete-id',
+            name: 'current-name',
             profileId: 'profile-id',
             settingsId: 'settings-id',
         },

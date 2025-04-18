@@ -13,6 +13,7 @@
                         <section class="modal-card-body">
                             <form id="team-upsert-form" action="/resource/team" method="POST" autocomplete="off">
                                 {{{form.id.hidden.input}}}
+                                {{{form.currentName.hidden.input}}}
                                 <div class="columns">
                                     <div class="column">
                                         <div class="field">
@@ -199,7 +200,7 @@
                         </header>
                         <section class="modal-card-body">
                             <form id="team-settings-form" action="/resource/team/settings" method="POST" autocomplete="off">
-                                {{{input.settingsId}}}
+                                {{{form.settingsId.hidden.input}}}
                                 <div id="team-settings"></div>
                             </form>
                         </section>

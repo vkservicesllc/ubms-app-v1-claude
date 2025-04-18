@@ -126,7 +126,7 @@ class Company {
                 if (!targets.includes(target)) target = targets[0]
 
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
-                const idProp = target == targets[0] ? 'id' : 'companyId'
+                const idProp = target === targets[0] ? 'id' : 'companyId'
 
                 let log = (await mysql.execute(query[target].select(fields, {
                     match: { [idProp]: Company.matchIdHash(this._id) },
@@ -141,7 +141,7 @@ class Company {
             this.flush = async target => {
                 if (!targets.includes(target)) target = targets[0]
 
-                const idProp = target == targets[0] ? 'id' : 'companyId'
+                const idProp = target === targets[0] ? 'id' : 'companyId'
 
                 await mysql.execute(query[target].update({ updateLog: null }, {
                     [idProp]: Company.matchIdHash(this._id),
@@ -193,8 +193,8 @@ class Company {
                     error = []
 
                     let i = 0, modCt = 0, createdBy
-                    if (action == '-') action = 'delete'
-                    else if (action == '+') {
+                    if (action === '-') action = 'delete'
+                    else if (action === '+') {
                         action = 'insert'
                         createdBy = await session.user.id()
                     }
@@ -205,10 +205,10 @@ class Company {
 
                         try {
                             const data = { companyId, teamId }
-                            if (action == 'insert') data.createdBy = createdBy
+                            if (action === 'insert') data.createdBy = createdBy
 
                             const [ result ] = await mysql.execute(query.teams[action](data))
-                            if (result.affectedRows == 1) modCt++
+                            if (result.affectedRows === 1) modCt++
                         } catch (err) {
                             error.push('DB Error: idx ' + i)
                         }
@@ -302,18 +302,18 @@ class Company {
 
                 try {
                     const [ result ] = await mysql.execute(query[target].update(data, match))
-                    if (result.affectedRows == 1) modified = true
+                    if (result.affectedRows === 1) modified = true
                 } catch (err) {
                     error = 'DB Error'
                 }
 
-                if (modified && target == targets[0] && data.since) {
+                if (modified && target === targets[0] && data.since) {
                     const { since } = data
                     const length = targets.length
                     let errors = []
 
                     for (let i = 1; i < length; i++) {
-                        if (i == 2) continue
+                        if (i === 2) continue
                         if (i > 8) break
 
                         try {
@@ -346,7 +346,7 @@ class Company {
                 data.createdBy = await session.user.id()
 
                 const [ result ] = await mysql.execute(query[target].insert(data))
-                if (result.affectedRows == 1) updated = true
+                if (result.affectedRows === 1) updated = true
                 else error = 'DB Error'
 
                 return { updated, error, data: await Company.data(session, { id: data.companyId }) }
@@ -359,7 +359,7 @@ class Company {
 
                 const id = await this.id()
                 let idProp = 'id', since, ein, log, history = {}
-                if (target != targets[0]) {
+                if (target !== targets[0]) {
                     idProp = 'companyId'
                     since = filter?.since ? filter.since : this.since
                 } else {
@@ -411,7 +411,7 @@ class Company {
                             break
                     }
 
-                    if (target != targets[0])
+                    if (target !== targets[0])
                         company = await Company.data(session, { _id: this._id })
 
                     if (file && data) await logDeletion(session, file, data, { [idProp]: id }) 
@@ -437,7 +437,7 @@ class Company {
                     try {
                         const [ result ] = await mysql.execute(query.companies.update(data, { id: await this.id() }))
 
-                        if (result.affectedRows == 1) {
+                        if (result.affectedRows === 1) {
                             confirmed = true
                             this.confirmed = true
                         }
@@ -500,7 +500,7 @@ class Company {
         const list = Company.categoryList
 
         for (const key in list) {
-            if (branch == list[key].branch) {
+            if (branch === list[key].branch) {
                 catId = key
                 break
             }
@@ -536,7 +536,7 @@ class Company {
 
             const [ result ] = await mysql.execute(query.names.insert(data.name))
 
-            if (result.affectedRows == 1) created = true
+            if (result.affectedRows === 1) created = true
             else return { created, error: 'DB Error: Stage 2' }
         } else return { created, error: 'DB Error: Stage 1' }
 
@@ -651,12 +651,12 @@ class Company {
         if (!id) match.companies.id = Company.matchIdHash(_id)
         if (route) match.names.route = { route: [ [ 'busName', 'coType' ], route ] }
         if (ein) match.companies.ein = { aes: [ ein, secret.ein ] }
-        if (DS && branch == 'admin') {
+        if (DS && branch === 'admin') {
             const { closed, active, confirmed } = filter
 
-            if (typeof closed == 'boolean') match.companies.until = { null: !closed }
-            if (typeof active == 'boolean') match.companies.active = active
-            if (typeof confirmed == 'boolean') match.companies.confirmed = confirmed
+            if (typeof closed === 'boolean') match.companies.until = { null: !closed }
+            if (typeof active === 'boolean') match.companies.active = active
+            if (typeof confirmed === 'boolean') match.companies.confirmed = confirmed
         } else {
             match.companies.until = null
             match.companies.confirmed = true
@@ -697,7 +697,7 @@ class Company {
     static find = async (session, params = {}) => {
         if (!session?.user) return { error: 'Invalid User' }
 
-        const { ein, duns, busName, coType, alias } = params
+        const { ein, duns, busName, coType, alias, exclude } = params
         if (
             (!ein && !duns && !alias && !busName && !coType) ||
             (busName && !coType) || (!busName && coType)
@@ -710,9 +710,16 @@ class Company {
         if (ein) match.ein = { aes: [ strip(ein), secret.ein ] }
         if (duns) match.duns = strip(duns)
 
+        if (exclude?._id) {
+            const company = await Company.data(session, { _id: exclude._id })
+            const id = await company.id()
+
+            match.not = { [idProp]: id }
+        }
+
         const data = (await mysql.execute(query[target].select(idProp, { match })))[0]
 
-        return { found: data.length == 1 }
+        return { found: data.length === 1 }
     }
 
 
@@ -764,7 +771,7 @@ class Owner extends Individual {
 
 
             this.history = async (session, target = 'names', log = false) => {
-                if (target == 'names') {
+                if (target === 'names') {
                     const individual = await Individual.data(session, { _id: this._personId })
                     return individual.history(session, log)
                 }
@@ -1001,15 +1008,17 @@ class Owner extends Individual {
         if (!scope || !['global', 'local'].includes(scope)) scope = 'local'
 
         //* Global search first by default
-        let { found, personId } = await Individual.find(session, { ssn })
+        const result = await Individual.find(session, { ssn })
+        let { found } = result
 
         //* Search in owners only
-        if (personId && scope == 'local') {
+        if (result?.personId && scope === 'local') {
+            const { personId } = result
             const data = (await mysql.execute(query.owners.select('id', {
                 match: { personId },
             })))
 
-            found = data.length == 1
+            found = data.length === 1
         }
 
         return { found }

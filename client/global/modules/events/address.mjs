@@ -25,7 +25,7 @@ export const addr1Event = (id, options = {}) => {
 
             if (!mail && poBox) addr1 = null
             else if (addr2Id) {
-                $addr2 = $(`#${addr2Id}`)
+                $addr2 = $(addr2Id)
                 if (poBox) $addr2.val(null)
                 else {
                     const addr2Patt = patterns.match.addr2
@@ -100,8 +100,8 @@ export const zipEvent = (id, options = {}) => {
                             return onChange(zip, $zip)
 
                         const { city, state } = response.data
-                        const $city = $(`#${cityId}`)
-                        const $state = $(`#${stateId}`)
+                        const $city = $(cityId)
+                        const $state = $(stateId)
 
                         if (city && state) {
                             if (cityId) $city.val(city)

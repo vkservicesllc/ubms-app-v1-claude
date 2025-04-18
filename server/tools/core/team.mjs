@@ -83,7 +83,7 @@ class Team {
                 if (!['teams', 'profiles'].includes(target)) target = 'teams'
 
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
-                const idProp = target == 'teams' ? 'id' : 'teamId'
+                const idProp = target === 'teams' ? 'id' : 'teamId'
 
                 let log = (await mysql.execute(query[target].select(fields, {
                     match: { [idProp]: Team.matchIdHash(this._id) },
@@ -241,7 +241,7 @@ class Team {
                     data.createdBy = userId
 
                     const [ result ] = await mysql.execute(query.profiles.insert(data))
-                    if (result.affectedRows != 1) error = 'DB Error: Could not create Team Profile'
+                    if (result.affectedRows !== 1) error = 'DB Error: Could not create Team Profile'
                 } else {
                     const { profile } = this
                     const { address1, address2, city, state, zip } = profile.address
@@ -260,7 +260,7 @@ class Team {
                     if (Object.keys(data).length) {
                         try {
                             const [ result ] = await mysql.execute(query.profiles.update(data, { teamId }))
-                            if (result.affectedRows != 1) error = 'DB Error: Could not update Team Profile'
+                            if (result.affectedRows !== 1) error = 'DB Error: Could not update Team Profile'
                         } catch (err) {
                             error = 'DB Error'
                         }
@@ -348,7 +348,7 @@ class Team {
 
                 try {
                     const [ result ] = await mysql.execute(query.teams.update(data, { id }))
-                    if (result.affectedRows == 1) modified = true
+                    if (result.affectedRows === 1) modified = true
                 } catch (err) {
                     error = 'DB Error'
                 }
@@ -497,7 +497,7 @@ class Team {
 
         const match = { name }
         if (exclude?._id) {
-            const team = await Team.data(session, { _id })
+            const team = await Team.data(session, { _id: exclude._id })
             const id = await team.id()
 
             match.not = { id }
@@ -505,7 +505,7 @@ class Team {
 
         const data = (await mysql.execute(query.teams.select('id', { match })))[0]
 
-        return { found: data.length == 1 }
+        return { found: data.length === 1 }
     }
 
 
@@ -529,7 +529,7 @@ class Team {
             const teamId = await team.id()
             const found = (await mysql.execute(query.users.select('teamId', {
                 match: { userId, teamId },
-            })))[0].length == 1
+            })))[0].length === 1
 
             if (!user.DS && !found) {
                 delete req.session.team

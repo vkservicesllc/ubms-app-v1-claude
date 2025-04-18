@@ -198,7 +198,7 @@ class Application {
         const fields = [ 'updateLog' ]
         let idProp = 'aplId'
 
-        if (target == 'applications') {
+        if (target === 'applications') {
             idProp = 'id'
             fields.unshift('createdBy', 'createdAt', 'createdIn', 'finishedAt', 'reviewedBy', 'reviewedAt')
         }
@@ -331,7 +331,7 @@ class Application {
 
         if (!error && Object.keys(data).length) {
             const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
-            if (result.affectedRows == 1) modified = true
+            if (result.affectedRows === 1) modified = true
 
             if (Object.keys(mainData).length)
                 await mysql.execute(query.applications.update(mainData, { id }))
@@ -711,7 +711,7 @@ class Application {
         ]
 
         let users = (await mysql.execute(Query.select(db.carrier, batch)))[0]
-        users.forEach(user => user.self = user._id == session.user._id)
+        users.forEach(user => user.self = user._id === session.user._id)
 
         return users
     }
@@ -800,7 +800,7 @@ class Application {
                 }
 
                 await Promise.all(filter.companies.map(async (_id) => {
-                    if (_id != 'null') {
+                    if (_id !== 'null') {
                         const carrier = await Carrier.data(res.session, { _id })
                         const id = await carrier.id()
 
@@ -810,7 +810,7 @@ class Application {
             }
 
             if (filter?.user) {
-                if (filter.user == 'null')
+                if (filter.user === 'null')
                     query.whereNull('userId')
                 else {
                     const userId = await (await User.data(res.session, { _id: filter.user })).id()
@@ -847,7 +847,7 @@ class Application {
 
                 if (filter.positions.includes('null')) {
                     nullable = true
-                    filter.positions = filter.positions.filter(value => value != 'null')
+                    filter.positions = filter.positions.filter(value => value !== 'null')
                 }
 
                 if (filter.positions.length)

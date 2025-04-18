@@ -42,7 +42,7 @@ export const busNameEvent = (id, coTypeId, callback = {}) => {
             if (onInput) onInput(busName, $busName)
         },
         onChange(busName, $busName) {
-            const $coType = $(`#${coTypeId}`)
+            const $coType = $(coTypeId)
             const coTypePatt = patterns.match.coType
             let coType = coTypePatt.test(busName)
                     ? coTypePatt.exec(busName)[0]
@@ -74,7 +74,7 @@ export const coTypeEvent = (id, busNameId, onChange, callback = {}) => {
         fill: true,
         onChange(coType, $coType) {
             if (onChange) {
-                const $busName = $(`#${busNameId}`)
+                const $busName = $(busNameId)
                 const busName = $busName.val()
 
                 onChange(coType, busName, $coType, $busName)
