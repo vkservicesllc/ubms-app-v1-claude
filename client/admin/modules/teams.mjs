@@ -16,6 +16,21 @@ const driverPositions = $.ajax('/api/source/driver?filter=positions', { async: f
 
 const interval = 30000
 
+const HS = selector.id.hidden
+const nameId = selector.id.text.name
+const catId = selector.id.select.category
+const descId = selector.id.text.desc
+const busNameId = selector.id.text.busName
+const coTypeId = selector.id.select.coType
+const phoneId = selector.id.text.phone
+const emailId = selector.id.text.email
+const websiteId = selector.id.text.website
+const addr1Id = selector.id.text.address1
+const addr2Id = selector.id.text.address2
+const zipId = selector.id.text.addrZip
+const cityId = selector.id.text.addrCity
+const stateId = selector.id.select.addrState
+
 const ids = {
     catIdIcon: 'team-category-select-icon',
 }
@@ -61,7 +76,7 @@ const $relationship = $('#team-relationship')
 const $settings = $('#team-settings')
 
 const $id = {
-    main: $(selector.id.hidden.id),
+    main: $(HS.id),
 }
 
 const setTip = new Tip($tip, tipDefs, message)
@@ -112,7 +127,7 @@ teamNameEvent({
     },
 })
 
-catIdEvent(selector.id.select.category, ids.catIdIcon)
+catIdEvent(catId, ids.catIdIcon)
 
 teamDescEvent({
     onInput(desc) {
@@ -124,14 +139,14 @@ teamDescEvent({
 })
 
 
-busNameEvent(selector.id.text.busName, selector.id.select.coType)
+busNameEvent(busNameId, coTypeId)
 
-coTypeEvent(selector.id.select.coType, selector.id.text.busName)
+coTypeEvent(coTypeId, busNameId)
 
 
-telEvent(selector.id.text.phone)
+telEvent(phoneId)
 
-emailEvent(selector.id.text.email, {
+emailEvent(emailId, {
     onInput() {
         $tip.email.html(null)
     },
@@ -141,7 +156,7 @@ emailEvent(selector.id.text.email, {
     },
 })
 
-urlEvent(selector.id.text.website, {
+urlEvent(websiteId, {
     onInput() {
         $tip.website.html(null)
     },
@@ -152,17 +167,17 @@ urlEvent(selector.id.text.website, {
 })
 
 
-addr1Event(selector.id.text.address1, { addr2Id: selector.id.text.address2 })
+addr1Event(addr1Id, { addr2Id })
 
-addr2Event(selector.id.text.address2)
+addr2Event(addr2Id)
 
-zipEvent(selector.id.text.addrZip, { cityId: selector.id.text.addrCity, stateId: selector.id.select.addrState })
+zipEvent(zipId, { cityId, stateId })
 
-cityEvent(selector.id.text.addrCity)
+cityEvent(cityId)
 
 
 const closeUpsert = () => {
-    const $catId = $(selector.id.select.category)
+    const $catId = $(catId)
 
     $modal.all.removeClass('is-active')
     $(selector.class.global).val(null)
@@ -243,14 +258,14 @@ const displayTeams = () => {
                         if (target == 'edit') {
                             const { description, count } = response.data
                             const { companies, users } = count
-                            const $catId = $(selector.id.select.category)
+                            const $catId = $(catId)
 
                             $id.main.val(_id)
-                            $(`${selector.id.hidden.name}, ${selector.id.text.name}`).val(name)
+                            $(`${HS.name}, ${nameId}`).val(name)
                             $catId.val(category).find('option[value=""]').remove()
                             if (companies) $catId.attr('disabled', true)
                             $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)
-                            $(selector.id.text.desc).val(description)
+                            $(descId).val(description)
 
                             $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
                             setTip.passed('name')
@@ -259,7 +274,7 @@ const displayTeams = () => {
                             countDescChars(description)
                             $modal.upsert.addClass('is-active')
                         } else if (target == 'profile') {
-                            $(selector.id.hidden.profileId).val(_id)
+                            $(HS.profileId).val(_id)
                             const { profile } = response.data
 
                             if (profile) {
@@ -267,23 +282,23 @@ const displayTeams = () => {
                                 const { address1, address2, city, state, zip } = profile.address
 
                                 if (busName && coType) {
-                                    $(selector.id.text.busName).val(busName)
-                                    $(selector.id.select.coType).val(coType)
-                                    $(selector.id.text.phone).val(formatTel(phone))
-                                    $(selector.id.text.email).val(email)
-                                    $(selector.id.text.website).val(website)
-                                    $(selector.id.text.address1).val(address1)
-                                    $(selector.id.text.address2).val(address2)
-                                    $(selector.id.text.addrZip).val(zip)
-                                    $(selector.id.text.addrCity).val(city)
-                                    $(selector.id.select.addrState).val(state)
+                                    $(busNameId).val(busName)
+                                    $(coTypeId).val(coType)
+                                    $(phoneId).val(formatTel(phone))
+                                    $(emailId).val(email)
+                                    $(websiteId).val(website)
+                                    $(addr1Id).val(address1)
+                                    $(addr2Id).val(address2)
+                                    $(zipId).val(zip)
+                                    $(cityId).val(city)
+                                    $(stateId).val(state)
                                 }
                             }
 
                             $title.profile.html(`<strong>${escapeHTML(name)}</strong> <small>Profile</small>`)
                             $modal.profile.addClass('is-active')
                         } else if (target == 'settings') {
-                            $(selector.id.hidden.settingsId).val(_id)
+                            $(HS.settingsId).val(_id)
                             const { settings } = response.data
 
                             const applied = {
@@ -384,7 +399,7 @@ $button.add.click(() => {
 
 //! TEST VERSION: Deleting via API
 $button.delete.click(function() {
-    const name = $(selector.id.hidden.name).val()
+    const name = $(HS.name).val()
 
     if (confirm(`Confirm deletion: Are you sure you want to delete "${name}"!`)) {
         const _id = $id.main.val()
