@@ -934,17 +934,20 @@ class User extends Person {
     static find = async (session, params = {}) => {
         if (!session?.user) return { error: 'Invalid User' }
 
-        const { username, email } = params
+        const { username, email, exclude } = params
         if (!username && !email) return { error: 'Invalid Parameters' }
 
-        let found = false
+        const match = { username, email }
+        if (exclude?._id) {
+            const user = await User.data(session, { _id })
+            const id = await user.id()
 
-        const data = (await mysql.execute(query.users.select('id', {
-            match: { username, email },
-        })))[0]
-        found = data.length == 1
+            match.not = { id }
+        }
 
-        return { found }
+        const data = (await mysql.execute(query.users.select('id', { match })))[0]
+
+        return { found: data.length === 1 }
     }
 
 
