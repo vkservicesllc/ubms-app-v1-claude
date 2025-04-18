@@ -16,20 +16,21 @@ const driverPositions = $.ajax('/api/source/driver?filter=positions', { async: f
 
 const interval = 30000
 
-const HS = selector.id.hidden
-const nameId = selector.id.text.name
-const catId = selector.id.select.category
-const descId = selector.id.text.desc
-const busNameId = selector.id.text.busName
-const coTypeId = selector.id.select.coType
-const phoneId = selector.id.text.phone
-const emailId = selector.id.text.email
-const websiteId = selector.id.text.website
-const addr1Id = selector.id.text.address1
-const addr2Id = selector.id.text.address2
-const zipId = selector.id.text.addrZip
-const cityId = selector.id.text.addrCity
-const stateId = selector.id.select.addrState
+const { id } = selector
+const HS = id.hidden
+const nameId = id.text.name
+const catId = id.select.category
+const descId = id.text.desc
+const busNameId = id.text.busName
+const coTypeId = id.select.coType
+const phoneId = id.text.phone
+const emailId = id.text.email
+const websiteId = id.text.website
+const addr1Id = id.text.address1
+const addr2Id = id.text.address2
+const zipId = id.text.addrZip
+const cityId = id.text.addrCity
+const stateId = id.select.addrState
 
 const ids = {
     catIdIcon: 'team-category-select-icon',

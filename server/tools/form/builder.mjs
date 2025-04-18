@@ -361,7 +361,7 @@ export const constructForm = (Src, target, options) => {
         }
 
     if (radio) {
-        const keys = Object.keys(radio).filter(key => key !== 'label')
+        const keys = Object.keys(radio).filter(key => key !== 'properties' && key !== 'label')
 
         if (keys) {
             form.radio = { label: radio.label(radioOpts?.label) }
@@ -378,7 +378,7 @@ export const constructForm = (Src, target, options) => {
     if (checkbox) {
         form.checkbox = { label: checkbox.label(checkboxOpts?.label) }
 
-        const keys = Object.keys(checkbox).filter(key => key !== 'label' && key !== 'input')
+        const keys = Object.keys(checkbox).filter(key => key !== 'properties' && key !== 'label' && key !== 'input')
 
         if (!keys.length) form.checkbox.input = checkbox.input(checkboxOpts?.input)
         else

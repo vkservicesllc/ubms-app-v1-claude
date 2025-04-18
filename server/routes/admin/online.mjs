@@ -8,14 +8,11 @@ import carrierPermissions from '../../tools/core/user/permissions.carrier.mjs'
 import { respond404 } from '../../tools/utils/response.mjs'
 
 /* Forms */
+import UserForm from '../../tools/form/user.mjs'
 import TeamForm from '../../tools/form/team.mjs'
 
 /* HTML Builders */
 import { Label as UserLabel, Input as UserInput, Select as UserSelect } from '../../html/user.mjs'
-import { Label as TeamLabel, Input as TeamInput, Select as TeamSelect } from '../../html/team.mjs'
-import { Label as CompanyLabel, Input as CompanyInput, Select as CompanySelect } from '../../html/company.mjs'
-import { Label as AddrLabel, Input as AddrInput, Select as AddrSelect } from '../../html/address.us.mjs'
-import { Label as ContactLabel, Input as ContactInput } from '../../html/contacts.mjs'
 
 /* Registry */
 import { formSelectors } from '../../../client/global/modules/registry/selectors.mjs'
@@ -44,6 +41,32 @@ router.get('/users', User.verify, (req, res) => {
         const key = 'users'
         let { hbs } = res
         hbs = hbs.set(key)
+
+        const options = {}
+        const fields = [
+            'status', 'location', 'condition',
+            'email', 'phone',
+            'firstName', 'lastName', 'alias', 'gender',
+        ]
+        fields.forEach(prop => {
+            const form = UserForm[prop]
+            const { required, initialType } = form.properties
+            const keys = Object.keys(form).filter(key => !['properties', 'validate'].includes(key))
+            options[prop] = {}
+
+            keys.forEach(key => {
+                options[prop][key] = {}
+                options[prop][key].label = { class: required === true ? labelClassRequired : labelClass }
+                if (['text', 'textarea'].includes(initialType))
+                    options[prop][key].input = { class: initialType === 'text' ? 'input' : initialType }
+                else if (key === 'text')
+                    options[prop][key].input = { class: 'input' }
+                else if (key === 'select')
+                    options[prop][key].input = { tabs: 13 }
+            })
+        })
+
+        hbs.form = new UserForm(options)
 
         const { user } = res.session
         const inputClass = 'input'
@@ -200,54 +223,6 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
         })
 
         hbs.form = new TeamForm(options)
-
-        // const {
-        //     class: teamClass,
-        //     id, busNameId, coTypeId, phoneId, emailId, websiteId,
-        //     addr1Id, addr2Id, cityId, stateId, zipId,
-        // } = formSelectors.team
-
-        hbs.label = {
-            // name: TeamLabel.name({ class: labelClassRequired }),
-            // category: TeamLabel.catId({ class: labelClassRequired }),
-            // description: TeamLabel.description({ class: labelClass }),
-            // busName: CompanyLabel.busName({ class: labelClassRequired, for: busNameId, content: 'Company Name' }),
-            // coType: CompanyLabel.coType({ class: labelClassRequired, for: coTypeId }),
-            // phone: ContactLabel.tel('phone', { class: labelClassRequired, addClass: 'required', for: phoneId }),
-            // email: ContactLabel.email({ class: labelClass, for: emailId }),
-            // website: CompanyLabel.website({ class: labelClass, for: websiteId }),
-            // address1: AddrLabel.address1({ class: labelClassRequired, for: addr1Id }),
-            // address2: AddrLabel.address2({ class: labelClass, for: addr2Id }, true),
-            // city: AddrLabel.city({ class: labelClassRequired, for: cityId }),
-            // state: AddrLabel.state({ class: labelClassRequired, for: stateId }),
-            // zip: AddrLabel.zip({ class: labelClassRequired, for: zipId }),
-        }
-
-        hbs.input = {
-            // current: {
-            //     name: TeamInput.name({}, true),
-            // },
-            // id: TeamInput.id(),
-            // name: TeamInput.name({ class: 'input' }),
-            // description: TeamInput.description({ class: 'textarea' }),
-            // profileId: TeamInput.id(null, { id: `profile-${id}` }),
-            // busName: CompanyInput.busName({ class: 'input', id: busNameId, addClass: teamClass }),
-            // phone: ContactInput.tel('phone', { class: 'input', id: phoneId, addClass: teamClass, required: true }),
-            // email: ContactInput.email({ class: 'input', id: emailId, addClass: teamClass }),
-            // website: CompanyInput.website({ class: 'input', id: websiteId, addClass: teamClass }),
-            // address1: AddrInput.address1({ class: `input ${teamClass}`, id: addr1Id }),
-            // address2: AddrInput.address2({ class: `input ${teamClass}`, id: addr2Id }),
-            // city: AddrInput.city({ class: `input ${teamClass}`, id: cityId }),
-            // zip: AddrInput.zip({ class: `input ${teamClass}`, id: zipId }),
-            // settingsId: TeamInput.id(null, { id: `settings-${id}` }),
-        }
-
-        hbs.select = {
-            // category: TeamSelect.catId({ tabs: 13, options: { emptyOpt: '--' } }),
-            // coType: CompanySelect.coType({ tabs: 13, options: { emptyOpt: '--' }, id: coTypeId, addClass: teamClass }),
-            // state: AddrSelect.stateUS({ tabs: 13, options: { emptyOpt: '--', valOpt: true }, id: stateId, class: teamClass }),
-        }
-
         hbs.descMaxChars = inputLength.team.desc.max
 
         res.render(key, hbs)

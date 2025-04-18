@@ -1,7 +1,7 @@
 import escapeHTML from '/modules/tools/utils/html.mjs'
 import { formSelectors } from '/modules/registry/selectors.mjs'
-import { tel as formatTel } from '/modules/tools/formatter.mjs'
-import { capitalizeFirst } from '/modules/tools/string.mjs'
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
+import { capitalizeFirst } from '/modules/tools/utils/string.mjs'
 import { nameEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 

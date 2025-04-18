@@ -1,6 +1,6 @@
 import { formSelectors } from '/modules/registry/selectors.mjs'
 import { roleNameEvent, roleLocationEvent } from '/modules/events/user.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 
 const { carrierRoleId, carrierRoleNameId, carrierRoleLocationId } = formSelectors.user
 
