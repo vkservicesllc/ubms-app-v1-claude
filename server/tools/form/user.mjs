@@ -8,6 +8,7 @@ import {
     createEmailForm,
 } from './reusable.mjs'
 
+import User from '../core/user.mjs'
 import selector from '../../../client/global/modules/registry/selectors/user.mjs'
 import roleSelector from '../../../client/global/modules/registry/selectors/user-role.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
@@ -15,11 +16,13 @@ import { getStaticProps } from '../../../client/global/modules/tools/utils/class
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
 
 const required = true, disabled = true
+const statusList = { ...User.statusList }
+delete statusList['D']
 
 const propsData = {
-    status: { 'U': 'User', 'A': 'Admin', 'S': 'Super Admin' },
-    location: { 'US': 'USA', 'UA': 'Ukraine' },
-    condition: { 'A': 'Active', 'I': 'Inactive', 'L': 'Locked' },
+    status: statusList,
+    location: User.locationList,
+    condition: User.conditionList,
 }
 
 const conditionKeys = ['active', 'inactive', 'locked']
@@ -28,7 +31,7 @@ const conditionKeys = ['active', 'inactive', 'locked']
 const createPropsForm = (flag, props = {}) => createForm({
     selector,
     target: flag,
-    group: 'props',
+    group: flag,
     ...props,
     type: flag === 'condition' ? 'select/radio' : 'select',
     name: flag,
@@ -130,6 +133,14 @@ class UserForm {
     }
 
     static id = createIdForm({ selector })
+    static modifyId = createIdForm({ selector, target: 'modifyId' })
+    static deleteId = createIdForm({ selector, target: 'deleteId' })
+
+    static hiddenUsername = createForm({
+        selector,
+        target: 'username',
+        type: 'hidden',
+    })
 
     static status = createPropsForm('status')
     static location = createPropsForm('location')
@@ -156,13 +167,13 @@ class UserForm {
         },
     })
 
-    static firstName = createPersonNameForm('first', { selector, group: 'name' })
+    static firstName = createPersonNameForm('first', { selector, group: 'name', label: 'Real First Name' })
     static lastName = createPersonNameForm('last', { selector, group: 'name' })
     static alias = createPersonNameForm('alias', { selector, group: 'name' })
     static gender = createGenderForm({ selector })
 
     static email = createEmailForm({ selector, required })
-    static phone = createPhoneForm({ selector })
+    static phone = createPhoneForm({ selector, label: 'US Cell Phone' })
 
 }
 

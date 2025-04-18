@@ -84,18 +84,17 @@
                                 {{/if}}
                             </header>
                             <section class="modal-card-body">
-                                <form class="content" id="{{formId.user}}" action="{{actionUrl.user}}" method="POST" autocomplete="off">
-                                    {{{input.id}}}
-                                    {{{input.usernameHidden}}}
-                                    {{{input.emailHidden}}}
+                                <form class="content" id="user-form" action="/resource/user" method="POST" autocomplete="off">
+                                    {{{form.id.hidden.input}}}
+                                    {{{form.hiddenUsername.hidden.input}}}
                                     <h5 class="has-text-info">Properties</h5>
                                     <div class="columns">
                                         <div class="column is-one-third">
                                             <div class="field">
-                                                {{{label.status}}}
+                                                {{{form.status.select.label}}}
                                                 <div class="control has-icons-left mt-1">
                                                     <div class="select is-fullwidth">
-                                                        {{{select.status}}}
+                                                        {{{form.status.select.input}}}
                                                     </div>
                                                     <span class="icon is-left">
                                                         <i class="fas fa-user"></i>
@@ -105,10 +104,10 @@
                                         </div>
                                         <div class="column is-one-third">
                                             <div class="field">
-                                                {{{label.location}}}
+                                                {{{form.location.select.label}}}
                                                 <div class="control has-icons-left mt-1">
                                                     <div class="select is-fullwidth">
-                                                        {{{select.location}}}
+                                                        {{{form.location.select.input}}}
                                                     </div>
                                                     <span class="icon is-left">
                                                         <i class="fas fa-location-crosshairs"></i>
@@ -121,9 +120,9 @@
                                     <div class="columns">
                                         <div class="column is-two-thirds">
                                             <div class="field">
-                                                {{{label.email}}}
+                                                {{{form.email.text.label}}}
                                                 <div class="control has-icons-left mt-1">
-                                                    {{{input.email}}}
+                                                    {{{form.email.text.input}}}
                                                     <span class="icon is-left">
                                                         <i class="fas fa-envelope"></i>
                                                     </span>
@@ -133,9 +132,9 @@
                                         </div>
                                         <div class="column">
                                             <div class="field">
-                                                {{{label.phone}}}
+                                                {{{form.phone.text.label}}}
                                                 <div class="control has-icons-left mt-1">
-                                                    {{{input.phone}}}
+                                                    {{{form.phone.text.input}}}
                                                     <span class="icon is-left">
                                                         <i class="fas fa-mobile"></i>
                                                     </span>
@@ -147,18 +146,18 @@
                                     <div class="columns">
                                         <div class="column">
                                             <div class="field">
-                                                {{{label.firstName}}}
+                                                {{{form.firstName.text.label}}}
                                                 <div class="control mt-1">
-                                                    {{{input.firstName}}}
+                                                    {{{form.firstName.text.input}}}
                                                 </div>
                                                 <p class="help" id="user-fname-help" style="display: none;"></p>
                                             </div>
                                         </div>
                                         <div class="column">
                                             <div class="field">
-                                                {{{label.lastName}}}
+                                                {{{form.lastName.text.label}}}
                                                 <div class="control mt-1">
-                                                    {{{input.lastName}}}
+                                                    {{{form.lastName.text.input}}}
                                                 </div>
                                             </div>
                                         </div>
@@ -166,23 +165,23 @@
                                     <div class="columns">
                                         <div class="column">
                                             <div class="field">
-                                                {{{label.alias}}}
+                                                {{{form.alias.text.label}}}
                                                 <div class="control mt-1">
-                                                    {{{input.alias}}}
+                                                    {{{form.alias.text.input}}}
                                                 </div>
                                                 <p class="help" id="user-alias-help" style="display: none;"></p>
                                             </div>
                                         </div>
                                         <div class="column">
                                             <div class="field">
-                                                {{{label.gender}}}
+                                                {{{form.gender.radio.label}}}
                                                 <div class="control mt-2">
                                                     <label class="radio">
-                                                        {{{input.genderM}}}
+                                                        {{{form.gender.radio.male.input}}}
                                                         Male
                                                     </label>
                                                     <label class="radio">
-                                                        {{{input.genderF}}}
+                                                        {{{form.gender.radio.female.input}}}
                                                         Female
                                                     </label>
                                                 </div>
@@ -193,7 +192,7 @@
                             </section>
                             <footer class="modal-card-foot">
                                 <div class="buttons">
-                                    <button type="submit" form="{{formId.user}}" class="button" id="user-modal-submit"></button>
+                                    <button type="submit" form="user-form" class="button" id="user-modal-submit"></button>
                                     <button class="button modal-cancel">Cancel</button>
                                     <p class="has-text-danger is-size-7">* Required fields</p>
                                 </div>
@@ -209,26 +208,26 @@
                                 <button class="delete"></button>
                             </header>
                             <section class="modal-card-body">
-                                <form id="{{formId.userCondition}}" action="{{actionUrl.userCondition}}" method="POST" autocomplete="off">
-                                    {{{input.id}}}
+                                <form id="user-condition-form" action="/resource/user/modify/condition" method="POST" autocomplete="off">
+                                    {{{form.modifyId.hidden.input}}}
                                     <div class="radios">
                                         <label class="radio">
-                                            {{{input.conditionA}}}
+                                            {{{form.condition.radio.active.input}}}
                                             &nbsp;Active
                                         </label>
                                         <label class="radio ml-5">
-                                            {{{input.conditionI}}}
+                                            {{{form.condition.radio.inactive.input}}}
                                             &nbsp;Suspended
                                         </label>
                                         <label class="radio ml-5">
-                                            {{{input.conditionL}}}
+                                            {{{form.condition.radio.locked.input}}}
                                             &nbsp;Locked by the System
                                         </label>
                                     </div>
                                 </form>
                             </section>
                             <footer class="modal-card-foot">
-                                <button type="submit" form="{{formId.userCondition}}" class="button is-success">Update</button>
+                                <button type="submit" form="user-condition-form" class="button is-success">Update</button>
                             </footer>
                         </div>
                     </div>
@@ -241,8 +240,8 @@
                                 <button class="delete"></button>
                             </header>
                             <section class="modal-card-body">
-                                <form id="{{formId.deleteUser}}" action="{{actionUrl.deleteUser}}" method="POST" autocomplete="off">
-                                    {{{input.id}}}
+                                <form id="user-delete-form" action="/resource/user/delete" method="POST" autocomplete="off">
+                                    {{{form.deleteId.hidden.input}}}
                                     <p class="has-text-danger">
                                         <b>Warning:</b><br/>
                                         Deleting this user will remove their account permanently.
@@ -256,7 +255,7 @@
                                 </form>
                             </section>
                             <footer class="modal-card-foot">
-                                <button type="submit" form="{{formId.deleteUser}}" class="button is-danger" id="user-delete-modal-submit" disabled>Delete</button>
+                                <button type="submit" form="user-delete-form" class="button is-danger" id="user-delete-modal-submit" disabled>Delete</button>
                             </footer>
                         </div>
                     </div>

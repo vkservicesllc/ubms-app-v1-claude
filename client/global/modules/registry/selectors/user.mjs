@@ -31,6 +31,9 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
+            username: 'username',
+            modifyId: 'modify-id',
+            deleteId: 'delete-id',
         },
         text: {
             username: 'username',

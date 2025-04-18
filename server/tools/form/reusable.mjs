@@ -23,7 +23,6 @@ export const createIdForm = (props = {}) => createForm({
     ...props,
     type : 'hidden',
     name: '_id',
-    validate: false,
 })
 
 
@@ -75,6 +74,7 @@ export const createPersonNameForm = (flag, props = {}) => {
 
 export const createGenderForm = (props = {}) => createForm({
     target: 'gender',
+    group: 'gender',
     name: 'sex',
     label: 'Gender',
     type: 'select/radio',

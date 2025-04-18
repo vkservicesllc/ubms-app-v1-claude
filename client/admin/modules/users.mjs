@@ -1,36 +1,30 @@
 import escapeHTML from '/modules/tools/utils/html.mjs'
-import { formSelectors } from '/modules/registry/selectors.mjs'
+import selector from '/modules/registry/selectors/user.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import { capitalizeFirst } from '/modules/tools/utils/string.mjs'
 import { nameEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 
-const {
-    id,
-    statusId,
-    locationId,
-    emailId,
-    userId,
-    phoneId,
-    firstNameId, lastNameId, aliasId,
-    genderId, genderClass,
-    conditionId, conditionClass,
-    mainFormId, deleteFormId,
-} = formSelectors.user
+const emailId = selector.id.text.email
+const phoneId = selector.id.text.phone
+const firstNameId = selector.id.text.firstName
+const lastNameId = selector.id.text.lastName
+const aliasId = selector.id.text.alias
+const conditionClass = selector.class.radio.condition
+const genderClass = selector.class.radio.gender
 
-const $id = $(`.${id}`)
-const $status = $(`#${statusId}`)
-const $location = $(`#${locationId}`)
-const $email = $(`#${emailId}`)
-const $emailHidden = $(`#${emailId}-hidden`)
-const $usernameHidden = $(`#${userId}-hidden`)
-const $phone = $(`#${phoneId}`)
-const $firstName = $(`#${firstNameId}`)
-const $lastName = $(`#${lastNameId}`)
-const $alias = $(`#${aliasId}`)
-const $gender = $(`.${genderClass}`)
-const $condition = $(`.${conditionClass}`)
-const $conditionL = $(`#${conditionId}-l`)
+const $id = $(selector.class.hidden)
+const $status = $(selector.id.select.status)
+const $location = $(selector.id.select.location)
+const $email = $(selector.id.text.email)
+const $hiddenUsername = $(selector.id.hidden.username)
+const $phone = $(phoneId)
+const $firstName = $(firstNameId)
+const $lastName = $(lastNameId)
+const $alias = $(aliasId)
+const $gender = $(genderClass)
+const $condition = $(conditionClass)
+const $lockedCondition = $(selector.id.radio.condition.locked)
 
 const $title = {
     all: $('.modal-card-title'),
@@ -39,8 +33,8 @@ const $title = {
     userCondition: $('#user-condition-modal-title'),
 }
 const $form = {
-    user: $(`#${mainFormId}`),
-    deleteUser: $(`#${deleteFormId}`),
+    user: $('#user-form'),
+    deleteUser: $('#user-delete-form'),
 }
 const $field = {
     status: $status.parent().parent().parent().parent(),
@@ -147,14 +141,13 @@ emailEvent(emailId, {
     onChange(email, valid) {
         const $tip = $help.email
         const $button = $submit.user
-        const id = $id.val()
-        const username = $usernameHidden.val()
-        const currentEmail = $emailHidden.val()
+        const _id = $(selector.id.hidden.id).val()
+        const username = $hiddenUsername.val()
 
         $tip.hide().removeClass('is-danger is-success').html(null)
         if (!$help.name.html()) $button.prop('disabled', false)
 
-        if (id) message.removeInvite()
+        if (_id) message.removeInvite()
 
         if (email) {
             if (!valid) {
@@ -163,10 +156,10 @@ emailEvent(emailId, {
                     .html(message.email.invalid)
                     .show()
                 $button.prop('disabled', true)
-            } else if (email != currentEmail)
+            } else
                 $.ajax('/api/unique/user', {
                     method: 'POST',
-                    data: { email },
+                    data: { email, exclude: { _id } },
                     success(response) {
                         const { unique } = response
 
@@ -176,7 +169,7 @@ emailEvent(emailId, {
                                 .html(message.email.success)
                                 .show()
 
-                            if (id && !username)
+                            if (_id && !username)
                                 message.buildInvite()
                         } else {
                             $tip
@@ -373,12 +366,12 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
                 $title.all.html(null)
                 message.removeInvite()
-                $(`input:not(.${genderClass}):not(.${conditionClass}):not([type=search]), select:not('.dt-input')`).val(null)
+                $(`input:not(${genderClass}):not(${conditionClass}):not([type=search]), select:not('.dt-input')`).val(null)
                 $status.prop('disabled', false).val('U')
                 $status.find('[value=S]').prop('disabled', false)
                 $gender.prop('checked', false)
                 $condition.prop('checked', false)
-                $conditionL.prop('disabled', true)
+                $lockedCondition.prop('disabled', true)
                 $confirmation.deleteUser.prop('checked', false)
                 $submit.user.text(null).removeClass('is-link is-success')
                 $submit.deleteUser.prop('disabled', true)
@@ -483,8 +476,9 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 method: 'POST',
                 success(data) {
                     const { _id, name, condition } = data
+console.log($condition)
                     $id.val(_id)
-                    if (condition[0] == 'L') $conditionL.prop('disabled', false)
+                    if (condition[0] == 'L') $lockedCondition.prop('disabled', false)
                     $condition.filter(function() {
                         return $(this).val() == condition[0]
                     }).prop('checked', true)
@@ -517,14 +511,14 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     location = location[0]
 
                     const $sex = [
-                        $(`#${genderId}-f`),
-                        $(`#${genderId}-m`),
+                        $(selector.id.radio.gender.male),
+                        $(selector.id.radio.gender.male),
                     ]
                     let disabled = false
 
                     $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${escapeHTML(name)}</strong>`)
-                    $usernameHidden.val(username)
-                    $emailHidden.val(email)
+                    $hiddenUsername.val(username)
+                    // $emailHidden.val(email)
                     if (status == 'D') {
                         disabled = true
                         $status.prop('disabled', disabled)

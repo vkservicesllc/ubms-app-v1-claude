@@ -57,9 +57,7 @@ router.get('/users', User.verify, (req, res) => {
             keys.forEach(key => {
                 options[prop][key] = {}
                 options[prop][key].label = { class: required === true ? labelClassRequired : labelClass }
-                if (['text', 'textarea'].includes(initialType))
-                    options[prop][key].input = { class: initialType === 'text' ? 'input' : initialType }
-                else if (key === 'text')
+                if (key === 'text')
                     options[prop][key].input = { class: 'input' }
                 else if (key === 'select')
                     options[prop][key].input = { tabs: 13 }
@@ -67,6 +65,7 @@ router.get('/users', User.verify, (req, res) => {
         })
 
         hbs.form = new UserForm(options)
+console.log(hbs.form)
 
         const { user } = res.session
         const inputClass = 'input'
@@ -77,33 +76,33 @@ router.get('/users', User.verify, (req, res) => {
         } = formSelectors.user
 
         hbs.label = {
-            status: UserLabel.status({ class: labelClassRequired }),
-            location: UserLabel.location({ class: labelClassRequired }),
-            email: UserLabel.email({ class: labelClassRequired }),
-            phone: UserLabel.phone({ class: labelClass }),
-            firstName: UserLabel.firstName({ class: labelClassRequired }),
-            lastName: UserLabel.lastName({ class: labelClassRequired }),
-            alias: UserLabel.alias({ class: labelClass }),
-            gender: UserLabel.gender({ class: labelClass }),
+            // status: UserLabel.status({ class: labelClassRequired }),
+            // location: UserLabel.location({ class: labelClassRequired }),
+            // email: UserLabel.email({ class: labelClassRequired }),
+            // phone: UserLabel.phone({ class: labelClass }),
+            // firstName: UserLabel.firstName({ class: labelClassRequired }),
+            // lastName: UserLabel.lastName({ class: labelClassRequired }),
+            // alias: UserLabel.alias({ class: labelClass }),
+            // gender: UserLabel.gender({ class: labelClass }),
 
             //! will be more added
             carrierRoleName: UserLabel.roleName({ target: 'crr', class: labelClassRequired }),
             carrierRoleLocation: UserLabel.roleLocation({ target: 'crr', class: labelClass }),
         }
         hbs.input = {
-            id: UserInput.id(null, true),
-            usernameHidden: UserInput.username({ type: 'hidden' }),
-            emailHidden: UserInput.email({ type: 'hidden' }),
-            email: UserInput.email({ class: inputClass }),
-            phone: UserInput.phone({ class: inputClass, disabled: user.location[0] != 'US' }),
-            firstName: UserInput.firstName({ class: inputClass, placeholder: 'As shown on ID' }),
-            lastName: UserInput.lastName({ class: inputClass }),
-            alias: UserInput.alias({ class: inputClass, placeholder: 'Nickname' }),
-            genderM: UserInput.gender('m'),
-            genderF: UserInput.gender('f'),
-            conditionA: UserInput.condition(),
-            conditionI: UserInput.condition({ value: 'I' }),
-            conditionL: UserInput.condition({ value: 'L' }),
+            // id: UserInput.id(null, true),
+            // usernameHidden: UserInput.username({ type: 'hidden' }),
+            // emailHidden: UserInput.email({ type: 'hidden' }),
+            // email: UserInput.email({ class: inputClass }),
+            // phone: UserInput.phone({ class: inputClass, disabled: user.location[0] != 'US' }),
+            // firstName: UserInput.firstName({ class: inputClass, placeholder: 'As shown on ID' }),
+            // lastName: UserInput.lastName({ class: inputClass }),
+            // alias: UserInput.alias({ class: inputClass, placeholder: 'Nickname' }),
+            // genderM: UserInput.gender('m'),
+            // genderF: UserInput.gender('f'),
+            // conditionA: UserInput.condition(),
+            // conditionI: UserInput.condition({ value: 'I' }),
+            // conditionL: UserInput.condition({ value: 'L' }),
 
             //! will be more added
             carrierRoleId: UserInput.roleId({ target: 'crr' }),
@@ -111,21 +110,21 @@ router.get('/users', User.verify, (req, res) => {
             carrierRoleName: UserInput.roleName({ target: 'crr', class: inputClass }),
         }
         hbs.select = {
-            status: UserSelect.status(user, selectProps),
-            location: UserSelect.location(user, selectProps),
+            // status: UserSelect.status(user, selectProps),
+            // location: UserSelect.location(user, selectProps),
 
             //! will be more added
             carrierRoleLocation: UserSelect.roleLocation({ target: 'crr', selectProps })
         }
-        hbs.formId = {
-            user: mainFormId,
-            deleteUser: deleteFormId,
-            userCondition: conditionFormId,
-        }
+        // hbs.formId = {
+        //     user: mainFormId,
+        //     deleteUser: deleteFormId,
+        //     userCondition: conditionFormId,
+        // }
         hbs.actionUrl = {
-            user: '/resource/user',
-            deleteUser: '/resource/user/delete',
-            userCondition: '/resource/user/modify/condition',
+            // user: '/resource/user',
+            // deleteUser: '/resource/user/delete',
+            // userCondition: '/resource/user/modify/condition',
             deleteRole: '/resource/role/delete',
 
             //! will be more added

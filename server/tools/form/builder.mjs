@@ -22,6 +22,7 @@ const createForm = (input = {}) => {
     if (name && (input.multiple === true || (type === 'checkbox' && data)))
         name += '[]'
 
+    if (type === 'hidden') validator = false
     const form = { properties: { required: required === true, initialType: type } }
 
     const initializeInput = (type, key, i) => {
@@ -57,6 +58,11 @@ const createForm = (input = {}) => {
                 if (selector.id)
                     lockedInput[type].id = selector.id[type][target]
             if (key) {
+                lockedInput[type][key].defaultClass = []
+                if (group && selector.class?.combo[group])
+                    lockedInput[type][key].defaultClass.push(selector.class.combo[group])
+                if (group && selector.class?.[type]?.[group])
+                    lockedInput[type][key].defaultClass.push(selector.class[type][group])
                 if (selector.id?.[type]?.[target]?.[key])
                     lockedInput[type][key].id = selector.id[type][target][key]
             }

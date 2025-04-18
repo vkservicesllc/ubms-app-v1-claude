@@ -737,7 +737,7 @@ class User extends Person {
 
     static locationList = {
         'US': 'USA',
-        'MX': 'Mexico',
+        // 'MX': 'Mexico',
         'UA': 'Ukraine',
     }
 

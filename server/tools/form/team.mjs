@@ -47,7 +47,6 @@ class TeamForm {
         selector,
         target: 'name',
         type: 'hidden',
-        validator: false,
     })
 
     static desc = createForm({
