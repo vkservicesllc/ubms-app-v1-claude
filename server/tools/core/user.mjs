@@ -942,7 +942,7 @@ class User extends Person {
             const user = await User.data(session, { _id: exclude._id })
             const id = await user.id()
 
-            match.not = { id }
+            match.id = { not: id }
         }
 
         const data = (await mysql.execute(query.users.select('id', { match })))[0]
@@ -1499,7 +1499,7 @@ class Role {
             const role = await Role.data(session, { _id: exclude._id })
             const id = await role.id()
 
-            match.not = { id }
+            match.id = { not: id }
         }
 
         const data = (await mysql.execute(query.roles.select('id', { match: { name, catId, location } })))[0]

@@ -714,7 +714,7 @@ class Company {
             const company = await Company.data(session, { _id: exclude._id })
             const id = await company.id()
 
-            match.not = { [idProp]: id }
+            match[idProp] = { not: id }
         }
 
         const data = (await mysql.execute(query[target].select(idProp, { match })))[0]

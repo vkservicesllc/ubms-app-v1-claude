@@ -500,7 +500,7 @@ class Team {
             const team = await Team.data(session, { _id: exclude._id })
             const id = await team.id()
 
-            match.not = { id }
+            match.id = { not: id }
         }
 
         const data = (await mysql.execute(query.teams.select('id', { match })))[0]
