@@ -492,10 +492,18 @@ class Team {
     static find = async (session, params = {}) => {
         if (!session?.user) return { error: 'Invalid User' }
 
-        const { name } = params
+        const { name, exclude } = params
         if (!name) return { error: 'Invalid Parameters' }
 
-        const data = (await mysql.execute(query.teams.select('id', { match: { name } })))[0]
+        const match = { name }
+        if (exclude?._id) {
+            const team = await Team.data(session, { _id })
+            const id = await team.id()
+
+            match.not = { id }
+        }
+
+        const data = (await mysql.execute(query.teams.select('id', { match })))[0]
 
         return { found: data.length == 1 }
     }
