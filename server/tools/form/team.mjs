@@ -5,6 +5,10 @@ import {
     createPhoneForm,
     createEmailForm,
     createWebsiteForm,
+    createAddressForm,
+    createAddrZipForm,
+    createAddrCityForm,
+    createAddrStateForm,
 } from './reusable.mjs'
 import { createCategoryForm, createBusNameForm, createCoTypeForm } from './company.mjs'
 
@@ -53,6 +57,12 @@ class TeamForm {
     static phone = createPhoneForm({ selector, required })
     static email = createEmailForm({ selector })
     static website = createWebsiteForm({ selector })
+
+    static address1 = createAddressForm({ selector })
+    static address2 = createAddressForm({ selector }, { idx: 2, business: true })
+    static addrZip = createAddrZipForm({ selector })
+    static addrCity = createAddrCityForm({ selector })
+    static addrState = createAddrStateForm({ selector, emptyOpt, options: { valOpt: true } })
 
 }
 

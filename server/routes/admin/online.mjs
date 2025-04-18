@@ -179,6 +179,7 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
             'teamName', 'category', 'desc',
             'busName', 'coType',
             'phone', 'email', 'website',
+            'address1', 'address2', 'addrZip', 'addrCity', 'addrState'
         ]
         fields.forEach(prop => {
             const form = TeamForm[prop]
@@ -200,11 +201,11 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
 
         hbs.form = new TeamForm(options)
 
-        const {
-            class: teamClass,
-            id, busNameId, coTypeId, phoneId, emailId, websiteId,
-            addr1Id, addr2Id, cityId, stateId, zipId,
-        } = formSelectors.team
+        // const {
+        //     class: teamClass,
+        //     id, busNameId, coTypeId, phoneId, emailId, websiteId,
+        //     addr1Id, addr2Id, cityId, stateId, zipId,
+        // } = formSelectors.team
 
         hbs.label = {
             // name: TeamLabel.name({ class: labelClassRequired }),
@@ -215,11 +216,11 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
             // phone: ContactLabel.tel('phone', { class: labelClassRequired, addClass: 'required', for: phoneId }),
             // email: ContactLabel.email({ class: labelClass, for: emailId }),
             // website: CompanyLabel.website({ class: labelClass, for: websiteId }),
-            address1: AddrLabel.address1({ class: labelClassRequired, for: addr1Id }),
-            address2: AddrLabel.address2({ class: labelClass, for: addr2Id }, true),
-            city: AddrLabel.city({ class: labelClassRequired, for: cityId }),
-            state: AddrLabel.state({ class: labelClassRequired, for: stateId }),
-            zip: AddrLabel.zip({ class: labelClassRequired, for: zipId }),
+            // address1: AddrLabel.address1({ class: labelClassRequired, for: addr1Id }),
+            // address2: AddrLabel.address2({ class: labelClass, for: addr2Id }, true),
+            // city: AddrLabel.city({ class: labelClassRequired, for: cityId }),
+            // state: AddrLabel.state({ class: labelClassRequired, for: stateId }),
+            // zip: AddrLabel.zip({ class: labelClassRequired, for: zipId }),
         }
 
         hbs.input = {
@@ -234,17 +235,17 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
             // phone: ContactInput.tel('phone', { class: 'input', id: phoneId, addClass: teamClass, required: true }),
             // email: ContactInput.email({ class: 'input', id: emailId, addClass: teamClass }),
             // website: CompanyInput.website({ class: 'input', id: websiteId, addClass: teamClass }),
-            address1: AddrInput.address1({ class: `input ${teamClass}`, id: addr1Id }),
-            address2: AddrInput.address2({ class: `input ${teamClass}`, id: addr2Id }),
-            city: AddrInput.city({ class: `input ${teamClass}`, id: cityId }),
-            zip: AddrInput.zip({ class: `input ${teamClass}`, id: zipId }),
-            settingsId: TeamInput.id(null, { id: `settings-${id}` }),
+            // address1: AddrInput.address1({ class: `input ${teamClass}`, id: addr1Id }),
+            // address2: AddrInput.address2({ class: `input ${teamClass}`, id: addr2Id }),
+            // city: AddrInput.city({ class: `input ${teamClass}`, id: cityId }),
+            // zip: AddrInput.zip({ class: `input ${teamClass}`, id: zipId }),
+            // settingsId: TeamInput.id(null, { id: `settings-${id}` }),
         }
 
         hbs.select = {
             // category: TeamSelect.catId({ tabs: 13, options: { emptyOpt: '--' } }),
             // coType: CompanySelect.coType({ tabs: 13, options: { emptyOpt: '--' }, id: coTypeId, addClass: teamClass }),
-            state: AddrSelect.stateUS({ tabs: 13, options: { emptyOpt: '--', valOpt: true }, id: stateId, class: teamClass }),
+            // state: AddrSelect.stateUS({ tabs: 13, options: { emptyOpt: '--', valOpt: true }, id: stateId, class: teamClass }),
         }
 
         hbs.descMaxChars = inputLength.team.desc.max

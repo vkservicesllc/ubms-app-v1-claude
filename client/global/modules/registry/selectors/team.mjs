@@ -15,6 +15,7 @@ const selector = {
             id: 'id',
             // delId: 'delete-id',
             profileId: 'profile-id',
+            settingsId: 'settings-id',
         },
         text: {
             name: 'name',
