@@ -476,7 +476,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 method: 'POST',
                 success(data) {
                     const { _id, name, condition } = data
-console.log($condition)
+
                     $id.val(_id)
                     if (condition[0] == 'L') $lockedCondition.prop('disabled', false)
                     $condition.filter(function() {
