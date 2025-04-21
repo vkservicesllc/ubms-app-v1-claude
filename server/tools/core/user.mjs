@@ -130,17 +130,9 @@ class User extends Person {
 
             this.report = async session => {
                 const result = { user: this }
+                const log = await this.log(null, true)
 
-                const [ rows ] = await mysql.execute(query.users.select([
-                    'createdBy',
-                    'createdAt',
-                    'updateLog',
-                    'deletedBy',
-                    'deletedAt',
-                ], { match: { id: User.matchIdHash(this._id) } }))
-                const logs = rows[0]
-
-                const { createdBy, deletedBy, updateLog } = logs
+                const { createdBy, deletedBy, updateLog } = log
                 /*
                     The timestamps will only be correct on the Live Server
                     if it is set up with UTC tz
@@ -178,33 +170,33 @@ class User extends Person {
                         names[id] = users[i].name
                     }
 
-                logs.createdBy = names[createdBy] || appName
-                if (deletedBy) logs.deletedBy = names[deletedBy]
+                log.createdBy = names[createdBy] || appName
+                if (deletedBy) log.deletedBy = names[deletedBy]
 
                 if (updateLog)
                     for (let i = 0; i < updateLog.length; i++) {
-                        logs.updateLog[i].modifiedBy = names[updateLog[i].modifiedBy] || appName
+                        log.updateLog[i].modifiedBy = names[updateLog[i].modifiedBy] || appName
 
                         for (const prop in updateLog[i].data) {
                             switch (prop) {
                                 case 'status':
-                                    logs.updateLog[i].data.status = User.statusList[updateLog[i].data.status]
-                                    logs.updateLog[i].oldData.status = User.statusList[updateLog[i].oldData.status]
+                                    log.updateLog[i].data.status = User.statusList[updateLog[i].data.status]
+                                    log.updateLog[i].oldData.status = User.statusList[updateLog[i].oldData.status]
                                     break
                                 case 'location':
-                                    logs.updateLog[i].data.location = User.locationList[updateLog[i].data.location]
-                                    logs.updateLog[i].oldData.location = User.locationList[updateLog[i].oldData.location]
+                                    log.updateLog[i].data.location = User.locationList[updateLog[i].data.location]
+                                    log.updateLog[i].oldData.location = User.locationList[updateLog[i].oldData.location]
                                     break
                                 case 'condition':
-                                    logs.updateLog[i].data.condition = User.conditionList[updateLog[i].data.condition]
-                                    logs.updateLog[i].oldData.condition = User.conditionList[updateLog[i].oldData.condition]
+                                    log.updateLog[i].data.condition = User.conditionList[updateLog[i].data.condition]
+                                    log.updateLog[i].oldData.condition = User.conditionList[updateLog[i].oldData.condition]
                                     break
                                 case 'sex':
                                     const genders = { '0': 'Female', '1': 'Male' }
                                     const { sex } = updateLog[i].data
                                     const { sex: oldSex } = updateLog[i].oldData
-                                    if ([0, 1].includes(sex)) logs.updateLog[i].data.sex = genders[sex]
-                                    if ([0, 1].includes(oldSex)) logs.updateLog[i].oldData.sex = genders[oldSex]
+                                    if ([0, 1].includes(sex)) log.updateLog[i].data.sex = genders[sex]
+                                    if ([0, 1].includes(oldSex)) log.updateLog[i].oldData.sex = genders[oldSex]
                             }
 
                             if (!(prop in labels))
@@ -212,7 +204,7 @@ class User extends Person {
                         }
                     }
 
-                result.log = logs
+                result.log = log
                 result.labels = labels
         
                 return result
@@ -923,8 +915,8 @@ class User extends Person {
 
     static list = async (session, filter = {}) => {
         const batch = User.#batch(session, { filter })
-        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
 
+        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
         list.forEach((data, i, arr) => arr[i] = new User(data, true))
 
         return list

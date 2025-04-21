@@ -65,7 +65,6 @@ router.get('/users', User.verify, (req, res) => {
         })
 
         hbs.form = new UserForm(options)
-console.log(hbs.form)
 
         const { user } = res.session
         const inputClass = 'input'

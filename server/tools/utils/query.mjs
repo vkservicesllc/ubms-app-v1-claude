@@ -26,11 +26,11 @@ class Query {
     static sha2 = (value, length = 512, secondLength) => {
         let sha2 = `SHA2(${Query.#value(value)}, ${length})`
 
-        if (length == 512 && secondLength) {
+        if (length === 512 && secondLength) {
             let substrLength
 
-            if (secondLength == 224) substrLength = 56
-            if (secondLength == 256) substrLength = 64
+            if (secondLength === 224) substrLength = 56
+            if (secondLength === 256) substrLength = 64
 
             if (substrLength) sha2 = `SUBSTRING(${sha2}, 1, ${substrLength})`
         }
@@ -76,11 +76,11 @@ class Query {
                 const [ id, foreignId, param3 ] = join
                 let foreignTable, foreignMatch, min, max
 
-                if (typeof param3 == 'string')
+                if (typeof param3 === 'string')
                     foreignTable = param3
-                else if (typeof param3 == 'number')
+                else if (typeof param3 === 'number')
                     foreignTable = tables[param3]
-                else if (typeof param3 == 'object')
+                else if (typeof param3 === 'object')
                     ({ min, max, match: foreignMatch, table: foreignTable } = param3)
 
                 if (!foreignTable) foreignTable = primaryTable
@@ -93,7 +93,7 @@ class Query {
                     if (Array.isArray(purpose)) {
                         field = purpose[0]
 
-                        if (typeof purpose[1] == 'object') {
+                        if (typeof purpose[1] === 'object') {
                             groups = groups.concat(Object.keys(purpose[1]))
                         }
 
@@ -185,7 +185,7 @@ class Query {
                 values[i].push(value)
             }
 
-            if (!fields.length || !values[i].length || fields.length != values[i].length)
+            if (!fields.length || !values[i].length || fields.length !== values[i].length)
                 return 'SELECT NULL'
 
             i++
@@ -269,10 +269,10 @@ class Query {
 
     static #_value(value, secret) {
         if (secret && value) return `AES_ENCRYPT('${value}', '${secret}')`
-        else if (typeof value == 'boolean') return value ? 'TRUE' : 'FALSE'
+        else if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE'
         else if (!value && value !== 0) return 'NULL'
-        else if (value == Query.timeStamp) return Query.timeStamp
-        else if (typeof value == 'string') return `'${value.replace(/'/g, "\\'")}'`
+        else if (value === Query.timeStamp) return Query.timeStamp
+        else if (typeof value === 'string') return `'${value.replace(/'/g, "\\'")}'`
         return value
     }
 
@@ -283,12 +283,12 @@ class Query {
         if (Array.isArray(field))
             [ field, resField ] = field
 
-        if (typeof field == 'object') {
+        if (typeof field === 'object') {
 
             if ('aes' in field) {
                 let secret
                 [ field, secret ] = field.aes
-                if (field[0] != '_') field = `_${field}`
+                if (field[0] !== '_') field = `_${field}`
                 if (!resField) resField = field.replace(/^_/, '')
 
                 field = `AES_DECRYPT(${Query.#_field(field, table)}, '${secret}')`
@@ -296,7 +296,7 @@ class Query {
 
             else if ('ip' in field) {
                 field = field.ip
-                if (field[0] != '_') field = `_${field}`
+                if (field[0] !== '_') field = `_${field}`
                 if (!resField) resField = field.replace(/^_/, '')
 
                 field = `INET6_NTOA(${Query.#_field(field, table)})`
@@ -307,7 +307,7 @@ class Query {
                 field = field[prop]
 
                 if (!resField) resField = field
-                if (resField[0] != '_') resField = `_${resField}`
+                if (resField[0] !== '_') resField = `_${resField}`
 
                 field = `${prop.toUpperCase()}(${Query.#_field(field, table)})`
             }
@@ -318,14 +318,14 @@ class Query {
                 if (Array.isArray(field))
                     [ field, length, secondLength ] = field
                 if (!resField) resField = field
-                if (resField[0] != '_') resField = `_${resField}`
+                if (resField[0] !== '_') resField = `_${resField}`
 
                 field = `SHA2(${Query.#_field(field, table)}, ${length})`
-                if (length == 512 && secondLength) {
+                if (length === 512 && secondLength) {
                     let substrLength
 
-                    if (secondLength == 224) substrLength = 56
-                    if (secondLength == 256) substrLength = 64
+                    if (secondLength === 224) substrLength = 56
+                    if (secondLength === 256) substrLength = 64
 
                     if (substrLength) field = `SUBSTRING(${field}, 1, ${substrLength})`
                 }
@@ -372,7 +372,7 @@ class Query {
                 [ field, resField ] = field.concat
 
                 field = field.map(item => {
-                    if (item[0] == '^')
+                    if (item[0] === '^')
                         item = `'${item.replace(/\^/g, '')}'`
                     else
                         item = Query.#_field(item, table)
@@ -408,7 +408,7 @@ class Query {
         let secret
 
         if (value instanceof Date) value = formatDateToString(value)
-        else if (value !== null && typeof value == 'object') {
+        else if (value !== null && typeof value === 'object') {
             if ('aes' in value)
                 [ value, secret ] = value.aes
             else if ('ip' in value) return `INET6_ATON('${value.ip}')`
@@ -429,7 +429,7 @@ class Query {
 
             let operator = ' = ', extension = ''
 
-            if (field == 'route' || field == 'concat') {
+            if (field === 'route' || field === 'concat') {
                 const prop = field
                 let fields
                 [ fields, value ] = value[field]
@@ -441,7 +441,7 @@ class Query {
             else if (Array.isArray(value))
                 [ value, operator, extension ] = combine(value)
 
-            else if (value !== null && typeof value == 'object') {
+            else if (value !== null && typeof value === 'object') {
 
                 if ('aes' in value || 'ip' in value) {
                     field = `_${field}`
@@ -465,7 +465,7 @@ class Query {
                     value = value.null
                     if (empty(value)) continue
 
-                    if (typeof value != 'boolean') value = true
+                    if (typeof value !== 'boolean') value = true
                     value = value ? 'NULL' : 'NOT NULL'
                 }
 
@@ -498,7 +498,7 @@ class Query {
             else value = Query.#value(value)
 
             field = Query.#field(field, table).split(' AS ')[0]
-            if (value == 'NULL' || value == 'NOT NULL')
+            if (value === 'NULL' || value === 'NOT NULL')
                 operator = ' IS '
             if (extension) extension = extension.replace('[FIELD]', field)
 
@@ -512,7 +512,7 @@ class Query {
 
 
         function empty(value) {
-            return value === undefined || typeof value == 'undefined'
+            return value === undefined || typeof value === 'undefined'
         }
 
         function combine(originalValues, eq = true) {
@@ -524,12 +524,13 @@ class Query {
             values.forEach((value, idx) => {
                 value = Query.#value(value)
 
-                if (value == 'NULL') {
+                if (value === 'NULL') {
                     if (!extension) extension = ` ${condition} [FIELD] IS${operator}NULL`
                 } else values[idx] = value
             })
             if (extension) values = values.filter(value => value !== null)
 
+            if (!values.length) return [ 'NULL', ' IS ', '' ]
             return [ `IN (${values.join(', ')})`, operator, extension ]
         }
 
@@ -537,7 +538,7 @@ class Query {
 
 
     static #sort(sort, table) {
-        if (typeof sort == 'object') {
+        if (typeof sort === 'object') {
             if (Array.isArray(sort))
                 sort = sort.map(item => resolve(item, table)).join(', ')
             else
@@ -550,7 +551,7 @@ class Query {
         function resolve(sort, table) {
             let order = 'asc'
 
-            if (typeof sort == 'object') {
+            if (typeof sort === 'object') {
                 order = Object.keys(sort)[0]
                 if (![ 'asc', 'desc' ].includes(order)) return
 
@@ -568,8 +569,8 @@ class Query {
     static #unpair(field, pairs) {
         let value = pairs[field]
 
-        if (value !== null && typeof value == 'object')
-            if (('aes' in value || 'ip' in value) && field[0] != '_') field = `_${field}`
+        if (value !== null && typeof value === 'object')
+            if (('aes' in value || 'ip' in value) && field[0] !== '_') field = `_${field}`
 
         return [ Query.#field(field), Query.#value(value) ]
     }
