@@ -7,7 +7,9 @@ const selector = {
     id: {
         hidden: {
             roleId: 'role-id',
+            roleDeleteId: 'role-delete-id',
             carrierRoleId: 'carrier-role-id',
+            carrierRoleDeleteId: 'carrier-role-delete-id',
         },
         text: {
             roleName: 'role-name',

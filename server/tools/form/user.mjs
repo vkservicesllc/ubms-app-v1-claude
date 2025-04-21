@@ -185,7 +185,9 @@ class RoleForm {
     }
 
     static roleId = createIdForm({ selector: roleSelector, target: 'roleId' })
+    static roleDeleteId = createIdForm({ selector: roleSelector, target: 'roleDeleteId' })
     static carrierRoleId = createIdForm({ selector: roleSelector, target: 'carrierRoleId' })
+    static carrierRoleDeleteId = createIdForm({ selector: roleSelector, target: 'carrierRoleDeleteId' })
 
     static roleName = createRoleNameForm('roleName')
     static carrierRoleName = createRoleNameForm('carrierRoleName')

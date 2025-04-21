@@ -8,7 +8,7 @@ import carrierPermissions from '../../tools/core/user/permissions.carrier.mjs'
 import { respond404 } from '../../tools/utils/response.mjs'
 
 /* Forms */
-import UserForm from '../../tools/form/user.mjs'
+import UserForm, { RoleForm } from '../../tools/form/user.mjs'
 import TeamForm from '../../tools/form/team.mjs'
 
 /* HTML Builders */
@@ -47,10 +47,12 @@ router.get('/users', User.verify, (req, res) => {
             'status', 'location', 'condition',
             'email', 'phone',
             'firstName', 'lastName', 'alias', 'gender',
+            'roleName', 'roleLocation',
+            'carrierRoleName', 'carrierRoleLocation',
         ]
         fields.forEach(prop => {
-            const form = UserForm[prop]
-            const { required, initialType } = form.properties
+            const form = UserForm[prop] || RoleForm[prop]
+            const { required } = form.properties
             const keys = Object.keys(form).filter(key => !['properties', 'validate'].includes(key))
             options[prop] = {}
 
@@ -64,7 +66,10 @@ router.get('/users', User.verify, (req, res) => {
             })
         })
 
-        hbs.form = new UserForm(options)
+        hbs.form = {
+            ...new UserForm(options),
+            ...new RoleForm(options),
+        }
 
         const { user } = res.session
         const inputClass = 'input'
