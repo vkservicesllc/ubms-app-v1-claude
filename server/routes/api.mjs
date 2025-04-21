@@ -59,23 +59,6 @@ router.post('/session/:prop', User.verify, (req, res) => {
 })
 
 
-router.post('/unique/:env', User.verify, async (req, res) => {
-    try {
-        const response = { unique: true }
-        const { env } = req.params
-        const src = { User, Team, Individual, Company, Owner, Carrier }  //! for later: School
-
-        const { found, error } = await src[capitalizeFirst(env)].find(res.session, req.body)
-        response.unique = !found
-        response.error = error
-
-        res.send(response)
-    } catch (err) {
-        throwErr.server(res, null, err, false)
-    }
-})
-
-
 router.post('/unique/original/:env', User.verify, async (req, res) => {
     try {
         const { env } = req.params
@@ -93,6 +76,23 @@ router.post('/unique/original/:env', User.verify, async (req, res) => {
             response.unique = !found
             response.error = error
         }
+
+        res.send(response)
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+router.post('/unique/:env', User.verify, async (req, res) => {
+    try {
+        const response = { unique: true }
+        const { env } = req.params
+        const src = { User, Team, Individual, Company, Owner, Carrier }  //! for later: School
+
+        const { found, error } = await src[capitalizeFirst(env)].find(res.session, req.body)
+        response.unique = !found
+        response.error = error
 
         res.send(response)
     } catch (err) {

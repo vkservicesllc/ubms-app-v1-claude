@@ -11,26 +11,26 @@
         <div class="column is-three-fifths">
             <div class="box role-form-section" id="carrier-roles-form-section">
                 <button class="delete close-role-section is-pulled-right" id="carrier-role-close"></button>
-                <form action="{{actionUrl.deleteRole}}" id="delete-carrier-role-form" method="POST">
-                    {{{input.carrierRoleDeleteId}}}
+                <form action="/resource/role/delete" id="delete-carrier-role-form" method="POST">
+                    {{{form.carrierRoleDeleteId.hidden.input}}}
                 </form>
-                <form action="{{actionUrl.carrierRole}}" id="carrier-role-form" method="POST" autocomplete="off">
-                    {{{input.carrierRoleId}}}
+                <form action="/resource/role/carrier" id="carrier-role-form" method="POST" autocomplete="off">
+                    {{{form.carrierRoleId.hidden.input}}}
                     <div class="columns">
                         <div class="column is-one-third">
                             <div class="field">
-                                {{{label.carrierRoleName}}}
+                                {{{form.carrierRoleName.text.label}}}
                                 <div class="control">
-                                    {{{input.carrierRoleName}}}
+                                    {{{form.carrierRoleName.text.input}}}
                                 </div>
                             </div>
                         </div>
                         <div class="column is-one-quarter">
                             <div class="field">
-                                {{{label.carrierRoleLocation}}}
+                                {{{form.carrierRoleLocation.select.label}}}
                                 <div class="control has-icons-left">
                                     <div class="select is-fullwidth">
-                                        {{{select.carrierRoleLocation}}}
+                                        {{{form.carrierRoleLocation.select.input}}}
                                     </div>
                                     <span class="icon is-left">
                                         <i class="fas fa-location-crosshairs"></i>

@@ -1486,7 +1486,7 @@ class Role {
         let { location } = params
         if (location !== undefined && !location) location = null
 
-        const match = { username, email }
+        const match = { name, catId, location }
         if (exclude?._id) {
             const role = await Role.data(session, { _id: exclude._id })
             const id = await role.id()

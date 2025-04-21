@@ -3,21 +3,28 @@ import initialize from './support.mjs'
 const prefix = 'user-role'
 
 const selector = {
-    class: {},
-    id: {
-        hidden: {
-            roleId: 'role-id',
-            roleDeleteId: 'role-delete-id',
-            carrierRoleId: 'carrier-role-id',
-            carrierRoleDeleteId: 'carrier-role-delete-id',
-        },
+    class: {
         text: {
-            roleName: 'role-name',
-            carrierRoleName: 'carrier-role-name',
+            roleName: 'name',
         },
         select: {
-            roleLocation: 'role-location',
-            carrierRoleLocation: 'carrier-role-location',
+            roleLocation: 'location',
+        },
+    },
+    id: {
+        hidden: {
+            roleId: 'id',
+            roleDeleteId: 'delete-id',
+            carrierRoleId: 'id--carrier',
+            carrierRoleDeleteId: 'delete-id--carrier',
+        },
+        text: {
+            roleName: 'name',
+            carrierRoleName: 'name--carrier',
+        },
+        select: {
+            roleLocation: 'location',
+            carrierRoleLocation: 'location--carrier',
         },
     },
 }

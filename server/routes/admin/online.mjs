@@ -12,10 +12,9 @@ import UserForm, { RoleForm } from '../../tools/form/user.mjs'
 import TeamForm from '../../tools/form/team.mjs'
 
 /* HTML Builders */
-import { Label as UserLabel, Input as UserInput, Select as UserSelect } from '../../html/user.mjs'
+import { Input as UserInput } from '../../html/user.mjs'
 
 /* Registry */
-import { formSelectors } from '../../../client/global/modules/registry/selectors.mjs'
 import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Local Constants */
@@ -42,6 +41,7 @@ router.get('/users', User.verify, (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key)
 
+        let tabs = 13
         const options = {}
         const fields = [
             'status', 'location', 'condition',
@@ -49,6 +49,7 @@ router.get('/users', User.verify, (req, res) => {
             'firstName', 'lastName', 'alias', 'gender',
             'roleName', 'roleLocation',
             'carrierRoleName', 'carrierRoleLocation',
+            //! will be more added
         ]
         fields.forEach(prop => {
             const form = UserForm[prop] || RoleForm[prop]
@@ -56,83 +57,22 @@ router.get('/users', User.verify, (req, res) => {
             const keys = Object.keys(form).filter(key => !['properties', 'validate'].includes(key))
             options[prop] = {}
 
+            //! Silly workaraound
+            if (prop === 'roleName') tabs -= 3
+
             keys.forEach(key => {
                 options[prop][key] = {}
                 options[prop][key].label = { class: required === true ? labelClassRequired : labelClass }
                 if (key === 'text')
                     options[prop][key].input = { class: 'input' }
                 else if (key === 'select')
-                    options[prop][key].input = { tabs: 13 }
+                    options[prop][key].input = { tabs }
             })
         })
 
         hbs.form = {
             ...new UserForm(options),
             ...new RoleForm(options),
-        }
-
-        const { user } = res.session
-        const inputClass = 'input'
-        const selectProps = { tab: 13 }
-        const {
-            mainFormId, deleteFormId, conditionFormId,
-            roleId, carrierRoleId,
-        } = formSelectors.user
-
-        hbs.label = {
-            // status: UserLabel.status({ class: labelClassRequired }),
-            // location: UserLabel.location({ class: labelClassRequired }),
-            // email: UserLabel.email({ class: labelClassRequired }),
-            // phone: UserLabel.phone({ class: labelClass }),
-            // firstName: UserLabel.firstName({ class: labelClassRequired }),
-            // lastName: UserLabel.lastName({ class: labelClassRequired }),
-            // alias: UserLabel.alias({ class: labelClass }),
-            // gender: UserLabel.gender({ class: labelClass }),
-
-            //! will be more added
-            carrierRoleName: UserLabel.roleName({ target: 'crr', class: labelClassRequired }),
-            carrierRoleLocation: UserLabel.roleLocation({ target: 'crr', class: labelClass }),
-        }
-        hbs.input = {
-            // id: UserInput.id(null, true),
-            // usernameHidden: UserInput.username({ type: 'hidden' }),
-            // emailHidden: UserInput.email({ type: 'hidden' }),
-            // email: UserInput.email({ class: inputClass }),
-            // phone: UserInput.phone({ class: inputClass, disabled: user.location[0] != 'US' }),
-            // firstName: UserInput.firstName({ class: inputClass, placeholder: 'As shown on ID' }),
-            // lastName: UserInput.lastName({ class: inputClass }),
-            // alias: UserInput.alias({ class: inputClass, placeholder: 'Nickname' }),
-            // genderM: UserInput.gender('m'),
-            // genderF: UserInput.gender('f'),
-            // conditionA: UserInput.condition(),
-            // conditionI: UserInput.condition({ value: 'I' }),
-            // conditionL: UserInput.condition({ value: 'L' }),
-
-            //! will be more added
-            carrierRoleId: UserInput.roleId({ target: 'crr' }),
-            carrierRoleDeleteId: UserInput.roleId({ target: 'crr', id: `delete-${carrierRoleId}` }),
-            carrierRoleName: UserInput.roleName({ target: 'crr', class: inputClass }),
-        }
-        hbs.select = {
-            // status: UserSelect.status(user, selectProps),
-            // location: UserSelect.location(user, selectProps),
-
-            //! will be more added
-            carrierRoleLocation: UserSelect.roleLocation({ target: 'crr', selectProps })
-        }
-        // hbs.formId = {
-        //     user: mainFormId,
-        //     deleteUser: deleteFormId,
-        //     userCondition: conditionFormId,
-        // }
-        hbs.actionUrl = {
-            // user: '/resource/user',
-            // deleteUser: '/resource/user/delete',
-            // userCondition: '/resource/user/modify/condition',
-            deleteRole: '/resource/role/delete',
-
-            //! will be more added
-            carrierRole: '/resource/role/carrier',
         }
 
         hbs.roleTables = {

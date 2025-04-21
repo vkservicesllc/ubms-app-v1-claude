@@ -106,6 +106,7 @@ const createPasswordForm = flag => {
 const createRoleNameForm = target => createForm({
     selector: roleSelector,
     target,
+    group: 'roleName',
     name: 'name',
     maxLength: length.user.roleName.max,
     required,
@@ -118,6 +119,7 @@ const createRoleNameForm = target => createForm({
 const createRoleLocationForm = target => createForm({
     selector: roleSelector,
     target,
+    group: 'roleLocation',
     type: 'select',
     name: 'location',
     data: propsData.location,

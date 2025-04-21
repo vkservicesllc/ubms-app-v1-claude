@@ -1,8 +1,6 @@
-import { formSelectors } from '/modules/registry/selectors.mjs'
+import selector from '/modules/registry/selectors/user-role.mjs'
 import { roleNameEvent, roleLocationEvent } from '/modules/events/user.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
-
-const { carrierRoleId, carrierRoleNameId, carrierRoleLocationId } = formSelectors.user
 
 
 const $section = $('#carrier-roles-form-section')
@@ -19,10 +17,10 @@ const $form = {
     delete: $('#delete-carrier-role-form'),
 }
 
-const $id = $(`#${carrierRoleId}`)
-const $deleteId = $(`#delete-${carrierRoleId}`)
-const $name = $(`#${carrierRoleNameId}`)
-const $location = $(`#${carrierRoleLocationId}`)
+const $id = $(selector.id.hidden.carrierRoleId)
+const $deleteId = $(selector.id.hidden.carrierRoleDeleteId)
+const $name = $(selector.id.text.carrierRoleName)
+const $location = $(selector.id.select.carrierRoleLocation)
 
 const showWarning = () => {
     $warning.show()
@@ -59,7 +57,7 @@ const onAjax = response => {
 const onChange = () => hideWarning()
 
 
-roleNameEvent(carrierRoleNameId, ajaxData, {
+roleNameEvent(ajaxData, {
     onInput() {
         hideWarning()
     },
@@ -67,7 +65,7 @@ roleNameEvent(carrierRoleNameId, ajaxData, {
 })
 
 
-roleLocationEvent(carrierRoleLocationId, ajaxData, { onChange, onAjax })
+roleLocationEvent(ajaxData, { onChange, onAjax })
 
 
 $.ajax('/api/roles/carrier', {
