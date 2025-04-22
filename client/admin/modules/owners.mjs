@@ -1,6 +1,6 @@
 import Person from './tools/core/person.mjs'
 import escapeHTML from './tools/utils/html.mjs'
-import { tel as formatTel } from './tools/formatter.mjs'
+import { tel as formatTel } from './tools/utils/formatter.mjs'
 import { openModifyModal, openDeleteModal, closeModals } from './company/owner.mjs'
 
 const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON

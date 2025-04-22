@@ -4,6 +4,7 @@ import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import patterns from '../../../client/global/modules/registry/patterns.mjs'
 import { capitalizeEach } from '../../../client/global/modules/tools/utils/string.mjs'
+import strip from '../../../client/global/modules/tools/utils/formatter.mjs'
 
 export const emptyOpt = '--'
 const required = true
@@ -232,4 +233,31 @@ export const createSinceForm = (props = {}) => createDateForm({
     label: 'Effective Date',
     required,
     ...props,
+})
+
+
+export const createSsnForm = (props = {}) => createForm({
+    target: 'ssn',
+    name: 'ssn',
+    label: 'SSN',
+    required,
+    ...props,
+    validator: {
+        rule: 'numeric',
+        sanitizer: value => strip(value),
+        custom: value => {
+            if (/^(\d)\1{8}$/.test(value)) {
+                throw new Error('Repeated digits are not allowed in SSN')
+            }
+
+            const incrPatt = "01234567890123456789"
+            const decrPatt = "98765432109876543210"
+
+            if (incrPatt.includes(value) || decrPatt.includes(value)) {
+                throw new Error('Sequential digits are not allowed in SSN')
+            }
+
+            return true
+        }
+    },
 })

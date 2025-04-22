@@ -19,19 +19,20 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
-            delId: 'delete-id',
+            modifyId: 'modify-phone-id',
+            deleteId: 'delete-id',
         },
         text: {
             firstName: 'first-name',
             middleName: 'middle-name',
             lastName: 'last-name',
-            suffix: 'suffix',
             dob: 'dob',
             ssn: 'ssn',
             phone: 'phone',
             nameSince: 'name-update-date',
         },
         select: {
+            suffix: 'suffix',
             gender: 'gender',
         },
         radio: {

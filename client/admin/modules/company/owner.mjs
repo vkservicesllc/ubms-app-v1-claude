@@ -1,12 +1,21 @@
 import Person from '../tools/core/person.mjs'
 import escapeHTML from '../tools/utils/html.mjs'
+import selector from '../registry/selectors/company-owner.mjs'
 import { nameEvent, ssnEvent } from '../events/person.mjs'
 import { inputEvent, selectEvent } from '../events/form.mjs'
-import { formSelectors } from '../registry/selectors.mjs'
-import { reformatDateString } from '../tools/date.mjs'
+import { reformatDateString } from '../tools/utils/date.mjs'
 
+const TS = selector.id.text, SS = selector.id.select
+const { id, modifyId, deleteId } = selector.id.hidden
+const firstNameId = TS.firstName
+const middleNameId = TS.middleName
+const lastNameId = TS.lastName
+const suffixId = SS.suffix
+const genderId = SS.gender
+const dobId = TS.dob
+const ssnId = TS.ssn
+const updateSinceId = TS.nameSince
 
-const { id, deleteOwnerId, ownerPhoneId, class: ownerClass, updateSinceId, firstNameId, middleNameId, lastNameId, suffixId, genderId, dobId, ssnId } = formSelectors.owner
 const $modal = {
     all: $('.owner-modal'),
     form: $('#owner-modal'),
@@ -45,7 +54,7 @@ const $field = {
     update: $('.owner-update-field'),
     upsert: $('.owner-upsert-field'),
 }
-const $updateSince =  $(`#${updateSinceId}`)
+const $updateSince =  $(updateSinceId)
 const $submit = $('#owner-submit')
 
 
@@ -68,7 +77,7 @@ $option.all.on('change', function() {
 })
 
 $trigger.option.click(() => {
-    const _id = $(`#${id}`).val()
+    const _id = $(id).val()
 
     if (_id)
         $.ajax(`/api/company-owner/${_id}`, {
@@ -81,16 +90,13 @@ $trigger.option.click(() => {
                     let { gender } = data
                     if (gender) [ gender ] = gender
 
-                    $(`#${firstNameId}`).val(firstName)
-                    $(`#${middleNameId}`).val(middleName)
-                    $(`#${lastNameId}`).val(lastName)
-                    $(`#${suffixId}`).val(suffix)
-                    $(`#${genderId}`).val(gender)
-                    $(`#${dobId}`).val(reformatDateString(dob, 'us'))
-                    if (ssn) {
-                        $(`#current-${ssnId}`).val(ssn[0])
-                        $(`#${ssnId}`).val(ssn[1])
-                    }
+                    $(firstNameId).val(firstName)
+                    $(middleNameId).val(middleName)
+                    $(lastNameId).val(lastName)
+                    $(suffixId).val(suffix)
+                    $(genderId).val(gender)
+                    $(dobId).val(reformatDateString(dob, 'us'))
+                    if (ssn) $(ssnId).val(ssn[1])
 
                     $submit.addClass('is-success').html('Correct')
                     $card.options.hide()
@@ -118,9 +124,9 @@ $trigger.option.click(() => {
 export const closeModals = () => {
     $modal.all.removeClass('is-active')
 
-    const $gender = $(`#${genderId}`)
+    const $gender = $(genderId)
 
-    $(`.${ownerClass}`).val(null)
+    $(selector.class.global).val(null)
     $updateSince.removeAttr('min').prop('disabled', true).datepicker('destroy')
     $option.label.css('border', 'none')
     $option.all.prop('checked', false)
@@ -152,7 +158,7 @@ export const openModifyModal = _id => {
         success(data) {
             $title.form
                 .html(`<small class="has-text-grey is-size-6">Modify Owner</small> <strong>${escapeHTML(new Person(data).fullName())}</strong>`)
-            $(`#${id}`).val(_id)
+            $(id).val(_id)
             $updateSince.attr('min', data.dob)
 
             $card.options.show()
@@ -170,7 +176,7 @@ export const openModifyPhoneModal = _id => {
         success(data) {
             $title.phone
                 .html(`<small class="has-text-grey is-size-6">Modify Phone for Owner</small> <strong>${escapeHTML(new Person(data).fullName())}</strong>`)
-            $(`#${ownerPhoneId}`).val(_id)
+            $(modifyId).val(_id)
             $modal.phone.addClass('is-active')
         },
     })
@@ -185,7 +191,7 @@ export const openDeleteModal = _id => {
         success(data) {
             $title.delete
                 .html(`<small class="has-text-danger is-size-6">Delete Owner</small> <strong>${escapeHTML(new Person(data).fullName())}</strong>`)
-            $(`#${deleteOwnerId}`).val(_id)
+            $(deleteId).val(_id)
             $modal.delete.addClass('is-active')
         },
     })

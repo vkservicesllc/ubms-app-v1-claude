@@ -13,6 +13,7 @@ import {
     createPersonNameForm,
     createDobForm,
     createGenderForm,
+    createSsnForm,
 } from './reusable.mjs'
 
 import Company from '../core/company.mjs'
@@ -181,8 +182,10 @@ class OwnerForm {
     }
 
     static id = createIdForm({ selector: ownerSelector })
+    static modifyId = createIdForm({ selector: ownerSelector, target: 'modifyId' })
+    static deleteId = createIdForm({ selector: ownerSelector, target: 'deleteId' })
 
-    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince' })
+    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince', required })
     static firstName = createPersonNameForm('first', { selector: ownerSelector, group: 'name' })
     static middleName = createPersonNameForm('middle', { selector: ownerSelector, group: 'name' })
     static lastName = createPersonNameForm('last', { selector: ownerSelector, group: 'name' })
@@ -190,6 +193,14 @@ class OwnerForm {
 
     static gender = createGenderForm({ selector: ownerSelector })
     static dob = createDobForm({ selector: ownerSelector, required })
+
+    static ssn = createSsnForm({
+        selector: ownerSelector,
+        required: false,
+        label: 'SSN <small>(optional but highly recommended)</small>',
+    })
+
+    static phone = createPhoneForm({ selector: ownerSelector, required })
 
 }
 
