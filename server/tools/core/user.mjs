@@ -861,7 +861,8 @@ class User extends Person {
             {
                 table: 'sessions',
                 fields: [ 'siteId', 'branch', 'lastLogin' ], //* DEFAULT
-                join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],
+                // join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],  //! Selects Admin branhc only
+                join: [ 'userId', 'id', { max: 'lastLogin' } ],
             },
         ]
 
