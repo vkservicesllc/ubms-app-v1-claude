@@ -6,10 +6,6 @@ import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
 
 /* Forms */
 import { OwnerForm } from '../../tools/form/company.mjs'
-import { Label as CompanyLabel, Input as CompanyInput, Select as CompanySelect } from '../../html/company.mjs'
-
-/* Registry */
-import { formSelectors } from '../../../client/global/modules/registry/selectors.mjs'
 
 /* Middleware */
 import { companyById, companyByCategoryAndRoute } from './mw/company.mjs'
@@ -67,36 +63,6 @@ router.get('/company-owners', User.verify, (req, res) => {
         })
 
         hbs.form = new OwnerForm(options)
-
-        // const { deleteId } = formSelectors.owner
-
-        // hbs.label = {
-        //     ownerUpdateSince: CompanyLabel.ownerUpdateSince({ class: labelClassRequired }),
-        //     ownerFirstName: CompanyLabel.ownerName('f', { class: labelClassRequired }),
-        //     ownerMiddleName: CompanyLabel.ownerName('m', { class: labelClass }),
-        //     ownerLastName: CompanyLabel.ownerName('l', { class: labelClassRequired }),
-        //     ownerSuffix: CompanyLabel.ownerName('s', { class: labelClass }),
-        //     ownerGender: CompanyLabel.ownerGender({ class: labelClass }),
-        //     ownerDob: CompanyLabel.ownerDob({ class: labelClassRequired }),
-        //     ownerSsn: CompanyLabel.ownerSsn({ class: labelClass }),
-        // }
-        // hbs.input = {
-        //     current: {
-        //         ownerId: CompanyInput.ownerId(),
-        //         ownerSsn: CompanyInput.ownerSsn({}, true),
-        //         ownerDeleteId: CompanyInput.ownerId({ id: deleteId }),
-        //     },
-        //     ownerUpdateSince: CompanyInput.ownerUpdateSince({ class: 'input' }),
-        //     ownerFirstName: CompanyInput.ownerName('f', { class: 'input' }),
-        //     ownerMiddleName: CompanyInput.ownerName('m', { class: 'input' }),
-        //     ownerLastName: CompanyInput.ownerName('l', { class: 'input' }),
-        //     ownerDob: CompanyInput.ownerDob({ class: 'input' }),
-        //     ownerSsn: CompanyInput.ownerSsn({ class: 'input' }),
-        // }
-        // hbs.select = {
-        //     ownerSuffix: CompanySelect.ownerSuffix({ tabs: 8, options: { emptyOpt: '--' } }),
-        //     ownerGender: CompanySelect.ownerGender({ tabs: 8, options: { emptyOpt: '--' } }),
-        // }
 
         res.render(key, hbs)
     } catch (err) {

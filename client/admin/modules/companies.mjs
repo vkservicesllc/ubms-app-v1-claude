@@ -1,7 +1,7 @@
 import Person from './tools/core/person.mjs'
 import Address from './tools/core/address.us.mjs'
 import escapeHTML from './tools/utils/html.mjs'
-import { tel as formatTel } from './tools/formatter.mjs'
+import { tel as formatTel } from './tools/utils/formatter.mjs'
 
 
 const statusReq = $.ajax('/api/session/status?key=0', { method: 'POST' })
