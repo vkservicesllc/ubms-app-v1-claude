@@ -13,6 +13,7 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
+            deleteId: 'delete-id',
             busName: 'business-name',
             coType: 'company-type',
             name: 'name',  //? full company name: perfect for matching
@@ -23,6 +24,7 @@ const selector = {
             duns: 'duns',
             busName: 'business-name',
             alias: 'alias',
+            confirmAlias: 'confirm-alias',
             website: 'website',
             ownership: 'ownership',
             address1: 'address-1',

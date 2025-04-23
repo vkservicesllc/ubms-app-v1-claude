@@ -398,3 +398,41 @@ export const constructForm = (Src, target, options) => {
 
     return form
 }
+
+
+export const updateFormOptions = (options, Form, data, instr = {}) => {
+    let fields, values
+    if (Array.isArray(data)) fields = data
+    else {
+        fields = Object.keys(data)
+        values = data
+    }
+
+    const { labelClass, labelClassRequired, textClass, textareaClass, selectClass , tabs } = instr
+
+    fields.forEach(prop => {
+        const form = Form[prop]
+        const { required, initialType } = form.properties
+        const keys = Object.keys(form).filter(key => !['properties', 'validate'].includes(key))
+        options[prop] = {}
+
+        keys.forEach(key => {
+            options[prop][key] = { label: {}, input: {} }
+
+            if (required) options[prop][key].label.class = labelClassRequired
+            else options[prop][key].label.class = labelClass
+
+            if (key === 'text') {
+                if (initialType === 'textarea') options[prop][key].input.class = textareaClass
+                else options[prop][key].input.class = textClass
+            } else if (key === 'select')
+                options[prop][key].input = { class: selectClass, tabs }
+            //! not compatible with radio and checkbox yet
+
+            options[prop][key].input.value = values?.[prop]
+        })
+
+    })
+
+    return options
+}

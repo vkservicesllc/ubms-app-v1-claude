@@ -72,6 +72,18 @@ const createCoTypeForm = (selector, props = {}) => createForm({
     data: Company.typeList.full(),
 })
 
+const createAliasForm = (confirm = false) => createForm({
+    selector: companySelector,
+    target: confirm ? 'confirmAlias' : 'alias',
+    name: 'alias',
+    maxLength: length.company.alias.max,
+    required,
+    label: 'Alias',
+    validator: {
+        sanitizer: value => value.replace(/[^A-Za-z]/, '').toUpperCase(),
+    },
+})
+
 
 class CompanyForm {
     constructor(options = {}) {
@@ -80,7 +92,8 @@ class CompanyForm {
     }
 
     static id = createIdForm({ selector: companySelector })
-    static category = createCategoryForm(companySelector)
+    static deleteId = createIdForm({ selector: companySelector, target: 'deleteId' })
+    static catId = createCategoryForm(companySelector)
     static since = createSinceForm({
         selector: companySelector,
         label: 'Launch Date',
@@ -88,15 +101,8 @@ class CompanyForm {
 
     static busName = createBusNameForm(companySelector)
     static coType = createCoTypeForm(companySelector)
-
-    static alias = createForm({
-        selector: companySelector,
-        target: 'alias',
-        name: 'alias',
-        maxLength: length.company.alias.max,
-        required,
-        label: 'Alias',
-    })
+    static alias = createAliasForm()
+    static confirmAlias = createAliasForm(true)
 
     static ein = createForm({
         selector: companySelector,

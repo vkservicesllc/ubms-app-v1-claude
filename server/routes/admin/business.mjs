@@ -5,6 +5,7 @@ const throwErr = require('../../tools/utils/error').data
 import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
 
 /* Forms */
+import { updateFormOptions } from '../../tools/form/builder.mjs'
 import { OwnerForm } from '../../tools/form/company.mjs'
 
 /* Middleware */
@@ -40,26 +41,16 @@ router.get('/company-owners', User.verify, (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key, { titlePfx: 'Company Owners' })
 
-        const options = {}
         const fields = [
             'firstName', 'middleName',
             'lastName', 'suffix', 'nameSince',
             'gender', 'dob', 'ssn', 'phone',
         ]
-        fields.forEach(prop => {
-            const form = OwnerForm[prop]
-            const { required } = form.properties
-            const keys = Object.keys(form).filter(key => !['properties', 'validate'].includes(key))
-            options[prop] = {}
-
-            keys.forEach(key => {
-                options[prop][key] = {}
-                options[prop][key].label = { class: required === true ? labelClassRequired : labelClass }
-                if (key === 'text')
-                    options[prop][key].input = { class: 'input' }
-                else if (key === 'select')
-                    options[prop][key].input = { tabs: 8 }
-            })
+        const options = updateFormOptions({}, OwnerForm, fields, {
+            labelClass,
+            labelClassRequired,
+            textClass: 'input',
+            tabs: 8,
         })
 
         hbs.form = new OwnerForm(options)

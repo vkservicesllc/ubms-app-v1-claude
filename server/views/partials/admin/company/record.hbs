@@ -16,20 +16,20 @@
         $('#usonly-msg-close').click(() => { $('#usonly-msg').remove() })
     </script>
     {{/if}}
-    {{{input.current.since}}}
+    {{!-- {{{input.current.since}}}
     {{{input.current.busName}}}
     {{{input.current.coType}}}
     {{{input.current.alias}}}
     {{{input.current.ein}}}
-    {{{input.current.duns}}}
+    {{{input.current.duns}}} --}}
     <div class="field">
         <h5 class="subtitle has-text-primary-40">Identification</h5>
         <div class="columns">
             <div class="column is-3">
-                {{{label.catId}}}
+                {{{form.catId.select.label}}}
                 <div class="control has-icons-left">
                     <div class="select is-fullwidth">
-                        {{{select.catId}}}
+                        {{{form.catId.select.input}}}
                     </div>
                     <span class="icon is-small is-left" id="business-category-select-icon">
                         {{{icon.select.catId}}}
@@ -37,18 +37,18 @@
                 </div>
             </div>
             <div class="column is-3">
-                {{{label.since}}}
+                {{{form.since.text.label}}}
                 <div class="control has-icons-left">
-                    {{{input.since}}}
+                    {{{form.since.text.input}}}
                     <span class="icon is-small is-left">
                         <i class="fas fa-calendar-days"></i>
                     </span>
                 </div>
             </div>
             <div class="column is-3">
-                {{{label.ein}}}
+                {{{form.ein.text.label}}}
                 <div class="control has-icons-left">
-                    {{{input.ein}}}
+                    {{{form.ein.text.input}}}
                     <span class="icon is-small is-left">
                         <i class="fas fa-fingerprint"></i>
                     </span>
@@ -56,9 +56,9 @@
                 <p class="help is-info" id="ein-tip">Not public; encrypted</p>
             </div>
             <div class="column is-3">
-                {{{label.duns}}}
+                {{{form.duns.text.label}}}
                 <div class="control">
-                    {{{input.duns}}}
+                    {{{form.duns.text.input}}}
                 </div>
                 <p class="help" id="duns-tip"></p>
             </div>
@@ -68,31 +68,31 @@
         <h5 class="subtitle has-text-primary-40">Recognition</h5>
         <div class="columns">
             <div class="column is-4">
-                {{{label.busName}}}
+                {{{form.busName.text.label}}}
                 <div class="control">
-                    {{{input.busName}}}
+                    {{{form.busName.text.input}}}
                 </div>
                 <p class="help is-info" id="busname-tip">Without Co Type</p>
             </div>
             <div class="column is-2">
-                {{{label.coType}}}
+                {{{form.coType.select.label}}}
                 <div class="control">
                     <div class="select is-fullwidth">
-                        {{{select.coType}}}
+                        {{{form.coType.select.input}}}
                     </div>
                 </div>
             </div>
             <div class="column is-2">
-                {{{label.alias}}}
+                {{{form.alias.text.label}}}
                 <div class="control">
-                    {{{input.alias}}}
+                    {{{form.alias.text.input}}}
                 </div>
                 <p class="help is-info" id="alias-tip">Abbreviation</p>
             </div>
             <div class="column is-4">
-                {{{label.website}}}
+                {{{form.website.text.label}}}
                 <div class="control has-icons-left">
-                    {{{input.website}}}
+                    {{{form.website.text.input}}}
                     <span class="icon is-small is-left">
                         <i class="fas fa-globe"></i>
                     </span>

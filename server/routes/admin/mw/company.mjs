@@ -24,6 +24,7 @@ import { respond404 } from '../../../tools/utils/response.mjs'
 import { button as formButton } from '../../../../client/global/modules/tools/utils/html/components.mjs'
 
 /* Forms */
+import { updateFormOptions } from '../../../tools/form/builder.mjs'
 import CompanyForm, { OwnerForm } from '../../../tools/form/company.mjs'
 
 /* Assets */
@@ -492,7 +493,8 @@ export const companyById = async (req, res) => {
         const css = {}
 
         /* Form */
-        const label = {}, input = { current: {} }, select = {}
+        let catForm, options = {}
+        const instr = { labelClass, labelClassRequired, textClass: 'input' }
         const icon = {
             select: {
                 catId: '<i class="fas fa-file-circle-question"></i>',
@@ -548,6 +550,180 @@ export const companyById = async (req, res) => {
             actionUrl.query.owner = `?company=${_id}`
             if (catIdIcon) icon.select.catId = catIdIcon
             submitProps.record = saveSubmit
+
+
+            /* Current Owner */
+            if (_ownerId) {
+                const { address } = data
+                const { address1, address2, zip, city } = address.physical
+                const {
+                    address1: mailAddress1,
+                    address2: mailAddress2,
+                    zip: mailZip,
+                    city: mailCity,
+                } = address.mail
+                let { state } = address.physical
+                let { state: mailState } = address.mail
+                if (state) state = state[0]
+                if (mailState) mailState = mailState[0]
+
+                steps.ownership = completedStep
+                steps.address = activeStep
+                visibility.ownership = hidden
+                visibility.address = ''
+                submitProps.ownership = saveSubmit
+
+
+                if (zip) {}
+
+
+                //
+            }
+
+
+            //! add confirmAlias for deletion
+            //! add ownership data
+        }
+
+
+        /* Record HBS Form & Submit */
+        {
+            const { content, style } = submitProps.record
+            const values = { catId, since, ein, duns, busName, coType, alias, website }
+
+            options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
+            button.submit.record = submitButton('record-submit', content, style)
+        }
+
+        /* Final Polish */
+        if (data.catId == 'crr')
+            css.card = {
+                minHeight: '455px',
+            }
+        if (data.name) {
+            data.name = escapeHTML(data.name)
+            data.alias = escapeHTML(data.alias)
+            if (data.owner.name) data.owner.name = escapeHTML(data.owner.name)
+        }
+
+        /* HBS Setup */
+        hbs = hbs.set(key, { titlePfx })
+        hbs._id = _id
+        hbs.actionUrl = actionUrl
+        hbs.data = data
+        hbs.display = display(data, ein)
+        hbs.contentTitle = contentTitle
+        hbs.steps = steps
+        hbs.step1 = step1
+        hbs.visibility = visibility
+        hbs.css = css
+        hbs.form = new CompanyForm(options)
+        hbs.catForm = catForm
+        hbs.icon = icon
+        hbs.button = button
+
+        res.render(key, hbs)
+
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+}
+
+
+export const companyById_OLD = async (req, res) => {
+    try {
+        // const key = 'company'
+        // let { hbs } = res
+
+        // /* HBS Preset */
+        // const { active } = hbs.nav
+        // hbs.nav.companies = active
+        // let titlePfx = 'New Company'
+
+        // /* Data Preset */
+        // let { _id } = req.params
+        // let data = { _id }
+        // let contentTitle = titlePfx
+        // const blocks = [ 'record', 'ownership', 'address', 'contacts', 'credentials', 'confirmation' ]
+
+        // /* Steps */
+        // const step = { segment: '', link: '', marker: '', span: '' }
+        // let step1 = 'Registration'
+        // const activeStep = {
+        //     segment: ' is-active',
+        //     link: ' is-link-live is-link-active',
+        //     marker: ' is-hollow',
+        //     span: '<i class="fas fa-pen" style="font-size: 65%;"></i>',
+        // }
+        // const completedStep = {
+        //     ...step,
+        //     link: ' is-link-live',
+        //     span: '<i class="fas fa-check"></i>',
+        // }
+        // const steps = { record: activeStep }
+
+        // /* Visibility, styles */
+        // const hidden = ' style="display: none;"'
+        // const visibility = { record: '' }
+        // const css = {}
+
+        // /* Form */
+        // const label = {}, input = { current: {} }, select = {}
+        // const icon = {
+        //     select: {
+        //         catId: '<i class="fas fa-file-circle-question"></i>',
+        //     },
+        // }
+        // const button = { submit: {}, add: {}, edit: {}, upsert: {} }
+        // const saveSubmit = { style: 'is-success', content: 'Save' }
+        // const submitProps = {}
+        // const submitButton = (id, content, style) => formButton({ type: 'submit', class: `button is-fullwidth ${style}`, id, content, disabled: true })
+        // const actionUrl = {
+        //     param: {
+        //         record: '/add',
+        //     },
+        //     query: {},
+        // }
+
+        // /* Defaults */
+        // for (const block of blocks) {
+        //     if (block == 'confirmation') break
+
+        //     submitProps[block] = { style: 'is-link', content: 'Next' }
+
+        //     if (block == 'record') continue
+
+        //     steps[block] = step
+        //     visibility[block] = hidden
+        // }
+        // let catId, since, ein, duns, busName, coType, alias, website
+
+
+        /* Current Company */
+        if (_id != 'new') {
+            // data = await Company.data(res.session, { _id })
+            // if (!data) return respond404(res)
+
+            // {({ _id, catId, since, duns, busName, coType, alias, website } = data)}
+            // ein = await data.ein(res.session)
+
+            // const { name, owner } = data
+            // const { _id: _ownerId } = owner
+            // const { icon: catIdIcon } = Company.categoryList[catId]
+
+            // step1 = 'Record'
+            // titlePfx = name
+            // contentTitle = `<span class="has-text-weight-semibold is-size-4">${escapeHTML(name)}</span>`
+            // contentTitle += ' &nbsp;&nbsp;<a id="delete-company-trigger"><i class="fas fa-trash-can has-text-danger is-size-6"></i></a>'
+
+            // steps.record = completedStep
+            // steps.ownership = activeStep
+            // visibility.record = hidden
+            // visibility.ownership = ''
+            // actionUrl.param.record = `/${_id}/modify`
+            // actionUrl.query.owner = `?company=${_id}`
+            // if (catIdIcon) icon.select.catId = catIdIcon
+            // submitProps.record = saveSubmit
 
 
             /* Current Owner */
@@ -753,9 +929,9 @@ export const companyById = async (req, res) => {
 
 
             /* Deletion HBS Form */
-            const { id: companyId, aliasId } = formSelectors.company
+            // const { id: companyId, aliasId } = formSelectors.company
             // input.deleteId = Input.id(_id, { id: `delete-${companyId}` })
-            input.confirmAlias = Input.alias({ class: 'input', id: `confirm-${aliasId}` })
+            input.confirmAlias = CompanyForm.confirmAlias.text.input({ class: 'input' })
 
             /* Ownership HBS Form */
             input.current.ownership = Input.ownership({ value: _ownerId })
@@ -799,66 +975,66 @@ export const companyById = async (req, res) => {
         }
 
 
-        /* Record HBS Form */
-        /* Current */
-        input.current.since = Input.since({ value: since }, true)
-        input.current.busName = Input.busName({ value: busName }, true)
-        input.current.coType = Input.coType({ value: coType })
-        input.current.alias = Input.alias({ value: alias }, true)
-        input.current.ein = Input.ein({ value: ein }, true)
-        input.current.duns = Input.duns({ value: duns }, true)
-        /* Label */
-        label.catId = Label.catId({ class: labelClassRequired })
-        label.since = Label.since({ class: labelClassRequired })
-        label.ein = Label.ein({ class: labelClassRequired })
-        label.duns = Label.duns({ class: labelClass })
-        label.busName = Label.busName({ class: labelClassRequired })
-        label.coType = Label.coType({ class: labelClassRequired })
-        label.alias = Label.alias({ class: labelClassRequired })
-        label.website = Label.website({ class: labelClass })
-        /* Input/Select */
-        select.catId = Select.catId({ tabs: 5, value: catId, options: { emptyOpt: '--' } })
-        input.since = Input.since({ class: 'input', value: since })
-        input.ein = Input.ein({ class: 'input', value: ein })
-        input.duns = Input.duns({ class: 'input', value: duns })
-        input.busName = Input.busName({ class: 'input', value: busName })
-        select.coType = Select.coType({ tabs: 5, value: coType, options: { emptyOpt: '--' } })
-        input.alias = Input.alias({ class: 'input', value: alias })
-        input.website = Input.website({ class: 'input', value: website })
-        /* Submit */
-        {
-            const { content, style } = submitProps.record
-            button.submit.record = submitButton('record-submit', content, style)
-        }
+        // /* Record HBS Form */
+        // /* Current */
+        // input.current.since = Input.since({ value: since }, true)
+        // input.current.busName = Input.busName({ value: busName }, true)
+        // input.current.coType = Input.coType({ value: coType })
+        // input.current.alias = Input.alias({ value: alias }, true)
+        // input.current.ein = Input.ein({ value: ein }, true)
+        // input.current.duns = Input.duns({ value: duns }, true)
+        // /* Label */
+        // label.catId = Label.catId({ class: labelClassRequired })
+        // label.since = Label.since({ class: labelClassRequired })
+        // label.ein = Label.ein({ class: labelClassRequired })
+        // label.duns = Label.duns({ class: labelClass })
+        // label.busName = Label.busName({ class: labelClassRequired })
+        // label.coType = Label.coType({ class: labelClassRequired })
+        // label.alias = Label.alias({ class: labelClassRequired })
+        // label.website = Label.website({ class: labelClass })
+        // /* Input/Select */
+        // select.catId = Select.catId({ tabs: 5, value: catId, options: { emptyOpt: '--' } })
+        // input.since = Input.since({ class: 'input', value: since })
+        // input.ein = Input.ein({ class: 'input', value: ein })
+        // input.duns = Input.duns({ class: 'input', value: duns })
+        // input.busName = Input.busName({ class: 'input', value: busName })
+        // select.coType = Select.coType({ tabs: 5, value: coType, options: { emptyOpt: '--' } })
+        // input.alias = Input.alias({ class: 'input', value: alias })
+        // input.website = Input.website({ class: 'input', value: website })
+        // /* Submit */
+        // {
+        //     const { content, style } = submitProps.record
+        //     button.submit.record = submitButton('record-submit', content, style)
+        // }
 
-        if (data.catId == 'crr')
-            css.card = {
-                minHeight: '455px',
-            }
-        if (data.name) {
-            data.name = escapeHTML(data.name)
-            data.alias = escapeHTML(data.alias)
-            if (data.owner.name) data.owner.name = escapeHTML(data.owner.name)
-        }
+        // if (data.catId == 'crr')
+        //     css.card = {
+        //         minHeight: '455px',
+        //     }
+        // if (data.name) {
+        //     data.name = escapeHTML(data.name)
+        //     data.alias = escapeHTML(data.alias)
+        //     if (data.owner.name) data.owner.name = escapeHTML(data.owner.name)
+        // }
 
-        /* HBS Setup */
-        hbs = hbs.set(key, { titlePfx })
-        hbs._id = _id
-        hbs.actionUrl = actionUrl
-        hbs.data = data
-        hbs.display = display(data, ein)
-        hbs.contentTitle = contentTitle
-        hbs.steps = steps
-        hbs.step1 = step1
-        hbs.visibility = visibility
-        hbs.css = css
-        hbs.label = label
-        hbs.input = input
-        hbs.select = select
-        hbs.icon = icon
-        hbs.button = button
+        // /* HBS Setup */
+        // hbs = hbs.set(key, { titlePfx })
+        // hbs._id = _id
+        // hbs.actionUrl = actionUrl
+        // hbs.data = data
+        // hbs.display = display(data, ein)
+        // hbs.contentTitle = contentTitle
+        // hbs.steps = steps
+        // hbs.step1 = step1
+        // hbs.visibility = visibility
+        // hbs.css = css
+        // hbs.label = label
+        // hbs.input = input
+        // hbs.select = select
+        // hbs.icon = icon
+        // hbs.button = button
 
-        res.render(key, hbs)
+        // res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }
@@ -888,15 +1064,6 @@ export const companyByCategoryAndRoute = async (req, res) => {
 
         }
 
-        const { id: companyId, aliasId } = formSelectors.company
-        const input = {
-            id: Input.id(_companyId),
-            // teamAddId: Input.id(_companyId, { id: `team-add-${companyId}` }),
-            // teamRemoveId: Input.id(_companyId, { id: `team-remove-${companyId}` }),
-            // deleteId: Input.id(_companyId, { id: `delete-${companyId}` }),
-            confirmAlias: Input.alias({ class: 'input', id: `confirm-${aliasId}` }),
-        }
-
         company.name = escapeHTML(company.name)
         company.alias = escapeHTML(company.alias)
         company.owner.name = escapeHTML(company.owner.name)
@@ -918,7 +1085,13 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs.input = input
         hbs.display = display(company, ein)
         hbs.css = css
-
+        hbs.form = {
+            confirmAlias: {
+                text: {
+                    input: CompanyForm.confirmAlias.text.input({ class: 'input' }),
+                },
+            },
+        }
         hbs.display.status = company.active
             ? 'Active'
             : '<i class="has-text-danger">Inactive</i>'

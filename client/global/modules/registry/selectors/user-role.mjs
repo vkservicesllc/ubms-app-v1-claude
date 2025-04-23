@@ -15,16 +15,16 @@ const selector = {
         hidden: {
             roleId: 'id',
             roleDeleteId: 'delete-id',
-            carrierRoleId: 'id--carrier',
-            carrierRoleDeleteId: 'delete-id--carrier',
+            carrierRoleId: 'id-in-carrier',
+            carrierRoleDeleteId: 'delete-id-in-carrier',
         },
         text: {
             roleName: 'name',
-            carrierRoleName: 'name--carrier',
+            carrierRoleName: 'name-in-carrier',
         },
         select: {
             roleLocation: 'location',
-            carrierRoleLocation: 'location--carrier',
+            carrierRoleLocation: 'location-in-carrier',
         },
     },
 }

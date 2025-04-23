@@ -8,6 +8,7 @@ import carrierPermissions from '../../tools/core/user/permissions.carrier.mjs'
 import { respond404 } from '../../tools/utils/response.mjs'
 
 /* Forms */
+import { updateFormOptions } from '../../tools/form/builder.mjs'
 import UserForm, { RoleForm } from '../../tools/form/user.mjs'
 import TeamForm from '../../tools/form/team.mjs'
 
@@ -41,38 +42,26 @@ router.get('/users', User.verify, (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key)
 
-        let tabs = 13
-        const options = {}
-        const fields = [
-            'status', 'location', 'condition',
-            'email', 'phone',
-            'firstName', 'lastName', 'alias', 'gender',
-            'roleName', 'roleLocation',
-            'carrierRoleName', 'carrierRoleLocation',
-            //! will be more added
-        ]
-        fields.forEach(prop => {
-            const form = UserForm[prop] || RoleForm[prop]
-            const { required } = form.properties
-            const keys = Object.keys(form).filter(key => !['properties', 'validate'].includes(key))
-            options[prop] = {}
-
-            //! Silly workaraound
-            if (prop === 'roleName') tabs -= 3
-
-            keys.forEach(key => {
-                options[prop][key] = {}
-                options[prop][key].label = { class: required === true ? labelClassRequired : labelClass }
-                if (key === 'text')
-                    options[prop][key].input = { class: 'input' }
-                else if (key === 'select')
-                    options[prop][key].input = { tabs }
-            })
-        })
+        const instr = { labelClass, labelClassRequired, textClass: 'input' }
+        const fields = {
+            user: [
+                'status', 'location', 'condition',
+                'email', 'phone',
+                'firstName', 'lastName', 'alias', 'gender',
+            ],
+            role: [
+                'roleName', 'roleLocation',
+                'carrierRoleName', 'carrierRoleLocation',
+            ],
+        }
+        const options = {
+            user: updateFormOptions({}, UserForm, fields.user, { ...instr, tabs: 13 }),
+            role: updateFormOptions({}, RoleForm, fields.role, { ...instr, tabs: 10 }),
+        }
 
         hbs.form = {
-            ...new UserForm(options),
-            ...new RoleForm(options),
+            ...new UserForm(options.user),
+            ...new RoleForm(options.role),
         }
 
         hbs.roleTables = {
@@ -140,29 +129,18 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key)
 
-        const options = {}
         const fields = [
             'teamName', 'category', 'desc',
             'busName', 'coType',
             'phone', 'email', 'website',
             'address1', 'address2', 'addrZip', 'addrCity', 'addrState'
         ]
-        fields.forEach(prop => {
-            const form = TeamForm[prop]
-            const { required, initialType } = form.properties
-            const keys = Object.keys(form).filter(key => !['properties', 'validate'].includes(key))
-            options[prop] = {}
-
-            keys.forEach(key => {
-                options[prop][key] = {}
-                options[prop][key].label = { class: required === true ? labelClassRequired : labelClass }
-                if (['text', 'textarea'].includes(initialType))
-                    options[prop][key].input = { class: initialType === 'text' ? 'input' : initialType }
-                else if (key === 'text')
-                    options[prop][key].input = { class: 'input' }
-                else if (key === 'select')
-                    options[prop][key].input = { tabs: 13 }
-            })
+        const options = updateFormOptions({}, TeamForm, fields, {
+            labelClass,
+            labelClassRequired,
+            textClass: 'input',
+            textareaClass: 'textarea',
+            tabs: 13,
         })
 
         hbs.form = new TeamForm(options)
