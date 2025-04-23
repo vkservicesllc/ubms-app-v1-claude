@@ -1,6 +1,5 @@
 import createForm, { constructForm } from './builder.mjs'
 import {
-    emptyOpt,
     createIdForm,
     createUsStateForm,
 } from './reusable.mjs'
@@ -63,6 +62,9 @@ for (const key in permits) {
         name: `stateTax[${key}]`,
         maxLength: length.carrier.permit.max[key],
         label: { content, title },
+        validator: {
+            rule: 'numeric',
+        },
     })
 }
 

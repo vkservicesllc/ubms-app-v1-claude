@@ -111,21 +111,28 @@ const createRoleNameForm = target => createForm({
     maxLength: length.user.roleName.max,
     required,
     label: 'Role Name',
-    validator: {
-        sanitizer: value => value.replace('&amp;', '&').replace('&#x27;', "'"),
-    },
+    validator: target === 'roleName'
+        ? {
+            sanitizer: value => value.replace('&amp;', '&').replace('&#x27;', "'"),
+        }
+        : false,
 })
 
-const createRoleLocationForm = target => createForm({
-    selector: roleSelector,
-    target,
-    group: 'roleLocation',
-    type: 'select',
-    name: 'location',
-    data: propsData.location,
-    emptyOpt: 'All',
-    label: 'Location',
-})
+const createRoleLocationForm = target => {
+    const props = {
+        selector: roleSelector,
+        target,
+        group: 'roleLocation',
+        type: 'select',
+        name: 'location',
+        data: propsData.location,
+        emptyOpt: 'All',
+        label: 'Location',
+    }
+    if (target !== 'roleLocation') props.validator = false
+
+    return createForm(props)
+}
 
 
 class UserForm {
