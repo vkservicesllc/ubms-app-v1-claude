@@ -4,7 +4,7 @@
         {{> user/nav}}
         <div class="ui segment">
             <h4 class="ui dividing header">{{user.name}}</h4>
-            <form class="ui form" id="{{formId}}" action="{{actionUrl}}" method="POST" autocomplete="off">
+            <form class="ui form" id="user-account-form" action="/account" method="POST" autocomplete="off">
                 <div class="two fields">
                     <div class="field">
                         {{{label.username}}}

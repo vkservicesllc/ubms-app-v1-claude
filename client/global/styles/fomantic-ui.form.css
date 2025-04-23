@@ -1,0 +1,4 @@
+.input-required::after {
+    content: ' *' !important;
+    color: red;
+}

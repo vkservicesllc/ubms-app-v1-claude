@@ -128,18 +128,13 @@ router.get('/login', async (req, res) => {
         const labelClass = 'ui teal tag label'
 
         hbs.label = {
-            username: Label.username({ class: labelClass }),
-            password: Label.password({ class: labelClass }),
+            username: UserForm.username.text.label({ class: labelClass }),
+            password: UserForm.password.text.label({ class: labelClass }),
         }
         hbs.input = {
-            username: Input.username(),
-            password: Input.password(),
+            username: UserForm.username.text.input(),
+            password: UserForm.password.text.input(),
         }
-        hbs.button = {
-            login: Button.login({ class: 'ui fluid big teal submit button' }),
-        }
-
-        hbs.formId = formSelectors.user.loginFormId
 
         res.render(key, hbs)
     } catch (err) {
@@ -157,15 +152,13 @@ router.get('/profile', User.verify, (req, res) => {
         const { firstName, lastName, alias, sex, DSA } = hbs.user
         const readOnly = !DSA
 
-        hbs.formId = formSelectors.user.profileFormId
         hbs.input = {
-            firstName: Input.firstName({ placeholder: 'Real First Name', value: firstName, readOnly }),
-            alias: Input.alias({ placeholder: 'Alias', value: alias, readOnly }),
-            lastName: Input.lastName({ placeholder: 'Last Name', value: lastName, readOnly }),
-            genderM: Input.gender('m', { checked: sex === 1 }),
-            genderF: Input.gender('f', { checked: sex === 0 }),
+            firstName: UserForm.firstName.text.input({ placeholder: 'Real First Name', value: firstName, readOnly }),
+            alias: UserForm.alias.text.input({ placeholder: 'Alias', value: alias, readOnly }),
+            lastName: UserForm.lastName.text.input({ placeholder: 'Last Name', value: lastName, readOnly }),
+            genderMale: UserForm.gender.radio.male.input({ checked: sex === 1 }),
+            genderFemale: UserForm.gender.radio.female.input({ checked: sex === 0 }),
         }
-        hbs.actionUrl = `/profile`
 
         res.render(key, hbs)
     } catch (err) {
@@ -199,18 +192,16 @@ router.get('/account', User.verify, (req, res) => {
 
         const { username, email, phone, location } = hbs.user
 
-        hbs.formId = formSelectors.user.accountFormId
         hbs.label = {
-            username: Label.username({ addClass: 'required' }),
-            email: Label.email(),
-            phone: Label.phone(),
+            username: UserForm.username.text.label(),
+            email: UserForm.email.text.label(),
+            phone: UserForm.phone.text.label(),
         }
         hbs.input = {
-            username: Input.username({ value: username, disabled: false }),
-            email: Input.email({ value: email }),
-            phone: Input.phone({ value: phone }),
+            username: UserForm.username.text.input({ value: username, disabled: false }),
+            email: UserForm.email.text.input({ value: email }),
+            phone: UserForm.phone.text.input({ value: phone }),
         }
-        hbs.actionUrl = `/account`
         hbs.nonUS = location[0] != 'US'
 
         res.render(key, hbs)
@@ -242,18 +233,13 @@ router.get('/security', User.verify, (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key)
 
-        hbs.formId = formSelectors.user.securityFormId
-        hbs.label = {
-            currentPass: Label.password({ content: 'Current Password', addClass: 'required' }),
-            newPass: Label.password({ purpose: 'new', addClass: 'required' }),
-            confPass: Label.password({ purpose: 'repeat', addClass: 'required' }),
+        hbs.label = {}
+        hbs.input = {}
+
+        for (const prop of ['password', 'createPassword', 'confirmPassword']) {
+            hbs.label[prop] = UserForm[prop].text.label()
+            hbs.input[prop] = UserForm[prop].text.input({ disabled: false })
         }
-        hbs.input = {
-            currentPass: Input.password({ disabled: false }),
-            newPass: Input.password({ purpose: 'new', disabled: false }),
-            confPass: Input.password({ purpose: 'repeat', disabled: false }),
-        }
-        hbs.actionUrl = `/security`
 
         res.render(key, hbs)
     } catch (err) {

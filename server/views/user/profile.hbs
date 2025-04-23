@@ -14,9 +14,9 @@
         <div class="ui segment">
             <h4 class="ui dividing header">{{idx user.status 1}} in {{idx user.location 1}}</h4>
             <img class="ui small circular image" id="avatar" src="{{{user.avaSrc}}}" alt="Avatar" />
-            <form class="ui form" id="{{formId}}" action="{{actionUrl}}" method="POST" autocomplete="off">
+            <form class="ui form" id="user-profile-form" action="/profile" method="POST" autocomplete="off">
                 <div class="field">
-                    <label>Name</label>
+                    <label class="input-required">Name</label>
                     <div class="three fields">
                         <div class="field">
                             {{{input.firstName}}}
@@ -33,13 +33,13 @@
                     <label>Gender</label>
                     <div class="field">
                         <div class="ui radio checkbox">
-                            {{{input.genderM}}}
+                            {{{input.genderMale}}}
                             <label>Male</label>
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
-                            {{{input.genderF}}}
+                            {{{input.genderFemale}}}
                             <label>Female</label>
                         </div>
                     </div>

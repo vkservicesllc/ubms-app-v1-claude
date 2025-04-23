@@ -861,8 +861,7 @@ class User extends Person {
             {
                 table: 'sessions',
                 fields: [ 'siteId', 'branch', 'lastLogin' ], //* DEFAULT
-                // join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],  //! Selects Admin branhc only
-                join: [ 'userId', 'id', { max: 'lastLogin' } ],
+                join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ], //? In this case it doesn't confuse lastUrl
             },
         ]
 
@@ -916,6 +915,7 @@ class User extends Person {
 
     static list = async (session, filter = {}) => {
         const batch = User.#batch(session, { filter })
+        batch[1].join[2].max = 'lastLogin'
 
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
         list.forEach((data, i, arr) => arr[i] = new User(data, true))

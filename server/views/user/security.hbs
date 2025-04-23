@@ -4,21 +4,21 @@
         {{> user/nav}}
         <div class="ui segment">
             <h4 class="ui dividing header">{{user.name}}</h4>
-            <form class="ui form" id="{{formId}}" action="{{actionUrl}}" method="POST" autocomplete="off">
+            <form class="ui form" id="user-security-form" action="/security" method="POST" autocomplete="off">
                 <div class="two fields">
                     <div class="field">
-                        {{{label.currentPass}}}
-                        {{{input.currentPass}}}
+                        {{{label.password}}}
+                        {{{input.password}}}
                     </div>
                 </div>
                 <div class="two fields">
                     <div class="field">
-                        {{{label.newPass}}}
-                        {{{input.newPass}}}
+                        {{{label.createPassword}}}
+                        {{{input.createPassword}}}
                     </div>
                     <div class="field">
-                        {{{label.confPass}}}
-                        {{{input.confPass}}}
+                        {{{label.confirmPassword}}}
+                        {{{input.confirmPassword}}}
                     </div>
                 </div>
                 <button type="submit" class="ui teal button">Update</button>
