@@ -1,9 +1,12 @@
 /* jQuery, jQuery Caret & jQuery Masked Input required */
-import { formSelectors } from '/modules/registry/selectors.mjs'
+import selector from '/modules/registry/selectors/user.mjs'
 import { usernameEvent } from './events/user.mjs'
 import { emailEvent, telEvent } from './events/contacts.mjs'
 
-const { userId, emailId, phoneId } = formSelectors.user
+const TS = selector.id.text
+const usernameId = TS.username
+const emailId = TS.email
+const phoneId = TS.phone
 
 
 const $help = {
@@ -12,8 +15,8 @@ const $help = {
     email: $('#email-help'),
 }
 const values = {
-    username: $(`#${userId}`).val(),
-    email: $(`#${emailId}`).val(),
+    username: $(usernameId).val(),
+    email: $(emailId).val(),
 }
 
 
@@ -34,7 +37,7 @@ usernameEvent({
     onAjax(response, $username) {
         const username = $username.val()
 
-        if (username && username != values.username && !response.unique) {
+        if (username && username !== values.username && !response.unique) {
             $username.val(null).focus().parent().addClass('error')
             $help.username
                 .show()
@@ -58,7 +61,7 @@ emailEvent(emailId, {
                 .find('span')
                     .html(`<i class="ui exclamation triangle icon"></i> <b>${email}</b> is invalid email`)
         } else {
-            if (email && email != values.email)
+            if (email && email !== values.email)
                 $.ajax('/api/unique/user', {
                     method: 'POST',
                     data: { email },

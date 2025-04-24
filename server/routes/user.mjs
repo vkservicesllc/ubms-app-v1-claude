@@ -202,7 +202,7 @@ router.get('/account', User.verify, (req, res) => {
             email: UserForm.email.text.input({ value: email }),
             phone: UserForm.phone.text.input({ value: phone }),
         }
-        hbs.nonUS = location[0] != 'US'
+        hbs.nonUS = location[0] !== 'US'
 
         res.render(key, hbs)
     } catch (err) {
@@ -355,8 +355,8 @@ router.get('/register/:_id', async (req, res) => {
                 const { invitedAt } = rows[0]
                 const weekDay = new Date(invitedAt).getDay()
                 let limit = 24
-                if (weekDay == 4) limit = 72
-                if (weekDay == 5) limit = 48
+                if (weekDay === 4) limit = 72
+                if (weekDay === 5) limit = 48
 
                 if (calculateHourAge(invitedAt) > limit) hbs.expiredForm = true
                 else {
