@@ -21,7 +21,7 @@ const offline = {
 const online = {
     external: [ ...defaults.external, 'store', 'jquery.ui', 'jquery.idle-timeout-plus' ],
     internal: {
-        css: [ ...defaults.internal.css ],
+        css: [ ...defaults.internal.css, 'fomantic-ui.form' ],
         js: [ ...defaults.internal.js, '^idle-timeout-plus' ],
         mjs: [ ...defaults.internal.mjs, 'no-mobile' ],
     },
