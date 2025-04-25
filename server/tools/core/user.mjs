@@ -570,7 +570,7 @@ class User extends Person {
                 if (error) return { deleted, error }
 
                 const sessionUserId = await session.user.id()
-                const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
+                const update = processData({ username: null, _passKey: null, email: null, phone: null, condition: 'I' }, {
                     modifiedBy: sessionUserId,
                     currentData: this,
                     currentUpdateLog: await this.log('updateLog'),
@@ -1254,6 +1254,7 @@ class User extends Person {
     static register = async (req, res) => {
         try {
             const { _id, username, password } = req.body
+
             const [ result ] = await mysql.execute(query.users.update({
                 username,
                 _passKey: await Bun.password.hash(password),

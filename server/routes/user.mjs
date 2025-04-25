@@ -13,7 +13,6 @@ import { formSelectors } from '../../client/global/modules/registry/selectors.mj
 /* Tools */
 import Site from '../tools/core/site.mjs'
 import User from '../tools/core/user.mjs'
-import { formInput } from '../../client/global/modules/tools/utils/html/form.mjs'
 import Query from '../tools/utils/query.mjs'
 import { respond404 } from '../tools/utils/response.mjs'
 import { calculateHourAge } from '../../client/global/modules/tools/utils/date.mjs'
@@ -235,7 +234,6 @@ router.get('/security', User.verify, (req, res) => {
 
         hbs.label = {}
         hbs.input = {}
-
         for (const prop of ['password', 'createPassword', 'confirmPassword']) {
             hbs.label[prop] = UserForm[prop].text.label()
             hbs.input[prop] = UserForm[prop].text.input({ disabled: false })
@@ -313,10 +311,7 @@ router.get('/authenticate', async (req, res) => {
 
         hbs.formId = formSelectors.user.authFormId
         hbs.input = {
-            token: Input.token({ placeholder: 'Token', value }),
-        }
-        hbs.button = {
-            auth: Button.authenticate({ class: 'fluid ui blue button' }),
+            token: UserForm.token.text.input({ placeholder: 'Token', value }),
         }
 
         return res.render(key, hbs)
@@ -334,6 +329,7 @@ router.get('/register/:_id', async (req, res) => {
         const key = 'register'
         let { hbs } = res
         hbs = hbs.set(key)
+
         hbs.userRegistered = false
         hbs.validForm = true
         hbs.expiredForm = false
@@ -366,24 +362,16 @@ router.get('/register/:_id', async (req, res) => {
                     for (const prop of props)
                         hbs.user[prop] = user[prop]
 
-                    hbs.formId = formSelectors.user.registerFormId
-                    hbs.label = {
-                        username: Label.username({ content: 'Create Username' }),
-                        newPassword: Label.password({ purpose: 'new' }),
-                        confPassword: Label.password({ purpose: 'repeat' }),
-                    }
+                    hbs.label = {}
                     hbs.input = {
-                        id: Input.id(_id),
-                        formId: formInput({
-                            type: 'hidden',
-                            id: 'form-id',
-                            name: 'formId',
-                            value: formId,
-                        }),
-                        username: Input.username(),
-                        newPassword: Input.password({ purpose: 'new' }),
-                        confPassword: Input.password({ purpose: 'repeat' }),
+                        hiddenId: UserForm.id.hidden.input({ value: _id }),
                     }
+
+                    for (const prop of ['newUsername', 'createPassword', 'confirmPassword']) {
+                        hbs.label[prop] = UserForm[prop].text.label()
+                        hbs.input[prop] = UserForm[prop].text.input({ disabled: false })
+                    }
+
                     hbs.length = {
                         password: length.user.password,
                     }

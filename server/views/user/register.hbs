@@ -46,11 +46,10 @@
         </div>
         <form class="ui form attached fluid segment" id="sign-up-form" action="/register" method="POST" autocomplete="off">
             <input type="hidden" id="form-mode" value="reg" />
-            {{{input.id}}}
-            {{{input.formId}}}
             <input type="hidden" id="username-validation" />
             <input type="hidden" id="password-validation" />
             <input type="hidden" id="conf-password-validation" />
+            {{{input.hiddenId}}}
             <div class="inline field">
                 <label>Display Name:</label>
                 <span class="ui purple text">{{user.name}}</span>
@@ -58,16 +57,16 @@
             <div class="ui divider"></div>
             <div class="two fields">
                 <div class="field">
-                    {{{label.username}}}
-                    {{{input.username}}}
+                    {{{label.newUsername}}}
+                    {{{input.newUsername}}}
                     <p class="help" id="username-help" style="display: none;"><span class="ui text"></span></p>
                 </div>
             </div>
             <div class="two fields">
                 <div class="field">
-                    {{{label.newPassword}}}
+                    {{{label.createPassword}}}
                     <div class="ui corder labeled input">
-                        {{{input.newPassword}}}
+                        {{{input.createPassword}}}
                         <div class="ui corner label">
                             <i class="ui eye slash icon" id="eye-icon"></i>
                         </div>
@@ -75,8 +74,8 @@
                     <p class="help" id="password-help" style="display: none;"><span class="ui text"></span></p>
                 </div>
                 <div class="field">
-                    {{{label.confPassword}}}
-                    {{{input.confPassword}}}
+                    {{{label.confirmPassword}}}
+                    {{{input.confirmPassword}}}
                     <p class="help" id="conf-password-help" style="display: none;"><span class="ui text"></span></p>
                 </div>
             </div>

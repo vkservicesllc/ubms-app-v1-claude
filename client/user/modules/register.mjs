@@ -1,6 +1,6 @@
 /* jQuery & jQuery Caret required */
 import { usernameEvent, passwordEvent, registerEvent } from './events/user.mjs'
-import { formSelectors } from './registry/selectors.mjs'
+import selector from './registry/selectors/user.mjs'
 
 
 const $validation = {
@@ -49,7 +49,7 @@ const style = {
 const $eye = $('#eye-icon')
 
 $eye.click(function() {
-    const $password = $(`#${formSelectors.user.newPassId}`)
+    const $password = $(selector.id.text.createPassword)
 
     if ($(this).hasClass('slash')) {
         $(this).removeClass('slash')
@@ -192,6 +192,7 @@ passwordEvent('confirm', {
 })
 
 registerEvent(($form, validPass) => {
+    if (!validPass) alert('Invalid Password!')
     if (!formValid()) return $segment.error.form.show()
 
     $form.addClass('loading')
@@ -259,14 +260,14 @@ $button.cancelDecline.click(function() {
 })
 
 $button.confirmDecline.click(function() {
-    const _id = $(`#${formSelectors.user.id}`).val()
+    const _id = $(selector.id.hidden.id).val()
 
     $.ajax({
         url: `/api/user/decline/${_id}`,
         type: 'POST',
         success(response) {
             if (response == 'OK') {
-                const $form = $(`#${formSelectors.user.registerFormId}, #form-header`)
+                const $form = $('#sign-up-form, #form-header')
                 $button.submit.prop('disabled', true)
                 $terms.prop('checked', false).prop('disabled', true)
                 $modal.termsDecline.hide()

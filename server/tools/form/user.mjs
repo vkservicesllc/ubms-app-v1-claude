@@ -51,7 +51,7 @@ const createUsernameForm = flag => createForm({
     autoComplete: 'off',
     required,
     disabled,
-    label: 'Username',
+    label: flag === 'new' ? 'Create Username' : 'Username',
     validator: flag === 'new'
         ? {
             length: { min: length.user.username.min },

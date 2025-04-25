@@ -42,7 +42,7 @@ module.exports = {
     'register': {
         external: [ ...offline.external ],
         internal: {
-            css: [ ...offline.internal.css, 'register' ],
+            css: [ ...offline.internal.css, 'fomantic-ui.form', 'register' ],
             js: [ ...offline.internal.js ],
             mjs: [ ...offline.internal.mjs ],
         },
