@@ -18,7 +18,8 @@ import Company, { Owner } from '../../../tools/core/company.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
 import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
 import escapeHTML from '../../../../client/global/modules/tools/utils/html.mjs'
-import { formLabel, formInput } from '../../../../client/global/modules/tools/utils/html/form.mjs'
+                //! TEMP
+                import { formLabel, formInput } from '../../../../client/global/modules/tools/utils/html/form.mjs'
 import { ein as formatEin, duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/utils/formatter.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
 import { button as formButton } from '../../../../client/global/modules/tools/utils/html/components.mjs'
@@ -583,6 +584,21 @@ export const companyById = async (req, res) => {
 
             //! add confirmAlias for deletion
             //! add ownership data
+            {
+                const { content, style } = submitProps.ownership
+                const values = { confirmAlias, ownership: _ownerId }
+
+                options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
+                button.submit.ownership = submitButton('ownership-submit', content, style)
+
+                button.add.owner = formButton({ class: 'button py-3 is-link', id: 'add-owner-trigger', content: '<i class="fas fa-plus"></i>' })
+                button.edit.owner = formButton({
+                    class: 'button py-3 is-primary is-dark',
+                    id: 'edit-owner-trigger',
+                    content: '<i class="fas fa-pen"></i>',
+                    disabled: _ownerId === null,
+                })
+            }
         }
 
 
@@ -668,7 +684,7 @@ export const companyById_OLD = async (req, res) => {
         // const css = {}
 
         // /* Form */
-        // const label = {}, input = { current: {} }, select = {}
+        const label = {}, input = { current: {} }, select = {}
         // const icon = {
         //     select: {
         //         catId: '<i class="fas fa-file-circle-question"></i>',
@@ -931,23 +947,23 @@ export const companyById_OLD = async (req, res) => {
             /* Deletion HBS Form */
             // const { id: companyId, aliasId } = formSelectors.company
             // input.deleteId = Input.id(_id, { id: `delete-${companyId}` })
-            input.confirmAlias = CompanyForm.confirmAlias.text.input({ class: 'input' })
+            // input.confirmAlias = CompanyForm.confirmAlias.text.input({ class: 'input' })
 
             /* Ownership HBS Form */
             input.current.ownership = Input.ownership({ value: _ownerId })
-            label.ownership = Label.ownership({ class: labelClassRequired })
-            select.ownership = await Select.ownership({ tabs: 5, value: _ownerId, options: { emptyOpt: '--' } })
-            button.add.owner = formButton({ class: 'button py-3 is-link', id: 'add-owner-trigger', content: '<i class="fas fa-plus"></i>' })
-            button.edit.owner = formButton({
-                class: 'button py-3 is-primary is-dark',
-                id: 'edit-owner-trigger',
-                content: '<i class="fas fa-pen"></i>',
-                disabled: _ownerId === null,
-            })
-            {
-                const { content, style } = submitProps.ownership
-                button.submit.ownership = submitButton('ownership-submit', content, style)
-            }
+            // label.ownership = Label.ownership({ class: labelClassRequired })
+            // select.ownership = await Select.ownership({ tabs: 5, value: _ownerId, options: { emptyOpt: '--' } })
+            // button.add.owner = formButton({ class: 'button py-3 is-link', id: 'add-owner-trigger', content: '<i class="fas fa-plus"></i>' })
+            // button.edit.owner = formButton({
+            //     class: 'button py-3 is-primary is-dark',
+            //     id: 'edit-owner-trigger',
+            //     content: '<i class="fas fa-pen"></i>',
+            //     disabled: _ownerId === null,
+            // })
+            // {
+            //     const { content, style } = submitProps.ownership
+            //     button.submit.ownership = submitButton('ownership-submit', content, style)
+            // }
 
             /* Owner HBS Form */
             /* Current */
