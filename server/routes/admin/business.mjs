@@ -50,10 +50,10 @@ router.get('/company-owners', User.verify, (req, res) => {
             labelClass,
             labelClassRequired,
             textClass: 'input',
-            tabs: 8,
+            tabs: 7,
         })
 
-        hbs.form = new OwnerForm(options)
+        hbs.ownerForm = new OwnerForm(options)
 
         res.render(key, hbs)
     } catch (err) {

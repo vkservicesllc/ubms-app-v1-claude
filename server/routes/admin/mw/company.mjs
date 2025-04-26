@@ -18,6 +18,7 @@ import Company, { Owner } from '../../../tools/core/company.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
 import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
 import escapeHTML from '../../../../client/global/modules/tools/utils/html.mjs'
+import { sortObjectByValue } from '../../../../client/global/modules/tools/utils/sorter.mjs'
                 //! TEMP
                 import { formLabel, formInput } from '../../../../client/global/modules/tools/utils/html/form.mjs'
 import { ein as formatEin, duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/utils/formatter.mjs'
@@ -494,7 +495,7 @@ export const companyById = async (req, res) => {
         const css = {}
 
         /* Form */
-        let catForm, options = {}
+        let catForm, options = {}, ownerOptions = {}
         const instr = { labelClass, labelClassRequired, textClass: 'input' }
         const icon = {
             select: {
@@ -582,15 +583,24 @@ export const companyById = async (req, res) => {
             }
 
 
-            //! add confirmAlias for deletion
-            //! add ownership data
             {
                 const { content, style } = submitProps.ownership
-                const values = { confirmAlias, ownership: _ownerId }
+                const values = { confirmAlias: null, ownership: _ownerId }
+                let data = {}
+
+                const owners = await Owner.list(res.session)
+                const names = []
+                owners.map(owner => names.push(owner.fullName()))
+                let dublicates = names.filter((name, i) => names.indexOf(name) !== i)
+                dublicates = [ ...new Set(dublicates) ]
+
+                owners.forEach((owner, i) => data[owner._id] = names[i] + (dublicates.includes(names[i]) ? ` (${owner.age})` : ''))
+                data = sortObjectByValue(data)
 
                 options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
-                button.submit.ownership = submitButton('ownership-submit', content, style)
+                options.ownership.select.input.data = data
 
+                button.submit.ownership = submitButton('ownership-submit', content, style)
                 button.add.owner = formButton({ class: 'button py-3 is-link', id: 'add-owner-trigger', content: '<i class="fas fa-plus"></i>' })
                 button.edit.owner = formButton({
                     class: 'button py-3 is-primary is-dark',
@@ -598,6 +608,13 @@ export const companyById = async (req, res) => {
                     content: '<i class="fas fa-pen"></i>',
                     disabled: _ownerId === null,
                 })
+
+                const fields = [
+                    'firstName', 'middleName',
+                    'lastName', 'suffix', 'nameSince',
+                    'gender', 'dob', 'ssn', 'phone',
+                ]
+                ownerOptions = updateFormOptions({}, OwnerForm, fields, { ...instr, tabs: 7 })
             }
         }
 
@@ -634,6 +651,7 @@ export const companyById = async (req, res) => {
         hbs.visibility = visibility
         hbs.css = css
         hbs.form = new CompanyForm(options)
+        hbs.ownerForm = new OwnerForm(ownerOptions)
         hbs.catForm = catForm
         hbs.icon = icon
         hbs.button = button
@@ -967,26 +985,26 @@ export const companyById_OLD = async (req, res) => {
 
             /* Owner HBS Form */
             /* Current */
-            input.current.ownerId = Input.ownerId()
-            input.current.ownerSsn = Input.ownerSsn({}, true)
-            /* Label */
-            label.ownerUpdateSince = Label.ownerUpdateSince({ class: labelClassRequired })
-            label.ownerFirstName = Label.ownerName('f', { class: labelClassRequired })
-            label.ownerMiddleName = Label.ownerName('m', { class: labelClass })
-            label.ownerLastName = Label.ownerName('l', { class: labelClassRequired })
-            label.ownerSuffix = Label.ownerName('s', { class: labelClass })
-            label.ownerGender = Label.ownerGender({ class: labelClass })
-            label.ownerDob = Label.ownerDob({ class: labelClassRequired })
-            label.ownerSsn = Label.ownerSsn({ class: labelClass })
-            /* Input/Select */
-            input.ownerUpdateSince = Input.ownerUpdateSince({ class: 'input'} )
-            input.ownerFirstName = Input.ownerName('f', { class: 'input' })
-            input.ownerMiddleName = Input.ownerName('m', { class: 'input' })
-            input.ownerLastName = Input.ownerName('l', { class: 'input' })
-            select.ownerSuffix = Select.ownerSuffix({ tabs: 7, options: { emptyOpt: '--' } })
-            select.ownerGender = Select.ownerGender({ tabs: 7, options: { emptyOpt: '--' } })
-            input.ownerDob = Input.ownerDob({ class: 'input' })
-            input.ownerSsn = Input.ownerSsn({ class: 'input' })
+            // input.current.ownerId = Input.ownerId()
+            // input.current.ownerSsn = Input.ownerSsn({}, true)
+            // /* Label */
+            // label.ownerUpdateSince = Label.ownerUpdateSince({ class: labelClassRequired })
+            // label.ownerFirstName = Label.ownerName('f', { class: labelClassRequired })
+            // label.ownerMiddleName = Label.ownerName('m', { class: labelClass })
+            // label.ownerLastName = Label.ownerName('l', { class: labelClassRequired })
+            // label.ownerSuffix = Label.ownerName('s', { class: labelClass })
+            // label.ownerGender = Label.ownerGender({ class: labelClass })
+            // label.ownerDob = Label.ownerDob({ class: labelClassRequired })
+            // label.ownerSsn = Label.ownerSsn({ class: labelClass })
+            // /* Input/Select */
+            // input.ownerUpdateSince = Input.ownerUpdateSince({ class: 'input'} )
+            // input.ownerFirstName = Input.ownerName('f', { class: 'input' })
+            // input.ownerMiddleName = Input.ownerName('m', { class: 'input' })
+            // input.ownerLastName = Input.ownerName('l', { class: 'input' })
+            // select.ownerSuffix = Select.ownerSuffix({ tabs: 7, options: { emptyOpt: '--' } })
+            // select.ownerGender = Select.ownerGender({ tabs: 7, options: { emptyOpt: '--' } })
+            // input.ownerDob = Input.ownerDob({ class: 'input' })
+            // input.ownerSsn = Input.ownerSsn({ class: 'input' })
 
         }
 

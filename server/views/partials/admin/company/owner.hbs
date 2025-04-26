@@ -9,14 +9,14 @@
             <form action="/resource/company-owner{{{actionUrl.query.owner}}}" id="company-owner-form" method="POST" autocomplete="off">
                 {{!-- {{{input.current.ownerId}}}
                 {{{input.current.ownerSsn}}} --}}
-                {{{form.id.hidden.input}}}
+                {{{ownerForm.id.hidden.input}}}
                 <div class="columns owner-update-field" style="display: none;">
                     <div class="column is-5">
                         {{!-- {{{label.ownerUpdateSince}}} --}}
-                        {{{form.nameSince.text.label}}}
+                        {{{ownerForm.nameSince.text.label}}}
                         <div class="control has-icons-left">
                             {{!-- {{{input.ownerUpdateSince}}} --}}
-                            {{{form.nameSince.text.input}}}
+                            {{{ownerForm.nameSince.text.input}}}
                             <span class="icon is-small is-left">
                                 <i class="fas fa-calendar-days"></i>
                             </span>
@@ -33,54 +33,54 @@
                 <div class="columns">
                     <div class="column is-6">
                         {{!-- {{{label.ownerFirstName}}} --}}
-                        {{{form.firstName.text.label}}}
+                        {{{ownerForm.firstName.text.label}}}
                         <div class="control">
                             {{!-- {{{input.ownerFirstName}}} --}}
-                            {{{form.firstName.text.input}}}
+                            {{{ownerForm.firstName.text.input}}}
                         </div>
                     </div>
                     <div class="column is-6">
                         {{!-- {{{label.ownerMiddleName}}} --}}
-                        {{{form.middleName.text.label}}}
+                        {{{ownerForm.middleName.text.label}}}
                         <div class="control">
                             {{!-- {{{input.ownerMiddleName}}} --}}
-                            {{{form.middleName.text.input}}}
+                            {{{ownerForm.middleName.text.input}}}
                         </div>
                     </div>
                 </div>
                 <div class="columns">
                     <div class="column is-6">
                         {{!-- {{{label.ownerLastName}}} --}}
-                        {{{form.lastName.text.label}}}
+                        {{{ownerForm.lastName.text.label}}}
                         <div class="control">
                             {{!-- {{{input.ownerLastName}}} --}}
-                            {{{form.lastName.text.input}}}
+                            {{{ownerForm.lastName.text.input}}}
                         </div>
                     </div>
                     <div class="column is-3">
                         {{!-- {{{label.ownerSuffix}}} --}}
-                        {{{form.suffix.select.label}}}
+                        {{{ownerForm.suffix.select.label}}}
                         <div class="select is-fullwidth">
                             {{!-- {{{select.ownerSuffix}}} --}}
-                            {{{form.suffix.select.input}}}
+                            {{{ownerForm.suffix.select.input}}}
                         </div>
                     </div>
                     <div class="column is-3 owner-upsert-field">
                         {{!-- {{{label.ownerGender}}} --}}
-                        {{{form.gender.select.label}}}
+                        {{{ownerForm.gender.select.label}}}
                         <div class="select is-fullwidth">
                             {{!-- {{{select.ownerGender}}} --}}
-                            {{{form.gender.select.input}}}
+                            {{{ownerForm.gender.select.input}}}
                         </div>
                     </div>
                 </div>
                 <div class="columns">
                     <div class="column is-5 owner-upsert-field">
                         {{!-- {{{label.ownerDob}}} --}}
-                        {{{form.dob.text.label}}}
+                        {{{ownerForm.dob.text.label}}}
                         <div class="control has-icons-left">
                             {{!-- {{{input.ownerDob}}} --}}
-                            {{{form.dob.text.input}}}
+                            {{{ownerForm.dob.text.input}}}
                             <span class="icon is-small is-left">
                                 <i class="fas fa-calendar-days"></i>
                             </span>
@@ -88,10 +88,10 @@
                     </div>
                     <div class="column is-7 owner-upsert-field">
                         {{!-- {{{label.ownerSsn}}} --}}
-                        {{{form.ssn.text.label}}}
+                        {{{ownerForm.ssn.text.label}}}
                         <div class="control has-icons-left">
                             {{!-- {{{input.ownerSsn}}} --}}
-                            {{{form.ssn.text.input}}}
+                            {{{ownerForm.ssn.text.input}}}
                             <span class="icon is-small is-left">
                                 <i class="fas fa-fingerprint"></i>
                             </span>

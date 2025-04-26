@@ -143,6 +143,7 @@ class CompanyForm {
         type: 'select',
         emptyOpt,
         required,
+        label: 'Owner',
         validate: false,
     })
 

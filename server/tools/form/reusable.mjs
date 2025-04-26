@@ -63,6 +63,8 @@ export const createPersonNameForm = (flag, props = {}) => {
         ...props,
         type,
         data,
+        emptyOpt,
+        options: { valOpt: true },
         maxLength: length.person?.[name]?.max, //* Ignored when type is 'select'
         required,
         validator: {
