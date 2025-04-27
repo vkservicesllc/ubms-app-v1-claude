@@ -586,19 +586,9 @@ export const companyById = async (req, res) => {
             {
                 const { content, style } = submitProps.ownership
                 const values = { confirmAlias: null, ownership: _ownerId }
-                let data = {}
-
-                const owners = await Owner.list(res.session)
-                const names = []
-                owners.map(owner => names.push(owner.fullName()))
-                let dublicates = names.filter((name, i) => names.indexOf(name) !== i)
-                dublicates = [ ...new Set(dublicates) ]
-
-                owners.forEach((owner, i) => data[owner._id] = names[i] + (dublicates.includes(names[i]) ? ` (${owner.age})` : ''))
-                data = sortObjectByValue(data)
 
                 options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
-                options.ownership.select.input.data = data
+                options.ownership.select.input.data = await Owner.inputData
 
                 button.submit.ownership = submitButton('ownership-submit', content, style)
                 button.add.owner = formButton({ class: 'button py-3 is-link', id: 'add-owner-trigger', content: '<i class="fas fa-plus"></i>' })
