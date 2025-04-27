@@ -20,7 +20,7 @@ import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { numeric } from '../../../client/global/modules/tools/utils/number.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import strip, { ein as formatEin, ssn as formatSsn } from '../../../client/global/modules/tools/utils/formatter.mjs'
-import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+import { sortArrayByObjectKey, sortObjectByValue } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 const mysql = require('../utils/mysql')
 
@@ -995,6 +995,21 @@ class Owner extends Individual {
         list.forEach((data, i, arr) => arr[i] = new Owner(data, true))
 
         return list
+    }
+
+
+    static inputData = async session => {
+        if (!session.user) return
+
+        const owners = await Owner.list(res.session)
+        const data = {}, names = []
+        owners.map(owner => names.push(owner.fullName()))
+        let dublicates = names.filter((name, i) => names.indexOf(name) !== i)
+        dublicates = [ ...new Set(dublicates) ]
+
+        owners.forEach((owner, i) => data[owner._id] = names[i] + (dublicates.includes(names[i]) ? ` (${owner.age})` : ''))
+
+        return sortObjectByValue(data)
     }
 
 
