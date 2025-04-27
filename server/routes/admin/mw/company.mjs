@@ -588,7 +588,7 @@ export const companyById = async (req, res) => {
                 const values = { confirmAlias: null, ownership: _ownerId }
 
                 options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
-                options.ownership.select.input.data = await Owner.inputData
+                options.ownership.select.input.data = await Owner.inputData(res.session)
 
                 button.submit.ownership = submitButton('ownership-submit', content, style)
                 button.add.owner = formButton({ class: 'button py-3 is-link', id: 'add-owner-trigger', content: '<i class="fas fa-plus"></i>' })
