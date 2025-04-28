@@ -1,4 +1,22 @@
 <form class="box px-5 form-container" id="address-form" action="/resource/company/{{{_id}}}/address" method="POST" autocomplete="off"{{{visibility.address}}}>
+    <article class="message is-warning" id="initaddr-msg">
+        <div class="message-header">
+            <p>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Important
+            </p>
+            <button class="delete" id="initaddr-msg-close"></button>
+        </div>
+        <div class="message-body">
+            The <em>initial address</em> refers to the address the company had at the time it was originally created.<br/>
+            Please ensure you list the address as it was <strong>at the time of formation</strong>, even if you are registering the company years later.<br/>
+            If the company's address has changed since then, you must still enter the original address during registration.<br/>
+            You may update the current address after the registration is complete.
+        </div>
+    </article>
+    <script>
+        $('#initaddr-msg-close').click(() => { $('#initaddr-msg').remove() })
+    </script>
     <div class="field">
         <h5 class="subtitle has-text-primary-40">Initial Physical Address</h5>
         <div class="columns">
