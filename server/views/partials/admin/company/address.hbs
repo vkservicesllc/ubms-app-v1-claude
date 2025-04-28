@@ -1,120 +1,86 @@
 <form class="box px-5 form-container" id="address-form" action="/resource/company/{{{_id}}}/address" method="POST" autocomplete="off"{{{visibility.address}}}>
-    <div class="columns">
-        <div class="column">
-            <h5 class="subtitle has-text-primary-40">Initial Physical Address</h5>
-            <div class="field">
-                <div class="columns">
-                    <div class="column is-8">
-                        {{{label.address1}}}
-                        <div class="control">
-                            {{{input.address1}}}
-                        </div>
-                        <p class="help is-info" id="addr1-tip">Without Suite/Unit</p>
-                    </div>
-                    <div class="column">
-                        {{{label.address2}}}
-                        <div class="control">
-                            {{{input.address2}}}
-                        </div>
-                    </div>
+    <div class="field">
+        <h5 class="subtitle has-text-primary-40">Initial Physical Address</h5>
+        <div class="columns">
+            <div class="column is-3">
+                {{{form.address1.text.label}}}
+                <div class="control">
+                    {{{form.address1.text.input}}}
+                </div>
+                <p class="help is-info" id="addr1-tip">Without Suite/Unit</p>
+            </div>
+            <div class="column is-2">
+                {{{form.address2.text.label}}}
+                <div class="control">
+                    {{{form.address2.text.input}}}
                 </div>
             </div>
-            <div class="field">
-                <div class="columns">
-                    <div class="column is-4">
-                        {{{label.zip}}}
-                        <div class="control">
-                            {{{input.zip}}}
-                        </div>
-                    </div>
-                    <div class="column is-8">
-                        {{{label.city}}}
-                        <div class="control">
-                            {{{input.city}}}
-                        </div>
-                    </div>
+            <div class="column is-2">
+                {{{form.addrZip.text.label}}}
+                <div class="control">
+                    {{{form.addrZip.text.input}}}
                 </div>
             </div>
-            <div class="field">
-                <div class="columns">
-                    <div class="column is-6">
-                        {{{label.state}}}
-                        <div class="select is-fullwidth">
-                            {{{select.state}}}
-                        </div>
-                    </div>
-                    <div class="column is-6">
-                        {{{label.country}}}
-                        <div class="control">
-                            {{{input.country}}}
-                        </div>
-                    </div>
+            <div class="column is-3">
+                {{{form.addrCity.text.label}}}
+                <div class="control">
+                    {{{form.addrCity.text.input}}}
                 </div>
             </div>
-            <div class="fields mt-5 px-1">
-                <label class="checkbox">
-                    {{{input.mailAddress}}}
-                    Mail Address is different
-                </label>
+            <div class="column is-2">
+                {{{form.addrState.select.label}}}
+                <div class="select is-fullwidth">
+                    {{{form.addrState.select.input}}}
+                </div>
             </div>
         </div>
-        <div class="column">
-            <h5 class="subtitle has-text-info">Initial Mail Address</h5>
-            <div class="field">
-                <div class="columns">
-                    <div class="column is-8">
-                        {{{label.mailAddress1}}}
-                        <div class="control">
-                            {{{input.mailAddress1}}}
-                        </div>
-                        <p class="help is-info" id="addr1-tip">Without Suite/Unit</p>
-                    </div>
-                    <div class="column">
-                        {{{label.mailAddress2}}}
-                        <div class="control">
-                            {{{input.mailAddress2}}}
-                        </div>
-                    </div>
+        <label class="checkbox">
+            <input type="checkbox" id="mail-address"{{{checked.mailAddress}}} />
+            Mailing address is different from physical
+        </label>
+    </div>
+    <div class="field mt-5"{{{visibility.mailAddress}}}>
+        <h5 class="subtitle has-text-info">Initial Mail Address</h5>
+        <div class="columns">
+            <div class="column is-3">
+                {{{form.mailAddress1.text.label}}}
+                <div class="control">
+                    {{{form.mailAddress1.text.input}}}
+                </div>
+                <p class="help is-info" id="addr1-tip">Without Suite/Unit</p>
+            </div>
+            <div class="column is-2">
+                {{{form.mailAddress2.text.label}}}
+                <div class="control">
+                    {{{form.mailAddress2.text.input}}}
                 </div>
             </div>
-            <div class="field">
-                <div class="columns">
-                    <div class="column is-4">
-                        {{{label.mailZip}}}
-                        <div class="control">
-                            {{{input.mailZip}}}
-                        </div>
-                    </div>
-                    <div class="column is-8">
-                        {{{label.mailCity}}}
-                        <div class="control">
-                            {{{input.mailCity}}}
-                        </div>
-                    </div>
+            <div class="column is-2">
+                {{{form.mailAddrZip.text.label}}}
+                <div class="control">
+                    {{{form.mailAddrZip.text.input}}}
                 </div>
             </div>
-            <div class="field">
-                <div class="columns">
-                    <div class="column is-6">
-                        {{{label.mailState}}}
-                        <div class="select is-fullwidth">
-                            {{{select.mailState}}}
-                        </div>
-                    </div>
-                    <div class="column is-6">
-                        {{{label.country}}}
-                        <div class="control">
-                            {{{input.country}}}
-                        </div>
-                    </div>
+            <div class="column is-3">
+                {{{form.mailAddrCity.text.label}}}
+                <div class="control">
+                    {{{form.mailAddrCity.text.input}}}
+                </div>
+            </div>
+            <div class="column is-2">
+                {{{form.mailAddrState.select.label}}}
+                <div class="select is-fullwidth">
+                    {{{form.mailAddrState.select.input}}}
                 </div>
             </div>
         </div>
     </div>
-    <div class="columns">
-        <div class="column is-10"></div>
-        <div class="column is-2">
-            {{{button.submit.address}}}
+    <div class="field">
+        <div class="columns">
+            <div class="column is-10"></div>
+            <div class="column is-2">
+                {{{button.submit.address}}}
+            </div>
         </div>
     </div>
 </form>

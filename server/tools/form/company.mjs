@@ -141,7 +141,7 @@ class CompanyForm {
     static ownership = createForm({
         selector: companySelector,
         target: 'ownership',
-        name: 'ownerId',
+        name: '_ownerId',
         type: 'select',
         emptyOpt,
         required,
@@ -158,7 +158,7 @@ class CompanyForm {
 
     static addrZip = createAddrZipForm({ selector: companySelector }, false)
     static addrCity = createAddrCityForm({ selector: companySelector }, false)
-    static addrState = createAddrStateForm({ selector: companySelector }, false)
+    static addrState = createAddrStateForm({ selector: companySelector, options: { valOpt: true } }, false)
 
     static mailAddress1 = createAddressForm({ selector: companySelector }, { mail: true })
 
@@ -169,7 +169,7 @@ class CompanyForm {
 
     static mailAddrZip = createAddrZipForm({ selector: companySelector }, true)
     static mailAddrCity = createAddrCityForm({ selector: companySelector }, true)
-    static mailAddrState = createAddrStateForm({ selector: companySelector }, true)
+    static mailAddrState = createAddrStateForm({ selector: companySelector, options: { valOpt: true } }, true)
 
     static phone = createPhoneForm({ selector: companySelector, required })
     static fax = createPhoneForm({ selector: companySelector, target: 'fax', name: 'fax', label: 'Fax' })

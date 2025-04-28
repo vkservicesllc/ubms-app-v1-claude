@@ -106,6 +106,7 @@ export const createPhoneForm = (props = {}) => createForm({
 
 
 export const createUsStateForm = (props = {}) => createForm({
+    emptyOpt,
     ...props,
     type: 'select',
     data: Address.stateList,

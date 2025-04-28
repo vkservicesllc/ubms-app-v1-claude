@@ -525,6 +525,7 @@ export const companyById = async (req, res) => {
             visibility[block] = hidden
         }
         let catId, since, ein, duns, busName, coType, alias, website
+        const checked = { mailAddress: '' }
 
 
         /* Current Company */
@@ -557,32 +558,49 @@ export const companyById = async (req, res) => {
             /* Current Owner */
             if (_ownerId) {
                 const { address } = data
-                const { address1, address2, zip, city } = address.physical
+                const { address1, address2, zip: addrZip, city: addrCity } = address.physical
                 const {
                     address1: mailAddress1,
                     address2: mailAddress2,
-                    zip: mailZip,
-                    city: mailCity,
+                    zip: mailAddrZip,
+                    city: mailAddrCity,
                 } = address.mail
-                let { state } = address.physical
-                let { state: mailState } = address.mail
-                if (state) state = state[0]
-                if (mailState) mailState = mailState[0]
+                let { state: addrState } = address.physical
+                let { state: mailAddrState } = address.mail
+                if (addrState) addrState = addrState[0]
+                if (mailAddrState) mailAddrState = mailAddrState[0]
 
                 steps.ownership = completedStep
                 steps.address = activeStep
                 visibility.ownership = hidden
                 visibility.address = ''
+                visibility.mailAddress = hidden
                 submitProps.ownership = saveSubmit
 
 
-                if (zip) {}
+                if (addrZip) {}
 
 
-                //
+                /* Address HBS Form & Submit */
+                {
+                    const { content, style } = submitProps.address
+
+                    const values = {
+                        address1, address2, addrZip, addrCity, addrState,
+                        mailAddress1, mailAddress2, mailAddrZip, mailAddrCity, mailAddrState,
+                    }
+                    options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
+                    if (mailAddrZip) {
+                        checked.mailAddress = ' checked'
+                        visibility.mailAddress = ''
+                    }
+
+                    button.submit.address = submitButton('address-submit', content, style)
+                }
             }
 
 
+            /* Ownership & Owner HBS Form & Submit */
             {
                 const { content, style } = submitProps.ownership
                 const values = { confirmAlias: null, ownership: _ownerId }
@@ -645,6 +663,7 @@ export const companyById = async (req, res) => {
         hbs.form = new CompanyForm(options)
         hbs.ownerForm = new OwnerForm(ownerOptions)
         hbs.catForm = catForm
+        hbs.checked = checked
         hbs.icon = icon
         hbs.button = button
 
@@ -960,7 +979,7 @@ export const companyById_OLD = async (req, res) => {
             // input.confirmAlias = CompanyForm.confirmAlias.text.input({ class: 'input' })
 
             /* Ownership HBS Form */
-            input.current.ownership = Input.ownership({ value: _ownerId })
+            // input.current.ownership = Input.ownership({ value: _ownerId })
             // label.ownership = Label.ownership({ class: labelClassRequired })
             // select.ownership = await Select.ownership({ tabs: 5, value: _ownerId, options: { emptyOpt: '--' } })
             // button.add.owner = formButton({ class: 'button py-3 is-link', id: 'add-owner-trigger', content: '<i class="fas fa-plus"></i>' })
