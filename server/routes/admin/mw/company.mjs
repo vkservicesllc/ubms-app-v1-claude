@@ -611,6 +611,8 @@ export const companyById = async (req, res) => {
 
         /* Record HBS Form & Submit */
         {
+            if (since) since = moment(since).format('MM/DD/YYYY')
+
             const { content, style } = submitProps.record
             const values = { catId, since, ein, duns, busName, coType, alias, website }
 

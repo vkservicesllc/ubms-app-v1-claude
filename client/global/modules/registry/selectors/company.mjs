@@ -26,7 +26,6 @@ const selector = {
             alias: 'alias',
             confirmAlias: 'confirm-alias',
             website: 'website',
-            ownership: 'ownership',
             address1: 'address-1',
             address2: 'address-2',
             addrCity: 'address-city',
@@ -48,6 +47,7 @@ const selector = {
         select: {
             category: 'category',
             coType: 'company-type',
+            ownership: 'ownership',
             addrState: 'address-state',
             mailAddrState: 'mail-address-state',
         },

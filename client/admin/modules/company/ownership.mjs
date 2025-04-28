@@ -1,10 +1,9 @@
 import { selectEvent } from '../events/form.mjs'
-import { formSelectors } from '../registry/selectors.mjs'
 import { openAddModal, openModifyModal, closeModals } from './owner.mjs'
+import selector from '../registry/selectors/company.mjs'
 
-const { ownershipId } = formSelectors.company
+const ownershipId = selector.id.select.ownership
 
-const $owner = $(`#${ownershipId}`)
 const $button = {
     edit: $('#edit-owner-trigger'),
     add: $('#add-owner-trigger'),
@@ -26,7 +25,7 @@ selectEvent(ownershipId, {
 $button.add.on('click', openAddModal)
 
 $button.edit.on('click', () => {
-    const _id = $owner.val()
+    const _id = $(ownershipId).val()
 
     openModifyModal(_id)
 })
