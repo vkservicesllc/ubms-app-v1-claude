@@ -64,6 +64,7 @@ const createCoTypeForm = (selector, props = {}) => createForm({
     selector,
     target: 'coType',
     name: 'coType',
+    emptyOpt,
     required,
     label: 'Type',
     options: { valOpt: true },

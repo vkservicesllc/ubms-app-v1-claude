@@ -614,7 +614,7 @@ export const companyById = async (req, res) => {
             const { content, style } = submitProps.record
             const values = { catId, since, ein, duns, busName, coType, alias, website }
 
-            options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
+            options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 6 })
             button.submit.record = submitButton('record-submit', content, style)
         }
 

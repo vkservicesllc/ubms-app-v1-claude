@@ -155,6 +155,7 @@ const formSelectOptions = (data = {}, options = {}) => {
 
     const nl = tabs ? `\n` : ''
     tabs = `\t`.repeat(tabs)
+
     if (emptyOpt !== null)
         html = nl + tabs + `<option value="">${emptyOpt}</option>`
 
@@ -212,12 +213,12 @@ export const formSelect = (props = {}, data = {}, options = {}) => {
         id,
         name,
         value,
-        emptyOpt,
         size,
         multiple,
         required,
         disabled,
     } = props
+    let { emptyOpt } = props
     const classes = initializeClass(props)
     const tabs = props.tabs >= -1 ? props.tabs : -1
 
@@ -231,8 +232,8 @@ export const formSelect = (props = {}, data = {}, options = {}) => {
 
     if (value) {
         options.value = value
-        if (required === true) options.emptyOpt = null
-    }
+        if (required === true) emptyOpt = null
+    } else options.value = null
 
     const nl = tabs > -1 ? `\n${'\t'.repeat(tabs)}` : ''
     const attrs = classAttr

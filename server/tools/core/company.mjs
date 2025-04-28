@@ -1001,7 +1001,7 @@ class Owner extends Individual {
     static inputData = async session => {
         if (!session.user) return
 
-        const owners = await Owner.list(res.session)
+        const owners = await Owner.list(session)
         const data = {}, names = []
         owners.map(owner => names.push(owner.fullName()))
         let dublicates = names.filter((name, i) => names.indexOf(name) !== i)

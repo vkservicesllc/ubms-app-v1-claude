@@ -360,11 +360,12 @@ export const constructForm = (Src, target, options) => {
             input: text.input(textOpts?.input),
         }
 
-    if (select)
+    if (select) {
         form.select = {
             label: select.label(selectOpts?.label),
             input: select.input(selectOpts?.input),
         }
+    }
 
     if (radio) {
         const keys = Object.keys(radio).filter(key => key !== 'properties' && key !== 'label')
