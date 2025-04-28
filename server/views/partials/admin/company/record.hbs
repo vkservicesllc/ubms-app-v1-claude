@@ -9,19 +9,13 @@
             <button class="delete" id="usonly-msg-close"></button>
         </div>
         <div class="message-body">
-            Please note that this section of our platform is designed specifically for the registration of <strong>US companies only</strong>!
+            Please note that this section of the platform is designed specifically for the registration of <strong>US companies only</strong>!
         </div>
     </article>
     <script>
         $('#usonly-msg-close').click(() => { $('#usonly-msg').remove() })
     </script>
     {{/if}}
-    {{!-- {{{input.current.since}}}
-    {{{input.current.busName}}}
-    {{{input.current.coType}}}
-    {{{input.current.alias}}}
-    {{{input.current.ein}}}
-    {{{input.current.duns}}} --}}
     <div class="field">
         <h5 class="subtitle has-text-primary-40">Identification</h5>
         <div class="columns">
@@ -87,7 +81,7 @@
                 <div class="control">
                     {{{form.alias.text.input}}}
                 </div>
-                <p class="help is-info" id="alias-tip">Abbreviation</p>
+                <p class="help is-info" id="alias-tip"></p>
             </div>
             <div class="column is-4">
                 {{{form.website.text.label}}}

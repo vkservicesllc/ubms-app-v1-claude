@@ -3,12 +3,20 @@ import getIdFromUrl from '../tools/id.mjs'
 import { catIdEvent, busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '../events/company.mjs'
 import { urlEvent } from '../events/web.mjs'
 import { inputEvent } from '../events/form.mjs'
-import { formSelectors } from '../registry/selectors.mjs'
+import selector from '../registry/selectors/company.mjs'
 
-const { catId, sinceId, einId, dunsId, busNameId, coTypeId, aliasId, websiteId } = formSelectors.company
+const TS = selector.id.text, SS = selector.id.select
+const catId = SS.category
+const sinceId = TS.since
+const einId = TS.ein
+const dunsId = TS.duns
+const busNameId = TS.busName
+const coTypeId = SS.coType
+const aliasId = TS.alias
+const websiteId = TS.website
 
-const id = getIdFromUrl()
-const duns = $(`#${dunsId}`).val()
+const _id = getIdFromUrl()
+const duns = $(dunsId).val()
 const $submit = $('#record-submit')
 const $form = $('#record-form')
 
@@ -42,7 +50,7 @@ const message = {
 
 const setTip = new Tip($tip, tipDefs, message)
 
-if (id && id != 'new') {
+if (_id && _id !== 'new') {
     setTip.passed('name')
     setTip.passed('alias')
     setTip.passed('ein')
@@ -52,40 +60,30 @@ $submit.prop('disabled', false)
 
 
 const handleChange = (props = {}) => {
-    let input = true
-    const { data, key, current } = props
+    let input = true, action = 'passed'
+    const { data, key } = props
+    const exclude = _id && _id !== 'new' ? { _id } : null
+
     for (const prop in data)
         if (!data[prop]) {
             input = false
             break
         }
-    let action = input ? 'passed' : 'default'
+    if (!input) action = 'default'
 
     $.ajax('/api/unique/company', {
         method: 'POST',
-        data,
+        data: { ...data, exclude },
         success(response) {
             const { unique, error } = response
+
             if (input && error) alert(error)
-            if (input && !current && !unique) action = 'failed'
+            if (input && !unique) action = 'failed'
 
             setTip[action](key)
             if (formValid()) $tip.form.html(null)
         },
     })
-}
-
-
-const handleNameChange = (busName, coType) => {
-    const currentBusName = $(`#current-${busNameId}`).val()
-    const currentCoType = $(`#current-${coTypeId}`).val()
-
-    if (busName && coType)
-        handleChange({
-            data: { busName, coType },
-            current: busName === currentBusName && coType === currentCoType,
-            key: 'name',
-        })
 }
 
 
@@ -96,10 +94,7 @@ einEvent(einId, {
         setTip.default('ein')
     },
     onChange(ein) {
-        const currentEin = $(`#current-${einId}`).val()
-        const current = ein === currentEin
-
-        handleChange({ data: { ein }, key: 'ein', current })
+        handleChange({ data: { ein }, key: 'ein' })
     },
 })
 
@@ -108,10 +103,7 @@ dunsEvent(dunsId, {
         setTip.default('duns')
     },
     onChange(duns) {
-        const currentDuns = $(`#current-${dunsId}`).val()
-        const current = duns === currentDuns
-
-        handleChange({ data: { duns }, key: 'duns', current })
+        handleChange({ data: { duns }, key: 'duns' })
     },
 })
 
@@ -120,12 +112,12 @@ busNameEvent(busNameId, coTypeId, {
         setTip.default('name')
     },
     onChange(busName, coType) {
-        handleNameChange(busName, coType)
+        handleChange({ data: { busName, coType }, key: 'name' })
     },
 })
 
 coTypeEvent(coTypeId, busNameId, (coType, busName) => {
-    handleNameChange(busName, coType)
+    handleChange({ data: { busName, coType }, key: 'name' })
 })
 
 aliasEvent(aliasId, {
@@ -133,10 +125,7 @@ aliasEvent(aliasId, {
         setTip.default('alias')
     },
     onChange(alias) {
-        const currentAlias = $(`#current-${aliasId}`).val()
-        const current = alias === currentAlias
-
-        handleChange({ data: { alias }, key: 'alias', current })
+        handleChange({ data: { alias }, key: 'alias' })
     },
 })
 

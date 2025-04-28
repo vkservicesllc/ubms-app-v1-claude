@@ -75,8 +75,9 @@ const createCoTypeForm = (selector, props = {}) => createForm({
 
 const createAliasForm = (confirm = false) => createForm({
     selector: companySelector,
-    target: confirm ? 'confirmAlias' : 'alias',
+    target: confirm === true ? 'confirmAlias' : 'alias',
     name: 'alias',
+    placeholder: confirm === false ? 'Abbr. or short' : null,
     maxLength: length.company.alias.max,
     required,
     label: 'Alias',
