@@ -1,11 +1,21 @@
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '../events/address.mjs'
 import { inputEvent, selectEvent } from '../events/form.mjs'
-import { formSelectors } from '../registry/selectors.mjs'
+import selector from '../registry/selectors/company.mjs'
 
-const { addr1Id, addr2Id, zipId, cityId, stateId, mailStatusId, mailAddr1Id, mailAddr2Id, mailZipId, mailCityId, mailStateId } = formSelectors.company
+const TS = selector.id.text, SS = selector.id.select
+const addr1Id = TS.address1, addr2Id = TS.address2
+const zipId = TS.addrZip, cityId = TS.addrCity, stateId = SS.addrState
+const mailAddr1Id = TS.mailAddress1, mailAddr2Id = TS.mailAddress2
+const mailZipId = TS.mailAddrZip, mailCityId = TS.mailAddrCity, mailStateId = SS.mailAddrState
+const mailStatusId = '#mail-address'
 
+const $mailFields = $('#mail-address-fields')
 const $submit = $('#address-submit')
 $submit.prop('disabled', false)
+
+
+if (!$(mailStatusId).prop('checked'))
+    $mailFields.find('input, select').prop('disabled', true)
 
 addr1Event(addr1Id, { addr2Id })
 addr2Event(addr2Id)
@@ -15,7 +25,12 @@ selectEvent(stateId)
 
 inputEvent(mailStatusId, {
     onChange(value, $input) {
-        $('.mail-address').prop('disabled', !$input.is(':checked'))
+        const checked = $input.is(':checked')
+
+        $mailFields
+            [checked ? 'show' : 'hide']()
+            .find('input, select')
+            .prop('disabled', !checked)
     },
 })
 
