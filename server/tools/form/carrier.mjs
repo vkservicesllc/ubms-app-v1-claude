@@ -13,15 +13,14 @@ import { permits } from '../../settings/carrier.mjs'
 const required = true
 
 
-const createNumberForm = (target, props = {}, alpha = false) => createForm({
+const createNumberForm = (target, props = {}, rule = 'numeric') => createForm({
     selector,
     target,
+    group: { numeric: 'number', alpha: 'alpha', alphanumeric: 'alphaNumber' }[rule],
     name: target,
     maxLength: length.carrier[target].max,
     ...props,
-    validator: {
-        rule: alpha === true ? 'alphanumeric' : 'numeric',
-    },
+    validator: { rule },
 })
 
 
@@ -54,7 +53,7 @@ class CarrierForm {
             content: 'SCAC',
             title: 'Standard Carrier Alpha Code',
         },
-    }, true)
+    }, 'alpha')
 
     static irp = createNumberForm('irp', {
         label: {
@@ -83,14 +82,13 @@ class CarrierForm {
 
     static fleetOne = createNumberForm('fleetOne', { label: 'FleetOne Carrier ID' })
 
-    static transflo = createNumberForm('transflo', { label: 'Transflo ID' }, true)
+    static transflo = createNumberForm('transflo', { label: 'Transflo ID' }, 'alphanumeric')
 
 }
 
 for (const key in permits) {
     const { content, title } = permits[key]
     const target = `${key}Permit`
-    selector.id.text[target]
 
     CarrierForm[target] = createForm({
         selector,

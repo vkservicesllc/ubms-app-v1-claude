@@ -237,6 +237,12 @@ const createForm = (input = {}) => {
                         .withMessage(`"${name}" field must be alphanumeric`)
                     break
 
+                case 'alpha':
+                    chain = chain
+                        .matches(/^[A-Za-z]+$/)
+                        .withMessage(`"${name}" field mustcontain alphabetic characters`)
+                    break
+
                 case 'boolean':
                     chain = chain
                         .customSanitizer(value => {

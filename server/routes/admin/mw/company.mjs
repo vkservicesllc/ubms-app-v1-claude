@@ -626,68 +626,12 @@ export const companyById = async (req, res) => {
                                         ifta, iftaJur: iftaJur || addrState,
                                         efs, fleetOne, transflo,
                                     }
-    
+                                    for (const key in permits)
+                                        values[`${key}Permit`] = stateTax?.[key]
+
                                     catOptions = updateFormOptions(catOptions, CarrierForm, values, { ...instr, tabs: 5 })
                                 }
                                 catForm = new CarrierForm(catOptions)
-// console.log(catForm)
-
-                                // label.carrier = {
-                                //     mc: CarrierLabel.mc({ class: labelClassRequired }),
-                                //     usdot: CarrierLabel.usdot({ class: labelClassRequired }),
-                                //     scac: CarrierLabel.scac({ class: labelClass }),
-                                //     ifta: CarrierLabel.ifta({ class: labelClass }),
-                                //     iftaJur: CarrierLabel.iftaJur({ class: labelClass }),
-                                //     irp: CarrierLabel.irp({ class: labelClass }),
-                                //     efs: CarrierLabel.efs({ class: labelClass }),
-                                //     fleetOne: CarrierLabel.fleetOne({ class: labelClass }),
-                                //     transflo: CarrierLabel.tranflo({ class: labelClass }),
-                                //     permit: {},
-                                // }
-
-                                // input.carrier = {
-                                //     current: {
-                                //         mc: CarrierInput.mc({ value: mc }, true),
-                                //         usdot: CarrierInput.usdot({ value: usdot }, true),
-                                //         scac: CarrierInput.scac({ value: scac }, true),
-                                //         ifta: CarrierInput.ifta({ value: ifta }, true),
-                                //         irp: CarrierInput.irp({ value: irp }, true),
-                                //         efs: CarrierInput.efs({ value: efs }, true),
-                                //         fleetOne: CarrierInput.fleetOne({ value: fleetOne }, true),
-                                //         transflo: CarrierInput.transflo({ value: transflo }, true),
-                                //     },
-                                //     mc: CarrierInput.mc({ class: 'input', value: mc }),
-                                //     usdot: CarrierInput.usdot({ class: 'input', value: usdot }),
-                                //     scac: CarrierInput.scac({ class: 'input', value: scac }),
-                                //     ifta: CarrierInput.ifta({ class: 'input', value: ifta }),
-                                //     irp: CarrierInput.irp({ class: 'input', value: irp }),
-                                //     efs: CarrierInput.efs({ class: 'input', value: efs }),
-                                //     fleetOne: CarrierInput.fleetOne({ class: 'input', value: fleetOne }),
-                                //     transflo: CarrierInput.transflo({ class: 'input', value: transflo }),
-                                //     permit: { current: {} },
-                                // }
-
-                                // for (const state in inputLength.carrier.permit.max) {
-                                //     let value
-                                //     if (stateTax) value = stateTax[state]
-
-                                //     label.carrier.permit[state] = CarrierLabel.permit(state, { class: labelClass })
-                                //     input.carrier.permit[state] = CarrierInput.permit(state, { class: 'input', value })
-                                //     input.carrier.permit.current[state] = CarrierInput.permit(state, { value }, true)
-                                // }
-
-                                // select.carrier = {
-                                //     iftaJur: CarrierSelect.iftaJur({
-                                //         tabs: 5,
-                                //         value: iftaJur || state,
-                                //         options: { valOpt: false },
-                                //     }),
-                                // }
-
-                                // button.upsert.statePermits = formButton({
-                                //     class: 'button is-primary',
-                                //     content: 'State Permits',
-                                // })
 
                                 {
                                     const { style, content } = submitProps.credentials

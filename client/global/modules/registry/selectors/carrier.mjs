@@ -1,10 +1,14 @@
 import initialize from './support.mjs'
+import length from '../length.mjs'
 
 const prefix = 'carrier'
 
 const selector = {
     class: {
         text: {
+            alpha: 'alpha',
+            alphaNumber: 'alphanumeric',
+            number: 'number',
             permit: 'permit',
         },
     },
@@ -31,6 +35,7 @@ const selector = {
 
 initialize(prefix, selector)
 
-selector.id.text.permit = target => `${target}-permit`
+for (const key in length.carrier.permit.max)
+    selector.id.text[`${key}Permit`] = `#${prefix}-${key}-permit-text-input`
 
 export default selector

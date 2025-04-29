@@ -1,11 +1,12 @@
 import length from '../registry/length.mjs'
 import { formSelectors } from '../registry/selectors.mjs'
 import { inputEvent } from '../events/form.mjs'
+import selector from '../registry/selectors/carrier.mjs'
 
-const { mcId, usdotId, scacId, iftaId, irpId, efsId, fleetOneId, transfloId } = formSelectors.carrier
-const numberIds = [ mcId, usdotId, scacId, iftaId, irpId, efsId, fleetOneId, transfloId ]
+// const { mcId, usdotId, scacId, iftaId, irpId, efsId, fleetOneId, transfloId } = formSelectors.carrier
+// const numberIds = [ mcId, usdotId, scacId, iftaId, irpId, efsId, fleetOneId, transfloId ]
 
-Object.keys(length.carrier.permit.max).forEach(key => numberIds.push(formSelectors.carrier.permit(key)))
+// Object.keys(length.carrier.permit.max).forEach(key => numberIds.push(formSelectors.carrier.permit(key)))
 
 const $modal = $('#carrier-state-permits-modal')
 const $submit = $('#credentials-submit')
@@ -18,75 +19,103 @@ const tip = {
     failedForm: '<i class="fas fa-close"></i>&nbsp; Credentials can not have dublicates<br /><i class="fas fa-close"></i>&nbsp; Data can not be submitted',
 }
 
-for (const id of numberIds) {
-    const number = $(`#${id}`).val()
+const TS = selector.class.text
+let credClass = ''
+for (const prop of ['alpha', 'alphaNumber', 'number', 'permit'])
+    credClass += `.${TS[prop]}`
 
-    if (number) {
-        const $tip = $(`#${id.replace('carrier-', '')}-tip`)
-
-        $tip
-            .addClass('is-success')
-            .html(tip.success)
-            .show()
-    }
-}
-
-inputEvent(numberIds, {
+inputEvent(credClass, {
     onInput(number, $number) {
         const id = $number.attr('id')
         const $tip = $(`#${id.replace('carrier-', '')}-tip`)
-
         let pattern = /\D/g
-        if (id == scacId) pattern = /[^A-Za-z]/g
-        if (id == transfloId) pattern = /[^A-Za-z0-9]/g
+
+        if ($(this).hasClass(TS.alpha)) pattern = /[^A-Za-z]/g
+        if ($(this).hasClass(TS.alphaNumber)) pattern = /[^A-Za-z0-9]/g
 
         $number.val(number.replace(pattern, '').toUpperCase())
         $tip.hide().removeClass('is-danger is-success').html(null)
     },
     onChange(number, $number) {
         const id = $number.attr('id')
-        const currentNumber = $(`#current-${id}`).val()
         const $tip = $(`#${id.replace('carrier-', '')}-tip`)
+        const name = $number.attr('name')
+        const data = { [name]: number }
 
-        if (number) {
-            if (number == currentNumber)
-                $tip
-                    .addClass('is-success')
-                    .html(tip.success)
-                    .show()
-            else {
-                let name = $number.attr('name')
-                const data = { [name]: number }
-    
-                $.ajax(`/api/unique/carrier`, {
-                    method: 'POST',
-                    data,
-                    success(response) {
-                        const { unique, error } = response
-    
-                        $tip.hide().html(null).removeClass('is-success is-danger')
-                        if (error) {
-                            $number.val(null)
-                            return alert(error)
-                        }
-    
-                        if (unique) {
-                            $tip
-                                .addClass('is-success')
-                                .html(tip.success)
-                                .show()
-                            if (formValid()) $formTip.html(null)
-                        } else
-                            $tip
-                                .addClass('is-danger')
-                                .html(tip.failed)
-                                .show()
-                    },
-                })
-            }
-        }
+        //! need to exclude _id that is not defined yet
     },
 })
+
+
+// for (const id of numberIds) {
+//     const number = $(`#${id}`).val()
+
+//     if (number) {
+//         const $tip = $(`#${id.replace('carrier-', '')}-tip`)
+
+//         $tip
+//             .addClass('is-success')
+//             .html(tip.success)
+//             .show()
+//     }
+// }
+
+// inputEvent(numberIds, {
+//     onInput(number, $number) {
+//         const id = $number.attr('id')
+//         const $tip = $(`#${id.replace('carrier-', '')}-tip`)
+
+//         let pattern = /\D/g
+//         if (id == scacId) pattern = /[^A-Za-z]/g
+//         if (id == transfloId) pattern = /[^A-Za-z0-9]/g
+
+//         $number.val(number.replace(pattern, '').toUpperCase())
+//         $tip.hide().removeClass('is-danger is-success').html(null)
+//     },
+//     onChange(number, $number) {
+//         const id = $number.attr('id')
+//         const currentNumber = $(`#current-${id}`).val()
+//         const $tip = $(`#${id.replace('carrier-', '')}-tip`)
+
+//         if (number) {
+//             if (number == currentNumber)
+//                 $tip
+//                     .addClass('is-success')
+//                     .html(tip.success)
+//                     .show()
+//             else {
+//                 let name = $number.attr('name')
+//                 const data = { [name]: number }
+    
+//                 $.ajax(`/api/unique/carrier`, {
+//                     method: 'POST',
+//                     data,
+//                     success(response) {
+//                         const { unique, error } = response
+    
+//                         $tip.hide().html(null).removeClass('is-success is-danger')
+//                         if (error) {
+//                             $number.val(null)
+//                             return alert(error)
+//                         }
+    
+//                         if (unique) {
+//                             $tip
+//                                 .addClass('is-success')
+//                                 .html(tip.success)
+//                                 .show()
+//                             if (formValid()) $formTip.html(null)
+//                         } else
+//                             $tip
+//                                 .addClass('is-danger')
+//                                 .html(tip.failed)
+//                                 .show()
+//                     },
+//                 })
+//             }
+//         }
+//     },
+// })
 
 
 $('#carrier-state-permits-open').click(() => {
