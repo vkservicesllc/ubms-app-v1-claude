@@ -115,7 +115,7 @@ export const createUsStateForm = (props = {}) => createForm({
 
 export const createAddressForm = (props = {}, options) => {
     const idx = options?.idx || 1
-    const mail = options?.mail || null
+    const mail = typeof options?.mail === 'boolean' ? options.mail :  null
     const business = options?.business || false
 
     return createForm({

@@ -28,6 +28,7 @@ import { button as formButton } from '../../../../client/global/modules/tools/ut
 /* Forms */
 import { updateFormOptions } from '../../../tools/form/builder.mjs'
 import CompanyForm, { OwnerForm } from '../../../tools/form/company.mjs'
+import CarrierForm from '../../../tools/form/carrier.mjs'
 
 /* Assets */
 import { labelClass, labelClassRequired } from '../assets.mjs'
@@ -578,13 +579,144 @@ export const companyById = async (req, res) => {
                 submitProps.ownership = saveSubmit
 
 
-                if (addrZip) {}
+                if (addrZip) {
+                    const { phone, fax, email } = data
+
+                    steps.address = completedStep
+                    steps.contacts = activeStep
+                    visibility.address = hidden
+                    visibility.contacts = ''
+                    submitProps.address = saveSubmit
+
+
+                    if (phone) {
+                        steps.contacts = completedStep
+                        visibility.contacts = hidden
+                        submitProps.contacts = saveSubmit
+
+                        let catOptions = {}
+
+
+                        switch (catId) {
+
+
+                            case 'crr':
+                                data = await Carrier.data(res.session, { _companyId: _id })
+                                if (!data) return respond404(res)
+
+                                const {
+                                    mc, usdot, scac, irp,
+                                    ifta, iftaJur, stateTax,
+                                    efs, fleetOne, transflo,
+                                } = data
+
+                                steps.credentials = activeStep
+                                visibility.credentials = ''
+
+                                if (mc && usdot) {
+                                    steps.credentials = completedStep
+                                    steps.confirmation = activeStep
+                                    visibility.credentials = hidden
+                                    submitProps.credentials = saveSubmit
+                                }
+
+                                {
+                                    const values = {
+                                        mc, usdot, scac, irp,
+                                        ifta, iftaJur: iftaJur || addrState,
+                                        efs, fleetOne, transflo,
+                                    }
+    
+                                    catOptions = updateFormOptions(catOptions, CarrierForm, values, { ...instr, tabs: 5 })
+                                }
+                                catForm = new CarrierForm(catOptions)
+// console.log(catForm)
+
+                                // label.carrier = {
+                                //     mc: CarrierLabel.mc({ class: labelClassRequired }),
+                                //     usdot: CarrierLabel.usdot({ class: labelClassRequired }),
+                                //     scac: CarrierLabel.scac({ class: labelClass }),
+                                //     ifta: CarrierLabel.ifta({ class: labelClass }),
+                                //     iftaJur: CarrierLabel.iftaJur({ class: labelClass }),
+                                //     irp: CarrierLabel.irp({ class: labelClass }),
+                                //     efs: CarrierLabel.efs({ class: labelClass }),
+                                //     fleetOne: CarrierLabel.fleetOne({ class: labelClass }),
+                                //     transflo: CarrierLabel.tranflo({ class: labelClass }),
+                                //     permit: {},
+                                // }
+
+                                // input.carrier = {
+                                //     current: {
+                                //         mc: CarrierInput.mc({ value: mc }, true),
+                                //         usdot: CarrierInput.usdot({ value: usdot }, true),
+                                //         scac: CarrierInput.scac({ value: scac }, true),
+                                //         ifta: CarrierInput.ifta({ value: ifta }, true),
+                                //         irp: CarrierInput.irp({ value: irp }, true),
+                                //         efs: CarrierInput.efs({ value: efs }, true),
+                                //         fleetOne: CarrierInput.fleetOne({ value: fleetOne }, true),
+                                //         transflo: CarrierInput.transflo({ value: transflo }, true),
+                                //     },
+                                //     mc: CarrierInput.mc({ class: 'input', value: mc }),
+                                //     usdot: CarrierInput.usdot({ class: 'input', value: usdot }),
+                                //     scac: CarrierInput.scac({ class: 'input', value: scac }),
+                                //     ifta: CarrierInput.ifta({ class: 'input', value: ifta }),
+                                //     irp: CarrierInput.irp({ class: 'input', value: irp }),
+                                //     efs: CarrierInput.efs({ class: 'input', value: efs }),
+                                //     fleetOne: CarrierInput.fleetOne({ class: 'input', value: fleetOne }),
+                                //     transflo: CarrierInput.transflo({ class: 'input', value: transflo }),
+                                //     permit: { current: {} },
+                                // }
+
+                                // for (const state in inputLength.carrier.permit.max) {
+                                //     let value
+                                //     if (stateTax) value = stateTax[state]
+
+                                //     label.carrier.permit[state] = CarrierLabel.permit(state, { class: labelClass })
+                                //     input.carrier.permit[state] = CarrierInput.permit(state, { class: 'input', value })
+                                //     input.carrier.permit.current[state] = CarrierInput.permit(state, { value }, true)
+                                // }
+
+                                // select.carrier = {
+                                //     iftaJur: CarrierSelect.iftaJur({
+                                //         tabs: 5,
+                                //         value: iftaJur || state,
+                                //         options: { valOpt: false },
+                                //     }),
+                                // }
+
+                                // button.upsert.statePermits = formButton({
+                                //     class: 'button is-primary',
+                                //     content: 'State Permits',
+                                // })
+
+                                {
+                                    const { style, content } = submitProps.credentials
+                                    button.submit.credentials = submitButton('credentials-submit', content, style)
+                                }
+
+                                break
+
+
+                            default:
+                                steps.confirmation = activeStep
+                        }
+
+
+                    }
+
+
+                    {
+                        const values = { phone, fax, email }
+                        options = updateFormOptions(options, CompanyForm, values, instr)
+
+                        const { style, content } = submitProps.contacts
+                        button.submit.contacts = submitButton('contacts-submit', content, style)
+                    }
+                }
 
 
                 /* Address HBS Form & Submit */
                 {
-                    const { content, style } = submitProps.address
-
                     const values = {
                         address1, address2, addrZip, addrCity, addrState,
                         mailAddress1, mailAddress2, mailAddrZip, mailAddrCity, mailAddrState,
@@ -595,6 +727,7 @@ export const companyById = async (req, res) => {
                         visibility.mailAddress = ''
                     }
 
+                    const { content, style } = submitProps.address
                     button.submit.address = submitButton('address-submit', content, style)
                 }
             }
@@ -602,12 +735,11 @@ export const companyById = async (req, res) => {
 
             /* Ownership & Owner HBS Form & Submit */
             {
-                const { content, style } = submitProps.ownership
                 const values = { confirmAlias: null, ownership: _ownerId }
-
                 options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
                 options.ownership.select.input.data = await Owner.inputData(res.session)
 
+                const { content, style } = submitProps.ownership
                 button.submit.ownership = submitButton('ownership-submit', content, style)
                 button.add.owner = formButton({ class: 'button py-3 is-link', id: 'add-owner-trigger', content: '<i class="fas fa-plus"></i>' })
                 button.edit.owner = formButton({
@@ -630,15 +762,14 @@ export const companyById = async (req, res) => {
         /* Record HBS Form & Submit */
         {
             if (since) since = moment(since).format('MM/DD/YYYY')
+            const values = { catId, since, ein, duns, busName, coType, alias, website }
+            options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 6 })
 
             const { content, style } = submitProps.record
-            const values = { catId, since, ein, duns, busName, coType, alias, website }
-
-            options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 6 })
             button.submit.record = submitButton('record-submit', content, style)
         }
 
-        /* Final Polish */
+        /* Category Form & Final Polish */
         if (data.catId == 'crr')
             css.card = {
                 minHeight: '455px',

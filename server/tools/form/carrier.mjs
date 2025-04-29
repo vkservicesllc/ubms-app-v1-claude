@@ -33,20 +33,57 @@ class CarrierForm {
 
     static id = createIdForm({ selector })
 
-    static mc = createNumberForm('mc', { required })
-    static usdot = createNumberForm('usdot', { required })
-    static ifta = createNumberForm('ifta', { name: 'ifta[number]' })
-    static scac = createNumberForm('scac', {}, true)
-    static irp = createNumberForm('irp')
-    static efs = createNumberForm('efs')
-    static fleetOne = createNumberForm('fleetOne')
-    static transflo = createNumberForm('transflo', {}, true)
+    static mc = createNumberForm('mc', {
+        required,
+        label: {
+            content: 'MC',
+            title: 'Motor Carrier ID',
+        },
+    })
+
+    static usdot = createNumberForm('usdot', {
+        required,
+        label: {
+            content: 'US-DOT',
+            title: 'US Department of Transportation Number',
+        },
+    })
+
+    static scac = createNumberForm('scac', {
+        label: {
+            content: 'SCAC',
+            title: 'Standard Carrier Alpha Code',
+        },
+    }, true)
+
+    static irp = createNumberForm('irp', {
+        label: {
+            content: 'IRP',
+            title: 'International Registration Plan ID',
+        },
+    })
+
+    static ifta = createNumberForm('ifta', {
+        name: 'ifta[number]',
+        label: {
+            content: 'IFTA',
+            title: 'International Fuel Tax Agreement ID',
+        },
+    })
 
     static iftaJur = createUsStateForm({
         selector,
         target: 'iftaJur',
         name: 'ifta[jurisdiction]',
+        emptyOpt: null,
+        label: 'IFTA Jurisdiction',
     })
+
+    static efs = createNumberForm('efs', { label: 'EFS Carrier ID' })
+
+    static fleetOne = createNumberForm('fleetOne', { label: 'FleetOne Carrier ID' })
+
+    static transflo = createNumberForm('transflo', { label: 'Transflo ID' }, true)
 
 }
 

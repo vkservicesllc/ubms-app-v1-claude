@@ -1,59 +1,59 @@
 <form class="box px-5 form-container" id="credentials-form" action="/resource/carrier/{{{_id}}}" method="POST" autocomplete="off"{{{visibility.credentials}}}>
-    {{{input.carrier.current.mc}}}
+    {{!-- {{{input.carrier.current.mc}}}
     {{{input.carrier.current.usdot}}}
     {{{input.carrier.current.ifta}}}
     {{{input.carrier.current.scac}}}
     {{{input.carrier.current.irp}}}
     {{{input.carrier.current.efs}}}
     {{{input.carrier.current.fleetOne}}}
-    {{{input.carrier.current.transflo}}}
+    {{{input.carrier.current.transflo}}} --}}
     <div class="field">
         <h5 class="subtitle has-text-primary-40">Licensing</h5>
         <div class="columns">
             <div class="column is-3">
-                {{{label.carrier.mc}}}
+                {{{catForm.mc.text.label}}}
                 <div class="control">
-                    {{{input.carrier.mc}}}
+                    {{{catForm.mc.text.input}}}
                 </div>
                 <p class="help carrier-tip" id="mc-tip"></p>
             </div>
             <div class="column is-3">
-                {{{label.carrier.usdot}}}
+                {{{catForm.usdot.text.label}}}
                 <div class="control">
-                    {{{input.carrier.usdot}}}
+                    {{{catForm.usdot.text.input}}}
                 </div>
                 <p class="help carrier-tip" id="usdot-tip"></p>
             </div>
             <div class="column is-3">
-                {{{label.carrier.scac}}}
+                {{{catForm.scac.text.label}}}
                 <div class="control">
-                    {{{input.carrier.scac}}}
+                    {{{catForm.scac.text.input}}}
                 </div>
                 <p class="help carrier-tip" id="scac-tip"></p>
             </div>
             <div class="column is-3">
-                {{{label.carrier.irp}}}
+                {{{catForm.irp.text.label}}}
                 <div class="control">
-                    {{{input.carrier.irp}}}
+                    {{{catForm.irp.text.input}}}
                 </div>
                 <p class="help carrier-tip" id="irp-tip"></p>
             </div>
         </div>
     </div>
     <div class="field">
-        <h5 class="subtitle has-text-primary-40">Highway Tax</h5>
+        <h5 class="subtitle has-text-primary-40">Initial Highway Tax</h5>
         <div class="columns">
             <div class="column is-3">
-                {{{label.carrier.ifta}}}
+                {{{catForm.ifta.text.label}}}
                 <div class="control">
-                    {{{input.carrier.ifta}}}
+                    {{{catForm.ifta.text.input}}}
                 </div>
                 <p class="help carrier-tip" id="ifta-tip"></p>
             </div>
             <div class="column is-3">
-                {{{label.carrier.iftaJur}}}
+                {{{catForm.iftaJur.select.label}}}
                 <div class="select is-fullwidth">
-                    {{{select.carrier.iftaJur}}}
+                    {{{catForm.iftaJur.select.input}}}
                 </div>
             </div>
             <div class="column is-6">
@@ -66,23 +66,23 @@
         <h5 class="subtitle has-text-primary-40">Miscellaneous</h5>
         <div class="columns">
             <div class="column is-3">
-                {{{label.carrier.efs}}}
+                {{{catForm.efs.text.label}}}
                 <div class="control">
-                    {{{input.carrier.efs}}}
+                    {{{catForm.efs.text.input}}}
                 </div>
                 <p class="help carrier-tip" id="efs-tip"></p>
             </div>
             <div class="column is-3">
-                {{{label.carrier.fleetOne}}}
+                {{{catForm.fleetOne.text.label}}}
                 <div class="control">
-                    {{{input.carrier.fleetOne}}}
+                    {{{catForm.fleetOne.text.input}}}
                 </div>
                 <p class="help carrier-tip" id="fleet-one-tip"></p>
             </div>
             <div class="column is-3">
-                {{{label.carrier.transflo}}}
+                {{{catForm.transflo.text.label}}}
                 <div class="control">
-                    {{{input.carrier.transflo}}}
+                    {{{catForm.transflo.text.input}}}
                 </div>
                 <p class="help carrier-tip" id="transflo-tip"></p>
             </div>
@@ -95,7 +95,7 @@
                 <h5 class="subtitle has-text-primary-40">State Permits</h5>
             </header>
             <section class="modal-card-body">
-                {{{input.carrier.permit.current.ca}}}
+                {{!-- {{{input.carrier.permit.current.ca}}}
                 {{{input.carrier.permit.current.fl}}}
                 {{{input.carrier.permit.current.il}}}
                 {{{input.carrier.permit.current.in}}}
@@ -106,7 +106,7 @@
                 {{{input.carrier.permit.current.ny}}}
                 {{{input.carrier.permit.current.or}}}
                 {{{input.carrier.permit.current.tx}}}
-                {{{input.carrier.permit.current.wa}}}
+                {{{input.carrier.permit.current.wa}}} --}}
                 <div class="columns">
                     <div class="column is-6">
                         <div class="field">

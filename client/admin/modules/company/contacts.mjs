@@ -1,7 +1,9 @@
 import { telEvent, emailEvent } from '../events/contacts.mjs'
-import { formSelectors } from '../registry/selectors.mjs'
+import selector from '../registry/selectors/company.mjs'
 
-const { phoneId, faxId, emailId } = formSelectors.company
+const TS = selector.id.text
+const phoneId = TS.phone, faxId = TS.fax, emailId = TS.email
+
 const $tip = {
     email: $('#email-tip'),
 }
