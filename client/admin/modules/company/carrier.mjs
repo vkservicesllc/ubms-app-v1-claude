@@ -20,9 +20,10 @@ const tip = {
 }
 
 const TS = selector.class.text
-let credClass = ''
+let credClass = []
 for (const prop of ['alpha', 'alphaNumber', 'number', 'permit'])
-    credClass += `.${TS[prop]}`
+    credClass.push(TS[prop])
+credClass = credClass.join(', ')
 
 inputEvent(credClass, {
     onInput(number, $number) {
