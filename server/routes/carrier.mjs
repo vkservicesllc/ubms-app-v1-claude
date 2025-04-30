@@ -1,9 +1,6 @@
 const router = require('express').Router()
 const throwErr = require('../tools/utils/error').data
 
-/* Registry */
-import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
-
 /* Tools */
 import User from '../tools/core/user.mjs'
 import Team from '../tools/core/team.mjs'
@@ -146,8 +143,6 @@ router.get('/', async (req, res, next) => {
             username: UserForm.username.text.input(),
             password: UserForm.password.text.input(),
         }
-
-        hbs.formId = formSelectors.user.loginFormId
 
         res.render(key, hbs)
     } catch (err) {

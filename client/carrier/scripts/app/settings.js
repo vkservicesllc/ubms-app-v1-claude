@@ -36,7 +36,7 @@ $button.submit.click(() => {
     $form.submit()
 })
 
-$.ajax('/api/assets/user?filter=settings&self=true&call=true', {
+$.ajax('/api/source/user?filter=settings&self=true&call=true', {
     method: 'POST',
     success(response) {
         resetDefaults()

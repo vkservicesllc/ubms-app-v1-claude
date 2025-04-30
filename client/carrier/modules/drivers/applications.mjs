@@ -1,8 +1,8 @@
-import Person from '/modules/assets/person.mjs'
-import escapeHTML from '/modules/assets/html.mjs'
-import { tel as formatTel } from '/modules/tools/formatter.mjs'
+import Person from '/modules/tools/core/person.mjs'
+import escapeHTML from '/modules/tools/utils/html.mjs'
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import filterDropdown from '/modules/tools/filter-dropdown.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/sorter.mjs'
 
 
 const interval = 60000
@@ -13,7 +13,7 @@ const conditions = {
     r: [ '<span class="ui red text">Rejected</small>', 'red text thumbs down' ],
     h: [ 'Hired', 'truck moving' ],
 }
-const positions = $.ajax('/api/assets/driver?filter=positions', { method: 'POST', async: false }).responseJSON
+const positions = $.ajax('/api/source/driver?filter=positions', { method: 'POST', async: false }).responseJSON
 const defaultContent = '<span style="color: pink; font-size: .9em;">Unassigned</span>'
 
 const styleSearch = () => {

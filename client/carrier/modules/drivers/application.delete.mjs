@@ -1,6 +1,6 @@
 import table from './applications.mjs'
-import escapeHTML from '/modules/assets/html.mjs'
-import { tel as formatTel, ssn as formatSsn } from '/modules/tools/formatter.mjs'
+import escapeHTML from '/modules/tools/utils/html.mjs'
+import { tel as formatTel, ssn as formatSsn } from '/modules/tools/utils/formatter.mjs'
 
 const modalId = '#delete-apl-modal'
 const $modal = $(modalId)

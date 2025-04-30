@@ -813,7 +813,7 @@ class Application {
                 if (filter.user === 'null')
                     query.whereNull('userId')
                 else {
-                    const userId = await (await User.data(res.session, { _id: filter.user })).id()
+                    const userId = await (await User.data(res.session, { _id: filter.user, allowDeleted: true })).id()
 
                     query.where('userId', userId)
                 }

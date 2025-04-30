@@ -869,7 +869,7 @@ class User extends Person {
         if (!params) params = {}
         if (!filter) filter = {}
 
-        const { _id, id, username, email } = params
+        const { _id, id, username, email, allowDeleted } = params
         const { id: ids, firstName, lastName, alias, sex, status, location, condition, decliner, deleted } = filter
         let deletedBy = null
         if (deleted === true) deletedBy = { null: false }
@@ -880,6 +880,7 @@ class User extends Person {
             firstName, lastName, alias, sex,
             status, location, condition, decliner,
         }
+        if (allowDeleted === true) delete batch[0].match.deletedBy
         if (!id && _id) batch[0].match.id = User.matchIdHash(_id)
         if (!id && !_id) batch[0].match.id = ids
 
