@@ -1,4 +1,4 @@
-import { formSelectors } from '/modules/registry/selectors.mjs'
+import selector from '/modules/registry/selectors/company.mjs'
 
 const $tabs = $('.company-card-tabs')
 const $sections = $('.company-card-content')
@@ -26,8 +26,7 @@ if ($('#teams-card-content').length) {
         history.replaceState(null, '', window.location.href.split('?')[0])
     }
 
-    const { id } = formSelectors.company
-    const _id = $(`#${id}`).val()
+    const _id = $(selector.id.hidden.id).val()
     const $teams = {
         available: $('#available-teams'),
         applied: $('#company-teams'),

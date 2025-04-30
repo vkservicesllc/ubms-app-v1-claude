@@ -347,10 +347,10 @@ class Carrier extends Company {
         }
 
         if (exclude?._id) {
-            const carrier = await Carrier.data(session, { _id: exclude._id })
-            const id = await carrier.id()
+            const carrier = await Carrier.data(session, { _companyId: exclude._id })
+            const id = carrier._id ? await carrier.id() : null
 
-            data[idProp] = { not: id }
+            if (id) match[idProp] = { not: id }
         }
 
         const data = (await mysql.execute(query[target].select(idProp, { match })))[0]

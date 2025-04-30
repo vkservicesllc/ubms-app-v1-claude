@@ -791,10 +791,14 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs._id = _companyId
         hbs.cardTitle = cardTitle
         hbs.data = company
-        hbs.input = input
         hbs.display = display(company, ein)
         hbs.css = css
         hbs.form = {
+            id: {
+                hidden: {
+                    input: CompanyForm.id.hidden.input({ value: _companyId }),
+                },
+            },
             confirmAlias: {
                 text: {
                     input: CompanyForm.confirmAlias.text.input({ class: 'input' }),
