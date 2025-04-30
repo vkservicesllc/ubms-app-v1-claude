@@ -154,38 +154,32 @@
                                 </div>
                             </div>
                             <div class="disabled field applicant-field" style="margin-top: 25px;">
-                                <h5 class="ui blue text header">Qualification / Properties</h5>
+                                <h5 class="ui blue text header">Qualification</h5>
                             </div>
                             <div class="disabled field applicant-field">
                                 <div class="ui checkbox">
-                                    <input type="checkbox" class="new-apl-eligibility" id="valid-dl-check" required disabled />
-                                    <label for="valid-dl-check">The Applicant has a valid US Driver License</label>
-                                </div>
-                            </div>
-                            <div class="disabled field applicant-field">
-                                <div class="ui checkbox">
-                                    <input type="checkbox" class="new-apl-eligibility" id="legal-status-check" required disabled />
-                                    <label for="legal-status-check">The Applicant is authorized to work in the US</label>
+                                    <input type="checkbox" class="new-apl-eligibility" id="qualification-check" required disabled />
+                                    <label for="qualification-check">The applicant holds a valid US driver license and is legally authorized to work in the United States</label>
                                 </div>
                             </div>
                             <div class="inline disabled fields" id="applicant-legal-status-field">
                                 <label>Legal Status</label>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-0" name="status" value="0" required disabled />
-                                        <label for="legal-status-0">US Citizen</label>
+                                        {{{form.status.radio.citizen.input}}}
+                                        {{{form.status.radio.citizen.label}}}
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-1" name="status" value="1" disabled />
-                                        <label for="legal-status-1">Permanent Resident</label>
+                                        {{{form.status.radio.resident.input}}}
+                                        {{{form.status.radio.resident.label}}}
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio" class="new-apl-eligibility new-apl-legal-status" id="legal-status-2" name="status" value="2" disabled />
-                                        <label for="legal-status-2">Work Visa/Authorization</label>
+                                        {{{form.status.radio.authorized.input}}}
+                                        {{{form.status.radio.authorized.label}}}
                                     </div>
                                 </div>
                             </div>

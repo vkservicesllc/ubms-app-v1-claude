@@ -111,14 +111,23 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         for (const state in Address.stateList)
             addrStateItems += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
 
+        const statusClass = 'new-apl-eligibility new-apl-legal-status'
+
         let options = {
             email: { text: { input: { placeholder: "Applicant's Email" } } },
+            status: {
+                radio: {
+                    citizen: { input: { class: statusClass } },
+                    resident: { input: { class: statusClass } },
+                    authorized: { input: { class: statusClass } },
+                },
+            },
         }
+
         const fields = [
             'firstName', 'middleName', 'lastName', 'suffix',
             'dob', 'gender', 'ssn', 'phone',
             'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
-            'position', 'statusExp',
         ]
         options = updateFormOptions(options, ApplicationForm, fields, { disabled: true })
 

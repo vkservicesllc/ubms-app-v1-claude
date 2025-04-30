@@ -67,7 +67,7 @@ const selector = {
             status: {
                 citizen: 'citizen-status',
                 resident: 'resident-status',
-                temporary: 'temporary-status',
+                authorized: 'authorized-status',
             },
         },
         checkbox: {

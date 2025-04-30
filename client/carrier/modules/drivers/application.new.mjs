@@ -2,25 +2,14 @@ import table from './applications.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
-import { formSelectors } from '/modules/registry/selectors.mjs'
+import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const {
-    class: aplClass,
-    firstNameId,
-    middleNameId,
-    lastNameId,
-    suffixId,
-    ssnId,
-    phoneId,
-    emailId,
-    addrSinceId,
-    addr1Id,
-    addr2Id,
-    zipId,
-    cityId,
-    statusExpId,
-} = formSelectors.driver
-
+const TS = selector.id.text
+const emailId = TS.email
+const addr1Id = TS.address1
+const addr2Id = TS.address2
+const zipId = TS.addrZip
+const cityId = TS.addrCity
 
 const modalId = '#new-apl-modal'
 const $modal = $(modalId)
@@ -35,8 +24,8 @@ const message = {
 
 const $submit = $('#new-apl-submit')
 const $form = $('#new-apl-form')
-const $email = $(`#${emailId}`)
-const $expiration = $(`#${statusExpId}`)
+const $email = $(emailId)
+const $expiration = $(TS.statusExp)
 const $registerApl = $('#register-new-apl')
 
 const $dropdown = {
@@ -102,7 +91,7 @@ const enableApplicant = () => {
 
 const disableApplicant = () => {
     $field.applicant.addClass('disabled').find('input').prop('disabled', true)
-    $(`.${aplClass}`).val(null)
+    $(`${selector.class.global}:not([type=hidden])`).val(null)
     $dropdown.suffix.dropdown('clear')
     $dropdown.gender.dropdown('clear')
     $dropdown.addrState.dropdown('clear')
@@ -126,21 +115,21 @@ $dropdown.addrState.dropdown()
 $dropdown.position.dropdown()
 
 
-nameEvent(firstNameId)
+nameEvent(TS.firstName)
 
-nameEvent(middleNameId)
+nameEvent(TS.middleName)
 
-nameEvent(lastNameId, {
-    sfxId: suffixId,
+nameEvent(TS.lastName, {
+    sfxId: true,
     onChange(lastName, $lastName, suffix) {
         if (suffix)
             $dropdown.suffix.dropdown('set selected', suffix)
     },
 })
 
-ssnEvent(ssnId)
+ssnEvent(TS.ssn)
 
-telEvent(phoneId)
+telEvent(TS.phone)
 
 addr1Event(addr1Id, { addr2Id })
 
@@ -156,7 +145,7 @@ zipEvent(zipId, {
 cityEvent(cityId)
 
 
-$('#legal-status-check').on('change', function() {
+$('#qualification-check').on('change', function() {
     if ($(this).prop('checked')) $field.status.removeClass('disabled').find('input').prop('disabled', false)
     else {
         $('.new-apl-legal-status').prop('checked', false)

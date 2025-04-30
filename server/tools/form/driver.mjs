@@ -70,13 +70,15 @@ class ApplicationForm {
     static addrCity = createAddrCityForm({ selector: appSelector, target: 'addrCity' })
     static addrState = createAddrStateForm({ selector: appSelector, target: 'addrState' })
 
-    static position = createForm({
+    static status = createForm({
         selector: appSelector,
-        target: 'position',
-        group: 'position',
+        target: 'status',
         type: 'select/radio',
-        name: 'position',
-        label: 'Desired Position',
+        name: 'status',
+        data: { '0': 'US Citizen', '1': 'Permanent Resident', '2': 'Work Authorization/Visa' },
+        keys: [ 'citizen', 'resident', 'authorized' ],
+        required,
+        disabled,
     })
 
     static statusExp = createDateForm({
@@ -85,6 +87,15 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Status Expires on',
+    })
+
+    static position = createForm({
+        selector: appSelector,
+        target: 'position',
+        group: 'position',
+        type: 'select/radio',
+        name: 'position',
+        label: 'Desired Position',
     })
 
 }

@@ -343,12 +343,7 @@ const createForm = (input = {}) => {
 
         return chain
     }
-if (name === 'suffix') {
-    console.log(form.hidden.label())
-    console.log(form.hidden.input())
-    console.log(form.select.label())
-    console.log(form.select.input({ tabs: 0 }))
-}
+
     return form
 }
 
@@ -425,7 +420,7 @@ export const updateFormOptions = (options, Form, data, instr = {}) => {
         values = data
     }
 
-    const { labelClass, labelClassRequired, textClass, textareaClass, selectClass , tabs } = instr
+    const { labelClass, labelClassRequired, textClass, textareaClass, selectClass , tabs, disabled } = instr
 
     fields.forEach(prop => {
         const form = Form[prop]
@@ -447,6 +442,7 @@ export const updateFormOptions = (options, Form, data, instr = {}) => {
             //! not compatible with radio and checkbox yet
 
             options[prop][key].input.value = values?.[prop]
+            if (disabled === true) options[prop][key].input.disabled = true
         })
 
     })
