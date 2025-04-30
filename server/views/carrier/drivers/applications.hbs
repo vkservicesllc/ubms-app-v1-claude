@@ -2,10 +2,12 @@
 
         <style>
             .dt-container { min-width: 1150px; }
+            .dt-column-order { display: none; }
             .custom-dt-toolbar { min-width: 67%; }
             .custom-dt-toolbar > * { width: 24.5%; }
             .ui.dropdown .transition i.icon { margin-right: 2px !important; }
             .help { margin-top: 5px; padding-left: 2px; }
+            th { padding-top: 5px !important; padding-bottom: 5px !important; }
         </style>
         <table class="ui compact table" id="driver-apl-table" style="width: 100%;"></table>
         {{#if (eq permissions.create true)}}

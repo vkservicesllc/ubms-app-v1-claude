@@ -26,7 +26,4 @@ $.extend(true, $.fn.dataTable.defaults, {
 })
 
 
-let lengthMenu = [
-    [ 20, 50, 100, 150, 250, 500 ],
-    [ 20, 50, 100, 150, 250, 500 ],
-]
+let lengthMenu = [ 20, 50, 100, 150, 250, 500 ]
