@@ -79,6 +79,7 @@ class ApplicationForm {
         keys: [ 'citizen', 'resident', 'authorized' ],
         required,
         disabled,
+        label: 'Immigration Status',
     })
 
     static statusExp = createDateForm({
@@ -95,6 +96,7 @@ class ApplicationForm {
         group: 'position',
         type: 'select/radio',
         name: 'position',
+        emptyOpt: 'Decide later...',
         label: 'Desired Position',
     })
 

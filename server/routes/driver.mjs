@@ -20,6 +20,14 @@ import { tel as formatTel, ssn as formatSsn } from '../../client/global/modules/
 
 /* Forms */
 import DriverForm, { ApplicationForm } from '../tools/form/driver.mjs'
+import { updateFormOptions } from '../tools/form/builder.mjs'
+
+const formInstr = {
+    labelClass: 'form-label text-black-50',
+    labelClassRequired: 'form-label',
+    textClass: 'form-control',
+    selectClass: 'form-select',
+}
 
 
 
@@ -95,60 +103,33 @@ router.get('/application/:param?', async (req, res, next) => {
         }
         if (settings?.drivers?.cdl) hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
 
-        const { labelProps, inputProps, selectProps, addrInputProps, addrSelectProps } = res.constants
-        const { addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
+        let options = {}
+        const placeholders = {
+            dob: 'MM/DD/YYYY',
+            ssn: '###-##-####',
+            phone: '(###) ###-####',
+            addrSince: 'MM/DD/YYYY',
+            statusExp: 'MM/DD/YYYY',
+        }
+        const fields = [
+            'firstName', 'middleName', 'lastName', 'suffix',
+            'gender', 'dob', 'ssn', 'phone', 'email',
+            'address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince',
+            'statusExp', 'position',
+        ]
+        options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
+        Object.keys(placeholders).map(prop => options[prop].text.input.placeholder = placeholders[prop])
+        options.addrState.select.input.options = { valOpt: true }
+        options.position.select.input.data = team.list.drivers.positions
+        options.status = { radio: { label: { class: formInstr.labelClassRequired } } }
 
-        hbs.label = {
-            firstName: DriverLabel.name('f', labelProps),
-            middleName: DriverLabel.name('m', labelProps),
-            lastName: DriverLabel.name('l', labelProps),
-            suffix: DriverLabel.name('s', labelProps),
-            gender: DriverLabel.gender(labelProps),
-            dob: DriverLabel.dob(labelProps),
-            ssn: DriverLabel.ssn(labelProps),
-            phone: DriverLabel.phone({ ...labelProps }),
-            email: DriverLabel.email(labelProps),
-            address1: AddrLabel.address1({ ...labelProps, for: addr1Id }),
-            address2: AddrLabel.address2({ ...labelProps, for: addr2Id }),
-            zip: AddrLabel.zip({ ...labelProps, for: zipId }),
-            city: AddrLabel.city({ ...labelProps, for: cityId }),
-            state: AddrLabel.state({ ...labelProps, for: stateId }),
-            addrSince: DriverLabel.addrSince(labelProps),
-            position: DriverLabel.position(labelProps),
-            statusExp: DriverLabel.statusExp(labelProps),
+        for (const prop of ['citizen', 'resident', 'authorized']) {
+            options.status.radio[prop] = { input: {}, label: {} }
+            options.status.radio[prop].input.class = 'form-check-input status-radio'
+            options.status.radio[prop].label.class = 'form-check-label'
         }
 
-        hbs.input = {
-            firstName: DriverInput.name('f', inputProps),
-            middleName: DriverInput.name('m', inputProps),
-            lastName: DriverInput.name('l', inputProps),
-            dob: DriverInput.dob({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
-            ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####' }),
-            phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####' }),
-            email: DriverInput.email(inputProps),
-            address1: AddrInput.address1({ ...addrInputProps, id: addr1Id }),
-            address2: AddrInput.address2({ ...addrInputProps, id: addr2Id }),
-            zip: AddrInput.zip({ ...addrInputProps, id: zipId }),
-            city: AddrInput.city({ ...addrInputProps, id: cityId }),
-            addrSince: DriverInput.addrSince({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
-            statusExp: DriverInput.statusExp({ ...inputProps, placeholder: 'MM/DD/YYYY' }),
-        }
-
-        hbs.select = {
-            suffix: DriverSelect.suffix(selectProps),
-            gender: DriverSelect.gender(selectProps),
-            state: AddrSelect.stateUS({
-                ...addrSelectProps,
-                id: stateId,
-                options: { valOpt: true, emptyOpt: '--' },
-            }),
-            position: DriverSelect.position({
-                ...selectProps,
-                options: {
-                    emptyOpt: 'Decide later...',
-                },
-            }, team.list.drivers.positions),
-        }
+        hbs.form = new ApplicationForm(options)
 
         hbs.formUrl = `/resource/application/${team._id}`
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
