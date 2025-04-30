@@ -888,7 +888,7 @@ class Application {
             query = query.limit(length).offset(start)
 
             const data = await query
-            const [{ count }] = await knex('app_carrier.applications').count('* as count')
+            const [{ count }] = await knex('app_carrier.applications').count('* as count').where({ teamId })
 
             res.json({
                 draw,
