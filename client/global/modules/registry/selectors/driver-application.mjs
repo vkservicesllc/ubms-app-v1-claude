@@ -8,6 +8,7 @@ const selector = {
             gender: 'gender',
             address: 'address',
             since: 'update-date',
+            position: 'position',
         },
         select: {
             gender: 'gender',

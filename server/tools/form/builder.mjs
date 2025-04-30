@@ -102,17 +102,22 @@ const createForm = (input = {}) => {
         }
     }
 
-    if (['hidden', 'text', 'textarea', 'password', 'email', 'url'].includes(type)) {
+    const selectType = type.includes('select')
+
+    if (['hidden', 'text', 'textarea', 'password', 'email', 'url'].includes(type) || selectType) {
         const initialType = type
         let formTextInput = formInput, keyType = 'text'
 
-        if (type === 'hidden') keyType = 'hidden'
+        if (type === 'hidden' || selectType) keyType = 'hidden'
         else if (type === 'textarea') formTextInput = formTextArea
 
         form[keyType] = { properties: { initialType } }
         initializeInput(keyType)
         initializeLabel(keyType)
-        if (type !== 'textarea') lockedInput[keyType].type = type
+        if (type !== 'textarea') {
+            if (selectType) lockedInput[keyType].type = 'hidden'
+            else lockedInput[keyType].type = type
+        }
 
         form[keyType].input = props => formTextInput({ ...input, ...props, ...lockedInput[keyType] })
         form[keyType].label = label
@@ -120,7 +125,7 @@ const createForm = (input = {}) => {
             : () => ''
     }
 
-    if (type.includes('select')) {
+    if (selectType) {
         form.select = { properties: { initialType: type } }
         initializeInput('select')
         initializeLabel('select')
@@ -338,7 +343,12 @@ const createForm = (input = {}) => {
 
         return chain
     }
-
+if (name === 'suffix') {
+    console.log(form.hidden.label())
+    console.log(form.hidden.input())
+    console.log(form.select.label())
+    console.log(form.select.input({ tabs: 0 }))
+}
     return form
 }
 

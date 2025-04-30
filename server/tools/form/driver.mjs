@@ -8,10 +8,12 @@ import {
     createGenderForm,
     createPhoneForm,
     createEmailForm,
+    createSinceForm,
     createAddressForm,
     createAddrZipForm,
     createAddrCityForm,
     createAddrStateForm,
+    createDateForm,
 } from './reusable.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
@@ -19,7 +21,7 @@ import appSelector from '../../../client/global/modules/registry/selectors/drive
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 
-const required = true
+const required = true, disabled = true
 
 
 class DriverForm {
@@ -61,11 +63,29 @@ class ApplicationForm {
     static phone = createPhoneForm({ selector: appSelector, target: 'phone', required, label: 'US Phone' })
     static email = createEmailForm({ selector: appSelector, target: 'email', required })
 
+    static addrSince = createSinceForm({ selector: appSelector, target: 'addrSince', label: 'Living since' })
     static address1 = createAddressForm({ selector: appSelector, target: 'address1' })
     static address2 = createAddressForm({ selector: appSelector, target: 'address2' }, { idx: 2 })
     static addrZip = createAddrZipForm({ selector: appSelector, target: 'addrZip' })
     static addrCity = createAddrCityForm({ selector: appSelector, target: 'addrCity' })
     static addrState = createAddrStateForm({ selector: appSelector, target: 'addrState' })
+
+    static position = createForm({
+        selector: appSelector,
+        target: 'position',
+        group: 'position',
+        type: 'select/radio',
+        name: 'position',
+        label: 'Desired Position',
+    })
+
+    static statusExp = createDateForm({
+        selector: appSelector,
+        target: 'statusExp',
+        required,
+        disabled,
+        label: 'Status Expires on',
+    })
 
 }
 
