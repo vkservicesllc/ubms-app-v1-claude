@@ -36,7 +36,7 @@
                             </div>
                             <div class="field">
                                 <div class="ui left labeled input">
-                                    {{{input.email}}}
+                                    {{{form.email.text.input}}}
                                     <div class="ui corner label">
                                         <i class="asterisk icon"></i>
                                     </div>
@@ -60,16 +60,16 @@
                         <div class="ui form">
                             <div class="disabled fields applicant-field" style="margin-top: 10px;">
                                 <div class="five wide field">
-                                    {{{label.firstName}}}
-                                    {{{input.firstName}}}
+                                    {{{form.firstName.text.label}}}
+                                    {{{form.firstName.text.input}}}
                                 </div>
                                 <div class="four wide field">
-                                    {{{label.middleName}}}
-                                    {{{input.middleName}}}
+                                    {{{form.middleName.text.label}}}
+                                    {{{form.middleName.text.input}}}
                                 </div>
                                 <div class="five wide field">
-                                    {{{label.lastName}}}
-                                    {{{input.lastName}}}
+                                    {{{form.lastName.text.label}}}
+                                    {{{form.lastName.text.input}}}
                                 </div>
                                 <div class="two wide field">
                                     {{{label.suffix}}}
@@ -226,7 +226,7 @@
             <script type="module" src="/modules/drivers/application.new.mjs"></script>
         </div>
         {{/if}}
-        {{#if (eq permissions.create true)}}
+        {{#if (eq permissions.delete true)}}
         <div class="ui tiny modal" id="delete-apl-modal">
             <div class="ui dark red text header" id="delete-apl-header">Delete Application</div>
             <div class="content">

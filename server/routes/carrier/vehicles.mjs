@@ -6,9 +6,7 @@ import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
 import { respond404 } from '../../tools/utils/response.mjs'
-
-/* Assets */
-import { navBuilder } from './assets.mjs'
+import { navBuilder } from './tools.mjs'
 
 
 

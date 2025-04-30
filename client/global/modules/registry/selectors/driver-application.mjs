@@ -19,15 +19,14 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
-            delId: 'delete-id',
+            deleteId: 'delete-id',
         },
         text: {
-            formId: 'form',
+            // formId: 'form',
             pin: 'pin',
             firstName: 'first-name',
             middleName: 'middle-name',
             lastName: 'last-name',
-            suffix: 'suffix',
             dob: 'dob',
             ssn: 'ssn',
             phone: 'phone',
@@ -35,8 +34,8 @@ const selector = {
             addrSince: 'address-start-date',
             address1: 'address-1',
             address2: 'address-2',
-            addrCity: 'address-city',
             addrZip: 'address-zip',
+            addrCity: 'address-city',
             statusExp: 'status-expiration',
             dlNumber: 'driver-license-number',
             dlClass: 'driver-license-class',
@@ -52,6 +51,7 @@ const selector = {
             medList: 'medicine-list',
         },
         select: {
+            suffix: 'suffix',
             gender: 'gender',
             addrState: 'address-state',
             status: 'legal-status',
