@@ -888,12 +888,17 @@ class Application {
             query = query.limit(length).offset(start)
 
             const data = await query
-            const [{ count }] = await knex('app_carrier.applications').count('* as count').where({ teamId })
+            const [{ totalCount }] = await knex('app_carrier.applications').count('* as totalCount').where({ teamId })
+
+            const filtered = (
+                search.value?.trim() !== '' ||
+                (filter && Object.values(filter).some(v => v?.toString().trim() !== ''))
+            )
 
             res.json({
                 draw,
-                recordsTotal: count,
-                recordsFiltered: data.length,
+                recordsTotal: totalCount,
+                recordsFiltered: data.length, //! need filtered data without limit
                 data,
                 actions: {
                     data: {

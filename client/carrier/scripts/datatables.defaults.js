@@ -23,6 +23,8 @@ $.extend(true, $.fn.dataTable.defaults, {
         zeroRecords: '<span class="ui red text">No records found</span>',
     },
 
+    pageLength: 20,
+
 })
 
 
