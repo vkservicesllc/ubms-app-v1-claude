@@ -44,7 +44,7 @@ const table = $('#driver-apl-table').DataTable({
                 user: $('#user-filter').val(),
             }
         },
-        dataSrc(response) { console.log(response)
+        dataSrc(response) { console.log(response) //!TEMP
             const { data, actions, aplAddress } = response
 
             data.forEach(row => {

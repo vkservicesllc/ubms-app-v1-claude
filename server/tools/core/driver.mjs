@@ -717,7 +717,7 @@ class Application {
     }
 
 
-    static dtList = async (req, res) => { /* API use only */
+    static dtList = async (req, res) => { /* DataTables Server Side use only */
         try {
             const sessionsUser = res.session.user
             const { DS } = sessionsUser
@@ -733,16 +733,32 @@ class Application {
             const { teamCompanies } = settings?.carrier || {}
             const companyIds = await team.ids(res.session, 'companies')
 
-            let subquery = knex
-                .select('*')
-                .from(`${db.business}.company_names`)
-                .whereIn('since', function() {
-                    this.select(knex.raw('MAX(since)'))
-                        .from(`${db.business}.company_names`)
-                        .groupBy('companyId')
-                })
 
-            let query = knex(`${db.carrier}.applications AS apl`)
+            /* STEP 1: Set up Select, Join and Count Default States */
+
+            const applyJoins = query => {
+                const subQuery = knex
+                    .select('*')
+                    .from(`${db.business}.company_names`)
+                    .whereIn('since', function() {
+                        this.select(knex.raw('MAX(since)'))
+                            .from(`${db.business}.company_names`)
+                            .groupBy('companyId')
+                    })
+
+                query
+                    .leftJoin(`${db.carrier}.application_DLs AS adl`, 'adl.aplId', 'apl.id')
+                    .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
+                    .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
+                    .leftJoin(
+                        knex.raw('? as cnm', [ subQuery ]),
+                        'cnm.companyId',
+                        'cmp.id'
+                    )
+                    .leftJoin(knex.raw(`${db.online}.users AS usr ON apl.userId = usr.id`))
+            }
+
+            const baseQuery = knex(`${db.carrier}.applications AS apl`)
                 .select(
                     knex.raw(Query.hashField(Application.hashId(), 'apl')),
                     knex.raw(Query.hashField(Team.hashId('teamId'))),
@@ -773,16 +789,19 @@ class Application {
                     'usr.location AS userLocation',
                     'usr.deletedAt AS userDeletedAt',
                 )
-                .leftJoin(`${db.carrier}.application_DLs AS adl`, 'adl.aplId', 'apl.id')
-                .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
-                .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
-                .leftJoin(
-                    knex.raw('? as cnm', [ subquery ]),
-                    'cnm.companyId',
-                    'cmp.id'
-                )
-                .leftJoin(knex.raw(`${db.online}.users AS usr ON apl.userId = usr.id`))
-                .where({ teamId })
+
+            const countQuery = knex(`${db.carrier}.applications as apl`).count('* as count')
+            const totalCountQuery = countQuery.clone()
+
+            applyJoins(baseQuery)
+            applyJoins(countQuery)
+
+            baseQuery.where({ teamId })
+            countQuery.where({ teamId })
+            totalCountQuery.where({ teamId })
+
+
+            /* STEP 2: Prepare Filters */
 
             const filterParams = {
                 company: {
@@ -791,6 +810,7 @@ class Application {
                     carrierIds: [],
                 },
             }
+
             if (filter?.companies) {
                 filter.companies = filter.companies.split(',')
 
@@ -810,16 +830,18 @@ class Application {
             }
 
             if (filter?.user) {
-                if (filter.user === 'null')
-                    query.whereNull('userId')
-                else {
+                if (filter.user === 'null') {
+                    baseQuery.whereNull('userId')
+                    countQuery.whereNull('userId')
+                } else {
                     const userId = await (await User.data(res.session, { _id: filter.user, allowDeleted: true })).id()
 
-                    query.where('userId', userId)
+                    baseQuery.where('userId', userId)
+                    countQuery.where('userId', userId)
                 }
             }
 
-            query.where(async function() {
+            function companyStateFilter() {
                 const { nullable, whereCond, carrierIds } = filterParams.company
 
                 if (nullable) this.whereNull('carrierId')
@@ -833,12 +855,16 @@ class Application {
 
                         if (carrierIds.length) this.whereIn('apl.carrierId', carrierIds)
                     })
-            })
+            }
+
+            baseQuery.where(companyStateFilter)
+            countQuery.where(companyStateFilter)
 
             if (filter?.conditions) {
                 filter.conditions = filter.conditions.split(',')
 
-                query.whereIn('apl.condition', filter.conditions)
+                baseQuery.whereIn('apl.condition', filter.conditions)
+                countQuery.whereIn('apl.condition', filter.conditions)
             }
 
             if (filter?.positions) {
@@ -850,55 +876,62 @@ class Application {
                     filter.positions = filter.positions.filter(value => value !== 'null')
                 }
 
-                if (filter.positions.length)
-                    query.where(function() {
+                if (filter.positions.length) {
+                    function positionFilter() {
                         this.whereIn('position', filter.positions)
                         if (nullable) this.orWhereNull('position')
-                    })
-                else query.whereNull('position')
+                    }
+
+                    baseQuery.where(positionFilter)
+                    countQuery.where(positionFilter)
+                } else {
+                    baseQuery.whereNull('position')
+                    countQuery.whereNull('position')
+                }
             }
+
+
+            /* STEP 3: Prepare Search */
 
             const searchableColumns = columns
                 .filter(column => column.data && column.data !== 'function' && column.searchable === 'true')
                 .map(column => column.data)
 
             if (search && search.value && searchableColumns.length) {
-                query = query.where(qb => {
+                function searchFilter() {
                     searchableColumns.forEach((field, i) => {
-                        if (i === 0) qb.where(`apl.${field}`, 'like', `%${search.value}%`)
-                        else qb.orWhere(`apl.${field}`, 'like', `%${search.value}%`)
+                        if (i === 0) this.where(`apl.${field}`, 'like', `%${search.value}%`)
+                        else this.orWhere(`apl.${field}`, 'like', `%${search.value}%`)
                     })
-                })
+                }
+
+                baseQuery.where(searchFilter)
+                countQuery.where(searchFilter)
             }
 
-//! REDUNDANT / REUSE SOMEWHERE ELSE AND DELETE
-//? CHECK ON THE MULTIPLE ORDER REQUEST, THE ONE BELOW IS FOR ONE REQUEST
-// console.log(order)
-//             const orderColumn = order?.[0]?.column != '0' ? order?.[0]?.column : null
-//             const orderField = columns?.[orderColumn]?.data
-//             const orderDir = order?.[0]?.dir === 'asc' ? 'asc' : 'desc'
-//             if (orderField) query = query.orderBy(orderField, orderDir)
-//             else
-            query = query.orderBy([
-                { column: 'createdAt', order: 'desc' },
-                { column: 'lastName', order: 'asc' },
-                { column: 'firstName', order: 'asc' },
+
+            /* STEP 4: Prepare Orders and Limits */
+
+            baseQuery
+                .orderBy([
+                    { column: 'createdAt', order: 'desc' },
+                    { column: 'lastName', order: 'asc' },
+                    { column: 'firstName', order: 'asc' },
+                ])
+                .limit(length).offset(start)
+
+
+            /* Obtain Data and Counts */
+            const [ data, [ { count: recordsFiltered } ], [ { count: recordsTotal } ] ] = await Promise.all([
+                baseQuery,
+                countQuery,
+                totalCountQuery,
             ])
-
-            query = query.limit(length).offset(start)
-
-            const data = await query
-            const [{ totalCount }] = await knex('app_carrier.applications').count('* as totalCount').where({ teamId })
-
-            const filtered = (
-                search.value?.trim() !== '' ||
-                (filter && Object.values(filter).some(v => v?.toString().trim() !== ''))
-            )
 
             res.json({
                 draw,
-                recordsTotal: totalCount,
-                recordsFiltered: data.length, //! need filtered data without limit
+                recordsTotal,
+                recordsFiltered,
                 data,
                 actions: {
                     data: {
