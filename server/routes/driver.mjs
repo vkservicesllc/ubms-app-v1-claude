@@ -214,55 +214,46 @@ router.get('/application/:param?', async (req, res, next) => {
             },
         }
 
-        hbs.label = {
-            firstName: DriverLabel.name('f', labelProps),
-            middleName: DriverLabel.name('m', labelProps),
-            lastName: DriverLabel.name('l', labelProps),
-            suffix: DriverLabel.name('s', labelProps),
-            dob: DriverLabel.dob(labelProps),
-            ssn: DriverLabel.ssn({ ...labelProps, content: 'SSN' }),
-            phone: DriverLabel.phone({ ...labelProps }),
-            email: DriverLabel.email(labelProps),
-            position: DriverLabel.position(labelProps),
-            address1: AddrLabel.address1({ ...labelProps, for: addr1Id }),
-            address2: AddrLabel.address2({ ...labelProps, for: addr2Id }),
-            zip: AddrLabel.zip({ ...labelProps, for: zipId }),
-            city: AddrLabel.city({ ...labelProps, for: cityId }),
-            state: AddrLabel.state({ ...labelProps, for: stateId }),
-            addrSince: DriverLabel.addrSince(labelProps),
+
+        //? NEW
+        let options = {}
+
+        {
+            const { firstName, middleName, lastName, suffix, email } = application
+            const { address1, address2, zip: addrZip, city: addrCity } = application.address
+            const values = {
+                firstName, middleName, lastName, suffix,
+                gender: application.gender[0],
+                dob: moment(application.dob).format('MM/DD/YYYY'),
+                ssn: formatSsn(application.ssn),
+                phone: formatTel(application.phone),
+                email, position: application.position?.[0],
+                address1, address2, addrZip, addrCity,
+                addrState: application.address.state[0],
+                addrSince: moment(application.address.since).format('MM/DD/YYYY'),
+            }
+            const placeholders = {
+                dob: 'MM/DD/YYYY',
+                ssn: '###-##-####',
+                phone: '(###) ###-####',
+                addrSince: 'MM/DD/YYYY',
+            }
+
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
+            Object.keys(placeholders).map(prop => options[prop].text.input.placeholder = placeholders[prop])
+            options.position.select.input.data = team.list.drivers.positions
+            options.addrState.select.input.options = { valOpt: true }
         }
 
-        hbs.input = {
-            firstName: DriverInput.name('f', { ...inputProps, value: application.firstName }),
-            middleName: DriverInput.name('m', { ...inputProps, value: application.middleName }),
-            lastName: DriverInput.name('l', { ...inputProps, value: application.lastName }),
-            dob: DriverInput.dob({ ...inputProps, placeholder: 'MM/DD/YYYY', value: moment(application.dob).format('MM/DD/YYYY') }),
-            ssn: DriverInput.ssn({ ...inputProps, placeholder: '###-##-####', value: formatSsn(application.ssn) }),
-            phone: DriverInput.phone({ ...inputProps, placeholder: '(###) ###-####', value: formatTel(application.phone) }),
-            email: DriverInput.email({ ...inputProps, value: application.email }),
-            address1: AddrInput.address1({ ...addrInputProps, id: addr1Id, value: application.address.address1 }),
-            address2: AddrInput.address2({ ...addrInputProps, id: addr2Id, value: application.address.address2 }),
-            zip: AddrInput.zip({ ...addrInputProps, id: zipId, value: application.address.zip }),
-            city: AddrInput.city({ ...addrInputProps, id: cityId, value: application.address.city }),
-            addrSince: DriverInput.addrSince({ ...inputProps, value: moment(application.address.since).format('MM/DD/YYYY') })
-        }
 
-        hbs.select = {
-            suffix: DriverSelect.suffix({ ...selectProps, value: application.suffix }),
-            position: DriverSelect.position({
-                ...selectProps,
-                value: application.position?.[0],
-                options: {
-                    emptyOpt: 'Decide later...',
-                },
-            }, team.list.drivers.positions),
-            state: AddrSelect.stateUS({
-                ...addrSelectProps,
-                id: stateId,
-                value: application.address.state[0],
-                options: { valOpt: true },
-            }),
-        }
+        //! NEW
+
+
+        hbs.label = {}
+
+        hbs.input = {}
+
+        hbs.select = {}
 
         const recUrl = `/resource/application/form/${formId}`
         hbs.actionUrl = {
@@ -423,6 +414,7 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.input.medList = DriverInput.problem('med', 'expl', { ...inputProps, value: application.medList })
         }
 
+        hbs.form = new ApplicationForm(options)
         hbs.progress = Math.round(step / steps.length * 100)
         hbs.step = step
         hbs.steps = steps

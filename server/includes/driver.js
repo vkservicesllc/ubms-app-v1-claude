@@ -12,7 +12,7 @@ module.exports = {
     'application.registration': {
         external: [ ...defaults.external, 'jquery.masked-input', 'font-awesome', 'moment' ],
         internal: {
-            css: [ ...defaults.internal.css, 'application' ],
+            css: [ ...defaults.internal.css, 'bootstrap.form', 'application' ],
             js: [ ...defaults.internal.js ],
             mjs: [ ...defaults.internal.mjs ],
         },
@@ -30,7 +30,7 @@ module.exports = {
     'application': {
         external: [ ...defaults.external, 'jquery.masked-input', 'font-awesome', 'moment' ],
         internal: {
-            css: [ ...defaults.internal.css, 'application' ],
+            css: [ ...defaults.internal.css, 'bootstrap.form', 'application' ],
             js: [ ...defaults.internal.js ],
             mjs: [ ...defaults.internal.mjs ],
         },

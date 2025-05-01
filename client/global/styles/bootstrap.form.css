@@ -1,0 +1,4 @@
+label.input-required::after {
+    content: ' *';
+    color: red;
+}

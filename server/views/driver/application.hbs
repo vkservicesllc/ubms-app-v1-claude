@@ -38,54 +38,54 @@
                                     <form id="profile-form" action="{{actionUrl.profile}}" method="POST" autocomplete="off">
                                         <div class="row g-3 my-1">
                                             <div class="col-md-6">
-                                                {{{label.firstName}}}
-                                                {{{input.firstName}}}
+                                                {{{form.firstName.text.label}}}
+                                                {{{form.firstName.text.input}}}
                                             </div>
                                             <div class="col-md-6">
-                                                {{{label.middleName}}}
-                                                {{{input.middleName}}}
+                                                {{{form.middleName.text.label}}}
+                                                {{{form.middleName.text.input}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
                                             <div class="col-md-6">
-                                                {{{label.lastName}}}
-                                                {{{input.lastName}}}
+                                                {{{form.lastName.text.label}}}
+                                                {{{form.lastName.text.input}}}
                                             </div>
                                             <div class="col-md-3">
-                                                {{{label.suffix}}}
-                                                {{{select.suffix}}}
+                                                {{{form.suffix.select.label}}}
+                                                {{{form.suffix.select.input}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
                                             <div class="col-md-4">
-                                                {{{label.gender}}}
-                                                {{{select.gender}}}
+                                                {{{form.gender.select.label}}}
+                                                {{{form.gender.select.input}}}
                                             </div>
                                             <div class="col-md-4">
-                                                {{{label.dob}}}
-                                                {{{input.dob}}}
+                                                {{{form.dob.text.label}}}
+                                                {{{form.dob.text.input}}}
                                                 <div class="form-text text-danger" id="profile-dob-help"></div>
                                             </div>
                                             <div class="col-md-4">
-                                                {{{label.ssn}}}
-                                                {{{input.ssn}}}
+                                                {{{form.ssn.text.label}}}
+                                                {{{form.ssn.text.input}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
                                             <div class="col-md-5">
-                                                {{{label.phone}}}
-                                                {{{input.phone}}}
+                                                {{{form.phone.text.label}}}
+                                                {{{form.phone.text.input}}}
                                             </div>
                                             <div class="col-md-7">
-                                                {{{label.email}}}
-                                                {{{input.email}}}
+                                                {{{form.email.text.label}}}
+                                                {{{form.email.text.input}}}
                                                 <div class="form-text text-danger" id="profile-email-help"></div>
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
                                             <div class="col-md-5">
-                                                {{{label.position}}}
-                                                {{{select.position}}}
+                                                {{{form.position.select.label}}}
+                                                {{{form.position.select.input}}}
                                             </div>
                                         </div>
                                         <p class="form-text text-danger mt-4" id="profile-form-help" style="display: none;"></p>
@@ -115,30 +115,30 @@
                                         <div class="row g-3 my-1">
                                             <label class="form-label text-danger required">U.S. Address required</label>
                                             <div class="col-md-6">
-                                                {{{label.address1}}}
-                                                {{{input.address1}}}
+                                                {{{form.address1.text.label}}}
+                                                {{{form.address1.text.input}}}
                                             </div>
                                             <div class="col-md-3">
-                                                {{{label.address2}}}
-                                                {{{input.address2}}}
+                                                {{{form.address2.text.label}}}
+                                                {{{form.address2.text.input}}}
                                             </div>
                                             <div class="col-md-3">
-                                                {{{label.zip}}}
-                                                {{{input.zip}}}
+                                                {{{form.addrZip.text.label}}}
+                                                {{{form.addrZip.text.input}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
                                             <div class="col-md-5">
-                                                {{{label.city}}}
-                                                {{{input.city}}}
+                                                {{{form.addrCity.text.label}}}
+                                                {{{form.addrCity.text.input}}}
                                             </div>
                                             <div class="col-md-3">
-                                                {{{label.state}}}
-                                                {{{select.state}}}
+                                                {{{form.addrState.select.label}}}
+                                                {{{form.addrState.select.input}}}
                                             </div>
                                             <div class="col-md-4">
-                                                {{{label.addrSince}}}
-                                                {{{input.addrSince}}}
+                                                {{{form.addrSince.text.label}}}
+                                                {{{form.addrSince.text.input}}}
                                                 <div class="form-text text-danger" id="addr-since-help"></div>
                                             </div>
                                         </div>
