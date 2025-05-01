@@ -1,20 +1,18 @@
 import { inputEvent } from '/modules/events/form.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
-import { formSelectors } from '/modules/registry/selectors.mjs'
+import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const {
-    class: aplClass,
-    phoneId,
-    dobId,
-    aplPinId,
-} = formSelectors.driver
+const TS = selector.id.text
+const phoneId = TS.phone
+const dobId = TS.dob
+const pinId = TS.pin
 
 const $card = $('#apl-login-card')
 const $submit = $('[type=submit]')
 const $form = $('#apl-login-form')
 const $help = $('#form-help')
 
-$(`.${aplClass}`).val(null)
+$(selector.class.global).val(null)
 
 const duration = 750
 $card.fadeIn(duration)
@@ -42,7 +40,7 @@ inputEvent(dobId, {
     onBlur,
 })
 
-inputEvent(aplPinId, {
+inputEvent(pinId, {
     onInput(pin, $pin) {
         onInput()
 
@@ -56,9 +54,9 @@ inputEvent(aplPinId, {
 $form.submit(function(evt) {
     evt.preventDefault()
 
-    const phone = $(`#${phoneId}`).val(),
-          dob = $(`#${dobId}`).val(),
-          pin = $(`#${aplPinId}`).val()
+    const phone = $(phoneId).val(),
+          dob = $(dobId).val(),
+          pin = $(pinId).val()
 
     if (!phone && !dob && !pin) return
 
@@ -89,4 +87,4 @@ $form.submit(function(evt) {
     })
 })
 
-setTimeout(() => $(`#${aplPinId}`).prop('disabled', false), 100)
+setTimeout(() => $(pinId).prop('disabled', false), 100)
