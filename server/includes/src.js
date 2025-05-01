@@ -90,11 +90,14 @@ module.exports = {
         'datatables.fomantic-ui': {
             css: [
                 '<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.semanticui.css" />',
+
                 '<link rel="stylesheet" href="/styles/datatables.fomantic-ui.css" />',
             ],
             js: [
                 '<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>',
                 '<script src="https://cdn.datatables.net/2.2.2/js/dataTables.semanticui.js"></script>',
+                '<script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.js"></script>',
+                '<script src="https://cdn.datatables.net/fixedheader/4.0.1/js/fixedHeader.semanticui.js"></script>',
                 '<script src="/scripts/datatables.js"></script>',
                 '<script src="/scripts/datatables.defaults.js"></script>',
             ],

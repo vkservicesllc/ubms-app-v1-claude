@@ -44,7 +44,7 @@ const table = $('#driver-apl-table').DataTable({
                 user: $('#user-filter').val(),
             }
         },
-        dataSrc(response) { console.log(response) //!TEMP
+        dataSrc(response) {
             const { data, actions, aplAddress } = response
 
             data.forEach(row => {
@@ -56,8 +56,11 @@ const table = $('#driver-apl-table').DataTable({
             return data
         },
     },
-    processing: true,
-    serverSide: true,
+
+    fixedHeader: {
+        header: true,
+        headerOffset: $('#top-nav').height(),
+    },
 
     columns: [
 
@@ -332,6 +335,8 @@ const table = $('#driver-apl-table').DataTable({
     },
 
     lengthMenu,
+    processing: true,
+    serverSide: true,
 
 })
 
