@@ -14,6 +14,7 @@ import {
     createAddrCityForm,
     createAddrStateForm,
     createDateForm,
+    createUsStateForm,
 } from './reusable.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
@@ -24,11 +25,49 @@ import { getStaticProps } from '../../../client/global/modules/tools/utils/class
 const required = true, disabled = true
 
 
+export const createDlStateForm = (props = {}) => createUsStateForm({
+    target: 'dlState',
+    group: 'driverLicense',
+    name: 'state',
+    required,
+    label: 'State',
+    ...props,
+})
+
+export const createDlNumberForm = (props = {}) => createForm({
+    target: 'dlNumber',
+    group: 'driverLicense',
+    name: 'number',
+    maxLength: length.driverLicense.number.max,
+    required,
+    label: 'ID #',
+    ...props,
+    validator: {
+        match: /^[A-Za-z0-9-]+$/,
+    },
+})
+
+export const createDlClassForm = (props = {}) => createForm({
+    target: 'dlClass',
+    group: 'driverLicense',
+    name: 'class',
+    maxLength: length.driverLicense.class.max,
+    label: 'Class',
+    ...props,
+    validator: {
+        match: /^[A-Z0-9-]+$/,
+    },
+})
+
+
 class DriverForm {
     constructor(options = {}) {
         getStaticProps(DriverForm)
             .forEach(target => this[target] = constructForm(DriverForm, target, options))
     }
+
+    static id = createIdForm({ selector })
+
 }
 
 
@@ -99,6 +138,12 @@ class ApplicationForm {
         emptyOpt: 'Decide later...',
         label: 'Desired Position',
     })
+
+    static dlState = createDlStateForm({ selector: appSelector })
+
+    static dlNumber = createDlNumberForm({ selector: appSelector })
+
+    static dlClass = createDlClassForm({ selector: appSelector })
 
 }
 

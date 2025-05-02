@@ -192,14 +192,13 @@ router.get('/application/:param?', async (req, res, next) => {
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
 
-        const { addr1Id, addr2Id, zipId, cityId, stateId } = formSelectors.driver
         const buttonProps = {
             next: { class: 'primary', text: 'Next' },
             save: { class: 'success', text: 'Save Changes' }
         }
         const { labelProps, inputProps, selectProps, addrInputProps, addrSelectProps } = res.constants
         selectProps.tabs = 12
-        addrSelectProps.tabs = 12
+        // addrSelectProps.tabs = 12
 
         const accordionProps = {
             pending: {
@@ -278,10 +277,15 @@ router.get('/application/:param?', async (req, res, next) => {
         const commercial = settings?.drivers?.cdl === true
 
         if (step >= 1) {
-            hbs.label.dlState = DriverLabel.dlState(labelProps)
-            hbs.label.dlNum = DriverLabel.dlNum(labelProps)
-            hbs.label.dlClass = DriverLabel.dlClass(labelProps)
-            hbs.label.gender = DriverLabel.gender(labelProps)
+
+            const values = {
+                dlState: application?.dl?.state,
+                dlNumber: application?.dl?.number,
+                dlClass: application?.dl?.class,
+            }
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
+            options.dlState.select.input.options = { valOpt: true }
+
             hbs.label.dlIss = DriverLabel.dlIss(labelProps)
             hbs.label.dlExp = DriverLabel.dlExp(labelProps)
             hbs.label.dlEndorse = DriverLabel.dlEndorse({
@@ -295,8 +299,6 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.label.dlDenied = {}
             hbs.label.dlRevoked = {}
 
-            hbs.input.dlNum = DriverInput.dlNum({ ...inputProps, value: application?.dl?.number })
-            hbs.input.dlClass = DriverInput.dlClass({ ...inputProps, value: application?.dl?.class })
             hbs.input.dlIss = DriverInput.dlIss({
                 ...inputProps,
                 placeholder: 'MM/DD/YYYY',
@@ -311,22 +313,6 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.input.dlRestr = DriverInput.dlRestr({ ...inputProps, value: application?.dl?.restriction, placeholder: 'None' })
             hbs.input.dlDenied = {}
             hbs.input.dlRevoked = {}
-
-            hbs.select.dlState = DriverSelect.dlState({
-                ...selectProps,
-                value: application?.dl?.state,
-                options: { valOpt: true, emptyOpt: !application?.dl?.state ? '--' : null },
-            })
-            // hbs.select.dlClass = DriverSelect.dlClass({
-            //     ...selectProps,
-            //     value: application?.dl?.class,
-            //     options: { emptyOpt: !application?.dl?.class ? '--' : null },
-            // }, commercial)
-            hbs.select.gender = DriverSelect.gender({
-                ...selectProps,
-                value: application.gender?.[0],
-                options: { emptyOpt: !application.gender ? '--' : null },
-            })
 
             const tags = ['yes', 'no', 'expl']
             tags.forEach(tag => {

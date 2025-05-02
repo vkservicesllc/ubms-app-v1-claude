@@ -4,7 +4,11 @@ const prefix = 'driver'
 
 const selector = {
     class: {},
-    id: {},
+    id: {
+        hidden: {
+            id: 'id',
+        },
+    },
 }
 
 initialize(prefix, selector)

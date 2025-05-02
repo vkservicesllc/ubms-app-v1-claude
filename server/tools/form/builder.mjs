@@ -207,7 +207,7 @@ const createForm = (input = {}) => {
             .optional({ nullable: true })
 
         if (typeof validator === 'object') {
-            const { caps, sanitizer, rule, length, custom } = validator
+            const { caps, sanitizer, rule, match, length, custom } = validator
 
             if (data) {
                 const values = Object.keys(data)
@@ -318,6 +318,11 @@ const createForm = (input = {}) => {
                         .withMessage(`"${name}" must be a valid URL`)
 
             }
+
+            if (match)
+                chain = chain
+                    .matches(match)
+                    .withMessage(`"${name}" does not match the specified RegExp pattern`)
 
             if (typeof custom === 'function')
                 chain = chain.custom(custom)
