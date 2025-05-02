@@ -1,11 +1,10 @@
 import applyTheme, { createThemeSelectEvent } from './theme.mjs'
-import { formSelectors } from './registry/selectors.mjs'
 
 
 $(document).ready(function() {
     const $title = $('.title')
     const $label = $('label')
-    const $button = $(`#${formSelectors.user.signInButtonId}`)
+    const $button = $('[type=submit]')
 
     const onLight = () => {
         $title.addClass('has-text-primary-30').removeClass('has-text-info')
