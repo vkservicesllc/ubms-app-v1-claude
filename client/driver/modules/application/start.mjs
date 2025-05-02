@@ -149,7 +149,7 @@ const onChange = (value, $el) => {
     if (value && required) $el.addClass('is-valid')
 
     const id = $el.attr('id')
-    if (value !== null && id != ssnId && id != dobId && id != statusExpId)
+    if (value !== null && id !== ssnId && id !== dobId && id !== statusExpId)
         sessionStorage.setItem(id, value)
 }
 const onBlur = (value, $el) => onChange(value, $el)

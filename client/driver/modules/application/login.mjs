@@ -45,7 +45,7 @@ inputEvent(pinId, {
         onInput()
 
         const length = $pin.attr('maxlength')
-        if (pin.length == length) $pin.blur()
+        if (pin.length === length) $pin.blur()
     },
     onBlur,
 })

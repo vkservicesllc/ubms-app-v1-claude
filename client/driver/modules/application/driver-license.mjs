@@ -1,21 +1,20 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
-import { formSelectors } from '/modules/registry/selectors.mjs'
 import { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const {
-    dlNumId,
-    dlClassId,
-    dlStateId,
-    dlIssId,
-    dlExpId,
-    dlEndorseId,
-    dlRestrId,
-    dlDeniedId,
-    dlDeniedExplId,
-    dlRevokedId,
-    dlRevokedExplId,
-} = formSelectors.driver
+const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
+const dlStateId = SS.dlState
+const dlNumId = TS.dlNumber
+const dlClassId = TS.dlClass
+const dlIssId = TS.dlIss
+const dlExpId = TS.dlExp
+const dlEndrsId = TS.dlEndrs
+const dlRestrId = TS.dlRestr
+const dlDeniedId = RS.dlDenied
+const dlRevokedId = RS.dlRevoked
+const dlDeniedExplId = TS.dlDeniedExpl
+const dlRevokedExplId = TS.dlRevokedExpl
 
 const $card = $('#apl-card')
 const $help = {
@@ -26,12 +25,12 @@ const $help = {
 const $submit = $('#dl-submit')
 const $form = $('#dl-form')
 
-const $issued = $(`#${dlIssId}`)
-const $expires = $(`#${dlExpId}`)
+const $issued = $(dlIssId)
+const $expires = $(dlExpId)
 
 const $expl = {
-    denied: $(`#${dlDeniedExplId}`),
-    revoked: $(`#${dlRevokedExplId}`),
+    denied: $(dlDeniedExplId),
+    revoked: $(dlRevokedExplId),
 }
 for (const key in $expl)
     if ($expl[key].val()) $expl[key].parent().show()
@@ -43,7 +42,6 @@ selectEvent(dlStateId, { fill: true, onChange })
 
 driverLicenseEvent(dlNumId, { onInput, onChange })
 
-// selectEvent(dlClassId, { fill: true, onChange })
 dlClassEvent(dlClassId)
 
 //! repetative
@@ -134,22 +132,23 @@ inputEvent(dlExpId, {
     onBlur,
 })
 
-inputEvent(dlEndorseId, { strip: true })
+inputEvent(dlEndrsId, { strip: true })
 
 inputEvent(dlRestrId, { strip: true })
 
 
 //! repetative
 const onRadioChange = (id, explId) => {
-    const $radio = $(`#${id}-yes, #${id}-no`)
-    const $expl = $(`#${explId}`)
+console.log(id)
+    const $radio = $(`${id.yes}, ${id.no}`)
+    const $expl = $(explId)
 
     $radio.on('change', function() {
         const value = $(this).val()
-        const action = value == 1 ? 'show' : 'hide'
-        const required = value == 1
+        const action = value === 'Y' ? 'show' : 'hide'
+        const disabled = action === 'hide'
 
-        $expl.prop('required', required).parent()[action]()
+        $expl.prop('disabled', disabled).parent()[action]()
     })
 }
 

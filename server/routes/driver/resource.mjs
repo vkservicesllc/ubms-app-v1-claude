@@ -7,14 +7,33 @@ import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
 
 /* Validators */
-import validationCheck from '../../validators/default.mjs'
-import {
-    validateApplicant,
-    validateApplicantLogin,
-    validateApplicantProfile,
-    validateApplicantAddress,
-    validateApplicantDL,
-} from '../../validators/driver.mjs'
+import validationCheck from '../../tools/form/validator.mjs'
+import DriverForm, { ApplicationForm } from '../../tools/form/driver.mjs'
+
+const validateApplicant = [], validateApplicantProfile = [], validateApplicantAddress = []
+const applicantProfileFields = [
+    'firstName', 'middleName', 'lastName', 'suffix',
+    'gender', 'dob', 'ssn', 'phone', 'email', 'position',
+]
+const applicantAddressFields = [ 'address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince' ]
+const applicantFields = [ ...applicantProfileFields, ...applicantAddressFields, 'status', 'statusExp' ]
+applicantFields.forEach(prop => validateApplicant.push(ApplicationForm[prop].validate()))
+applicantProfileFields.forEach(prop => validateApplicantProfile.push(ApplicationForm[prop].validate()))
+applicantAddressFields.forEach(prop => validateApplicantAddress.push(ApplicationForm[prop].validate()))
+
+const validateApplicantLogin = []
+const applicantLoginFields = ['phone', 'dob', 'pin']
+applicantLoginFields.forEach(prop => validateApplicantLogin.push(ApplicationForm[prop].validate()))
+
+const validateApplicantDL = []
+const applicantDlFields = [
+    'dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp',
+    'dlEndrs', 'dlRestr',
+    'dlDenied', 'dlRevoked', 'dlDeniedExpl', 'dlRevokedExpl',
+]
+applicantDlFields.forEach(prop => validateApplicantDL.push(ApplicationForm[prop].validate()))
+
+//!.. to be continued
 
 
 const dynamicValidator = {

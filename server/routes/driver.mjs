@@ -177,7 +177,7 @@ router.get('/application/:param?', async (req, res, next) => {
         const { formId } = application
 
         const { application: _id } = req.session
-        if (!_id || _id != application._id) {
+        if (!_id || _id !== application._id) {
             delete req.session.application
 
             return res.redirect(`/application/${formId}`)
