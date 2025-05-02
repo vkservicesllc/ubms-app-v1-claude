@@ -1,16 +1,15 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
-import { formSelectors } from '/modules/registry/selectors.mjs'
 import { check, onInput, onChange, onSubmit } from './support.mjs'
+import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const {
-    addr1Id,
-    addr2Id,
-    zipId,
-    cityId,
-    stateId,
-    addrSinceId,
-} = formSelectors.driver
+const TS = selector.id.text, SS = selector.id.select
+const addr1Id = TS.address1
+const addr2Id = TS.address2
+const zipId = TS.addrZip
+const cityId = TS.addrCity
+const stateId = SS.addrState
+const addrSinceId = TS.addrSince
 
 const $card = $('#apl-card')
 const $help = {
@@ -67,10 +66,8 @@ inputEvent(addrSinceId, {
                 if (date.isAfter(today)) {
                     $since.addClass('is-invalid')
                     $help.addrSince.text('* Future date forbidden')
-                } else {
+                } else
                     $since.addClass('is-valid')
-                    sessionStorage.setItem(addrSinceId, since)
-                }
             }
         }
 

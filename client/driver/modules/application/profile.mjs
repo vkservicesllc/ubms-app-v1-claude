@@ -1,20 +1,19 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
-import { formSelectors } from '/modules/registry/selectors.mjs'
 import { onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const {
-    firstNameId,
-    middleNameId,
-    lastNameId,
-    suffixId,
-    dobId,
-    ssnId,
-    phoneId,
-    emailId,
-    positionId,
-} = formSelectors.driver
+const TS = selector.id.text, SS = selector.id.select
+const firstNameId = TS.firstName
+const middleNameId = TS.middleName
+const lastNameId = TS.lastName
+const suffixId = SS.suffix
+const dobId = TS.dob
+const ssnId = TS.ssn
+const phoneId = TS.phone
+const emailId = TS.email
+const positionId = SS.position
 
 const $card = $('#apl-card')
 const $help = {
