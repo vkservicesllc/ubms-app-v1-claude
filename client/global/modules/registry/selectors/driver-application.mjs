@@ -16,6 +16,7 @@ const selector = {
         },
         radio: {
             gender: 'gender',
+            dlCategory: 'driver-license-category',
         },
     },
     id: {
@@ -70,6 +71,10 @@ const selector = {
                 resident: 'resident-status',
                 authorized: 'authorized-status',
             },
+            dlCommercial: {
+                yes: 'driver-license-commercial',
+                no: 'driver-license-non-commercial',
+            },
             dlDenied: {
                 yes: 'driver-license-denied',
                 no: 'driver-license-never-denied',
@@ -80,11 +85,9 @@ const selector = {
             },
         },
         checkbox: {
-            statusValid: 'valid-legal-status',
-            dlValid: 'valid-driver-license',
+            // statusValid: 'valid-legal-status',
+            // dlValid: 'valid-driver-license',
             dlCommercial: 'commercial-driver-license',
-            dlDenied: 'driver-license-denied',
-            dlRevoked: 'driver-license-revoked',
             mecAvail: 'med-card-available',
             medTaken: 'medicine-taken',
         },

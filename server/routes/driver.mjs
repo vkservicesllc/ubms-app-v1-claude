@@ -293,21 +293,31 @@ router.get('/application/:param?', async (req, res, next) => {
             options.dlState.select.input.options = { valOpt: true }
             options.dlEndrs.text.label.content = 'Endorsements <small>(if any)</small>'
             options.dlRestr.text.label.content = 'Restrictions <small>(if any)</small>'
+            options.dlCommercial = { radio: { label: { class: formInstr.labelClassRequired } } }
             options.dlDenied = { radio: { label: { class: formInstr.labelClassRequired } } }
             options.dlRevoked = { radio: { label: { class: formInstr.labelClassRequired } } }
+            const radioProps = {
+                input: { class: 'form-check-input' },
+                label: { class: 'form-check-label' },
+            }
 
             for (const prop of ['yes', 'no']) {
-                const radioProp = {
-                    input: { class: 'form-check-input dl-problem-radio' },
-                    label: { class: 'form-check-label' }
-                }
-                options.dlDenied.radio[prop] = { ...radioProp }
-                options.dlRevoked.radio[prop] = { ...radioProp }
+                options.dlCommercial.radio[prop] = { input: { ...radioProps.input }, label: { ...radioProps.label } }
+                options.dlDenied.radio[prop] = { input: { ...radioProps.input }, label: { ...radioProps.label } }
+                options.dlRevoked.radio[prop] = { input: { ...radioProps.input }, label: { ...radioProps.label } }
             }
-            options.dlDenied.radio.yes.checked = application?.dl?.denied === true
-            options.dlDenied.radio.no.checked = application?.dl?.denied === false
-            options.dlRevoked.radio.yes.checked = application?.dl?.revoked === true
-            options.dlRevoked.radio.no.checked = application?.dl?.revoked === false
+            if (commercial) {
+                options.dlCommercial.radio.yes.input.checked = true
+                options.dlCommercial.radio.yes.input.disabled = true
+                options.dlCommercial.radio.no.input.disabled = true
+            } else {
+                options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === 1
+                options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === 0
+            }
+            options.dlDenied.radio.yes.input.checked = application?.dl?.denied === 1
+            options.dlDenied.radio.no.input.checked = application?.dl?.denied === 0
+            options.dlRevoked.radio.yes.input.checked = application?.dl?.revoked === 1
+            options.dlRevoked.radio.no.input.checked = application?.dl?.revoked === 0
         }
 
         if (step >= 2) { /* MEDICAL CARD */

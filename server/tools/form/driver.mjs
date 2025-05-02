@@ -26,6 +26,16 @@ import { getStaticProps } from '../../../client/global/modules/tools/utils/class
 const required = true, disabled = true
 
 
+export const createDlCommercialFrom = (props = {}) => createYesNoForm({
+    target: 'dlCommercial',
+    group: 'dlCategory',
+    name: 'commercial',
+    data: { 'Y': 'Commercial', 'N': 'Non-commercial' },
+    required,
+    label: 'Category',
+    ...props,
+})
+
 export const createDlStateForm = (props = {}) => createUsStateForm({
     target: 'dlState',
     group: 'driverLicense',
@@ -60,20 +70,22 @@ export const createDlClassForm = (props = {}) => createForm({
     },
 })
 
-export const createDlIssForm = (prop = {}) => createDateForm({
+export const createDlIssForm = (props = {}) => createDateForm({
     target: 'dlIss',
     group: 'driverLicense',
     name: 'issuedOn',
     required,
     label: 'Issued on',
+    ...props,
 })
 
-export const createDlExpForm = (prop = {}) => createDateForm({
+export const createDlExpForm = (props = {}) => createDateForm({
     target: 'dlExp',
     group: 'driverLicense',
     name: 'expiresOn',
     required,
     label: 'Expires on',
+    ...props,
 })
 
 export const createDlEndrsForm = (props = {}) => createForm({
@@ -83,6 +95,7 @@ export const createDlEndrsForm = (props = {}) => createForm({
     name: 'endorsement',
     maxLength: length.driverLicense.endorsement.max,
     label: 'Endorsements',
+    ...props,
 })
 
 export const createDlRestrForm = (props = {}) => createForm({
@@ -92,6 +105,7 @@ export const createDlRestrForm = (props = {}) => createForm({
     name: 'restriction',
     maxLength: length.driverLicense.restriction.max,
     label: 'Restrictions',
+    ...props,
 })
 
 export const createDlProblemExplForm = (target, name) => createForm({
@@ -185,6 +199,8 @@ class ApplicationForm {
         emptyOpt: 'Decide later...',
         label: 'Desired Position',
     })
+
+    static dlCommercial = createDlCommercialFrom({ selector: appSelector })
 
     static dlState = createDlStateForm({ selector: appSelector })
     static dlNumber = createDlNumberForm({ selector: appSelector })

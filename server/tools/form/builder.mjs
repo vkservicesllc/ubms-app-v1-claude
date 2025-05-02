@@ -10,7 +10,7 @@ const lockedLabelProps = ['defaultClass', 'for']
 
 
 const createForm = (input = {}) => {
-    const { selector, target, group, data, keys, defaultClass, id, required } = input
+    const { selector, target, group, data, keys, defaultClass, id, required, disabled } = input
     let { type, label, name, validator } = input
 
     const lockedInput = {}, lockedLabel = {}
@@ -198,7 +198,7 @@ const createForm = (input = {}) => {
     if (validator !== false) form.validate = () => {
         let chain = body(name).trim()
 
-        if (required)
+        if (required && !disabled)
             chain = chain
                 .notEmpty()
                 .withMessage(`"${name}" field can not be empty`)

@@ -27,9 +27,8 @@ applicantLoginFields.forEach(prop => validateApplicantLogin.push(ApplicationForm
 
 const validateApplicantDL = []
 const applicantDlFields = [
-    'dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp',
-    'dlEndrs', 'dlRestr',
-    'dlDenied', 'dlRevoked', 'dlDeniedExpl', 'dlRevokedExpl',
+    'dlCommercial', 'dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp',
+    'dlEndrs', 'dlRestr', 'dlDenied', 'dlRevoked', 'dlDeniedExpl', 'dlRevokedExpl',
 ]
 applicantDlFields.forEach(prop => validateApplicantDL.push(ApplicationForm[prop].validate()))
 
@@ -56,7 +55,7 @@ const dynamicValidator = {
         Promise.all(validators.map(validator => validator.run(req)))
             .then(() => next())
             .catch(next)
-    }
+    },
 }
 
 

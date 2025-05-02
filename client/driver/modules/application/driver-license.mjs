@@ -139,7 +139,6 @@ inputEvent(dlRestrId, { strip: true })
 
 //! repetative
 const onRadioChange = (id, explId) => {
-console.log(id)
     const $radio = $(`${id.yes}, ${id.no}`)
     const $expl = $(explId)
 
@@ -161,4 +160,4 @@ inputEvent(dlDeniedExplId, { strip: true })
 inputEvent(dlRevokedExplId, { strip: true })
 
 
-onSubmit($form, $help, $submit, $card)
+onSubmit($form, $help, $submit, $card, () => $(selector.class.radio.dlCategory).prop('disabled', false))

@@ -175,6 +175,19 @@
                                 <div class="accordion-body pt-1">
                                     <form id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
                                         <div class="row g-3 my-1">
+                                            {{{form.dlCommercial.radio.label}}}
+                                            <div class="col-md-12 mt-1">
+                                                <div class="form-check form-check-inline">
+                                                    {{{form.dlCommercial.radio.yes.input}}}
+                                                    {{{form.dlCommercial.radio.yes.label}}}
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    {{{form.dlCommercial.radio.no.input}}}
+                                                    {{{form.dlCommercial.radio.no.label}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row g-3 my-1">
                                             <div class="col-md-3">
                                                 {{{form.dlState.select.label}}}
                                                 {{{form.dlState.select.input}}}

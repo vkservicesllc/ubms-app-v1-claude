@@ -163,7 +163,7 @@ class Application {
             this.dl = {
                 number: data.dlNumber,
                 // commercial: Driver.dlClassList.filter(dlClass => dlClass.id === data.dlClass)[0].commercial,
-                commercial: data.commercial,
+                commercial: data.dlCommercial,
                 class: data.dlClass,
                 state: data.dlState,
                 issuedOn: data.dlIssuedOn,
@@ -590,6 +590,7 @@ class Application {
             {
                 table: 'application_DLs',
                 fields: [
+                    [ 'commercial', 'dlCommercial' ],
                     [ 'number', 'dlNumber' ],
                     [ 'class', 'dlClass' ],
                     [ 'state', 'dlState' ],

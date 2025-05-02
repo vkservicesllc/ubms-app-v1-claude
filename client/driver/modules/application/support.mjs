@@ -11,7 +11,7 @@ export const onChange = (value, $el) => {
 
 export const onBlur = (value, $el) => onChange(value, $el)
 
-export const onSubmit = ($form, $help, $submit, $card) => {
+export const onSubmit = ($form, $help, $submit, $card, cb) => {
     $form.submit(function(evt) {
         evt.preventDefault()
 
@@ -28,6 +28,7 @@ export const onSubmit = ($form, $help, $submit, $card) => {
 
         const duration = 750
         $card.fadeOut(duration)
+        if (cb) cb()
         setTimeout(() => $form.unbind().submit(), duration)
     })
 }
