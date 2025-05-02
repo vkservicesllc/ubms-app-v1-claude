@@ -1,5 +1,3 @@
-import { formSelectors } from './registry/selectors.mjs'
-
 $(() => {
     const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent)
 

@@ -22,8 +22,8 @@ const online = {
     external: [ ...defaults.external, 'store', 'jquery.ui', 'jquery.idle-timeout-plus' ],
     internal: {
         css: [ ...defaults.internal.css, 'fomantic-ui.form' ],
-        js: [ ...defaults.internal.js, '^idle-timeout-plus' ],
-        mjs: [ ...defaults.internal.mjs, 'no-mobile' ],
+        js: [ ...defaults.internal.js, 'no-mobile', '^idle-timeout-plus' ],
+        mjs: [ ...defaults.internal.mjs ],
     },
 }
 

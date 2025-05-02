@@ -102,7 +102,7 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
                 display.condition = `<span class="has-text-danger-70">${display.condition}</span>`
 
             const input = {
-                // id: UserInput.id(user._id),
+                id: UserForm.id.hidden.input({ value: user._id }),
             }
 
             hbs.display = display

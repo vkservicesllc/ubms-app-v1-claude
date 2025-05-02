@@ -1,7 +1,8 @@
-import { formSelectors } from '/modules/registry/selectors.mjs'
+// import { formSelectors } from '/modules/registry/selectors.mjs'
+import selector from "/modules/registry/selectors/user.mjs"
 
-const { id } = formSelectors.user
-const _id = $(`#${id}`).val()
+// const { id } = formSelectors.user
+const _id = $(selector.id.hidden.id).val()
 const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 
 if (_id)
