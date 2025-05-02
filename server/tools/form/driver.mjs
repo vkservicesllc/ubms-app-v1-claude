@@ -15,6 +15,7 @@ import {
     createAddrStateForm,
     createDateForm,
     createUsStateForm,
+    createYesNoForm,
 } from './reusable.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
@@ -57,6 +58,52 @@ export const createDlClassForm = (props = {}) => createForm({
     validator: {
         match: /^[A-Z0-9-]+$/,
     },
+})
+
+export const createDlIssForm = (prop = {}) => createDateForm({
+    target: 'dlIss',
+    group: 'driverLicense',
+    name: 'issuedOn',
+    required,
+    label: 'Issued on',
+})
+
+export const createDlExpForm = (prop = {}) => createDateForm({
+    target: 'dlExp',
+    group: 'driverLicense',
+    name: 'expiresOn',
+    required,
+    label: 'Expires on',
+})
+
+export const createDlEndrsForm = (props = {}) => createForm({
+    target: 'dlEndrs',
+    group: 'driverLicense',
+    type: 'textarea',
+    name: 'endorsement',
+    maxLength: length.driverLicense.endorsement.max,
+    label: 'Endorsements',
+})
+
+export const createDlRestrForm = (props = {}) => createForm({
+    target: 'dlRestr',
+    group: 'driverLicense',
+    type: 'textarea',
+    name: 'restriction',
+    maxLength: length.driverLicense.restriction.max,
+    label: 'Restrictions',
+})
+
+export const createDlProblemExplForm = (target, name) => createForm({
+    selector: appSelector,
+    target,
+    group: 'driverLicense',
+    type: 'textarea',
+    name,
+    maxLength: length.driverLicense.problemExpl.max,
+    required,
+    disabled,
+    label: 'Explain what happened',
 })
 
 
@@ -140,10 +187,33 @@ class ApplicationForm {
     })
 
     static dlState = createDlStateForm({ selector: appSelector })
-
     static dlNumber = createDlNumberForm({ selector: appSelector })
-
     static dlClass = createDlClassForm({ selector: appSelector })
+    static dlIss = createDlIssForm({ selector: appSelector })
+    static dlExp = createDlExpForm({ selector: appSelector })
+    static dlEndrs = createDlEndrsForm({ selector: appSelector })
+    static dlRestr = createDlRestrForm({ selector: appSelector })
+
+    static dlDenied = createYesNoForm({
+        selector: appSelector,
+        target: 'dlDenied',
+        group: 'driverLicense',
+        name: 'denied',
+        required,
+        // label: 'Have you ever been denied a license, permit, or privilege to operate a motor vehicle?',
+    })
+
+    static dlRevoked = createYesNoForm({
+        selector: appSelector,
+        target: 'dlRevoked',
+        group: 'driverLicense',
+        name: 'revoked',
+        required,
+        // label: 'Has your license, permit, or driving privilege ever been suspended or revoked?',
+    })
+
+    static dlDeniedExpl = createDlProblemExplForm('dlDeniedExpl', 'deniedExpl')
+    static dlRevokedExpl = createDlProblemExplForm('dlRevokedExpl', 'revokedExpl')
 
 }
 

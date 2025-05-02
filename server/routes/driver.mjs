@@ -26,6 +26,7 @@ const formInstr = {
     labelClass: 'form-label text-black-50',
     labelClassRequired: 'form-label',
     textClass: 'form-control',
+    textareaClass: 'form-control',
     selectClass: 'form-select',
 }
 
@@ -118,7 +119,7 @@ router.get('/application/:param?', async (req, res, next) => {
             'statusExp', 'position',
         ]
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
-        Object.keys(placeholders).map(prop => options[prop].text.input.placeholder = placeholders[prop])
+        Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         options.addrState.select.input.options = { valOpt: true }
         options.position.select.input.data = team.list.drivers.positions
         options.status = { radio: { label: { class: formInstr.labelClassRequired } } }
@@ -160,7 +161,7 @@ router.get('/application/:param?', async (req, res, next) => {
         }
         const fields = Object.keys(placeholders)
         options = updateFormOptions(options, ApplicationForm, fields, formInstr)
-        fields.map(prop => options[prop].text.input.placeholder = placeholders[prop])
+        fields.forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         options.phone.text.label.content = 'Phone'
 
         hbs.form = new ApplicationForm(options)
@@ -192,13 +193,12 @@ router.get('/application/:param?', async (req, res, next) => {
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
 
+        const recUrl = `/resource/application/form/${formId}`
+
         const buttonProps = {
             next: { class: 'primary', text: 'Next' },
             save: { class: 'success', text: 'Save Changes' }
         }
-        const { labelProps, inputProps, selectProps, addrInputProps, addrSelectProps } = res.constants
-        selectProps.tabs = 12
-        // addrSelectProps.tabs = 12
 
         const accordionProps = {
             pending: {
@@ -213,8 +213,31 @@ router.get('/application/:param?', async (req, res, next) => {
             },
         }
 
+        hbs.button = {}
+        hbs.accordion = {}
 
-        //? NEW
+        hbs.actionUrl = {
+            profile: `${recUrl}/profile`,
+            address: `${recUrl}/address`,
+            dl: `${recUrl}/driver-license`,
+            mec: `${recUrl}/medical-card`
+        }
+
+        for (const ct of ['one', 'two', 'three']) { //! ADD MORE...
+            const { save, next } = buttonProps
+
+            hbs.button[ct] = ct === 'one' ? save : next
+            hbs.accordion[ct] = accordionProps.pending
+        }
+
+                //! TEMP
+                const { labelProps, inputProps, selectProps } = res.constants
+                selectProps.tabs = 12
+                // addrSelectProps.tabs = 12
+                hbs.label = {}
+                hbs.input = {}
+                hbs.select = {}
+
         let options = {}
 
         {
@@ -239,124 +262,55 @@ router.get('/application/:param?', async (req, res, next) => {
             }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
-            Object.keys(placeholders).map(prop => options[prop].text.input.placeholder = placeholders[prop])
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.position.select.input.data = team.list.drivers.positions
             options.addrState.select.input.options = { valOpt: true }
         }
 
-
-        //! NEW
-
-
-        hbs.label = {}
-
-        hbs.input = {}
-
-        hbs.select = {}
-
-        const recUrl = `/resource/application/form/${formId}`
-        hbs.actionUrl = {
-            profile: `${recUrl}/profile`,
-            address: `${recUrl}/address`,
-            dl: `${recUrl}/driver-license`,
-            mec: `${recUrl}/medical-card`
-        }
-
-        hbs.button = {
-            one: buttonProps.save,
-            two: buttonProps.next,
-            three: buttonProps.next,
-        }
-
-        hbs.accordion = {
-            one: accordionProps.pending,
-            two: accordionProps.pending,
-            three: accordionProps.pending,
-        }
-
         const commercial = settings?.drivers?.cdl === true
 
-        if (step >= 1) {
-
+        if (step >= 1) { /* DRIVER LICENSE */
             const values = {
                 dlState: application?.dl?.state,
                 dlNumber: application?.dl?.number,
                 dlClass: application?.dl?.class,
+                dlIss: application?.dl?.issuedOn ? moment(application.dl.issuedOn).format('MM/DD/YYYY') : null,
+                dlExp: application?.dl?.expiresOn ? moment(application.dl.expiresOn).format('MM/DD/YYYY') : null,
+                dlEndrs: application?.dl?.endorsement,
+                dlRestr: application?.dl?.restriction,
+                dlDeniedExpl: application?.dl?.deniedExpl,
+                dlRevokedExpl: application?.dl?.revokedExpl,
             }
+            const placeholders = {
+                dlIss: 'MM/DD/YYYY',
+                dlExp: 'MM/DD/YYYY',
+                dlEndrs: 'None',
+                dlRestr: 'None',
+            }
+
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.dlState.select.input.options = { valOpt: true }
+            options.dlEndrs.text.label.content = 'Endorsements <small>(if any)</small>'
+            options.dlRestr.text.label.content = 'Restrictions <small>(if any)</small>'
+            options.dlDenied = { radio: { label: { class: formInstr.labelClassRequired } } }
+            options.dlRevoked = { radio: { label: { class: formInstr.labelClassRequired } } }
 
-            hbs.label.dlIss = DriverLabel.dlIss(labelProps)
-            hbs.label.dlExp = DriverLabel.dlExp(labelProps)
-            hbs.label.dlEndorse = DriverLabel.dlEndorse({
-                ...labelProps,
-                content: 'Endorsements <small class="text-muted">(if any)</small>',
-            })
-            hbs.label.dlRestr = DriverLabel.dlRestr({
-                ...labelProps,
-                content: 'Restrictions <small class="text-muted">(if any)</small>',
-            })
-            hbs.label.dlDenied = {}
-            hbs.label.dlRevoked = {}
-
-            hbs.input.dlIss = DriverInput.dlIss({
-                ...inputProps,
-                placeholder: 'MM/DD/YYYY',
-                value: application?.dl?.issuedOn ? moment(application.dl.issuedOn).format('MM/DD/YYYY') : null,
-            })
-            hbs.input.dlExp = DriverInput.dlExp({
-                ...inputProps,
-                placeholder: 'MM/DD/YYYY',
-                value: application?.dl?.expiresOn ? moment(application.dl.expiresOn).format('MM/DD/YYYY') : null,
-            })
-            hbs.input.dlEndorse = DriverInput.dlEndorse({ ...inputProps, value: application?.dl?.endorsement, placeholder: 'None' })
-            hbs.input.dlRestr = DriverInput.dlRestr({ ...inputProps, value: application?.dl?.restriction, placeholder: 'None' })
-            hbs.input.dlDenied = {}
-            hbs.input.dlRevoked = {}
-
-            const tags = ['yes', 'no', 'expl']
-            tags.forEach(tag => {
-                const props = {
-                    label: labelProps,
-                    input: {
-                        denied: { ...inputProps },
-                        revoked: { ...inputProps },
-                    },
+            for (const prop of ['yes', 'no']) {
+                const radioProp = {
+                    input: { class: 'form-check-input dl-problem-radio' },
+                    label: { class: 'form-check-label' }
                 }
-
-                if (tag != 'expl') {
-                    props.label = { class: 'form-check-label' }
-                    props.input = {
-                        denied: { class: 'form-check-input' },
-                        revoked: { class: 'form-check-input' },
-                    }
-
-                    if (application.dl) {
-                        const { denied, revoked } = application.dl
-
-                        if ((denied && tag == 'yes') || (!denied && tag == 'no'))
-                            props.input.denied.checked = true
-                        if ((revoked && tag == 'yes') || (!revoked && tag == 'no'))
-                            props.input.revoked.checked = true
-                    }
-                } else {
-                    if (application.dl) {
-                        const { deniedExpl, revokedExpl } = application.dl
-
-                        if (deniedExpl) props.input.denied.value = deniedExpl
-                        if (revokedExpl) props.input.revoked.value = revokedExpl
-                    }
-                }
-
-                hbs.label.dlDenied[tag] = DriverLabel.problem('dl-denied', tag, props.label)
-                hbs.label.dlRevoked[tag] = DriverLabel.problem('dl-revoked', tag, props.label)
-
-                hbs.input.dlDenied[tag] = DriverInput.problem('dl-denied', tag, props.input.denied)
-                hbs.input.dlRevoked[tag] = DriverInput.problem('dl-revoked', tag, props.input.revoked)
-            })
+                options.dlDenied.radio[prop] = { ...radioProp }
+                options.dlRevoked.radio[prop] = { ...radioProp }
+            }
+            options.dlDenied.radio.yes.checked = application?.dl?.denied === true
+            options.dlDenied.radio.no.checked = application?.dl?.denied === false
+            options.dlRevoked.radio.yes.checked = application?.dl?.revoked === true
+            options.dlRevoked.radio.no.checked = application?.dl?.revoked === false
         }
 
-        if (step >= 2) {
+        if (step >= 2) { /* MEDICAL CARD */
             hbs.button.one = buttonProps.save
             hbs.accordion.one = accordionProps.finished
 

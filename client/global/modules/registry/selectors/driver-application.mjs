@@ -43,10 +43,10 @@ const selector = {
             dlClass: 'driver-license-class',
             dlIss: 'driver-license-issue-date',
             dlExp: 'driver-license-expiration-date',
-            dlEndorse: 'driver-license-endrosement',
+            dlEndrs: 'driver-license-endrosement',
             dlRestr: 'driver-license-restriction',
-            dlDenied: 'driver-license-denied',
-            dlRevoked: 'driver-license-revoked',
+            dlDeniedExpl: 'driver-license-denied-explanation',
+            dlRevokedExpl: 'driver-license-revoked-explanation',
             mecIss: 'med-card-exam-date',
             mecExp: 'med-card-expiration-date',
             mecNumber: 'med-card-number',
@@ -69,6 +69,14 @@ const selector = {
                 citizen: 'citizen-status',
                 resident: 'resident-status',
                 authorized: 'authorized-status',
+            },
+            dlDenied: {
+                yes: 'driver-license-denied',
+                no: 'driver-license-never-denied',
+            },
+            dlRevoked: {
+                yes: 'driver-license-revoked',
+                no: 'driver-license-never-revoked',
             },
         },
         checkbox: {
