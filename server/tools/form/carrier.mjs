@@ -8,7 +8,7 @@ import selector from '../../../client/global/modules/registry/selectors/carrier.
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 
-import { permits } from '../../settings/carrier.mjs'
+import { permits } from '../core/carrier.mjs'
 
 const required = true
 

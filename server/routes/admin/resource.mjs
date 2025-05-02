@@ -1,10 +1,8 @@
 const router = require('express').Router()
 
-/* Settings */
-import { permits } from '../../settings/carrier.mjs'
-
 /* Tools */
 import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
+import { permits } from '../../tools/core/carrier.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'

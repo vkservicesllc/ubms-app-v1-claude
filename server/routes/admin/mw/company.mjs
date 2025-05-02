@@ -1,16 +1,10 @@
 import moment from 'moment'
 
-/* Settings */
-import { permits } from '../../../settings/carrier.mjs'
-
 /* Tools */
 import Company, { Owner } from '../../../tools/core/company.mjs'
-import Carrier from '../../../tools/core/carrier.mjs'
+import Carrier, { permits } from '../../../tools/core/carrier.mjs'
 import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
 import escapeHTML from '../../../../client/global/modules/tools/utils/html.mjs'
-import { sortObjectByValue } from '../../../../client/global/modules/tools/utils/sorter.mjs'
-                //! TEMP
-                import { formLabel, formInput } from '../../../../client/global/modules/tools/utils/html/form.mjs'
 import { ein as formatEin, duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/utils/formatter.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
 import { button as formButton } from '../../../../client/global/modules/tools/utils/html/components.mjs'
