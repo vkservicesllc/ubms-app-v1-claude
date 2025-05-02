@@ -108,7 +108,7 @@ export const createDlRestrForm = (props = {}) => createForm({
     ...props,
 })
 
-export const createDlProblemExplForm = (target, name) => createForm({
+const createDlProblemExplForm = (target, name) => createForm({
     selector: appSelector,
     target,
     group: 'driverLicense',
@@ -118,6 +118,35 @@ export const createDlProblemExplForm = (target, name) => createForm({
     required,
     disabled,
     label: 'Explain what happened',
+})
+
+const createMecIssForm = (props = {}) => createDateForm({
+    target: 'mecIss',
+    group: 'medCard',
+    name: 'issuedOn',
+    required,
+    label: 'Exam Date',
+    ...props,
+})
+
+const createMecExpForm = (props = {}) => createDateForm({
+    target: 'mecExp',
+    group: 'medCard',
+    name: 'expiresOn',
+    required,
+    label: 'Expires on',
+    ...props,
+})
+
+const createMecNumberForm = (props = {}) => createForm({
+    target: 'mecNumber',
+    group: 'medCard',
+    name: 'nrcme',
+    label: {
+        content: 'NRCME #',
+        title: 'National Registry Number',
+    },
+    ...props,
 })
 
 
@@ -230,6 +259,39 @@ class ApplicationForm {
 
     static dlDeniedExpl = createDlProblemExplForm('dlDeniedExpl', 'deniedExpl')
     static dlRevokedExpl = createDlProblemExplForm('dlRevokedExpl', 'revokedExpl')
+
+    static noMec = createForm({
+        selector: appSelector,
+        target: 'noMec',
+        type: 'checkbox',
+        name: 'mecAbsent',
+        label: 'Medical card is not available',
+        validator: {
+            sanitizer: value => !!value,
+        },
+    })
+
+    static mecIss = createMecIssForm({ selector: appSelector })
+    static mecExp = createMecExpForm({ selector: appSelector })
+    static mecNumber = createMecNumberForm({ selector: appSelector })
+
+    static underMeds = createYesNoForm({
+        selector: appSelector,
+        target: 'underMeds',
+        name: 'underMeds',
+        required,
+        label: 'Impairing medications taken',
+    })
+
+    static medList = createForm({
+        selector: appSelector,
+        target: 'medList',
+        type: 'textarea',
+        name: 'medList',
+        required,
+        disabled,
+        label: 'Medication List',
+    })
 
 }
 

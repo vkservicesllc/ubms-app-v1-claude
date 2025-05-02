@@ -1,17 +1,7 @@
 import moment from 'moment'
 
-/* HTML Builders */
-import { Label, Input, Select } from '../../../html/company.mjs'
-import { Label as CarrierLabel, Input as CarrierInput, Select as CarrierSelect } from '../../../html/carrier.mjs'
-import { Label as AddrLabel, Input as AddrInput, Select as AddrSelect } from '../../../html/address.us.mjs'
-import { Label as ContactLabel, Input as ContactInput } from '../../../html/contacts.mjs'
-
 /* Settings */
 import { permits } from '../../../settings/carrier.mjs'
-
-/* Registry */
-import { formSelectors } from '../../../../client/global/modules/registry/selectors.mjs'
-import inputLength from '../../../../client/global/modules/registry/length.mjs'
 
 /* Tools */
 import Company, { Owner } from '../../../tools/core/company.mjs'

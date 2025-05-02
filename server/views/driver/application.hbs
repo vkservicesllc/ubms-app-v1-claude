@@ -291,26 +291,26 @@
                                         <div class="row g-3 my-1">
                                             <div class="col-md-12">
                                                 <div class="form-check">
-                                                    {{{input.medCard}}}
-                                                    {{{label.medCard}}}
+                                                    {{{form.noMec.checkbox.input}}}
+                                                    {{{form.noMec.checkbox.label}}}
                                                 </div>
                                             </div>
                                         </div>
                                         {{/if}}
                                         <div class="row g-3 my-1" id="driver-med-card-fields"{{medCardDisplay}}>
                                             <div class="col-md-4">
-                                                {{{label.mecIss}}}
-                                                {{{input.mecIss}}}
+                                                {{{form.mecIss.text.label}}}
+                                                {{{form.mecIss.text.input}}}
                                                 <div class="form-text text-danger" id="mec-iss-help"></div>
                                             </div>
                                             <div class="col-md-4">
-                                                {{{label.mecExp}}}
-                                                {{{input.mecExp}}}
+                                                {{{form.mecExp.text.label}}}
+                                                {{{form.mecExp.text.input}}}
                                                 <div class="form-text" id="mec-exp-help"></div>
                                             </div>
                                             <div class="col-md-4">
-                                                {{{label.mecNum}}}
-                                                {{{input.mecNum}}}
+                                                {{{form.mecNumber.text.label}}}
+                                                {{{form.mecNumber.text.input}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
@@ -319,17 +319,17 @@
                                             </label>
                                             <div class="col-md-4">
                                                 <div class="form-check form-check-inline">
-                                                    {{{input.underMeds.yes}}}
-                                                    {{{label.underMeds.yes}}}
+                                                    {{{form.underMeds.radio.yes.input}}}
+                                                    {{{form.underMeds.radio.yes.label}}}
                                                 </div>
                                                 <div class="form-check form-check-inline">
-                                                    {{{input.underMeds.no}}}
-                                                    {{{label.underMeds.no}}}
+                                                    {{{form.underMeds.radio.no.input}}}
+                                                    {{{form.underMeds.radio.no.label}}}
                                                 </div>
                                             </div>
                                             <div class="col-md-8" style="display: none;">
-                                                {{{label.medList}}}
-                                                {{{input.medList}}}
+                                                {{{form.medList.text.label}}}
+                                                {{{form.medList.text.input}}}
                                             </div>
                                         </div>
                                         <p class="form-text text-danger mt-4" id="mec-form-help" style="display: none;"></p>

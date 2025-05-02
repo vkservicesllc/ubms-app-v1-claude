@@ -12,9 +12,6 @@ import { updateFormOptions } from '../../tools/form/builder.mjs'
 import UserForm, { RoleForm } from '../../tools/form/user.mjs'
 import TeamForm from '../../tools/form/team.mjs'
 
-/* HTML Builders */
-import { Input as UserInput } from '../../html/user.mjs'
-
 /* Registry */
 import inputLength from '../../../client/global/modules/registry/length.mjs'
 
@@ -105,7 +102,7 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
                 display.condition = `<span class="has-text-danger-70">${display.condition}</span>`
 
             const input = {
-                id: UserInput.id(user._id),
+                // id: UserInput.id(user._id),
             }
 
             hbs.display = display

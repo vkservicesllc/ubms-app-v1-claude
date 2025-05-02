@@ -10,6 +10,7 @@ const selector = {
             since: 'update-date',
             position: 'position',
             driverLicense: 'driver-license',
+            medCard: 'medical-card',
         },
         select: {
             gender: 'gender',
@@ -83,12 +84,13 @@ const selector = {
                 yes: 'driver-license-revoked',
                 no: 'driver-license-never-revoked',
             },
+            underMeds: {
+                yes: 'meds-taken',
+                no: 'dmeds-not-taken',
+            },
         },
         checkbox: {
-            // statusValid: 'valid-legal-status',
-            // dlValid: 'valid-driver-license',
-            dlCommercial: 'commercial-driver-license',
-            mecAvail: 'med-card-available',
+            noMec: 'no-med-card',
             medTaken: 'medicine-taken',
         },
     },

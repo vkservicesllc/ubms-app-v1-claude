@@ -2,13 +2,6 @@ const router = require('express').Router()
 const moment = require('moment')
 const throwErr = require('../tools/utils/error').data
 
-/* Registry */
-import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
-
-/* HTML Builders */
-import { Label as DriverLabel, Input as DriverInput, Select as DriverSelect } from '../html/driver.mjs'
-import { Label as AddrLabel, Input as AddrInput, Select as AddrSelect } from '../html/address.us.mjs'
-
 /* Tools */
 import Team from '../tools/core/team.mjs'
 import Carrier from '../tools/core/carrier.mjs'
@@ -28,6 +21,11 @@ const formInstr = {
     textClass: 'form-control',
     textareaClass: 'form-control',
     selectClass: 'form-select',
+}
+
+const checkProps = {
+    input: { class: 'form-check-input' },
+    label: { class: 'form-check-label' },
 }
 
 
@@ -56,15 +54,6 @@ router.use((req, res, next) => {
 
 
 router.get('/application/:param?', async (req, res, next) => {
-    const { class: aplClass } = formSelectors.driver
-    const labelProps = { class: 'form-label' }
-    const inputProps = { class: 'form-control' }
-    const addrInputProps = { ...inputProps, class: `${inputProps.class} ${aplClass}` }
-    const selectProps = { class: 'form-select', tabs: 8, options: { emptyOpt: '--' } }
-    const addrSelectProps = { ...selectProps, class: `${inputProps.class} ${aplClass}` }
-
-    res.constants = { labelProps, inputProps, addrInputProps, selectProps, addrSelectProps }
-
     try {
         const { env } = req.query
         if (!env) return next()
@@ -230,14 +219,6 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.accordion[ct] = accordionProps.pending
         }
 
-                //! TEMP
-                const { labelProps, inputProps, selectProps } = res.constants
-                selectProps.tabs = 12
-                // addrSelectProps.tabs = 12
-                hbs.label = {}
-                hbs.input = {}
-                hbs.select = {}
-
         let options = {}
 
         {
@@ -296,15 +277,11 @@ router.get('/application/:param?', async (req, res, next) => {
             options.dlCommercial = { radio: { label: { class: formInstr.labelClassRequired } } }
             options.dlDenied = { radio: { label: { class: formInstr.labelClassRequired } } }
             options.dlRevoked = { radio: { label: { class: formInstr.labelClassRequired } } }
-            const radioProps = {
-                input: { class: 'form-check-input' },
-                label: { class: 'form-check-label' },
-            }
 
             for (const prop of ['yes', 'no']) {
-                options.dlCommercial.radio[prop] = { input: { ...radioProps.input }, label: { ...radioProps.label } }
-                options.dlDenied.radio[prop] = { input: { ...radioProps.input }, label: { ...radioProps.label } }
-                options.dlRevoked.radio[prop] = { input: { ...radioProps.input }, label: { ...radioProps.label } }
+                options.dlCommercial.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.dlDenied.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.dlRevoked.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
             if (commercial) {
                 options.dlCommercial.radio.yes.input.checked = true
@@ -323,45 +300,29 @@ router.get('/application/:param?', async (req, res, next) => {
         if (step >= 2) { /* MEDICAL CARD */
             hbs.button.one = buttonProps.save
             hbs.accordion.one = accordionProps.finished
-
-            let disabled = false
-
-            // if CDL Class C (Non-CDL), D, then applicant should be able to select No Medical Card
             hbs.medCard = application.dl.commercial === false
-            if (hbs.medCard) {
-                disabled = application.medCard === false
-                hbs.label.medCard = DriverLabel.medCard({ class: 'form-check-label' })
-                hbs.input.medCard = DriverInput.medCard({ class: 'form-check-input', checked: disabled })
-            }
-            hbs.medCardDisplay = disabled ? ' style="display: none;"' : ''
+            hbs.medCardDisplay = hbs.medCard && application.medCard === false ? ' style="display: none;"' : ''
 
-            hbs.label.mecNum = DriverLabel.mecNum(labelProps)
-            hbs.label.mecIss = DriverLabel.mecIss(labelProps)
-            hbs.label.mecExp = DriverLabel.mecExp(labelProps)
-            hbs.label.underMeds = {
-                yes: DriverLabel.problem('med', 'yes', { class: 'form-check-label' }),
-                no: DriverLabel.problem('med', 'no', { class: 'form-check-label' }),
+            const values = {
+                mecIss: application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('MM/DD/YYYY') : null,
+                mecExp: application?.mec?.expiresOn ? moment(application.mec.expiresOn).format('MM/DD/YYYY') : null,
+                mecNumber: application?.mec?.nrcme,
+                medList: application.medList,
             }
-            hbs.label.medList = DriverLabel.problem('med', 'expl', { ...labelProps, content: 'List medications <small class="text-muted">(names only)</small>' })
+            const placeholders = {
+                mecIss: 'MM/DD/YYYY',
+                mecExp: 'MM/DD/YYYY',
+            }
 
-            hbs.input.mecNum = DriverInput.mecNum({ ...inputProps, value: application?.mec?.nrcme, disabled })
-            hbs.input.mecIss = DriverInput.mecIss({
-                ...inputProps,
-                placeholder: 'MM/DD/YYYY',
-                value: application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('MM/DD/YYYY') : null,
-                disabled,
-            })
-            hbs.input.mecExp = DriverInput.mecExp({
-                ...inputProps,
-                placeholder: 'MM/DD/YYYY',
-                value: application?.mec?.expiresOn ? moment(application.mec.expiresOn).format('MM/DD/YYYY') : null,
-                disabled,
-            })
-            hbs.input.underMeds = {
-                yes: DriverInput.problem('med', 'yes', { class: 'form-check-input', checked: application.underMeds === true }),
-                no: DriverInput.problem('med', 'no', { class: 'form-check-input', checked: application.underMeds === false }),
-            }
-            hbs.input.medList = DriverInput.problem('med', 'expl', { ...inputProps, value: application.medList })
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+            options.noMec = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
+            options.underMeds = { radio: {} }
+            for (const prop of ['yes', 'no'])
+                options.underMeds.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            options.underMeds.radio.yes.input.checked = application.underMeds === 1
+            options.underMeds.radio.no.input.checked = application.underMeds === 0
+            options.medList.text.label.content = 'List medications <small>(names only)</small>'
         }
 
         hbs.form = new ApplicationForm(options)

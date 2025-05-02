@@ -10,8 +10,8 @@ import Driver, { Application } from '../../tools/core/driver.mjs'
 import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
 
 /* Validators */
-import validationCheck from '../../validators/default.mjs'
-import { validateApplicant } from '../../validators/driver.mjs'
+import validationCheck from '../../tools/form/validator.mjs'
+import { validateApplicant } from '../driver/resource.mjs'
 
 const url = {
     drivers: {

@@ -7,7 +7,7 @@ import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
 
 /* Validators */
-import { validateApplicantLogin } from '../../validators/driver.mjs'
+import { validateApplicantLogin } from './resource.mjs'
 
 
 

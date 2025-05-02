@@ -1,15 +1,21 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { formSelectors } from '/modules/registry/selectors.mjs'
 import { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const {
-    medCardId,
-    mecNumId,
-    mecIssId,
-    mecExpId,
-    medId,
-    medListId,
-} = formSelectors.driver
+// const {
+//     medCardId,
+//     // mecNumId,
+//     // mecIssId,
+//     // mecExpId,
+//     medId,
+//     // medListId,
+// } = formSelectors.driver
+
+const TS = selector.id.text
+const mecNumId = TS.mecNumber
+const mecIssId = TS.mecIss
+const mecExpId = TS.mecExp
+const medListId = TS.medList
 
 const $card = $('#apl-card')
 const $help = {
@@ -26,17 +32,17 @@ const $expires = $(`#${mecExpId}`)
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
-$(`#${medCardId}`).on('change', function() {
-    const checked = $(this).prop('checked')
-    let action = 'show', disabled = false
+// $(`#${medCardId}`).on('change', function() {
+//     const checked = $(this).prop('checked')
+//     let action = 'show', disabled = false
 
-    if (checked) {
-        action = 'hide'
-        disabled = true
-    }
+//     if (checked) {
+//         action = 'hide'
+//         disabled = true
+//     }
 
-    $mecRow[action]().find('input').prop('disabled', disabled)
-})
+//     $mecRow[action]().find('input').prop('disabled', disabled)
+// })
 
 //! repetative
 inputEvent(mecIssId, {
@@ -135,20 +141,20 @@ inputEvent(mecNumId, {
 
 
 //! repetative
-const onRadioChange = (id, explId) => {
-    const $radio = $(`#${id}-yes, #${id}-no`)
-    const $expl = $(`#${explId}`)
+// const onRadioChange = (id, explId) => {
+//     const $radio = $(`#${id}-yes, #${id}-no`)
+//     const $expl = $(`#${explId}`)
 
-    $radio.on('change', function() {
-        const value = $(this).val()
-        const action = value == 1 ? 'show' : 'hide'
-        const required = value == 1
+//     $radio.on('change', function() {
+//         const value = $(this).val()
+//         const action = value == 1 ? 'show' : 'hide'
+//         const required = value == 1
 
-        $expl.prop('required', required).parent()[action]()
-    })
-}
+//         $expl.prop('required', required).parent()[action]()
+//     })
+// }
 
-onRadioChange(medId, medListId)
+// onRadioChange(medId, medListId)
 
 inputEvent(medListId, { strip: true })
 

@@ -8,7 +8,6 @@ import db from '../settings/mysql.mjs'
 
 /* Registry */
 import length from '../../client/global/modules/registry/length.mjs'
-import { formSelectors } from '../../client/global/modules/registry/selectors.mjs'
 
 /* Tools */
 import Site from '../tools/core/site.mjs'
@@ -306,7 +305,6 @@ router.get('/authenticate', async (req, res) => {
             hbs.script = `$('form').submit()`
         }
 
-        hbs.formId = formSelectors.user.authFormId
         hbs.input = {
             token: UserForm.token.text.input({ placeholder: 'Token', value }),
         }

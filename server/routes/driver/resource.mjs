@@ -129,3 +129,5 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
 
 
 export default router
+
+export { validateApplicant, validateApplicantLogin }
