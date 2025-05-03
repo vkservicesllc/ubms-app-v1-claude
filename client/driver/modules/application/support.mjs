@@ -33,7 +33,7 @@ export const onSubmit = ($form, $help, $submit, $card, cb) => {
     })
 }
 
-export const onYesNoRadioChange = (id, explId) => { console.log(id)
+export const onYesNoRadioChange = (id, explId) => {
     const $radio = $(`${id.yes}, ${id.no}`)
     const $expl = $(explId)
 
