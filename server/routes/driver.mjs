@@ -300,8 +300,8 @@ router.get('/application/:param?', async (req, res, next) => {
         if (step >= 2) { /* MEDICAL CARD */
             hbs.button.one = buttonProps.save
             hbs.accordion.one = accordionProps.finished
-            hbs.medCard = application.dl.commercial === false
-            hbs.medCardDisplay = hbs.medCard && application.medCard === false ? ' style="display: none;"' : ''
+            hbs.medCard = application.dl.commercial === 0
+            hbs.medCardDisplay = ''
 
             const values = {
                 mecIss: application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('MM/DD/YYYY') : null,
@@ -323,6 +323,16 @@ router.get('/application/:param?', async (req, res, next) => {
             options.underMeds.radio.yes.input.checked = application.underMeds === 1
             options.underMeds.radio.no.input.checked = application.underMeds === 0
             options.medList.text.label.content = 'List medications <small>(names only)</small>'
+
+            if (hbs.medCard && application.medCard === false) {
+                hbs.medCardDisplay = ' style="display: none;"'
+
+                const fields = Object.keys(values).filter(key => !['medList'].includes(key))
+                fields.forEach(prop => { //! ...when Med Card Form has text input ONLY
+                    options[prop].text.input.value = null
+                    options[prop].text.input.disabled = true
+                })
+            }
         }
 
         hbs.form = new ApplicationForm(options)

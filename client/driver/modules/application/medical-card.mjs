@@ -3,6 +3,7 @@ import { check, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text
+const noMecId = selector.id.checkbox.noMec
 const mecNumId = TS.mecNumber
 const mecIssId = TS.mecIss
 const mecExpId = TS.mecExp
@@ -24,17 +25,17 @@ const $expires = $(mecExpId)
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
-// $(`#${medCardId}`).on('change', function() {
-//     const checked = $(this).prop('checked')
-//     let action = 'show', disabled = false
+$(noMecId).on('change', function() {
+    const checked = $(this).prop('checked')
+    let action = 'show', disabled = false
 
-//     if (checked) {
-//         action = 'hide'
-//         disabled = true
-//     }
+    if (checked) {
+        action = 'hide'
+        disabled = true
+    }
 
-//     $mecRow[action]().find('input').prop('disabled', disabled)
-// })
+    $mecRow[action]().find('input').prop('disabled', disabled)
+})
 
 //! repetative
 inputEvent(mecIssId, {
