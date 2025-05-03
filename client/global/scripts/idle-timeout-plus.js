@@ -13,7 +13,8 @@ jQuery(document).ready(() => {
 
             const warnTimeLimit = 30
             const idleTimeLimit = maxAge / 1000 - warnTimeLimit
-            const keepAliveUrl = `${path}/keep-alive`
+            const keepAliveUrl = `${path}/keep-alive?_=${new Date().getTime()}`
+
             const keepAliveInterval = idleTimeLimit / 2
 
             IdleTimeoutPlus.start({
