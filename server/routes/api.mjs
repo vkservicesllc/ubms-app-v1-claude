@@ -30,7 +30,10 @@ router.post('/login/validation', async (req, res) => {
 })
 
 
-router.get('/session/keep-alive', User.verify, (req, res) => res.send('OK'))
+router.get('/session/keep-alive', User.verify, (req, res) => {
+    if (req.session) req.session.touch()
+    return res.sendStatus(204)
+})
 
 
 router.post('/session/:prop', User.verify, (req, res) => {
