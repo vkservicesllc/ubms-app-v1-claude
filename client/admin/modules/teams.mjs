@@ -205,10 +205,11 @@ const displayTeams = () => {
             let i = 0, html = ''
 
             for (const [ idx, row ] of data.entries()) {
-                const { _id, name, description, catId, count } = row
+                const { _id, name, description, catId, count, settings } = row
                 const { companies, users } = count
                 const companyStyle = `is-${companies ? 'primary' : 'danger'}`
                 const userStyle = `is-${users ? 'primary' : 'danger'}`
+                const cdl = settings?.drivers?.cdl ? '<span class="tag" style="font-size: .65em;"><strong class="has-text-grey">CDL enforced</strong></span>' : ''
 
                 if (i === 0) html += '<div class="columns">'
 
@@ -234,7 +235,9 @@ const displayTeams = () => {
                 html += `<div><a class="has-text-grey team-profile" data-team-id="${_id}"><i class="fas fa-briefcase"></i></a></div>`
                 html += `<div><a class="has-text-grey team-settings" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
 
-                html += '</div></div></div></div>'
+                html += '</div>'
+                if (cdl) html += `${cdl}`
+                html += '</div></div></div>'
 
                 if (i === 4 || idx === data.length) {
                     html += '</div>'

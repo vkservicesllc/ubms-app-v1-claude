@@ -34,6 +34,7 @@ class TeamForm {
     static teamName = createForm({
         selector,
         target: 'name',
+        name: 'name',
         maxLength: length.team.name.max,
         required,
         label: 'Name',
