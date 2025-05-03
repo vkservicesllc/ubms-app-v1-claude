@@ -3,7 +3,6 @@ $.ajax('/api/local-session/current', {
     success(response) {
         setInterval(() => {
             $.ajax('/api/session/keep-alive', { cache: false })
-            console.log('session is being kept alive...')
         }, response.maxAge - 5000)
     },
     error(jqXHR) {
