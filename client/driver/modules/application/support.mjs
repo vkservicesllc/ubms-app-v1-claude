@@ -32,3 +32,16 @@ export const onSubmit = ($form, $help, $submit, $card, cb) => {
         setTimeout(() => $form.unbind().submit(), duration)
     })
 }
+
+export const onYesNoRadioChange = (id, explId) => { console.log(id)
+    const $radio = $(`${id.yes}, ${id.no}`)
+    const $expl = $(explId)
+
+    $radio.on('change', function() {
+        const value = $(this).val()
+        const action = value === 'Y' ? 'show' : 'hide'
+        const disabled = action === 'hide'
+
+        $expl.prop('disabled', disabled).parent()[action]()
+    })
+}

@@ -1,6 +1,6 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
-import { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
@@ -136,24 +136,9 @@ inputEvent(dlEndrsId, { strip: true })
 
 inputEvent(dlRestrId, { strip: true })
 
+onYesNoRadioChange(dlDeniedId, dlDeniedExplId)
 
-//! repetative
-const onRadioChange = (id, explId) => {
-    const $radio = $(`${id.yes}, ${id.no}`)
-    const $expl = $(explId)
-
-    $radio.on('change', function() {
-        const value = $(this).val()
-        const action = value === 'Y' ? 'show' : 'hide'
-        const disabled = action === 'hide'
-
-        $expl.prop('disabled', disabled).parent()[action]()
-    })
-}
-
-onRadioChange(dlDeniedId, dlDeniedExplId)
-
-onRadioChange(dlRevokedId, dlRevokedExplId)
+onYesNoRadioChange(dlRevokedId, dlRevokedExplId)
 
 inputEvent(dlDeniedExplId, { strip: true })
 

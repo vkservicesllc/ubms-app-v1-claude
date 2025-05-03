@@ -1,20 +1,12 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import { check, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-
-// const {
-//     medCardId,
-//     // mecNumId,
-//     // mecIssId,
-//     // mecExpId,
-//     medId,
-//     // medListId,
-// } = formSelectors.driver
 
 const TS = selector.id.text
 const mecNumId = TS.mecNumber
 const mecIssId = TS.mecIss
 const mecExpId = TS.mecExp
+const underMedsId = selector.id.radio.underMeds
 const medListId = TS.medList
 
 const $card = $('#apl-card')
@@ -27,8 +19,8 @@ const $mecRow = $('#driver-med-card-fields')
 const $submit = $('#mec-submit')
 const $form = $('#mec-form')
 
-const $issued = $(`#${mecIssId}`)
-const $expires = $(`#${mecExpId}`)
+const $issued = $(mecIssId)
+const $expires = $(mecExpId)
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
@@ -139,22 +131,7 @@ inputEvent(mecNumId, {
     },
 })
 
-
-//! repetative
-// const onRadioChange = (id, explId) => {
-//     const $radio = $(`#${id}-yes, #${id}-no`)
-//     const $expl = $(`#${explId}`)
-
-//     $radio.on('change', function() {
-//         const value = $(this).val()
-//         const action = value == 1 ? 'show' : 'hide'
-//         const required = value == 1
-
-//         $expl.prop('required', required).parent()[action]()
-//     })
-// }
-
-// onRadioChange(medId, medListId)
+onYesNoRadioChange(underMedsId, medListId)
 
 inputEvent(medListId, { strip: true })
 

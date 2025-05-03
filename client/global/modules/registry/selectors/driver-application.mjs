@@ -91,7 +91,6 @@ const selector = {
         },
         checkbox: {
             noMec: 'no-med-card',
-            medTaken: 'medicine-taken',
         },
     },
 }

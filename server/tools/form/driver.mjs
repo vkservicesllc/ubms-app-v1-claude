@@ -214,6 +214,7 @@ class ApplicationForm {
     static statusExp = createDateForm({
         selector: appSelector,
         target: 'statusExp',
+        name: 'statusExpiresOn',
         required,
         disabled,
         label: 'Status Expires on',

@@ -268,10 +268,10 @@ class Application {
                 })
                 if (data.addrSince) {
                     if (dateAfter(data.addrSince, 3, 'years', this.finishedAt)) {
-                        if (this.step == 1) data.step = 0
+                        if (this.step === 1) data.step = 0
                         data.addrEnough = false
                     } else {
-                        if (this.step == 0) data.step = 1
+                        if (this.step === 0) data.step = 1
                         data.addrEnough = true
                     }
                 }
@@ -285,15 +285,16 @@ class Application {
             case 'driver-license':
                 target = 'aplDLs'
                 idProp = 'aplId'
+
                 const checkExpl = data => {
                     if (
-                        (data['DL_denied'] == '1' && !data['DL_deniedExpl']) ||
-                        (data['DL_revoked'] == '1' && !data['DL_revokedExpl'])
+                        (data['denied'] && !data['deniedExpl']) ||
+                        (data['revoked'] && !data['revokedExpl'])
                     ) return 'Data Submission Error: Explanation not provided'
                 }
 
-                if (data['DL_denied'] == '0') data['DL_deniedExpl'] = null
-                if (data['DL_revoked'] == '0') data['DL_revokedExpl'] = null
+                if (!data['denied']) data['deniedExpl'] = null
+                if (!data['revoked']) data['revokedExpl'] = null
 
                 if (!this.dl) {
                     data = processData(data)

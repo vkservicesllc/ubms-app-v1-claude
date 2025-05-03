@@ -70,7 +70,7 @@ class Carrier extends Company {
                 if (!targets.includes(target)) target = targets[0]
 
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
-                const idProp = target == targets[0] ? 'id' : 'carrierId'
+                const idProp = target === targets[0] ? 'id' : 'carrierId'
 
                 let log = (await mysql.execute(query[target].select(fields, {
                     match: { [idProp]: Carrier.matchIdHash(this._id) },
@@ -85,7 +85,7 @@ class Carrier extends Company {
             this.flush = async target => {
                 if (!targets.includes(target)) target = targets[0]
 
-                const idProp = target == targets[0] ? 'id' : 'carrierId'
+                const idProp = target === targets[0] ? 'id' : 'carrierId'
 
                 await mysql.execute(query[target].update({ updateLog: null }, {
                     [idProp]: Carrier.matchIdHash(this._id),
@@ -147,7 +147,7 @@ class Carrier extends Company {
                     data.ifta.createdBy = data.carrier.createdBy
 
                     const [ result ] = await mysql.execute(query.ifta.insert(data.ifta))
-                    if (result.affectedRows == 1) initialized = true
+                    if (result.affectedRows === 1) initialized = true
                     else error = 'DB Error: Stage 2'
 
                     if (!error && Object.keys(data.stateTax).length) {
@@ -155,7 +155,7 @@ class Carrier extends Company {
                         data.stateTax.createdBy = data.carrier.createdBy
 
                         const [ result ] = await mysql.execute(query.stateTax.insert(data.stateTax))
-                        if (result.affectedRows != 1) error = 'DB Error: State 3'
+                        if (result.affectedRows !== 1) error = 'DB Error: State 3'
                     }
                 } else error = 'DB Error: Stage 1'
 
@@ -213,7 +213,7 @@ class Carrier extends Company {
                 if (Object.keys(data.carrier).length) {
                     try {
                         const [ result ] = await mysql.execute(query.carriers.update(data.carrier, { id }))
-                        if (result.affectedRows == 1) modified = true
+                        if (result.affectedRows === 1) modified = true
                     } catch (err) {
                         error = 'DB Error: Stage 1'
                     }
@@ -225,7 +225,7 @@ class Carrier extends Company {
                             carrierId: id,
                             since,
                         }))
-                        if (result.affectedRows == 1) modified = true
+                        if (result.affectedRows === 1) modified = true
                     } catch (err) {
                         error = 'DB Error: Stage 2'
                     }
@@ -234,7 +234,7 @@ class Carrier extends Company {
                 if (!error && Object.keys(data.stateTax).length) {
                     try {
                         const [ result ] = await mysql.execute(query.stateTax.update(data.stateTax, { carrierId: id }))
-                        if (result.affectedRows == 1) modified = true
+                        if (result.affectedRows === 1) modified = true
                     } catch (err) {
                         error = 'DB Error: Stage 3'
                     }
@@ -355,7 +355,7 @@ class Carrier extends Company {
 
         const data = (await mysql.execute(query[target].select(idProp, { match })))[0]
 
-        return { found: data.length == 1 }
+        return { found: data.length === 1 }
     }
 
 
