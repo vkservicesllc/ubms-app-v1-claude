@@ -10,7 +10,30 @@ import Carrier from '../tools/core/carrier.mjs'
 import Driver from '../tools/core/driver.mjs'
 import { capitalizeFirst } from '../../client/global/modules/tools/utils/string.mjs'
 
+export const sessionDetails = (req, res) => {
+    try {
+        const { prop } = req.params
+        let data = {}
 
+        switch (prop) {
+
+            case 'current':
+                const { maxAge, logoutUrl } = res.session
+                data = { maxAge, logoutUrl }
+                break
+
+            default:
+                data = res.session.user[req.params.prop]
+                const { key } = req.query
+                if (key) data = data[key]
+
+        }
+
+        res.send(data)
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+}
 
 
 router.post('/login', User.login)
@@ -36,30 +59,7 @@ router.get('/session/keep-alive', User.verify, (req, res) => {
 })
 
 
-router.post('/session/:prop', User.verify, (req, res) => {
-    try {
-        const { prop } = req.params
-        let data = {}
-
-        switch (prop) {
-
-            case 'current':
-                const { maxAge, logoutUrl } = res.session
-                data = { maxAge, logoutUrl }
-                break
-
-            default:
-                data = res.session.user[req.params.prop]
-                const { key } = req.query
-                if (key) data = data[key]
-
-        }
-
-        res.send(data)
-    } catch (err) {
-        throwErr.server(res, null, err, false)
-    }
-})
+router.post('/session/:prop', User.verify, sessionDetails)
 
 
 router.post('/unique/original/:env', User.verify, async (req, res) => {

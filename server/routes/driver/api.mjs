@@ -9,6 +9,16 @@ import Driver, { Application } from '../../tools/core/driver.mjs'
 /* Validators */
 import { validateApplicantLogin } from './resource.mjs'
 
+/* API */
+import { sessionDetails } from '../api.mjs'
+
+
+
+router.post('/local-session/:prop', (req, res, next) => {
+    if (req.session.application) return next()
+
+    return throwErr.auth(res)
+}, sessionDetails)
 
 
 router.post('/application/login/:formId', validateApplicantLogin, async (req, res) => {
