@@ -1,13 +1,6 @@
 import getIdFromUrl from '../tools/id.mjs'
-import length from '../registry/length.mjs'
-import { formSelectors } from '../registry/selectors.mjs'
 import { inputEvent } from '../events/form.mjs'
 import selector from '../registry/selectors/carrier.mjs'
-
-// const { mcId, usdotId, scacId, iftaId, irpId, efsId, fleetOneId, transfloId } = formSelectors.carrier
-// const numberIds = [ mcId, usdotId, scacId, iftaId, irpId, efsId, fleetOneId, transfloId ]
-
-// Object.keys(length.carrier.permit.max).forEach(key => numberIds.push(formSelectors.carrier.permit(key)))
 
 const $modal = $('#carrier-state-permits-modal')
 const $submit = $('#credentials-submit')
