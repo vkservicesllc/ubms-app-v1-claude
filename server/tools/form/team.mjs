@@ -12,11 +12,15 @@ import {
 } from './reusable.mjs'
 import { createCategoryForm, createBusNameForm, createCoTypeForm } from './company.mjs'
 
+import Team from '../core/team.mjs'
 import selector from '../../../client/global/modules/registry/selectors/team.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 
 const required = true, disabled = true
+
+const deptData = {}
+Team.deptList.forEach((name, prop) => deptData[prop] = name)
 
 
 class TeamForm {
@@ -29,6 +33,18 @@ class TeamForm {
     static profileId = createIdForm({ selector, target: 'profileId' })
     static settingsId = createIdForm({ selector, target: 'settingsId' })
     static category = createCategoryForm(selector)
+
+    static crrDept = createForm({
+        selector,
+        target: 'crrDept',
+        group: 'department',
+        type: 'select/radio',
+        name: 'crrDeptId',
+        data: deptData,
+        keys: ['zero', 'one'],
+        required, //! temporarily required since we don't have any other category but "carrier"
+        label: 'Department',
+    })
 
     //* "name" can not be used as an own property
     static teamName = createForm({

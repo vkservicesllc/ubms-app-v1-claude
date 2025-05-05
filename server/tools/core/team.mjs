@@ -29,6 +29,10 @@ class Team {
     constructor(data = {}, light = false) {
         this._id = data._id
         this.catId = data.catId
+        if (this.catId === 'crr') {
+            this.crrDeptId = data.crrDeptId
+            this.crrDept = Team.deptList[this.crrDeptId]
+        }
         this.name = data.name
         this.description = data.description
         if (data.busName && data.coType)
@@ -364,7 +368,7 @@ class Team {
                 const id = await this.id()
                 const log = await this.log()
 
-                try {
+                try {console.log(query.teams.delete({ id }))
                     const [ result ] = await mysql.execute(query.teams.delete({ id }))
                     if (result.affectedRows > 0) deleted = true
                 } catch(err) {
@@ -391,6 +395,9 @@ class Team {
     static hashId = (field = 'id') => hash(field, Team.#algorithm)
 
     static matchIdHash = value => matchHash(value, Team.#algorithm)
+
+
+    static deptList = ['Truck Load', 'Expedite']
 
 
     static create = async (session, data) => {
@@ -428,15 +435,19 @@ class Team {
         if (!filter) filter = {}
 
         const { _id, id, name } = params
-        const { catId } = filter
-        const match = { id, name, catId }
+        const { catId, deptId } = filter
+        const match = { id, name, catId, deptId }
         if (!id) match.id = Team.matchIdHash(_id)
 
-        const join = [ 'teamId', 'id' ]
+        const join = ['teamId', 'id']
         const batch = [
             {
                 table: 'teams',
-                fields: [ Team.hashId(), 'catId', 'name', 'description', 'settings' ],
+                fields: [
+                    Team.hashId(), 'catId',
+                    'crrDeptId',
+                    'name', 'description', 'settings',
+                ],
                 match,
                 group: 'id',
             },
@@ -452,13 +463,24 @@ class Team {
             },
             {
                 table: 'teams_companies',
-                fields: [ { countDist: [ 'companyId', 'companyCount' ] } ],
+                fields: [ { countDist: ['companyId', 'companyCount'] } ],
                 join,
             },
             {
                 table: 'teams_users',
-                fields: [ { countDist: [ 'userId', 'userCount' ] } ],
+                fields: [ { countDist: ['userId', 'userCount', {
+                    case: {
+                        db: db.online,
+                        table: 'users',
+                        match: { deletedBy: null },
+                    },
+                }] } ],
                 join,
+            },
+            {
+                db: db.online,
+                table: 'users',
+                join: ['id', 'userId', { table: 'teams_users' }],
             },
         ]
 

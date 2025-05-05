@@ -352,10 +352,18 @@ class Query {
             }
 
             else if ('countDist' in field ) {
-                [ field, resField ] = field.countDist
-
+                let options
+                [ field, resField, options ] = field.countDist
                 field = Query.#_field(field, table)
-                field = `COUNT(DISTINCT ${field})`
+
+                if (options?.case) {
+                    const { db, table, match } = options.case
+                    const caseTable = Query.#_table(table, db)
+                    const caseMatch = Query.#match(match, caseTable)
+
+                    field = `COUNT(DISTINCT CASE WHEN ${caseMatch} THEN ${field} END)`
+                } else
+                    field = `COUNT(DISTINCT ${field})`
             }
 
             else if ('countCase' in field) {

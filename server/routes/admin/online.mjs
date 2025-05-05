@@ -127,10 +127,10 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
         hbs = hbs.set(key)
 
         const fields = [
-            'teamName', 'category', 'desc',
+            'teamName', 'category', 'desc', 'crrDept',
             'busName', 'coType',
             'phone', 'email', 'website',
-            'address1', 'address2', 'addrZip', 'addrCity', 'addrState'
+            'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
         ]
         const options = updateFormOptions({}, TeamForm, fields, {
             labelClass,
@@ -139,6 +139,9 @@ router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
             textareaClass: 'textarea',
             tabs: 13,
         })
+
+        //! Temporary
+        options.category.select.input.value = 'crr'
 
         hbs.form = new TeamForm(options)
         hbs.descMaxChars = inputLength.team.desc.max

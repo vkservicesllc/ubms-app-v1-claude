@@ -9,6 +9,12 @@ const selector = {
             address: 'address',
             contacts: 'contacts',
         },
+        select: {
+            department: 'department',
+        },
+        radio: {
+            department: 'department',
+        },
     },
     id: {
         hidden: {
@@ -30,9 +36,16 @@ const selector = {
             addrZip: 'address-zip',
         },
         select: {
+            department: 'department',
             category: 'category',
             coType: 'company-type',
             addrState: 'address-state',
+        },
+        radio: {
+            crrDept: {
+                zero: 'department-zero',
+                one: 'department-one',
+            },
         },
     },
 }

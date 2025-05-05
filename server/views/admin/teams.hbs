@@ -23,7 +23,7 @@
                                             </div>
                                             <p class="help" id="team-name-tip"></p>
                                         </div>
-                                        <div class="field">
+                                        <div class="field" style="display: none;">
                                             {{{form.category.select.label}}}
                                             <div class="control has-icons-left">
                                                 <div class="select is-fullwidth">
@@ -32,6 +32,22 @@
                                                 <span class="icon is-small is-left" id="team-category-select-icon">
                                                     <i class="fas fa-file-circle-question"></i>
                                                 </span>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            {{!-- Temporarily visible and required until we have more categories --}}
+                                            {{{form.crrDept.radio.label}}}
+                                            <div class="control">
+                                                <label class="radio">
+                                                    {{{form.crrDept.radio.zero.input}}}
+                                                    {{{form.crrDept.radio.zero.label}}}
+                                                </label>
+                                            </div>
+                                            <div class="control">
+                                                <label class="radio">
+                                                    {{{form.crrDept.radio.one.input}}}
+                                                    {{{form.crrDept.radio.one.label}}}
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
