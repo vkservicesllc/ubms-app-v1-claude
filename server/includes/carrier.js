@@ -84,8 +84,62 @@ module.exports = {
         },
     },
 
+    'drivers.pre-applications': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
     'drivers.applications': {
         external: [ ...online.external, 'jquery.masked-input', 'datatables.fomantic-ui', 'moment' ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers.pre-employments': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers.hired': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers.pay-agreements': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers.leaving': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers.former': {
+        external: [ ...online.external ],
         internal: {
             css: [ ...online.internal.css ],
             js: [ ...online.internal.js ],

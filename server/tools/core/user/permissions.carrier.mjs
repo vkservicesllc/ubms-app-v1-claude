@@ -31,6 +31,10 @@ export default {
                 name: 'Leaving Process',
                 privileges: '*',
             },
+            'lft': {
+                name: 'Former Employees',
+                privileges: [ 0, 4 ],
+            },
         },
     },
     'f:drv': {
