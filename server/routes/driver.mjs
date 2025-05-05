@@ -245,7 +245,6 @@ router.get('/application/:param?', async (req, res, next) => {
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
-            options.position.select.input.data = team.list.drivers.positions
             options.addrState.select.input.options = { valOpt: true }
         }
 
