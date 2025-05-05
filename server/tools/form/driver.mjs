@@ -192,7 +192,7 @@ class ApplicationForm {
     static phone = createPhoneForm({ selector: appSelector, target: 'phone', required, label: 'US Phone' })
     static email = createEmailForm({ selector: appSelector, target: 'email', required })
 
-    static addrSince = createSinceForm({ selector: appSelector, target: 'addrSince', label: 'Living since' })
+    static addrSince = createSinceForm({ selector: appSelector, target: 'addrSince', name: 'addrSince', label: 'Living since' })
     static address1 = createAddressForm({ selector: appSelector, target: 'address1' })
     static address2 = createAddressForm({ selector: appSelector, target: 'address2' }, { idx: 2 })
     static addrZip = createAddrZipForm({ selector: appSelector, target: 'addrZip' })
