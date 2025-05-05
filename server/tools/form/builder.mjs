@@ -198,7 +198,7 @@ const createForm = (input = {}) => {
     if (validator !== false) form.validate = () => {
         let chain = body(name).trim()
 
-        if (required && !disabled)
+        if (required && !disabled) //! Useless in case the default state is disabled (will use it for now)
             chain = chain
                 .notEmpty()
                 .withMessage(`"${name}" field can not be empty`)

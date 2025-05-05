@@ -655,6 +655,12 @@ export const companyById = async (req, res) => {
                         visibility.mailAddress = ''
                     }
 
+                    if (mailAddrZip)
+                        Object.keys(values).slice(-5).forEach(prop => {
+                            const input = options[prop]?.text?.input || options[prop].select.input
+                            input.disabled = false
+                        })
+
                     const { content, style } = submitProps.address
                     button.submit.address = submitButton('address-submit', content, style)
                 }

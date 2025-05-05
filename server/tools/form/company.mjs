@@ -160,16 +160,16 @@ class CompanyForm {
     static addrCity = createAddrCityForm({ selector: companySelector }, false)
     static addrState = createAddrStateForm({ selector: companySelector, options: { valOpt: true } }, false)
 
-    static mailAddress1 = createAddressForm({ selector: companySelector }, { mail: true })
+    static mailAddress1 = createAddressForm({ selector: companySelector, disabled }, { mail: true })
 
     static mailAddress2 = createAddressForm(
-        { selector: companySelector },
+        { selector: companySelector, disabled },
         { idx: 2, mail: true, business: true }
     )
 
-    static mailAddrZip = createAddrZipForm({ selector: companySelector }, true)
-    static mailAddrCity = createAddrCityForm({ selector: companySelector }, true)
-    static mailAddrState = createAddrStateForm({ selector: companySelector, options: { valOpt: true } }, true)
+    static mailAddrZip = createAddrZipForm({ selector: companySelector, disabled }, true)
+    static mailAddrCity = createAddrCityForm({ selector: companySelector, disabled }, true)
+    static mailAddrState = createAddrStateForm({ selector: companySelector, disabled, options: { valOpt: true } }, true)
 
     static phone = createPhoneForm({ selector: companySelector, required })
     static fax = createPhoneForm({ selector: companySelector, target: 'fax', name: 'fax', label: 'Fax' })
