@@ -53,6 +53,8 @@ router.get('/', (req, res) => {
             },
         }
 
+        hbs.refreshToUrl = apps.carrier.address
+
         res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)
