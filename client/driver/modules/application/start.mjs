@@ -32,11 +32,19 @@ const $help = {
     statusExp: $('#status-exp-help'),
     form: $('#form-help'),
 }
+const $gender = $(genderId)
 const $addrState = $(stateId)
 const $status = $('.status-radio')
 const $expiration = $(statusExpId)
+const $position = $(positionId)
+const $positionIntro = $('#position-intro')
+const $section = $('#application-form')
+const $label = {
+    position: $(`label[for=${positionId.replace('#', '')}]`),
+}
 const $submit = $('[type=submit]')
 const $form = $('#apl-start-form')
+let positionDetermined = false
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
@@ -83,7 +91,15 @@ if (aplStatus === 'started') {
     }
 })
 
+if ($gender.val()) $gender.find('option[value=""]').remove()
 if ($addrState.val()) $addrState.find('option[value=""]').remove()
+if ($position.val()) {
+    $position.find('option[value=""]').remove()
+    $positionIntro.hide()
+    $section.show()
+
+    positionDetermined = true
+} else $label.position.hide()
 
 const duration = 750
 $card.fadeIn(duration)
@@ -168,7 +184,7 @@ nameEvent(lastNameId, { sfxId: suffixId, onInput,
 
 selectEvent(suffixId, { onChange })
 
-selectEvent(genderId, { onChange })
+selectEvent(genderId, { fill: true, onChange })
 
 ssnEvent(ssnId, { onInput, onChange, onBlur })
 
@@ -322,7 +338,22 @@ inputEvent(statusExpId, {
     },
 })
 
-selectEvent(positionId, { onChange })
+selectEvent(positionId, { fill: true, onChange(position, $position) {
+    if (!positionDetermined) {
+        positionDetermined = true
+
+        $card.fadeOut(duration)
+        setTimeout(() => {
+            $position.find('option[value=""]').remove()
+            $positionIntro.hide()
+            $section.show()
+            $label.position.show()
+            $card.fadeIn(duration)
+        }, duration)
+    }
+
+    onChange(position, $position)
+} })
 
 
 $form.submit(function(evt) {

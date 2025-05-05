@@ -19,6 +19,7 @@
                 <div class="card-text py-2" id="form-card">
                     <p class="text-start my-0 px-1"><small class="text-muted apl-label">Application ID:</small> {{formId}}</p>
                     <p class="text-start my-0 px-1"><small class="text-muted apl-label">Applicant:</small> {{applicantName}}</p>
+                    <p class="text-start my-0 px-1"><small class="text-muted apl-label">Position:</small> {{position}}</p>
                     <p class="text-start my-0 px-1"><small class="text-muted apl-label">Started on:</small> {{startedAt}}</p>
                     <div class="progress mt-2">
                         <div class="progress-bar bg-success" style="width: {{progress}}%;">{{progress}}%</div>
@@ -159,19 +160,19 @@
                         {{#if (eq addrEnough false)}}
                         <div class="accordion-item">
                             <h2 class="accordion-header"></h2>
-                            <div id="collapse-0.2" class="text-start accordion-collapse collapse" data-bs-parent="#apl-accordion"></div>
+                            <div id="collapse-0.2" class="text-start accordion-collapse collapse{{accordion.one.body}}" data-bs-parent="#apl-accordion"></div>
                         </div>
                         {{/if}}
 
                         {{#if (gte step 1)}}
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button{{accordion.one.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1">
-                                    <i class="{{accordion.one.state}} accordion-button-state"></i>
+                                <button class="accordion-button{{accordion.two.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1">
+                                    <i class="{{accordion.two.state}} accordion-button-state"></i>
                                     <strong>{{idx steps 1}}</strong>
                                 </button>
                             </h2>
-                            <div id="collapse-1" class="text-start accordion-collapse collapse{{accordion.one.body}}" data-bs-parent="#apl-accordion">
+                            <div id="collapse-1" class="text-start accordion-collapse collapse{{accordion.two.body}}" data-bs-parent="#apl-accordion">
                                 <div class="accordion-body pt-1">
                                     <form id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
                                         <div class="row g-3 my-1">
@@ -265,7 +266,7 @@
                                         <div class="row g-3 my-2">
                                             <div class="col-md-4">
                                                 <div class="d-grid">
-                                                    <button type="submit" class="btn btn-{{button.one.class}}" id="dl-submit">{{button.one.text}}</button>
+                                                    <button type="submit" class="btn btn-{{button.two.class}}" id="dl-submit">{{button.three.text}}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -279,12 +280,12 @@
                         {{#if (gte step 2)}}
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button{{accordion.two.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-2">
-                                    <i class="{{accordion.two.state}} accordion-button-state"></i>
+                                <button class="accordion-button{{accordion.three.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-2">
+                                    <i class="{{accordion.three.state}} accordion-button-state"></i>
                                     <strong>{{idx steps 2}}</strong>
                                 </button>
                             </h2>
-                            <div id="collapse-2" class="text-start accordion-collapse collapse{{accordion.two.body}}" data-bs-parent="#apl-accordion">
+                            <div id="collapse-2" class="text-start accordion-collapse collapse{{accordion.three.body}}" data-bs-parent="#apl-accordion">
                                 <div class="accordion-body">
                                     <form id="mec-form" action="{{actionUrl.mec}}" method="POST" autocomplete="off">
                                         {{#if (eq medCard true)}}
@@ -336,7 +337,7 @@
                                         <div class="row g-3 my-2">
                                             <div class="col-md-4">
                                                 <div class="d-grid">
-                                                    <button type="submit" class="btn btn-{{button.two.class}}" id="mec-submit">{{button.two.text}}</button>
+                                                    <button type="submit" class="btn btn-{{button.three.class}}" id="mec-submit">{{button.three.text}}</button>
                                                 </div>
                                             </div>
                                         </div>

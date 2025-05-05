@@ -138,7 +138,6 @@ const table = $('#driver-apl-table').DataTable({
             title: 'Position',
             searchable: false,
             orderable: false,
-            defaultContent: '<span style="color: pink; font-size: .9em;">Undecided</span>',
             render(data) {
                 return positions[data]
             },
@@ -249,7 +248,6 @@ const table = $('#driver-apl-table').DataTable({
             user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
         }
 
-        dropdown.position.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='red text user slash icon'></i>"><span class="ui red text">Undecided</span></div>`)
         dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='red text handshake slash icon'></i>"><span class="ui red text">Unassigned</span></div>`)
         dropdown.user.find('.menu').append(`<div class="item" data-value="null" data-text="<span class='ui red text'><i>Not assigned to User</span>"><span class="ui red text">Unassigned</span></div>`)
 

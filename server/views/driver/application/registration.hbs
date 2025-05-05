@@ -62,134 +62,138 @@
                     <button class="btn btn-success" id="confirm">I Understand & Agree</button>
                 </div>
                 <div class="card-text text-start px-2" id="form-card" style="display: none;">
-                    <form id="apl-start-form" action="{{formUrl}}" method="POST" autocomplete="off">
-                        <h6 class="text-secondary mt-4 my-1">Legal Name (per Government ID)</h6>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-6">
-                                {{{form.firstName.text.label}}}
-                                {{{form.firstName.text.input}}}
-                            </div>
-                            <div class="col-md-6">
-                                {{{form.middleName.text.label}}}
-                                {{{form.middleName.text.input}}}
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-6">
-                                {{{form.lastName.text.label}}}
-                                {{{form.lastName.text.input}}}
-                            </div>
-                            <div class="col-md-3">
-                                {{{form.suffix.select.label}}}
-                                {{{form.suffix.select.input}}}
-                            </div>
-                        </div>
-                        <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Personal Identifiers</h6>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-3">
-                                {{{form.gender.select.label}}}
-                                {{{form.gender.select.input}}}
-                            </div>
-                            <div class="col-md-4">
-                                {{{form.dob.text.label}}}
-                                {{{form.dob.text.input}}}
-                                <div class="form-text text-danger" id="dob-help"></div>
-                            </div>
-                            <div class="col-md-5">
-                                {{{form.ssn.text.label}}}
-                                {{{form.ssn.text.input}}}
-                            </div>
-                        </div>
-                        <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Contacts</h6>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-5">
-                                {{{form.phone.text.label}}}
-                                {{{form.phone.text.input}}}
-                            </div>
-                            <div class="col-md-7">
-                                {{{form.email.text.label}}}
-                                {{{form.email.text.input}}}
-                                <div class="form-text text-danger" id="email-help"></div>
-                            </div>
-                        </div>
-                        <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Current / Most Recent Address in the US</h6>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-6">
-                                {{{form.address1.text.label}}}
-                                {{{form.address1.text.input}}}
-                            </div>
-                            <div class="col-md-3">
-                                {{{form.address2.text.label}}}
-                                {{{form.address2.text.input}}}
-                            </div>
-                            <div class="col-md-3">
-                                {{{form.addrZip.text.label}}}
-                                {{{form.addrZip.text.input}}}
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-5">
-                                {{{form.addrCity.text.label}}}
-                                {{{form.addrCity.text.input}}}
-                            </div>
-                            <div class="col-md-3">
-                                {{{form.addrState.select.label}}}
-                                {{{form.addrState.select.input}}}
-                            </div>
-                            <div class="col-md-4">
-                                {{{form.addrSince.text.label}}}
-                                {{{form.addrSince.text.input}}}
-                                <div class="form-text text-danger" id="addr-since-help"></div>
-                            </div>
-                        </div>
-                        <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Qualification</h6>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-12">
-                                <label class="form-label">I certify under penalty of law that:</label>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="confirm-dl" required />
-                                    <label class="form-check-label input-required" for="confirm-dl">
-                                        I have a valid and genuine driver's license
-                                    </label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="confirm-status" required />
-                                    <label class="form-check-label input-required" for="confirm-status">
-                                        I am legally authorized to work in the United States
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-6">
-                                {{!-- <label class="form-label input-required">Immigration Status</label> --}}
-                                {{{form.status.radio.label}}}
-                                <div class="form-check">
-                                    {{{form.status.radio.citizen.input}}}
-                                    {{{form.status.radio.citizen.label}}}
-                                </div>
-                                <div class="form-check">
-                                    {{{form.status.radio.resident.input}}}
-                                    {{{form.status.radio.resident.label}}}
-                                </div>
-                                <div class="form-check">
-                                    {{{form.status.radio.authorized.input}}}
-                                    {{{form.status.radio.authorized.label}}}
-                                </div>
-                            </div>
-                            <div class="col-md-4" style="display: none;">
-                                {{{form.statusExp.text.label}}}
-                                {{{form.statusExp.text.input}}}
-                                <div class="form-text text-danger" id="status-exp-help"></div>
-                            </div>
-                            <div class="col-md-5">
+                    <form class="pt-2" id="apl-start-form" action="{{formUrl}}" method="POST" autocomplete="off">
+                        <p class="pt-3" id="position-intro">Please choose the position you'd like to apply for:<p>
+                        <div class="row g-3 mb-2">
+                            <div class="col-md-6 pt-0">
                                 {{{form.position.select.label}}}
                                 {{{form.position.select.input}}}
                             </div>
                         </div>
-                        <p class="form-text text-danger mt-4" id="form-help" style="display: none;"></p>
-                        <div class="d-grid gap-2 mt-4 mb-2">
-                            <button type="submit" class="btn btn-primary">Start Application</button>
+                        <div id="application-form" style="display: none;">
+                            <h6 class="text-secondary mt-4 my-1">Legal Name (per Government ID)</h6>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-6">
+                                    {{{form.firstName.text.label}}}
+                                    {{{form.firstName.text.input}}}
+                                </div>
+                                <div class="col-md-6">
+                                    {{{form.middleName.text.label}}}
+                                    {{{form.middleName.text.input}}}
+                                </div>
+                            </div>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-6">
+                                    {{{form.lastName.text.label}}}
+                                    {{{form.lastName.text.input}}}
+                                </div>
+                                <div class="col-md-3">
+                                    {{{form.suffix.select.label}}}
+                                    {{{form.suffix.select.input}}}
+                                </div>
+                            </div>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Personal Identifiers</h6>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-3">
+                                    {{{form.gender.select.label}}}
+                                    {{{form.gender.select.input}}}
+                                </div>
+                                <div class="col-md-4">
+                                    {{{form.dob.text.label}}}
+                                    {{{form.dob.text.input}}}
+                                    <div class="form-text text-danger" id="dob-help"></div>
+                                </div>
+                                <div class="col-md-5">
+                                    {{{form.ssn.text.label}}}
+                                    {{{form.ssn.text.input}}}
+                                </div>
+                            </div>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Contacts</h6>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-5">
+                                    {{{form.phone.text.label}}}
+                                    {{{form.phone.text.input}}}
+                                </div>
+                                <div class="col-md-7">
+                                    {{{form.email.text.label}}}
+                                    {{{form.email.text.input}}}
+                                    <div class="form-text text-danger" id="email-help"></div>
+                                </div>
+                            </div>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Current / Most Recent Address in the US</h6>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-6">
+                                    {{{form.address1.text.label}}}
+                                    {{{form.address1.text.input}}}
+                                </div>
+                                <div class="col-md-3">
+                                    {{{form.address2.text.label}}}
+                                    {{{form.address2.text.input}}}
+                                </div>
+                                <div class="col-md-3">
+                                    {{{form.addrZip.text.label}}}
+                                    {{{form.addrZip.text.input}}}
+                                </div>
+                            </div>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-5">
+                                    {{{form.addrCity.text.label}}}
+                                    {{{form.addrCity.text.input}}}
+                                </div>
+                                <div class="col-md-3">
+                                    {{{form.addrState.select.label}}}
+                                    {{{form.addrState.select.input}}}
+                                </div>
+                                <div class="col-md-4">
+                                    {{{form.addrSince.text.label}}}
+                                    {{{form.addrSince.text.input}}}
+                                    <div class="form-text text-danger" id="addr-since-help"></div>
+                                </div>
+                            </div>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Qualification</h6>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-12">
+                                    <label class="form-label">I certify under penalty of law that:</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="confirm-dl" required />
+                                        <label class="form-check-label input-required" for="confirm-dl">
+                                            I have a valid and genuine driver's license
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="confirm-status" required />
+                                        <label class="form-check-label input-required" for="confirm-status">
+                                            I am legally authorized to work in the United States
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-6">
+                                    {{{form.status.radio.label}}}
+                                    <div class="form-check">
+                                        {{{form.status.radio.citizen.input}}}
+                                        {{{form.status.radio.citizen.label}}}
+                                    </div>
+                                    <div class="form-check">
+                                        {{{form.status.radio.resident.input}}}
+                                        {{{form.status.radio.resident.label}}}
+                                    </div>
+                                    <div class="form-check">
+                                        {{{form.status.radio.authorized.input}}}
+                                        {{{form.status.radio.authorized.label}}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4" style="display: none;">
+                                    {{{form.statusExp.text.label}}}
+                                    {{{form.statusExp.text.input}}}
+                                    <div class="form-text text-danger" id="status-exp-help"></div>
+                                </div>
+                            </div>
+                            <p class="form-text text-danger mt-4" id="form-help" style="display: none;"></p>
+                            <div class="d-grid gap-2 mt-4 mb-2">
+                                <button type="submit" class="btn btn-primary">Start Application</button>
+                            </div>
                         </div>
                     </form>
                 </div>

@@ -95,6 +95,7 @@ export const createDlEndrsForm = (props = {}) => createForm({
     name: 'endorsement',
     maxLength: length.driverLicense.endorsement.max,
     label: 'Endorsements',
+    disabled,
     ...props,
 })
 
@@ -181,6 +182,17 @@ class ApplicationForm {
         label: 'PIN',
     })
 
+    static position = createForm({
+        selector: appSelector,
+        target: 'position',
+        group: 'position',
+        type: 'select/radio',
+        name: 'position',
+        emptyOpt,
+        required,
+        label: 'Position',
+    })
+
     static firstName = createPersonNameForm('first', { selector: appSelector, group: 'name' })
     static middleName = createPersonNameForm('middle', { selector: appSelector, group: 'name' })
     static lastName = createPersonNameForm('last', { selector: appSelector, group: 'name' })
@@ -218,16 +230,6 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Status Expires on',
-    })
-
-    static position = createForm({
-        selector: appSelector,
-        target: 'position',
-        group: 'position',
-        type: 'select/radio',
-        name: 'position',
-        emptyOpt: 'Decide later...',
-        label: 'Desired Position',
     })
 
     static dlCommercial = createDlCommercialFrom({ selector: appSelector })

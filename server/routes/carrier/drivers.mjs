@@ -122,6 +122,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
             hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=${req.session.team}`
 
             const driverPositions = team.list.drivers.positions
+console.log(driverPositions)
             let suffixItems = '', genderItems = '', positionItems = '', addrStateItems = ''
             const t = `\t`.repeat(11)
 

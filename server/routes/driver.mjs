@@ -118,6 +118,7 @@ router.get('/application/:param?', async (req, res, next) => {
             options.status.radio[prop].input.class = 'form-check-input status-radio'
             options.status.radio[prop].label.class = 'form-check-label'
         }
+        options.position.select.label.content = 'Desired Position'
 
         hbs.form = new ApplicationForm(options)
 
@@ -287,6 +288,7 @@ router.get('/application/:param?', async (req, res, next) => {
                 options.dlCommercial.radio.yes.input.checked = true
                 options.dlCommercial.radio.yes.input.disabled = true
                 options.dlCommercial.radio.no.input.disabled = true
+                options.dlEndrs.text.input.disabled = false
             } else {
                 options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === 1
                 options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === 0
@@ -298,8 +300,8 @@ router.get('/application/:param?', async (req, res, next) => {
         }
 
         if (step >= 2) { /* MEDICAL CARD */
-            hbs.button.one = buttonProps.save
-            hbs.accordion.one = accordionProps.finished
+            hbs.button.two = buttonProps.save
+            hbs.accordion.two = accordionProps.finished
             hbs.medCard = application.dl.commercial === 0
             hbs.medCardDisplay = ''
 
@@ -342,6 +344,7 @@ router.get('/application/:param?', async (req, res, next) => {
         hbs.formId = formId
         hbs.addrEnough = application.address.enough
         hbs.applicantName = application.fullName
+        hbs.position = application.position[1]
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') //! Test time accuracy on live server
 
         res.render(key, hbs)

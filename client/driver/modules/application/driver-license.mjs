@@ -4,6 +4,7 @@ import { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from '
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
+const dlCommercialClass = selector.class.radio.dlCategory
 const dlStateId = SS.dlState
 const dlNumId = TS.dlNumber
 const dlClassId = TS.dlClass
@@ -37,6 +38,17 @@ for (const key in $expl)
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
+const $endorsement = $(dlEndrsId)
+if ($endorsement.prop('disabled')) $endorsement.parent().hide()
+
+
+inputEvent(dlCommercialClass, {
+    onChange(value) {
+        const action = { 'Y': 'show', 'N': 'hide' }[value]
+
+        $endorsement.prop('disabled', value === 'N').parent()[action]()
+    },
+})
 
 selectEvent(dlStateId, { fill: true, onChange })
 
@@ -145,4 +157,4 @@ inputEvent(dlDeniedExplId, { strip: true })
 inputEvent(dlRevokedExplId, { strip: true })
 
 
-onSubmit($form, $help, $submit, $card, () => $(selector.class.radio.dlCategory).prop('disabled', false))
+onSubmit($form, $help, $submit, $card, () => $(dlCommercialClass).prop('disabled', false))
