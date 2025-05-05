@@ -13,10 +13,10 @@ import DriverForm, { ApplicationForm } from '../../tools/form/driver.mjs'
 const validateApplicant = [], validateApplicantProfile = [], validateApplicantAddress = []
 const applicantProfileFields = [
     'firstName', 'middleName', 'lastName', 'suffix',
-    'gender', 'dob', 'ssn', 'phone', 'email', 'position',
+    'gender', 'dob', 'ssn', 'phone', 'email',
 ]
 const applicantAddressFields = [ 'address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince' ]
-const applicantFields = [ ...applicantProfileFields, ...applicantAddressFields, 'status', 'statusExp' ]
+const applicantFields = [ ...applicantProfileFields, 'position', ...applicantAddressFields, 'status', 'statusExp' ]
 applicantFields.forEach(prop => validateApplicant.push(ApplicationForm[prop].validate()))
 applicantProfileFields.forEach(prop => validateApplicantProfile.push(ApplicationForm[prop].validate()))
 applicantAddressFields.forEach(prop => validateApplicantAddress.push(ApplicationForm[prop].validate()))
