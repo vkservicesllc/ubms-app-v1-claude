@@ -23,7 +23,7 @@ import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 import strip from '../../../client/global/modules/tools/utils/formatter.mjs'
 
-const required = true
+const required = true, disabled = true
 
 
 const createCategoryForm = (selector, props = {}) => {
@@ -194,7 +194,7 @@ class OwnerForm {
     static modifyId = createIdForm({ selector: ownerSelector, target: 'modifyId' })
     static deleteId = createIdForm({ selector: ownerSelector, target: 'deleteId' })
 
-    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince', required })
+    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince', required, disabled })
     static firstName = createPersonNameForm('first', { selector: ownerSelector, group: 'name' })
     static middleName = createPersonNameForm('middle', { selector: ownerSelector, group: 'name' })
     static lastName = createPersonNameForm('last', { selector: ownerSelector, group: 'name' })

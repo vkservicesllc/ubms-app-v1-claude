@@ -87,12 +87,11 @@
                             <form id="company-delete-form" action="/resource/company/{{{_id}}}/delete" method="POST" autocomplete="off">
                                 {{{form.confirmAlias.text.input}}}
                                 <script type="module">
-                                    import { formSelectors } from '/modules/registry/selectors.mjs'
+                                    import selector from '/modules/registry/selectors/company.mjs'
                                     import { aliasEvent } from '/modules/events/company.mjs'
 
                                     const $module = $('#company-delete-modal')
-                                    let { aliasId } = formSelectors.company
-                                    aliasId = `confirm-${aliasId}`
+                                    const aliasId = selector.id.text.confirmAlias
 
                                     aliasEvent(aliasId)
                                     $('#delete-company-trigger').click(() => {
@@ -100,7 +99,7 @@
                                     })
                                     $('#close-company-delete-modal').click(() => {
                                         $module.removeClass('is-active')
-                                        $(`#${aliasId}`).val(null)
+                                        $(aliasId).val(null)
                                     })
                                 </script>
                             </form>
