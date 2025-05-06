@@ -283,15 +283,17 @@ router.get('/application/:param?', async (req, res, next) => {
                 options.dlDenied.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options.dlRevoked.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
-            if (commercial) {
+
+            if (commercial && application?.dl?.commercial === undefined) {
                 options.dlCommercial.radio.yes.input.checked = true
                 options.dlCommercial.radio.yes.input.disabled = true
                 options.dlCommercial.radio.no.input.disabled = true
-                options.dlEndrs.text.input.disabled = false
             } else {
                 options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === 1
                 options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === 0
             }
+
+            if (options.dlCommercial.radio.yes.input.checked) options.dlEndrs.text.input.disabled = false
             options.dlDenied.radio.yes.input.checked = application?.dl?.denied === 1
             options.dlDenied.radio.no.input.checked = application?.dl?.denied === 0
             options.dlRevoked.radio.yes.input.checked = application?.dl?.revoked === 1
