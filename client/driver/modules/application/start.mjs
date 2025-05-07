@@ -87,7 +87,7 @@ if (aplStatus === 'started') {
         const required = $el.prop('required')
 
         $el.val(value)
-        if (required) $el.addClass('is-valid')
+        if (required && $el.val() === value) $el.addClass('is-valid')
     }
 })
 

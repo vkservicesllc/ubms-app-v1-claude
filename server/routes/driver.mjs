@@ -298,6 +298,8 @@ router.get('/application/:param?', async (req, res, next) => {
             options.dlDenied.radio.no.input.checked = application?.dl?.denied === 0
             options.dlRevoked.radio.yes.input.checked = application?.dl?.revoked === 1
             options.dlRevoked.radio.no.input.checked = application?.dl?.revoked === 0
+            if (values.dlDeniedExpl) options.dlDeniedExpl.text.input.disabled = false
+            if (values.dlRevokedExpl) options.dlRevokedExpl.text.input.disabled = false
         }
 
         if (step >= 2) { /* MEDICAL CARD */

@@ -152,9 +152,9 @@ onYesNoRadioChange(dlDeniedId, dlDeniedExplId)
 
 onYesNoRadioChange(dlRevokedId, dlRevokedExplId)
 
-inputEvent(dlDeniedExplId, { strip: true })
+inputEvent(dlDeniedExplId, { strip: true, onChange })
 
-inputEvent(dlRevokedExplId, { strip: true })
+inputEvent(dlRevokedExplId, { strip: true, onChange })
 
 
 onSubmit($form, $help, $submit, $card, () => $(dlCommercialClass).prop('disabled', false))
