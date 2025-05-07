@@ -19,8 +19,8 @@ import { getStaticProps } from '../../../client/global/modules/tools/utils/class
 
 const required = true, disabled = true
 
-const deptData = {}
-Team.deptList.forEach((name, prop) => deptData[prop] = name)
+const crrDeptData = {}
+Team.deptList.crr.forEach((name, prop) => crrDeptData[prop] = name)
 
 
 class TeamForm {
@@ -37,12 +37,13 @@ class TeamForm {
     static crrDept = createForm({
         selector,
         target: 'crrDept',
-        group: 'department',
+        group: 'crrDept',
         type: 'select/radio',
-        name: 'crrDeptId',
-        data: deptData,
+        name: 'deptId[]',
+        data: crrDeptData,
         keys: ['zero', 'one'],
-        required, //! temporarily required since we don't have any other category but "carrier"
+        required,
+        disabled,
         label: 'Department',
     })
 
@@ -58,12 +59,6 @@ class TeamForm {
             length: { min: length.team.name.min },
             sanitizer: value => value.replace('&amp;', '&').replace('&#x27;', "'"),
         },
-    })
-
-    static currentName = createForm({
-        selector,
-        target: 'name',
-        type: 'hidden',
     })
 
     static desc = createForm({

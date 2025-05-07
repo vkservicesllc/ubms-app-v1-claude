@@ -29,10 +29,6 @@ class Team {
     constructor(data = {}, light = false) {
         this._id = data._id
         this.catId = data.catId
-        if (this.catId === 'crr') {
-            this.crrDeptId = data.crrDeptId
-            this.crrDept = Team.deptList[this.crrDeptId]
-        }
         this.name = data.name
         this.description = data.description
         if (data.busName && data.coType)
@@ -56,6 +52,11 @@ class Team {
             users: data.userCount,
         }
         this.settings = data.settings?.[this.catId] || null
+
+        if (this.catId === 'crr') {
+            this.deptId = this.settings.deptId
+            this.depts = Team.deptList.crr.filter((value, i) => this.deptId.includes(i))
+        }
 
         if (!light) {
 
@@ -286,15 +287,13 @@ class Team {
 
                 switch (this.catId) {
                     case 'crr':
-                        data[this.catId].drivers.cdl = data[this.catId].drivers.cdl
-                            ? true
-                            : false
+                        data[this.catId].drivers.cdl = !!data[this.catId].drivers.cdl
                         break
                 }
 
-                settings[this.catId] = data[this.catId]
-                console.log(settings)
+                settings[this.catId] = { ...settings[this.catId], ...data[this.catId] }
                 settings = JSON.stringify(settings)
+                //! This method does not track and log the change
 
                 try {
                     const [ result ] = await mysql.execute(query.teams.update({ settings }, { id }))
@@ -341,7 +340,10 @@ class Team {
                 let modified = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { modified, error }
 
+                let deptId = data.deptId
+                delete data.deptId
                 if (this.count.companies) delete data.catId
+                if (this.count.companies || this.count.users) deptId = null
 
                 const id = await this.id()
                 data = processData(data, {
@@ -349,6 +351,28 @@ class Team {
                     currentData: this,
                     currentUpdateLog: await this.log('updateLog'),
                 })
+
+                if (deptId) {
+                    deptId = deptId.map(id => +id)
+                    const same = (function (arr1, arr2) {
+                        if (!arr1 || arr1.length !== arr2.length) return false
+
+                        const sorted1 = [...arr1].sort()
+                        const sorted2 = [...arr2].sort()
+
+                        return sorted1.every((value, idx) => value === sorted2[idx])
+                    })[this.settings?.deptId, deptId]
+
+                    if (!same) {
+                        let { settings } = this
+                        if (!settings) settings = {}
+                        settings.deptId = deptId
+                        data.settings = JSON.stringify({
+                            [this.catId]: settings,
+                        })
+                    }
+                    //! This method does not track and log the change
+                }
 
                 try {
                     const [ result ] = await mysql.execute(query.teams.update(data, { id }))
@@ -368,7 +392,7 @@ class Team {
                 const id = await this.id()
                 const log = await this.log()
 
-                try {console.log(query.teams.delete({ id }))
+                try {
                     const [ result ] = await mysql.execute(query.teams.delete({ id }))
                     if (result.affectedRows > 0) deleted = true
                 } catch(err) {
@@ -397,7 +421,9 @@ class Team {
     static matchIdHash = value => matchHash(value, Team.#algorithm)
 
 
-    static deptList = ['Truck Load', 'Expedite']
+    static deptList = {
+        crr: ['Truck Load', 'Expedite'],
+    }
 
 
     static create = async (session, data) => {
@@ -409,6 +435,17 @@ class Team {
 
         for (const prop of [ 'name', 'catId' ])
             if (!data[prop]) return { created, error: 'Invalid Data' }
+
+        if (data.deptId) {
+            data.settings = {
+                [data.catId]: {
+                    deptId: data.deptId.map(id => +id),
+                },
+            }
+
+            data.settings = JSON.stringify(data.settings)
+            delete data.deptId
+        }
 
         data.createdBy = await session.user.id()
 
@@ -443,11 +480,7 @@ class Team {
         const batch = [
             {
                 table: 'teams',
-                fields: [
-                    Team.hashId(), 'catId',
-                    'crrDeptId',
-                    'name', 'description', 'settings',
-                ],
+                fields: [ Team.hashId(), 'catId','name', 'description', 'settings' ],
                 match,
                 group: 'id',
             },

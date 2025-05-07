@@ -32,6 +32,9 @@ const zipId = id.text.addrZip
 const cityId = id.text.addrCity
 const stateId = id.select.addrState
 
+const crrDeptClass = selector.class.radio.crrDept
+
+
 const ids = {
     catIdIcon: 'team-category-select-icon',
 }
@@ -52,7 +55,8 @@ const $title = {
     settings: $('#team-settings-title'),
 }
 const $radio = {
-    department: $(selector.class.radio.department),
+    allDepts: $(`${crrDeptClass}`),
+    crrDept: $(crrDeptClass),
 }
 const $tip = {
     name: $('#team-name-tip'),
@@ -190,7 +194,7 @@ const closeUpsert = () => {
     $button.upsert.html(null).removeClass('is-link is-success').prop('disabled', false)
     $title.upsert.html(null)
     $catId.attr('disabled', false)
-    $radio.department.prop('checked', false)
+    $radio.allDepts.prop('checked', false).prop('disabled', true)
     if (!$catId.find('option[value=""]').length)
         $catId.prepend('<option value="">--</option>').val(null)
     $(`#${ids.catIdIcon}`).html(defaults.catIdIcon)
@@ -207,19 +211,14 @@ const displayTeams = () => {
         success(response) {
             const data = sortArrayByObjectKey(response.data, 'name')
             let i = 0, html = ''
-console.log(data)
+
             for (const [ idx, row ] of data.entries()) {
-                const { _id, name, description, catId, crrDept, count, settings } = row
+                const { _id, name, description, catId, depts, count, settings } = row
                 const { companies, users } = count
                 const companyStyle = `is-${companies ? 'primary' : 'danger'}`
                 const userStyle = `is-${users ? 'primary' : 'danger'}`
 
                 let companyCat = categories[catId].item[0]
-                let cdlEnf
-                if (catId === 'crr') {
-                    if (crrDept) companyCat += ` (${crrDept})`
-                    if (settings?.drivers?.cdl) cdlEnf = '<span class="tag is-warning">CDL</span>'
-                }
 
                 if (i === 0) html += '<div class="columns">'
 
@@ -227,8 +226,21 @@ console.log(data)
                 html += '<div class="card">'
                 html += '<div class="card-content">'
 
-                html += `<p class="title"><a class="team-edit" data-team-id="${_id}">${escapeHTML(name)}</a></p>`
-                if (description) html += `<p class="subtitle has-text-primary-30 mt-2">${escapeHTML(description)}</p>`
+                html += `<p class="title mb-3"><a class="team-edit" data-team-id="${_id}" style="font-size: .85em;">${escapeHTML(name)}</a></p>`
+                if (description) html += `<p class="subtitle has-text-primary-30 mb-2" style="font-size: .95em;">${escapeHTML(description)}</p>`
+
+                switch (catId) {
+
+                    case 'crr':
+                        html += '<div class="field is-grouped is-grouped-multiline">'
+
+                        html += `<div><span class="tag is-info">${depts.join(', ')}</span></div>`
+                        if (settings?.drivers?.cdl) html += '<div><span class="tag is-warning">CDL enforced</span></div>'
+
+                        html += '</div>'
+                        break
+
+                }
 
                 html += '<div class="field is-grouped is-grouped-multiline">'
 
@@ -244,9 +256,10 @@ console.log(data)
 
                 html += `<div><a class="has-text-grey team-profile" data-team-id="${_id}"><i class="fas fa-briefcase"></i></a></div>`
                 html += `<div><a class="has-text-grey team-settings" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
-                if (cdlEnf) html += `<div>${cdlEnf}</div>`
 
-                html += '</div></div></div></div>'
+                html += '</div>'
+
+                html += '</div></div></div>'
 
                 if (i === 3 || idx === data.length) {
                     html += '</div>'
@@ -266,7 +279,7 @@ console.log(data)
                     url: `/api/team/${_id}`,
                     method: 'POST',
                     success(response) {
-                        const { _id, catId: category, crrDeptId, name } = response.data
+                        const { _id, catId: category, name, settings } = response.data
 
                         if (target == 'edit') {
                             const { description, count } = response.data
@@ -278,13 +291,19 @@ console.log(data)
                             $catId.val(category).find('option[value=""]').remove()
                             if (companies) $catId.attr('disabled', true)
                             $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)
-                            $(`${selector.class.radio.department}[value=${crrDeptId}]`).prop('checked', true)
                             $(descId).val(description)
+
+                            if (category === 'crr') {
+                                const crrDeptId = settings.deptId[0] //! Only works for radios with only possible department
+                                $(`${crrDeptClass}[value=${crrDeptId}]`).prop('checked', true)
+                                $radio.crrDept.prop('disabled', false)
+                            }
 
                             $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
                             setTip.passed('name')
                             $button.upsert.html('Update').addClass('is-success')
                             if (!companies && !users) $button.delete.show()
+                            else $radio.allDepts.prop('disabled', true)
                             countDescChars(description)
                             $modal.upsert.addClass('is-active')
                         } else if (target == 'profile') {
@@ -409,6 +428,9 @@ $button.add.click(() => {
     $title.upsert.html('<small>New Team</small>')
     $button.upsert.html('Create').addClass('is-link')
     $modal.upsert.addClass('is-active')
+
+    //! TEMP: enable carrier departments only (visible by default for now)
+    $radio.crrDept.prop('disabled', false)
 })
 
 //! TEST VERSION: Deleting via API

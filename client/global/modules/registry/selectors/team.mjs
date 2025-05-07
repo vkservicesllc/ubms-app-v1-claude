@@ -10,10 +10,10 @@ const selector = {
             contacts: 'contacts',
         },
         select: {
-            department: 'department',
+            crrDept: 'carrier-department',
         },
         radio: {
-            department: 'department',
+            crrDept: 'carrier-department',
         },
     },
     id: {
@@ -36,15 +36,15 @@ const selector = {
             addrZip: 'address-zip',
         },
         select: {
-            department: 'department',
+            crrDept: 'carrier-department',
             category: 'category',
             coType: 'company-type',
             addrState: 'address-state',
         },
         radio: {
             crrDept: {
-                zero: 'department-zero',
-                one: 'department-one',
+                zero: 'carrier-department-zero',
+                one: 'carrier-department-one',
             },
         },
     },
