@@ -381,17 +381,10 @@ class Application {
 
 
     static stepList = [
-        [ 'Profile', 'Address', 'Previous Addresses' ],
+        [ 'Profile', 'Address' ],  //, 'Previous Addresses' ],
         'Driver License',
         'Medical Card',
-        'Accidents',
-        'Citations',
-        'Pre-Employment',
-        'Work Hours',
-        'Business',
-        'Beneficiary',
-        'Emergency Contact',
-        'Feedback',
+        'Legal Compliance',
     ]
 
 

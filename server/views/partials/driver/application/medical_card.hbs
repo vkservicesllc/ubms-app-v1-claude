@@ -1,0 +1,68 @@
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button{{accordion.two.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-2">
+            <i class="{{accordion.two.state}} accordion-button-state"></i>
+            <strong>{{idx steps 2}}</strong>
+        </button>
+    </h2>
+    <div id="collapse-2" class="text-start accordion-collapse collapse{{accordion.two.body}}" data-bs-parent="#apl-accordion">
+        <div class="accordion-body">
+            <form id="mec-form" action="{{actionUrl.mec}}" method="POST" autocomplete="off">
+                {{#if (eq medCard true)}}
+                <div class="row g-3 my-1">
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            {{{form.noMec.checkbox.input}}}
+                            {{{form.noMec.checkbox.label}}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+                <div class="row g-3 my-1" id="driver-med-card-fields"{{medCardDisplay}}>
+                    <div class="col-md-4">
+                        {{{form.mecIss.text.label}}}
+                        {{{form.mecIss.text.input}}}
+                        <div class="form-text text-danger" id="mec-iss-help"></div>
+                    </div>
+                    <div class="col-md-4">
+                        {{{form.mecExp.text.label}}}
+                        {{{form.mecExp.text.input}}}
+                        <div class="form-text" id="mec-exp-help"></div>
+                    </div>
+                    <div class="col-md-4">
+                        {{{form.mecNumber.text.label}}}
+                        {{{form.mecNumber.text.input}}}
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <label class="form-label required">
+                        Are you currently taking any medication that may impair your ability to safely operate a commercial motor vehicle?
+                    </label>
+                    <div class="col-md-4">
+                        <div class="form-check form-check-inline">
+                            {{{form.underMeds.radio.yes.input}}}
+                            {{{form.underMeds.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.underMeds.radio.no.input}}}
+                            {{{form.underMeds.radio.no.label}}}
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="display: none;">
+                        {{{form.medList.text.label}}}
+                        {{{form.medList.text.input}}}
+                    </div>
+                </div>
+                <p class="form-text text-danger mt-4" id="mec-form-help" style="display: none;"></p>
+                <div class="row g-3 my-2">
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-{{button.two.class}}" id="mec-submit">{{button.two.text}}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <script type="module" src="/modules/application/medical-card.mjs"></script>
+        </div>
+    </div>
+</div>

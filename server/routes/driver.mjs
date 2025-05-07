@@ -210,13 +210,12 @@ router.get('/application/:param?', async (req, res, next) => {
             profile: `${recUrl}/profile`,
             address: `${recUrl}/address`,
             dl: `${recUrl}/driver-license`,
-            mec: `${recUrl}/medical-card`
+            mec: `${recUrl}/medical-card`,
+            legal: `${recUrl}/legal-compliance`,
         }
 
-        for (const ct of ['one', 'two', 'three']) { //! ADD MORE...
-            const { save, next } = buttonProps
-
-            hbs.button[ct] = ct === 'one' ? save : next
+        for (const ct of ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {
+            hbs.button[ct] = buttonProps.next
             hbs.accordion[ct] = accordionProps.pending
         }
 
@@ -269,7 +268,7 @@ router.get('/application/:param?', async (req, res, next) => {
                 dlRestr: 'None',
             }
 
-            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.dlState.select.input.options = { valOpt: true }
             options.dlEndrs.text.label.content = 'Endorsements <small>(if any)</small>'
@@ -303,8 +302,8 @@ router.get('/application/:param?', async (req, res, next) => {
         }
 
         if (step >= 2) { /* MEDICAL CARD */
-            hbs.button.two = buttonProps.save
-            hbs.accordion.two = accordionProps.finished
+            hbs.button.one = buttonProps.save
+            hbs.accordion.one = accordionProps.finished
             hbs.medCard = application.dl.commercial === 0
             hbs.medCardDisplay = ''
 
@@ -340,12 +339,18 @@ router.get('/application/:param?', async (req, res, next) => {
             }
         }
 
+        if (step >= 3) { /* LEGAL COMPLIANCE */
+            hbs.button.two = buttonProps.save
+            hbs.accordion.two = accordionProps.finished
+
+        }
+
         hbs.form = new ApplicationForm(options)
         hbs.progress = Math.round(step / steps.length * 100)
         hbs.step = step
         hbs.steps = steps
         hbs.formId = formId
-        hbs.addrEnough = application.address.enough
+        // hbs.addrEnough = application.address.enough
         hbs.applicantName = application.fullName
         hbs.position = application.position[1]
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') //! Test time accuracy on live server

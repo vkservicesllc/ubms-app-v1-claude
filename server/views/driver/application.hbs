@@ -151,200 +151,25 @@
                             </div>
                         </div>
 
-                        {{#if (eq addrEnough false)}}
+                        {{!-- {{#if (eq addrEnough false)}}
                         <div class="accordion-item">
                             <h2 class="accordion-header"></h2>
                             <div id="collapse-0.2" class="text-start accordion-collapse collapse{{accordion.one.body}}" data-bs-parent="#apl-accordion"></div>
                         </div>
-                        {{/if}}
-
+                        {{/if}} --}}
                         {{#if (gte step 1)}}
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button{{accordion.two.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1">
-                                    <i class="{{accordion.two.state}} accordion-button-state"></i>
-                                    <strong>{{idx steps 1}}</strong>
-                                </button>
-                            </h2>
-                            <div id="collapse-1" class="text-start accordion-collapse collapse{{accordion.two.body}}" data-bs-parent="#apl-accordion">
-                                <div class="accordion-body pt-1">
-                                    <form id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
-                                        <div class="row g-3 my-1">
-                                            {{{form.dlCommercial.radio.label}}}
-                                            <div class="col-md-12 mt-1">
-                                                <div class="form-check form-check-inline">
-                                                    {{{form.dlCommercial.radio.yes.input}}}
-                                                    {{{form.dlCommercial.radio.yes.label}}}
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    {{{form.dlCommercial.radio.no.input}}}
-                                                    {{{form.dlCommercial.radio.no.label}}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row g-3 my-1">
-                                            <div class="col-md-3">
-                                                {{{form.dlState.select.label}}}
-                                                {{{form.dlState.select.input}}}
-                                            </div>
-                                            <div class="col-md-5">
-                                                {{{form.dlNumber.text.label}}}
-                                                {{{form.dlNumber.text.input}}}
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{{form.dlClass.text.label}}}
-                                                {{{form.dlClass.text.input}}}
-                                            </div>
-                                        </div>
-                                        <div class="row g-3 my-1">
-                                            <div class="col-md-4">
-                                                {{{form.dlIss.text.label}}}
-                                                {{{form.dlIss.text.input}}}
-                                                <div class="form-text text-danger" id="dl-iss-help"></div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{{form.dlExp.text.label}}}
-                                                {{{form.dlExp.text.input}}}
-                                                <div class="form-text" id="dl-exp-help"></div>
-                                            </div>
-                                        </div>
-                                        <div class="row g-3 my-1">
-                                            <div class="col-md-6">
-                                                {{{form.dlEndrs.text.label}}}
-                                                {{{form.dlEndrs.text.input}}}
-                                            </div>
-                                            <div class="col-md-6">
-                                                {{{form.dlRestr.text.label}}}
-                                                {{{form.dlRestr.text.input}}}
-                                            </div>
-                                        </div>
-                                        <div class="row g-3 my-1">
-                                            <label class="form-label required">
-                                                Have you ever been denied a license, permit, or privilege to operate a motor vehicle?
-                                            </label>
-                                            <div class="col-md-4">
-                                                <div class="form-check form-check-inline">
-                                                    {{{form.dlDenied.radio.yes.input}}}
-                                                    {{{form.dlDenied.radio.yes.label}}}
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    {{{form.dlDenied.radio.no.input}}}
-                                                    {{{form.dlDenied.radio.no.label}}}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-8" style="display: none;">
-                                                {{{form.dlDeniedExpl.text.label}}}
-                                                {{{form.dlDeniedExpl.text.input}}}
-                                            </div>
-                                        </div>
-                                        <div class="row g-3 my-1">
-                                            <label class="form-label required">
-                                                Has your license, permit, or driving privilege ever been suspended or revoked?
-                                            </label>
-                                            <div class="col-md-4">
-                                                <div class="form-check form-check-inline">
-                                                    {{{form.dlRevoked.radio.yes.input}}}
-                                                    {{{form.dlRevoked.radio.yes.label}}}
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    {{{form.dlRevoked.radio.no.input}}}
-                                                    {{{form.dlRevoked.radio.no.label}}}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-8" style="display: none;">
-                                                {{{form.dlRevokedExpl.text.label}}}
-                                                {{{form.dlRevokedExpl.text.input}}}
-                                            </div>
-                                        </div>
-                                        <p class="form-text text-danger mt-4" id="dl-form-help" style="display: none;"></p>
-                                        <div class="row g-3 my-2">
-                                            <div class="col-md-4">
-                                                <div class="d-grid">
-                                                    <button type="submit" class="btn btn-{{button.two.class}}" id="dl-submit">{{button.two.text}}</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <script type="module" src="/modules/application/driver-license.mjs"></script>
-                                </div>
-                            </div>
-                        </div>
-                        {{/if}}
+                        {{> driver/application/driver_license}}
 
+                        {{/if}}
                         {{#if (gte step 2)}}
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button{{accordion.three.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-2">
-                                    <i class="{{accordion.three.state}} accordion-button-state"></i>
-                                    <strong>{{idx steps 2}}</strong>
-                                </button>
-                            </h2>
-                            <div id="collapse-2" class="text-start accordion-collapse collapse{{accordion.three.body}}" data-bs-parent="#apl-accordion">
-                                <div class="accordion-body">
-                                    <form id="mec-form" action="{{actionUrl.mec}}" method="POST" autocomplete="off">
-                                        {{#if (eq medCard true)}}
-                                        <div class="row g-3 my-1">
-                                            <div class="col-md-12">
-                                                <div class="form-check">
-                                                    {{{form.noMec.checkbox.input}}}
-                                                    {{{form.noMec.checkbox.label}}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {{/if}}
-                                        <div class="row g-3 my-1" id="driver-med-card-fields"{{medCardDisplay}}>
-                                            <div class="col-md-4">
-                                                {{{form.mecIss.text.label}}}
-                                                {{{form.mecIss.text.input}}}
-                                                <div class="form-text text-danger" id="mec-iss-help"></div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{{form.mecExp.text.label}}}
-                                                {{{form.mecExp.text.input}}}
-                                                <div class="form-text" id="mec-exp-help"></div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{{form.mecNumber.text.label}}}
-                                                {{{form.mecNumber.text.input}}}
-                                            </div>
-                                        </div>
-                                        <div class="row g-3 my-1">
-                                            <label class="form-label required">
-                                                Are you currently taking any medication that may impair your ability to safely operate a commercial motor vehicle?
-                                            </label>
-                                            <div class="col-md-4">
-                                                <div class="form-check form-check-inline">
-                                                    {{{form.underMeds.radio.yes.input}}}
-                                                    {{{form.underMeds.radio.yes.label}}}
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    {{{form.underMeds.radio.no.input}}}
-                                                    {{{form.underMeds.radio.no.label}}}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-8" style="display: none;">
-                                                {{{form.medList.text.label}}}
-                                                {{{form.medList.text.input}}}
-                                            </div>
-                                        </div>
-                                        <p class="form-text text-danger mt-4" id="mec-form-help" style="display: none;"></p>
-                                        <div class="row g-3 my-2">
-                                            <div class="col-md-4">
-                                                <div class="d-grid">
-                                                    <button type="submit" class="btn btn-{{button.three.class}}" id="mec-submit">{{button.three.text}}</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <script type="module" src="/modules/application/medical-card.mjs"></script>
-                                </div>
-                            </div>
-                        </div>
+                        {{> driver/application/medical_card}}
+
                         {{/if}}
+                        {{#if (gte step 3)}}
+                        {{> driver/application/legal_compliance}}
 
+                        {{/if}}
                     </div>
-
-
 
                 </div>
             </div>

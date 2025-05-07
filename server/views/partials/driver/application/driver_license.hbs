@@ -1,0 +1,110 @@
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button{{accordion.one.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1">
+            <i class="{{accordion.one.state}} accordion-button-state"></i>
+            <strong>{{idx steps 1}}</strong>
+        </button>
+    </h2>
+    <div id="collapse-1" class="text-start accordion-collapse collapse{{accordion.one.body}}" data-bs-parent="#apl-accordion">
+        <div class="accordion-body pt-1">
+            <form id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
+                <div class="row g-3 my-1">
+                    {{{form.dlCommercial.radio.label}}}
+                    <div class="col-md-12 mt-1">
+                        <div class="form-check form-check-inline">
+                            {{{form.dlCommercial.radio.yes.input}}}
+                            {{{form.dlCommercial.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.dlCommercial.radio.no.input}}}
+                            {{{form.dlCommercial.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <div class="col-md-3">
+                        {{{form.dlState.select.label}}}
+                        {{{form.dlState.select.input}}}
+                    </div>
+                    <div class="col-md-5">
+                        {{{form.dlNumber.text.label}}}
+                        {{{form.dlNumber.text.input}}}
+                    </div>
+                    <div class="col-md-4">
+                        {{{form.dlClass.text.label}}}
+                        {{{form.dlClass.text.input}}}
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <div class="col-md-4">
+                        {{{form.dlIss.text.label}}}
+                        {{{form.dlIss.text.input}}}
+                        <div class="form-text text-danger" id="dl-iss-help"></div>
+                    </div>
+                    <div class="col-md-4">
+                        {{{form.dlExp.text.label}}}
+                        {{{form.dlExp.text.input}}}
+                        <div class="form-text" id="dl-exp-help"></div>
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <div class="col-md-6">
+                        {{{form.dlEndrs.text.label}}}
+                        {{{form.dlEndrs.text.input}}}
+                    </div>
+                    <div class="col-md-6">
+                        {{{form.dlRestr.text.label}}}
+                        {{{form.dlRestr.text.input}}}
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <label class="form-label required">
+                        Have you ever been denied a license, permit, or privilege to operate a motor vehicle?
+                    </label>
+                    <div class="col-md-4">
+                        <div class="form-check form-check-inline">
+                            {{{form.dlDenied.radio.yes.input}}}
+                            {{{form.dlDenied.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.dlDenied.radio.no.input}}}
+                            {{{form.dlDenied.radio.no.label}}}
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="display: none;">
+                        {{{form.dlDeniedExpl.text.label}}}
+                        {{{form.dlDeniedExpl.text.input}}}
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <label class="form-label required">
+                        Has your license, permit, or driving privilege ever been suspended or revoked?
+                    </label>
+                    <div class="col-md-4">
+                        <div class="form-check form-check-inline">
+                            {{{form.dlRevoked.radio.yes.input}}}
+                            {{{form.dlRevoked.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.dlRevoked.radio.no.input}}}
+                            {{{form.dlRevoked.radio.no.label}}}
+                        </div>
+                    </div>
+                    <div class="col-md-8" style="display: none;">
+                        {{{form.dlRevokedExpl.text.label}}}
+                        {{{form.dlRevokedExpl.text.input}}}
+                    </div>
+                </div>
+                <p class="form-text text-danger mt-4" id="dl-form-help" style="display: none;"></p>
+                <div class="row g-3 my-2">
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-{{button.one.class}}" id="dl-submit">{{button.one.text}}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <script type="module" src="/modules/application/driver-license.mjs"></script>
+        </div>
+    </div>
+</div>
