@@ -33,6 +33,9 @@ const applicantDlFields = [
 applicantDlFields.forEach(prop => validateApplicantDL.push(ApplicationForm[prop].validate()))
 
 //!.. to be continued
+const validateApplicantMEC = []
+const applicantMecFields = ['noMec', 'mecIss', 'mecExp', 'mecNumber', 'underMeds', 'medList']
+applicantMecFields.forEach(prop => validateApplicantMEC.push(ApplicationForm[prop].validate()))
 
 
 const dynamicValidator = {
@@ -51,7 +54,7 @@ const dynamicValidator = {
                 validators = validateApplicantDL
                 break
             case 'medical-card':
-                validators = [] //! TEMP
+                validators = validateApplicantMEC
         }
 
         Promise.all(validators.map(validator => validator.run(req)))
@@ -92,10 +95,10 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
         const application = await Application.data(session, { formId })
         if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
 
-        return res.send({
-            step,
-            body: req.body,
-        })
+        // return res.send({
+        //     step,
+        //     body: req.body,
+        // })
 
         const { error } = await application.modify(session, step, req.body)
         if (error) return throwErr.server(res, error)

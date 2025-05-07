@@ -328,15 +328,17 @@ router.get('/application/:param?', async (req, res, next) => {
             options.underMeds.radio.no.input.checked = application.underMeds === 0
             options.medList.text.label.content = 'List medications <small>(names only)</small>'
 
-            if (hbs.medCard && application.medCard === false) {
+            const fields = Object.keys(values).filter(key => !['medList'].includes(key))
+            if (hbs.medCard && application.medCard === 0) {
                 hbs.medCardDisplay = ' style="display: none;"'
 
-                const fields = Object.keys(values).filter(key => !['medList'].includes(key))
                 fields.forEach(prop => { //! ...when Med Card Form has text input ONLY
                     options[prop].text.input.value = null
                     options[prop].text.input.disabled = true
                 })
-            }
+                options.noMec.checkbox.input.checked = true
+            } else
+                fields.forEach(prop => options[prop].text.input.disabled = false)
         }
 
         if (step >= 3) { /* LEGAL COMPLIANCE */

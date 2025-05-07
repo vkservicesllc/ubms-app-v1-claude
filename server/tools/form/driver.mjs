@@ -274,8 +274,8 @@ class ApplicationForm {
         },
     })
 
-    static mecIss = createMecIssForm({ selector: appSelector })
-    static mecExp = createMecExpForm({ selector: appSelector })
+    static mecIss = createMecIssForm({ selector: appSelector, disabled })
+    static mecExp = createMecExpForm({ selector: appSelector, disabled })
     static mecNumber = createMecNumberForm({ selector: appSelector })
 
     static underMeds = createYesNoForm({

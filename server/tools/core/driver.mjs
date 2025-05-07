@@ -345,8 +345,8 @@ class Application {
                     mainData = processData(mainData)
                     mainData.step = 3
 
-                    if (mainData.medCard !== false) {
-                        data = processData()
+                    if (mainData.medCard !== false && data.length) {
+                        data = processData(data)
                         data.aplId = await this.id()
                         action = 'insert'
                     }
@@ -357,7 +357,7 @@ class Application {
 
 
         }
-
+console.log({ mainData, data })
         if (!error) {
             if (Object.keys(data).length) {
                 const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
