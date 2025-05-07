@@ -31,8 +31,9 @@ const throwErr = require('../utils/error')
 const query = {
     drivers: new Query(db.carrier, 'drivers'),
     applications: new Query(db.carrier, 'applications'),
-    aplDLs: new Query(db.carrier, 'application_DLs'),
     aplAddresses: new Query(db.carrier, 'application_addresses'),
+    aplDLs: new Query(db.carrier, 'application_DLs'),
+    aplMECs: new Query(db.carrier, 'application_MECs'),
 }
 
 
@@ -278,8 +279,8 @@ class Application {
                 break
 
 
-            case 'prev-address':
-                break
+            // case 'prev-address':
+            //     break
 
 
             case 'driver-license':
@@ -328,14 +329,45 @@ class Application {
                 break
 
 
+            case 'medical-card':
+                target = 'aplMECs'
+                idProp = 'aplId'
+
+                if (!this.dl.commercial && data.mecAbsent) mainData.medCard = false
+                delete data.mecAbsent
+
+                mainData.underMeds = data.underMeds
+                if (data.underMeds) mainData.medList = data.medList
+                delete data.underMeds
+                delete data.medList
+
+                if (this.step < 3) {
+                    mainData = processData(mainData)
+                    mainData.step = 3
+
+                    if (mainData.medCard !== false) {
+                        data = processData()
+                        data.aplId = await this.id()
+                        action = 'insert'
+                    }
+                } else {
+                    // update
+                }
+                break
+
+
         }
 
-        if (!error && Object.keys(data).length) {
-            const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
-            if (result.affectedRows === 1) modified = true
+        if (!error) {
+            if (Object.keys(data).length) {
+                const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
+                if (result.affectedRows === 1) modified = true
+            }
 
-            if (Object.keys(mainData).length)
-                await mysql.execute(query.applications.update(mainData, { id }))
+            if (Object.keys(mainData).length) {
+                const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
+                if (!modified && result.affectedRows === 1) modified = true
+            }
         }
 
         return { modified, error }

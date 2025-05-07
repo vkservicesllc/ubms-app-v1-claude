@@ -1,5 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { check, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
+import { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text
@@ -134,7 +134,7 @@ inputEvent(mecNumId, {
 
 onYesNoRadioChange(underMedsId, medListId)
 
-inputEvent(medListId, { strip: true })
+inputEvent(medListId, { strip: true, onInput, onChange })
 
 
 onSubmit($form, $help, $submit, $card)
