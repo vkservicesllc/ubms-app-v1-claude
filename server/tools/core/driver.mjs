@@ -233,6 +233,8 @@ class Application {
         if (session.user && session.user !== true)
             modifiedBy = await session.user.id()
 
+        let checkExpl
+
         switch (step) {
 
 
@@ -287,7 +289,7 @@ class Application {
                 target = 'aplDLs'
                 idProp = 'aplId'
 
-                const checkExpl = data => {
+                checkExpl = data => {
                     if (
                         (data['denied'] && !data['deniedExpl']) ||
                         (data['revoked'] && !data['revokedExpl'])
@@ -299,7 +301,7 @@ class Application {
 
                 if (!this.dl) {
                     data = processData(data)
-                    data.aplId = await this.id()
+                    data.aplId = id
                     mainData.step = 2
                     action = 'insert'
 
@@ -333,7 +335,11 @@ class Application {
                 target = 'aplMECs'
                 idProp = 'aplId'
 
-                if (!this.dl.commercial && data.mecAbsent) mainData.medCard = false
+                if (data['underMeds'] && !data['medList'])
+                    error = 'Data Submission Error: Explanation not provided'
+                if (!data['underMeds']) data['medList'] = null
+
+                if (!this.dl.commercial && data.mecAbsent && !data.expiresOn) mainData.medCard = false
                 delete data.mecAbsent
 
                 mainData.underMeds = data.underMeds
@@ -345,13 +351,49 @@ class Application {
                     mainData = processData(mainData)
                     mainData.step = 3
 
-                    if (mainData.medCard !== false && Object.keys(data).length) {
-                        data = processData(data)
-                        data.aplId = await this.id()
-                        action = 'insert'
+                    if (mainData.medCard !== false) {
+                        if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
+                        else {
+                            data = processData(data)
+                            data.aplId = id
+                            action = 'insert'
+                        }
                     }
                 } else {
-                    // update
+                    if (mainData.medCard === false) {
+                        if (this.mec) {
+                            const [ result ] = await mysql.execute(query.aplMECs.delete({ aplId: id }))
+                            if (result.affectedRows !== 1) error = 'DB Error: Could not delete MEC record'
+                        }
+                    } else {
+                        if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
+                        else {
+                            if (this.mec) {
+                                currentData = this.mec
+                                currentUpdateLog = await this.log('updateLog', target)
+
+                                data = processData(data, {
+                                    modifiedBy,
+                                    branch,
+                                    siteId,
+                                    currentData,
+                                    currentUpdateLog,
+                                })
+                            } else {
+                                data = processData(data)
+                                data.aplId = id
+                                action = 'insert'
+                            }
+                        }
+                    }
+
+                    mainData = processData(mainData, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
                 }
                 break
 
