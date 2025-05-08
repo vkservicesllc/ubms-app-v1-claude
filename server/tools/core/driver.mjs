@@ -21,6 +21,7 @@ import { generateRandomString } from '../utils/string.mjs'
 import { dateAfter } from '../utils/date.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import bool from '../../../client/global/modules/tools/utils/boolean.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 import { tel as formatTel } from '../../../client/global/modules/tools/utils/formatter.mjs'
 
@@ -181,8 +182,13 @@ class Application {
                 issuedOn: data.mecIssuedOn,
                 expiresOn: data.mecExpiresOn,
             }
-        this.underMeds = !!data.underMeds
+        this.underMeds = bool(data.underMeds)
         this.medList = data.medList
+
+        this.dui = bool(data.dui)
+        this.criminal = bool(data.criminal)
+        this.criminalExpl = data.criminalExpl
+        this.citation = bool(data.citation)
 
     }
 
@@ -363,6 +369,8 @@ class Application {
                             if (result.affectedRows !== 1) error = 'DB Error: Could not delete MEC record'
                         }
                     } else {
+                        mainData.medCard = true
+
                         if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
                         else {
                             if (this.mec) {
@@ -649,6 +657,10 @@ class Application {
                     'medCard',
                     'underMeds',
                     'medList',
+                    'dui',
+                    'criminal',
+                    'criminalExpl',
+                    'citation',
                 ],
                 match,
             },

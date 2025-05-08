@@ -165,7 +165,7 @@ router.get('/application/:param?', async (req, res, next) => {
     try {
         const { application } = res.session
         const { formId } = application
-console.log(application)
+
         const { application: _id } = req.session
         if (!_id || _id !== application._id) {
             delete req.session.application
@@ -295,7 +295,7 @@ console.log(application)
                 options.dlCommercial.radio[application.medCard ? 'yes' : 'no'].input.checked = true
             } else {
                 options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === true
-                options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === true
+                options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === false
             }
 
             if (options.dlCommercial.radio.yes.input.checked) options.dlEndrs.text.input.disabled = false
