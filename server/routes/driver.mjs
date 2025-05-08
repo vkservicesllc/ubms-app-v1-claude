@@ -176,6 +176,12 @@ router.get('/application/:param?', async (req, res, next) => {
         const team = await Team.data({ ...res.session, user: true }, { _id: application._teamId })
         if (!team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
 
+        const depts = team.depts.join(', ')
+        let agency = team?.profile?.company
+        if (agency) agency = `<span title="${depts}">${agency}</span>`
+        let carrier = application?.carrier?.name
+        if (carrier) carrier = `<span title="${depts}">${carrier}</span>`
+
         const { step } = application
         const { settings } = team
         const steps = [ ...Application.stepList ]
@@ -283,10 +289,10 @@ router.get('/application/:param?', async (req, res, next) => {
                 options.dlRevoked.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
-            if (commercial && application?.dl?.commercial === undefined) {
-                options.dlCommercial.radio.yes.input.checked = true
+            if ((commercial && application?.dl?.commercial === undefined) || application.medCard === 0) {
                 options.dlCommercial.radio.yes.input.disabled = true
                 options.dlCommercial.radio.no.input.disabled = true
+                options.dlCommercial.radio[application.medCard === 1 ? 'yes' : 'no'].input.checked = true
             } else {
                 options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === 1
                 options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === 0
@@ -353,6 +359,8 @@ router.get('/application/:param?', async (req, res, next) => {
         }
 
         hbs.form = new ApplicationForm(options)
+        hbs.agency = agency
+        hbs.carrier = carrier
         hbs.progress = Math.round(step / steps.length * 100)
         hbs.step = step
         hbs.steps = steps
@@ -360,7 +368,7 @@ router.get('/application/:param?', async (req, res, next) => {
         // hbs.addrEnough = application.address.enough
         hbs.applicantName = application.fullName
         hbs.position = application.position[1]
-        hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') //! Test time accuracy on live server
+        hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET' //! Test time accuracy on live server
 
         res.render(key, hbs)
     } catch (err) {

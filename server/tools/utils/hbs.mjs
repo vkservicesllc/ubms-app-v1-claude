@@ -5,7 +5,8 @@ export default {
     gt: (v1, v2) => v1 > v2,
     lte: (v1, v2) => v1 <= v2,
     gte: (v1, v2) => v1 >= v2,
-    hv: (v1) => v1,
+    hv: (v1) => !!v1,
+    nhv: (v1) => !v1,
     and() {
         return Array.prototype.every.call(arguments, Boolean)
     },

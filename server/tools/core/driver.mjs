@@ -332,25 +332,24 @@ class Application {
             case 'medical-card':
                 target = 'aplMECs'
                 idProp = 'aplId'
-console.log('1', { mainData, data })
+
                 if (!this.dl.commercial && data.mecAbsent) mainData.medCard = false
                 delete data.mecAbsent
-console.log('2', { mainData, data })
+
                 mainData.underMeds = data.underMeds
                 if (data.underMeds) mainData.medList = data.medList
                 delete data.underMeds
                 delete data.medList
-console.log('3', { mainData, data })
+
                 if (this.step < 3) {
                     mainData = processData(mainData)
                     mainData.step = 3
-console.log('4', { mainData, data })
+
                     if (mainData.medCard !== false && Object.keys(data).length) {
                         data = processData(data)
                         data.aplId = await this.id()
                         action = 'insert'
                     }
-console.log('5', { mainData, data })
                 } else {
                     // update
                 }
@@ -358,7 +357,7 @@ console.log('5', { mainData, data })
 
 
         }
-console.log('Final', { mainData, data })
+
         if (!error) {
             if (Object.keys(data).length) {
                 const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))

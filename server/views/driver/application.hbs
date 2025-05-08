@@ -3,7 +3,7 @@
     <style>
         .apl-label {
             display: inline-block;
-            width: 95px;
+            width: 75px;
             font-size: .8em;
         }
         .accordion-button-state {
@@ -17,12 +17,20 @@
             <div class="card-body pt-4">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
                 <div class="card-text py-2" id="form-card">
-                    <p class="text-start my-0 px-1"><small class="text-muted apl-label">Application ID:</small> {{formId}}</p>
-                    <p class="text-start my-0 px-1"><small class="text-muted apl-label">Applicant:</small> {{applicantName}}</p>
-                    <p class="text-start my-0 px-1"><small class="text-muted apl-label">Position:</small> {{position}}</p>
-                    <p class="text-start my-0 px-1"><small class="text-muted apl-label">Started on:</small> {{startedAt}}</p>
-                    <div class="progress mt-2">
-                        <div class="progress-bar bg-success" style="width: {{progress}}%;">{{progress}}%</div>
+                    <div style="font-size: .92em;">
+                        {{#if (hv agency)}}
+                        <p class="text-start my-0 px-1"><small class="text-muted apl-label">Agency:</small> {{{agency}}}</p>
+                        {{/if}}
+                        {{#if (hv carrier)}}
+                        <p class="text-start my-0 px-1"><small class="text-muted apl-label">Carrier:</small> {{{carrier}}}</p>
+                        {{/if}}
+                        <p class="text-start my-0 px-1"><small class="text-muted apl-label">Form ID:</small> {{formId}}</p>
+                        <p class="text-start my-0 px-1"><small class="text-muted apl-label">Applicant:</small> {{applicantName}}</p>
+                        <p class="text-start my-0 px-1"><small class="text-muted apl-label">Position:</small> {{position}}</p>
+                        <p class="text-start my-0 px-1"><small class="text-muted apl-label">Started at:</small> {{startedAt}}</p>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-success" style="width: {{progress}}%;">{{progress}}%</div>
+                        </div>
                     </div>
 
                     <div class="accordion mt-3" id="apl-accordion">

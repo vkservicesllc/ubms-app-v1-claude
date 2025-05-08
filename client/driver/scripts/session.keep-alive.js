@@ -7,5 +7,6 @@ $.ajax('/api/local-session/current', {
     },
     error(jqXHR) {
         if (jqXHR.status === 401) alert('Failed to keep permanent session!')
+        location.reload()
     },
 })
