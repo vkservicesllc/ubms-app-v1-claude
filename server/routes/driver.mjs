@@ -306,6 +306,7 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.accordion.one = accordionProps.finished
             hbs.medCard = application.dl.commercial === 0
             hbs.medCardDisplay = ''
+            hbs.medListDisplay = ' style="display: none;"'
 
             const values = {
                 mecIss: application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('MM/DD/YYYY') : null,
@@ -339,6 +340,10 @@ router.get('/application/:param?', async (req, res, next) => {
                 options.noMec.checkbox.input.checked = true
             } else
                 fields.forEach(prop => options[prop].text.input.disabled = false)
+            if (values.medList) {
+                options.medList.text.input.disabled = false
+                hbs.medListDisplay = ''
+            }
         }
 
         if (step >= 3) { /* LEGAL COMPLIANCE */
