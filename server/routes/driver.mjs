@@ -165,7 +165,7 @@ router.get('/application/:param?', async (req, res, next) => {
     try {
         const { application } = res.session
         const { formId } = application
-
+console.log(application)
         const { application: _id } = req.session
         if (!_id || _id !== application._id) {
             delete req.session.application
@@ -289,20 +289,20 @@ router.get('/application/:param?', async (req, res, next) => {
                 options.dlRevoked.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
-            if ((commercial && application?.dl?.commercial === undefined) || application.medCard === 0) {
+            if ((commercial && application?.dl?.commercial === undefined) || !application.medCard) {
                 options.dlCommercial.radio.yes.input.disabled = true
                 options.dlCommercial.radio.no.input.disabled = true
-                options.dlCommercial.radio[application.medCard === 1 ? 'yes' : 'no'].input.checked = true
+                options.dlCommercial.radio[application.medCard ? 'yes' : 'no'].input.checked = true
             } else {
-                options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === 1
-                options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === 0
+                options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === true
+                options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === true
             }
 
             if (options.dlCommercial.radio.yes.input.checked) options.dlEndrs.text.input.disabled = false
-            options.dlDenied.radio.yes.input.checked = application?.dl?.denied === 1
-            options.dlDenied.radio.no.input.checked = application?.dl?.denied === 0
-            options.dlRevoked.radio.yes.input.checked = application?.dl?.revoked === 1
-            options.dlRevoked.radio.no.input.checked = application?.dl?.revoked === 0
+            options.dlDenied.radio.yes.input.checked = application?.dl?.denied === true
+            options.dlDenied.radio.no.input.checked = application?.dl?.denied === false
+            options.dlRevoked.radio.yes.input.checked = application?.dl?.revoked === true
+            options.dlRevoked.radio.no.input.checked = application?.dl?.revoked === false
             if (values.dlDeniedExpl) options.dlDeniedExpl.text.input.disabled = false
             if (values.dlRevokedExpl) options.dlRevokedExpl.text.input.disabled = false
         }
@@ -310,7 +310,7 @@ router.get('/application/:param?', async (req, res, next) => {
         if (step >= 2) { /* MEDICAL CARD */
             hbs.button.one = buttonProps.save
             hbs.accordion.one = accordionProps.finished
-            hbs.medCard = application.dl.commercial === 0
+            hbs.medCard = application.dl.commercial === false
             hbs.medCardDisplay = ''
             hbs.medListDisplay = ' style="display: none;"'
 
@@ -331,12 +331,12 @@ router.get('/application/:param?', async (req, res, next) => {
             options.underMeds = { radio: {} }
             for (const prop of ['yes', 'no'])
                 options.underMeds.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-            options.underMeds.radio.yes.input.checked = application.underMeds === 1
-            options.underMeds.radio.no.input.checked = application.underMeds === 0
+            options.underMeds.radio.yes.input.checked = application.underMeds === true
+            options.underMeds.radio.no.input.checked = application.underMeds === false
             options.medList.text.label.content = 'List medications <small>(names only)</small>'
 
             const fields = Object.keys(values).filter(key => !['medList'].includes(key))
-            if (hbs.medCard && application.medCard === 0) {
+            if (hbs.medCard && !application.medCard) {
                 hbs.medCardDisplay = ' style="display: none;"'
 
                 fields.forEach(prop => { //! ...when Med Card Form has text input ONLY
@@ -365,7 +365,6 @@ router.get('/application/:param?', async (req, res, next) => {
         hbs.step = step
         hbs.steps = steps
         hbs.formId = formId
-        // hbs.addrEnough = application.address.enough
         hbs.applicantName = application.fullName
         hbs.position = application.position[1]
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET' //! Test time accuracy on live server

@@ -96,11 +96,9 @@ class Application {
         this._userId = data._userId
         this._carrierId = data._carrierId
         this.formId = data.formId
-        this.position = data.position
-            ? [ data.position, Driver.positionList[data.position] ]
-            : null
+        this.position = [ data.position, Driver.positionList[data.position] ]
         this.condition = data.condition
-        this.legalStatus = [ data.legalStatus, data.LS_expiresOn ]
+        this.legalStatus = [ data.status, data.statusExpiresOn ]
         this.step = data.step
         this.firstName = firstName
         this.middleName = middleName
@@ -125,7 +123,7 @@ class Application {
         this.phone = data.phone
         this.address = new Address(data)
         this.address.since = data.addrSince
-        this.address.enough = data.addrEnough
+        this.address.enough = !!data.addrEnough
         this.team = {
             name: data.teamName,
         }
@@ -163,28 +161,27 @@ class Application {
         if (data.dlNumber)
             this.dl = {
                 number: data.dlNumber,
-                // commercial: Driver.dlClassList.filter(dlClass => dlClass.id === data.dlClass)[0].commercial,
-                commercial: data.dlCommercial,
+                commercial: !!data.dlCommercial,
                 class: data.dlClass,
                 state: data.dlState,
                 issuedOn: data.dlIssuedOn,
                 expiresOn: data.dlExpiresOn,
                 endorsement: data.dlEndors,
                 restriction: data.dlRestr,
-                denied: data.dlDenied,
+                denied: !!data.dlDenied,
                 deniedExpl: data.dlDeniedExpl,
-                revoked: data.dlRevoked,
+                revoked: !!data.dlRevoked,
                 revokedExpl: data.dlRevokedExpl,
             }
 
-        this.medCard = data.medCard
+        this.medCard = !!data.medCard
         if (this.medCard && data.mecExpiresOn)
             this.mec = {
                 nrcme: data.nrcme,
                 issuedOn: data.mecIssuedOn,
                 expiresOn: data.mecExpiresOn,
             }
-        this.underMeds = data.underMeds
+        this.underMeds = !!data.underMeds
         this.medList = data.medList
 
     }
@@ -335,15 +332,15 @@ class Application {
                 target = 'aplMECs'
                 idProp = 'aplId'
 
-                if (data['underMeds'] && !data['medList'])
+                if (data.underMeds && !data.medList)
                     error = 'Data Submission Error: Explanation not provided'
-                if (!data['underMeds']) data['medList'] = null
+                if (!data.underMeds) data.medList = null
 
                 if (!this.dl.commercial && data.mecAbsent && !data.expiresOn) mainData.medCard = false
                 delete data.mecAbsent
 
                 mainData.underMeds = data.underMeds
-                if (data.underMeds) mainData.medList = data.medList
+                mainData.medList = data.medList || null
                 delete data.underMeds
                 delete data.medList
 

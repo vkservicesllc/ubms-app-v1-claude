@@ -249,5 +249,8 @@ $form.submit(function(evt) {
     if (!$dropdown.addrState.dropdown('get value'))
         return alert("Applicant's address state is required")
 
+    if (!$dropdown.position.dropdown('get value'))
+        return alert("Applicant's position is required")
+
     this.submit()
 })
