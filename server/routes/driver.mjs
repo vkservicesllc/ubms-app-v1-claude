@@ -393,6 +393,15 @@ router.get('/application/:param?', async (req, res, next) => {
                 options.criminalExpl.text.input.disabled = false
                 hbs.criminalExplDisplay = ''
             }
+
+            const fields = [ 'citDate', 'citState', 'citReason', 'citOtherReason' ]
+            options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr })
+            options.citState.select.input.options = { valOpt: true }
+
+            const placeholders = {
+                citDate: 'MM/DD/YYYY',
+            }
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
 
         hbs.form = new ApplicationForm(options)

@@ -20,6 +20,7 @@ import {
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
+import Driver, { Application } from '../core/driver.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 
@@ -304,7 +305,7 @@ class ApplicationForm {
         group: 'duiInDecade',
         data: { 'Y': 'within the past 10 years', 'N': 'earlier than 10 years ago' },
         disabled,
-        label: 'The arrest occurred:',
+        label: 'The the most recent arrest occurred:',
     })
 
     static criminal = createYesNoForm({
@@ -328,6 +329,43 @@ class ApplicationForm {
         selector: appSelector,
         target: 'citation',
         name: 'citation',
+    })
+
+    static citDate = createDateForm({
+        selector: appSelector,
+        target: 'citDate',
+        name: 'citedOn',
+        required,
+        label: 'Cited on',
+    })
+
+    static citState = createUsStateForm({
+        selector: appSelector,
+        target: 'citState',
+        name: 'state',
+        required,
+        label: 'State',
+    })
+
+    static citReason = createForm({
+        selector: appSelector,
+        target: 'citReason',
+        type: 'select',
+        name: 'reason',
+        data: Application.citationList,
+        emptyOpt,
+        required: true,
+        label: 'Reason',
+    })
+
+    static citOtherReason = createForm({
+        selector: appSelector,
+        target: 'citOtherReason',
+        name: 'otherReason',
+        maxLength: 25,
+        required,
+        disabled,
+        label: 'Provide the reason',
     })
 
 }

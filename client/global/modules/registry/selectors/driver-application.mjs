@@ -55,6 +55,8 @@ const selector = {
             mecNumber: 'med-card-number',
             medList: 'medicine-list',
             criminalExpl: 'criminal-explanation',
+            citDate: 'citation-date',
+            citOtherReason: 'citation-other-reason',
         },
         select: {
             suffix: 'suffix',
@@ -63,6 +65,8 @@ const selector = {
             status: 'legal-status',
             position: 'position',
             dlState: 'driver-license-state',
+            citState: 'citation-state',
+            citReason: 'citation-reason',
         },
         radio: {
             gender: {

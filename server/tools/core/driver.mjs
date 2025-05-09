@@ -465,7 +465,24 @@ class Application {
         'Driver License',
         'Medical Card',
         'Legal Compliance',
+        'Safety',
+        'Driving Experience',
+        'Previous Employment',
+        'Driving Preference',
+        'Occupational Accidental Insurance',
+        'Business Entity',
+        'Emergency Contact',
     ]
+
+    static citationList = {
+        speed5: 'Speeding 5+',
+        speed10: 'Speeding 10+',
+        redLight: 'Red Light',
+        stopSign: 'Stop Sign',
+        noDL: 'No Driver License',
+        noMEC: 'No Medical Card',
+        other: 'Other',
+    }
 
 
     static #algorithm = 'SHA-224'
