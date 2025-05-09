@@ -75,26 +75,29 @@
                         </div>
                     </div>
                 </div>
+                <div id="citations"></div>
             </form>
-            <div class="row g-3 my-1">
-                <div class="col-md-4">
-                    {{{form.citDate.text.label}}}
-                    {{{form.citDate.text.input}}}
-                    <div class="form-text text-danger" id="cit-date-help"></div>
+            <div class="border-top" id="citation-form-sample" style="display: none;">
+                <div class="row g-3 my-1">
+                    <div class="col-md-4">
+                        {{{form.citDate.text.label}}}
+                        {{{form.citDate.text.input}}}
+                        <div class="form-text text-danger" id="cit-date-help"></div>
+                    </div>
+                    <div class="col-md-3">
+                        {{{form.citState.select.label}}}
+                        {{{form.citState.select.input}}}
+                    </div>
+                    <div class="col-md-5">
+                        {{{form.citReason.select.label}}}
+                        {{{form.citReason.select.input}}}
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    {{{form.citState.select.label}}}
-                    {{{form.citState.select.input}}}
-                </div>
-                <div class="col-md-5">
-                    {{{form.citReason.select.label}}}
-                    {{{form.citReason.select.input}}}
-                </div>
-            </div>
-            <div class="row g-3 my-1">
-                <div class="col-md-6">
-                    {{{form.citOtherReason.text.label}}}
-                    {{{form.citOtherReason.text.input}}}
+                <div class="row g-3 my-1" style="display: none;">
+                    <div class="col-md-6">
+                        {{{form.citOtherReason.text.label}}}
+                        {{{form.citOtherReason.text.input}}}
+                    </div>
                 </div>
             </div>
             <script type="module" src="/modules/application/legal-compliance.mjs"></script>
