@@ -270,6 +270,7 @@ export const createYesNoForm = (props = {}, type = 'radio') => createForm({
     type,
     data: { 'Y': 'Yes', 'N': 'No' },
     required,
+    requiredLabel: false,
     ...props,
     keys: ['yes', 'no'],
     validator: {

@@ -11,7 +11,8 @@ const lockedLabelProps = ['defaultClass', 'for']
 
 const createForm = (input = {}) => {
     const { selector, target, group, data, keys, defaultClass, id, required, disabled } = input
-    let { type, label, name, validator } = input
+    let { type, label, name, validator, requiredLabel } = input
+    if (typeof requiredLabel !== 'boolean') requiredLabel = true
 
     const lockedInput = {}, lockedLabel = {}
 
@@ -84,7 +85,7 @@ const createForm = (input = {}) => {
                 if (type !== 'radio' && !(type === 'checkbox' && data) && lockedInput[type].id)
                     lockedLabel[type].for = lockedInput[type].id
 
-                if (required) {
+                if (required && requiredLabel) {
                     const { defaultClass } = lockedLabel[type]
                     if (typeof defaultClass === 'string')
                         lockedLabel[type].defaultClass = [ defaultClass ]

@@ -18,6 +18,7 @@ const selector = {
         radio: {
             gender: 'gender',
             dlCategory: 'driver-license-category',
+            duiInDecade: 'had-dui-in-decade',
         },
     },
     id: {
@@ -92,6 +93,10 @@ const selector = {
             dui: {
                 yes: 'had-dui',
                 no: 'had-no-dui',
+            },
+            duiInDecade: {
+                yes: 'had-dui-in-decade',
+                no: 'had-dui-before-decade',
             },
             criminal: {
                 yes: 'had-criminal',

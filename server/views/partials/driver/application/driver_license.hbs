@@ -10,7 +10,7 @@
             <form id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
                 <div class="row g-3 my-1">
                     {{{form.dlCommercial.radio.label}}}
-                    <div class="col-md-12 mt-1">
+                    <div class="col-md-12 mt-0">
                         <div class="form-check form-check-inline">
                             {{{form.dlCommercial.radio.yes.input}}}
                             {{{form.dlCommercial.radio.yes.label}}}
@@ -58,10 +58,10 @@
                     </div>
                 </div>
                 <div class="row g-3 my-1">
-                    <label class="form-label input-required">
+                    <label class="form-label">
                         Have you ever been denied a license, permit, or privilege to operate a motor vehicle?
                     </label>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mt-0 mb-2">
                         <div class="form-check form-check-inline">
                             {{{form.dlDenied.radio.yes.input}}}
                             {{{form.dlDenied.radio.yes.label}}}
@@ -71,16 +71,16 @@
                             {{{form.dlDenied.radio.no.label}}}
                         </div>
                     </div>
-                    <div class="col-md-8" style="display: none;">
+                    <div class="col-md-8 mt-0" style="display: none;">
                         {{{form.dlDeniedExpl.text.label}}}
                         {{{form.dlDeniedExpl.text.input}}}
                     </div>
                 </div>
                 <div class="row g-3 my-1">
-                    <label class="form-label input-required">
+                    <label class="form-label">
                         Has your license, permit, or driving privilege ever been suspended or revoked?
                     </label>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mt-0 mb-2">
                         <div class="form-check form-check-inline">
                             {{{form.dlRevoked.radio.yes.input}}}
                             {{{form.dlRevoked.radio.yes.label}}}
@@ -90,7 +90,7 @@
                             {{{form.dlRevoked.radio.no.label}}}
                         </div>
                     </div>
-                    <div class="col-md-8" style="display: none;">
+                    <div class="col-md-8 mt-0" style="display: none;">
                         {{{form.dlRevokedExpl.text.label}}}
                         {{{form.dlRevokedExpl.text.input}}}
                     </div>

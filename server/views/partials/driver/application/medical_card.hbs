@@ -35,10 +35,10 @@
                     </div>
                 </div>
                 <div class="row g-3 my-1">
-                    <label class="form-label input-required">
+                    <label class="form-label">
                         Are you currently taking any medication that may impair your ability to safely operate a commercial motor vehicle?
                     </label>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mt-0 mb-2">
                         <div class="form-check form-check-inline">
                             {{{form.underMeds.radio.yes.input}}}
                             {{{form.underMeds.radio.yes.label}}}
@@ -48,7 +48,7 @@
                             {{{form.underMeds.radio.no.label}}}
                         </div>
                     </div>
-                    <div class="col-md-8"{{{medListDisplay}}}>
+                    <div class="col-md-8 mt-0"{{{medListDisplay}}}>
                         {{{form.medList.text.label}}}
                         {{{form.medList.text.input}}}
                     </div>

@@ -186,6 +186,7 @@ class Application {
         this.medList = data.medList
 
         this.dui = bool(data.dui)
+        this.duiInDecade = bool(data.dui)
         this.criminal = bool(data.criminal)
         this.criminalExpl = data.criminalExpl
         this.citation = bool(data.citation)
@@ -658,6 +659,7 @@ class Application {
                     'underMeds',
                     'medList',
                     'dui',
+                    'duiInDecade',
                     'criminal',
                     'criminalExpl',
                     'citation',

@@ -32,6 +32,7 @@ export const createDlCommercialFrom = (props = {}) => createYesNoForm({
     name: 'commercial',
     data: { 'Y': 'Commercial', 'N': 'Non-commercial' },
     label: 'Category',
+    requiredLabel: true,
     ...props,
 })
 
@@ -294,6 +295,16 @@ class ApplicationForm {
         selector: appSelector,
         target: 'dui',
         name: 'dui',
+    })
+
+    static duiInDecade = createYesNoForm({
+        selector: appSelector,
+        target: 'duiInDecade',
+        name: 'duiInDecade',
+        group: 'duiInDecade',
+        data: { 'Y': 'within the past 10 years', 'N': 'earlier than 10 years ago' },
+        disabled,
+        label: 'The arrest occurred:',
     })
 
     static criminal = createYesNoForm({

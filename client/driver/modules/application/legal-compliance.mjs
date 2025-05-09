@@ -10,4 +10,6 @@ const citationId = RS.citation
 
 const $card = $('#apl-card')
 
+onYesNoRadioChange(duiId, selector.class.radio.duiInDecade, 2)
+
 onYesNoRadioChange(criminalId, criminalExplId)

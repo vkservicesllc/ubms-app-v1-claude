@@ -9,10 +9,10 @@
         <div class="accordion-body">
             <form id="legal-form" action="{{actionUrl.legal}}" method="POST" autocomplete="off">
                 <div class="row g-3 my-1">
-                    <label class="form-label input-required">
+                    <label class="form-label">
                         Have you ever been arrested in connection with impaired or intoxicated driving (DUI/DWI)?
                     </label>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mt-0 mb-2">
                         <div class="form-check form-check-inline">
                             {{{form.dui.radio.yes.input}}}
                             {{{form.dui.radio.yes.label}}}
@@ -22,12 +22,23 @@
                             {{{form.dui.radio.no.label}}}
                         </div>
                     </div>
+                    <div class="col-md-8 mt-0"{{{duiInDecadeDisplay}}}>
+                        {{{form.duiInDecade.radio.label}}}
+                        <div class="form-check form-check-inline">
+                            {{{form.duiInDecade.radio.yes.input}}}
+                            {{{form.duiInDecade.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.duiInDecade.radio.no.input}}}
+                            {{{form.duiInDecade.radio.no.label}}}
+                        </div>
+                    </div>
                 </div>
                 <div class="row g-3 my-1">
-                    <label class="form-label input-required">
+                    <label class="form-label">
                         Have you ever been charged with or found guilty of a misdemeanor or felony offense?
                     </label>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mt-0 mb-2">
                         <div class="form-check form-check-inline">
                             {{{form.criminal.radio.yes.input}}}
                             {{{form.criminal.radio.yes.label}}}
@@ -37,16 +48,16 @@
                             {{{form.criminal.radio.no.label}}}
                         </div>
                     </div>
-                    <div class="col-md-8"{{{criminalExplDisplay}}}>
+                    <div class="col-md-8 mt-0"{{{criminalExplDisplay}}}>
                         {{{form.criminalExpl.text.label}}}
                         {{{form.criminalExpl.text.input}}}
                     </div>
                 </div>
                 <div class="row g-3 my-1">
-                    <label class="form-label input-required">
+                    <label class="form-label">
                         Have you been issued any traffic citations within the past 3 years?
                     </label>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mt-0 mb-2">
                         <div class="form-check form-check-inline">
                             {{{form.citation.radio.yes.input}}}
                             {{{form.citation.radio.yes.label}}}

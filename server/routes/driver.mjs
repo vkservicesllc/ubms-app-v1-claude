@@ -356,6 +356,7 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.button.two = buttonProps.save
             hbs.accordion.two = accordionProps.finished
             hbs.criminalExplDisplay = ' style="display: none;"'
+            hbs.duiInDecadeDisplay = ' style="display: none;"'
 
             const values = {
                 criminalExpl: application.criminalExpl,
@@ -363,11 +364,13 @@ router.get('/application/:param?', async (req, res, next) => {
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
 
             options.dui = { radio: {} }
+            options.duiInDecade = { radio: {} }
             options.criminal = { radio: {} }
             options.citation = { radio: {} }
 
             for (const prop of ['yes', 'no']) {
                 options.dui.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.duiInDecade.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options.criminal.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options.citation.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
@@ -378,6 +381,14 @@ router.get('/application/:param?', async (req, res, next) => {
             options.criminal.radio.no.input.checked = application.criminal === false
             options.citation.radio.yes.input.checked = application.citation === true
             options.citation.radio.no.input.checked = application.citation === false
+
+            if (application.dui === true) {
+                options.duiInDecade.radio.yes.input.disabled = false
+                options.duiInDecade.radio.no.input.disabled = false
+                options.duiInDecade.radio.yes.input.checked = application.duiInDecade === true
+                options.duiInDecade.radio.no.input.checked = application.duiInDecade === false
+                hbs.duiInDecadeDisplay = ''
+            }
             if (values.criminalExpl) {
                 options.criminalExpl.text.input.disabled = false
                 hbs.criminalExplDisplay = ''

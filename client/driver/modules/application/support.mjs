@@ -33,15 +33,18 @@ export const onSubmit = ($form, $help, $submit, $card, cb) => {
     })
 }
 
-export const onYesNoRadioChange = (id, explId) => {
+export const onYesNoRadioChange = (id, explSelector, depth = 1) => {
     const $radio = $(`${id.yes}, ${id.no}`)
-    const $expl = $(explId)
+    const $expl = $(explSelector)
 
     $radio.on('change', function() {
         const value = $(this).val()
         const action = value === 'Y' ? 'show' : 'hide'
         const disabled = action === 'hide'
+        let $parent = $expl.parent()
+        if (depth === 2) $parent = $parent.parent()
 
-        $expl.prop('disabled', disabled).parent()[action]()
+        $expl.prop('disabled', disabled)
+        $parent[action]()
     })
 }
