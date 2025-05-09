@@ -53,6 +53,7 @@ const selector = {
             mecExp: 'med-card-expiration-date',
             mecNumber: 'med-card-number',
             medList: 'medicine-list',
+            criminalExpl: 'criminal-explanation',
         },
         select: {
             suffix: 'suffix',
@@ -87,6 +88,18 @@ const selector = {
             underMeds: {
                 yes: 'meds-taken',
                 no: 'dmeds-not-taken',
+            },
+            dui: {
+                yes: 'had-dui',
+                no: 'had-no-dui',
+            },
+            criminal: {
+                yes: 'had-criminal',
+                no: 'had-no-criminal',
+            },
+            citation: {
+                yes: 'had-citation',
+                no: 'had-no-citation',
             },
         },
         checkbox: {

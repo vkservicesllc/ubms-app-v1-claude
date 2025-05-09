@@ -280,8 +280,8 @@ router.get('/application/:param?', async (req, res, next) => {
             options.dlEndrs.text.label.content = 'Endorsements <small>(if any)</small>'
             options.dlRestr.text.label.content = 'Restrictions <small>(if any)</small>'
             options.dlCommercial = { radio: { label: { class: formInstr.labelClassRequired } } }
-            options.dlDenied = { radio: { label: { class: formInstr.labelClassRequired } } }
-            options.dlRevoked = { radio: { label: { class: formInstr.labelClassRequired } } }
+            options.dlDenied = { radio: {} }
+            options.dlRevoked = { radio: {} }
 
             for (const prop of ['yes', 'no']) {
                 options.dlCommercial.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
@@ -355,7 +355,33 @@ router.get('/application/:param?', async (req, res, next) => {
         if (step >= 3) { /* LEGAL COMPLIANCE */
             hbs.button.two = buttonProps.save
             hbs.accordion.two = accordionProps.finished
+            hbs.criminalExplDisplay = ' style="display: none;"'
 
+            const values = {
+                criminalExpl: application.criminalExpl,
+            }
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
+
+            options.dui = { radio: {} }
+            options.criminal = { radio: {} }
+            options.citation = { radio: {} }
+
+            for (const prop of ['yes', 'no']) {
+                options.dui.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.criminal.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.citation.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            }
+
+            options.dui.radio.yes.input.checked = application.dui === true
+            options.dui.radio.no.input.checked = application.dui === false
+            options.criminal.radio.yes.input.checked = application.criminal === true
+            options.criminal.radio.no.input.checked = application.criminal === false
+            options.citation.radio.yes.input.checked = application.citation === true
+            options.citation.radio.no.input.checked = application.citation === false
+            if (values.criminalExpl) {
+                options.criminalExpl.text.input.disabled = false
+                hbs.criminalExplDisplay = ''
+            }
         }
 
         hbs.form = new ApplicationForm(options)

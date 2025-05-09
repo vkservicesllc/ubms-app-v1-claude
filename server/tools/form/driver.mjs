@@ -31,7 +31,6 @@ export const createDlCommercialFrom = (props = {}) => createYesNoForm({
     group: 'dlCategory',
     name: 'commercial',
     data: { 'Y': 'Commercial', 'N': 'Non-commercial' },
-    required,
     label: 'Category',
     ...props,
 })
@@ -247,8 +246,6 @@ class ApplicationForm {
         target: 'dlDenied',
         group: 'driverLicense',
         name: 'denied',
-        required,
-        // label: 'Have you ever been denied a license, permit, or privilege to operate a motor vehicle?',
     })
 
     static dlRevoked = createYesNoForm({
@@ -256,8 +253,6 @@ class ApplicationForm {
         target: 'dlRevoked',
         group: 'driverLicense',
         name: 'revoked',
-        required,
-        // label: 'Has your license, permit, or driving privilege ever been suspended or revoked?',
     })
 
     static dlDeniedExpl = createDlProblemExplForm('dlDeniedExpl', 'deniedExpl')
@@ -282,7 +277,6 @@ class ApplicationForm {
         selector: appSelector,
         target: 'underMeds',
         name: 'underMeds',
-        required,
         label: 'Impairing medications taken',
     })
 
@@ -294,6 +288,35 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Medication List',
+    })
+
+    static dui = createYesNoForm({
+        selector: appSelector,
+        target: 'dui',
+        name: 'dui',
+    })
+
+    static criminal = createYesNoForm({
+        selector: appSelector,
+        target: 'criminal',
+        name: 'criminal',
+    })
+
+    static criminalExpl = createForm({
+        selector: appSelector,
+        target: 'criminalExpl',
+        type: 'textarea',
+        name: 'criminalExpl',
+        maxLength: 100,
+        required,
+        disabled,
+        label: 'Explain what happened',
+    })
+
+    static citation = createYesNoForm({
+        selector: appSelector,
+        target: 'citation',
+        name: 'citation',
     })
 
 }

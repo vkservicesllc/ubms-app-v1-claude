@@ -8,9 +8,55 @@
     <div id="collapse-3" class="text-start accordion-collapse collapse{{accordion.three.body}}" data-bs-parent="#apl-accordion">
         <div class="accordion-body">
             <form id="legal-form" action="{{actionUrl.legal}}" method="POST" autocomplete="off">
-
-                LEGAL COMPLIANCE FORM...
-
+                <div class="row g-3 my-1">
+                    <label class="form-label input-required">
+                        Have you ever been arrested in connection with impaired or intoxicated driving (DUI/DWI)?
+                    </label>
+                    <div class="col-md-4">
+                        <div class="form-check form-check-inline">
+                            {{{form.dui.radio.yes.input}}}
+                            {{{form.dui.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.dui.radio.no.input}}}
+                            {{{form.dui.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <label class="form-label input-required">
+                        Have you ever been charged with or found guilty of a misdemeanor or felony offense?
+                    </label>
+                    <div class="col-md-4">
+                        <div class="form-check form-check-inline">
+                            {{{form.criminal.radio.yes.input}}}
+                            {{{form.criminal.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.criminal.radio.no.input}}}
+                            {{{form.criminal.radio.no.label}}}
+                        </div>
+                    </div>
+                    <div class="col-md-8"{{{criminalExplDisplay}}}>
+                        {{{form.criminalExpl.text.label}}}
+                        {{{form.criminalExpl.text.input}}}
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <label class="form-label input-required">
+                        Have you been issued any traffic citations within the past 3 years?
+                    </label>
+                    <div class="col-md-4">
+                        <div class="form-check form-check-inline">
+                            {{{form.citation.radio.yes.input}}}
+                            {{{form.citation.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.citation.radio.no.input}}}
+                            {{{form.citation.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">
