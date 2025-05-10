@@ -357,6 +357,11 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.accordion.two = accordionProps.finished
             hbs.criminalExplDisplay = ' style="display: none;"'
             hbs.duiInDecadeDisplay = ' style="display: none;"'
+            hbs.citationsDisplay = ' style="display: none;"'
+
+            //! This LIST will be obtained via
+            //? await application.citations()
+            const citations = [] //? may be redundant here and be obtained via api in client
 
             const values = {
                 criminalExpl: application.criminalExpl,
@@ -393,9 +398,13 @@ router.get('/application/:param?', async (req, res, next) => {
                 options.criminalExpl.text.input.disabled = false
                 hbs.criminalExplDisplay = ''
             }
+            if (application.citation === true) {
+                //!... there'll be more here
+                hbs.citationsDisplay = ''
+            }
 
             const fields = [ 'citDate', 'citState', 'citReason', 'citOtherReason' ]
-            options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr })
+            options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 6 })
             options.citState.select.input.options = { valOpt: true }
 
             const placeholders = {

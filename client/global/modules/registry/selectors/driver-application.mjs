@@ -19,6 +19,7 @@ const selector = {
             gender: 'gender',
             dlCategory: 'driver-license-category',
             duiInDecade: 'had-dui-in-decade',
+            citation: 'citation',
         },
     },
     id: {

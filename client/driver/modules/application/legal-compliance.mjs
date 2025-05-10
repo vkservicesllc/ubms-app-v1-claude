@@ -9,14 +9,20 @@ const criminalExplId = selector.id.text.criminalExpl
 const citationId = RS.citation
 
 const $card = $('#apl-card')
-const $citation = $('#citations')
+const $citations = $('#citations')
+const $citList = $('#citation-list')
+// const $citForm = $('#citation-form-sample')
 
 onYesNoRadioChange(duiId, selector.class.radio.duiInDecade, 2)
 
 onYesNoRadioChange(criminalId, criminalExplId)
 
-inputEvent(citationId, {
-    onChange() {
-        // add button and citation forms
+inputEvent(selector.class.radio.citation, {
+    onChange(value) {
+        const action = value === 'Y' ? 'show' : 'hide'
+
+        // $citList.html(action === 'show' ? $citForm : null)
+
+        $citations[action]()
     },
 })

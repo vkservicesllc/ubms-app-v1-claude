@@ -475,13 +475,14 @@ class Application {
     ]
 
     static citationList = {
-        speed5: 'Speeding 5+',
-        speed10: 'Speeding 10+',
-        redLight: 'Red Light',
-        stopSign: 'Stop Sign',
-        noDL: 'No Driver License',
-        noMEC: 'No Medical Card',
-        other: 'Other',
+        s5: 'Speeding 5+',
+        s10: 'Speeding 10+',
+        rl: 'Red Light',
+        ss: 'Stop Sign',
+        _dl: 'No Driver License',
+        _mec: 'No Medical Card',
+        _sb: 'No Seat Belt',
+        _: 'Other',
     }
 
 

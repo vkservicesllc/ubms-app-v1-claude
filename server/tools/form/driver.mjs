@@ -328,6 +328,7 @@ class ApplicationForm {
     static citation = createYesNoForm({
         selector: appSelector,
         target: 'citation',
+        group: 'citation',
         name: 'citation',
     })
 
