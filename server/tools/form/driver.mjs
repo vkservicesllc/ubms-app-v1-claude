@@ -6,6 +6,7 @@ import {
     createDobForm,
     createSsnForm,
     createGenderForm,
+    createMaritalStatus,
     createPhoneForm,
     createEmailForm,
     createSinceForm,
@@ -211,6 +212,8 @@ class ApplicationForm {
     static addrZip = createAddrZipForm({ selector: appSelector, target: 'addrZip' })
     static addrCity = createAddrCityForm({ selector: appSelector, target: 'addrCity' })
     static addrState = createAddrStateForm({ selector: appSelector, target: 'addrState' })
+
+    static marital = createMaritalStatus({ selector: appSelector, required })
 
     static status = createForm({
         selector: appSelector,

@@ -78,9 +78,9 @@ export const createPersonNameForm = (flag, props = {}) => {
 export const createGenderForm = (props = {}) => createForm({
     target: 'gender',
     group: 'gender',
+    type: 'select/radio',
     name: 'sex',
     label: 'Gender',
-    type: 'select/radio',
     ...props,
     data: Person.genderList,
     keys: ['male', 'female'],
@@ -89,6 +89,19 @@ export const createGenderForm = (props = {}) => createForm({
         rule: 'boolean',
         sanitizer: value => value === 'M',
     },
+})
+
+
+export const createMaritalStatus = (props = {}) => createForm({
+    target: 'marital',
+    group: 'marital',
+    type: 'select/radio',
+    name: 'marital',
+    label: 'Marital Status',
+    ...props,
+    data: Person.maritalList,
+    keys: ['single', 'married', 'divorced', 'separated', 'widowed'],
+    emptyOpt,
 })
 
 

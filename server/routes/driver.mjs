@@ -371,21 +371,21 @@ router.get('/application/:param?', async (req, res, next) => {
             options.dui = { radio: {} }
             options.duiInDecade = { radio: {} }
             options.criminal = { radio: {} }
-            options.citation = { radio: {} }
+            options.citations = { radio: {} }
 
             for (const prop of ['yes', 'no']) {
                 options.dui.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options.duiInDecade.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options.criminal.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                options.citation.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.citations.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
             options.dui.radio.yes.input.checked = application.dui === true
             options.dui.radio.no.input.checked = application.dui === false
             options.criminal.radio.yes.input.checked = application.criminal === true
             options.criminal.radio.no.input.checked = application.criminal === false
-            options.citation.radio.yes.input.checked = application.citation === true
-            options.citation.radio.no.input.checked = application.citation === false
+            options.citations.radio.yes.input.checked = application.citations === true
+            options.citations.radio.no.input.checked = application.citations === false
 
             if (application.dui === true) {
                 options.duiInDecade.radio.yes.input.disabled = false
@@ -398,7 +398,7 @@ router.get('/application/:param?', async (req, res, next) => {
                 options.criminalExpl.text.input.disabled = false
                 hbs.criminalExplDisplay = ''
             }
-            if (application.citation === true) {
+            if (application.citations === true) {
                 //!... there'll be more here
                 hbs.citationsDisplay = ''
             }

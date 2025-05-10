@@ -120,6 +120,7 @@ class Application {
                 this.gender = [ 'M', 'Male' ]
                 break
         }
+        this.marital = data.marital
         this.email = data.email
         this.phone = data.phone
         this.address = new Address(data)
@@ -189,7 +190,9 @@ class Application {
         this.duiInDecade = bool(data.dui)
         this.criminal = bool(data.criminal)
         this.criminalExpl = data.criminalExpl
-        this.citation = bool(data.citation)
+        this.citations = bool(data.citation)
+
+        this.accidents = bool(data.accidents)
 
     }
 
@@ -664,6 +667,7 @@ class Application {
                     'dob',
                     { aes: [ 'ssn', ssnSecret ] },
                     'sex',
+                    'marital',
                     'email',
                     'phone',
                     'addrEnough', //? could be redundant
@@ -680,7 +684,8 @@ class Application {
                     'duiInDecade',
                     'criminal',
                     'criminalExpl',
-                    'citation',
+                    'citations',
+                    'accidents',
                 ],
                 match,
             },

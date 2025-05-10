@@ -67,6 +67,14 @@ class Person {
         'F': 'Female',
     }
 
+    static maritalList = {
+        's': 'Single (Never Married)',
+        'm': 'Married',
+        'd': 'Divorced',
+        'p': 'Separated',
+        'w': 'Widowed',
+    }
+
 
     fullName(placeholder = 'FmLs') {
         if (!this.firstName || !this.lastName) return null

@@ -14,9 +14,11 @@ const selector = {
         },
         select: {
             gender: 'gender',
+            marital: 'marital-status',
         },
         radio: {
             gender: 'gender',
+            marital: 'marital-status',
             dlCategory: 'driver-license-category',
             duiInDecade: 'had-dui-in-decade',
             citation: 'citation',
@@ -62,6 +64,7 @@ const selector = {
         select: {
             suffix: 'suffix',
             gender: 'gender',
+            marital: 'marital-status',
             addrState: 'address-state',
             status: 'legal-status',
             position: 'position',
@@ -73,6 +76,13 @@ const selector = {
             gender: {
                 male: 'gender-male',
                 female: 'gender-female',
+            },
+            marital: {
+                single: 'marital-single',
+                married: 'marital-married',
+                separated: 'marital-separated',
+                divorced: 'marital-divorced',
+                widowed: 'marital-widowed',
             },
             status: {
                 citizen: 'citizen-status',
