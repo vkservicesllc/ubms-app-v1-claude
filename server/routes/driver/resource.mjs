@@ -13,7 +13,7 @@ import DriverForm, { ApplicationForm } from '../../tools/form/driver.mjs'
 const validateApplicant = [], validateApplicantProfile = [], validateApplicantAddress = []
 const applicantProfileFields = [
     'firstName', 'middleName', 'lastName', 'suffix',
-    'gender', 'dob', 'ssn', 'phone', 'email',
+    'gender', 'dob', 'ssn', 'marital', 'phone', 'email',
 ]
 const applicantAddressFields = [ 'address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince' ]
 const applicantFields = [ ...applicantProfileFields, 'position', ...applicantAddressFields, 'status', 'statusExp' ]
