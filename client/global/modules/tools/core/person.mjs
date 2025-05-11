@@ -68,7 +68,7 @@ class Person {
     }
 
     static maritalList = {
-        's': 'Single (Never Married)',
+        's': 'Single',
         'm': 'Married',
         'd': 'Divorced',
         'p': 'Separated',

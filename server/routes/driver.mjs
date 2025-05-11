@@ -109,16 +109,23 @@ router.get('/application/:param?', async (req, res, next) => {
         ]
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
         Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+        options.position.select.label.content = 'Desired Position'
         options.addrState.select.input.options = { valOpt: true }
         options.position.select.input.data = team.list.drivers.positions
+        options.marital = { radio: { label: { class: formInstr.labelClassRequired } } }
         options.status = { radio: { label: { class: formInstr.labelClassRequired } } }
+
+        for (const prop of ['single', 'married', 'divorced', 'separated', 'widowed']) {
+            options.marital.radio[prop] = { input: {}, label: {} }
+            options.marital.radio[prop].input.class = 'form-check-input status-radio'
+            options.marital.radio[prop].label.class = 'form-check-label'
+        }
 
         for (const prop of ['citizen', 'resident', 'authorized']) {
             options.status.radio[prop] = { input: {}, label: {} }
             options.status.radio[prop].input.class = 'form-check-input status-radio'
             options.status.radio[prop].label.class = 'form-check-label'
         }
-        options.position.select.label.content = 'Desired Position'
 
         hbs.form = new ApplicationForm(options)
 
