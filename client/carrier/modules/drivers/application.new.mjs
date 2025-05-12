@@ -32,6 +32,7 @@ const $dropdown = {
     company: $('#new-apl-company-dropdown'),
     suffix: $('#suffix-dropdown'),
     gender: $('#gender-dropdown'),
+    marital: $('#marital-dropdown'),
     addrState: $('#addr-state-dropdown'),
     position: $('#position-dropdown'),
 }
@@ -94,6 +95,7 @@ const disableApplicant = () => {
     $(`${selector.class.global}:not([type=hidden])`).val(null)
     $dropdown.suffix.dropdown('clear')
     $dropdown.gender.dropdown('clear')
+    $dropdown.marital.dropdown('clear')
     $dropdown.addrState.dropdown('clear')
     $dropdown.position.dropdown('clear')
     $('.new-apl-eligibility, .new-apl-legal-status').prop('checked', false).prop('disabled', true)
@@ -111,6 +113,7 @@ $registerApl.on('change', function() {
 
 $dropdown.suffix.dropdown()
 $dropdown.gender.dropdown()
+$dropdown.marital.dropdown()
 $dropdown.addrState.dropdown()
 $dropdown.position.dropdown()
 
@@ -245,6 +248,9 @@ $form.submit(function(evt) {
 
     if (!$dropdown.gender.dropdown('get value'))
         return alert("Applicant's gender is required")
+
+    if (!$dropdown.marital.dropdown('get value'))
+        return alert("Applicant's marital status is required")
 
     if (!$dropdown.addrState.dropdown('get value'))
         return alert("Applicant's address state is required")

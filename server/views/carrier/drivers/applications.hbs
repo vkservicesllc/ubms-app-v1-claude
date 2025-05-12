@@ -109,22 +109,23 @@
                                     {{{form.ssn.text.input}}}
                                 </div>
                                 <div class="four wide field">
-                                    {{{form.phone.text.label}}}
-                                    {{{form.phone.text.input}}}
+                                    {{{form.marital.select.label}}}
+                                    <div class="ui fluid clearable selection required dropdown" id="marital-dropdown">
+                                        {{{form.marital.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.marital}}}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="disabled field applicant-field" style="margin-top: 25px;">
-                                <h5 class="ui blue text header">Current US Address</h5>
+                                <h5 class="ui blue text header">Contact/Address in US</h5>
                             </div>
                             <div class="disabled fields applicant-field">
                                 <div class="four wide field">
-                                    {{{form.addrSince.text.label}}}
-                                    <div class="ui calendar" id="addr-since-calendar">
-                                        <div class="ui fluid input left icon">
-                                            {{{form.addrSince.text.input}}}
-                                            <i class="calendar icon"></i>
-                                        </div>
-                                    </div>
+                                    {{{form.phone.text.label}}}
+                                    {{{form.phone.text.input}}}
                                 </div>
                                 <div class="five wide field">
                                     {{{form.address1.text.label}}}
@@ -154,9 +155,18 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="four wide field">
+                                    {{{form.addrSince.text.label}}}
+                                    <div class="ui calendar" id="addr-since-calendar">
+                                        <div class="ui fluid input left icon">
+                                            {{{form.addrSince.text.input}}}
+                                            <i class="calendar icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="disabled field applicant-field" style="margin-top: 25px;">
-                                <h5 class="ui blue text header">Qualification</h5>
+                                <h5 class="ui blue text header">Eligibility/Qualification</h5>
                             </div>
                             <div class="disabled field applicant-field">
                                 <div class="ui checkbox">

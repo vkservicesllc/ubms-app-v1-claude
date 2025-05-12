@@ -122,13 +122,15 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
             hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=${req.session.team}`
 
             const driverPositions = team.list.drivers.positions
-            let suffixItems = '', genderItems = '', positionItems = '', addrStateItems = ''
+            let suffixItems = '', genderItems = '', maritalItems = '', positionItems = '', addrStateItems = ''
             const t = `\t`.repeat(11)
 
             for (const sfx in Person.suffixList)
                 suffixItems += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
             for (const sex in Person.genderList)
                 genderItems += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
+            for (const stat in Person.maritalList)
+                maritalItems += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
             for (const pos in driverPositions)
                 positionItems += `\n${t}<div class="item" data-value="${pos}" data-text="${pos}">${driverPositions[pos]}</div>`
             for (const state in Address.stateList)
@@ -153,11 +155,13 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
                 'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             ]
             options = updateFormOptions(options, ApplicationForm, fields, { disabled: true })
+            options.phone.text.label.content = 'Phone'
 
             hbs.form = new ApplicationForm(options)
             hbs.dropdown = {
                 suffix: suffixItems,
                 gender: genderItems,
+                marital: maritalItems,
                 position: positionItems,
                 addrState: addrStateItems,
             }
