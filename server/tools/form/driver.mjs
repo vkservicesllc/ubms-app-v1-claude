@@ -127,7 +127,6 @@ const createMecIssForm = (props = {}) => createDateForm({
     target: 'mecIss',
     group: 'medCard',
     name: 'issuedOn',
-    required,
     label: 'Exam Date',
     ...props,
 })
@@ -274,8 +273,8 @@ class ApplicationForm {
         },
     })
 
-    static mecIss = createMecIssForm({ selector: appSelector, disabled })
     static mecExp = createMecExpForm({ selector: appSelector, disabled })
+    static mecIss = createMecIssForm({ selector: appSelector })
     static mecNumber = createMecNumberForm({ selector: appSelector })
 
     static underMeds = createYesNoForm({
@@ -328,7 +327,7 @@ class ApplicationForm {
         label: 'Explain what happened',
     })
 
-    static citation = createYesNoForm({
+    static citations = createYesNoForm({
         selector: appSelector,
         target: 'citation',
         group: 'citation',

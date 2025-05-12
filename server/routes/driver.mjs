@@ -242,6 +242,7 @@ router.get('/application/:param?', async (req, res, next) => {
                 gender: application.gender[0],
                 dob: moment(application.dob).format('MM/DD/YYYY'),
                 ssn: formatSsn(application.ssn),
+                marital: application.marital,
                 phone: formatTel(application.phone),
                 email, position: application.position?.[0],
                 address1, address2, addrZip, addrCity,

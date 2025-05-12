@@ -190,7 +190,7 @@ class Application {
         this.duiInDecade = bool(data.dui)
         this.criminal = bool(data.criminal)
         this.criminalExpl = data.criminalExpl
-        this.citations = bool(data.citation)
+        this.citations = bool(data.citations)
 
         this.accidents = bool(data.accidents)
 
