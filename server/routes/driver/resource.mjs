@@ -15,8 +15,8 @@ const applicantProfileFields = [
     'firstName', 'middleName', 'lastName', 'suffix',
     'gender', 'dob', 'ssn', 'marital', 'phone', 'email',
 ]
-const applicantAddressFields = [ 'address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince' ]
-const applicantFields = [ ...applicantProfileFields, 'position', ...applicantAddressFields, 'status', 'statusExp' ]
+const applicantAddressFields = ['address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince']
+const applicantFields = [...applicantProfileFields, 'position', ...applicantAddressFields, 'status', 'statusExp']
 applicantFields.forEach(prop => validateApplicant.push(ApplicationForm[prop].validate()))
 applicantProfileFields.forEach(prop => validateApplicantProfile.push(ApplicationForm[prop].validate()))
 applicantAddressFields.forEach(prop => validateApplicantAddress.push(ApplicationForm[prop].validate()))
@@ -32,10 +32,13 @@ const applicantDlFields = [
 ]
 applicantDlFields.forEach(prop => validateApplicantDL.push(ApplicationForm[prop].validate()))
 
-//!.. to be continued
 const validateApplicantMEC = []
-const applicantMecFields = ['noMec', 'mecIss', 'mecExp', 'mecNumber', 'underMeds', 'medList']
+const applicantMecFields = ['noMec', 'mecExp', 'mecIss', 'mecNumber', 'underMeds', 'medList']
 applicantMecFields.forEach(prop => validateApplicantMEC.push(ApplicationForm[prop].validate()))
+
+const validateApplicantCompliance = []
+const applicantComplianceFields = ['dui', 'duiInDecade', 'criminal', 'criminalExpl', 'citations']
+applicantComplianceFields.forEach(prop => validateApplicantCompliance.push(ApplicationForm[prop].validate()))
 
 
 const dynamicValidator = {
@@ -55,6 +58,10 @@ const dynamicValidator = {
                 break
             case 'medical-card':
                 validators = validateApplicantMEC
+                break
+            case 'legal-compliance':
+                validators = validateApplicantCompliance
+                break
         }
 
         Promise.all(validators.map(validator => validator.run(req)))
