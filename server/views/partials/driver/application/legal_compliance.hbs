@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <div id="citations"{{{citationsDisplay}}}>
-                    <div id="citation-list"></div>
+                    <div class="border-bottom pb-4" id="citation-list"></div>
                     <div class="col-md-2 mt-4">
                         <div class="d-grid">
                             <button class="btn btn-primary"><i class="fas fa-plus"></i></button>
@@ -79,31 +79,33 @@
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-{{button.three.class}}" id="mec-submit">{{button.three.text}}</button>
+                            <button type="submit" class="btn btn-{{button.three.class}}" id="legal-submit">{{button.three.text}}</button>
                         </div>
                     </div>
                 </div>
             </form>
-            <div class="border-top mt-4" id="citation-form-sample" style="display: none;">
-                <div class="row g-3 my-1">
-                    <div class="col-md-4">
-                        {{{form.citDate.text.label}}}
-                        {{{form.citDate.text.input}}}
-                        <div class="form-text text-danger" id="cit-date-help"></div>
+            <div id="citation-form-sample" style="display: none;">
+                <div class="border-top mt-4">
+                    <div class="row g-3 my-1">
+                        <div class="col-md-4">
+                            {{{form.citDate.text.label}}}
+                            {{{form.citDate.text.input}}}
+                            <div class="form-text text-danger" id="cit-date-help"></div>
+                        </div>
+                        <div class="col-md-3">
+                            {{{form.citState.select.label}}}
+                            {{{form.citState.select.input}}}
+                        </div>
+                        <div class="col-md-5">
+                            {{{form.citReason.select.label}}}
+                            {{{form.citReason.select.input}}}
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        {{{form.citState.select.label}}}
-                        {{{form.citState.select.input}}}
-                    </div>
-                    <div class="col-md-5">
-                        {{{form.citReason.select.label}}}
-                        {{{form.citReason.select.input}}}
-                    </div>
-                </div>
-                <div class="row g-3 my-1" style="display: none;">
-                    <div class="col-md-6">
-                        {{{form.citOtherReason.text.label}}}
-                        {{{form.citOtherReason.text.input}}}
+                    <div class="row g-3 my-1" style="display: none;">
+                        <div class="col-md-6">
+                            {{{form.citOtherReason.text.label}}}
+                            {{{form.citOtherReason.text.input}}}
+                        </div>
                     </div>
                 </div>
             </div>

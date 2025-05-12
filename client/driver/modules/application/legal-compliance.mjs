@@ -1,5 +1,5 @@
 import { inputEvent } from '/modules/events/form.mjs'
-import { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
+import formId, { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const RS = selector.id.radio
@@ -11,7 +11,7 @@ const citationId = RS.citation
 const $card = $('#apl-card')
 const $citations = $('#citations')
 const $citList = $('#citation-list')
-// const $citForm = $('#citation-form-sample')
+const $citForm = $('#citation-form-sample')
 
 onYesNoRadioChange(duiId, selector.class.radio.duiInDecade, 2)
 
@@ -19,10 +19,21 @@ onYesNoRadioChange(criminalId, criminalExplId)
 
 inputEvent(selector.class.radio.citation, {
     onChange(value) {
-        const action = value === 'Y' ? 'show' : 'hide'
+        if (value === 'N') {
+            $citations.hide()
+            $citList.html(null)
+            return
+        }
 
-        // $citList.html(action === 'show' ? $citForm : null)
+        $.ajax('/api/driver/application/citations', {
+            method: 'POST',
+            data: { formId: formId() },
+            success(response) {
+                console.log(response)
+                $citList.html($citForm.html())
 
-        $citations[action]()
+                $citations.show()
+            },
+        })
     },
 })

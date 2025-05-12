@@ -35,6 +35,8 @@ const query = {
     aplAddresses: new Query(db.carrier, 'application_addresses'),
     aplDLs: new Query(db.carrier, 'application_DLs'),
     aplMECs: new Query(db.carrier, 'application_MECs'),
+    aplCitations: new Query(db.carrier, 'application_citations'),
+    aplAccidents: new Query(db.carrier, 'application_accidents'),
 }
 
 
@@ -460,6 +462,34 @@ class Application {
         await logDeletion(session, 'applications', this, { id, teamId, carrierId, userId })
 
         return { deleted }
+    }
+
+
+    data = async (target, session) => {
+        let error = sessionError({ ...session, user: true }, { branches: [ 'carrier', 'driver' ] })
+        if (error) return { error }
+
+        let src, fields = []
+        const filter = { match: { aplId: await this.id() } }
+
+        switch (target) {
+
+            case 'citations':
+                src = 'aplCitations'
+                fields = [
+                    hash('id'),
+                    'citedOn',
+                    'state',
+                    'reason',
+                    'otherReason',
+                ]
+                break
+
+        }
+
+        if (!src || !fields.length) return { error: 'Internal Server Error: Invalid Params' }
+
+        return { data: (await mysql.execute(query[src].select(fields, filter)))[0] }
     }
 
 

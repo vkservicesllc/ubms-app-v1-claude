@@ -7,7 +7,7 @@ import User, { Role } from '../tools/core/user.mjs'
 import Team from '../tools/core/team.mjs'
 import Company, { Owner } from '../tools/core/company.mjs'
 import Carrier from '../tools/core/carrier.mjs'
-import Driver from '../tools/core/driver.mjs'
+import Driver, { Application as DriverApplication } from '../tools/core/driver.mjs'
 import { capitalizeFirst } from '../../client/global/modules/tools/utils/string.mjs'
 
 export const sessionDetails = (req, res) => {
@@ -148,6 +148,23 @@ router.post('/source/:source/:_id?', User.verify, async (req, res) => {
     }
 
     res.send(result)
+})
+
+
+router.post('/driver/application/:target', (req, res, next) => {
+    if (!['carrier', 'driver'].includes(res.session.branch)) return throwErr.auth(res)
+
+    next()
+}, async (req, res) => {
+    try {
+        const { formId } = req.body
+        const application = await DriverApplication.data(res.session, { formId })
+        if (!application) return res.send({ error: 'DB Error: Application not found' })
+
+        res.send({ data: await application.data('citations', res.session) })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
 })
 
 
