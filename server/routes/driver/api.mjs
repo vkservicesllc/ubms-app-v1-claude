@@ -50,7 +50,7 @@ router.post('/application/:formId/:target', (req, res, next) => {
     const application = await Application.data(res.session, { formId })
     if (!application) return res.send({ error: 'DB Error: Application not found' })
 
-    res.send({ data: await application.data(target, { ...res.session, user: true }) })
+    res.send({ data: (await application.data(target, { ...res.session, user: true })).data })
 })
 
 

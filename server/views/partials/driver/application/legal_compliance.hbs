@@ -70,9 +70,9 @@
                 </div>
                 <div id="citations"{{{citationsDisplay}}}>
                     <div class="border-bottom pb-4" id="citation-list"></div>
-                    <div class="col-md-2 mt-4">
-                        <div class="d-grid">
-                            <button class="btn btn-primary"><i class="fas fa-plus"></i></button>
+                    <div class="d-flex">
+                        <div class="ms-auto pt-3">
+                            <button class="btn btn-secondary btn-sm" id="add-citation-button"><i class="fas fa-plus"></i></button>
                         </div>
                     </div>
                 </div>
@@ -84,9 +84,14 @@
                     </div>
                 </div>
             </form>
-            <div id="citation-form-sample" style="display: none;">
+            <div id="citation-form-template" style="display: none;">
                 <div class="border-top mt-4">
                     {{{form.citId.hidden.input}}}
+                    <div class="d-flex" id="delete-citation" style="display: none !important;">
+                        <div class="ms-auto pt-3">
+                            <button class="btn btn-danger btn-sm delete-citation-button" id="delete-citation-button"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-4">
                             {{{form.citDate.text.label}}}
@@ -102,8 +107,8 @@
                             {{{form.citReason.select.input}}}
                         </div>
                     </div>
-                    <div class="row g-3 my-1" style="display: none;">
-                        <div class="col-md-6">
+                    <div class="row g-3 my-1">
+                        <div class="col-md-6" style="display: none;">
                             {{{form.citOtherReason.text.label}}}
                             {{{form.citOtherReason.text.input}}}
                         </div>
