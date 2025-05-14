@@ -25,14 +25,21 @@ inputEvent(selector.class.radio.citation, {
             return
         }
 
-        $.ajax('/api/driver/application/citations', {
+        $.ajax(`/api/application/${formId()}/citations`, {
             method: 'POST',
-            data: { formId: formId() },
             success(response) {
-                console.log(response)
-                $citList.html($citForm.html())
+                const { data, error } = response
+                if (error) return alert(error)
 
-                $citations.show()
+                if (!data.length) {
+                    // add one empty form
+                } else {
+                    // copy, populate and paste forms with options to disable/hide or destroy
+                }
+
+                // $citList.html($citForm.html())
+
+                // $citations.show()
             },
         })
     },

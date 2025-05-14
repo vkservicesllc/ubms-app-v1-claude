@@ -412,7 +412,7 @@ router.get('/application/:param?', async (req, res, next) => {
             }
 
             const fields = [ 'citDate', 'citState', 'citReason', 'citOtherReason' ]
-            options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 6 })
+            options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
             options.citState.select.input.options = { valOpt: true }
 
             const placeholders = {

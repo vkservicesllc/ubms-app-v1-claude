@@ -40,5 +40,19 @@ router.post('/application/login/:formId', validateApplicantLogin, async (req, re
 })
 
 
+router.post('/application/:formId/:target', (req, res, next) => {
+    if (!req.session.application) return throwErr.auth(res)
+
+    next()
+}, async (req, res) => {
+    const { formId, target } = req.params
+
+    const application = await Application.data(res.session, { formId })
+    if (!application) return res.send({ error: 'DB Error: Application not found' })
+
+    res.send({ data: await application.data(target, { ...res.session, user: true }) })
+})
+
+
 
 export default router

@@ -466,7 +466,7 @@ class Application {
 
 
     data = async (target, session) => {
-        let error = sessionError({ ...session, user: true }, { branches: [ 'carrier', 'driver' ] })
+        let error = sessionError(session, { branches: [ 'carrier', 'driver' ] })
         if (error) return { error }
 
         let src, fields = []

@@ -334,6 +334,12 @@ class ApplicationForm {
         name: 'citation',
     })
 
+    static citId = createIdForm({
+        selector: appSelector,
+        target: 'citId',
+        group: 'citId',
+    })
+
     static citDate = createDateForm({
         selector: appSelector,
         target: 'citDate',

@@ -12,6 +12,10 @@ const selector = {
             driverLicense: 'driver-license',
             medCard: 'medical-card',
         },
+        hidden: {
+            citId: 'citation-id',
+            accId: 'accident-id',
+        },
         select: {
             gender: 'gender',
             marital: 'marital-status',
@@ -28,6 +32,8 @@ const selector = {
         hidden: {
             id: 'id',
             deleteId: 'delete-id',
+            citId: 'citation-id',
+            accId: 'accident-id',
         },
         text: {
             // formId: 'form',
