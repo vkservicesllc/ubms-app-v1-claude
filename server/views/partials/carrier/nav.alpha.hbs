@@ -1,7 +1,7 @@
 {{> head}}
 
     <div class="ui left visible vertical inverted labeled icon sidebar menu" id="left-nav">
-        {{#if (eq teamSelect false)}}
+        {{#if (and (eq teamNav true) (eq teamSelect false)) }}
         <a class="item" id="team-link">
             <i class="people arrows icon"></i>
             Teams

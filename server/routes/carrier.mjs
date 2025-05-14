@@ -80,6 +80,7 @@ router.use((req, res, next) => {
                 hbs.team = {}
                 hbs.teamSelect = false
                 hbs.teamDropdown = ''
+                hbs.teamNav = true
 
                 const props = [
                     'name',
@@ -89,11 +90,13 @@ router.use((req, res, next) => {
                     hbs.team[prop] = team[prop]
 
                 const settings = await user.settings(res.session)
+                const { applied: teams } = await user.teams(res.session)
+                if (teams.length === 1) hbs.teamNav = false
+
                 if (settings?.carrier?.teamSelect == '1') {
-                    hbs.teamSelect = true
-                    const { applied: teams } = await user.teams(res.session)
                     const t = `\t`.repeat(2)
 
+                    hbs.teamSelect = true
                     hbs.teamDropdown = `<span class="item" id="team-item">${team.name}</span>`
                     if (teams.length > 1) {
                         hbs.teamDropdown = `<div class="ui inline dropdown item" id="team-item">`
@@ -162,11 +165,15 @@ router.get('/', async (req, res, next) => {
             return res.redirect(url)
         }
 
+        const { applied: teams } = await user.teams(res.session)
+        if (teams.length === 1) {
+            req.session.team = teams[0]._id
+            return res.redirect('/')
+        }
+
         const key = 'team'
         let { hbs } = res
         hbs = await hbs.set(key)
-
-        const { applied: teams } = await user.teams(res.session)
         const t = `\t`.repeat(8)
         let menu = ''
 
