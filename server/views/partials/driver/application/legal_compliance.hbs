@@ -72,7 +72,7 @@
                     <div class="border-bottom pb-4" id="citation-list"></div>
                     <div class="d-flex">
                         <div class="ms-auto pt-3">
-                            <button class="btn btn-secondary btn-sm" id="add-citation-button"><i class="fas fa-plus"></i></button>
+                            <button type="button" class="btn btn-secondary btn-sm" id="add-citation-button"><i class="fas fa-plus"></i></button>
                         </div>
                     </div>
                 </div>
@@ -89,14 +89,14 @@
                     {{{form.citId.hidden.input}}}
                     <div class="d-flex" id="delete-citation" style="display: none !important;">
                         <div class="ms-auto pt-3">
-                            <button class="btn btn-danger btn-sm delete-citation-button" id="delete-citation-button"><i class="fas fa-trash"></i></button>
+                            <button type="button" class="btn btn-danger btn-sm delete-citation-button" data-bs-toggle="modal" data-bs-target="#delete-citation-modal"><i class="fas fa-close"></i></button>
                         </div>
                     </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-4">
                             {{{form.citDate.text.label}}}
                             {{{form.citDate.text.input}}}
-                            <div class="form-text text-danger" id="cit-date-help"></div>
+                            <div class="form-text text-danger"></div>
                         </div>
                         <div class="col-md-3">
                             {{{form.citState.select.label}}}
@@ -115,7 +115,25 @@
                     </div>
                 </div>
             </div>
-            <script type="module" src="/modules/application/legal-compliance.mjs"></script>
+            <div class="modal fade" id="delete-citation-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Delete Citation</h1>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="citation-delete-target">
+                            <p class="my-1"><small>Are you sure you want to remove the following citation?</small></p>
+                            <p class="my-1" id="citation-desc">Citation on the date in the state</p>
+                            <p class="my-1"><small>This change will take effect after you click the "{{button.three.text}}" button</small></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id="remove-citation-button">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div><script type="module" src="/modules/application/legal-compliance.mjs"></script>
         </div>
     </div>
 </div>

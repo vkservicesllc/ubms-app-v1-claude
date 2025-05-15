@@ -329,9 +329,9 @@ class ApplicationForm {
 
     static citations = createYesNoForm({
         selector: appSelector,
-        target: 'citation',
-        group: 'citation',
-        name: 'citation',
+        target: 'citations',
+        group: 'citations',
+        name: 'citations',
     })
 
     static citId = createIdForm({
@@ -375,6 +375,13 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Provide the reason',
+    })
+
+    static accidents = createYesNoForm({
+        selector: appSelector,
+        target: 'accidents',
+        group: 'accidents',
+        name: 'accidents',
     })
 
 }

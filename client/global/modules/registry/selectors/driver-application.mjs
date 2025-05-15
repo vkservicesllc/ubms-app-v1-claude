@@ -25,7 +25,8 @@ const selector = {
             marital: 'marital-status',
             dlCategory: 'driver-license-category',
             duiInDecade: 'had-dui-in-decade',
-            citation: 'citation',
+            citations: 'citations',
+            accidents: 'accidents',
         },
     },
     id: {
@@ -123,9 +124,13 @@ const selector = {
                 yes: 'had-criminal',
                 no: 'had-no-criminal',
             },
-            citation: {
-                yes: 'had-citation',
-                no: 'had-no-citation',
+            citations: {
+                yes: 'had-citations',
+                no: 'had-no-citations',
+            },
+            accidents: {
+                yes: 'had-accidents',
+                no: 'had-no-accidents',
             },
         },
         checkbox: {
