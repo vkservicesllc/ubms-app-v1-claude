@@ -350,7 +350,7 @@ class Application {
                 idProp = 'aplId'
 
                 if (data.underMeds && !data.medList)
-                    error = 'Data Submission Error: Explanation not provided'
+                    error = 'Data Submission Error: Medical List not provided'
                 if (!data.underMeds) data.medList = null
 
                 if (!this.dl.commercial && data.mecAbsent && !data.expiresOn) mainData.medCard = false
@@ -411,6 +411,23 @@ class Application {
                         currentUpdateLog: await this.log('updateLog'),
                     })
                 }
+                break
+
+            case 'legal-compliance':
+                if (data.dui && typeof data.duiInDecade !== 'boolean')
+                    error = 'Data Submission Error: Explanation not provided for DUI'
+                if (!data.dui) data.duiInDecade = null
+
+                if (data.criminal && !data.criminalExpl)
+                    error = 'Data Submission Error: Explanation not provided for Criminal Record'
+                if (!data.criminal) data.criminalExpl = null
+
+                if (data.citations) {
+                    //
+                } else {
+                    //? delete all citations tied to the aplId
+                }
+
                 break
 
 
