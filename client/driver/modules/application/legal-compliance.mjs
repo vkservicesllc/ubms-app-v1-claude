@@ -17,6 +17,8 @@ const $deleteTarget = $('#citation-delete-target')
 const $removeButton = $('#remove-citation-button')
 const $deleteModal = $('#delete-citation-modal')
 
+const countCitList = () => $citList.children().length
+
 
 if ($(citationsId.yes).is(':checked')) drawCitationForms()
 
@@ -49,6 +51,37 @@ $('#remove-citation-button').on('click', () => {
     if (!$citList.html()) drawCitationForms(true)
 })
 
+$addButton.click(function() {
+    const i = countCitList()
+
+    const $clone = $citForm.clone().attr('id', `citation-form-${i}`)
+
+    $clone.find('input, select').each(function() {
+        const $field = $(this)
+
+        const id = $field.attr('id')
+        if (id) {
+            const newId = `${id}-${i}`
+
+            $field.attr('id', newId)
+            $clone.find(`label[for="${id}"]`).attr('for', newId)
+        }
+
+        const name = $field.attr('name')
+        $field.attr('name', `${name}[${i}]`)
+    })
+
+    $clone.show().find('.delete-citation-button')
+        .on('click', function() {
+            const target = $(this).parent().parent().parent().parent().attr('id')
+
+            $deleteTarget.val(target)
+        })
+    $citList.append($clone)
+
+    $('.delete-citation-button').parent().parent().attr('style', '')
+})
+
 
 function drawCitationForms(empty = false) {
     $('.delete-citation-button').off('click')
@@ -61,22 +94,22 @@ function drawCitationForms(empty = false) {
 
 
                 //!TEMP
-                data = [
-                    // {
-                    //     _id: 'abc123',
-                    //     citedOn: '2024-10-18',
-                    //     state: 'LA',
-                    //     reason: 's10',
-                    //     otherReason: null,
-                    // },
-                    // {
-                    //     _id: 'xyz321',
-                    //     citedOn: '2022-03-15',
-                    //     state: 'IL',
-                    //     reason: '_',
-                    //     otherReason: 'Stupid reason',
-                    // },
-                ]
+                // data = [
+                //     {
+                //         _id: 'abc123',
+                //         citedOn: '2024-10-18',
+                //         state: 'LA',
+                //         reason: 's10',
+                //         otherReason: null,
+                //     },
+                //     {
+                //         _id: 'xyz321',
+                //         citedOn: '2022-03-15',
+                //         state: 'IL',
+                //         reason: '_',
+                //         otherReason: 'Stupid reason',
+                //     },
+                // ]
 
 
             if (empty) data = []
