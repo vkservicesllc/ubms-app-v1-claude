@@ -16,9 +16,15 @@ const selector = {
             citId: 'citation-id',
             accId: 'accident-id',
         },
+        text: {
+            citDate: 'citation-date',
+            citOtherReason: 'citation-other-reason',
+        },
         select: {
             gender: 'gender',
             marital: 'marital-status',
+            citState: 'citation-state',
+            citReason: 'citation-reason',
         },
         radio: {
             gender: 'gender',
@@ -33,6 +39,7 @@ const selector = {
         hidden: {
             id: 'id',
             deleteId: 'delete-id',
+            appliedOn: 'applied-on',
             citId: 'citation-id',
             accId: 'accident-id',
         },

@@ -2,11 +2,13 @@ require('dotenv').config({ path: '../../.env' })
 const { DB__MYSQL_AES_SSN } = process.env
 const ssnSecret = DB__MYSQL_AES_SSN
 
+
 /* Settings */
 import { addrBook } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
 /* Tools */
+import moment from 'moment'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Individual from './individual.mjs'
@@ -101,6 +103,9 @@ class Application {
         this.formId = data.formId
         this.position = [ data.position, Driver.positionList[data.position] ]
         this.condition = data.condition
+        this.appliedAt = data.createdAt
+        this.appliedOn = moment(data.createdAt).format('YYYY-MM-DD')
+
         this.legalStatus = [ data.status, data.statusExpiresOn ]
         this.step = data.step
         this.firstName = firstName
@@ -687,6 +692,7 @@ class Application {
                     'formId',
                     'condition',
                     'step',
+                    'createdAt',
                     'status',
                     'statusExpiresOn',
                     'position',

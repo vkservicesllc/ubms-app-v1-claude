@@ -1,14 +1,20 @@
-import { inputEvent } from '/modules/events/form.mjs'
+import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import formId, { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const RS = selector.id.radio
+const TS = selector.class.text, SS = selector.class.select
 const duiId = RS.dui
 const criminalId = RS.criminal
 const criminalExplId = selector.id.text.criminalExpl
 const citationsId = RS.citations
 
 const $card = $('#apl-card')
+const $form = $('#legal-form')
+const $submit = $('#legal-submit')
+const $help = {
+    form: $('#legal-form-help'),
+}
 const $citations = $('#citations')
 const $citList = $('#citation-list')
 const $citForm = $('#citation-form-template')
@@ -16,6 +22,7 @@ const $addButton = $('#add-citation-button')
 const $deleteTarget = $('#citation-delete-target')
 const $removeButton = $('#remove-citation-button')
 const $deleteModal = $('#delete-citation-modal')
+const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const countCitList = () => $citList.children().length
 
@@ -49,16 +56,16 @@ $removeButton.click(() => {
     $deleteModal.modal('hide')
 
     if (!$citList.html()) $citList.append(cloneCitForm())
-    resetDeleteButtons()
+    resetEvents()
 })
 
 $addButton.click(() => {
     $citList.append(cloneCitForm(countCitList()))
-    resetDeleteButtons()
+    resetEvents()
 })
 
 
-//! Missing event listeners for Citation Form
+onSubmit($form, $help, $submit, $card)
 
 
 function cloneCitForm(i = 0, data = null) {
@@ -120,7 +127,7 @@ function drawCitationForms() {
             const count = data.length
             for (let i = 0; i < count; i++) $citList.append(cloneCitForm(i, data))
 
-            resetDeleteButtons()
+            resetEvents()
             if (countCitList())
 
             $citations.show()
@@ -129,7 +136,7 @@ function drawCitationForms() {
 }
 
 
-function resetDeleteButtons() {
+function resetEvents() {
     $('.delete-citation-button')
         .off('click')
         .on('click', function() {
@@ -139,4 +146,57 @@ function resetDeleteButtons() {
         })
         .parent().parent()
         .attr('style', countCitList() > 1 ? '' : 'display: none !important;')
+
+    inputEvent(TS.citDate, {
+        mask: '99/99/9999',
+        placeholder: 'MM/DD/YYYY',
+        onInput(date, $date) {
+            $date.removeClass('is-valid is-invalid').next().text(null)
+        },
+        onChange(date, $date) {
+            if (date) {
+                const $help = $date.next()
+                date = moment(date, 'MM/DD/YYYY', true)
+
+                if (!date.isValid()) {
+                    $date.addClass('is-invalid')
+                    $help.text('* Invalid date')
+                } else {
+                    const today = moment()
+
+                    if (date.isAfter(today)) {
+                        $date.addClass('is-invalid')
+                        $help.text('* Future date forbidden')
+                    } else {
+                        const limit = moment(appliedOn).clone().subtract(3, 'years')
+
+                        if (date.isBefore(limit)) {
+                            $date.addClass('is-invalid')
+                            $help.text('* Over 3 years ago')
+                        } else $date.addClass('is-valid')
+                    }
+                }
+            }
+
+            if (check($form)) $help.form.hide().html(null)
+        },
+        onBlur,
+    })
+
+    selectEvent(SS.citState, { fill: true, onChange })
+
+    selectEvent(SS.citReason, {
+        fill: true,
+        onChange(reason, $reason) {
+            onChange(reason, $reason)
+
+            const $otherReason = $reason.parent().parent().next().find(TS.citOtherReason)
+            $otherReason.prop('disabled', true).parent().hide()
+
+            if (reason === '_')
+                $otherReason.prop('disabled', false).parent().show()
+        },
+    })
+
+    inputEvent(TS.citOtherReason, { onInput, onChange })
 }

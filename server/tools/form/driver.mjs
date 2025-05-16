@@ -194,6 +194,12 @@ class ApplicationForm {
         label: 'Position',
     })
 
+    static appliedOn = createForm({
+        selector: appSelector,
+        target: 'appliedOn',
+        type: 'hidden',
+    })
+
     static firstName = createPersonNameForm('first', { selector: appSelector, group: 'name' })
     static middleName = createPersonNameForm('middle', { selector: appSelector, group: 'name' })
     static lastName = createPersonNameForm('last', { selector: appSelector, group: 'name' })
@@ -343,6 +349,7 @@ class ApplicationForm {
     static citDate = createDateForm({
         selector: appSelector,
         target: 'citDate',
+        group: 'citDate',
         name: 'citedOn',
         required,
         label: 'Cited on',
@@ -351,6 +358,7 @@ class ApplicationForm {
     static citState = createUsStateForm({
         selector: appSelector,
         target: 'citState',
+        group: 'citState',
         name: 'state',
         required,
         label: 'State',
@@ -359,6 +367,7 @@ class ApplicationForm {
     static citReason = createForm({
         selector: appSelector,
         target: 'citReason',
+        group: 'citReason',
         type: 'select',
         name: 'reason',
         data: Application.citationList,
@@ -370,6 +379,7 @@ class ApplicationForm {
     static citOtherReason = createForm({
         selector: appSelector,
         target: 'citOtherReason',
+        group: 'citOtherReason',
         name: 'otherReason',
         maxLength: 25,
         required,

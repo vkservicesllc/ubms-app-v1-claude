@@ -232,7 +232,15 @@ router.get('/application/:param?', async (req, res, next) => {
             hbs.accordion[ct] = accordionProps.pending
         }
 
-        let options = {}
+        let options = {
+            appliedOn: {
+                hidden: {
+                    input: {
+                        value: application.appliedOn,
+                    },
+                },
+            },
+        }
 
         {
             const { firstName, middleName, lastName, suffix, email } = application
