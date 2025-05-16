@@ -40,7 +40,7 @@ inputEvent(selector.class.radio.citations, {
 
 $deleteModal.on('hidden.bs.modal', () => $deleteTarget.val(null))
 
-$('#remove-citation-button').on('click', () => {
+$removeButton.click(() => {
     document.activeElement.blur()
     const target = $deleteTarget.val()
 
@@ -48,12 +48,21 @@ $('#remove-citation-button').on('click', () => {
     $deleteTarget.val(null)
     $deleteModal.modal('hide')
 
-    if (!$citList.html()) drawCitationForms(true)
+    if (!$citList.html()) $citList.append(cloneCitForm())
+    resetDeleteButtons()
 })
 
-$addButton.click(function() {
-    const i = countCitList()
+$addButton.click(() => {
+    $citList.append(cloneCitForm(countCitList()))
+    resetDeleteButtons()
+})
 
+
+//! Missing event listeners for Citation Form
+
+
+function cloneCitForm(i = 0, data = null) {
+    const tsi = `${Date.now()}-${i}`
     const $clone = $citForm.clone().attr('id', `citation-form-${i}`)
 
     $clone.find('input, select').each(function() {
@@ -61,58 +70,42 @@ $addButton.click(function() {
 
         const id = $field.attr('id')
         if (id) {
-            const newId = `${id}-${i}`
+            const newId = `${id}-${tsi}`
 
             $field.attr('id', newId)
             $clone.find(`label[for="${id}"]`).attr('for', newId)
         }
 
         const name = $field.attr('name')
-        $field.attr('name', `${name}[${i}]`)
+        $field.attr('name', `${name}[]`)
+
+        if (data) {
+            const value = data[i][name]
+
+            if (value) {
+                $field.val(value)
+
+                if ($field.is('select'))
+                    $field.find('option[value=""]').remove()
+
+                if ($field.prop('disabled'))
+                    $field.prop('disabled', false).parent().show()
+
+                $field.addClass('is-valid')
+            }
+        }
     })
 
-    $clone.show().find('.delete-citation-button')
-        .on('click', function() {
-            const target = $(this).parent().parent().parent().parent().attr('id')
-
-            $deleteTarget.val(target)
-        })
-    $citList.append($clone)
-
-    $('.delete-citation-button').parent().parent().attr('style', '')
-})
+    return $clone.show()
+}
 
 
-function drawCitationForms(empty = false) {
-    $('.delete-citation-button').off('click')
-
+function drawCitationForms() {
     $.ajax(`/api/application/${formId()}/citations`, {
         method: 'POST',
         success(response) {
-            let { data, error } = response
+            const { data, error } = response
             if (error) return alert(error)
-
-
-                //!TEMP
-                // data = [
-                //     {
-                //         _id: 'abc123',
-                //         citedOn: '2024-10-18',
-                //         state: 'LA',
-                //         reason: 's10',
-                //         otherReason: null,
-                //     },
-                //     {
-                //         _id: 'xyz321',
-                //         citedOn: '2022-03-15',
-                //         state: 'IL',
-                //         reason: '_',
-                //         otherReason: 'Stupid reason',
-                //     },
-                // ]
-
-
-            if (empty) data = []
 
             if (!data.length)
                 data.push({
@@ -125,51 +118,25 @@ function drawCitationForms(empty = false) {
             else data.forEach(row => row.citedOn = moment(row.citedOn).format('MM/DD/YYYY'))
 
             const count = data.length
-            for (let i = 0; i < count; i++) {
-                const $clone = $citForm.clone().attr('id', `citation-form-${i}`)
+            for (let i = 0; i < count; i++) $citList.append(cloneCitForm(i, data))
 
-                $clone.find('input, select').each(function() {
-                    const $field = $(this)
-
-                    const id = $field.attr('id')
-                    if (id) {
-                        const newId = `${id}-${i}`
-
-                        $field.attr('id', newId)
-                        $clone.find(`label[for="${id}"]`).attr('for', newId)
-                    }
-
-                    const name = $field.attr('name')
-                    $field.attr('name', `${name}[${i}]`)
-
-                    const value = data[i][name]
-                    if (value) {
-                        $field.val(value)
-
-                        if ($field.is('select'))
-                            $field.find('option[value=""]').remove()
-
-                        if ($field.prop('disabled'))
-                            $field.prop('disabled', false).parent().show()
-
-                        $field.addClass('is-valid')
-                    }
-                })
-
-                $clone.show()
-                $citList.append($clone)
-            }
-
-            $('.delete-citation-button')
-                .on('click', function() {
-                    const target = $(this).parent().parent().parent().parent().attr('id')
-
-                    $deleteTarget.val(target)
-                })
-                .parent().parent()
-                .attr('style', data.length > 1 ? '' : 'display: none !important;')
+            resetDeleteButtons()
+            if (countCitList())
 
             $citations.show()
         },
     })
+}
+
+
+function resetDeleteButtons() {
+    $('.delete-citation-button')
+        .off('click')
+        .on('click', function() {
+            const target = $(this).parent().parent().parent().parent().attr('id')
+
+            $deleteTarget.val(target)
+        })
+        .parent().parent()
+        .attr('style', countCitList() > 1 ? '' : 'display: none !important;')
 }
