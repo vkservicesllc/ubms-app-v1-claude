@@ -1,7 +1,9 @@
 const router = require('express').Router()
+const { body } = require('express-validator')
 const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
+import moment from 'moment'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
@@ -39,6 +41,12 @@ applicantMecFields.forEach(prop => validateApplicantMEC.push(ApplicationForm[pro
 const validateApplicantCompliance = []
 const applicantComplianceFields = ['dui', 'duiInDecade', 'criminal', 'criminalExpl', 'citations']
 applicantComplianceFields.forEach(prop => validateApplicantCompliance.push(ApplicationForm[prop].validate()))
+validateApplicantCompliance.push(body('citedOn').optional({ nullable: true }).isArray().withMessage('"citedOn" must be an array'))
+validateApplicantCompliance.push(body('citedOn.*').optional().customSanitizer(value => moment(value, 'MM/DD/YYYY').format('YYYY-MM-DD')))
+
+const validateApplicantSafety = []
+const applicantSafetyFields = ['accidents']
+applicantSafetyFields.forEach(prop => validateApplicantSafety.push(ApplicationForm[prop].validate()))
 
 
 const dynamicValidator = {
@@ -61,6 +69,9 @@ const dynamicValidator = {
                 break
             case 'legal-compliance':
                 validators = validateApplicantCompliance
+                break
+            case 'safety':
+                validators = validateApplicantSafety
                 break
         }
 
@@ -101,7 +112,7 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
         const { formId, step } = req.params
         const application = await Application.data(session, { formId })
         if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
-
+return res.send(req.body)
         const { error } = await application.modify(session, step, req.body)
         if (error) return throwErr.server(res, error)
 
