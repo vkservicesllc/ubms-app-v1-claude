@@ -164,9 +164,10 @@ const onChange = (value, $el) => {
     const required = $el.prop('required')
     if (value && required) $el.addClass('is-valid')
 
-    const id = $el.attr('id')
+    let id = $el.attr('id')
+    id = `#${id}`
     if (value !== null && id !== ssnId && id !== dobId && id !== statusExpId)
-        sessionStorage.setItem(id, value)
+        sessionStorage.setItem(id.replace('#', ''), value)
 }
 const onBlur = (value, $el) => onChange(value, $el)
 
@@ -196,7 +197,7 @@ emailEvent(emailId, {
         $email.removeClass('is-valid is-invalid')
     },
     onChange(email, valid, $email) {
-        if (!email || (email && valid)) sessionStorage.setItem(emailId, email)
+        if (!email || (email && valid)) sessionStorage.setItem(emailId.replace('#', ''), email)
 
         if (email)
             if (!valid) {
@@ -234,7 +235,7 @@ inputEvent(dobId, {
             }
 
             if (invalid) $help.dob.text(invalid)
-            else sessionStorage.setItem(dobId, dob)
+            else sessionStorage.setItem(dobId.replace('#', ''), dob)
         }
 
         if (check($form)) $help.form.hide().html(null)
@@ -289,7 +290,7 @@ inputEvent(addrSinceId, {
                     $help.addrSince.text('* Future date forbidden')
                 } else {
                     $since.addClass('is-valid')
-                    sessionStorage.setItem(addrSinceId, since)
+                    sessionStorage.setItem(addrSinceId.replace('#', ''), since)
                 }
             }
         }
