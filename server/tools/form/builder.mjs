@@ -211,7 +211,7 @@ const createForm = (input = {}) => {
 
         if (typeof validator === 'object') {
             const { caps, sanitizer, rule, match, length, custom } = validator
-if (true) console.log({ name, rule })
+
             if (data) {
                 const values = Object.keys(data)
 
