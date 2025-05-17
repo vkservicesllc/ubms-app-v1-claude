@@ -340,47 +340,54 @@ class ApplicationForm {
         name: 'citations',
     })
 
-    static citId = createIdForm({
+    static _citId = createIdForm({
         selector: appSelector,
         target: 'citId',
         group: 'citId',
+        name: '_id[]',
     })
 
-    static citDate = createDateForm({
+    static _citDate = createDateForm({
         selector: appSelector,
         target: 'citDate',
         group: 'citDate',
-        name: 'citedOn',
+        name: 'citedOn[]',
         required,
+        disabled,
         label: 'Cited on',
+        validator: {
+            rule: 'date',
+        },
     })
 
-    static citState = createUsStateForm({
+    static _citState = createUsStateForm({
         selector: appSelector,
         target: 'citState',
         group: 'citState',
-        name: 'state',
+        name: 'state[]',
         required,
+        disabled,
         label: 'State',
     })
 
-    static citReason = createForm({
+    static _citReason = createForm({
         selector: appSelector,
         target: 'citReason',
         group: 'citReason',
         type: 'select',
-        name: 'reason',
+        name: 'reason[]',
         data: Application.citationList,
         emptyOpt,
         required: true,
+        disabled,
         label: 'Reason',
     })
 
-    static citOtherReason = createForm({
+    static _citOtherReason = createForm({
         selector: appSelector,
         target: 'citOtherReason',
         group: 'citOtherReason',
-        name: 'otherReason',
+        name: 'otherReason[]',
         maxLength: 25,
         required,
         disabled,

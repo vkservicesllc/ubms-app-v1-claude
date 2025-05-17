@@ -39,13 +39,11 @@ const applicantMecFields = ['noMec', 'mecExp', 'mecIss', 'mecNumber', 'underMeds
 applicantMecFields.forEach(prop => validateApplicantMEC.push(ApplicationForm[prop].validate()))
 
 const validateApplicantCompliance = []
-const applicantComplianceFields = ['dui', 'duiInDecade', 'criminal', 'criminalExpl', 'citations']
+const applicantComplianceFields = ['dui', 'duiInDecade', 'criminal', 'criminalExpl', 'citations', '_citDate', '_citState', '_citReason', '_citOtherReason']
 applicantComplianceFields.forEach(prop => validateApplicantCompliance.push(ApplicationForm[prop].validate()))
-validateApplicantCompliance.push(body('citedOn').optional({ nullable: true }).isArray().withMessage('"citedOn" must be an array'))
-validateApplicantCompliance.push(body('citedOn.*').optional().customSanitizer(value => moment(value, 'MM/DD/YYYY').format('YYYY-MM-DD')))
 
 const validateApplicantSafety = []
-const applicantSafetyFields = ['accidents']
+const applicantSafetyFields = ['accidents'] //! continue the list
 applicantSafetyFields.forEach(prop => validateApplicantSafety.push(ApplicationForm[prop].validate()))
 
 

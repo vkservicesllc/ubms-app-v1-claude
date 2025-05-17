@@ -88,7 +88,7 @@
             </form>
             <div id="citation-form-template" style="display: none;">
                 <div class="border-top mt-4">
-                    {{{form.citId.hidden.input}}}
+                    {{{form._citId.hidden.input}}}
                     <div class="d-flex" id="delete-citation" style="display: none !important;">
                         <div class="ms-auto pt-3">
                             <button type="button" class="btn btn-danger btn-sm delete-citation-button" data-bs-toggle="modal" data-bs-target="#delete-citation-modal"><i class="fas fa-close"></i></button>
@@ -96,23 +96,23 @@
                     </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-4">
-                            {{{form.citDate.text.label}}}
-                            {{{form.citDate.text.input}}}
+                            {{{form._citDate.text.label}}}
+                            {{{form._citDate.text.input}}}
                             <div class="form-text text-danger"></div>
                         </div>
                         <div class="col-md-3">
-                            {{{form.citState.select.label}}}
-                            {{{form.citState.select.input}}}
+                            {{{form._citState.select.label}}}
+                            {{{form._citState.select.input}}}
                         </div>
                         <div class="col-md-5">
-                            {{{form.citReason.select.label}}}
-                            {{{form.citReason.select.input}}}
+                            {{{form._citReason.select.label}}}
+                            {{{form._citReason.select.input}}}
                         </div>
                     </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-6" style="display: none;">
-                            {{{form.citOtherReason.text.label}}}
-                            {{{form.citOtherReason.text.input}}}
+                            {{{form._citOtherReason.text.label}}}
+                            {{{form._citOtherReason.text.input}}}
                         </div>
                     </div>
                 </div>

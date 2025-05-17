@@ -1,3 +1,5 @@
+const throwErr = require('../../../tools/utils/error').data
+
 import moment from 'moment'
 
 /* Tools */
@@ -392,12 +394,12 @@ export const applicationProgress = async (req, res) => {
             if (application.citations === true)
                 hbs.citationsDisplay = ''
 
-            const fields = [ 'citDate', 'citState', 'citReason', 'citOtherReason' ]
+            const fields = [ '_citDate', '_citState', '_citReason', '_citOtherReason' ]
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
-            options.citState.select.input.options = { valOpt: true }
+            options._citState.select.input.options = { valOpt: true }
 
             const placeholders = {
-                citDate: 'MM/DD/YYYY',
+                _citDate: 'MM/DD/YYYY',
             }
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }

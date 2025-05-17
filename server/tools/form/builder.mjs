@@ -197,7 +197,9 @@ const createForm = (input = {}) => {
     }
 
     if (validator !== false) form.validate = () => {
-        let chain = body(name).trim()
+        let chain = name.includes('[]')
+            ? body(`${name.replace('[]', '')}.*`).trim()
+            : body(name).trim()
 
         if (required && !disabled) //! Useless in case the default state is disabled (will use it for now)
             chain = chain
@@ -209,7 +211,7 @@ const createForm = (input = {}) => {
 
         if (typeof validator === 'object') {
             const { caps, sanitizer, rule, match, length, custom } = validator
-
+if (true) console.log({ name, rule })
             if (data) {
                 const values = Object.keys(data)
 

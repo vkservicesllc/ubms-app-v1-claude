@@ -83,8 +83,10 @@ function cloneCitForm(i = 0, data = null) {
             $clone.find(`label[for="${id}"]`).attr('for', newId)
         }
 
-        const name = $field.attr('name')
-        $field.attr('name', `${name}[]`)
+        const name = $field.attr('name').replace('[]', '')
+
+        if (!$field.hasClass(TS.citOtherReason.replace('.', '')))
+            $field.prop('disabled', false)
 
         if (data) {
             const value = data[i][name]
