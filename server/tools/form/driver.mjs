@@ -340,13 +340,6 @@ class ApplicationForm {
         name: 'citations',
     })
 
-    static _citId = createIdForm({
-        selector: appSelector,
-        target: 'citId',
-        group: 'citId',
-        name: '_id[]',
-    })
-
     static _citDate = createDateForm({
         selector: appSelector,
         target: 'citDate',

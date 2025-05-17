@@ -500,12 +500,16 @@ class Application {
             case 'citations':
                 src = 'aplCitations'
                 fields = [
-                    hash('id'),
                     'citedOn',
                     'state',
                     'reason',
                     'otherReason',
                 ]
+                break
+
+            case 'accidents':
+                src = 'aplAccidents'
+                fields = [] //! add fields...
                 break
 
         }

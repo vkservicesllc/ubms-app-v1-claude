@@ -2,6 +2,8 @@ import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import formId, { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
+const citations = $.ajax('/api/local-source/application?filter=citations', { method: 'POST', async: false }).responseJSON
+
 const RS = selector.id.radio
 const TS = selector.class.text, SS = selector.class.select
 const duiId = RS.dui
@@ -19,9 +21,10 @@ const $citations = $('#citations')
 const $citList = $('#citation-list')
 const $citForm = $('#citation-form-template')
 const $addButton = $('#add-citation-button')
-const $deleteTarget = $('#citation-delete-target')
 const $removeButton = $('#remove-citation-button')
 const $deleteModal = $('#delete-citation-modal')
+const $deleteTarget = $('#delete-citation-target')
+const $deleteCitDesc = $('#delete-citation-desc')
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const countCitList = () => $citList.children().length
@@ -45,7 +48,14 @@ inputEvent(selector.class.radio.citations, {
     },
 })
 
-$deleteModal.on('hidden.bs.modal', () => $deleteTarget.val(null))
+$deleteModal
+    .on('hide.bs.modal', () => {
+        $('.btn').blur()
+    })
+    .on('hidden.bs.modal', () => {
+        $deleteTarget.val(null)
+        $deleteCitDesc.html(null)
+    })
 
 $removeButton.click(() => {
     document.activeElement.blur()
@@ -54,6 +64,7 @@ $removeButton.click(() => {
     $(`#${target}`).remove()
     $deleteTarget.val(null)
     $deleteModal.modal('hide')
+    $deleteCitDesc.html(null)
 
     if (!$citList.html()) $citList.append(cloneCitForm())
     resetEvents()
@@ -70,7 +81,7 @@ onSubmit($form, $help, $submit, $card)
 
 function cloneCitForm(i = 0, data = null) {
     const tsi = `${Date.now()}-${i}`
-    const $clone = $citForm.clone().attr('id', `citation-form-${i}`)
+    const $clone = $citForm.clone().attr('id', `citation-form-${tsi}`)
 
     $clone.find('input, select').each(function() {
         const $field = $(this)
@@ -118,7 +129,6 @@ function drawCitationForms() {
 
             if (!data.length)
                 data.push({
-                    _id: null,
                     citedOn: null,
                     state: null,
                     reason: null,
@@ -145,6 +155,31 @@ function resetEvents() {
             const target = $(this).parent().parent().parent().parent().attr('id')
 
             $deleteTarget.val(target)
+
+            const $target = $(`#${target}`)
+            let reason = $target.find(SS.citReason).val()
+            let desc = '<em class="text-danger">Empty Form</em>'
+
+            if (reason) {
+                if (reason != '_') reason = citations[reason]
+                else {
+                    const otherReason = $target.find(TS.citOtherReason).val()
+                    if (otherReason) reason = otherReason
+                    else reason = ''
+                }
+
+                if (reason) {
+                    desc = `<strong>${reason}</strong>`
+
+                    const citedOn = $target.find(TS.citDate).val()
+                    const citState = $target.find(SS.citState).val()
+
+                    if (citedOn) desc += ` on ${citedOn}`
+                    if (citState) desc += ` in ${citState}`
+                }
+            }
+
+            $deleteCitDesc.html(desc)
         })
         .parent().parent()
         .attr('style', countCitList() > 1 ? '' : 'display: none !important;')
@@ -200,5 +235,5 @@ function resetEvents() {
         },
     })
 
-    inputEvent(TS.citOtherReason, { onInput, onChange })
+    inputEvent(TS.citOtherReason, { strip: true, word: true, onInput, onChange })
 }

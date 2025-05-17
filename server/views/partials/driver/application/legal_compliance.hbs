@@ -88,7 +88,6 @@
             </form>
             <div id="citation-form-template" style="display: none;">
                 <div class="border-top mt-4">
-                    {{{form._citId.hidden.input}}}
                     <div class="d-flex" id="delete-citation" style="display: none !important;">
                         <div class="ms-auto pt-3">
                             <button type="button" class="btn btn-danger btn-sm delete-citation-button" data-bs-toggle="modal" data-bs-target="#delete-citation-modal"><i class="fas fa-close"></i></button>
@@ -124,9 +123,9 @@
                             <h1 class="modal-title fs-5">Delete Citation</h1>
                         </div>
                         <div class="modal-body">
-                            <input type="hidden" id="citation-delete-target">
+                            <input type="hidden" id="delete-citation-target" />
                             <p class="my-1"><small>Are you sure you want to remove the following citation?</small></p>
-                            <p class="my-1" id="citation-desc">Citation on the date in the state</p>
+                            <p class="my-1" id="delete-citation-desc"></p>
                             <p class="my-1"><small>This change will take effect after you click the "{{button.three.text}}" button</small></p>
                         </div>
                         <div class="modal-footer">

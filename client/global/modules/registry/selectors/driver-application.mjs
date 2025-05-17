@@ -12,10 +12,6 @@ const selector = {
             driverLicense: 'driver-license',
             medCard: 'medical-card',
         },
-        hidden: {
-            citId: 'citation-id',
-            accId: 'accident-id',
-        },
         text: {
             citDate: 'citation-date',
             citOtherReason: 'citation-other-reason',
@@ -40,11 +36,8 @@ const selector = {
             id: 'id',
             deleteId: 'delete-id',
             appliedOn: 'applied-on',
-            citId: 'citation-id',
-            accId: 'accident-id',
         },
         text: {
-            // formId: 'form',
             pin: 'pin',
             firstName: 'first-name',
             middleName: 'middle-name',

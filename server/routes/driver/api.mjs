@@ -21,6 +21,26 @@ router.post('/local-session/:prop', (req, res, next) => {
 }, sessionDetails)
 
 
+router.post('/local-source/:source', (req, res) => {
+    const { filter } = req.query
+    const { source } = req.params
+
+    let result
+
+    switch (source) {
+        case 'application':
+            result = {
+                citations: Application.citationList,
+            }
+            break
+    }
+
+    if (filter) result = result[filter]
+
+    res.send(result)
+})
+
+
 router.post('/application/login/:formId', validateApplicantLogin, async (req, res) => {
     try {
         const { formId } = req.params

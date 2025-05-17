@@ -7,7 +7,7 @@ import User, { Role } from '../tools/core/user.mjs'
 import Team from '../tools/core/team.mjs'
 import Company, { Owner } from '../tools/core/company.mjs'
 import Carrier from '../tools/core/carrier.mjs'
-import Driver from '../tools/core/driver.mjs'
+import Driver, { Application as DriverApplication } from '../tools/core/driver.mjs'
 import { capitalizeFirst } from '../../client/global/modules/tools/utils/string.mjs'
 
 export const sessionDetails = (req, res) => {
@@ -107,7 +107,7 @@ router.post('/unique/:env', User.verify, async (req, res) => {
 router.post('/source/:source/:_id?', User.verify, async (req, res) => {
     const { filter, self, call } = req.query
     const { source } = req.params
-    let{ _id } = req.params
+    let { _id } = req.params
     let Src, result
 
     switch (source) {
@@ -135,6 +135,14 @@ router.post('/source/:source/:_id?', User.verify, async (req, res) => {
                 positions: Driver.positionList,
             }
             break
+
+        case 'driver-application':
+            Src = DriverApplication
+            result = {
+                citations: DriverApplication.citationList,
+            }
+            break
+
     }
 
     if (filter) {
