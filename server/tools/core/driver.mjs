@@ -105,6 +105,7 @@ class Application {
         this.condition = data.condition
         this.appliedAt = data.createdAt
         this.appliedOn = moment(data.createdAt).format('YYYY-MM-DD')
+        this.finishedAt = data.finishedAt
 
         this.legalStatus = [ data.status, data.statusExpiresOn ]
         this.step = data.step
@@ -215,7 +216,7 @@ class Application {
 
         if (target === 'applications') {
             idProp = 'id'
-            fields.unshift('createdBy', 'createdAt', 'createdIn', 'finishedAt', 'reviewedBy', 'reviewedAt')
+            fields.unshift('createdBy', 'createdAt', 'createdIn', 'finishedAt', 'reviewedBy', 'reviewedAt', 'archivedBy', 'archivedAt')
         }
 
         let log = (await mysql.execute(query[target].select(fields, {
@@ -709,7 +710,9 @@ class Application {
                     'formId',
                     'condition',
                     'step',
+                    'createdBy',
                     'createdAt',
+                    'finishedAt',
                     'status',
                     'statusExpiresOn',
                     'position',
@@ -882,6 +885,7 @@ class Application {
             if (!DS && !('d:drv/apl' in permissions))
                 return throwErr.api.auth(res, null, err, false)
 
+            const { archived } = req.params
             const settings = await sessionsUser.settings(res.session)
             const team = await Team.data(res.session, { _id: req.session.team })
             const teamId = await team.id()
@@ -955,6 +959,15 @@ class Application {
             baseQuery.where({ teamId })
             countQuery.where({ teamId })
             totalCountQuery.where({ teamId })
+
+            const archiveWhere = archived === 'archived'
+                ? 'whereNotNull'
+                : 'whereNull'
+
+            baseQuery[archiveWhere]('archivedAt')
+            countQuery[archiveWhere]('archivedAt')
+            totalCountQuery[archiveWhere]('archivedAt')
+                
 
 
             /* STEP 2: Prepare Filters */
