@@ -53,7 +53,6 @@ router.post('/drivers/application/:_id', User.verify, Team.verify, async (req, r
     }
 })
 
-router.post('/drivers/applications', User.verify, Team.verify, Application.dtList)
 
 router.post('/drivers/applications/filters', User.verify, Team.verify, async (req, res) => {
     try {
@@ -72,6 +71,9 @@ router.post('/drivers/applications/filters', User.verify, Team.verify, async (re
         throwErr.server(res, null, err)
     }
 })
+
+
+router.post('/drivers/applications/:archived?', User.verify, Team.verify, Application.dtList)
 
 
 
