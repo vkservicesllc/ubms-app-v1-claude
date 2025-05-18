@@ -578,9 +578,10 @@ class Application {
         s10: 'Speeding 10+',
         rl: 'Red Light',
         ss: 'Stop Sign',
+        sb: 'Seat Belt',
         _dl: 'No Driver License',
         _mec: 'No Medical Card',
-        _sb: 'No Seat Belt',
+        _i: 'No Insurance',
         _: 'Other',
     }
 
