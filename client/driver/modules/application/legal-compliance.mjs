@@ -231,13 +231,11 @@ function resetEvents() {
 
             const $otherReason = $reason.parent().parent().next().find(TS.citOtherReason)
             $otherReason
-                // .prop('disabled', true)
                 .val('-')
                 .parent().hide()
 
-            if (reason === '_')
+            if (reason === 'other')
                 $otherReason
-                    // .prop('disabled', false)
                     .val(null).removeClass('is-valid')
                     .parent().show()
         },

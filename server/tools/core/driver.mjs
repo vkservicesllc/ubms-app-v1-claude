@@ -561,7 +561,7 @@ class Application {
 
     static stepList = [
         [ 'Profile', 'Address' ],  //, 'Previous Addresses' ],
-        'Driver License',
+        "Driver's License",
         'Medical Card',
         'Legal Compliance',
         'Safety',
@@ -574,15 +574,50 @@ class Application {
     ]
 
     static citationList = {
-        s5: 'Speeding 5+',
-        s10: 'Speeding 10+',
-        rl: 'Red Light',
-        ss: 'Stop Sign',
-        sb: 'Seat Belt',
-        _dl: 'No Driver License',
-        _mec: 'No Medical Card',
-        _i: 'No Insurance',
-        _: 'Other',
+        "Moving Violations": {
+            speeding_5_9: "Speeding (5-9 mph)",
+            speeding_10_14: "Speeding (10-14 mph)",
+            speeding_15_19: "Speeding (15-19 mph)",
+            speeding_20_plus: "Speeding (20+ mph)",
+            failure_yield: "Failure to Yield",
+            red_light: "Running Red Light",
+            stop_sign: "Running Stop Sign",
+            improper_lane: "Improper Lane Change",
+            tailgating: "Following Too Closely",
+            reckless: "Reckless Driving",
+            distracted: "Distracted Driving"
+        },
+        "Non-Moving Violations": {
+            expired_reg: "Expired Registration",
+            expired_license: "Expired Driver's License",
+            no_insurance: "No Proof of Insurance",
+            seatbelt: "Seat Belt Violation",
+            parking: "Parking Violation"
+        },
+        "License & Documents": {
+            no_license: "No Driver's License",
+            expired_license: "Expired Driver's License",
+            canceled_license: "Suspended/Revoked License",
+            no_registration: "No Valid Registration",
+            expired_registration: "Expired Registration",
+            no_insurance: "No Insurance",
+            expired_insurance: "Expired Insurance",
+            false_docs: "Falsified Documents",
+        },
+        "Alcohol/Drug Related": {
+            dui: "DUI/DWI",
+            open_container: "Open Container",
+            refusal_test: "Refusal to Submit to Testing"
+        },
+        "Commercial Vehicle": {
+            logbook: "Logbook",
+            hos: "Hours of Service",
+            unsecured_load: "Unsecured Load",
+            overweight: "Overweight Vehicle"
+        },
+        "Misc": {
+            other: "Other"
+        },
     }
 
     static accidentList = {}
