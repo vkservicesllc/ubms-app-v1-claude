@@ -2,7 +2,7 @@ import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import formId, { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const citations = $.ajax('/api/local-source/application?filter=citations', { method: 'POST', async: false }).responseJSON
+const violations = $.ajax('/api/local-source/application?filter=violations', { method: 'POST', async: false }).responseJSON
 
 const RS = selector.id.radio
 const TS = selector.class.text, SS = selector.class.select
@@ -96,8 +96,7 @@ function cloneCitForm(i = 0, data = null) {
 
         const name = $field.attr('name').replace('[]', '')
 
-        // if (!$field.hasClass(TS.citOtherReason.replace('.', '')))
-            $field.prop('disabled', false)
+        $field.prop('disabled', false)
 
         if (data) {
             const value = data[i][name]
@@ -108,8 +107,6 @@ function cloneCitForm(i = 0, data = null) {
                 if ($field.is('select'))
                     $field.find('option[value=""]').remove()
 
-                // if ($field.prop('disabled'))
-                //     $field.prop('disabled', false).parent().show()
                 if ($field.parent().is(':hidden'))
                     $field.parent().show()
 
@@ -163,7 +160,7 @@ function resetEvents() {
             let desc = '<em class="text-danger">Empty Form</em>'
 
             if (reason) {
-                if (reason != '_') reason = citations[reason]
+                if (reason != 'other') reason = violations[reason]
                 else {
                     const otherReason = $target.find(TS.citOtherReason).val()
                     if (otherReason) reason = otherReason

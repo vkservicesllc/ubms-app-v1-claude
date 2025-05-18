@@ -139,7 +139,8 @@ router.post('/source/:source/:_id?', User.verify, async (req, res) => {
         case 'driver-application':
             Src = DriverApplication
             result = {
-                citations: DriverApplication.citationList,
+                violations: DriverApplication.citationList,
+                accidents: DriverApplication.accidentList,
             }
             break
 

@@ -69,7 +69,13 @@
                     </div>
                 </div>
                 <div id="citations"{{{citationsDisplay}}}>
-                    <label class="form-label text-danger mt-3 mb-0">At least one citation must be reported</label>
+                    <label class="form-label text-danger mt-3">At least one violation must be reported</label>
+                    <label class="form-label mb-0">
+                        <small>
+                            <i class="fas fa-triangle-exclamation"></i>
+                            If a citation includes multiple violations, complete a separate form for each
+                        </small>
+                    </label>
                     <div class="border-bottom pb-4" id="citation-list"></div>
                     <div class="d-flex">
                         <div class="ms-auto pt-3">
@@ -88,8 +94,8 @@
             </form>
             <div id="citation-form-template" style="display: none;">
                 <div class="border-top mt-4">
-                    <div class="d-flex" id="delete-citation" style="display: none !important;">
-                        <div class="ms-auto pt-3">
+                    <div class="d-flex">
+                        <div class="ms-auto pt-3" style="display: none !important;">
                             <button type="button" class="btn btn-danger btn-sm delete-citation-button" data-bs-toggle="modal" data-bs-target="#delete-citation-modal"><i class="fas fa-close"></i></button>
                         </div>
                     </div>

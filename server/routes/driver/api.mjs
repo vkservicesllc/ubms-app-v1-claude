@@ -30,7 +30,8 @@ router.post('/local-source/:source', (req, res) => {
     switch (source) {
         case 'application':
             result = {
-                citations: Application.citationList,
+                violations: Application.violationList,
+                accidents: Application.accidentList,
             }
             break
     }

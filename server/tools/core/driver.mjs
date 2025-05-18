@@ -573,32 +573,28 @@ class Application {
         'Emergency Contact',
     ]
 
-    static citationList = {
+    static violationList = {
         "Moving Violations": {
-            speeding_5_9: "Speeding (5-9 mph)",
-            speeding_10_14: "Speeding (10-14 mph)",
-            speeding_15_19: "Speeding (15-19 mph)",
-            speeding_20_plus: "Speeding (20+ mph)",
+            speeding_5_9: "Speeding (5–9 MPH)",
+            speeding_10_14: "Speeding (10–14 MPH)",
+            speeding_15_19: "Speeding (15–19 MPH)",
+            speeding_20_plus: "Speeding (20+ MPH)",
             failure_yield: "Failure to Yield",
             red_light: "Running Red Light",
             stop_sign: "Running Stop Sign",
             improper_lane: "Improper Lane Change",
             tailgating: "Following Too Closely",
             reckless: "Reckless Driving",
-            distracted: "Distracted Driving"
+            distracted: "Distracted Driving",
         },
         "Non-Moving Violations": {
-            expired_reg: "Expired Registration",
-            expired_license: "Expired Driver's License",
-            no_insurance: "No Proof of Insurance",
             seatbelt: "Seat Belt Violation",
-            parking: "Parking Violation"
+            parking: "Parking Violation",
         },
         "License & Documents": {
             no_license: "No Driver's License",
-            expired_license: "Expired Driver's License",
-            canceled_license: "Suspended/Revoked License",
-            no_registration: "No Valid Registration",
+            suspended_license: "Suspended/Revoked License",
+            no_registration: "No Registration",
             expired_registration: "Expired Registration",
             no_insurance: "No Insurance",
             expired_insurance: "Expired Insurance",
@@ -607,20 +603,45 @@ class Application {
         "Alcohol/Drug Related": {
             dui: "DUI/DWI",
             open_container: "Open Container",
-            refusal_test: "Refusal to Submit to Testing"
+            refusal_test: "Refused Testing",
         },
         "Commercial Vehicle": {
-            logbook: "Logbook",
+            logbook: "Logbook Violation",
             hos: "Hours of Service",
             unsecured_load: "Unsecured Load",
-            overweight: "Overweight Vehicle"
+            overweight: "Overweight Vehicle",
         },
         "Misc": {
-            other: "Other"
+            other: "Other",
         },
     }
 
-    static accidentList = {}
+    static accidentList = {
+        "Vehicle-to-Vehicle": {
+            head_on: "Head-on",
+            rear_end: "Rear-End",
+            sideswipe: "Sideswipe",
+            broadside: "Broadside (T-bone)",
+            backing: "Backing Collision",
+            multi_vehicle: "Chain Reaction / Multi-Vehicle",
+        },
+        "Vehicle-to-Other": {
+            pedestrian: "Vehicle vs. Pedestrian",
+            bicyclist: "Vehicle vs. Bicyclist",
+            animal: "Vehicle vs. Animal",
+            parked: "Parked Vehicle",
+            object: "Struck Object",
+            work_zone: "Work Zone Collision",
+        },
+        "Misc": {
+            rollover: "Rollover",
+            run_off_road: "Run-Off-Road",
+            non_collision: "Non-Collision Incident",
+        },
+        "Other": {
+            other: "Other",
+        }
+    }
 
 
     static #algorithm = 'SHA-224'

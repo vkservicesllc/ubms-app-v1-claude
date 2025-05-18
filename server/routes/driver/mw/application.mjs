@@ -397,7 +397,6 @@ export const applicationProgress = async (req, res) => {
 
             const fields = [ '_citDate', '_citState', '_citReason', '_citOtherReason' ]
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
-            // options._citState.select.input.options = { valOpt: true }
 
             const placeholders = {
                 _citDate: 'MM/DD/YYYY',

@@ -368,19 +368,19 @@ class ApplicationForm {
         target: 'citReason',
         group: 'citReason',
         type: 'select',
-        name: 'reason[]',
-        data: Application.citationList,
+        name: 'violation[]',
+        data: Application.violationList,
         emptyOpt,
         required: true,
         disabled,
-        label: 'Reason',
+        label: 'Violation',
     })
 
     static _citOtherReason = createForm({
         selector: appSelector,
         target: 'citOtherReason',
         group: 'citOtherReason',
-        name: 'otherReason[]',
+        name: 'other[]',
         maxLength: 25,
         required,
         disabled,
