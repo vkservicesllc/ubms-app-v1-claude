@@ -539,10 +539,10 @@ class Application {
             case 'citations':
                 src = 'aplCitations'
                 fields = [
+                    'violation',
+                    'other',
                     'citedOn',
                     'state',
-                    'reason',
-                    'otherReason',
                 ]
                 break
 
