@@ -10,6 +10,9 @@
         .form-text {
             font-size: .8em;
         }
+        h6 {
+            font-size: .95em;
+        }
     </style>
 
     <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
@@ -74,7 +77,7 @@
                             </div>
                         </div>
                         <div id="application-form" style="display: none;">
-                            <h6 class="text-secondary mt-4 my-1 border-top pt-3">Legal Name (per Government ID)</h6>
+                            <h6 class="text-secondary mt-4 my-1 border-top pt-3">Legal Name <small>(per Government ID)</small></h6>
                             <div class="row g-3 my-1">
                                 <div class="col-md-6">
                                     {{{form.firstName.text.label}}}
@@ -95,7 +98,7 @@
                                     {{{form.suffix.select.input}}}
                                 </div>
                             </div>
-                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Personal Identifiers</h6>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Personal Information</h6>
                             <div class="row g-3 my-1">
                                 <div class="col-md-3">
                                     {{{form.gender.select.label}}}
@@ -109,6 +112,35 @@
                                 <div class="col-md-5">
                                     {{{form.ssn.text.label}}}
                                     {{{form.ssn.text.input}}}
+                                </div>
+                            </div>
+                            <div class="row g-3 my-1">
+                                {{{form.marital.radio.label}}}
+                                <div class="col-md-4 my-0">
+                                    <div class="form-check">
+                                        {{{form.marital.radio.single.input}}}
+                                        {{{form.marital.radio.single.label}}}
+                                    </div>
+                                    <div class="form-check">
+                                        {{{form.marital.radio.married.input}}}
+                                        {{{form.marital.radio.married.label}}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 my-0">
+                                    <div class="form-check">
+                                        {{{form.marital.radio.divorced.input}}}
+                                        {{{form.marital.radio.divorced.label}}}
+                                    </div>
+                                    <div class="form-check">
+                                        {{{form.marital.radio.separated.input}}}
+                                        {{{form.marital.radio.separated.label}}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 my-0">
+                                    <div class="form-check">
+                                        {{{form.marital.radio.widowed.input}}}
+                                        {{{form.marital.radio.widowed.label}}}
+                                    </div>
                                 </div>
                             </div>
                             <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Contacts</h6>
@@ -151,36 +183,6 @@
                                     {{{form.addrSince.text.label}}}
                                     {{{form.addrSince.text.input}}}
                                     <div class="form-text text-danger" id="addr-since-help"></div>
-                                </div>
-                            </div>
-                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Personal Information</h6>
-                            <div class="row g-3 my-1">
-                                {{{form.marital.radio.label}}}
-                                <div class="col-md-4 my-0">
-                                    <div class="form-check">
-                                        {{{form.marital.radio.single.input}}}
-                                        {{{form.marital.radio.single.label}}}
-                                    </div>
-                                    <div class="form-check">
-                                        {{{form.marital.radio.married.input}}}
-                                        {{{form.marital.radio.married.label}}}
-                                    </div>
-                                </div>
-                                <div class="col-md-4 my-0">
-                                    <div class="form-check">
-                                        {{{form.marital.radio.divorced.input}}}
-                                        {{{form.marital.radio.divorced.label}}}
-                                    </div>
-                                    <div class="form-check">
-                                        {{{form.marital.radio.separated.input}}}
-                                        {{{form.marital.radio.separated.label}}}
-                                    </div>
-                                </div>
-                                <div class="col-md-4 my-0">
-                                    <div class="form-check">
-                                        {{{form.marital.radio.widowed.input}}}
-                                        {{{form.marital.radio.widowed.label}}}
-                                    </div>
                                 </div>
                             </div>
                             <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Eligibility</h6>

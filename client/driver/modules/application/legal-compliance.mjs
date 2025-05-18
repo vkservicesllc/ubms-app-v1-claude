@@ -96,7 +96,7 @@ function cloneCitForm(i = 0, data = null) {
 
         const name = $field.attr('name').replace('[]', '')
 
-        if (!$field.hasClass(TS.citOtherReason.replace('.', '')))
+        // if (!$field.hasClass(TS.citOtherReason.replace('.', '')))
             $field.prop('disabled', false)
 
         if (data) {
@@ -108,11 +108,13 @@ function cloneCitForm(i = 0, data = null) {
                 if ($field.is('select'))
                     $field.find('option[value=""]').remove()
 
-                if ($field.prop('disabled'))
-                    $field.prop('disabled', false).parent().show()
+                // if ($field.prop('disabled'))
+                //     $field.prop('disabled', false).parent().show()
+                if ($field.parent().is(':hidden'))
+                    $field.parent().show()
 
                 $field.addClass('is-valid')
-            }
+            } else $field.val('-')
         }
     })
 
@@ -228,10 +230,16 @@ function resetEvents() {
             onChange(reason, $reason)
 
             const $otherReason = $reason.parent().parent().next().find(TS.citOtherReason)
-            $otherReason.prop('disabled', true).parent().hide()
+            $otherReason
+                // .prop('disabled', true)
+                .val('-')
+                .parent().hide()
 
             if (reason === '_')
-                $otherReason.prop('disabled', false).parent().show()
+                $otherReason
+                    // .prop('disabled', false)
+                    .val(null).removeClass('is-valid')
+                    .parent().show()
         },
     })
 

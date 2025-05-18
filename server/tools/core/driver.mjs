@@ -195,7 +195,7 @@ class Application {
         this.medList = data.medList
 
         this.dui = bool(data.dui)
-        this.duiInDecade = bool(data.dui)
+        this.duiInDecade = bool(data.duiInDecade)
         this.criminal = bool(data.criminal)
         this.criminalExpl = data.criminalExpl
         this.citations = bool(data.citations)
@@ -414,7 +414,11 @@ class Application {
                 }
                 break
 
+
             case 'legal-compliance':
+                target = 'aplCitations'
+                action = 'insert'
+
                 if (data.dui && typeof data.duiInDecade !== 'boolean')
                     error = 'Data Submission Error: Explanation not provided for DUI'
                 if (!data.dui) data.duiInDecade = null
@@ -423,21 +427,56 @@ class Application {
                     error = 'Data Submission Error: Explanation not provided for Criminal Record'
                 if (!data.criminal) data.criminalExpl = null
 
-                if (data.citations) {
-                    //
+                const { citations } = data
+
+                mainData.dui = data.dui
+                mainData.duiInDecade = data.duiInDecade
+                mainData.criminal = data.criminal
+                mainData.criminalExpl = data.criminalExpl
+                mainData.citations = citations
+
+                await mysql.execute(query.aplCitations.delete({ aplId: id }))
+
+                const { citedOn, state, reason, otherReason } = data
+                data = []
+
+                if (!reason && data.citations) data.citations = false
+
+                if (this.step < 4) {
+                    mainData = processData(mainData)
+                    mainData.step = 4
                 } else {
-                    //? delete all citations tied to the aplId
+                    mainData = processData(mainData, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
                 }
 
+                if (citations) {
+                    const count = reason.length
+
+                    for (let i = 0; i < count; i++) {
+                        data.push({
+                            aplId: id,
+                            citedOn: citedOn[i],
+                            state: state[i],
+                            reason: reason[i],
+                            otherReason: reason[i] === '_' ? otherReason?.[i] : null,
+                        })
+                    }
+                }
                 break
 
 
         }
 
         if (!error) {
-            if (Object.keys(data).length) {
+            if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
                 const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
-                if (result.affectedRows === 1) modified = true
+                if (result.affectedRows > 0) modified = true
             }
 
             if (Object.keys(mainData).length) {
