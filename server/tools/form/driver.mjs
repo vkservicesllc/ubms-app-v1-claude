@@ -394,6 +394,57 @@ class ApplicationForm {
         name: 'accidents',
     })
 
+    static _accDate = createDateForm({
+        selector: appSelector,
+        target: 'accDate',
+        group: 'accDate',
+        name: 'date[]',
+        required,
+        disabled,
+        label: 'Date',
+        validator: {
+            rule: 'date',
+        },
+    })
+
+    static _accInjuries = createYesNoForm({
+        selector: appSelector,
+        target: 'accInjuries',
+        name: 'injuries[]',
+        disabled,
+    })
+
+    static _accFatalities = createYesNoForm({
+        selector: appSelector,
+        target: 'accFatalities',
+        name: 'fatalities[]',
+        disabled,
+    })
+
+    static _accType = createForm({
+        selector: appSelector,
+        target: 'accType',
+        group: 'accType',
+        type: 'select',
+        name: 'type[]',
+        data: Application.accidentList,
+        emptyOpt,
+        required: true,
+        disabled,
+        label: 'Type',
+    })
+
+    static _accOtherType = createForm({
+        selector: appSelector,
+        target: 'accOtherType',
+        group: 'accOtherType',
+        name: 'otherType[]',
+        maxLength: 25,
+        required,
+        disabled,
+        label: 'Other Type',
+    })
+
 }
 
 

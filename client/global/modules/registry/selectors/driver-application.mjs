@@ -15,12 +15,14 @@ const selector = {
         text: {
             citDate: 'citation-date',
             citOtherReason: 'citation-other-reason',
+            accOtherType: 'accident-other-type',
         },
         select: {
             gender: 'gender',
             marital: 'marital-status',
             citState: 'citation-state',
             citReason: 'citation-reason',
+            accType: 'accident-type',
         },
         radio: {
             gender: 'gender',
@@ -67,6 +69,8 @@ const selector = {
             criminalExpl: 'criminal-explanation',
             citDate: 'citation-date',
             citOtherReason: 'citation-other-reason',
+            accDate: 'accident-date',
+            accOtherType: 'accident-other-type',
         },
         select: {
             suffix: 'suffix',
@@ -78,6 +82,7 @@ const selector = {
             dlState: 'driver-license-state',
             citState: 'citation-state',
             citReason: 'citation-reason',
+            accType: 'accident-type',
         },
         radio: {
             gender: {
@@ -131,6 +136,14 @@ const selector = {
             accidents: {
                 yes: 'had-accidents',
                 no: 'had-no-accidents',
+            },
+            accInjuries: {
+                yes: 'had-accident-injuries',
+                no: 'had-no-accident-injuries',
+            },
+            accFatalities: {
+                yes: 'had-accident-fatalities',
+                no: 'had-no-accident-fatalities',
             },
         },
         checkbox: {

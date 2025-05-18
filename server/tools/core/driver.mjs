@@ -584,6 +584,8 @@ class Application {
         _: 'Other',
     }
 
+    static accidentList = {}
+
 
     static #algorithm = 'SHA-224'
 
