@@ -464,7 +464,7 @@ class Application {
                             citedOn: citedOn[i],
                             state: state[i],
                             violation: violation[i],
-                            other: violation[i] === '_' ? other?.[i] : null,
+                            other: violation[i] === 'other' ? other?.[i] : null,
                         })
                     }
                 }
