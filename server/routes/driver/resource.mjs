@@ -124,6 +124,7 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
 router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationCheck, async (req, res) => {
     try {
         const { _teamId, _carrierId } = req.params
+        const { dept: deptId } = req.query
         const session = { ...res.session, user: true }
 
         const team = await Team.data(session, { _id: _teamId })
@@ -135,6 +136,9 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
             if (!carrier) return throwErr.server(res, 'Server Internal Error: Unidentified Carrier')
             req.body.carrierId = await carrier.id()
         }
+
+        if (deptId) req.body.deptId = deptId
+        else req.body.deptId = team.settings.deptId[0]
 
         const { error, url, data: application } = await Application.create(res.session, req.body)
         if (error) return throwErr.server(res, error)

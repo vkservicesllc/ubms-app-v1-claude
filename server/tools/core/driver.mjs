@@ -100,6 +100,7 @@ class Application {
         this._teamId = data._teamId
         this._userId = data._userId
         this._carrierId = data._carrierId
+        this.deptId = data.deptId
         this.formId = data.formId
         this.position = [ data.position, Driver.positionList[data.position] ]
         this.condition = data.condition
@@ -698,6 +699,10 @@ class Application {
         }
     }
 
+    static vehicleTypeList = {
+        //
+    }
+
 
     static #algorithm = 'SHA-224'
 
@@ -864,6 +869,7 @@ class Application {
                     Team.hashId('teamId'),
                     Carrier.hashId('carrierId'),
                     User.hashId('userId'),
+                    'deptId',
                     'formId',
                     'condition',
                     'step',
@@ -1081,6 +1087,7 @@ class Application {
                     knex.raw(Query.hashField(Team.hashId('teamId'))),
                     knex.raw(Query.hashField(Carrier.hashId('carrierId'))),
                     knex.raw(Query.hashField(User.hashId('userId'))),
+                    'apl.deptId',
                     'apl.formId',
                     'apl.condition',
                     'apl.createdAt', //! will return ISO 8601 UTC timestamp (YYYY-MM-DDTHH:mm:ss.sssZ)

@@ -30,13 +30,15 @@ const checkProps = {
 
 export const applicationStart = async (req, res, next) => {
     try {
-        const { env } = req.query
+        const { env, dept: deptId } = req.query
         if (!env) return next()
 
         const team = await Team.data({ ...res.session, user: true }, { _id: env })
         if (!team) return respond404(res)
 
         const { settings } = team
+        if (settings.deptId.length > 1 && !deptId) return respond404(res)
+
         const key = 'application.registration'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
@@ -106,6 +108,7 @@ export const applicationStart = async (req, res, next) => {
 
         hbs.formUrl = `/resource/application/${team._id}`
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
+        if (deptId) hbs.formUrl += `?dept=${deptId}`
 
         res.render('application/registration', hbs)
     } catch (err) {
@@ -152,7 +155,7 @@ export const applicationLogin = async (req, res, next) => {
 export const applicationProgress = async (req, res) => {
     try {
         const { application } = res.session
-        const { formId } = application
+        const { formId, deptId } = application
 
         const { application: _id } = req.session
         if (!_id || _id !== application._id) {
@@ -441,6 +444,7 @@ export const applicationProgress = async (req, res) => {
             hbs.button.four = buttonProps.save
             hbs.accordion.four = accordionProps.finished
 
+            //! at this point it is divided into departments
         }
 
         hbs.form = new ApplicationForm(options)
@@ -450,6 +454,7 @@ export const applicationProgress = async (req, res) => {
         hbs.step = step
         hbs.steps = steps
         hbs.formId = formId
+        hbs.deptId = deptId
         hbs.applicantName = application.fullName
         hbs.position = application.position[1]
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET' //! Test time accuracy on live server
