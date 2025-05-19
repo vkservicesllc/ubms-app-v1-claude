@@ -437,10 +437,10 @@ class Application {
 
                 await mysql.execute(query.aplCitations.delete({ aplId: id }))
 
-                const { citedOn, state, reason, otherReason } = data
+                const { citedOn, state, violation, other } = data
                 data = []
 
-                if (!reason && data.citations) data.citations = false
+                if (!violation && data.citations) data.citations = false
 
                 if (this.step < 4) {
                     mainData = processData(mainData)
@@ -456,15 +456,15 @@ class Application {
                 }
 
                 if (citations) {
-                    const count = reason.length
+                    const count = violation.length
 
                     for (let i = 0; i < count; i++) {
                         data.push({
                             aplId: id,
                             citedOn: citedOn[i],
                             state: state[i],
-                            reason: reason[i],
-                            otherReason: reason[i] === '_' ? otherReason?.[i] : null,
+                            violation: violation[i],
+                            other: violation[i] === '_' ? other?.[i] : null,
                         })
                     }
                 }
