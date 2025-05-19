@@ -5,6 +5,7 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
 const accidents = $.ajax('/api/local-source/application?filter=accidents', { method: 'POST', async: false }).responseJSON
 
 const RS = selector.id.radio
+const TS = selector.class.text, SS = selector.class.select
 const accidentsId = RS.accidents
 
 const $card = $('#apl-card')
@@ -75,9 +76,9 @@ function cloneAccForm(i = 0, data = null) {
     const tsi = `${Date.now()}-${i}`
     const $clone = $accForm.clone().attr('id', `accident-form-${tsi}`)
 
-    //! Will have radio buttons as well
     $clone.find('input, select').each(function() {
         const $field = $(this)
+        let filled = false
 
         const id = $field.attr('id')
         if (id) {
@@ -91,21 +92,22 @@ function cloneAccForm(i = 0, data = null) {
 
         $field.prop('disabled', false)
 
-        //! Need to handle radio buttons as well
         if (data) {
+            const type = $field.attr('type')
             const value = data[i][name]
 
-            if (value) {
-                $field.val(value)
+            if (value !== null) {
+                if (type === 'radio') {
+                    const _value = $field.attr('value')
+                    if ((_value === 'Y' && value === true) || (_value === 'N' && value === false))
+                        $field.prop('checked', true)
+                } else {
+                    $field.val(value).addClass('is-valid')
 
-                if ($field.is('select'))
-                    $field.find('option[value=""]').remove()
-
-                if ($field.parent().is(':hidden'))
-                    $field.parent().show()
-
-                $field.addClass('is-valid')
-            } else $field.val('-')
+                    if ($field.is('select')) $field.find('option[value=""]').remove()
+                    if ($field.parent().is(':hidden')) $field.parent().show()
+                }
+            } else if (filled) $field.val('-')
         }
     })
 
@@ -125,7 +127,9 @@ function drawAccidentForms() {
                     collision: null,
                     other: null,
                     date: null,
-                    //! will continue
+                    state: null,
+                    injuries: null,
+                    fatalities: null,
                 })
             else data.forEach(row => row.date = moment(row.date).format('MM/DD/YYYY'))
 
@@ -140,4 +144,97 @@ function drawAccidentForms() {
 }
 
 
-function resetEvents() {}
+function resetEvents() {
+    $('.delete-accident-button')
+        .off('click')
+        .on('click', function() {
+            const target = $(this).parent().parent().parent().parent().attr('id')
+
+            $deleteTarget.val(target)
+
+            const $target = $(`#${target}`)
+            let type = $target.find(SS.accType).val()
+            let desc = '<em class="text-danger">Empty Form</em>'
+
+            if (type) {
+                if (type != 'other') type = accidents[reason]
+                else {
+                    const otherType = $target.find(TS.accOtherType).val()
+                    if (otherType) type = otherType
+                    else type = ''
+                }
+
+                if (type) {
+                    desc = `<strong>${type}</strong>`
+
+                    const accDate = $target.find(TS.accDate).val()
+                    const accState = $target.find(SS.accState).val()
+
+                    if (accDate) desc += ` on ${accDate}`
+                    if (accState) desc += ` in ${accState}`
+                }
+            }
+
+            $deleteAccDesc.html(desc)
+        })
+        .parent()
+        .attr('style', countAccList() > 1 ? '' : 'display: none !important;')
+        
+    selectEvent(SS.accType, {
+        fill: true,
+        onChange(type, $type) {
+            onChange(type, $type)
+
+            const $otherType = $type.parent().parent().next().find(TS.accOtherType)
+            $otherType
+                .val('-')
+                .parent().hide()
+
+            if (type === 'other')
+                $otherType
+                    .val(null).removeClass('is-valid')
+                    .parent().show()
+        },
+    })
+
+    inputEvent(TS.accOtherType, { strip: true, word: true, onInput, onChange })
+
+    inputEvent(TS.accDate, {
+        mask: '99/99/9999',
+        placeholder: 'MM/DD/YYYY',
+        onInput(date, $date) {
+            $date.removeClass('is-valid is-invalid').next().text(null)
+        },
+        onChange(date, $date) {
+            if (date) {
+                const $help = $date.next()
+                date = moment(date, 'MM/DD/YYYY', true)
+
+                if (!date.isValid()) {
+                    $date.addClass('is-invalid')
+                    $help.text('* Invalid date')
+                } else {
+                    const today = moment()
+
+                    if (date.isAfter(today)) {
+                        $date.addClass('is-invalid')
+                        $help.text('* Future date forbidden')
+                    } else {
+                        const limit = moment(appliedOn).clone().subtract(3, 'years')
+
+                        if (date.isBefore(limit)) {
+                            $date.addClass('is-invalid')
+                            $help.text('* Over 3 years ago')
+                        } else $date.addClass('is-valid')
+                    }
+                }
+            }
+
+            if (check($form)) $help.form.hide().html(null)
+        },
+        onBlur,
+    })
+    
+    selectEvent(SS.accState, { fill: true, onChange })
+
+}

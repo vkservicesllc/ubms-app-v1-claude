@@ -431,18 +431,32 @@ class ApplicationForm {
         },
     })
 
+    static _accState = createUsStateForm({
+        selector: appSelector,
+        target: 'accState',
+        group: 'accState',
+        name: 'state[]',
+        required,
+        disabled,
+        label: 'State',
+    })
+
     static _accInjuries = createYesNoForm({
         selector: appSelector,
         target: 'accInjuries',
         name: 'injuries[]',
+        required,
         disabled,
+        label: 'Injuries',
     })
 
     static _accFatalities = createYesNoForm({
         selector: appSelector,
         target: 'accFatalities',
         name: 'fatalities[]',
+        required,
         disabled,
+        label: 'Fatalities',
     })
 
 }

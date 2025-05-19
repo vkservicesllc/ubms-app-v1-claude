@@ -14,15 +14,17 @@ const selector = {
         },
         text: {
             citDate: 'citation-date',
+            accDate: 'accident-date',
             citOtherReason: 'citation-other-reason',
             accOtherType: 'accident-other-type',
         },
         select: {
             gender: 'gender',
             marital: 'marital-status',
-            citState: 'citation-state',
             citReason: 'citation-reason',
+            citState: 'citation-state',
             accType: 'accident-type',
+            accState: 'accident-state',
         },
         radio: {
             gender: 'gender',
@@ -80,9 +82,10 @@ const selector = {
             status: 'legal-status',
             position: 'position',
             dlState: 'driver-license-state',
-            citState: 'citation-state',
             citReason: 'citation-reason',
+            citState: 'citation-state',
             accType: 'accident-type',
+            accState: 'accident-state',
         },
         radio: {
             gender: {

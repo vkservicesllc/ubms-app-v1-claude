@@ -552,6 +552,7 @@ class Application {
                     'collision',
                     'other',
                     'date',
+                    'state',
                     'injuries',
                     'fatalities',
                 ]

@@ -85,6 +85,7 @@ function cloneCitForm(i = 0, data = null) {
 
     $clone.find('input, select').each(function() {
         const $field = $(this)
+        let filled = false
 
         const id = $field.attr('id')
         if (id) {
@@ -102,7 +103,7 @@ function cloneCitForm(i = 0, data = null) {
             const value = data[i][name]
 
             if (value) {
-                $field.val(value)
+                $field.val(value).addClass('is-valid')
 
                 if ($field.is('select'))
                     $field.find('option[value=""]').remove()
@@ -110,8 +111,8 @@ function cloneCitForm(i = 0, data = null) {
                 if ($field.parent().is(':hidden'))
                     $field.parent().show()
 
-                $field.addClass('is-valid')
-            } else $field.val('-')
+                filled = true
+            } else if (filled) $field.val('-')
         }
     })
 
@@ -182,6 +183,25 @@ function resetEvents() {
         .parent()
         .attr('style', countCitList() > 1 ? '' : 'display: none !important;')
 
+    selectEvent(SS.citReason, {
+        fill: true,
+        onChange(reason, $reason) {
+            onChange(reason, $reason)
+
+            const $otherReason = $reason.parent().parent().next().find(TS.citOtherReason)
+            $otherReason
+                .val('-')
+                .parent().hide()
+
+            if (reason === 'other')
+                $otherReason
+                    .val(null).removeClass('is-valid')
+                    .parent().show()
+        },
+    })
+
+    inputEvent(TS.citOtherReason, { strip: true, word: true, onInput, onChange })
+
     inputEvent(TS.citDate, {
         mask: '99/99/9999',
         placeholder: 'MM/DD/YYYY',
@@ -220,22 +240,4 @@ function resetEvents() {
 
     selectEvent(SS.citState, { fill: true, onChange })
 
-    selectEvent(SS.citReason, {
-        fill: true,
-        onChange(reason, $reason) {
-            onChange(reason, $reason)
-
-            const $otherReason = $reason.parent().parent().next().find(TS.citOtherReason)
-            $otherReason
-                .val('-')
-                .parent().hide()
-
-            if (reason === 'other')
-                $otherReason
-                    .val(null).removeClass('is-valid')
-                    .parent().show()
-        },
-    })
-
-    inputEvent(TS.citOtherReason, { strip: true, word: true, onInput, onChange })
 }

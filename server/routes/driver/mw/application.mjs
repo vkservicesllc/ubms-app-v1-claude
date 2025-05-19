@@ -410,23 +410,30 @@ export const applicationProgress = async (req, res) => {
             hbs.accidentsDisplay = ' style="display: none;"'
 
             options.accidents = { radio: {} }
-            for (const prop of ['yes', 'no'])
+            options._accInjuries = { radio: {} }
+            options._accFatalities = { radio: {} }
+            for (const prop of ['yes', 'no']) {
                 options.accidents.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options._accInjuries.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options._accFatalities.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            }
             options.accidents.radio.yes.input.checked = application.accidents === true
             options.accidents.radio.no.input.checked = application.accidents === false
 
             if (application.accidents === true)
                 hbs.accidentsDisplay = ''
 
-            const fields = ['_accType', '_accOtherType', '_accDate']
+            let { labelClassRequired } = formInstr
+            labelClassRequired += ' input-required'
+            const fields = ['_accType', '_accOtherType', '_accDate', '_accState' ]
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
+            options._accInjuries.radio.label = { class: labelClassRequired }
+            options._accFatalities.radio.label = { class: labelClassRequired }
 
             const placeholders = {
                 _accDate: 'MM/DD/YYYY',
             }
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
-
-            //! Injuries and Fatalities
         }
 
         hbs.form = new ApplicationForm(options)
