@@ -548,7 +548,13 @@ class Application {
 
             case 'accidents':
                 src = 'aplAccidents'
-                fields = [] //! add fields...
+                fields = [
+                    'collision',
+                    'other',
+                    'date',
+                    'injuries',
+                    'fatalities',
+                ]
                 break
 
         }

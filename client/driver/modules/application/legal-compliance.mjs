@@ -128,10 +128,10 @@ function drawCitationForms() {
 
             if (!data.length)
                 data.push({
+                    violation: null,
+                    other: null,
                     citedOn: null,
                     state: null,
-                    reason: null,
-                    otherReason: null,
                 })
             else data.forEach(row => row.citedOn = moment(row.citedOn).format('MM/DD/YYYY'))
 
@@ -139,7 +139,6 @@ function drawCitationForms() {
             for (let i = 0; i < count; i++) $citList.append(cloneCitForm(i, data))
 
             resetEvents()
-            if (countCitList())
 
             $citations.show()
         },
@@ -180,7 +179,7 @@ function resetEvents() {
 
             $deleteCitDesc.html(desc)
         })
-        .parent().parent()
+        .parent()
         .attr('style', countCitList() > 1 ? '' : 'display: none !important;')
 
     inputEvent(TS.citDate, {

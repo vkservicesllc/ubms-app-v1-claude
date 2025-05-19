@@ -395,7 +395,7 @@ export const applicationProgress = async (req, res) => {
             if (application.citations === true)
                 hbs.citationsDisplay = ''
 
-            const fields = [ '_citDate', '_citState', '_citReason', '_citOtherReason' ]
+            const fields = ['_citReason', '_citOtherReason', '_citDate', '_citState']
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
 
             const placeholders = {
@@ -407,7 +407,26 @@ export const applicationProgress = async (req, res) => {
         if (step >= 4) { /* SAFETY */
             hbs.button.three = buttonProps.save
             hbs.accordion.three = accordionProps.finished
+            hbs.accidentsDisplay = ' style="display: none;"'
 
+            options.accidents = { radio: {} }
+            for (const prop of ['yes', 'no'])
+                options.accidents.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            options.accidents.radio.yes.input.checked = application.accidents === true
+            options.accidents.radio.no.input.checked = application.accidents === false
+
+            if (application.accidents === true)
+                hbs.accidentsDisplay = ''
+
+            const fields = ['_accType', '_accOtherType', '_accDate']
+            options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
+
+            const placeholders = {
+                _accDate: 'MM/DD/YYYY',
+            }
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+
+            //! Injuries and Fatalities
         }
 
         hbs.form = new ApplicationForm(options)

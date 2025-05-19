@@ -340,29 +340,6 @@ class ApplicationForm {
         name: 'citations',
     })
 
-    static _citDate = createDateForm({
-        selector: appSelector,
-        target: 'citDate',
-        group: 'citDate',
-        name: 'citedOn[]',
-        required,
-        disabled,
-        label: 'Cited on',
-        validator: {
-            rule: 'date',
-        },
-    })
-
-    static _citState = createUsStateForm({
-        selector: appSelector,
-        target: 'citState',
-        group: 'citState',
-        name: 'state[]',
-        required,
-        disabled,
-        label: 'State',
-    })
-
     static _citReason = createForm({
         selector: appSelector,
         target: 'citReason',
@@ -387,11 +364,58 @@ class ApplicationForm {
         label: 'Provide the reason',
     })
 
+    static _citDate = createDateForm({
+        selector: appSelector,
+        target: 'citDate',
+        group: 'citDate',
+        name: 'citedOn[]',
+        required,
+        disabled,
+        label: 'Cited on',
+        validator: {
+            rule: 'date',
+        },
+    })
+
+    static _citState = createUsStateForm({
+        selector: appSelector,
+        target: 'citState',
+        group: 'citState',
+        name: 'state[]',
+        required,
+        disabled,
+        label: 'State',
+    })
+
     static accidents = createYesNoForm({
         selector: appSelector,
         target: 'accidents',
         group: 'accidents',
         name: 'accidents',
+    })
+
+    static _accType = createForm({
+        selector: appSelector,
+        target: 'accType',
+        group: 'accType',
+        type: 'select',
+        name: 'collision[]',
+        data: Application.accidentList,
+        emptyOpt,
+        required: true,
+        disabled,
+        label: 'Collision Type',
+    })
+
+    static _accOtherType = createForm({
+        selector: appSelector,
+        target: 'accOtherType',
+        group: 'accOtherType',
+        name: 'other[]',
+        maxLength: 25,
+        required,
+        disabled,
+        label: 'Other Type',
     })
 
     static _accDate = createDateForm({
@@ -419,30 +443,6 @@ class ApplicationForm {
         target: 'accFatalities',
         name: 'fatalities[]',
         disabled,
-    })
-
-    static _accType = createForm({
-        selector: appSelector,
-        target: 'accType',
-        group: 'accType',
-        type: 'select',
-        name: 'type[]',
-        data: Application.accidentList,
-        emptyOpt,
-        required: true,
-        disabled,
-        label: 'Type',
-    })
-
-    static _accOtherType = createForm({
-        selector: appSelector,
-        target: 'accOtherType',
-        group: 'accOtherType',
-        name: 'otherType[]',
-        maxLength: 25,
-        required,
-        disabled,
-        label: 'Other Type',
     })
 
 }

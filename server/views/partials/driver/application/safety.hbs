@@ -8,7 +8,35 @@
     <div id="collapse-4" class="text-start accordion-collapse collapse{{accordion.four.body}}" data-bs-parent="#apl-accordion">
         <div class="accordion-body">
             <form id="safety-form" action="{{actionUrl.safety}}" method="POST" autocomplete="off">
-                SAFETY FORM
+                <div class="row g-3 my-1">
+                    <label class="form-label">
+                        Have you been involved in any motor vehicle accidents in the past 3 years?
+                    </label>
+                    <div class="col-md-4 mt-0 mb-2">
+                        <div class="form-check form-check-inline">
+                            {{{form.accidents.radio.yes.input}}}
+                            {{{form.accidents.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.accidents.radio.no.input}}}
+                            {{{form.accidents.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
+                <div id="accidents"{{{accidentsDisplay}}}>
+                    <label class="form-label fw-normal text-danger mt-3 mb-0">
+                        <small>
+                            <i class="fas fa-circle-exclamation"></i>
+                            At least one accident must be reported
+                        </small>
+                    </label>
+                    <div class="border-bottom pb-4" id="accident-list"></div>
+                    <div class="d-flex">
+                        <div class="ms-auto pt-3">
+                            <button type="button" class="btn btn-secondary btn-sm" id="add-accident-button"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
                 <p class="form-text text-danger mt-4" id="safety-form-help" style="display: none;"></p>
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
@@ -18,6 +46,56 @@
                     </div>
                 </div>
             </form>
+            <div id="accident-form-template" style="display: none;">
+                <div class="border-top mt-4">
+                    <div class="d-flex">
+                        <div class="ms-auto pt-3" style="display: none !important;">
+                            <button type="button" class="btn btn-danger btn-sm delete-accident-button" data-bs-toggle="modal" data-bs-target="#delete-accident-modal">
+                                <i class="fas fa-close"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row g-3 my-1">
+                        <div class="col-md-10">
+                            {{{form._accType.select.label}}}
+                            {{{form._accType.select.input}}}
+                        </div>
+                    </div>
+                    <div class="row g-3 my-1">
+                        <div class="col-md-10" style="display: none;">
+                            {{{form._accOtherType.text.label}}}
+                            {{{form._accOtherType.text.input}}}
+                        </div>
+                    </div>
+                    <div class="row g-3 my-1">
+                        <div class="col-md-4">
+                            {{{form._accDate.text.label}}}
+                            {{{form._accDate.text.input}}}
+                            <div class="form-text text-danger"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="delete-accident-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Delete Accident</h1>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="delete-accident-target" />
+                            <p class="my-1"><small>Are you sure you want to remove the following accident?</small></p>
+                            <p class="my-1" id="delete-accident-desc"></p>
+                            <p class="my-1"><small>This change will take effect after you click the "{{button.four.text}}" button</small></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id="remove-accident-button">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script type="module" src="/modules/application/safety.mjs"></script>
         </div>
     </div>
 </div>
