@@ -1,0 +1,23 @@
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button{{accordion.five.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-5">
+            <i class="{{accordion.five.state}} accordion-button-state"></i>
+            <strong>{{idx steps 5}}</strong>
+        </button>
+    </h2>
+    <div id="collapse-5" class="text-start accordion-collapse collapse{{accordion.five.body}}" data-bs-parent="#apl-accordion">
+        <div class="accordion-body">
+            <form id="safety-form" action="{{actionUrl.experience}}" method="POST" autocomplete="off">
+                CONDITIONAL EXPERIENCE FORM
+                <div class="row g-3 my-2">
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-{{button.five.class}}" id="safety-submit">{{button.five.text}}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <script type="module" src="/modules/application/experience.mjs"></script>
+        </div>
+    </div>
+</div>

@@ -207,6 +207,7 @@ export const applicationProgress = async (req, res) => {
             mec: `${recUrl}/medical-card`,
             legal: `${recUrl}/legal-compliance`,
             safety: `${recUrl}/safety`,
+            experience: `${recUrl}/experience`,
         }
 
         for (const ct of ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {
@@ -434,6 +435,12 @@ export const applicationProgress = async (req, res) => {
                 _accDate: 'MM/DD/YYYY',
             }
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+        }
+
+        if (step >= 5) { /* DRIVING EXPERIENCE */
+            hbs.button.four = buttonProps.save
+            hbs.accordion.four = accordionProps.finished
+
         }
 
         hbs.form = new ApplicationForm(options)

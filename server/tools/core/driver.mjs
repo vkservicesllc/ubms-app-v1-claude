@@ -417,7 +417,7 @@ class Application {
 
             case 'legal-compliance':
                 target = 'aplCitations'
-                action = 'insert'
+                action = 'insert' //! for now it is easier to delete and insert newly submitted citations, `updateLog` is redundant at this point
 
                 if (data.dui && typeof data.duiInDecade !== 'boolean')
                     error = 'Data Submission Error: Explanation not provided for DUI'
@@ -437,7 +437,7 @@ class Application {
 
                 await mysql.execute(query.aplCitations.delete({ aplId: id }))
 
-                const { citedOn, state, violation, other } = data
+                const { violation, other: otherViolation, citedOn, state: citState  } = data
                 data = []
 
                 if (!violation && data.citations) data.citations = false
@@ -461,15 +461,63 @@ class Application {
                     for (let i = 0; i < count; i++) {
                         data.push({
                             aplId: id,
-                            citedOn: citedOn[i],
-                            state: state[i],
                             violation: violation[i],
-                            other: violation[i] === 'other' ? other?.[i] : null,
+                            other: violation[i] === 'other' ? otherViolation?.[i] : null,
+                            citedOn: citedOn[i],
+                            state: citState[i],
                         })
                     }
                 }
                 break
 
+
+            case 'safety':
+                target = 'aplAccidents'
+                action = 'insert' //! for now it is easier to delete and insert newly submitted accidents, `updateLog` is redundant at this point
+
+                const { accidents } = data
+                mainData.accidents = accidents
+
+                await mysql.execute(query.aplAccidents.delete({ aplId: id }))
+
+                const { collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = data
+                data = []
+
+                if (!collision && data.accidents) data.accidents = false
+
+                if (this.step < 5) {
+                    mainData = processData(mainData)
+                    mainData.step = 5
+                } else {
+                    mainData = processData(mainData, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+                }
+
+                if (accidents) {
+                    const count = accidents.length
+
+                    for (let i = 0; i < count; i++) {
+                        data.push({
+                            aplId: id,
+                            collision: collision[i],
+                            other: collision[i] === 'other' ? otherCollision?.[i] : null,
+                            date: accDate[i],
+                            state: accState[i],
+                            injuries: injuries[i],
+                            fatalities: fatalities[i],
+                        })
+                    }
+                }
+                break
+
+
+            case 'experience':
+                break
 
         }
 
