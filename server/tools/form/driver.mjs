@@ -483,6 +483,43 @@ class ApplicationForm {
         label: 'Vehicle Currently Driven',
     })
 
+    static straightExp = createForm({
+        type: 'checkbox',
+        data: {
+            box: 'Box Truck',
+            cube: 'Cube Truck',
+            dump: 'Dump Truck',
+            pickup: 'Heavy-Duty Pickup',
+        },
+        name: 'straight',
+        label: 'Straight Truck',
+    })
+
+    static semiExp = createForm({
+        type: 'checkbox',
+        data: {
+            van: 'Dry Van',
+            reefer: 'Reefer',
+            flat: 'Flatbed',
+            step: 'Step Deck',
+            tanker: 'Tanker',
+            lowboy: 'Lowboy',
+        },
+        name: 'semi',
+        label: 'Semi Tractor/Trailer',
+    })
+
+    //! Rework DB and core
+    // static otherExp = createForm({
+    //     type: 'checkbox',
+    //     data: {
+    //         van: 'Cargo Van',
+    //         tandem: 'Tandem Tractor/Trailer',
+    //     },
+    //     name: 'other',
+    //     label: 'Other',
+    // })
+
 }
 
 
