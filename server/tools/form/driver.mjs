@@ -484,57 +484,38 @@ class ApplicationForm {
     })
 
     static straightExp = createForm({
-        //! Selector missing
+        selector: appSelector,
+        target: 'straightExp',
         type: 'checkbox',
-        data: {
-            box: 'Box Truck',
-            cube: 'Cube Truck',
-            dump: 'Dump Truck',
-            pickup: 'Heavy-Duty Pickup',
-        },
+        data: Application.vehicleList.straight,
         name: 'vehicles[straight]',
         label: 'Straight Truck',
     })
 
     static semiExp = createForm({
-        //! Selector missing
+        selector: appSelector,
+        target: 'semiExp',
         type: 'checkbox',
-        data: {
-            van: 'Dry Van',
-            reefer: 'Reefer',
-            flat: 'Flatbed',
-            step: 'Step Deck',
-            tanker: 'Tanker',
-            lowboy: 'Lowboy',
-        },
+        data: Application.vehicleList.semi,
         name: 'vehicles[semi]',
         label: 'Semi Tractor/Trailer',
     })
 
     static tandemExp = createForm({
-        //! Selector missing
+        selector: appSelector,
+        target: 'tandemExp',
         type: 'checkbox',
-        name: 'vehicles[other][tandem]',
+        name: 'vehicles[misc][tandem]',
         label: 'Tandem Tractor/Trailer',
     })
 
     static vanExp = createForm({
-        //! Selector missing
+        selector: appSelector,
+        target: 'vanExp',
         type: 'checkbox',
-        name: 'vehicles[other][van]',
+        name: 'vehicles[misc][van]',
         label: 'Cargo Van',
     })
-
-    //! Rework DB and core
-    // static otherExp = createForm({
-    //     type: 'checkbox',
-    //     data: {
-    //         van: 'Cargo Van',
-    //         tandem: 'Tandem Tractor/Trailer',
-    //     },
-    //     name: 'other',
-    //     label: 'Other',
-    // })
 
 }
 

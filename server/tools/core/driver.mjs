@@ -718,44 +718,23 @@ class Application {
         }
     }
 
-    // static vehicleList = {
-    //     straight: {
-    //         name: 'Straight Truck',
-    //         deptId: [0, 1],
-    //         types: {
-    //             name: 'Straight Truck Types',
-    //             variants: {
-    //                 box: 'Box Truck',
-    //                 cube: 'Cube Truck',
-    //                 dump: 'Dump Truck',
-    //                 pickup: 'Heavy-Duty Pickup',
-    //             },
-    //         },
-    //     },
-    //     semi: {
-    //         name: 'Semi Tractor/Trailer',
-    //         deptId: 0,
-    //         types: {
-    //             name: 'Trailer Types',
-    //             variants: {
-    //                 van: 'Dry Van',
-    //                 reefer: 'Reefer',
-    //                 flat: 'Flatbed',
-    //                 step: 'Step Deck',
-    //                 tanker: 'Tanker',
-    //                 lowboy: 'Lowboy',
-    //             },
-    //         },
-    //     },
-    //     tandem: {
-    //         name: 'Tandem Tractor/Trailer',
-    //         deptId: 0,
-    //     },
-    //     van: {
-    //         name: 'Cargo Van',
-    //         deptId: 1,
-    //     },
-    // }
+    static vehicleList = {
+        straight: {
+            box: 'Box',
+            cube: 'Cube',
+            dump: 'Dump',
+            rollback: 'Rollback',
+            pickup: 'Heavy-Duty Pickup',
+        },
+        semi: {
+            van: 'Dry Van',
+            reefer: 'Reefer',
+            flat: 'Flatbed',
+            step: 'Step Deck',
+            tanker: 'Tanker',
+            lowboy: 'Lowboy',
+        },
+    }
 
 
     static #algorithm = 'SHA-224'

@@ -35,10 +35,10 @@ const selector = {
             accidents: 'accidents',
         },
         checkbox: {
-            vehicleTypeExp: 'vehicle-type-experience',
+            // vehicleTypeExp: 'vehicle-type-experience',
             straightExp: 'straight-truck-experience',
-            trailerExp: 'trailer-type-experience',
-        }
+            semiExp: 'trailer-type-experience',
+        },
     },
     id: {
         hidden: {
@@ -168,27 +168,29 @@ const selector = {
         },
         checkbox: {
             noMec: 'no-med-card',
-            vehicleTypeExp: {
-                straight: 'straight-truck-experience',
-                semi: 'semi-tractor-trailer-experience',
-                tandem: 'tandem-tractor-trailer-experience',
-                van: 'cargo-van-experience',
-            },
+            // vehicleTypeExp: {
+            //     straight: 'straight-truck-experience',
+            //     semi: 'semi-tractor-trailer-experience',
+            //     tandem: 'tandem-tractor-trailer-experience',
+            //     van: 'cargo-van-experience',
+            // },
             straightExp: {
                 box: 'box-truck-experience',
                 cube: 'cube-truck-experience',
                 dump: 'dump-truck-experience',
                 pickup: 'pickup-truck-experience',
             },
-            trailerExp: {
-                van: 'dry-van-experience',
-                reefer: 'reefer-experience',
-                flat: 'flatbed-experience',
-                step: 'step-deck-experience',
-                tanker: 'tanker-experience',
-                lowboy: 'lowboy-experience',
-                other: 'other-trailer-experience',
+            semiExp: {
+                van: 'dry-van-semi-experience',
+                reefer: 'reefer-semi-experience',
+                flat: 'flatbed-semi-experience',
+                step: 'step-deck-semi-experience',
+                tanker: 'tanker-semi-experience',
+                lowboy: 'lowboy-semi-experience',
+                // other: 'other-trailer-experience',
             },
+            tandemExp: 'tandem-experience',
+            vanExp: 'cargo-van-experience',
         },
     },
 }

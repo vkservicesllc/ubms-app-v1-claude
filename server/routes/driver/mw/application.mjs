@@ -448,8 +448,10 @@ export const applicationProgress = async (req, res) => {
         if (step >= 5) { /* DRIVING EXPERIENCE */
             hbs.button.four = buttonProps.save
             hbs.accordion.four = accordionProps.finished
+            hbs.vhlExpColWidth = application.deptId === 0 && application.dl.commercial ? 4 : 6
 
-            //! at this point it is divided into departments
+            let { labelClassRequired } = formInstr
+
             options.cmvExp = { radio: {} }
             options.cdlSchool = { radio: {} }
             options.currentVhl = { radio: {} }
@@ -464,6 +466,17 @@ export const applicationProgress = async (req, res) => {
             options.cdlSchool.radio.no.input.checked = application?.experience?.cdlSchool === false
             options.currentVhl.radio.yes.input.checked = application?.experience?.current === true
             options.currentVhl.radio.no.input.checked = application?.experience?.current === false
+
+            options.straightExp = { checkbox: { label: { class: labelClassRequired } } }
+            options.semiExp = { checkbox: { label: { class: labelClassRequired } } }
+            for (const prop in Application.vehicleList.straight)
+                options.straightExp.checkbox[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            for (const prop in Application.vehicleList.semi)
+                options.semiExp.checkbox[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            options.tandemExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
+            options.vanExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
+
+            //! ...not finished
 
         }
 

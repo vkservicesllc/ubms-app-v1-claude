@@ -31,6 +31,85 @@
                 </div>
                 {{/if}}
 
+                <div class="row g-3 my-1">
+                    <label class="form-label mb-0">
+                        Select all options that best describe your driving experience:
+                    </label>
+                    <div class="col-md-{{vhlExpColWidth}} vehicle-experience-col-width">
+                        {{{form.straightExp.checkbox.label}}}
+                        <div class="form-check">
+                            {{{form.straightExp.checkbox.box.input}}}
+                            {{{form.straightExp.checkbox.box.label}}}
+                        </div>
+                        <div class="form-check">
+                            {{{form.straightExp.checkbox.cube.input}}}
+                            {{{form.straightExp.checkbox.cube.label}}}
+                        </div>
+                        <div class="form-check">
+                            {{{form.straightExp.checkbox.dump.input}}}
+                            {{{form.straightExp.checkbox.dump.label}}}
+                        </div>
+                        <div class="form-check">
+                            {{{form.straightExp.checkbox.rollback.input}}}
+                            {{{form.straightExp.checkbox.rollback.label}}}
+                        </div>
+                        <div class="form-check">
+                            {{{form.straightExp.checkbox.pickup.input}}}
+                            {{{form.straightExp.checkbox.pickup.label}}}
+                        </div>
+                    </div>
+                    {{#if (
+                        and
+                            (eq deptId 0)
+                            (eq cdl true)
+                    )}}
+                    <div class="col-md-4 cmv-experience">
+                        {{{form.semiExp.checkbox.label}}}
+                        <div class="form-check">
+                            {{{form.semiExp.checkbox.van.input}}}
+                            {{{form.semiExp.checkbox.van.label}}}
+                        </div>
+                        <div class="form-check">
+                            {{{form.semiExp.checkbox.reefer.input}}}
+                            {{{form.semiExp.checkbox.reefer.label}}}
+                        </div>
+                        <div class="form-check">
+                            {{{form.semiExp.checkbox.flat.input}}}
+                            {{{form.semiExp.checkbox.flat.label}}}
+                        </div>
+                        <div class="form-check">
+                            {{{form.semiExp.checkbox.step.input}}}
+                            {{{form.semiExp.checkbox.step.label}}}
+                        </div>
+                        <div class="form-check">
+                            {{{form.semiExp.checkbox.tanker.input}}}
+                            {{{form.semiExp.checkbox.tanker.label}}}
+                        </div>
+                        <div class="form-check">
+                            {{{form.semiExp.checkbox.lowboy.input}}}
+                            {{{form.semiExp.checkbox.lowboy.label}}}
+                        </div>
+                    </div>
+                    {{/if}}
+                    <div class="col-md-{{vhlExpColWidth}} vehicle-experience-col-width">
+                        <label class="form-label">Misc</label>
+                        {{#if (
+                            and
+                                (eq deptId 0)
+                                (eq cdl true)
+                        )}}
+                        <div class="form-check cmv-experience">
+                            {{{form.tandemExp.checkbox.input}}}
+                            {{{form.tandemExp.checkbox.label}}}
+                        </div>
+                        {{/if}}
+                        <div class="form-check">
+                            {{{form.vanExp.checkbox.input}}}
+                            {{{form.vanExp.checkbox.label}}}
+                        </div>
+                    </div>
+                </div>
+
                 {{#if (
                     and
                         (eq deptId 0)
