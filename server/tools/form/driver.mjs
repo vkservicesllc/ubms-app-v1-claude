@@ -484,6 +484,7 @@ class ApplicationForm {
     })
 
     static straightExp = createForm({
+        //! Selector missing
         type: 'checkbox',
         data: {
             box: 'Box Truck',
@@ -491,11 +492,12 @@ class ApplicationForm {
             dump: 'Dump Truck',
             pickup: 'Heavy-Duty Pickup',
         },
-        name: 'straight',
+        name: 'vehicles[straight]',
         label: 'Straight Truck',
     })
 
     static semiExp = createForm({
+        //! Selector missing
         type: 'checkbox',
         data: {
             van: 'Dry Van',
@@ -505,8 +507,22 @@ class ApplicationForm {
             tanker: 'Tanker',
             lowboy: 'Lowboy',
         },
-        name: 'semi',
+        name: 'vehicles[semi]',
         label: 'Semi Tractor/Trailer',
+    })
+
+    static tandemExp = createForm({
+        //! Selector missing
+        type: 'checkbox',
+        name: 'vehicles[other][tandem]',
+        label: 'Tandem Tractor/Trailer',
+    })
+
+    static vanExp = createForm({
+        //! Selector missing
+        type: 'checkbox',
+        name: 'vehicles[other][van]',
+        label: 'Cargo Van',
     })
 
     //! Rework DB and core
