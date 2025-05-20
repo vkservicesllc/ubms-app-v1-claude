@@ -476,6 +476,18 @@ export const applicationProgress = async (req, res) => {
             options.tandemExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
             options.vanExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
 
+            const values = {
+                expStartDate: application?.experience?.firstDate ? moment(application.experience.firstDate).format('MM/DD/YYYY') : null,
+                expEndDate: application?.experience?.lastDate ? moment(application.experience.lastDate).format('MM/DD/YYYY') : null,
+                expMileage: application?.experience?.mileage,
+            }
+            const placeholders = {
+                expStartDate: 'MM/DD/YYYY',
+                expEndDate: 'MM/DD/YYYY',
+            }
+
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             //! ...not finished
 
         }

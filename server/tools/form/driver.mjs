@@ -517,6 +517,27 @@ class ApplicationForm {
         label: 'Cargo Van',
     })
 
+    static expStartDate = createDateForm({
+        selector: appSelector,
+        target: 'expStartDate',
+        name: 'firstDate',
+        label: 'First Driven on',
+    })
+
+    static expEndDate = createDateForm({
+        selector: appSelector,
+        target: 'expEndDate',
+        name: 'lastDate',
+        label: 'Last Driven on',
+    })
+
+    static expMileage = createForm({
+        selector: appSelector,
+        target: 'expMileage',
+        name: 'mileage',
+        label: 'Total Mileage Driven',
+    })
+
 }
 
 
