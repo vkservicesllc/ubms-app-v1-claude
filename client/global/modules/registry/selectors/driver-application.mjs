@@ -34,6 +34,11 @@ const selector = {
             citations: 'citations',
             accidents: 'accidents',
         },
+        checkbox: {
+            vehicleTypeExp: 'vehicle-type-experience',
+            straightExp: 'straight-truck-experience',
+            trailerExp: 'trailer-type-experience',
+        }
     },
     id: {
         hidden: {
@@ -148,9 +153,42 @@ const selector = {
                 yes: 'had-accident-fatalities',
                 no: 'had-no-accident-fatalities',
             },
+            cmvExp: {
+                yes: 'has-cmv-experience',
+                no: 'has-no-cmv-experience',
+            },
+            cdlSchool: {
+                yes: 'attended-cdl-school',
+                no: 'no-cdl-school',
+            },
+            currentVhl: {
+                yes: 'currently-driving',
+                no: 'currently-not-driving', 
+            },
         },
         checkbox: {
             noMec: 'no-med-card',
+            vehicleTypeExp: {
+                straight: 'straight-truck-experience',
+                semi: 'semi-tractor-trailer-experience',
+                tandem: 'tandem-tractor-trailer-experience',
+                van: 'cargo-van-experience',
+            },
+            straightExp: {
+                box: 'box-truck-experience',
+                cube: 'cube-truck-experience',
+                dump: 'dump-truck-experience',
+                pickup: 'pickup-truck-experience',
+            },
+            trailerExp: {
+                van: 'dry-van-experience',
+                reefer: 'reefer-experience',
+                flat: 'flatbed-experience',
+                step: 'step-deck-experience',
+                tanker: 'tanker-experience',
+                lowboy: 'lowboy-experience',
+                other: 'other-trailer-experience',
+            },
         },
     },
 }

@@ -203,6 +203,25 @@ class Application {
 
         this.accidents = bool(data.accidents)
 
+        if (this.step >= 6)
+            this.experience = {
+                cmv: bool(data.cmvExp),
+                vehicles: data.vehiclesExp,
+                firstDrivenOn: data.firstDrivenOn,
+                lastDrivenOn: data.lastDrivenOn,
+                drivenMileage: drivenMileage,
+                pastWeekHours: data.pastWeekHours,
+                cdlSchool: bool(data.cdlSchool),
+                schName: data.schName,
+                schPhone: data.schPhone,
+                schEndDate: data.schEndDate,
+                schDuration: data.schDuration,
+                currentVhl: bool(data.currentVhl),
+                currentType: data.currentType,
+                currentMake: data.currentMake,
+                currentModel: data.currentModel,
+                currentYear: data.currentYear,
+            }
     }
 
 
@@ -699,44 +718,44 @@ class Application {
         }
     }
 
-    static vehicleList = {
-        straight: {
-            name: 'Straight Truck',
-            deptId: [0, 1],
-            types: {
-                name: 'Straight Truck Types',
-                variants: {
-                    box: 'Box Truck',
-                    cube: 'Cube Truck',
-                    dump: 'Dump Truck',
-                    pickup: 'Heavy-Duty Pickup',
-                },
-            },
-        },
-        semi: {
-            name: 'Semi Tractor/Trailer',
-            deptId: 0,
-            types: {
-                name: 'Trailer Types',
-                variants: {
-                    van: 'Dry Van',
-                    reefer: 'Reefer',
-                    flat: 'Flatbed',
-                    step: 'Step Deck',
-                    tanker: 'Tanker',
-                    lowboy: 'Lowboy',
-                },
-            },
-        },
-        tandem: {
-            name: 'Tandem Tractor/Trailer',
-            deptId: 0,
-        },
-        van: {
-            name: 'Cargo Van',
-            deptId: 1,
-        },
-    }
+    // static vehicleList = {
+    //     straight: {
+    //         name: 'Straight Truck',
+    //         deptId: [0, 1],
+    //         types: {
+    //             name: 'Straight Truck Types',
+    //             variants: {
+    //                 box: 'Box Truck',
+    //                 cube: 'Cube Truck',
+    //                 dump: 'Dump Truck',
+    //                 pickup: 'Heavy-Duty Pickup',
+    //             },
+    //         },
+    //     },
+    //     semi: {
+    //         name: 'Semi Tractor/Trailer',
+    //         deptId: 0,
+    //         types: {
+    //             name: 'Trailer Types',
+    //             variants: {
+    //                 van: 'Dry Van',
+    //                 reefer: 'Reefer',
+    //                 flat: 'Flatbed',
+    //                 step: 'Step Deck',
+    //                 tanker: 'Tanker',
+    //                 lowboy: 'Lowboy',
+    //             },
+    //         },
+    //     },
+    //     tandem: {
+    //         name: 'Tandem Tractor/Trailer',
+    //         deptId: 0,
+    //     },
+    //     van: {
+    //         name: 'Cargo Van',
+    //         deptId: 1,
+    //     },
+    // }
 
 
     static #algorithm = 'SHA-224'
@@ -967,6 +986,28 @@ class Application {
                     'nrcme',
                     [ 'issuedOn', 'mecIssuedOn' ],
                     [ 'expiresOn', 'mecExpiresOn' ],
+                ],
+                join: [ 'aplId', 'id' ],
+            },
+            {
+                table: 'application_experiences',
+                fields: [
+                    [ 'cmv', 'cmvExp' ],
+                    [ 'vehicles', 'vehiclesExp' ],
+                    'firstDrivenOn',
+                    'lastDrivenOn',
+                    'drivenMileage',
+                    'pastWeekHours',
+                    'cdlSchool',
+                    'schName',
+                    'schPhone',
+                    'schEndDate',
+                    'schDuration',
+                    [ 'current', 'currentVhl' ],
+                    'currentType',
+                    'currentMake',
+                    'currentModel',
+                    'currentYear',
                 ],
                 join: [ 'aplId', 'id' ],
             },

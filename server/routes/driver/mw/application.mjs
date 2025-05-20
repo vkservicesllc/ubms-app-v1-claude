@@ -291,10 +291,15 @@ export const applicationProgress = async (req, res) => {
                 options.dlRevoked.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
+            //! Rework this logic
             if ((commercial && application?.dl?.commercial === undefined) || !application.medCard) {
                 options.dlCommercial.radio.yes.input.disabled = true
                 options.dlCommercial.radio.no.input.disabled = true
                 options.dlCommercial.radio[application.medCard ? 'yes' : 'no'].input.checked = true
+            } else if (application?.experience?.cmv || application?.experience?.cdlSchool) {
+                options.dlCommercial.radio.yes.input.disabled = true
+                options.dlCommercial.radio.no.input.disabled = true
+                options.dlCommercial.radio.yes.input.checked = true
             } else {
                 options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === true
                 options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === false
@@ -445,6 +450,21 @@ export const applicationProgress = async (req, res) => {
             hbs.accordion.four = accordionProps.finished
 
             //! at this point it is divided into departments
+            options.cmvExp = { radio: {} }
+            options.cdlSchool = { radio: {} }
+            options.currentVhl = { radio: {} }
+            for (const prop of ['yes', 'no']) {
+                options.cmvExp.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.cdlSchool.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.currentVhl.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            }
+            options.cmvExp.radio.yes.input.checked = application?.experience?.cmv === true
+            options.cmvExp.radio.no.input.checked = application?.experience?.cmv === false
+            options.cdlSchool.radio.yes.input.checked = application?.experience?.cdlSchool === true
+            options.cdlSchool.radio.no.input.checked = application?.experience?.cdlSchool === false
+            options.currentVhl.radio.yes.input.checked = application?.experience?.current === true
+            options.currentVhl.radio.no.input.checked = application?.experience?.current === false
+
         }
 
         hbs.form = new ApplicationForm(options)
@@ -456,7 +476,9 @@ export const applicationProgress = async (req, res) => {
         hbs.formId = formId
         hbs.deptId = deptId
         hbs.applicantName = application.fullName
-        hbs.position = application.position[1]
+        hbs.applicantPosition = application.position[1]
+        hbs.position = application.position[0]
+        hbs.cdl = application?.dl?.commercial === true
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET' //! Test time accuracy on live server
 
         res.render(key, hbs)

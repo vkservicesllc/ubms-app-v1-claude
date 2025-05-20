@@ -8,7 +8,73 @@
     <div id="collapse-5" class="text-start accordion-collapse collapse{{accordion.five.body}}" data-bs-parent="#apl-accordion">
         <div class="accordion-body">
             <form id="safety-form" action="{{actionUrl.experience}}" method="POST" autocomplete="off">
-                CONDITIONAL EXPERIENCE FORM
+
+                {{#if (
+                    and
+                        (eq deptId 0)
+                        (eq cdl true)
+                )}}
+                <div class="row g-3 my-1">
+                    <label class="form-label">
+                        Have you previously operated a Commercial Motor Vehicle (CMV)?
+                    </label>
+                    <div class="col-md-4 mt-0 mb-2">
+                        <div class="form-check form-check-inline">
+                            {{{form.cmvExp.radio.yes.input}}}
+                            {{{form.cmvExp.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.cmvExp.radio.no.input}}}
+                            {{{form.cmvExp.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+
+                {{#if (
+                    and
+                        (eq deptId 0)
+                        (eq cdl true)
+                )}}
+                <div class="row g-3 my-1">
+                    <label class="form-label">
+                        Have you attended a CDL driving school in the past?
+                    </label>
+                    <div class="col-md-4 mt-0 mb-2">
+                        <div class="form-check form-check-inline">
+                            {{{form.cdlSchool.radio.yes.input}}}
+                            {{{form.cdlSchool.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.cdlSchool.radio.no.input}}}
+                            {{{form.cdlSchool.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+
+                {{#if (
+                    and
+                        (eq deptId 1)
+                        (eq position 'OO')
+                )}}
+                <div class="row g-3 my-1">
+                    <label class="form-label">
+                        Do you presently use a straight truck or cargo van as part of your job?
+                    </label>
+                    <div class="col-md-4 mt-0 mb-2">
+                        <div class="form-check form-check-inline">
+                            {{{form.cdlSchool.radio.yes.input}}}
+                            {{{form.cdlSchool.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.cdlSchool.radio.no.input}}}
+                            {{{form.cdlSchool.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
+
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">

@@ -459,6 +459,30 @@ class ApplicationForm {
         label: 'Fatalities',
     })
 
+    static cmvExp = createYesNoForm({
+        selector: appSelector,
+        target: 'cmvExp',
+        name: 'cmv',
+        required,
+        label: 'CMV Experience',
+    })
+
+    static cdlSchool = createYesNoForm({
+        selector: appSelector,
+        target: 'cdlSchool',
+        name: 'cdlSchool',
+        required,
+        label: 'Attended CDL School',
+    })
+
+    static currentVhl = createYesNoForm({
+        selector: appSelector,
+        target: 'currentVhl',
+        name: 'current',
+        required,
+        label: 'Vehicle Currently Driven',
+    })
+
 }
 
 
