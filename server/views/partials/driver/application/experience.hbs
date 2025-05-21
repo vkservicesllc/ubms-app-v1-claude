@@ -8,6 +8,14 @@
     <div id="collapse-5" class="text-start accordion-collapse collapse{{accordion.five.body}}" data-bs-parent="#apl-accordion">
         <div class="accordion-body">
             <form id="safety-form" action="{{actionUrl.experience}}" method="POST" autocomplete="off">
+                <div class="row g-3 my-1">
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            {{{form.noExp.checkbox.input}}}
+                            {{{form.noExp.checkbox.label}}}
+                        </div>
+                    </div>
+                </div>
 
                 {{#if (
                     and
@@ -89,10 +97,18 @@
                             {{{form.semiExp.checkbox.lowboy.input}}}
                             {{{form.semiExp.checkbox.lowboy.label}}}
                         </div>
+                        <div class="form-check">
+                            {{{form.semiExp.checkbox.carhaul.input}}}
+                            {{{form.semiExp.checkbox.carhaul.label}}}
+                        </div>
                     </div>
                     {{/if}}
                     <div class="col-md-{{vhlExpColWidth}} vehicle-experience-col-width">
                         <label class="form-label">Misc</label>
+                        <div class="form-check">
+                            {{{form.vanExp.checkbox.input}}}
+                            {{{form.vanExp.checkbox.label}}}
+                        </div>
                         {{#if (
                             and
                                 (eq deptId 0)
@@ -103,10 +119,6 @@
                             {{{form.tandemExp.checkbox.label}}}
                         </div>
                         {{/if}}
-                        <div class="form-check">
-                            {{{form.vanExp.checkbox.input}}}
-                            {{{form.vanExp.checkbox.label}}}
-                        </div>
                     </div>
                 </div>
 
@@ -148,6 +160,28 @@
                             {{{form.cdlSchool.radio.no.label}}}
                         </div>
                     </div>
+                    <div class="my-0" id="cdl-school-form"{{{schoolDisplay}}}>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-7">
+                                {{{form.schName.text.label}}}
+                                {{{form.schName.text.input}}}
+                            </div>
+                            <div class="col-md-5">
+                                {{{form.schPhone.text.label}}}
+                                {{{form.schPhone.text.input}}}
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-4">
+                                {{{form.schEndDate.text.label}}}
+                                {{{form.schEndDate.text.input}}}
+                            </div>
+                            <div class="col-md-5">
+                                {{{form.schDuration.select.label}}}
+                                {{{form.schDuration.select.input}}}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 {{/if}}
 
@@ -162,12 +196,12 @@
                     </label>
                     <div class="col-md-4 mt-0 mb-2">
                         <div class="form-check form-check-inline">
-                            {{{form.cdlSchool.radio.yes.input}}}
-                            {{{form.cdlSchool.radio.yes.label}}}
+                            {{{form.currentVhl.radio.yes.input}}}
+                            {{{form.currentVhl.radio.yes.label}}}
                         </div>
                         <div class="form-check form-check-inline">
-                            {{{form.cdlSchool.radio.no.input}}}
-                            {{{form.cdlSchool.radio.no.label}}}
+                            {{{form.currentVhl.radio.no.input}}}
+                            {{{form.currentVhl.radio.no.label}}}
                         </div>
                     </div>
                 </div>

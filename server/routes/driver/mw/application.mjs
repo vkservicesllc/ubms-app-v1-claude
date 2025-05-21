@@ -449,9 +449,11 @@ export const applicationProgress = async (req, res) => {
             hbs.button.four = buttonProps.save
             hbs.accordion.four = accordionProps.finished
             hbs.vhlExpColWidth = application.deptId === 0 && application.dl.commercial ? 4 : 6
+            hbs.schoolDisplay = ' style="display: none;"'
 
             let { labelClassRequired } = formInstr
 
+            options.noExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
             options.cmvExp = { radio: {} }
             options.cdlSchool = { radio: {} }
             options.currentVhl = { radio: {} }
@@ -477,18 +479,34 @@ export const applicationProgress = async (req, res) => {
             options.vanExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
 
             const values = {
-                expStartDate: application?.experience?.firstDate ? moment(application.experience.firstDate).format('MM/DD/YYYY') : null,
-                expEndDate: application?.experience?.lastDate ? moment(application.experience.lastDate).format('MM/DD/YYYY') : null,
+                expStartDate: application?.experience?.firstDate
+                    ? moment(application.experience.firstDate).format('MM/DD/YYYY')
+                    : null,
+                expEndDate: application?.experience?.lastDate
+                    ? moment(application.experience.lastDate).format('MM/DD/YYYY')
+                    : null,
                 expMileage: application?.experience?.mileage,
+                schName: application?.experience?.schName,
+                schPhone: application?.experience?.schPhone
+                    ? formatTel(application.experience.schPhone)
+                    : null,
+                schEndDate: application?.experience?.schEndDate
+                    ? moment(application.experience.schEndDate).format('MM/DD/YYYY')
+                    : null,
+                schDuration: application?.experience?.schDuration,
             }
             const placeholders = {
                 expStartDate: 'MM/DD/YYYY',
                 expEndDate: 'MM/DD/YYYY',
+                schEndDate: 'MM/DD/YYYY',
+                schPhone: '(###) ###-####',
             }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             //! ...not finished
+
+            if (true) hbs.schoolDisplay = ''
 
         }
 

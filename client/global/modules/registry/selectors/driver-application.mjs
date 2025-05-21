@@ -11,6 +11,7 @@ const selector = {
             position: 'position',
             driverLicense: 'driver-license',
             medCard: 'medical-card',
+            cdlSchool: 'cdl-school',
         },
         text: {
             citDate: 'citation-date',
@@ -35,7 +36,6 @@ const selector = {
             accidents: 'accidents',
         },
         checkbox: {
-            // vehicleTypeExp: 'vehicle-type-experience',
             straightExp: 'straight-truck-experience',
             semiExp: 'trailer-type-experience',
         },
@@ -78,6 +78,13 @@ const selector = {
             citOtherReason: 'citation-other-reason',
             accDate: 'accident-date',
             accOtherType: 'accident-other-type',
+            expStartDate: 'experience-start-date',
+            expEndDate: 'experience-end-date',
+            expMileage: 'experience-mileage',
+            schName: 'school-name',
+            schPhone: 'school-phone',
+            schEndDate: 'school-end-date',
+            schDuration: 'school-duration',
         },
         select: {
             suffix: 'suffix',
@@ -168,12 +175,7 @@ const selector = {
         },
         checkbox: {
             noMec: 'no-med-card',
-            // vehicleTypeExp: {
-            //     straight: 'straight-truck-experience',
-            //     semi: 'semi-tractor-trailer-experience',
-            //     tandem: 'tandem-tractor-trailer-experience',
-            //     van: 'cargo-van-experience',
-            // },
+            noExp: 'no-experience',
             straightExp: {
                 box: 'box-truck-experience',
                 cube: 'cube-truck-experience',

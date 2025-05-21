@@ -241,6 +241,9 @@ class ApplicationForm {
         label: 'Status Expires on',
     })
 
+
+    /* DRIVER LICENSE */
+
     static dlCommercial = createDlCommercialFrom({ selector: appSelector })
 
     static dlState = createDlStateForm({ selector: appSelector })
@@ -267,6 +270,9 @@ class ApplicationForm {
 
     static dlDeniedExpl = createDlProblemExplForm('dlDeniedExpl', 'deniedExpl')
     static dlRevokedExpl = createDlProblemExplForm('dlRevokedExpl', 'revokedExpl')
+
+
+    /* MEDICAL CARD */
 
     static noMec = createForm({
         selector: appSelector,
@@ -299,6 +305,9 @@ class ApplicationForm {
         disabled,
         label: 'Medication List',
     })
+
+
+    /* LEGAL COMPLIANCE */
 
     static dui = createYesNoForm({
         selector: appSelector,
@@ -387,6 +396,9 @@ class ApplicationForm {
         label: 'State',
     })
 
+
+    /* SAFETY */
+
     static accidents = createYesNoForm({
         selector: appSelector,
         target: 'accidents',
@@ -459,28 +471,23 @@ class ApplicationForm {
         label: 'Fatalities',
     })
 
+
+    /* EXPERIENCE */
+
+    static noExp = createForm({
+        selector: appSelector,
+        target: 'noExp',
+        type: 'checkbox',
+        name: 'noExp',
+        label: 'No Driving Experience',
+    })
+
     static cmvExp = createYesNoForm({
         selector: appSelector,
         target: 'cmvExp',
         name: 'cmv',
         required,
         label: 'CMV Experience',
-    })
-
-    static cdlSchool = createYesNoForm({
-        selector: appSelector,
-        target: 'cdlSchool',
-        name: 'cdlSchool',
-        required,
-        label: 'Attended CDL School',
-    })
-
-    static currentVhl = createYesNoForm({
-        selector: appSelector,
-        target: 'currentVhl',
-        name: 'current',
-        required,
-        label: 'Vehicle Currently Driven',
     })
 
     static straightExp = createForm({
@@ -521,13 +528,15 @@ class ApplicationForm {
         selector: appSelector,
         target: 'expStartDate',
         name: 'firstDate',
-        label: 'First Driven on',
+        required,
+        label: 'Started Driving on',
     })
 
     static expEndDate = createDateForm({
         selector: appSelector,
         target: 'expEndDate',
         name: 'lastDate',
+        required,
         label: 'Last Driven on',
     })
 
@@ -535,7 +544,69 @@ class ApplicationForm {
         selector: appSelector,
         target: 'expMileage',
         name: 'mileage',
-        label: 'Total Mileage Driven',
+        required,
+        label: 'Approx. Mileage',
+    })
+
+    static cdlSchool = createYesNoForm({
+        selector: appSelector,
+        target: 'cdlSchool',
+        name: 'cdlSchool',
+        required,
+        label: 'Attended CDL School',
+    })
+
+    static schName = createForm({
+        selector: appSelector,
+        target: 'schName',
+        group: 'cdlSchool',
+        name: 'schName',
+        maxLength: 25,
+        required,
+        disabled,
+        label: 'School Name',
+    })
+
+    static schPhone = createPhoneForm({
+        selector: appSelector,
+        target: 'schPhone',
+        group: 'cdlSchool',
+        name: 'schPhone',
+        required,
+        disabled,
+        label: 'Phone',
+    })
+
+    static schEndDate = createDateForm({
+        selector: appSelector,
+        target: 'schEndDate',
+        group: 'cdlSchool',
+        name: 'schEndDate',
+        required,
+        disabled,
+        label: 'Completion Date',
+    })
+
+    static schDuration = createForm({
+        selector: appSelector,
+        target: 'schDuration',
+        group: 'cdlSchool',
+        type: 'select',
+        name: 'schDuration',
+        data: Application.schoolDurationList,
+        emptyOpt,
+        required,
+        disabled,
+        label: 'Attendance Duration',
+    })
+
+
+    static currentVhl = createYesNoForm({
+        selector: appSelector,
+        target: 'currentVhl',
+        name: 'current',
+        required,
+        label: 'Vehicle Currently Driven',
     })
 
 }

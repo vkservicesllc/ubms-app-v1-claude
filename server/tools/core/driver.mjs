@@ -733,7 +733,16 @@ class Application {
             step: 'Step Deck',
             tanker: 'Tanker',
             lowboy: 'Lowboy',
+            carhaul: 'Car Hauler',
         },
+    }
+
+    static schoolDurationList = {
+        '0-1w': '1 week',
+        '1-2w': '1 – 2 weeks',
+        '2-4w': '2 – 4 weeks',
+        '1-2m': '1 – 2 months',
+        '2+ m': 'More than 2 months',
     }
 
 
@@ -938,6 +947,7 @@ class Application {
                     'criminalExpl',
                     'citations',
                     'accidents',
+                    'experience',
                 ],
                 match,
             },
