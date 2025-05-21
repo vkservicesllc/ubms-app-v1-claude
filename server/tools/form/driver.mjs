@@ -472,7 +472,9 @@ class ApplicationForm {
     })
 
 
+
     /* EXPERIENCE */
+
 
     static noExp = createForm({
         selector: appSelector,
@@ -524,6 +526,7 @@ class ApplicationForm {
         label: 'Cargo Van',
     })
 
+
     static expStartDate = createDateForm({
         selector: appSelector,
         target: 'expStartDate',
@@ -547,6 +550,20 @@ class ApplicationForm {
         required,
         label: 'Approx. Mileage',
     })
+
+    static expHours = createForm({
+        selector: appSelector,
+        group: 'expHours',
+        type: 'number',
+        name: 'pastWeekHours[]',
+        step: '1',
+        // required,
+        // disabled,
+        validator: {
+            rule: 'numeric',
+        },
+    })
+
 
     static cdlSchool = createYesNoForm({
         selector: appSelector,
@@ -618,6 +635,8 @@ class ApplicationForm {
         required,
         label: 'Vehicle Currently Driven',
     })
+
+
 
 }
 

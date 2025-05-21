@@ -3,7 +3,7 @@ import moment from 'moment'
 import patterns from '../../../client/global/modules/registry/patterns.mjs'
 import { formLabel, formInput, formTextArea, formSelect, formRadio, formCheckbox } from '../../../client/global/modules/tools/utils/html/form.mjs'
 
-const types = ['hidden', 'text', 'textarea', 'password', 'email', 'url', 'select', 'radio', 'checkbox', 'select/radio', 'select/checkbox']
+const types = ['hidden', 'text', 'textarea', 'password', 'email', 'url', 'number', 'select', 'radio', 'checkbox', 'select/radio', 'select/checkbox']
 const valueTypes = ['hidden', 'text', 'select']
 const redundantInputProps = ['type', 'label', 'selector', 'target', 'group', 'data', 'keys', 'defaultClass', 'id', 'name', 'required']
 const lockedLabelProps = ['defaultClass', 'for']
@@ -105,7 +105,7 @@ const createForm = (input = {}) => {
 
     const selectType = type.includes('select')
 
-    if (['hidden', 'text', 'textarea', 'password', 'email', 'url'].includes(type) || selectType) {
+    if (['hidden', 'text', 'textarea', 'password', 'email', 'url', 'number'].includes(type) || selectType) {
         const initialType = type
         let formTextInput = formInput, keyType = 'text'
 

@@ -508,6 +508,16 @@ export const applicationProgress = async (req, res) => {
             options.schState.select.input.options = { valOpt: true }
             //! ...not finished
 
+            //!TEST
+            // options.expHours.text.input.class = formInstr.textClass
+            options.expHours = {
+                text: {
+                    input: {
+                        class: formInstr.textClass,
+                    },
+                },
+            }
+
             if (application?.experience?.cdlSchool === true) hbs.schoolDisplay = ''
 
         }

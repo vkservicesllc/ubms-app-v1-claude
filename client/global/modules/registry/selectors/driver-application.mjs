@@ -18,6 +18,7 @@ const selector = {
             accDate: 'accident-date',
             citOtherReason: 'citation-other-reason',
             accOtherType: 'accident-other-type',
+            expHours: 'experience-daily-hours',
         },
         select: {
             gender: 'gender',
