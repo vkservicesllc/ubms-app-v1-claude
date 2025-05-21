@@ -479,7 +479,7 @@ class ApplicationForm {
         target: 'noExp',
         type: 'checkbox',
         name: 'noExp',
-        label: 'No Driving Experience',
+        label: 'No prior driving experience',
     })
 
     static cmvExp = createYesNoForm({
@@ -564,7 +564,7 @@ class ApplicationForm {
         maxLength: 25,
         required,
         disabled,
-        label: 'School Name',
+        label: 'Name',
     })
 
     static schPhone = createPhoneForm({
@@ -575,6 +575,16 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Phone',
+    })
+
+    static schState = createUsStateForm({
+        selector: appSelector,
+        target: 'schState',
+        group: 'cdlSchool',
+        name: 'schState',
+        required,
+        disabled,
+        label: 'State',
     })
 
     static schEndDate = createDateForm({

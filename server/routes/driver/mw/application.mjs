@@ -490,6 +490,7 @@ export const applicationProgress = async (req, res) => {
                 schPhone: application?.experience?.schPhone
                     ? formatTel(application.experience.schPhone)
                     : null,
+                schState: application?.experience?.schState,
                 schEndDate: application?.experience?.schEndDate
                     ? moment(application.experience.schEndDate).format('MM/DD/YYYY')
                     : null,
@@ -504,6 +505,7 @@ export const applicationProgress = async (req, res) => {
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 9 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+            options.schState.select.input.options = { valOpt: true }
             //! ...not finished
 
             if (application?.experience?.cdlSchool === true) hbs.schoolDisplay = ''

@@ -149,7 +149,7 @@
                     )}}
                     <div class="row g-3 my-1">
                         <label class="form-label">
-                            Have you attended a CDL driving school in the past?
+                            Have you attended a CDL training school in the past?
                         </label>
                         <div class="col-md-4 mt-0 mb-2">
                             <div class="form-check form-check-inline">
@@ -161,7 +161,8 @@
                                 {{{form.cdlSchool.radio.no.label}}}
                             </div>
                         </div>
-                        <div class="my-0" id="cdl-school-form"{{{schoolDisplay}}}>
+                        <div class="border-top border-bottom py-4" id="cdl-school-form"{{{schoolDisplay}}}>
+                            <label class="form-label mb-0">CDL Training School</label>
                             <div class="row g-3 my-1">
                                 <div class="col-md-7">
                                     {{{form.schName.text.label}}}
@@ -173,6 +174,10 @@
                                 </div>
                             </div>
                             <div class="row g-3 my-1">
+                                <div class="col-md-3">
+                                    {{{form.schState.select.label}}}
+                                    {{{form.schState.select.input}}}
+                                </div>
                                 <div class="col-md-4">
                                     {{{form.schEndDate.text.label}}}
                                     {{{form.schEndDate.text.input}}}

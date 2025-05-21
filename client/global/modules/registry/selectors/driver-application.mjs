@@ -98,6 +98,7 @@ const selector = {
             citState: 'citation-state',
             accType: 'accident-type',
             accState: 'accident-state',
+            schState: 'school-state',
         },
         radio: {
             gender: {
