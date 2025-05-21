@@ -502,11 +502,11 @@ export const applicationProgress = async (req, res) => {
                 schPhone: '(###) ###-####',
             }
 
-            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 9 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             //! ...not finished
 
-            if (true) hbs.schoolDisplay = ''
+            if (application?.experience?.cdlSchool === true) hbs.schoolDisplay = ''
 
         }
 

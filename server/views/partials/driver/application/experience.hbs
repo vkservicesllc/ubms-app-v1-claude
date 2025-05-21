@@ -7,7 +7,7 @@
     </h2>
     <div id="collapse-5" class="text-start accordion-collapse collapse{{accordion.five.body}}" data-bs-parent="#apl-accordion">
         <div class="accordion-body">
-            <form id="safety-form" action="{{actionUrl.experience}}" method="POST" autocomplete="off">
+            <form id="experience-form" action="{{actionUrl.experience}}" method="POST" autocomplete="off">
                 <div class="row g-3 my-1">
                     <div class="col-md-12">
                         <div class="form-check">
@@ -16,201 +16,204 @@
                         </div>
                     </div>
                 </div>
+                <div id="experience-details">
 
-                {{#if (
-                    and
-                        (eq deptId 0)
-                        (eq cdl true)
-                )}}
-                <div class="row g-3 my-1">
-                    <label class="form-label">
-                        Have you previously operated a Commercial Motor Vehicle (CMV)?
-                    </label>
-                    <div class="col-md-4 mt-0 mb-2">
-                        <div class="form-check form-check-inline">
-                            {{{form.cmvExp.radio.yes.input}}}
-                            {{{form.cmvExp.radio.yes.label}}}
-                        </div>
-                        <div class="form-check form-check-inline">
-                            {{{form.cmvExp.radio.no.input}}}
-                            {{{form.cmvExp.radio.no.label}}}
-                        </div>
-                    </div>
-                </div>
-                {{/if}}
-
-                <div class="row g-3 my-1">
-                    <label class="form-label mb-0">
-                        Select all options that best describe your driving experience:
-                    </label>
-                    <div class="col-md-{{vhlExpColWidth}} vehicle-experience-col-width">
-                        {{{form.straightExp.checkbox.label}}}
-                        <div class="form-check">
-                            {{{form.straightExp.checkbox.box.input}}}
-                            {{{form.straightExp.checkbox.box.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.straightExp.checkbox.cube.input}}}
-                            {{{form.straightExp.checkbox.cube.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.straightExp.checkbox.dump.input}}}
-                            {{{form.straightExp.checkbox.dump.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.straightExp.checkbox.rollback.input}}}
-                            {{{form.straightExp.checkbox.rollback.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.straightExp.checkbox.pickup.input}}}
-                            {{{form.straightExp.checkbox.pickup.label}}}
-                        </div>
-                    </div>
                     {{#if (
                         and
                             (eq deptId 0)
                             (eq cdl true)
                     )}}
-                    <div class="col-md-4 cmv-experience">
-                        {{{form.semiExp.checkbox.label}}}
-                        <div class="form-check">
-                            {{{form.semiExp.checkbox.van.input}}}
-                            {{{form.semiExp.checkbox.van.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.semiExp.checkbox.reefer.input}}}
-                            {{{form.semiExp.checkbox.reefer.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.semiExp.checkbox.flat.input}}}
-                            {{{form.semiExp.checkbox.flat.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.semiExp.checkbox.step.input}}}
-                            {{{form.semiExp.checkbox.step.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.semiExp.checkbox.tanker.input}}}
-                            {{{form.semiExp.checkbox.tanker.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.semiExp.checkbox.lowboy.input}}}
-                            {{{form.semiExp.checkbox.lowboy.label}}}
-                        </div>
-                        <div class="form-check">
-                            {{{form.semiExp.checkbox.carhaul.input}}}
-                            {{{form.semiExp.checkbox.carhaul.label}}}
+                    <div class="row g-3 my-1">
+                        <label class="form-label">
+                            Have you previously operated a Commercial Motor Vehicle (CMV)?
+                        </label>
+                        <div class="col-md-4 mt-0 mb-2">
+                            <div class="form-check form-check-inline">
+                                {{{form.cmvExp.radio.yes.input}}}
+                                {{{form.cmvExp.radio.yes.label}}}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{{form.cmvExp.radio.no.input}}}
+                                {{{form.cmvExp.radio.no.label}}}
+                            </div>
                         </div>
                     </div>
                     {{/if}}
-                    <div class="col-md-{{vhlExpColWidth}} vehicle-experience-col-width">
-                        <label class="form-label">Misc</label>
-                        <div class="form-check">
-                            {{{form.vanExp.checkbox.input}}}
-                            {{{form.vanExp.checkbox.label}}}
+
+                    <div class="row g-3 my-1">
+                        <label class="form-label mb-0">
+                            Select all options that best describe your driving experience:
+                        </label>
+                        <div class="col-md-{{vhlExpColWidth}} vehicle-experience-col-width">
+                            {{{form.straightExp.checkbox.label}}}
+                            <div class="form-check">
+                                {{{form.straightExp.checkbox.box.input}}}
+                                {{{form.straightExp.checkbox.box.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.straightExp.checkbox.cube.input}}}
+                                {{{form.straightExp.checkbox.cube.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.straightExp.checkbox.dump.input}}}
+                                {{{form.straightExp.checkbox.dump.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.straightExp.checkbox.rollback.input}}}
+                                {{{form.straightExp.checkbox.rollback.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.straightExp.checkbox.pickup.input}}}
+                                {{{form.straightExp.checkbox.pickup.label}}}
+                            </div>
                         </div>
                         {{#if (
                             and
                                 (eq deptId 0)
                                 (eq cdl true)
                         )}}
-                        <div class="form-check cmv-experience">
-                            {{{form.tandemExp.checkbox.input}}}
-                            {{{form.tandemExp.checkbox.label}}}
+                        <div class="col-md-4 cmv-experience">
+                            {{{form.semiExp.checkbox.label}}}
+                            <div class="form-check">
+                                {{{form.semiExp.checkbox.van.input}}}
+                                {{{form.semiExp.checkbox.van.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.semiExp.checkbox.reefer.input}}}
+                                {{{form.semiExp.checkbox.reefer.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.semiExp.checkbox.flat.input}}}
+                                {{{form.semiExp.checkbox.flat.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.semiExp.checkbox.step.input}}}
+                                {{{form.semiExp.checkbox.step.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.semiExp.checkbox.tanker.input}}}
+                                {{{form.semiExp.checkbox.tanker.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.semiExp.checkbox.lowboy.input}}}
+                                {{{form.semiExp.checkbox.lowboy.label}}}
+                            </div>
+                            <div class="form-check">
+                                {{{form.semiExp.checkbox.carhaul.input}}}
+                                {{{form.semiExp.checkbox.carhaul.label}}}
+                            </div>
+                        </div>
+                        {{/if}}
+                        <div class="col-md-{{vhlExpColWidth}} vehicle-experience-col-width">
+                            <label class="form-label">Misc</label>
+                            <div class="form-check">
+                                {{{form.vanExp.checkbox.input}}}
+                                {{{form.vanExp.checkbox.label}}}
+                            </div>
+                            {{#if (
+                                and
+                                    (eq deptId 0)
+                                    (eq cdl true)
+                            )}}
+                            <div class="form-check cmv-experience">
+                                {{{form.tandemExp.checkbox.input}}}
+                                {{{form.tandemExp.checkbox.label}}}
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 my-1">
+                        <div class="col-md-4">
+                            {{{form.expStartDate.text.label}}}
+                            {{{form.expStartDate.text.input}}}
+                            <div class="form-text text-danger"></div>
+                        </div>
+                        <div class="col-md-4">
+                            {{{form.expEndDate.text.label}}}
+                            {{{form.expEndDate.text.input}}}
+                            <div class="form-text text-danger"></div>
+                        </div>
+                        {{#if (eq deptId 0)}}
+                        <div class="col-md-4">
+                            {{{form.expMileage.text.label}}}
+                            {{{form.expMileage.text.input}}}
                         </div>
                         {{/if}}
                     </div>
-                </div>
 
-                <div class="row g-3 my-1">
-                    <div class="col-md-4">
-                        {{{form.expStartDate.text.label}}}
-                        {{{form.expStartDate.text.input}}}
-                        <div class="form-text text-danger"></div>
-                    </div>
-                    <div class="col-md-4">
-                        {{{form.expEndDate.text.label}}}
-                        {{{form.expEndDate.text.input}}}
-                        <div class="form-text text-danger"></div>
-                    </div>
-                    {{#if (eq deptId 0)}}
-                    <div class="col-md-4">
-                        {{{form.expMileage.text.label}}}
-                        {{{form.expMileage.text.input}}}
+                    {{#if (
+                        and
+                            (eq deptId 0)
+                            (eq cdl true)
+                    )}}
+                    <div class="row g-3 my-1">
+                        <label class="form-label">
+                            Have you attended a CDL driving school in the past?
+                        </label>
+                        <div class="col-md-4 mt-0 mb-2">
+                            <div class="form-check form-check-inline">
+                                {{{form.cdlSchool.radio.yes.input}}}
+                                {{{form.cdlSchool.radio.yes.label}}}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{{form.cdlSchool.radio.no.input}}}
+                                {{{form.cdlSchool.radio.no.label}}}
+                            </div>
+                        </div>
+                        <div class="my-0" id="cdl-school-form"{{{schoolDisplay}}}>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-7">
+                                    {{{form.schName.text.label}}}
+                                    {{{form.schName.text.input}}}
+                                </div>
+                                <div class="col-md-5">
+                                    {{{form.schPhone.text.label}}}
+                                    {{{form.schPhone.text.input}}}
+                                </div>
+                            </div>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-4">
+                                    {{{form.schEndDate.text.label}}}
+                                    {{{form.schEndDate.text.input}}}
+                                </div>
+                                <div class="col-md-5">
+                                    {{{form.schDuration.select.label}}}
+                                    {{{form.schDuration.select.input}}}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {{/if}}
-                </div>
 
-                {{#if (
-                    and
-                        (eq deptId 0)
-                        (eq cdl true)
-                )}}
-                <div class="row g-3 my-1">
-                    <label class="form-label">
-                        Have you attended a CDL driving school in the past?
-                    </label>
-                    <div class="col-md-4 mt-0 mb-2">
-                        <div class="form-check form-check-inline">
-                            {{{form.cdlSchool.radio.yes.input}}}
-                            {{{form.cdlSchool.radio.yes.label}}}
-                        </div>
-                        <div class="form-check form-check-inline">
-                            {{{form.cdlSchool.radio.no.input}}}
-                            {{{form.cdlSchool.radio.no.label}}}
-                        </div>
-                    </div>
-                    <div class="my-0" id="cdl-school-form"{{{schoolDisplay}}}>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-7">
-                                {{{form.schName.text.label}}}
-                                {{{form.schName.text.input}}}
+                    {{#if (
+                        and
+                            (eq deptId 1)
+                            (eq position 'OO')
+                    )}}
+                    <div class="row g-3 my-1">
+                        <label class="form-label">
+                            Do you presently use a straight truck or cargo van as part of your job?
+                        </label>
+                        <div class="col-md-4 mt-0 mb-2">
+                            <div class="form-check form-check-inline">
+                                {{{form.currentVhl.radio.yes.input}}}
+                                {{{form.currentVhl.radio.yes.label}}}
                             </div>
-                            <div class="col-md-5">
-                                {{{form.schPhone.text.label}}}
-                                {{{form.schPhone.text.input}}}
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-4">
-                                {{{form.schEndDate.text.label}}}
-                                {{{form.schEndDate.text.input}}}
-                            </div>
-                            <div class="col-md-5">
-                                {{{form.schDuration.select.label}}}
-                                {{{form.schDuration.select.input}}}
+                            <div class="form-check form-check-inline">
+                                {{{form.currentVhl.radio.no.input}}}
+                                {{{form.currentVhl.radio.no.label}}}
                             </div>
                         </div>
                     </div>
-                </div>
-                {{/if}}
+                    {{/if}}
 
-                {{#if (
-                    and
-                        (eq deptId 1)
-                        (eq position 'OO')
-                )}}
-                <div class="row g-3 my-1">
-                    <label class="form-label">
-                        Do you presently use a straight truck or cargo van as part of your job?
-                    </label>
-                    <div class="col-md-4 mt-0 mb-2">
-                        <div class="form-check form-check-inline">
-                            {{{form.currentVhl.radio.yes.input}}}
-                            {{{form.currentVhl.radio.yes.label}}}
-                        </div>
-                        <div class="form-check form-check-inline">
-                            {{{form.currentVhl.radio.no.input}}}
-                            {{{form.currentVhl.radio.no.label}}}
-                        </div>
-                    </div>
                 </div>
-                {{/if}}
 
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-{{button.five.class}}" id="safety-submit">{{button.five.text}}</button>
+                            <button type="submit" class="btn btn-{{button.five.class}}" id="experience-submit">{{button.five.text}}</button>
                         </div>
                     </div>
                 </div>

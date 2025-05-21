@@ -203,7 +203,7 @@ class Application {
 
         this.accidents = bool(data.accidents)
 
-        if (this.step >= 6)
+        if (data.experience)
             this.experience = {
                 cmv: bool(data.cmvExp),
                 vehicles: data.vehiclesExp,
