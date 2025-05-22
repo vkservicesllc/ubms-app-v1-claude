@@ -35,7 +35,7 @@ const createForm = (input = {}) => {
             if (required && i) lockedInput[type][key].required = false
         }
 
-        if (selector && target) {
+        if (selector && (target || group)) {
             if (!defaultClass) lockedInput[type].defaultClass = []
             else if (typeof defaultClass === 'string')
                 lockedInput[type].defaultClass = [ defaultClass ]

@@ -551,19 +551,6 @@ class ApplicationForm {
         label: 'Approx. Mileage',
     })
 
-    static expHours = createForm({
-        selector: appSelector,
-        group: 'expHours',
-        type: 'number',
-        name: 'pastWeekHours[]',
-        step: '1',
-        // required,
-        // disabled,
-        validator: {
-            rule: 'numeric',
-        },
-    })
-
 
     static cdlSchool = createYesNoForm({
         selector: appSelector,
@@ -638,6 +625,23 @@ class ApplicationForm {
 
 
 
+}
+
+
+for (let i = 0; i < 7; i++) {
+    ApplicationForm[`expHours${i + 1}`] = createForm({
+        selector: appSelector,
+        group: 'expHours',
+        type: 'number',
+        name: `pastWeekHours[${i}]`,
+        step: '1',
+        required,
+        requiredLabel: false,
+        label: true,
+        validator: {
+            rule: 'numeric',
+        },
+    })
 }
 
 

@@ -506,19 +506,27 @@ export const applicationProgress = async (req, res) => {
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 9 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.schState.select.input.options = { valOpt: true }
-            //! ...not finished
 
-            //!TEST
-            // options.expHours.text.input.class = formInstr.textClass
-            options.expHours = {
-                text: {
-                    input: {
-                        class: formInstr.textClass,
+            const appliedOn = moment(application.appliedOn)
+            let j = 8
+            for (let i = 1; i <= 7; i++) {
+                const content = `<small>${appliedOn.clone().subtract(--j, 'days').format('dddd/MMM D, YYYY')}</small>`.replace('/', '<br/>')
+                options[`expHours${i}`] = {
+                    text: {
+                        input: {
+                            class: formInstr.textClass,
+                            //! value
+                        },
+                        label: {
+                            class: formInstr.labelClassRequired,
+                            content,
+                        },
                     },
-                },
+                }
             }
 
             if (application?.experience?.cdlSchool === true) hbs.schoolDisplay = ''
+            //! ...not finished, need make/model/year
 
         }
 
