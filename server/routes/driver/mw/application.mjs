@@ -515,7 +515,7 @@ export const applicationProgress = async (req, res) => {
                     text: {
                         input: {
                             class: formInstr.textClass,
-                            //! value
+                            values: application?.experience?.hours[i] || 0,
                         },
                         label: {
                             class: formInstr.labelClassRequired,
