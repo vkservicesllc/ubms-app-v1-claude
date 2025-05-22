@@ -618,7 +618,7 @@ class ApplicationForm {
     static currentVhl = createYesNoForm({
         selector: appSelector,
         target: 'currentVhl',
-        name: 'current',
+        name: 'currentVhl',
         required,
         label: 'Vehicle Currently Driven',
     })
@@ -633,7 +633,7 @@ for (let i = 0; i < 7; i++) {
         selector: appSelector,
         group: 'expHours',
         type: 'number',
-        name: `pastWeekHours[${i}]`,
+        name: `hours[${i}]`,
         step: '1',
         required,
         requiredLabel: false,
