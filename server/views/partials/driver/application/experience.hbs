@@ -142,6 +142,7 @@
                         {{/if}}
                     </div>
 
+                    {{#if (eq deptId 0)}}
                     <div class="row g-3 my-1">
                         <label class="form-label mb-0">
                             Enter the total full hours driven each day over the past 7 days:
@@ -149,7 +150,7 @@
                         <label class="form-label fw-normal text-secondary my-0">
                             <small>
                                 <i class="fas fa-triangle-exclamation"></i>
-                                Whole numbers only
+                                Whole numbers only (0 if none)
                             </small>
                         </label>
                         <div class="col-md-6">
@@ -201,6 +202,7 @@
                             </div>
                         </div>
                     </div>
+                    {{/if}}
 
                     {{#if (
                         and
@@ -221,31 +223,31 @@
                                 {{{form.cdlSchool.radio.no.label}}}
                             </div>
                         </div>
-                        <div class="border-top border-bottom py-4" id="cdl-school-form"{{{schoolDisplay}}}>
-                            <label class="form-label mb-0">CDL Training School</label>
-                            <div class="row g-3 my-1">
-                                <div class="col-md-7">
-                                    {{{form.schName.text.label}}}
-                                    {{{form.schName.text.input}}}
-                                </div>
-                                <div class="col-md-5">
-                                    {{{form.schPhone.text.label}}}
-                                    {{{form.schPhone.text.input}}}
-                                </div>
+                    </div>
+                    <div class="border-top border-bottom py-4" id="cdl-school-form"{{{schoolDisplay}}}>
+                        <label class="form-label mb-0">CDL Training School</label>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-7">
+                                {{{form.schName.text.label}}}
+                                {{{form.schName.text.input}}}
                             </div>
-                            <div class="row g-3 my-1">
-                                <div class="col-md-3">
-                                    {{{form.schState.select.label}}}
-                                    {{{form.schState.select.input}}}
-                                </div>
-                                <div class="col-md-4">
-                                    {{{form.schEndDate.text.label}}}
-                                    {{{form.schEndDate.text.input}}}
-                                </div>
-                                <div class="col-md-5">
-                                    {{{form.schDuration.select.label}}}
-                                    {{{form.schDuration.select.input}}}
-                                </div>
+                            <div class="col-md-5">
+                                {{{form.schPhone.text.label}}}
+                                {{{form.schPhone.text.input}}}
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-3">
+                                {{{form.schState.select.label}}}
+                                {{{form.schState.select.input}}}
+                            </div>
+                            <div class="col-md-4">
+                                {{{form.schEndDate.text.label}}}
+                                {{{form.schEndDate.text.input}}}
+                            </div>
+                            <div class="col-md-5">
+                                {{{form.schDuration.select.label}}}
+                                {{{form.schDuration.select.input}}}
                             </div>
                         </div>
                     </div>
@@ -258,7 +260,7 @@
                     )}}
                     <div class="row g-3 my-1">
                         <label class="form-label">
-                            Do you presently use a straight truck or cargo van as part of your job?
+                            Do you currently own (and drive) a box truck or cargo van as part of your job?
                         </label>
                         <div class="col-md-4 mt-0 mb-2">
                             <div class="form-check form-check-inline">
@@ -268,6 +270,19 @@
                             <div class="form-check form-check-inline">
                                 {{{form.currentVhl.radio.no.input}}}
                                 {{{form.currentVhl.radio.no.label}}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top border-bottom py-4" id="current-vhl-form"{{{vehicleDisplay}}}>
+                        <label class="form-label mb-0">Describe your vehicle</label>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-3">
+                                {{{form.currentVhlYear.select.label}}}
+                                {{{form.currentVhlYear.select.input}}}
+                            </div>
+                            <div class="col-md-9">
+                                {{{form.currentVehicle.select.label}}}
+                                {{{form.currentVehicle.select.input}}}
                             </div>
                         </div>
                     </div>

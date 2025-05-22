@@ -486,6 +486,7 @@ export const applicationProgress = async (req, res) => {
                     ? moment(application.experience.lastDate).format('MM/DD/YYYY')
                     : null,
                 expMileage: application?.experience?.mileage,
+
                 schName: application?.experience?.schName,
                 schPhone: application?.experience?.schPhone
                     ? formatTel(application.experience.schPhone)
@@ -495,6 +496,10 @@ export const applicationProgress = async (req, res) => {
                     ? moment(application.experience.schEndDate).format('MM/DD/YYYY')
                     : null,
                 schDuration: application?.experience?.schDuration,
+
+                //! ...unfinished
+                currentVehicle: null,
+                currentVhlYear: null,
             }
             const placeholders = {
                 expStartDate: 'MM/DD/YYYY',
@@ -503,19 +508,19 @@ export const applicationProgress = async (req, res) => {
                 schPhone: '(###) ###-####',
             }
 
-            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 9 })
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 8 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.schState.select.input.options = { valOpt: true }
 
             const appliedOn = moment(application.appliedOn)
             let j = 8
-            for (let i = 1; i <= 7; i++) {
+            for (let i = 0; i < 7; i++) {
                 const content = `<small>${appliedOn.clone().subtract(--j, 'days').format('dddd/MMM D, YYYY')}</small>`.replace('/', '<br/>')
-                options[`expHours${i}`] = {
+                options[`expHours${i + 1}`] = {
                     text: {
                         input: {
                             class: formInstr.textClass,
-                            values: application?.experience?.hours[i] || 0,
+                            value: application?.experience?.hours[i] || null,
                         },
                         label: {
                             class: formInstr.labelClassRequired,

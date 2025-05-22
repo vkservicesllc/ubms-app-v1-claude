@@ -22,6 +22,7 @@ import {
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
 import Driver, { Application } from '../core/driver.mjs'
+import { Truck, Van } from '../core/vehicle.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 
@@ -623,6 +624,46 @@ class ApplicationForm {
         label: 'Vehicle Currently Driven',
     })
 
+    static currentVehicle = createForm({
+        //! no selector target
+        type: 'select',
+        name: 'currentMakeModel',
+        data: currentVehicleMakeModelData(),
+        emptyOpt,
+        required,
+        // disabled,
+        label: 'Current Vehicle',
+    })
+
+    static currentVhlMake = createForm({
+        //! no selector target
+        name: 'currentVhlMake',
+        maxLength: 10,
+        required,
+        // disabled,
+        label: 'Make',
+    })
+
+    static currentVhlMake = createForm({
+        //! no selector target
+        name: 'currentVhlModel',
+        maxLength: 15,
+        required,
+        // disabled,
+        label: 'Model',
+    })
+
+    static currentVhlYear = createForm({
+        //! no selector target
+        type: 'select',
+        name: 'currentVhlYear',
+        data: descYears(),
+        emptyOpt,
+        required,
+        // disabled,
+        label: 'Year',
+    })
+
 
 
 }
@@ -647,3 +688,47 @@ for (let i = 0; i < 7; i++) {
 
 export default DriverForm
 export { ApplicationForm }
+
+
+function currentVehicleMakeModelData() {
+    let vehicles = {
+        van: {
+            group: 'Cargo Van',
+            data: Van.cargoMakeModelList,
+        },
+        box: {
+            group: 'Box Truck',
+            data: Truck.straightBoxMakeModelList,
+        },
+    }
+
+    const data = {}
+
+    for (const type in vehicles) {
+        const list = vehicles[type].data
+        const { group } = vehicles[type]
+
+        data[group] = {}
+
+        for (const make in list) {
+            const sublist = list[make]
+
+            sublist.forEach(model => data[group][`${type}:${make}:${model}`] = `${make} ${model}`)
+        }
+    }
+
+    data['Not found'] = { other: 'Other...' }
+
+    return data
+}
+
+
+function descYears() {
+    const year = new Date().getFullYear() + 1
+    const list = {}
+
+    for (let i = 0; i < 20; i++)
+        list[`:${year - i}`] = year - i
+
+    return list
+}
