@@ -480,7 +480,6 @@ export const applicationProgress = async (req, res) => {
             options.vanExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
 
             const values = {
-
                 expStartDate: application?.experience?.firstDate
                     ? moment(application.experience.firstDate).format('MM/DD/YYYY')
                     : null,
@@ -488,7 +487,6 @@ export const applicationProgress = async (req, res) => {
                     ? moment(application.experience.lastDate).format('MM/DD/YYYY')
                     : null,
                 expMileage: application?.experience?.mileage,
-
                 schName: application?.experience?.schName,
                 schPhone: application?.experience?.schPhone
                     ? formatTel(application.experience.schPhone)
@@ -498,14 +496,12 @@ export const applicationProgress = async (req, res) => {
                     ? moment(application.experience.schEndDate).format('MM/DD/YYYY')
                     : null,
                 schDuration: application?.experience?.schDuration,
-
                 // currentVhlYear: application?.experience?.currentVhlYear,
                 // currentVhlMMT: application?.experience?.currentVhlMMT,
                 // currentVhlMake: application?.experience?.currentVhlMake,
                 // currentVhlModel: application?.experience?.currentVhlModel,
                 // currentVhlType: application?.experience?.currentVhlType,
                 // currentSBoxLen: application?.experience?.currentSBoxLen,
-
             }
             const placeholders = {
                 expStartDate: 'MM/DD/YYYY',
