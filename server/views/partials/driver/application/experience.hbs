@@ -253,14 +253,14 @@
                     </div>
                     {{/if}}
 
-                    {{#if (
+                    {{!-- {{#if (
                         and
                             (eq deptId 1)
                             (eq position 'OO')
                     )}}
                     <div class="row g-3 my-1">
                         <label class="form-label">
-                            Do you currently own (and drive) a box truck or cargo van as part of your job?
+                            Do you currently own and drive a box truck or cargo van as part of your job?
                         </label>
                         <div class="col-md-4 mt-0 mb-2">
                             <div class="form-check form-check-inline">
@@ -276,17 +276,37 @@
                     <div class="border-top border-bottom py-4" id="current-vhl-form"{{{vehicleDisplay}}}>
                         <label class="form-label mb-0">Describe your vehicle</label>
                         <div class="row g-3 my-1">
+                            <div class="col-md-9">
+                                {{{form.currentVhlMMT.select.label}}}
+                                {{{form.currentVhlMMT.select.input}}}
+                            </div>
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-4">
+                                {{{form.currentVhlMake.text.label}}}
+                                {{{form.currentVhlMake.text.input}}}
+                            </div>
+                            <div class="col-md-5">
+                                {{{form.currentVhlModel.text.label}}}
+                                {{{form.currentVhlModel.text.input}}}
+                            </div>
                             <div class="col-md-3">
                                 {{{form.currentVhlYear.select.label}}}
                                 {{{form.currentVhlYear.select.input}}}
                             </div>
-                            <div class="col-md-9">
-                                {{{form.currentVehicle.select.label}}}
-                                {{{form.currentVehicle.select.input}}}
+                        </div>
+                        <div class="row g-3 my-1">
+                            <div class="col-md-4">
+                                {{{form.currentVhlType.select.label}}}
+                                {{{form.currentVhlType.select.input}}}
+                            </div>
+                            <div class="col-md-5">
+                                {{{form.currentSBoxLen.select.label}}}
+                                {{{form.currentSBoxLen.select.input}}}
                             </div>
                         </div>
                     </div>
-                    {{/if}}
+                    {{/if}} --}}
 
                 </div>
 

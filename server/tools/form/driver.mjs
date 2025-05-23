@@ -616,6 +616,10 @@ class ApplicationForm {
     })
 
 
+
+    /* OWNERSHIP */
+
+
     static currentVhl = createYesNoForm({
         selector: appSelector,
         target: 'currentVhl',
@@ -624,10 +628,11 @@ class ApplicationForm {
         label: 'Vehicle Currently Driven',
     })
 
-    static currentVehicle = createForm({
-        //! no selector target
+    static currentVhlMMT = createForm({
+        selector: appSelector,
+        target: 'currentVhlMMT',
         type: 'select',
-        name: 'currentMakeModel',
+        name: 'mmt',
         data: currentVehicleMakeModelData(),
         emptyOpt,
         required,
@@ -635,33 +640,75 @@ class ApplicationForm {
         label: 'Current Vehicle',
     })
 
-    static currentVhlMake = createForm({
-        //! no selector target
-        name: 'currentVhlMake',
-        maxLength: 10,
-        required,
-        // disabled,
-        label: 'Make',
-    })
-
-    static currentVhlMake = createForm({
-        //! no selector target
-        name: 'currentVhlModel',
-        maxLength: 15,
-        required,
-        // disabled,
-        label: 'Model',
-    })
-
     static currentVhlYear = createForm({
-        //! no selector target
+        selector: appSelector,
+        target: 'currentVhlYear',
         type: 'select',
-        name: 'currentVhlYear',
+        name: 'year',
         data: descYears(),
         emptyOpt,
         required,
         // disabled,
         label: 'Year',
+        validator: {
+            sanitizer: value => +(value.replace(':', '')),
+            rule: 'numeric',
+        },
+    })
+
+    static currentVhlMake = createForm({
+        selector: appSelector,
+        target: 'currentVhlMake',
+        name: 'make',
+        maxLength: 20,
+        required,
+        // disabled,
+        label: 'Make',
+    })
+
+    static currentVhlModel = createForm({
+        selector: appSelector,
+        target: 'currentVhlModel',
+        name: 'model',
+        maxLength: 25,
+        required,
+        // disabled,
+        label: 'Model',
+    })
+
+    static currentVhlType = createForm({
+        selector: appSelector,
+        target: 'currentVhlType',
+        type: 'select',
+        name: 'type',
+        data: { van: 'Cargo Van', straightBox: 'Box Truck' },
+        emptyOpt,
+        required,
+        // disabled,
+        label: 'Type',
+    })
+
+    static currentVhlLen = createForm({
+        selector: appSelector,
+        target: 'currentVhlLen',
+        type: 'select',
+        name: 'length',
+        data: { //? Temporary data (until other type require lengths as well)
+            '10': '10 ft (Small)',
+            '12': '12 ft (Medium-Small)',
+            '14': '14 ft (Medium)',
+            '16': '16 ft (Mid-Large)',
+            '20': '20 ft (Large)',
+            '24': '24 ft (Extra Large)',
+            '26': '26 ft (Heavy Duty)',
+        },
+        emptyOpt,
+        required,
+        // disabled,
+        label: 'Length',
+        validator: {
+            sanitizer: value => +value,
+        },
     })
 
 
@@ -690,7 +737,7 @@ export default DriverForm
 export { ApplicationForm }
 
 
-function currentVehicleMakeModelData() {
+export function currentVehicleMakeModelData() {
     let vehicles = {
         van: {
             group: 'Cargo Van',

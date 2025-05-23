@@ -19,7 +19,7 @@ class Truck extends Vehicle {
 
     static straightBoxMakeModelList = {
         'Ford': ['F-650 Box', 'F-750 Box'],
-        'Chevrolet': ['Low Cab Forward 6500XD'],
+        'Chevrolet': ['LCF 6500XD'],
         'Freightliner': ['M2 106 Box'],
         'Kenworth': ['T270 Box'],
         'International': ['MV607', 'Durastar 4300'],
@@ -77,7 +77,7 @@ class Van extends Vehicle {
     static cargoMakeModelList = {
         'Ford': ['Transit', 'Transit Connect', 'E-Series'],
         'Mercedes-Benz': ['Sprinter', 'Metris'],
-        'Freightliner': ['Sprinter (Rebadged MB)'],
+        'Freightliner': ['Sprinter'],
         'Ram': ['ProMaster', 'ProMaster City'],
         'Chevrolet': ['Express 2500', 'Express 3500'],
         'GMC': ['Savana 2500', 'Savana 3500'],

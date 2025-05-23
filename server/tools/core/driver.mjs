@@ -218,10 +218,17 @@ class Application {
                 schEndDate: data.schEndDate,
                 schDuration: data.schDuration,
                 currentVhl: bool(data.currentVhl),
-                currentType: data.currentType,
-                currentMake: data.currentMake,
-                currentModel: data.currentModel,
-                currentYear: data.currentYear,
+                
+            }
+
+        if (data.currentVhl)
+            this.ownedVhl = {
+                mmt: data.vhlMmt,
+                make: data.vhlMake,
+                model: data.vhlModel,
+                year: data.vhlYear,
+                type: data.vhlType,
+                sBoxLen: data.vhlLength,
             }
     }
 
@@ -644,8 +651,8 @@ class Application {
         'Driving Experience',
         'Previous Employment',
         'Driving Preference',
+        'Business Details', //! if owner operator, concatenate "Ownership & " at the beginning
         'Occupational Accidental Insurance',
-        'Business Entity',
         'Emergency Contact',
     ]
 
@@ -949,6 +956,7 @@ class Application {
                     'citations',
                     'accidents',
                     'experience',
+                    'currentVhl',
                 ],
                 match,
             },
@@ -994,11 +1002,19 @@ class Application {
                     'schState',
                     'schEndDate',
                     'schDuration',
-                    'currentVhl',
-                    'currentType',
-                    'currentMake',
-                    'currentModel',
-                    'currentYear',
+                ],
+                join: [ 'aplId', 'id' ],
+            },
+            //! gap
+            {
+                table: 'application_vehicles',
+                fields: [
+                    [ 'mmt', 'vhlMmt' ],
+                    [ 'make', 'vhlMake' ],
+                    [ 'model', 'vhlModel' ],
+                    [ 'year', 'vhlYear' ],
+                    [ 'type', 'vhlType' ],
+                    [ 'length', 'vhlLength' ],
                 ],
                 join: [ 'aplId', 'id' ],
             },

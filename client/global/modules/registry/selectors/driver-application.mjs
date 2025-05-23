@@ -85,7 +85,10 @@ const selector = {
             schName: 'school-name',
             schPhone: 'school-phone',
             schEndDate: 'school-end-date',
-            schDuration: 'school-duration',
+
+            //! gap
+            // currentVhlMake: 'current-vehicle-make',
+            // currentVhlModel: 'current-vehicle-model',
         },
         select: {
             suffix: 'suffix',
@@ -100,6 +103,13 @@ const selector = {
             accType: 'accident-type',
             accState: 'accident-state',
             schState: 'school-state',
+            schDuration: 'school-duration',
+
+            //!gap
+            // currentVhlYear: 'current-vehicle-year',
+            // currentVhlMMT: 'current-vehicle-make-model-type',
+            // currentVhlType: 'current-vehicle-type',
+            // currentVhlLen: 'current-vehicle-length',
         },
         radio: {
             gender: {
@@ -170,10 +180,12 @@ const selector = {
                 yes: 'attended-cdl-school',
                 no: 'no-cdl-school',
             },
-            currentVhl: {
-                yes: 'currently-driving',
-                no: 'currently-not-driving', 
-            },
+
+            //! gap
+            // currentVhl: {
+            //     yes: 'currently-driving',
+            //     no: 'currently-not-driving', 
+            // },
         },
         checkbox: {
             noMec: 'no-med-card',
