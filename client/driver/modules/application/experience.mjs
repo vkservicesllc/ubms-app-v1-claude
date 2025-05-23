@@ -6,6 +6,9 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio, CS = selector.id.checkbox
 const noExpId = CS.noExp
 const cmvExpId = RS.cmvExp
+const startDateId = TS.expStartDate
+const endDateId = TS.expEndDate
+const mileageId = TS.expMileage
 const expHoursCls = selector.class.text.expHours
 const cdlSchoolId = RS.cdlSchool
 
@@ -25,8 +28,25 @@ const calculateHours = () => {
     $totalHours.val(total)
 }
 
+
 calculateHours()
 
+inputEvent(mileageId, {
+    onFocus(miles, $miles) {
+        if (miles) $miles.val(Number(miles.replace(/,/g, '')))
+    },
+    onInput(miles, $mileage) {
+        miles = miles.replace(/\D/g, '')
+
+        $mileage.val(miles)
+    },
+    onBlur(miles, $mileage) {
+        miles = (+miles).toLocaleString()
+
+        $mileage.val(miles)
+        onBlur(miles, $mileage)
+    },
+})
 
 inputEvent(expHoursCls, {
     onInput(hours, $hours) {
@@ -39,8 +59,10 @@ inputEvent(expHoursCls, {
     onChange,
     onBlur(hours, $hours) {
         if (!hours) hours = '0'
+        if (hours > 12) hours = 12
 
         $hours.val(hours)
+        calculateHours()
         onBlur(hours, $hours)
     },
 })

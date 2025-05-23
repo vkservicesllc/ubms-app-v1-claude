@@ -548,8 +548,13 @@ class ApplicationForm {
         selector: appSelector,
         target: 'expMileage',
         name: 'mileage',
+        maxLength: 7,
         required,
         label: 'Approx. Mileage',
+        validator: {
+            sanitizer: value => Number(value),
+            rule: 'numeric',
+        },
     })
 
 
@@ -723,6 +728,8 @@ for (let i = 0; i < 7; i++) {
         type: 'number',
         name: `hours[${i}]`,
         step: '1',
+        min: '0',
+        max: '12',
         required,
         requiredLabel: false,
         label: true,
