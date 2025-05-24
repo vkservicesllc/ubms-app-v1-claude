@@ -449,6 +449,7 @@ export const applicationProgress = async (req, res) => {
             hbs.button.four = buttonProps.save
             hbs.accordion.four = accordionProps.finished
             hbs.vhlExpColWidth = application.deptId === 0 && application.dl.commercial ? 4 : 6
+            hbs.cmvExpDisplay = '' //! if no cmv exp, display none
             hbs.schoolDisplay = ' style="display: none;"'
             // hbs.currentVhlDisplay = ' style="display: none;"'
 
@@ -533,6 +534,7 @@ export const applicationProgress = async (req, res) => {
             }
 
             if (application?.experience?.cdlSchool === true) hbs.schoolDisplay = ''
+            if (application?.experience?.cmv === false) hbs.cmvExpDisplay = ' style="display: none;"'
             // if (application?.experience?.currentVhl === true) hbs.currentVhlDisplay = ''
 
         }
