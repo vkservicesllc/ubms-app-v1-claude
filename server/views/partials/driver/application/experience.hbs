@@ -319,6 +319,9 @@
                 </div>
             </form>
             <script type="module" src="/modules/application/experience.mjs"></script>
+            {{#if (eq deptId 0)}}
+            <script type="module" src="/modules/application/experience.truck-load.mjs"></script>
+            {{/if}}
         </div>
     </div>
 </div>
