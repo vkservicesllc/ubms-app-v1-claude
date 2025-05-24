@@ -11,7 +11,7 @@ const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
 const $card = $('#apl-card')
 const $expDetails = $('#experience-details')
-const $starDate = $(startDateId)
+const $startDate = $(startDateId)
 const $endDate = $(endDateId)
 const $help = {
     expStart: $('#exp-start-help'),
@@ -62,6 +62,43 @@ inputEvent(startDateId, {
             }
         }
 
+        if (check($form)) $help.form.hide().html(null)
+    },
+    onBlur,
+})
+
+
+inputEvent(endDateId, {
+    ...dateOpts,
+    onInput(endDate, $endDate) {
+        $help.expEnd.text(null).removeClass('text-danger text-warning')
+        $endDate.removeClass('is-valid is-invalid')
+    },
+    onChange(endDate, $endDate) {
+        if (endDate) {
+            endDate = moment(endDate, 'MM/DD/YYYY', true)
+
+            if (!endDate.isValid()) {
+                $endDate.addClass('is-invalid')
+                $help.expEnd.addClass('text-danger').text('* Invalid date')
+            } else {
+                const today = moment()
+                let startDate = $startDate.val()
+
+                if (endDate.isAfter(today)) {
+                    $endDate.addClass('is-invalid')
+                    $help.expEnd.text('* Future date forbidden')
+                } else if (startDate) {
+                    startDate = moment(startDate, 'MM/DD/YYYY', true)
+
+                    if (endDate.isBefore(startDate)) {
+                        $endDate.addClass('is-invalid')
+                        $help.expEnd.text('* Finished before started')
+                    } else $endDate.addClass('is-valid')
+                } else $endDate.addClass('is-valid')
+            }
+        }
+        
         if (check($form)) $help.form.hide().html(null)
     },
     onBlur,
