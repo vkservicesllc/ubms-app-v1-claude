@@ -7,7 +7,19 @@ const noExpId = CS.noExp
 const startDateId = TS.expStartDate
 const endDateId = TS.expEndDate
 
+const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
+
+const $card = $('#apl-card')
 const $expDetails = $('#experience-details')
+const $starDate = $(startDateId)
+const $endDate = $(endDateId)
+const $help = {
+    expStart: $('#exp-start-help'),
+    expEnd: $('#exp-end-help'),
+    schEnd: $('#sch-end-help'),
+    form: $('#exp-form-help'),
+}
+const $form = $('#experience-form')
 
 
 inputEvent(noExpId, {
@@ -16,4 +28,41 @@ inputEvent(noExpId, {
 
         $expDetails[checked ? 'hide' : 'show']()
     },
+})
+
+
+inputEvent(startDateId, {
+    ...dateOpts,
+    onInput(startDate, $startDate) {
+        $help.expStart.text(null)
+        $startDate.removeClass('is-valid is-invalid')
+    },
+    onChange(startDate, $startDate) {
+        if (startDate) {
+            startDate = moment(startDate, 'MM/DD/YYYY', true)
+
+            if (!startDate.isValid()) {
+                $startDate.addClass('is-invalid')
+                $help.expStart.text('* Invalid date')
+            } else {
+                const today = moment()
+                let endDate = $endDate.val()
+
+                if (startDate.isAfter(today)) {
+                    $startDate.addClass('is-invalid')
+                    $help.expStart.text('* Future date forbidden')
+                } else if (endDate) {
+                    endDate = moment(endDate, 'MM/DD/YYYY', true)
+
+                    if (startDate.isAfter(endDate)) {
+                        $startDate.addClass('is-invalid')
+                        $help.expStart.text('* Started before finished')
+                    } else $startDate.addClass('is-valid')
+                } else $startDate.addClass('is-valid')
+            }
+        }
+
+        if (check($form)) $help.form.hide().html(null)
+    },
+    onBlur,
 })

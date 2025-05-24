@@ -127,12 +127,12 @@
                         <div class="col-md-4">
                             {{{form.expStartDate.text.label}}}
                             {{{form.expStartDate.text.input}}}
-                            <div class="form-text text-danger"></div>
+                            <div class="form-text text-danger" id="exp-start-help"></div>
                         </div>
                         <div class="col-md-4">
                             {{{form.expEndDate.text.label}}}
                             {{{form.expEndDate.text.input}}}
-                            <div class="form-text text-danger"></div>
+                            <div class="form-text text-danger" id="exp-end-help"></div>
                         </div>
                         {{#if (eq deptId 0)}}
                         <div class="col-md-4">
@@ -244,6 +244,7 @@
                             <div class="col-md-4">
                                 {{{form.schEndDate.text.label}}}
                                 {{{form.schEndDate.text.input}}}
+                            <div class="form-text text-danger" id="sch-end-help"></div>
                             </div>
                             <div class="col-md-5">
                                 {{{form.schDuration.select.label}}}
@@ -310,6 +311,7 @@
 
                 </div>
 
+                <p class="form-text text-danger mt-4" id="exp-form-help" style="display: none;"></p>
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">
