@@ -214,13 +214,13 @@ function resetEvents() {
                     $date.addClass('is-invalid')
                     $help.text('* Invalid date')
                 } else {
-                    const today = moment()
+                    const today = moment(appliedOn)
 
                     if (date.isAfter(today)) {
                         $date.addClass('is-invalid')
                         $help.text('* Future date forbidden')
                     } else {
-                        const limit = moment(appliedOn).clone().subtract(3, 'years')
+                        const limit = today.clone().subtract(3, 'years')
 
                         if (date.isBefore(limit)) {
                             $date.addClass('is-invalid')

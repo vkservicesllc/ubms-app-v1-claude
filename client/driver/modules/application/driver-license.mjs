@@ -37,6 +37,7 @@ for (const key in $expl)
     if ($expl[key].val()) $expl[key].parent().show()
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
+const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const $endorsement = $(dlEndrsId)
 if ($endorsement.prop('disabled')) $endorsement.parent().hide()
@@ -71,7 +72,7 @@ inputEvent(dlIssId, {
                 $issued.addClass('is-invalid')
                 $help.issued.text('* Invalid date')
             } else {
-                const today = moment()
+                const today = moment(appliedOn)
                 let expires = $expires.val() 
 
                 if (issued.isAfter(today)) {
@@ -108,7 +109,7 @@ inputEvent(dlExpId, {
                 $expires.addClass('is-invalid')
                 $help.expires.addClass('text-danger').text('* Invalid date')
             } else {
-                const today = moment()
+                const today = moment(appliedOn)
                 let issued = $issued.val()
 
                 const diff = {

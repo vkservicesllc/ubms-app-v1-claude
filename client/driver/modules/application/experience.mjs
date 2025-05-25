@@ -8,6 +8,7 @@ const startDateId = TS.expStartDate
 const endDateId = TS.expEndDate
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
+const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const $card = $('#apl-card')
 const $expDetails = $('#experience-details')
@@ -45,7 +46,7 @@ inputEvent(startDateId, {
                 $startDate.addClass('is-invalid')
                 $help.expStart.text('* Invalid date')
             } else {
-                const today = moment()
+                const today = moment(appliedOn)
                 let endDate = $endDate.val()
 
                 if (startDate.isAfter(today)) {
@@ -71,7 +72,7 @@ inputEvent(startDateId, {
 inputEvent(endDateId, {
     ...dateOpts,
     onInput(endDate, $endDate) {
-        $help.expEnd.text(null).removeClass('text-danger text-warning')
+        $help.expEnd.text(null)
         $endDate.removeClass('is-valid is-invalid')
     },
     onChange(endDate, $endDate) {
@@ -80,9 +81,9 @@ inputEvent(endDateId, {
 
             if (!endDate.isValid()) {
                 $endDate.addClass('is-invalid')
-                $help.expEnd.addClass('text-danger').text('* Invalid date')
+                $help.expEnd.text('* Invalid date')
             } else {
-                const today = moment()
+                const today = moment(appliedOn)
                 let startDate = $startDate.val()
 
                 if (endDate.isAfter(today)) {

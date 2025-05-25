@@ -10,6 +10,7 @@ const cdlSchoolId = RS.cdlSchool
 
 const $hours = $(expHoursCls)
 const $totalHours = $('#total-weekly-experience-hours')
+const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const calculateHours = () => {
     let total = 0

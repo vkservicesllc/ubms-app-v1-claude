@@ -24,6 +24,7 @@ const $issued = $(mecIssId)
 const $expires = $(mecExpId)
 
 const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
+const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 $(noMecId).on('change', function() {
     const checked = $(this).prop('checked')
@@ -52,7 +53,7 @@ inputEvent(mecIssId, {
                 $issued.addClass('is-invalid')
                 $help.issued.text('* Invalid date')
             } else {
-                const today = moment()
+                const today = moment(appliedOn)
                 let expires = $expires.val() 
 
                 if (issued.isAfter(today)) {
@@ -89,7 +90,7 @@ inputEvent(mecExpId, {
                 $expires.addClass('is-invalid')
                 $help.expires.addClass('text-danger').text('* Invalid date')
             } else {
-                const today = moment()
+                const today = moment(appliedOn)
                 let issued = $issued.val()
 
                 const diff = {
