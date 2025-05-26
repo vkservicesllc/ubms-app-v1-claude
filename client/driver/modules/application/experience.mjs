@@ -17,10 +17,10 @@ const $endDate = $(endDateId)
 const $help = {
     expStart: $('#exp-start-help'),
     expEnd: $('#exp-end-help'),
-    schEnd: $('#sch-end-help'),
     form: $('#exp-form-help'),
 }
 const $form = $('#experience-form')
+const $submit = $('#experience-submit')
 
 
 inputEvent(noExpId, {
@@ -103,4 +103,10 @@ inputEvent(endDateId, {
         if (check($form)) $help.form.hide().html(null)
     },
     onBlur,
+})
+
+
+onSubmit($form, $help, $submit, $card, () => {
+    if ($(noExpId).prop('checked'))
+        $expDetails.find('input, select').prop('disabled')
 })

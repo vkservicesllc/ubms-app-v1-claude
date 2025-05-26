@@ -1,5 +1,6 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import formId, { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import { telEvent } from '/modules/events/contacts.mjs'
+import { check, onInput, onChange, onBlur } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio, CS = selector.id.checkbox
@@ -7,10 +8,21 @@ const cmvExpId = RS.cmvExp
 const mileageId = TS.expMileage
 const expHoursCls = selector.class.text.expHours
 const cdlSchoolId = RS.cdlSchool
+const schNameId = TS.schName
+const schPhoneId = TS.schPhone
+const schStateId = SS.schState
+const schEndDateId = TS.schEndDate
+const schDurationId = SS.schDuration
 
 const $hours = $(expHoursCls)
 const $totalHours = $('#total-weekly-experience-hours')
 const appliedOn = $(selector.id.hidden.appliedOn).val()
+
+const $form = $('#experience-form')
+const $help = {
+    schEnd: $('#sch-end-help'),
+    form: $('#exp-form-help'),
+}
 
 const calculateHours = () => {
     let total = 0
@@ -99,3 +111,46 @@ inputEvent(`${cdlSchoolId.yes}, ${cdlSchoolId.no}`, {
         $form[action]()
     },
 })
+
+
+inputEvent(schNameId, {
+    capitalize: 'each',
+    strip: true,
+    onInput,
+    onChange,
+})
+
+telEvent(schPhoneId, { onInput, onChange, onBlur })
+
+inputEvent(schEndDateId, {
+    mask: '99/99/9999',
+    placeholder: 'MM/DD/YYYY',
+    onInput(endDate, $endDate) {
+        $help.schEnd.text(null)
+        $endDate.removeClass('is-valid is-invalid')
+    },
+    onChange(endDate, $endDate) {
+        if (endDate) {
+            endDate = moment(endDate, 'MM/DD/YYYY', true)
+
+            if (!endDate.isValid()) {
+                $endDate.addClass('is-invalid')
+                $help.schEnd.text('* Invalid date')
+            } else {
+                const today = moment(appliedOn)
+
+                if (endDate.isAfter(today)) {
+                    $endDate.addClass('is-invalid')
+                    $help.schEnd.text('* Future date forbidden')
+                } $endDate.addClass('is-valid')
+            }
+        }
+
+        if (check($form)) $help.form.hide().html(null)
+    },
+    onBlur,
+})
+
+selectEvent(schStateId, { fill: true, onChange })
+
+selectEvent(schDurationId, { fill: true, onChange })

@@ -1,4 +1,5 @@
 /* jQuery required; jQuery Caret, jQuery Masked Input & jQuery UI optional */
+import { capitalizeEach, capitalizeFirst } from '../tools/utils/string.mjs'
 import { slim, strip as _strip, word as _word, english } from './supplies.mjs'
 
 
@@ -7,7 +8,8 @@ export const inputEvent = (selector, options = {}) => {
 
     const $input = $(selector)
     const { onFocus, onBlur, mask, strip, word } = options
-    let { placeholder, caret, lower, upper, datepicker } = options
+    let { placeholder, caret, lower, upper, datepicker, capitalize } = options
+    if (!['each', 'first'].includes(capitalize)) capitalize = false
 
     if (mask) {
         if (!placeholder) placeholder = '#'
@@ -66,6 +68,8 @@ export const inputEvent = (selector, options = {}) => {
             let value = slim(english($(this).val()))
             if (lower) value = value.toLowerCase()
             if (upper) value = value.toUpperCase()
+            if (capitalize === 'each') value = capitalizeEach(value)
+            else if (capitalize === 'first') value = capitalizeFirst(value)
 
             $(this).val(value)
             if (onInput) onInput(value, $(this))

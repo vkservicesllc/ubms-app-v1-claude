@@ -750,7 +750,7 @@ class Application {
         '1-2w': '1 – 2 weeks',
         '2-4w': '2 – 4 weeks',
         '1-2m': '1 – 2 months',
-        '2+ m': 'More than 2 months',
+        '2+ m': '2+ months',
     }
 
 
