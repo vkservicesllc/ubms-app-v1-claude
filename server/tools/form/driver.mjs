@@ -505,6 +505,7 @@ class ApplicationForm {
     static semiExp = createForm({
         selector: appSelector,
         target: 'semiExp',
+        group: 'semiExp',
         type: 'checkbox',
         data: Application.vehicleList.semi,
         name: 'vehicles[semi]',

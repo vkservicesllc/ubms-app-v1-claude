@@ -4,6 +4,7 @@ import { check, onInput, onChange, onBlur } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio, CS = selector.id.checkbox
+const noExpId = CS.noExp
 const cmvExpId = RS.cmvExp
 const mileageId = TS.expMileage
 const expHoursCls = selector.class.text.expHours
@@ -37,6 +38,31 @@ const calculateHours = () => {
 
 
 calculateHours()
+
+
+inputEvent(noExpId, {
+    onChange(value, $el) {
+        const checked = $el.prop('checked')
+
+        if (!checked) {
+            const selectors = ['input', 'select']
+            const $noCmvExp = $(cmvExpId.no)
+            const $noCdlSchool = $(cdlSchoolId.no)
+
+            if ($noCmvExp.prop('checked')) {
+                selectors[0] += `:not(${selector.class.checkbox.semiExp})`
+                selectors[0] += `:not(${selector.id.checkbox.tandemExp})`
+            }
+
+            if ($noCdlSchool.prop('checked')) {
+                selectors[0] += `:not(${selector.class.combo.cdlSchool})`
+                selectors[1] += `:not(${selector.class.combo.cdlSchool})`
+            }
+
+            $expDetails.find(selectors.join(', ')).prop('disabled', false)
+        }
+    },
+})
 
 
 inputEvent(`${cmvExpId.yes}, ${cmvExpId.no}`, {

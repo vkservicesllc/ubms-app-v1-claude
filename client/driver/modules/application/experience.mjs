@@ -28,6 +28,8 @@ inputEvent(noExpId, {
         const checked = $el.prop('checked')
 
         $expDetails[checked ? 'hide' : 'show']()
+        if (checked)
+            $expDetails.find('input, select').prop('disabled', true)
     },
 })
 
@@ -108,5 +110,5 @@ inputEvent(endDateId, {
 
 onSubmit($form, $help, $submit, $card, () => {
     if ($(noExpId).prop('checked'))
-        $expDetails.find('input, select').prop('disabled')
+        $expDetails.find('input, select').prop('disabled', true)
 })
