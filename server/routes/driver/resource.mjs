@@ -43,8 +43,13 @@ const applicantComplianceFields = ['dui', 'duiInDecade', 'criminal', 'criminalEx
 applicantComplianceFields.forEach(prop => validateApplicantCompliance.push(ApplicationForm[prop].validate()))
 
 const validateApplicantSafety = []
-const applicantSafetyFields = ['accidents'] //! continue the list
+const applicantSafetyFields = ['accidents', '_accType', '_accOtherType', '_accDate', '_accState', '_accInjuries', '_accFatalities']
 applicantSafetyFields.forEach(prop => validateApplicantSafety.push(ApplicationForm[prop].validate()))
+
+
+const validateApplicantExperience = []
+const applicantExperienceFields = ['noExp', 'cmvExp', 'expStartDate', 'expEndDate', 'expMileage', 'cdlSchool']
+applicantExperienceFields.forEach(prop => validateApplicantExperience.push(ApplicationForm[prop].validate()))
 
 
 const dynamicValidator = {
@@ -72,7 +77,7 @@ const dynamicValidator = {
                 validators = validateApplicantSafety
                 break
             case 'experience':
-                validators = []
+                validators = validateApplicantExperience
                 break
         }
 

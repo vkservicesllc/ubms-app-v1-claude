@@ -201,16 +201,16 @@ const createForm = (input = {}) => {
             ? body(`${name.replace('[]', '')}.*`).trim()
             : body(name).trim()
 
-        if (required && !disabled) //! Useless in case the default state is disabled (will use it for now)
-            chain = chain
-                .notEmpty()
-                .withMessage(`"${name}" field can not be empty`)
-        else chain = chain
-            .customSanitizer(value => value || null)
-            .optional({ nullable: true })
-
         if (typeof validator === 'object') {
-            const { caps, sanitizer, rule, match, length, custom } = validator
+            const { caps, sanitizer, rule, match, length, optional, custom } = validator
+
+            if (required && !disabled && !optional) //! Useless in case the default state is disabled (will use it for now)
+                chain = chain
+                    .notEmpty()
+                    .withMessage(`"${name}" field can not be empty`)
+            else chain = chain
+                .customSanitizer(value => value || null)
+                .optional({ nullable: true })
 
             if (data) {
                 const values = Object.keys(data)

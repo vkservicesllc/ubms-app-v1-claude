@@ -483,6 +483,9 @@ class ApplicationForm {
         type: 'checkbox',
         name: 'noExp',
         label: 'No prior driving experience',
+        validator: {
+            sanitizer: value => !!value,
+        },
     })
 
     static cmvExp = createYesNoForm({
@@ -491,7 +494,7 @@ class ApplicationForm {
         name: 'cmv',
         required,
         label: 'CMV Experience',
-    })
+    }, true)
 
     static straightExp = createForm({
         selector: appSelector,
@@ -535,7 +538,7 @@ class ApplicationForm {
         name: 'firstDate',
         required,
         label: 'Started Driving on',
-    })
+    }, true)
 
     static expEndDate = createDateForm({
         selector: appSelector,
@@ -543,7 +546,7 @@ class ApplicationForm {
         name: 'lastDate',
         required,
         label: 'Last Driven on',
-    })
+    }, true)
 
     static expMileage = createForm({
         selector: appSelector,
@@ -553,8 +556,9 @@ class ApplicationForm {
         required,
         label: 'Approx. Mileage',
         validator: {
-            sanitizer: value => Number(value),
+            sanitizer: value => Number(value.replace(/,/, '')),
             rule: 'numeric',
+            optional: true,
         },
     })
 
@@ -565,7 +569,7 @@ class ApplicationForm {
         name: 'cdlSchool',
         required,
         label: 'Attended CDL School',
-    })
+    }, true)
 
     static schName = createForm({
         selector: appSelector,
@@ -734,9 +738,10 @@ for (let i = 0; i < 7; i++) {
         required,
         requiredLabel: false,
         label: true,
-        validator: {
-            rule: 'numeric',
-        },
+        // validator: {
+        //     rule: 'numeric',
+        //     sanitizer: value => +value,
+        // },
     })
 }
 

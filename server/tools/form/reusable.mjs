@@ -228,11 +228,17 @@ export const createWebsiteForm = (props = {}) => createForm({
 })
 
 
-export const createDateForm = (props = {}) => createForm({
-    type: 'date',
-    ...props,  //* When "min" and/or "max" are supplied, the validator will check as well
-    validator: { rule: 'date' },
-})
+export const createDateForm = (props = {}, optional) => {
+    const validator = { rule: 'date' }
+    if (props?.required && optional === true)
+        validator.optional = true
+
+    return createForm({
+        type: 'date',
+        ...props,  //* When "min" and/or "max" are supplied, the validator will check as well
+        validator,
+    })
+}
 
 
 export const createDobForm = (props = {}) => createDateForm({
@@ -279,7 +285,7 @@ export const createSsnForm = (props = {}) => createForm({
     },
 })
 
-export const createYesNoForm = (props = {}, type = 'radio') => createForm({
+export const createYesNoForm = (props = {}, optional = false, type = 'radio') => createForm({
     type,
     data: { 'Y': 'Yes', 'N': 'No' },
     required,
@@ -288,5 +294,6 @@ export const createYesNoForm = (props = {}, type = 'radio') => createForm({
     keys: ['yes', 'no'],
     validator: {
         sanitizer: value => value === 'Y' || value === '1',
+        optional,
     },
 })
