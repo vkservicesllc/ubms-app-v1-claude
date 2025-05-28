@@ -556,7 +556,7 @@ class ApplicationForm {
         required,
         label: 'Approx. Mileage',
         validator: {
-            sanitizer: value => Number(value.replace(/,/, '')),
+            sanitizer: value => Number(value.replace(/,/g, '')),
             rule: 'numeric',
             optional: true,
         },

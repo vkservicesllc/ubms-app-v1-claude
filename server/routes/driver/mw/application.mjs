@@ -477,12 +477,29 @@ export const applicationProgress = async (req, res) => {
 
             options.straightExp = { checkbox: { label: { class: labelClassRequired } } }
             options.semiExp = { checkbox: { label: { class: labelClassRequired } } }
-            for (const prop in Application.vehicleList.straight)
-                options.straightExp.checkbox[prop] = { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } }
-            for (const prop in Application.vehicleList.semi)
-                options.semiExp.checkbox[prop] = { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } }
-            options.tandemExp = { checkbox: { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } } }
-            options.vanExp = { checkbox: { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } } }
+
+            for (const prop in Application.vehicleList.straight) {
+                const checked = application?.experience?.vehicles?.straight?.includes(prop)
+                options.straightExp.checkbox[prop] = { input: { ...checkProps.input, checked, disabled }, label: { ...checkProps.label } }
+            }
+
+            for (const prop in Application.vehicleList.semi) {
+                const checked = application?.experience?.cmv === true && application?.experience?.vehicles?.semi?.includes(prop)
+                options.semiExp.checkbox[prop] = { input: { ...checkProps.input, checked, disabled }, label: { ...checkProps.label } }
+            }
+
+            options.vanExp = { checkbox: {
+                input: { ...checkProps.input, disabled, checked: application?.experience?.vehicles?.misc?.includes('van') },
+                label: { ...checkProps.label },
+            }}
+            options.tandemExp = { checkbox: {
+                input: {
+                    ...checkProps.input,
+                    disabled,
+                    checked: application?.experience?.cmv === true && application?.experience?.vehicles?.misc?.includes('tandem'),
+                },
+                label: { ...checkProps.label },
+            }}
 
             const values = {
                 expStartDate: application?.experience?.firstDate
@@ -491,7 +508,7 @@ export const applicationProgress = async (req, res) => {
                 expEndDate: application?.experience?.lastDate
                     ? moment(application.experience.lastDate).format('MM/DD/YYYY')
                     : null,
-                expMileage: application?.experience?.mileage,
+                expMileage: application?.experience?.mileage?.toLocaleString(),
                 schName: application?.experience?.schName,
                 schPhone: application?.experience?.schPhone
                     ? formatTel(application.experience.schPhone)

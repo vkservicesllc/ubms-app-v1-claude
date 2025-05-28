@@ -9,12 +9,14 @@ const cmvExpId = RS.cmvExp
 const mileageId = TS.expMileage
 const expHoursCls = selector.class.text.expHours
 const cdlSchoolId = RS.cdlSchool
+const cdlSchoolCls = selector.class.combo.cdlSchool
 const schNameId = TS.schName
 const schPhoneId = TS.schPhone
 const schStateId = SS.schState
 const schEndDateId = TS.schEndDate
 const schDurationId = SS.schDuration
 
+const $expDetails = $('#experience-details')
 const $hours = $(expHoursCls)
 const $totalHours = $('#total-weekly-experience-hours')
 const appliedOn = $(selector.id.hidden.appliedOn).val()
@@ -39,6 +41,8 @@ const calculateHours = () => {
 
 calculateHours()
 
+if ($(cdlSchoolId.yes).prop('checked')) $(cdlSchoolCls).prop('disabled', false)
+
 
 inputEvent(noExpId, {
     onChange(value, $el) {
@@ -55,8 +59,8 @@ inputEvent(noExpId, {
             }
 
             if ($noCdlSchool.prop('checked')) {
-                selectors[0] += `:not(${selector.class.combo.cdlSchool})`
-                selectors[1] += `:not(${selector.class.combo.cdlSchool})`
+                selectors[0] += `:not(${cdlSchoolCls})`
+                selectors[1] += `:not(${cdlSchoolCls})`
             }
 
             $expDetails.find(selectors.join(', ')).prop('disabled', false)

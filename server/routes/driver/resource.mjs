@@ -48,7 +48,10 @@ applicantSafetyFields.forEach(prop => validateApplicantSafety.push(ApplicationFo
 
 
 const validateApplicantExperience = []
-const applicantExperienceFields = ['noExp', 'cmvExp', 'expStartDate', 'expEndDate', 'expMileage', 'cdlSchool']
+const applicantExperienceFields = [
+    'noExp', 'cmvExp', 'expStartDate', 'expEndDate', 'expMileage',
+    'cdlSchool', 'schName', 'schPhone', 'schState', 'schEndDate', 'schDuration',
+]
 applicantExperienceFields.forEach(prop => validateApplicantExperience.push(ApplicationForm[prop].validate()))
 
 

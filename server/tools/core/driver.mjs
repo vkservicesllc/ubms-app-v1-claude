@@ -583,13 +583,14 @@ class Application {
                     if (data.hours) data.hours = JSON.stringify(data.hours.map(value => +value))
 
                     data.aplId = id
-                }
+                } else data = {}
                 break
 
         }
 
         if (!error) {
             if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
+console.log(data)
                 const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
                 if (result.affectedRows > 0) modified = true
             }
