@@ -39,6 +39,7 @@ const query = {
     aplMECs: new Query(db.carrier, 'application_MECs'),
     aplCitations: new Query(db.carrier, 'application_citations'),
     aplAccidents: new Query(db.carrier, 'application_accidents'),
+    aplExperiences: new Query(db.carrier, 'application_experiences',
 }
 
 
@@ -545,6 +546,7 @@ class Application {
 
 
             case 'experience':
+                target = 'aplExperiences'
                 break
 
         }
