@@ -39,7 +39,7 @@ const applicantMecFields = ['noMec', 'mecExp', 'mecIss', 'mecNumber', 'underMeds
 applicantMecFields.forEach(prop => validateApplicantMEC.push(ApplicationForm[prop].validate()))
 
 const validateApplicantCompliance = []
-const applicantComplianceFields = ['dui', 'duiInDecade', 'criminal', 'criminalExpl', 'citations', '_citDate', '_citState', '_citReason', '_citOtherReason']
+const applicantComplianceFields = ['dui', 'duiInDecade', 'criminal', 'criminalExpl', 'dotDat', 'citations', '_citDate', '_citState', '_citReason', '_citOtherReason']
 applicantComplianceFields.forEach(prop => validateApplicantCompliance.push(ApplicationForm[prop].validate()))
 
 const validateApplicantSafety = []

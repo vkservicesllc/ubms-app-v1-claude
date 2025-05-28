@@ -343,6 +343,12 @@ class ApplicationForm {
         label: 'Explain what happened',
     })
 
+    static dotDat = createYesNoForm({
+        selector: appSelector,
+        target: 'dotDat',
+        name: 'dotDat',
+    })
+
     static citations = createYesNoForm({
         selector: appSelector,
         target: 'citations',
@@ -627,7 +633,7 @@ class ApplicationForm {
 
 
 
-    /* PRE-EMPLYMENT */
+    /* PRE-EMPLOYMENT */
 
     static prevEmployed = createYesNoForm({
         selector: appSelector,

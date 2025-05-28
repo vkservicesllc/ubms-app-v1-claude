@@ -375,12 +375,14 @@ export const applicationProgress = async (req, res) => {
             options.dui = { radio: {} }
             options.duiInDecade = { radio: {} }
             options.criminal = { radio: {} }
+            options.dotDat = { radio: {} }
             options.citations = { radio: {} }
 
             for (const prop of ['yes', 'no']) {
                 options.dui.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options.duiInDecade.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options.criminal.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.dotDat.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options.citations.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
@@ -388,6 +390,8 @@ export const applicationProgress = async (req, res) => {
             options.dui.radio.no.input.checked = application.dui === false
             options.criminal.radio.yes.input.checked = application.criminal === true
             options.criminal.radio.no.input.checked = application.criminal === false
+            options.dotDat.radio.yes.input.checked = application.dotDat === true
+            options.dotDat.radio.no.input.checked = application.dotDat === false
             options.citations.radio.yes.input.checked = application.citations === true
             options.citations.radio.no.input.checked = application.citations === false
 

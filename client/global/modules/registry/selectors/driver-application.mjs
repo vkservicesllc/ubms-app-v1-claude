@@ -156,6 +156,10 @@ const selector = {
                 yes: 'had-criminal',
                 no: 'had-no-criminal',
             },
+            dotDat: {
+                yes: 'dot-drug-alcohol-test-compliant',
+                no: 'dot-drug-alcohol-test-non-compliant',
+            },
             citations: {
                 yes: 'had-citations',
                 no: 'had-no-citations',

@@ -200,6 +200,7 @@ class Application {
         this.duiInDecade = bool(data.duiInDecade)
         this.criminal = bool(data.criminal)
         this.criminalExpl = data.criminalExpl
+        this.dotDat = bool(data.dotDat)
         this.citations = bool(data.citations)
 
         this.accidents = bool(data.accidents)
@@ -463,6 +464,7 @@ class Application {
                 mainData.duiInDecade = data.duiInDecade
                 mainData.criminal = data.criminal
                 mainData.criminalExpl = data.criminalExpl
+                mainData.dotDat = data.dotDat
                 mainData.citations = citations
 
                 await mysql.execute(query.aplCitations.delete({ aplId: id }))
@@ -590,7 +592,6 @@ class Application {
 
         if (!error) {
             if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
-console.log(data)
                 const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
                 if (result.affectedRows > 0) modified = true
             }
@@ -993,6 +994,7 @@ console.log(data)
                     'duiInDecade',
                     'criminal',
                     'criminalExpl',
+                    'dotDat',
                     'citations',
                     'accidents',
                     'experience',
