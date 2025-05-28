@@ -19,6 +19,12 @@ const selector = {
             citOtherReason: 'citation-other-reason',
             accOtherType: 'accident-other-type',
             expHours: 'experience-daily-hours',
+            prevEmployer: 'employer',
+            emplPhone: 'employer-phone',
+            emplAddress1: 'employer-address-1',
+            emplAddress2: 'employer-address-2',
+            emplAddrZip: 'employer-address-zip',
+            emplAddrCity: 'employer-address-city',
         },
         select: {
             gender: 'gender',
@@ -27,6 +33,7 @@ const selector = {
             citState: 'citation-state',
             accType: 'accident-type',
             accState: 'accident-state',
+            emplAddrState: 'employer-address-state',
         },
         radio: {
             gender: 'gender',
@@ -85,6 +92,12 @@ const selector = {
             schName: 'school-name',
             schPhone: 'school-phone',
             schEndDate: 'school-end-date',
+            prevEmployer: 'employer',
+            emplPhone: 'employer-phone',
+            emplAddress1: 'employer-address-1',
+            emplAddress2: 'employer-address-2',
+            emplAddrZip: 'employer-address-zip',
+            emplAddrCity: 'employer-address-city',
 
             //! gap
             // currentVhlMake: 'current-vehicle-make',
@@ -104,6 +117,7 @@ const selector = {
             accState: 'accident-state',
             schState: 'school-state',
             schDuration: 'school-duration',
+            emplAddrState: 'employer-address-state',
 
             //!gap
             // currentVhlYear: 'current-vehicle-year',

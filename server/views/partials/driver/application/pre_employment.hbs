@@ -7,7 +7,7 @@
     </h2>
     <div id="collapse-6" class="text-start accordion-collapse collapse{{accordion.six.body}}" data-bs-parent="#apl-accordion">
         <div class="accordion-body">
-            <form id="experience-form" action="{{actionUrl.preEmployment}}" method="POST" autocomplete="off">
+            <form id="preempl-form" action="{{actionUrl.preEmployment}}" method="POST" autocomplete="off">
                 <div class="row g-3 my-1">
                     <label class="form-label">
                         Are you currently employed, or have you been employed in the U.S. within the past 10 years?
@@ -23,7 +23,35 @@
                         </div>
                     </div>
                 </div>
+                <div class="row g-3 my-2">
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-{{button.six.class}}" id="preempl-submit">{{button.six.text}}</button>
+                        </div>
+                    </div>
+                </div>
             </form>
+            <div id="preempl-form-template" style="display: ;">
+                <div class="border-top mt-4">
+                    <div class="d-flex">
+                        <div class="ms-auto pt-3" style="display: none !important;">
+                            <button type="button" class="btn btn-danger btn-sm delete-preempl-button" data-bs-toggle="modal" data-bs-target="#delete-preempl-modal">
+                                <i class="fas fa-close"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row g-3 my-1">
+                        <div class="col-md-7">
+                            {{{form._prevEmployer.text.label}}}
+                            {{{form._prevEmployer.text.input}}}
+                        </div>
+                        <div class="col-md-5">
+                            {{{form._emplPhone.text.label}}}
+                            {{{form._emplPhone.text.input}}}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

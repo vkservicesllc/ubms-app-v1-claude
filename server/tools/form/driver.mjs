@@ -643,6 +643,67 @@ class ApplicationForm {
         label: 'Previously employed within the past 10 years',
     })
 
+    static _prevEmployer = createForm({
+        selector: appSelector,
+        target: 'prevEmployer',
+        group: 'prevEmployed',
+        name: 'employer[]',
+        maxLength: 40,
+        required,
+        disabled,
+        label: 'Company / Employer Name',
+    })
+
+    static _emplPhone = createPhoneForm({
+        selector: appSelector,
+        target: 'emplPhone',
+        group: 'emplPhone',
+        name: 'phone[]',
+        required,
+        disabled,
+        label: 'Phone',
+    })
+
+    static _emplAddr1 = createAddressForm({
+        selector: appSelector,
+        target: 'emplAddress1',
+        group: 'emplAddress1',
+        name: 'address1[]',
+        disabled,
+    })
+
+    static _emplAddr2 = createAddressForm({
+        selector: appSelector,
+        target: 'emplAddress2',
+        group: 'emplAddress2',
+        name: 'address2[]',
+        disabled,
+    }, { idx: 2, business: true })
+
+    static _emplAddrZip = createAddrZipForm({
+        selector: appSelector,
+        target: 'emplAddrZip',
+        group: 'emplAddrZip',
+        name: 'zip[]',
+        disabled,
+    })
+
+    static _emplAddrCity = createAddrCityForm({
+        selector: appSelector,
+        target: 'emplAddrCity',
+        group: 'emplAddrCity',
+        name: 'city[]',
+        disabled,
+    })
+
+    static _emplAddrState = createAddrStateForm({
+        selector: appSelector,
+        target: 'emplAddrState',
+        group: 'emplAddrState',
+        name: 'state[]',
+        disabled,
+    })
+
 
 
     /* VEHICLE OWNERSHIP */

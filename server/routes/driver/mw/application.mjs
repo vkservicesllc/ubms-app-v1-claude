@@ -566,6 +566,14 @@ export const applicationProgress = async (req, res) => {
             for (const prop of ['yes', 'no']) {
                 options.prevEmployed.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
+
+            const fields = ['_prevEmployer', '_emplPhone']
+            options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
+
+            const placeholders = {
+                _emplPhone: '(###) ###-####',
+            }
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
 
 
