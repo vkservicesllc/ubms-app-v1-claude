@@ -630,13 +630,13 @@ class ApplicationForm {
     /* OWNERSHIP */
 
 
-    static currentVhl = createYesNoForm({
-        selector: appSelector,
-        target: 'currentVhl',
-        name: 'currentVhl',
-        required,
-        label: 'Vehicle Currently Driven',
-    })
+    // static currentVhl = createYesNoForm({
+    //     selector: appSelector,
+    //     target: 'currentVhl',
+    //     name: 'currentVhl',
+    //     required,
+    //     label: 'Vehicle Currently Driven',
+    // })
 
     static currentVhlMMT = createForm({
         selector: appSelector,

@@ -450,27 +450,32 @@ export const applicationProgress = async (req, res) => {
             hbs.button.four = buttonProps.save
             hbs.accordion.four = accordionProps.finished
             hbs.vhlExpColWidth = application.deptId === 0 && application.dl.commercial ? 4 : 6
-            hbs.cmvExpDisplay = '' //! if no cmv exp, display none
+            hbs.expDetailsDisplay = ''
+            hbs.cmvExpDisplay = ''
             hbs.schoolDisplay = ' style="display: none;"'
-            // hbs.currentVhlDisplay = ' style="display: none;"'
 
             let { labelClassRequired } = formInstr
+            let disabled = false
 
             options.noExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
+            if (application.experience === false) {
+                options.noExp.checkbox.input.checked = true
+                hbs.expDetailsDisplay = ' style="display: none;"'
+                disabled = true
+            }
+
+            //! figure out the way to apply disabled property to all inputs in the section
+
             options.cmvExp = { radio: {} }
             options.cdlSchool = { radio: {} }
-            // options.currentVhl = { radio: {} }
             for (const prop of ['yes', 'no']) {
                 options.cmvExp.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options.cdlSchool.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                // options.currentVhl.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
             options.cmvExp.radio.yes.input.checked = application?.experience?.cmv === true
             options.cmvExp.radio.no.input.checked = application?.experience?.cmv === false
             options.cdlSchool.radio.yes.input.checked = application?.experience?.cdlSchool === true
             options.cdlSchool.radio.no.input.checked = application?.experience?.cdlSchool === false
-            // options.currentVhl.radio.yes.input.checked = application?.experience?.current === true
-            // options.currentVhl.radio.no.input.checked = application?.experience?.current === false
 
             options.straightExp = { checkbox: { label: { class: labelClassRequired } } }
             options.semiExp = { checkbox: { label: { class: labelClassRequired } } }
@@ -498,12 +503,6 @@ export const applicationProgress = async (req, res) => {
                     ? moment(application.experience.schEndDate).format('MM/DD/YYYY')
                     : null,
                 schDuration: application?.experience?.schDuration,
-                // currentVhlYear: application?.experience?.currentVhlYear,
-                // currentVhlMMT: application?.experience?.currentVhlMMT,
-                // currentVhlMake: application?.experience?.currentVhlMake,
-                // currentVhlModel: application?.experience?.currentVhlModel,
-                // currentVhlType: application?.experience?.currentVhlType,
-                // currentSBoxLen: application?.experience?.currentSBoxLen,
             }
             const placeholders = {
                 expStartDate: 'MM/DD/YYYY',
@@ -524,7 +523,7 @@ export const applicationProgress = async (req, res) => {
                     text: {
                         input: {
                             class: formInstr.textClass,
-                            value: application?.experience?.hours[i] || null,
+                            value: application?.experience?.hours?.[i] || null,
                         },
                         label: {
                             class: formInstr.labelClassRequired,
@@ -536,7 +535,6 @@ export const applicationProgress = async (req, res) => {
 
             if (application?.experience?.cdlSchool === true) hbs.schoolDisplay = ''
             if (application?.experience?.cmv === false) hbs.cmvExpDisplay = ' style="display: none;"'
-            // if (application?.experience?.currentVhl === true) hbs.currentVhlDisplay = ''
 
         }
 
@@ -545,6 +543,25 @@ export const applicationProgress = async (req, res) => {
             hbs.accordion.five = accordionProps.finished
 
             //
+        }
+
+
+
+        {
+            //! OWNER OPERATOR...
+            //? No need to ask the question, obviously the person who applies for owner's position must have a vehicle
+            // hbs.currentVhlDisplay = ' style="display: none;"'
+            // options.currentVhl = { radio: {} }
+                // options.currentVhl.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            // options.currentVhl.radio.yes.input.checked = application?.experience?.current === true
+            // options.currentVhl.radio.no.input.checked = application?.experience?.current === false
+                // currentVhlYear: application?.experience?.currentVhlYear,
+                // currentVhlMMT: application?.experience?.currentVhlMMT,
+                // currentVhlMake: application?.experience?.currentVhlMake,
+                // currentVhlModel: application?.experience?.currentVhlModel,
+                // currentVhlType: application?.experience?.currentVhlType,
+                // currentSBoxLen: application?.experience?.currentSBoxLen,
+            // if (application?.experience?.currentVhl === true) hbs.currentVhlDisplay = ''
         }
 
         hbs.form = new ApplicationForm(options)

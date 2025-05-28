@@ -204,7 +204,8 @@ class Application {
 
         this.accidents = bool(data.accidents)
 
-        if (data.experience)
+        this.experience = bool(data.experience)
+        if (this.experience)
             this.experience = {
                 cmv: bool(data.cmvExp),
                 vehicles: data.expVehicles,

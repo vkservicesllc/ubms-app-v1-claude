@@ -181,7 +181,7 @@ const selector = {
                 no: 'no-cdl-school',
             },
 
-            //! gap
+            //! gap -- NO NEED IN THIS QUESTION
             // currentVhl: {
             //     yes: 'currently-driving',
             //     no: 'currently-not-driving', 
