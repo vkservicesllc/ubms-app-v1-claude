@@ -223,7 +223,7 @@ class Application {
                 
             }
 
-        if (data.currentVhl)
+        if (data.vhlMmt)
             this.ownedVhl = {
                 mmt: data.vhlMmt,
                 make: data.vhlMake,
@@ -995,7 +995,6 @@ class Application {
                     'citations',
                     'accidents',
                     'experience',
-                    'currentVhl',
                 ],
                 match,
             },

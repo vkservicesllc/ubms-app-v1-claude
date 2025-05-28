@@ -627,16 +627,19 @@ class ApplicationForm {
 
 
 
-    /* OWNERSHIP */
+    /* PRE-EMPLYMENT */
+
+    static prevEmployed = createYesNoForm({
+        selector: appSelector,
+        target: 'prevEmployed',
+        name: 'prevEmployed',
+        required,
+        label: 'Previously employed within the past 10 years',
+    })
 
 
-    // static currentVhl = createYesNoForm({
-    //     selector: appSelector,
-    //     target: 'currentVhl',
-    //     name: 'currentVhl',
-    //     required,
-    //     label: 'Vehicle Currently Driven',
-    // })
+
+    /* VEHICLE OWNERSHIP */
 
     static currentVhlMMT = createForm({
         selector: appSelector,

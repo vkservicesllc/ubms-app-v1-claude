@@ -464,13 +464,11 @@ export const applicationProgress = async (req, res) => {
                 disabled = true
             }
 
-            //! figure out the way to apply disabled property to all inputs in the section
-
             options.cmvExp = { radio: {} }
             options.cdlSchool = { radio: {} }
             for (const prop of ['yes', 'no']) {
-                options.cmvExp.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                options.cdlSchool.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.cmvExp.radio[prop] = { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } }
+                options.cdlSchool.radio[prop] = { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } }
             }
             options.cmvExp.radio.yes.input.checked = application?.experience?.cmv === true
             options.cmvExp.radio.no.input.checked = application?.experience?.cmv === false
@@ -480,11 +478,11 @@ export const applicationProgress = async (req, res) => {
             options.straightExp = { checkbox: { label: { class: labelClassRequired } } }
             options.semiExp = { checkbox: { label: { class: labelClassRequired } } }
             for (const prop in Application.vehicleList.straight)
-                options.straightExp.checkbox[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.straightExp.checkbox[prop] = { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } }
             for (const prop in Application.vehicleList.semi)
-                options.semiExp.checkbox[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-            options.tandemExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
-            options.vanExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
+                options.semiExp.checkbox[prop] = { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } }
+            options.tandemExp = { checkbox: { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } } }
+            options.vanExp = { checkbox: { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } } }
 
             const values = {
                 expStartDate: application?.experience?.firstDate
@@ -511,7 +509,7 @@ export const applicationProgress = async (req, res) => {
                 schPhone: '(###) ###-####',
             }
 
-            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 8 })
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, disabled, tabs: 8 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.schState.select.input.options = { valOpt: true }
 
@@ -524,6 +522,7 @@ export const applicationProgress = async (req, res) => {
                         input: {
                             class: formInstr.textClass,
                             value: application?.experience?.hours?.[i] || null,
+                            disabled,
                         },
                         label: {
                             class: formInstr.labelClassRequired,
@@ -542,7 +541,10 @@ export const applicationProgress = async (req, res) => {
             hbs.button.five = buttonProps.save
             hbs.accordion.five = accordionProps.finished
 
-            //
+            options.prevEmployed = { radio: {} }
+            for (const prop of ['yes', 'no']) {
+                options.prevEmployed.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            }
         }
 
 
