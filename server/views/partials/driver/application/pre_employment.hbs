@@ -1,0 +1,23 @@
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button{{accordion.six.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-6">
+            <i class="{{accordion.six.state}} accordion-button-state"></i>
+            <strong>{{idx steps 6}}</strong>
+        </button>
+    </h2>
+    <div id="collapse-6" class="text-start accordion-collapse collapse{{accordion.six.body}}" data-bs-parent="#apl-accordion">
+        <div class="accordion-body">
+            <form id="experience-form" action="{{actionUrl.preEmployment}}" method="POST" autocomplete="off">
+                ... PRE EMPLOYMENT FORM
+                <div class="row g-3 my-1">
+                    <div class="col-md-12">
+                        <div class="form-check">
+                            {{{form.noPreEmp.checkbox.input}}}
+                            {{{form.noPreEmp.checkbox.label}}}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

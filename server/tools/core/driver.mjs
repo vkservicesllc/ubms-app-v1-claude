@@ -39,7 +39,7 @@ const query = {
     aplMECs: new Query(db.carrier, 'application_MECs'),
     aplCitations: new Query(db.carrier, 'application_citations'),
     aplAccidents: new Query(db.carrier, 'application_accidents'),
-    aplExperiences: new Query(db.carrier, 'application_experiences',
+    aplExperiences: new Query(db.carrier, 'application_experiences'),
 }
 
 
@@ -474,7 +474,7 @@ class Application {
                 if (this.step < 4) {
                     mainData = processData(mainData)
                     mainData.step = 4
-                } else {
+                } else
                     mainData = processData(mainData, {
                         modifiedBy,
                         branch,
@@ -482,7 +482,6 @@ class Application {
                         currentData: this,
                         currentUpdateLog: await this.log('updateLog'),
                     })
-                }
 
                 if (citations) {
                     const count = violation.length
@@ -517,7 +516,7 @@ class Application {
                 if (this.step < 5) {
                     mainData = processData(mainData)
                     mainData.step = 5
-                } else {
+                } else
                     mainData = processData(mainData, {
                         modifiedBy,
                         branch,
@@ -525,7 +524,6 @@ class Application {
                         currentData: this,
                         currentUpdateLog: await this.log('updateLog'),
                     })
-                }
 
                 if (accidents) {
                     const count = accidents.length
@@ -547,6 +545,44 @@ class Application {
 
             case 'experience':
                 target = 'aplExperiences'
+                action = 'insert' //! for now it is easier to delete and insert newly submitted experiences, `updateLog` is redundant at this point
+
+                await mysql.execute(query.aplExperiences.delete({ aplId: id }))
+
+                mainData.experience = data.noExp !== true
+                delete data.noExp
+
+                if (this.step < 6) {
+                    mainData = processData(mainData)
+                    mainData.step = 6
+                } else
+                    mainData = processData(mainData, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: { experience: !!this.experience },
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+
+                if (mainData.experience) {
+                    if (data?.vehicles?.misc) {
+                        const { misc } = data.vehicles
+                        data.vehicles.misc = []
+
+                        for (const prop in misc)
+                            data.vehicles.misc.push(prop)
+                    }
+
+                    if (data.cmv === false) {
+                        if (data?.vehicles?.semi) delete data.vehicles.semi
+                        if (data?.vehicles?.misc) data.vehicles.misc = data.vehicles.misc.filter(value => value !== 'tandem')
+                    }
+
+                    if (data.vehicles) data.vehicles = JSON.stringify(data.vehicles)
+                    if (data.hours) data.hours = JSON.stringify(data.hours.map(value => +value))
+
+                    data.aplId = id
+                }
                 break
 
         }

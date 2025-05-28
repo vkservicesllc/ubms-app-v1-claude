@@ -211,6 +211,7 @@ export const applicationProgress = async (req, res) => {
             legal: `${recUrl}/legal-compliance`,
             safety: `${recUrl}/safety`,
             experience: `${recUrl}/experience`,
+            preEmployment: `${recUrl}/pre-employment`,
         }
 
         for (const ct of ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {
@@ -537,6 +538,13 @@ export const applicationProgress = async (req, res) => {
             if (application?.experience?.cmv === false) hbs.cmvExpDisplay = ' style="display: none;"'
             // if (application?.experience?.currentVhl === true) hbs.currentVhlDisplay = ''
 
+        }
+
+        if (step >= 6) { /* PREVIOUS EMPLOYMENT */
+            hbs.button.five = buttonProps.save
+            hbs.accordion.five = accordionProps.finished
+
+            //
         }
 
         hbs.form = new ApplicationForm(options)
