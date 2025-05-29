@@ -28,6 +28,8 @@ const selector = {
             emplStartDate: 'employment-start-date',
             emplPosition: 'employment-position',
             emplEarnings: 'employment-earnings',
+            emplEndDate: 'employment-end-date',
+            emplRfl: 'employment-reason-for-leaving',
         },
         select: {
             gender: 'gender',
@@ -106,6 +108,8 @@ const selector = {
             emplStartDate: 'employment-start-date',
             emplPosition: 'employment-position',
             emplEarnings: 'employment-earnings',
+            emplEndDate: 'employment-end-date',
+            emplRfl: 'employment-reason-for-leaving',
 
             //! gap
             // currentVhlMake: 'current-vehicle-make',

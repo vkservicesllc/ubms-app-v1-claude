@@ -747,6 +747,26 @@ class ApplicationForm {
         label: 'Subject to DOT Drug/Alcohol Testing',
     })
 
+    static _emplEndDate = createDateForm({
+        selector: appSelector,
+        target: 'emplEndDate',
+        group: 'emplEndDate',
+        name: 'leftOn[]',
+        disabled,
+        label: 'Termination Date',
+    })
+
+    static _emplRFL = createForm({
+        selector: appSelector,
+        target: 'emplRfl',
+        group: 'emplRfl',
+        type: 'textarea',
+        name: 'rfl[]',
+        required,
+        disabled,
+        label: 'Reason for Leaving',
+    })
+
 
 
     /* VEHICLE OWNERSHIP */

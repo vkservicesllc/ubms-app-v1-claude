@@ -40,6 +40,7 @@ const query = {
     aplCitations: new Query(db.carrier, 'application_citations'),
     aplAccidents: new Query(db.carrier, 'application_accidents'),
     aplExperiences: new Query(db.carrier, 'application_experiences'),
+    aplEmployers: new Query(db.carrier, 'application_preemployments'),
 }
 
 
@@ -673,6 +674,26 @@ class Application {
                     'state',
                     'injuries',
                     'fatalities',
+                ]
+                break
+
+            case 'employers':
+                src = 'aplEmployers'
+                fields = [
+                    'employer',
+                    'phone',
+                    'address1',
+                    'address2',
+                    'city',
+                    'state',
+                    'zip',
+                    'startedOn',
+                    'position',
+                    'earnings',
+                    'fmcsr',
+                    'dotDat',
+                    'leftOn',
+                    'rfl',
                 ]
                 break
 

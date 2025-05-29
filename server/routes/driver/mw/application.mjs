@@ -564,6 +564,7 @@ export const applicationProgress = async (req, res) => {
         if (step >= 6) { /* PREVIOUS EMPLOYMENT */
             hbs.button.five = buttonProps.save
             hbs.accordion.five = accordionProps.finished
+            hbs.preemplDisplay = ' style="display: none;"'
 
             options.prevEmployed = { radio: {} }
             options._emplFMCSR = { radio: {} }
@@ -579,12 +580,14 @@ export const applicationProgress = async (req, res) => {
                 '_emplAddr1', '_emplAddr2', '_emplAddrZip',
                 '_emplAddrCity', '_emplAddrState', '_emplStartDate',
                 '_emplPosition', '_emplEarnings',
+                '_emplEndDate', '_emplRFL',
             ]
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
 
             const placeholders = {
                 _emplPhone: '(###) ###-####',
                 _emplStartDate: 'MM/DD/YYYY',
+                _emplEndDate: 'MM/DD/YYYY',
             }
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
