@@ -1,4 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { telEvent } from '/modules/events/contacts.mjs'
 import formId, { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
@@ -72,7 +73,7 @@ function cloneEmplForm(i = 0, data = null) {
     const tsi = `${Date.now()}-${i}`
     const $clone = $emplForm.clone().attr('id', `preempl-form-${tsi}`)
 
-    $clone.find('input, select').each(function() {
+    $clone.find('input, select, textarea').each(function() {
         const $field = $(this)
 
         const id = $field.attr('id')
@@ -175,4 +176,14 @@ function resetEvents() {
         })
         .parent()
         .attr('style', countEmplList() > 1 ? '' : 'display: none !important;')
+
+    inputEvent(TS.prevEmployer, {
+        capitalize: 'each',
+        strip: true,
+        onInput,
+        onChange,
+    })
+
+    telEvent(TS.emplPhone, { onInput, onChange, onBlur })
+
 }
