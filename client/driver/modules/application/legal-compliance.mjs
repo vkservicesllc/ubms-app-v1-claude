@@ -140,7 +140,6 @@ function drawCitationForms() {
             for (let i = 0; i < count; i++) $citList.append(cloneCitForm(i, data))
 
             resetEvents()
-
             $citations.show()
         },
     })

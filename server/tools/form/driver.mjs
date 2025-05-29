@@ -632,6 +632,7 @@ class ApplicationForm {
     static prevEmployed = createYesNoForm({
         selector: appSelector,
         target: 'prevEmployed',
+        group: 'prevEmployed',
         name: 'prevEmployed',
         required,
         label: 'Previously employed within the past 10 years',
@@ -640,7 +641,7 @@ class ApplicationForm {
     static _prevEmployer = createForm({
         selector: appSelector,
         target: 'prevEmployer',
-        group: 'prevEmployed',
+        group: 'prevEmployer',
         name: 'employer[]',
         maxLength: 40,
         required,

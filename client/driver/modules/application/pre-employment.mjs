@@ -1,3 +1,136 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import formId, { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
+
+const RS = selector.id.radio
+const TS = selector.class.text, SS = selector.class.select
+const employedId = RS.prevEmployed
+
+const $card = $('#apl-card')
+const $form = $('#preempl-form')
+const $submit = $('#preempl-submit')
+const $help = {
+    form: $('#preempl-form-help'),
+}
+const $preEmployments = $('#pre-employments')
+const $emplList = $('#preempl-list')
+const $emplForm = $('#preempl-form-template')
+const $addButton = $('#add-preempl-button')
+const $removeButton = $('#remove-preempl-button')
+const $deleteModal = $('#delete-preempl-modal')
+const $deleteTarget = $('#delete-preempl-target')
+const $deleteEmplDesc = $('#delete-preempl-desc')
+const appliedOn = $(selector.id.hidden.appliedOn).val()
+
+const countAEmplList = () => $emplList.children().length
+
+
+if ($(employedId.yes).is(':checked')) drawEmployerForms()
+
+inputEvent(selector.class.radio.prevEmployed, {
+    onChange(value) {
+        if (value === 'N') {
+            $preEmployments.hide()
+            $emplList.html(null)
+            return
+        }
+
+        drawEmployerForms()
+    },
+})
+
+$addButton.click(() => {
+    $emplList.append(cloneEmplForm(countEmplList()))
+    resetEvents()
+})
+
+
+function cloneEmplForm(i = 0, data = null) {
+    const tsi = `${Date.now()}-${i}`
+    const $clone = $emplForm.clone().attr('id', `preempl-form-${tsi}`)
+
+    $clone.find('input, select').each(function() {
+        const $field = $(this)
+        let filled = false
+
+        const id = $field.attr('id')
+        if (id) {
+            const newId = `${id}-${tsi}`
+
+            $field.attr('id', newId)
+            $clone.find(`label[for="${id}"]`).attr('for', newId)
+        }
+
+        const name = $field.attr('name').replace('[]', '')
+
+        $field.prop('disabled', false)
+
+        if (data) {
+            const type = $field.attr('type')
+            const value = data[i][name]
+
+            // if (value !== null) {
+            //     if (type === 'radio') {
+            //         const _value = $field.attr('value')
+            //         if ((_value === 'Y' && value === true) || (_value === 'N' && value === false))
+            //             $field.prop('checked', true)
+            //     } else {
+            //         $field.val(value).addClass('is-valid')
+
+            //         if ($field.is('select')) $field.find('option[value=""]').remove()
+            //         if ($field.parent().is(':hidden')) $field.parent().show()
+            //     }
+            // } else if (filled) $field.val('-')
+        }
+    })
+
+    return $clone.show()
+}
+
+
+function drawEmployerForms() {
+    $.ajax(`/api/application/${formId()}/employers`, {
+        method: 'POST',
+        success(response) {
+            const { data, error } = response
+            if (error) return alert(error)
+
+            if (!data.length) {
+                const employer = {}
+                const fields = [
+                    'employer',
+                    'phone',
+                    'address1',
+                    'address2',
+                    'city',
+                    'state',
+                    'zip',
+                    'startedOn',
+                    'position',
+                    'earnings',
+                    'fmcsr',
+                    'dotDat',
+                    'leftOn',
+                    'rfl',
+                ]
+
+                fields.forEach(field => employer[field] = null)
+                data.push(employer)
+            } else
+                data.forEach(row => {
+                    row.phone = formatTel(row.phone)
+                    row.startedOn = moment(row.startedOn).format('MM/DD/YYYY')
+                    if (row.leftOn) row.leftOn = moment(row.leftOn).format('MM/DD/YYYY')
+                })
+
+            const count = data.length
+            for (let i = 0; i < count; i++) $emplList.append(cloneEmplForm(i, data))
+
+            resetEvents()
+            $preEmployments.show()
+        },
+    })
+}
+
+function resetEvents() {}

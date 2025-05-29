@@ -137,7 +137,6 @@ function drawAccidentForms() {
             for (let i = 0; i < count; i++) $accList.append(cloneAccForm(i, data))
 
             resetEvents()
-
             $accidents.show()
         },
     })

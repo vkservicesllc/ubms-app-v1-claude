@@ -47,6 +47,7 @@ const selector = {
             duiInDecade: 'had-dui-in-decade',
             citations: 'citations',
             accidents: 'accidents',
+            prevEmployed: 'previously-employed',
             emplFmcsr: 'employment-subject-to-fmcsr',
             emplDotDat: 'employment-subject-to-dot-drug-alcohol-test',
         },
@@ -209,6 +210,10 @@ const selector = {
             cdlSchool: {
                 yes: 'attended-cdl-school',
                 no: 'no-cdl-school',
+            },
+            prevEmployed: {
+                yes: 'previously-employed',
+                no: 'not-previously-employed',
             },
             emplFmcsr: {
                 yes: 'employment-subject-to-fmcsr',
