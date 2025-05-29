@@ -388,9 +388,6 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Cited on',
-        validator: {
-            rule: 'date',
-        },
     })
 
     static _citState = createUsStateForm({
@@ -445,9 +442,6 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Date',
-        validator: {
-            rule: 'date',
-        },
     })
 
     static _accState = createUsStateForm({
@@ -702,6 +696,37 @@ class ApplicationForm {
         group: 'emplAddrState',
         name: 'state[]',
         disabled,
+    })
+
+    static _emplStartDate = createDateForm({
+        selector: appSelector,
+        target: 'emplStartDate',
+        group: 'emplStartDate',
+        name: 'startedOn[]',
+        required,
+        disabled,
+        label: 'Started on',
+    })
+
+    static _emplPosition = createForm({
+        selector: appSelector,
+        target: 'emplPosition',
+        group: 'emplPosition',
+        name: 'position[]',
+        required,
+        disabled,
+        label: 'Position/Title',
+    })
+
+    static _emplEarnings = createForm({
+        selector: appSelector,
+        target: 'emplEarnings',
+        group: 'emplEarnings',
+        type: 'number',
+        name: 'earnings[]',
+        required,
+        disabled,
+        label: 'Monthly Earnings/Salary',
     })
 
 

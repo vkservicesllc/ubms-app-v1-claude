@@ -25,6 +25,9 @@ const selector = {
             emplAddress2: 'employer-address-2',
             emplAddrZip: 'employer-address-zip',
             emplAddrCity: 'employer-address-city',
+            emplStartDate: 'employment-start-date',
+            emplPosition: 'employment-position',
+            emplEarnings: 'employment-earnings',
         },
         select: {
             gender: 'gender',
@@ -98,6 +101,9 @@ const selector = {
             emplAddress2: 'employer-address-2',
             emplAddrZip: 'employer-address-zip',
             emplAddrCity: 'employer-address-city',
+            emplStartDate: 'employment-start-date',
+            emplPosition: 'employment-position',
+            emplEarnings: 'employment-earnings',
 
             //! gap
             // currentVhlMake: 'current-vehicle-make',

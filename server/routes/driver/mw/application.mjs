@@ -567,11 +567,17 @@ export const applicationProgress = async (req, res) => {
                 options.prevEmployed.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
-            const fields = ['_prevEmployer', '_emplPhone']
+            const fields = [
+                '_prevEmployer', '_emplPhone',
+                '_emplAddr1', '_emplAddr2', '_emplAddrZip',
+                '_emplAddrCity', '_emplAddrState', '_emplStartDate',
+                '_emplPosition', '_emplEarnings',
+            ]
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
 
             const placeholders = {
                 _emplPhone: '(###) ###-####',
+                _emplStartDate: 'MM/DD/YYYY',
             }
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
