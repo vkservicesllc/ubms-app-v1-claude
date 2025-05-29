@@ -729,6 +729,24 @@ class ApplicationForm {
         label: 'Monthly Earnings/Salary',
     })
 
+    static _emplFMCSR = createYesNoForm({
+        selector: appSelector,
+        target: 'emplFmcsr',
+        group: 'emplFmcsr',
+        name: 'fmcsr[]',
+        disabled,
+        label: 'Subject to FMCSRs',
+    })
+
+    static _emplDotDat = createYesNoForm({
+        selector: appSelector,
+        target: 'emplDotDat',
+        group: 'emplDotDat',
+        name: 'dotDat[]',
+        disabled,
+        label: 'Subject to DOT Drug/Alcohol Testing',
+    })
+
 
 
     /* VEHICLE OWNERSHIP */

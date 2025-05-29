@@ -92,6 +92,93 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row g-3 my-1">
+                        {{#if (eq cdl true)}}
+                        <label class="form-label mb-0">
+                            During this employment were you subject to:
+                        </label>
+                        <div class="col-md-12">
+                            <label class="form-label">
+                                &bull; Federal Motor Carrier Safety Regulations (FMCSRs)?
+                            </label>
+                            <div class="col-md-12 mt-0 mb-2">
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplFMCSR.radio.yes.input}}}
+                                    {{{form._emplFMCSR.radio.yes.label}}}
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplFMCSR.radio.no.input}}}
+                                    {{{form._emplFMCSR.radio.no.label}}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">
+                                &bull; DOT Drug/Alcohol Testing?
+                            </label>
+                            <div class="col-md-12 mt-0 mb-2">
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplDotDat.radio.yes.input}}}
+                                    {{{form._emplDotDat.radio.yes.label}}}
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplDotDat.radio.no.input}}}
+                                    {{{form._emplDotDat.radio.no.label}}}
+                                </div>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="col-md-12">
+                            <label class="form-label">
+                                Were you subject to DOT Drug/Alcohol Testing during this employment?
+                            </label>
+                            <div class="col-md-12 mt-0 mb-2">
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplDotDat.radio.yes.input}}}
+                                    {{{form._emplDotDat.radio.yes.label}}}
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplDotDat.radio.no.input}}}
+                                    {{{form._emplDotDat.radio.no.label}}}
+                                </div>
+                            </div>
+                        </div>
+                        {{/if}}
+                    </div>
+                    {{!-- <div class="row g-3 my-1">
+                        {{#if (eq cdl true)}}
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Were you subject to <abbr title="Federal Motor Carrier Safety Regulations">FMCSRs</abbr> during this employment?
+                            </label>
+                            <div class="col-md-12 mt-0 mb-2">
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplFMCSR.radio.yes.input}}}
+                                    {{{form._emplFMCSR.radio.yes.label}}}
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplFMCSR.radio.no.input}}}
+                                    {{{form._emplFMCSR.radio.no.label}}}
+                                </div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                Were you subject to DOT Drug/Alcohol Testing during this employment?
+                            </label>
+                            <div class="col-md-12 mt-0 mb-2">
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplDotDat.radio.yes.input}}}
+                                    {{{form._emplDotDat.radio.yes.label}}}
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    {{{form._emplDotDat.radio.no.input}}}
+                                    {{{form._emplDotDat.radio.no.label}}}
+                                </div>
+                            </div>
+                        </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

@@ -552,7 +552,8 @@ class Application {
 
                 await mysql.execute(query.aplExperiences.delete({ aplId: id }))
 
-                mainData.experience = data.noExp !== true
+                const experience = data.noExp !== true
+                mainData.experience = experience
                 delete data.noExp
 
                 if (this.step < 6) {
@@ -567,7 +568,7 @@ class Application {
                         currentUpdateLog: await this.log('updateLog'),
                     })
 
-                if (mainData.experience) {
+                if (experience) {
                     if (data?.vehicles?.misc) {
                         const { misc } = data.vehicles
                         data.vehicles.misc = []

@@ -45,6 +45,8 @@ const selector = {
             duiInDecade: 'had-dui-in-decade',
             citations: 'citations',
             accidents: 'accidents',
+            emplFmcsr: 'employment-subject-to-fmcsr',
+            emplDotDat: 'employment-subject-to-dot-drug-alcohol-test',
         },
         checkbox: {
             straightExp: 'straight-truck-experience',
@@ -203,6 +205,14 @@ const selector = {
             cdlSchool: {
                 yes: 'attended-cdl-school',
                 no: 'no-cdl-school',
+            },
+            emplFmcsr: {
+                yes: 'employment-subject-to-fmcsr',
+                no: 'employment-not-subject-to-fmcsr',
+            },
+            emplDotDat: {
+                yes: 'employment-subject-to-dot-drug-alcohol-test',
+                no: 'employment-not-subject-to-dot-drug-alcohol-test',
             },
 
             //! gap -- NO NEED IN THIS QUESTION

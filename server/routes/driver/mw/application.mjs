@@ -538,11 +538,14 @@ export const applicationProgress = async (req, res) => {
             let j = 8
             for (let i = 0; i < 7; i++) {
                 const content = `<small>${appliedOn.clone().subtract(--j, 'days').format('dddd/MMM D, YYYY')}</small>`.replace('/', '<br/>')
+                let hours = application?.experience?.hours?.[i]
+                if (hours === 0) hours = `${hours}`
+
                 options[`expHours${i + 1}`] = {
                     text: {
                         input: {
                             class: formInstr.textClass,
-                            value: application?.experience?.hours?.[i] || null,
+                            value: hours || null,
                             disabled,
                         },
                         label: {
@@ -563,8 +566,12 @@ export const applicationProgress = async (req, res) => {
             hbs.accordion.five = accordionProps.finished
 
             options.prevEmployed = { radio: {} }
+            options._emplFMCSR = { radio: {} }
+            options._emplDotDat = { radio: {} }
             for (const prop of ['yes', 'no']) {
                 options.prevEmployed.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options._emplFMCSR.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options._emplDotDat.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
             const fields = [
