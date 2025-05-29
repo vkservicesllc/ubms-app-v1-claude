@@ -23,7 +23,7 @@ const $deleteTarget = $('#delete-preempl-target')
 const $deleteEmplDesc = $('#delete-preempl-desc')
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
-const countAEmplList = () => $emplList.children().length
+const countEmplList = () => $emplList.children().length
 
 
 if ($(employedId.yes).is(':checked')) drawEmployerForms()
@@ -40,6 +40,28 @@ inputEvent(selector.class.radio.prevEmployed, {
     },
 })
 
+$deleteModal
+    .on('hide.bs.modal', () => {
+        $('.btn').blur()
+    })
+    .on('hidden.bs.modal', () => {
+        $deleteTarget.val(null)
+        $deleteEmplDesc.html(null)
+    })
+
+$removeButton.click(() => {
+    document.activeElement.blur()
+    const target = $deleteTarget.val()
+
+    $(`#${target}`).remove()
+    $deleteTarget.val(null)
+    $deleteModal.modal('hide')
+    $deleteEmplDesc.html(null)
+
+    if (!$emplList.html()) $emplList.append(cloneEmplForm())
+    resetEvents()
+})
+
 $addButton.click(() => {
     $emplList.append(cloneEmplForm(countEmplList()))
     resetEvents()
@@ -52,7 +74,6 @@ function cloneEmplForm(i = 0, data = null) {
 
     $clone.find('input, select').each(function() {
         const $field = $(this)
-        let filled = false
 
         const id = $field.attr('id')
         if (id) {
@@ -70,18 +91,18 @@ function cloneEmplForm(i = 0, data = null) {
             const type = $field.attr('type')
             const value = data[i][name]
 
-            // if (value !== null) {
-            //     if (type === 'radio') {
-            //         const _value = $field.attr('value')
-            //         if ((_value === 'Y' && value === true) || (_value === 'N' && value === false))
-            //             $field.prop('checked', true)
-            //     } else {
-            //         $field.val(value).addClass('is-valid')
+            if (value !== null) {
+                if (type === 'radio') {
+                    const _value = $field.attr('value')
+                    if ((_value === 'Y' && value === true) || (_value === 'N' && value === false))
+                        $field.prop('checked', true)
+                } else {
+                    $field.val(value).addClass('is-valid')
 
-            //         if ($field.is('select')) $field.find('option[value=""]').remove()
-            //         if ($field.parent().is(':hidden')) $field.parent().show()
-            //     }
-            // } else if (filled) $field.val('-')
+                    if ($field.is('select')) $field.find('option[value=""]').remove()
+                    if ($field.parent().is(':hidden')) $field.parent().show()
+                }
+            }
         }
     })
 
@@ -133,4 +154,25 @@ function drawEmployerForms() {
     })
 }
 
-function resetEvents() {}
+function resetEvents() {
+    $('.delete-preempl-button')
+        .off('click')
+        .on('click', function() {
+            const target = $(this).parent().parent().parent().parent().attr('id')
+
+            $deleteTarget.val(target)
+
+            const $target = $(`#${target}`)
+            let employer = $target.find(TS.prevEmployer).val()
+            let desc = '<em class="text-danger">Empty Form</em>'
+
+            if (employer) {
+                desc = `<strong>${employer}</strong>`
+                //? decide if anything else to be added
+            }
+
+            $deleteEmplDesc.html(desc)
+        })
+        .parent()
+        .attr('style', countEmplList() > 1 ? '' : 'display: none !important;')
+}
