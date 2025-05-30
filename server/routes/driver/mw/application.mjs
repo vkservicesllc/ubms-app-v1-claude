@@ -583,6 +583,7 @@ export const applicationProgress = async (req, res) => {
                 '_emplEndDate', '_emplRFL',
             ]
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
+            options._emplAddrState.select.input.options = { valOpt: true }
 
             const placeholders = {
                 _emplPhone: '(###) ###-####',

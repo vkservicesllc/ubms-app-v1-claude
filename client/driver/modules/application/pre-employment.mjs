@@ -1,8 +1,10 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
+import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
+import patterns from '/modules/registry/patterns.mjs'
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import formId, { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 
 const RS = selector.id.radio
 const TS = selector.class.text, SS = selector.class.select
@@ -155,6 +157,7 @@ function drawEmployerForms() {
     })
 }
 
+//! does not .off events for fields
 function resetEvents() {
     $('.delete-preempl-button')
         .off('click')
@@ -185,6 +188,32 @@ function resetEvents() {
     })
 
     telEvent(TS.emplPhone, { onInput, onChange, onBlur })
+
+    addr1Event(TS.emplAddress1, {
+        onInput,
+        onChange(addr1, $addr1) {
+            const $addr2 = $addr1.parent().next().find(TS.emplAddress2)
+            const addr2Patt = patterns.match.addr2
+            let addr2 = addr2Patt.test(addr1)
+                ? addr2Patt.exec(addr1)[0].toUpperCase()
+                : null
+
+            addr1 = addr1.replace(addr2Patt, '').trim()
+            if (addr2) addr2 = patterns.replace(addr2, 'addr2')
+            $addr1.val(addr1)
+            $addr2.val(addr2)
+
+            onChange(addr1, $addr1)
+        },
+    })
+
+    addr2Event(TS.emplAddress2, { onInput, onChange })
+
+    //! zip event missing
+
+    cityEvent(TS.emplAddrCity, { onInput, onChange })
+
+    selectEvent(SS.emplAddrState, { fill: true, onChange })
 
     inputEvent(TS.emplRfl, {
         capitalize: 'first',
