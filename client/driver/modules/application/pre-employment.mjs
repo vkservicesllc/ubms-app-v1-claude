@@ -186,4 +186,12 @@ function resetEvents() {
 
     telEvent(TS.emplPhone, { onInput, onChange, onBlur })
 
+    inputEvent(TS.emplRfl, {
+        capitalize: 'first',
+        strip: true,
+        word: true,
+        onInput,
+        onChange,
+    })
+
 }
