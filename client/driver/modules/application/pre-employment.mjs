@@ -157,7 +157,7 @@ function drawEmployerForms() {
     })
 }
 
-//! does not .off events for fields
+
 function resetEvents() {
     $('.delete-preempl-button')
         .off('click')
@@ -209,7 +209,20 @@ function resetEvents() {
 
     addr2Event(TS.emplAddress2, { onInput, onChange })
 
-    //! zip event missing
+    zipEvent(TS.emplAddrZip, {
+        onInput,
+        onChange(zip, $zip, city, state) {
+            if (city && state) {
+                const $city = $zip.parent().parent().next().find(TS.emplAddrCity)
+                const $state = $zip.parent().parent().next().find(SS.emplAddrState)
+
+                $city.val(city)
+                $state.val(state)
+            }
+
+            onChange(zip, $zip)
+        },
+    })
 
     cityEvent(TS.emplAddrCity, { onInput, onChange })
 

@@ -27,11 +27,13 @@ export const inputEvent = (selector, options = {}) => {
             .focus(reset)
 
         if (onInput)
-            $input.on('keydown', function() {
-                const value = slim(english($(this).val()))
+            $input
+                .off('keydown')
+                .on('keydown', function() {
+                    const value = slim(english($(this).val()))
 
-                onInput(value, $(this))
-            })
+                    onInput(value, $(this))
+                })
 
         function reset() {
             if ($(this).val() === mask.replace(/9/g, placeholder))
@@ -51,6 +53,7 @@ export const inputEvent = (selector, options = {}) => {
         datepicker = { ...defaults, ...datepicker }
 
         $input
+            .off('input')
             .on('input', function() {
                 $(this).val(null)
             })
@@ -58,11 +61,15 @@ export const inputEvent = (selector, options = {}) => {
     }
 
     if (onFocus)
-        $input.on('focus', function() {
-            onFocus($(this).val(), $(this))
-        })
+        $input
+            .off('focus')
+            .on('focus', function() {
+                onFocus($(this).val(), $(this))
+            })
 
     $input
+        .off('input')
+        .off('change')
         .on('input', function() {
             const { onInput } = options
             let value = slim(english($(this).val()))
@@ -85,9 +92,11 @@ export const inputEvent = (selector, options = {}) => {
         })
 
     if (onBlur)
-        $input.on('blur', function() {
-            onBlur($(this).val(), $(this))
-        })
+        $input
+            .off('blur')
+            .on('blur', function() {
+                onBlur($(this).val(), $(this))
+            })
 }
 
 
@@ -96,20 +105,26 @@ export const selectEvent = (selector, options = {}) => {
     const { fill, onChange, onFocus, onBlur } = options
 
     if (fill || onChange)
-        $select.on('change', function() {
-            const value = $(this).val()
+        $select
+            .off('change')
+            .on('change', function() {
+                const value = $(this).val()
 
-            if (fill && value) $(this).find('option[value=""]').remove()
-            if (onChange) onChange($(this).val(), $(this))
-        })
+                if (fill && value) $(this).find('option[value=""]').remove()
+                if (onChange) onChange($(this).val(), $(this))
+            })
 
     if (onFocus)
-        $select.on('focus', function() {
-            onFocus($(this).val(), $(this))
-        })
+        $select
+            .off('focus')
+            .on('focus', function() {
+                onFocus($(this).val(), $(this))
+            })
 
     if (onBlur)
-        $select.on('blur', function() {
-            onBlur($(this).val(), $(this))
-        })
+        $select
+            .off('blur')
+            .on('blur', function() {
+                onBlur($(this).val(), $(this))
+            })
 }
