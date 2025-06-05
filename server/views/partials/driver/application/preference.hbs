@@ -1,0 +1,21 @@
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button{{accordion.seven.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-7">
+            <i class="{{accordion.seven.state}} accordion-button-state"></i>
+            <strong>{{idx steps 7}}</strong>
+        </button>
+    </h2>
+    <div id="collapse-7" class="text-start accordion-collapse collapse{{accordion.seven.body}}" data-bs-parent="#apl-accordion">
+        <div class="accordion-body">
+            <form id="preference-form" action="{{actionUrl.preference}}" method="POST" autocomplete="off">
+                <div class="row g-3 my-2">
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-{{button.seven.class}}" id="preference-submit">{{button.seven.text}}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

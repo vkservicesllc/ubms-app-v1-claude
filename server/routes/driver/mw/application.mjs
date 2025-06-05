@@ -212,6 +212,7 @@ export const applicationProgress = async (req, res) => {
             safety: `${recUrl}/safety`,
             experience: `${recUrl}/experience`,
             preEmployment: `${recUrl}/pre-employment`,
+            preference: `${recUrl}/preference`,
         }
 
         for (const ct of ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {
@@ -597,7 +598,9 @@ export const applicationProgress = async (req, res) => {
 
         if (step >= 7) { /* DRIVING PREFERENCES */
             hbs.button.six = buttonProps.save
-            // hbs.accordion.five = accordionProps.finished
+            hbs.accordion.six = accordionProps.finished
+
+            //
         }
 
 
