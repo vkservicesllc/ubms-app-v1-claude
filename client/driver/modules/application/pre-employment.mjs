@@ -266,6 +266,16 @@ function resetEvents() {
         },
     })
 
+    inputEvent(TS.emplPosition, {
+        capitalize: 'each',
+        strip: true,
+        word: true,
+        onInput,
+        onChange,
+    })
+
+    //!earnings event
+
     inputEvent(TS.emplRfl, {
         capitalize: 'first',
         strip: true,
@@ -304,8 +314,29 @@ function resetEvents() {
                             .removeClass('text-info')
                             .addClass('text-danger')
                             .text('* Future date forbidden')
+                    } else {
+                        const $start = $end.parent().parent().prev().prev().find(TS.emplStartDate)
+                        let start = $start.val()
+                        start = moment(start, 'MM/DD/YYYY', true)
+
+                        if (start && end.isBefore(start)) {
+                            $end.addClass('is-invalid')
+                            $help
+                                .removeClass('text-info')
+                                .addClass('text-danger')
+                                .text('* Left before started')
+                        } else {
+                            const limit = today.clone().subtract(10, 'years')
+
+                            if (end.isBefore(limit)) {
+                                $end.addClass('is-invalid')
+                                $help
+                                    .removeClass('text-info')
+                                    .addClass('text-danger')
+                                    .text('* Over 10 years ago')
+                            }
+                        }
                     }
-                    //! not finished...
                 }
             }
 
