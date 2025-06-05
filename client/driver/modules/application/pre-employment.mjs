@@ -33,15 +33,29 @@ const countEmplList = () => $emplList.children().length
 
 if ($(employedId.yes).is(':checked')) drawEmployerForms()
 
-inputEvent(selector.class.radio.prevEmployed, {
-    onChange(value) {
-        if (value === 'N') {
-            $preEmployments.hide()
-            $emplList.html(null)
-            return
-        }
+let selected = false
+
+inputEvent(employedId.yes, {
+    onChange() {
+        selected = true
 
         drawEmployerForms()
+    },
+})
+
+inputEvent(employedId.no, {
+    onChange(value, $el) {
+        if (selected === true) {
+            if (confirm('By confirming, you acknowledge that your pre-employment data will be erased!')) {
+                $preEmployments.hide()
+                $emplList.html(null)
+
+                selected = false
+            } else {
+                $el.prop('checked', false)
+                $(employedId.yes).prop('checked', true)
+            }
+        }
     },
 })
 
@@ -71,6 +85,9 @@ $addButton.click(() => {
     $emplList.append(cloneEmplForm(countEmplList()))
     resetEvents()
 })
+
+
+onSubmit($form, $help, $submit, $card)
 
 
 function cloneEmplForm(i = 0, data = null) {
@@ -274,7 +291,22 @@ function resetEvents() {
         onChange,
     })
 
-    //!earnings event
+    inputEvent(TS.emplEarnings, {
+        onFocus(amount, $amount) {
+            if (amount) $amount.val(Number(amount.replace(/,/g, '')))
+        },
+        onInput(amount, $amount) {
+            amount = amount.replace(/\D/g, '')
+
+            $amount.val(amount)
+        },
+        onBlur(amount, $amount) {
+            amount = (+amount).toLocaleString()
+
+            $amount.val(amount)
+            onBlur(amount, $amount)
+        },
+    })
 
     inputEvent(TS.emplRfl, {
         capitalize: 'first',

@@ -36,15 +36,41 @@ onYesNoRadioChange(duiId, selector.class.radio.duiInDecade, 2)
 
 onYesNoRadioChange(criminalId, criminalExplId)
 
-inputEvent(selector.class.radio.citations, {
-    onChange(value) {
-        if (value === 'N') {
-            $citations.hide()
-            $citList.html(null)
-            return
-        }
+// inputEvent(selector.class.radio.citations, {
+//     onChange(value) {
+//         if (value === 'N') {
+//             $citations.hide()
+//             $citList.html(null)
+//             return
+//         }
+
+//         drawCitationForms()
+//     },
+// })
+
+let selected = false
+
+inputEvent(citationsId.yes, {
+    onChange() {
+        selected = true
 
         drawCitationForms()
+    },
+})
+
+inputEvent(citationsId.no, {
+    onChange(value, $el) {
+        if (selected === true) {
+            if (confirm('By confirming, you acknowledge that your citation data will be erased!')) {
+                $citations.hide()
+                $citList.html(null)
+
+                selected = false
+            } else {
+                $el.prop('checked', false)
+                $(citationsId.yes).prop('checked', true)
+            }
+        }
     },
 })
 

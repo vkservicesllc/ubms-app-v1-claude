@@ -29,15 +29,29 @@ const countAccList = () => $accList.children().length
 
 if ($(accidentsId.yes).is(':checked')) drawAccidentForms()
 
-inputEvent(selector.class.radio.accidents, {
-    onChange(value) {
-        if (value === 'N') {
-            $accidents.hide()
-            $accList.html(null)
-            return
-        }
+let selected = false
+
+inputEvent(accidentsId.yes, {
+    onChange() {
+        selected = true
 
         drawAccidentForms()
+    },
+})
+
+inputEvent(accidentsId.no, {
+    onChange(value, $el) {
+        if (selected === true) {
+            if (confirm('By confirming, you acknowledge that your accident data will be erased!')) {
+                $accidents.hide()
+                $accList.html(null)
+
+                selected = false
+            } else {
+                $el.prop('checked', false)
+                $(accidentsId.yes).prop('checked', true)
+            }
+        }
     },
 })
 
