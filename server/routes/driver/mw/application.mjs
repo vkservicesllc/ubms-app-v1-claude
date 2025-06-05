@@ -602,16 +602,28 @@ export const applicationProgress = async (req, res) => {
 
             options.operType = {
                 radio: {
-                    solo: { input: { ...checkProps.input, checked: false }, label: { ...checkProps.label } },
-                    team: { input: { ...checkProps.input, checked: false }, label: { ...checkProps.label } },
+                    solo: { input: { ...checkProps.input, checked: application?.preference?.operType === 's' }, label: { ...checkProps.label } },
+                    team: { input: { ...checkProps.input, checked: application?.preference?.operType === 't' }, label: { ...checkProps.label } },
                 },
             }
 
             options.haulRegion = { checkbox: {} }
+            options.equipmentType = { checkbox: {} }
+
             for (const prop in Application.haulRegionList) {
-                const checked = false // application?.experience?.vehicles?.straight?.includes(prop)
+                const checked = application?.preference?.haulRegion?.includes(prop)
                 options.haulRegion.checkbox[prop] = { input: { ...checkProps.input, checked }, label: { ...checkProps.label } }
             }
+
+            for (const prop in Application.vehicleList.semi) {
+                const checked = application?.preference?.equipmentPreference?.includes(prop)
+                options.equipmentType.checkbox[prop] = { input: { ...checkProps.input, checked }, label: { ...checkProps.label } }
+            }
+
+            const values = {
+                startPref: application?.preference?.startPref,
+            }
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
         }
 
 

@@ -41,6 +41,7 @@ const query = {
     aplAccidents: new Query(db.carrier, 'application_accidents'),
     aplExperiences: new Query(db.carrier, 'application_experiences'),
     aplEmployers: new Query(db.carrier, 'application_preemployments'),
+    aplPreferences: new Query(db.carrier, 'application_preferences'),
 }
 
 
@@ -226,6 +227,18 @@ class Application {
             }
 
         this.prevEmployed = bool(data.prevEmployed)
+
+        if (data.startPref !== null) {
+            this.preference = {
+                startPref: data.startPref.toString(),
+                operType: data.operType,
+            }
+
+            if (this.deptId === 0) {
+                this.preference.haulRegion = data.haulRegion
+                this.preference.equipmentType = data.equipmentType
+            }
+        }
 
         if (data.vhlMmt)
             this.ownedVhl = {
@@ -1128,6 +1141,16 @@ class Application {
                     'schState',
                     'schEndDate',
                     'schDuration',
+                ],
+                join: [ 'aplId', 'id' ],
+            },
+            {
+                table: 'application_preferences',
+                fields: [
+                    'operType',
+                    'haulRegion',
+                    [ 'equipment', 'equipmentType' ],
+                    'startPref',
                 ],
                 join: [ 'aplId', 'id' ],
             },

@@ -132,6 +132,7 @@ const selector = {
             schDuration: 'school-duration',
             emplAddrState: 'employer-address-state',
             operType: 'operating-type-preference',
+            startPref: 'start-preference',
 
             //!gap
             // currentVhlYear: 'current-vehicle-year',
@@ -251,6 +252,7 @@ const selector = {
                 step: 'step-deck-semi-experience',
                 tanker: 'tanker-semi-experience',
                 lowboy: 'lowboy-semi-experience',
+                carhaul: 'carhauler-semi-experience',
                 // other: 'other-trailer-experience',
             },
             tandemExp: 'tandem-experience',
@@ -260,6 +262,12 @@ const selector = {
                 reg: 'regional-hauling-region-preference',
                 otr: 'overtheroad-hauling-region-preference',
                 otrInt: 'overtheroad-international-hauling-region-preference',
+            },
+            equipmentType: {
+                van: 'van-equipment-type-preference',
+                reefer: 'reefer-equipment-type-preference',
+                flat: 'flatbed-equipment-type-preference',
+                step: 'stepdeck-equipment-type-preference',
             },
         },
     },

@@ -798,6 +798,27 @@ class ApplicationForm {
         label: 'Hauling Region',
     })
 
+    static equipmentType = createForm({
+        selector: appSelector,
+        target: 'equipmentType',
+        type: 'checkbox',
+        name: 'equipment',
+        data: Application.vehicleList.semi,
+        required,
+        label: 'Equipment Type',
+    })
+
+    static startPref = createForm({
+        selector: appSelector,
+        target: 'startPref',
+        type: 'select',
+        name: 'startPref',
+        data: { '0': 'Right Away', '1': 'One Week', '2': 'Two Weeks', '3': 'Three Weeks', '4': 'Four Weeks' },
+        emptyOpt,
+        required,
+        label: 'Preference to start in:',
+    })
+
 
 
     /* VEHICLE OWNERSHIP */
