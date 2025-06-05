@@ -574,6 +574,8 @@ export const applicationProgress = async (req, res) => {
                 options._emplFMCSR.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 options._emplDotDat.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
+            options.prevEmployed.radio.yes.input.checked = application.prevEmployed === true
+            options.prevEmployed.radio.no.input.checked = application.prevEmployed === false
 
             const fields = [
                 '_prevEmployer', '_emplPhone',
@@ -591,6 +593,11 @@ export const applicationProgress = async (req, res) => {
                 _emplEndDate: 'MM/DD/YYYY',
             }
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+        }
+
+        if (step >= 7) { /* DRIVING PREFERENCES */
+            hbs.button.six = buttonProps.save
+            // hbs.accordion.five = accordionProps.finished
         }
 
 

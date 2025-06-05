@@ -723,12 +723,15 @@ class ApplicationForm {
         selector: appSelector,
         target: 'emplEarnings',
         group: 'emplEarnings',
-        // type: 'number',
         name: 'earnings[]',
         maxLength: 4,
         required,
         disabled,
         label: 'Monthly Earnings/Salary',
+        validator: {
+            sanitizer: value => Number(value.replace(/,/g, '')),
+            rule: 'numeric',
+        },
     })
 
     static _emplFMCSR = createYesNoForm({
@@ -749,15 +752,6 @@ class ApplicationForm {
         label: 'Subject to DOT Drug/Alcohol Testing',
     })
 
-    static _emplEndDate = createDateForm({
-        selector: appSelector,
-        target: 'emplEndDate',
-        group: 'emplEndDate',
-        name: 'leftOn[]',
-        disabled,
-        label: 'Termination Date',
-    })
-
     static _emplRFL = createForm({
         selector: appSelector,
         target: 'emplRfl',
@@ -767,6 +761,15 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Reason for Leaving',
+    })
+
+    static _emplEndDate = createDateForm({
+        selector: appSelector,
+        target: 'emplEndDate',
+        group: 'emplEndDate',
+        name: 'leftOn[]',
+        disabled,
+        label: 'Termination Date',
     })
 
 

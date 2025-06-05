@@ -36,18 +36,6 @@ onYesNoRadioChange(duiId, selector.class.radio.duiInDecade, 2)
 
 onYesNoRadioChange(criminalId, criminalExplId)
 
-// inputEvent(selector.class.radio.citations, {
-//     onChange(value) {
-//         if (value === 'N') {
-//             $citations.hide()
-//             $citList.html(null)
-//             return
-//         }
-
-//         drawCitationForms()
-//     },
-// })
-
 let selected = false
 
 inputEvent(citationsId.yes, {

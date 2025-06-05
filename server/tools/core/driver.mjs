@@ -225,6 +225,8 @@ class Application {
                 
             }
 
+        this.prevEmployed = bool(data.prevEmployed)
+
         if (data.vhlMmt)
             this.ownedVhl = {
                 mmt: data.vhlMmt,
@@ -473,6 +475,7 @@ class Application {
                 const { violation, other: otherViolation, citedOn, state: citState  } = data
                 data = []
 
+                //! DOESN'T MAKE SENSE
                 if (!violation && data.citations) data.citations = false
 
                 if (this.step < 4) {
@@ -515,6 +518,7 @@ class Application {
                 const { collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = data
                 data = []
 
+                //! DOESN'T MAKE SENSE
                 if (!collision && data.accidents) data.accidents = false
 
                 if (this.step < 5) {
@@ -530,7 +534,7 @@ class Application {
                     })
 
                 if (accidents) {
-                    const count = accidents.length
+                    const count = collision.length
 
                     for (let i = 0; i < count; i++) {
                         data.push({
@@ -588,6 +592,57 @@ class Application {
 
                     data.aplId = id
                 } else data = {}
+                break
+
+            case 'pre-employment':
+                target = 'aplEmployers'
+                action = 'insert' //! for now it is easier to delete and insert newly submitted employments, `updateLog` is redundant at this point
+
+                const { prevEmployed } = data
+                mainData.prevEmployed = prevEmployed
+
+                await (mysql.execute(query.aplEmployers.delete({ aplId: id })))
+
+                const {
+                    employer, phone, address1, address2, zip, city, state,
+                    startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
+                } = data
+                data = []
+
+                if (this.step < 7) {
+                    mainData = processData(mainData)
+                    mainData.step = 7
+                } else
+                    mainData = processData(mainData, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+
+                if (prevEmployed) {
+                    const count = employer.length
+
+                    for (let i = 0; i < count; i++)
+                        data.push({
+                            aplId: id,
+                            employer: employer[i],
+                            phone: phone[i],
+                            address1: address1[i],
+                            address2: address2[i],
+                            city: city[i],
+                            state: state[i],
+                            zip: zip[i],
+                            startedOn: startedOn[i],
+                            position: position[i],
+                            earnings: earnings[i],
+                            fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
+                            dotDat: dotDat[i],
+                            rfl: rfl[i],
+                            leftOn: leftOn[i],
+                        })
+                }
                 break
 
         }
@@ -1020,6 +1075,7 @@ class Application {
                     'citations',
                     'accidents',
                     'experience',
+                    'prevEmployed',
                 ],
                 match,
             },

@@ -55,6 +55,15 @@ const applicantExperienceFields = [
 applicantExperienceFields.forEach(prop => validateApplicantExperience.push(ApplicationForm[prop].validate()))
 
 
+const validateApplicantEmployers = []
+const applicantEmployerFields = [
+    'prevEmployed',
+    '_prevEmployer', '_emplPhone', '_emplAddr1', '_emplAddr2', '_emplAddrZip', '_emplAddrCity', '_emplAddrState',
+    '_emplStartDate', '_emplPosition', '_emplEarnings', '_emplFMCSR', '_emplDotDat', '_emplRFL', '_emplEndDate',
+]
+applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(ApplicationForm[prop].validate()))
+
+
 const dynamicValidator = {
     applications: (req, res, next) => {
         const { step } = req.params
@@ -81,6 +90,9 @@ const dynamicValidator = {
                 break
             case 'experience':
                 validators = validateApplicantExperience
+                break
+            case 'pre-employment':
+                validators = validateApplicantEmployers
                 break
         }
 

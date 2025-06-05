@@ -116,10 +116,12 @@ function cloneEmplForm(i = 0, data = null) {
             if (value !== null) {
                 if (type === 'radio') {
                     const _value = $field.attr('value')
-                    if ((_value === 'Y' && value === true) || (_value === 'N' && value === false))
+
+                    if ((_value === 'Y' && value) || (_value === 'N' && !value))
                         $field.prop('checked', true)
                 } else {
-                    $field.val(value).addClass('is-valid')
+                    $field.val(value)
+                    if ($field.is(':required')) $field.addClass('is-valid')
 
                     if ($field.is('select')) $field.find('option[value=""]').remove()
                     if ($field.parent().is(':hidden')) $field.parent().show()
@@ -164,6 +166,7 @@ function drawEmployerForms() {
                 data.forEach(row => {
                     row.phone = formatTel(row.phone)
                     row.startedOn = moment(row.startedOn).format('MM/DD/YYYY')
+                    row.earnings = row.earnings.toLocaleString()
                     if (row.leftOn) row.leftOn = moment(row.leftOn).format('MM/DD/YYYY')
                 })
 
