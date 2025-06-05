@@ -871,6 +871,13 @@ class Application {
         '2+ m': '2+ months',
     }
 
+    static haulRegionList = {
+        loc: 'Local',
+        reg: 'Regional',
+        otr: 'Long Haul (Domestic)',
+        otrInt: 'Long Haul (International)',
+    }
+
 
     static #algorithm = 'SHA-224'
 

@@ -793,12 +793,7 @@ class ApplicationForm {
         target: 'haulRegion',
         type: 'checkbox',
         name: 'haulRegion',
-        data: {
-            loc: 'Local',
-            reg: 'Regional',
-            otr: 'Long Haul (Domestic)',
-            otrInt: 'Long Haul (International)',
-        },
+        data: Application.haulRegionList,
         required,
         label: 'Hauling Region',
     })

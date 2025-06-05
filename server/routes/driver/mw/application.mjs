@@ -602,9 +602,15 @@ export const applicationProgress = async (req, res) => {
 
             options.operType = {
                 radio: {
-                    solo: { input: { ...checkProps.input }, label: { ...checkProps.label } },
-                    team: { input: { ...checkProps.input }, label: { ...checkProps.label } },
+                    solo: { input: { ...checkProps.input, checked: false }, label: { ...checkProps.label } },
+                    team: { input: { ...checkProps.input, checked: false }, label: { ...checkProps.label } },
                 },
+            }
+
+            options.haulRegion = { checkbox: {} }
+            for (const prop in Application.haulRegionList) {
+                const checked = false // application?.experience?.vehicles?.straight?.includes(prop)
+                options.haulRegion.checkbox[prop] = { input: { ...checkProps.input, checked }, label: { ...checkProps.label } }
             }
         }
 
