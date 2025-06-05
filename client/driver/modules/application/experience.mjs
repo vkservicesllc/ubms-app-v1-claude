@@ -1,5 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import formId, { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import { check, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio, CS = selector.id.checkbox
@@ -67,7 +67,6 @@ inputEvent(startDateId, {
 
         if (check($form)) $help.form.hide().html(null)
     },
-    onBlur,
 })
 
 
@@ -104,7 +103,6 @@ inputEvent(endDateId, {
         
         if (check($form)) $help.form.hide().html(null)
     },
-    onBlur,
 })
 
 

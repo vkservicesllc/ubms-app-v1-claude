@@ -150,7 +150,7 @@ inputEvent(schNameId, {
     onChange,
 })
 
-telEvent(schPhoneId, { onInput, onChange, onBlur })
+telEvent(schPhoneId, { onInput, onChange })
 
 inputEvent(schEndDateId, {
     mask: '99/99/9999',
@@ -178,7 +178,6 @@ inputEvent(schEndDateId, {
 
         if (check($form)) $help.form.hide().html(null)
     },
-    onBlur,
 })
 
 selectEvent(schStateId, { fill: true, onChange })

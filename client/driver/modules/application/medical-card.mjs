@@ -1,5 +1,5 @@
 import { inputEvent } from '/modules/events/form.mjs'
-import { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
+import { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text
@@ -72,7 +72,6 @@ inputEvent(mecIssId, {
 
         if (check($form)) $help.form.hide().html(null)
     },
-    onBlur,
 })
 
 //! repetative
@@ -123,7 +122,6 @@ inputEvent(mecExpId, {
 
         if (check($form)) $help.form.hide().html(null)
     },
-    onBlur,
 })
 
 inputEvent(mecNumId, {

@@ -24,6 +24,8 @@ const $removeButton = $('#remove-preempl-button')
 const $deleteModal = $('#delete-preempl-modal')
 const $deleteTarget = $('#delete-preempl-target')
 const $deleteEmplDesc = $('#delete-preempl-desc')
+
+const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const countEmplList = () => $emplList.children().length
@@ -187,7 +189,7 @@ function resetEvents() {
         onChange,
     })
 
-    telEvent(TS.emplPhone, { onInput, onChange, onBlur })
+    telEvent(TS.emplPhone, { onInput, onChange })
 
     addr1Event(TS.emplAddress1, {
         onInput,
@@ -216,8 +218,8 @@ function resetEvents() {
                 const $city = $zip.parent().parent().next().find(TS.emplAddrCity)
                 const $state = $zip.parent().parent().next().find(SS.emplAddrState)
 
-                $city.val(city)
-                $state.val(state)
+                $city.val(city).addClass('is-valid')
+                $state.val(state).addClass('is-valid').find('option[value=""]').remove()
             }
 
             onChange(zip, $zip)
@@ -228,12 +230,87 @@ function resetEvents() {
 
     selectEvent(SS.emplAddrState, { fill: true, onChange })
 
+    inputEvent(TS.emplStartDate, {
+        ...dateOpts,
+        onInput(date, $date) {
+            $date.removeClass('is-valid is-invalid').next().text(null)
+        },
+        onChange(start, $start) {console.log({ start, $start })
+            if (start) {
+                const $help = $start.next()
+                start = moment(start, 'MM/DD/YYYY', true)
+
+                if (!start.isValid()) {
+                    $start.addClass('is-invalid')
+                    $help.text('* Invalid date')
+                } else {
+                    const today = moment(appliedOn)
+
+                    if (start.isAfter(today)) {
+                        $start.addClass('is-invalid')
+                        $help.text('* Future date forbidden')
+                    } else {
+                        const $end = $start.parent().parent().next().next().find(TS.emplEndDate)
+                        let end = $end.val()
+                        if (end) end = moment(end, 'MM/DD/YYYY', true)
+
+                        if (end && start.isAfter(end)) {
+                            $start.addClass('is-invalid')
+                            $help.text('* Started after left')
+                        } else $start.addClass('is-valid')
+                    }
+                }
+            }
+
+            if (check($form)) $help.form.hide().html(null)
+        },
+    })
+
     inputEvent(TS.emplRfl, {
         capitalize: 'first',
         strip: true,
         word: true,
         onInput,
         onChange,
+    })
+
+    inputEvent(TS.emplEndDate, {
+        ...dateOpts,
+        onInput(date, $date) {
+            $date
+                .removeClass('is-invalid')
+                .next()
+                    .removeClass('text-danger')
+                    .addClass('text-info')
+                    .text('Blank if still employed')
+        },
+        onChange(end, $end) {
+            if (end) {
+                const $help = $end.next()
+                end = moment(end, 'MM/DD/YYYY', true)
+
+                if (!end.isValid()) {
+                    $end.addClass('is-invalid')
+                    $help
+                        .removeClass('text-info')
+                        .addClass('text-danger')
+                        .text('* Invalid date')
+                } else {
+                    const today = moment(appliedOn)
+
+                    if (end.isAfter(today)) {
+                        $end.addClass('is-invalid')
+                        $help
+                            .removeClass('text-info')
+                            .addClass('text-danger')
+                            .text('* Future date forbidden')
+                    }
+                    //! not finished...
+                }
+            }
+
+            if (check($form)) $help.form.hide().html(null)
+        },
     })
 
 }

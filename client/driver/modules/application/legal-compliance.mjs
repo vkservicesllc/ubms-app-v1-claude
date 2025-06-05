@@ -1,5 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import formId, { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
+import formId, { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const violations = $.ajax('/api/local-source/application?filter=violations', { method: 'POST', async: false }).responseJSON
@@ -234,7 +234,6 @@ function resetEvents() {
 
             if (check($form)) $help.form.hide().html(null)
         },
-        onBlur,
     })
 
     selectEvent(SS.citState, { fill: true, onChange })

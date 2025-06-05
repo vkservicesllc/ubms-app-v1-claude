@@ -169,7 +169,6 @@ const onChange = (value, $el) => {
     if (value !== null && id !== ssnId && id !== dobId && id !== statusExpId)
         sessionStorage.setItem(id.replace('#', ''), value)
 }
-const onBlur = (value, $el) => onChange(value, $el)
 
 nameEvent(firstNameId, { onInput, onChange })
 
@@ -187,9 +186,9 @@ selectEvent(suffixId, { onChange })
 
 selectEvent(genderId, { fill: true, onChange })
 
-ssnEvent(ssnId, { onInput, onChange, onBlur })
+ssnEvent(ssnId, { onInput, onChange })
 
-telEvent(phoneId, { onInput, onChange, onBlur })
+telEvent(phoneId, { onInput, onChange })
 
 emailEvent(emailId, {
     onInput(email, $email) {
@@ -236,11 +235,10 @@ inputEvent(dobId, {
 
             if (invalid) $help.dob.text(invalid)
             else sessionStorage.setItem(dobId.replace('#', ''), dob)
-        }
+        } else sessionStorage.setItem(dobId.replace('#', ''), dob)
 
         if (check($form)) $help.form.hide().html(null)
     },
-    onBlur,
 })
 
 addr1Event(addr1Id, {

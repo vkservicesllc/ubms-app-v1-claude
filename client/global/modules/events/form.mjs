@@ -69,7 +69,6 @@ export const inputEvent = (selector, options = {}) => {
 
     $input
         .off('input')
-        .off('change')
         .on('input', function() {
             const { onInput } = options
             let value = slim(english($(this).val()))
@@ -81,6 +80,7 @@ export const inputEvent = (selector, options = {}) => {
             $(this).val(value)
             if (onInput) onInput(value, $(this))
         })
+        .off('change')
         .on('change', function() {
             const { onChange } = options
             let value = $(this).val()

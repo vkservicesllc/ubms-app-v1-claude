@@ -1,7 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
-import { onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import { onInput, onChange, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
@@ -38,9 +38,9 @@ nameEvent(lastNameId, { sfxId: suffixId, onInput,
 
 selectEvent(suffixId, { onChange })
 
-ssnEvent(ssnId, { onInput, onChange, onBlur })
+ssnEvent(ssnId, { onInput, onChange })
 
-telEvent(phoneId, { onInput, onChange, onBlur })
+telEvent(phoneId, { onInput, onChange })
 
 emailEvent(emailId, {
     onInput(email, $email) {
@@ -76,13 +76,12 @@ inputEvent(dobId, {
 
                 if (date.isAfter(diff)) {
                     $dob.addClass('is-invalid')
-                    $help.dob.text("* You're too young to apply")
+                    $help.dob.text("* Too young to apply")
                 } else
                     $dob.addClass('is-valid')
             }
         }
     },
-    onBlur,
 })
 
 selectEvent(positionId, { onChange })

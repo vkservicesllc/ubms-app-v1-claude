@@ -11,6 +11,8 @@ export const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
 
 export const onChange = (value, $el) => {
     if (!$el) return
+    if (['MM/DD/YYYY', '(###) ###-####', '###-##-####'].includes(value))
+        value = null
 
     const required = $el.prop('required')
     if (value && required) $el.addClass('is-valid')

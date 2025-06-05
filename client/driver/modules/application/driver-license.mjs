@@ -1,6 +1,6 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
-import { check, onInput, onChange, onBlur, onSubmit, onYesNoRadioChange } from './support.mjs'
+import { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
@@ -91,7 +91,6 @@ inputEvent(dlIssId, {
 
         if (check($form)) $help.form.hide().html(null)
     },
-    onBlur,
 })
 
 //! repetative
@@ -142,7 +141,6 @@ inputEvent(dlExpId, {
 
         if (check($form)) $help.form.hide().html(null)
     },
-    onBlur,
 })
 
 inputEvent(dlEndrsId, { strip: true })
