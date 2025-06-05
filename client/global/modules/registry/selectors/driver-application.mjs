@@ -131,6 +131,7 @@ const selector = {
             schState: 'school-state',
             schDuration: 'school-duration',
             emplAddrState: 'employer-address-state',
+            operType: 'operating-type-preference',
 
             //!gap
             // currentVhlYear: 'current-vehicle-year',
@@ -223,6 +224,10 @@ const selector = {
                 yes: 'employment-subject-to-dot-drug-alcohol-test',
                 no: 'employment-not-subject-to-dot-drug-alcohol-test',
             },
+            operType: {
+                solo: 'operating-type-solo-preference',
+                team: 'operating-type-team-preference',
+            },
 
             //! gap -- NO NEED IN THIS QUESTION
             // currentVhl: {
@@ -250,6 +255,12 @@ const selector = {
             },
             tandemExp: 'tandem-experience',
             vanExp: 'cargo-van-experience',
+            haulRegion: {
+                loc: 'local-hauling-region-preference',
+                reg: 'regional-hauling-region-preference',
+                otr: 'overtheroad-hauling-region-preference',
+                otrInt: 'overtheroad-international-hauling-region-preference',
+            },
         },
     },
 }

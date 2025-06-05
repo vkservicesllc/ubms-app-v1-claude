@@ -774,6 +774,37 @@ class ApplicationForm {
 
 
 
+    /* PREFERENCE */
+
+    static operType = createForm({
+        selector: appSelector,
+        target: 'operType',
+        type: 'select/radio',
+        name: 'operType',
+        emptyOpt,
+        data: { s: 'Solo', t: 'Team' },
+        keys: ['solo', 'team'],
+        required,
+        label: 'Operating Type',
+    })
+
+    static haulRegion = createForm({
+        selector: appSelector,
+        target: 'haulRegion',
+        type: 'checkbox',
+        name: 'haulRegion',
+        data: {
+            loc: 'Local',
+            reg: 'Regional',
+            otr: 'Long Haul (Domestic)',
+            otrInt: 'Long Haul (International)',
+        },
+        required,
+        label: 'Hauling Region',
+    })
+
+
+
     /* VEHICLE OWNERSHIP */
 
     static currentVhlMMT = createForm({

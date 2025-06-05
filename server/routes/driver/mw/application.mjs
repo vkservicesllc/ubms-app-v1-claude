@@ -600,7 +600,12 @@ export const applicationProgress = async (req, res) => {
             hbs.button.six = buttonProps.save
             hbs.accordion.six = accordionProps.finished
 
-            //
+            options.operType = {
+                radio: {
+                    solo: { input: { ...checkProps.input }, label: { ...checkProps.label } },
+                    team: { input: { ...checkProps.input }, label: { ...checkProps.label } },
+                },
+            }
         }
 
 

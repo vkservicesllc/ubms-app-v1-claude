@@ -17,7 +17,6 @@
                     </div>
                 </div>
                 <div id="experience-details"{{{expDetailsDisplay}}}>
-
                     {{#if (
                         and
                             (eq deptId 0)
@@ -39,7 +38,6 @@
                         </div>
                     </div>
                     {{/if}}
-
                     <div class="row g-3 my-1">
                         <label class="form-label mb-0">
                             Select all options that best describe your driving experience:
@@ -122,7 +120,6 @@
                             {{/if}}
                         </div>
                     </div>
-
                     <div class="row g-3 my-1">
                         <div class="col-md-4">
                             {{{form.expStartDate.text.label}}}
@@ -141,7 +138,6 @@
                         </div>
                         {{/if}}
                     </div>
-
                     {{#if (eq deptId 0)}}
                     <div class="row g-3 my-1">
                         <label class="form-label mb-0">
@@ -203,7 +199,6 @@
                         </div>
                     </div>
                     {{/if}}
-
                     {{#if (
                         and
                             (eq deptId 0)
@@ -253,64 +248,7 @@
                         </div>
                     </div>
                     {{/if}}
-
-                    {{!-- {{#if (
-                        and
-                            (eq deptId 1)
-                            (eq position 'OO')
-                    )}}
-                    <div class="row g-3 my-1">
-                        <label class="form-label">
-                            Do you currently own and drive a box truck or cargo van as part of your job?
-                        </label>
-                        <div class="col-md-4 mt-0 mb-2">
-                            <div class="form-check form-check-inline">
-                                {{{form.currentVhl.radio.yes.input}}}
-                                {{{form.currentVhl.radio.yes.label}}}
-                            </div>
-                            <div class="form-check form-check-inline">
-                                {{{form.currentVhl.radio.no.input}}}
-                                {{{form.currentVhl.radio.no.label}}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="border-top border-bottom py-4" id="current-vhl-form"{{{vehicleDisplay}}}>
-                        <label class="form-label mb-0">Describe your vehicle</label>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-9">
-                                {{{form.currentVhlMMT.select.label}}}
-                                {{{form.currentVhlMMT.select.input}}}
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-4">
-                                {{{form.currentVhlMake.text.label}}}
-                                {{{form.currentVhlMake.text.input}}}
-                            </div>
-                            <div class="col-md-5">
-                                {{{form.currentVhlModel.text.label}}}
-                                {{{form.currentVhlModel.text.input}}}
-                            </div>
-                            <div class="col-md-3">
-                                {{{form.currentVhlYear.select.label}}}
-                                {{{form.currentVhlYear.select.input}}}
-                            </div>
-                        </div>
-                        <div class="row g-3 my-1">
-                            <div class="col-md-4">
-                                {{{form.currentVhlType.select.label}}}
-                                {{{form.currentVhlType.select.input}}}
-                            </div>
-                            <div class="col-md-5">
-                                {{{form.currentSBoxLen.select.label}}}
-                                {{{form.currentSBoxLen.select.input}}}
-                            </div>
-                        </div>
-                    </div>
-                    {{/if}} --}}
-
                 </div>
-
                 <p class="form-text text-danger mt-4" id="exp-form-help" style="display: none;"></p>
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
