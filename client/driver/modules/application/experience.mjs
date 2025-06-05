@@ -2,7 +2,7 @@ import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { check, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio, CS = selector.id.checkbox
+const TS = selector.id.text, CS = selector.id.checkbox
 const noExpId = CS.noExp
 const startDateId = TS.expStartDate
 const endDateId = TS.expEndDate
@@ -21,17 +21,6 @@ const $help = {
 }
 const $form = $('#experience-form')
 const $submit = $('#experience-submit')
-
-
-inputEvent(noExpId, {
-    onChange(value, $el) {
-        const checked = $el.prop('checked')
-
-        $expDetails[checked ? 'hide' : 'show']()
-        if (checked)
-            $expDetails.find('input, select').prop('disabled', true)
-    },
-})
 
 
 inputEvent(startDateId, {

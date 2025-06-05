@@ -10,7 +10,10 @@ inputEvent(noExpId, {
     onChange(value, $el) {
         const checked = $el.prop('checked')
 
+        $expDetails[checked ? 'hide' : 'show']()
         if (!checked)
             $expDetails.find('input, select').prop('disabled', false)
+        else
+            $expDetails.find('input, select').prop('disabled', true)
     },
 })

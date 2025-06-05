@@ -48,6 +48,7 @@ inputEvent(noExpId, {
     onChange(value, $el) {
         const checked = $el.prop('checked')
 
+        $expDetails[checked ? 'hide' : 'show']()
         if (!checked) {
             const selectors = ['input', 'select']
             const $noCmvExp = $(cmvExpId.no)
@@ -64,7 +65,8 @@ inputEvent(noExpId, {
             }
 
             $expDetails.find(selectors.join(', ')).prop('disabled', false)
-        }
+        } else
+            $expDetails.find('input, select').prop('disabled', true)
     },
 })
 
