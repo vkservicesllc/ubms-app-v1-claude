@@ -1,0 +1,37 @@
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button{{accordion.eight.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-8">
+            <i class="{{accordion.eight.state}} accordion-button-state"></i>
+            <strong>{{idx steps 8}}</strong>
+        </button>
+    </h2>
+    <div id="collapse-8" class="text-start accordion-collapse collapse{{accordion.eight.body}}" data-bs-parent="#apl-accordion">
+        <div class="accordion-body">
+            <form id="business-form" action="{{actionUrl.business}}" method="POST" autocomplete="off">
+                <div class="row g-3 my-1">
+                    <label class="form-label">
+                        Do you have an active LLC registered?
+                    </label>
+                    <div class="col-md-4 mt-0 mb-2">
+                        <div class="form-check form-check-inline">
+                            {{{form.activeLLC.radio.yes.input}}}
+                            {{{form.activeLLC.radio.yes.label}}}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{{form.activeLLC.radio.no.input}}}
+                            {{{form.activeLLC.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3 my-2">
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-{{button.eight.class}}" id="preference-submit">{{button.eight.text}}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <script type="module" src="/modules/application/business.mjs"></script>
+        </div>
+    </div>
+</div>

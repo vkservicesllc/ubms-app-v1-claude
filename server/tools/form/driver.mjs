@@ -827,6 +827,19 @@ class ApplicationForm {
 
 
 
+    /* BUSINESS DETAILS */
+
+    static activeLLC = createYesNoForm({
+        selector: appSelector,
+        target: 'activeLLC',
+        group: 'activeLLC',
+        name: 'activeLLC',
+        required,
+        label: 'Active LLC',
+    })
+
+
+
     /* VEHICLE OWNERSHIP */
 
     static currentVhlMMT = createForm({

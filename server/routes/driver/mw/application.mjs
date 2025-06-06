@@ -213,6 +213,7 @@ export const applicationProgress = async (req, res) => {
             experience: `${recUrl}/experience`,
             preEmployment: `${recUrl}/pre-employment`,
             preference: `${recUrl}/preference`,
+            business: `${recUrl}/business`,
         }
 
         for (const ct of ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {
@@ -626,9 +627,15 @@ export const applicationProgress = async (req, res) => {
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
         }
 
-        if (step >= 8) { /* BENEFICIARY */
+        if (step >= 8) { /* BUSINESS / OWNERSHIP */
+            if (application.position[0] === 'OO') steps[8] += ' / Ownership'
             hbs.button.seven = buttonProps.save
-            // hbs.accordion.seven = accordionProps.finished
+            hbs.accordion.seven = accordionProps.finished
+
+            options.activeLLC = { radio: {} }
+            for (const prop of ['yes', 'no']) {
+                options.activeLLC.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            }
         }
 
 
