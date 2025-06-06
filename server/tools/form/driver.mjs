@@ -791,20 +791,22 @@ class ApplicationForm {
     static haulRegion = createForm({
         selector: appSelector,
         target: 'haulRegion',
+        group: 'haulRegion',
         type: 'checkbox',
         name: 'haulRegion',
         data: Application.haulRegionList,
-        required,
+        // required,
         label: 'Hauling Region',
     })
 
     static equipmentType = createForm({
         selector: appSelector,
         target: 'equipmentType',
+        group: 'equipmentType',
         type: 'checkbox',
         name: 'equipment',
         data: Application.vehicleList.semi,
-        required,
+        // required,
         label: 'Equipment Type',
     })
 

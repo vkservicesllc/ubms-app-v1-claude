@@ -87,6 +87,13 @@
                     </div>
                 </div>
             </form>
+            <script type="module" src="/modules/application/preference.mjs"></script>
+            {{#if (eq deptId 0)}}
+            <script type="module" src="/modules/application/preference.truck-load.mjs"></script>
+            {{/if}}
+            {{#if (eq deptId 1)}}
+            <script type="module" src="/modules/application/preference.expedite.mjs"></script>
+            {{/if}}
         </div>
     </div>
 </div>

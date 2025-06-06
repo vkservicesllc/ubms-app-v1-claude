@@ -1,4 +1,4 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { inputEvent } from '/modules/events/form.mjs'
 import { check, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 

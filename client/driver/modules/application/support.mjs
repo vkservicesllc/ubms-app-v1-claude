@@ -23,22 +23,31 @@ export const onBlur = (value, $el) => onChange(value, $el)
 export const onSubmit = ($form, $help, $submit, $card, cb) => {
     $form.submit(function(evt) {
         evt.preventDefault()
+        let dismiss = false
 
-        const valid = check($(this))
-        if (!valid)
-            return $help.form
-                .html('<i class="fas fa-triangle-exclamation"></i> Some of the provided information is invalid')
-                .show()
+        if ($help?.form) {
+            const valid = check($(this))
+            if (!valid)
+                return $help.form
+                    .html('<i class="fas fa-triangle-exclamation"></i> Some of the provided information is invalid')
+                    .show()
 
-        $help.form.hide().html(null)
-        $submit
-            .prop('disabled', true)
-            .html('<span class="spinner-border spinner-border-sm"></span> Submitting...')
+            $help.form.hide().html(null)
+        }
 
-        const duration = 750
-        $card.fadeOut(duration)
-        if (cb) cb()
-        setTimeout(() => $form.unbind().submit(), duration)
+        if (cb && typeof cb === 'object' && cb.dismiss) dismiss = cb.dismiss()
+
+        if (!dismiss) {
+            const duration = 750
+
+            $submit
+                .prop('disabled', true)
+                .html('<span class="spinner-border spinner-border-sm"></span> Submitting...')
+            $card.fadeOut(duration)
+
+            if (cb && typeof cb !== 'object') cb()
+            setTimeout(() => $form.unbind().submit(), duration)
+        }
     })
 }
 

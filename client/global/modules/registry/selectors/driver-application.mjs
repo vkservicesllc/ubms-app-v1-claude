@@ -54,6 +54,8 @@ const selector = {
         checkbox: {
             straightExp: 'straight-truck-experience',
             semiExp: 'trailer-type-experience',
+            haulRegion: 'hauling-region-preference',
+            equipmentType: 'equipment-type-preference',
         },
     },
     id: {
