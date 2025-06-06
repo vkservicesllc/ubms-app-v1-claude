@@ -631,11 +631,45 @@ export const applicationProgress = async (req, res) => {
             if (application.position[0] === 'OO') steps[8] += ' / Ownership'
             hbs.button.seven = buttonProps.save
             hbs.accordion.seven = accordionProps.finished
+            hbs.llcDetailsDisplay = ' style="display: none;"'
+            hbs.llcAssistanceDisplay = ' style="display: none;"'
+            hbs.llcProposedDisplay = ' style="display: none;"'
 
             options.activeLLC = { radio: {} }
+            options.llcAssistance = { radio: {} }
             for (const prop of ['yes', 'no']) {
                 options.activeLLC.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options.llcAssistance.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
+
+            if (false) {
+                options.activeLLC.radio.yes.input.checked = true
+                hbs.llcDetailsDisplay = ''
+            }
+
+            if (false) {
+                options.activeLLC.radio.no.input.checked = true
+                hbs.llcAssistanceDisplay = ''
+
+                if (false) {
+                    options.llcAssistance.radio.yes.input.checked = true
+                    options.llcAssistance.radio.yes.input.disabled = false
+                    hbs.llcProposedDisplay = ''
+                }
+            }
+
+            const values = {
+                llcName: null,
+                llcState: null,
+                llcEin: null,
+                llcProposedName: null,
+            }
+            const placeholders = {
+                llcEin: '##-#######',
+            }
+
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
 
 

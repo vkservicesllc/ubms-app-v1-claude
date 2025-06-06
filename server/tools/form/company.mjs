@@ -86,6 +86,22 @@ const createAliasForm = (confirm = false) => createForm({
     },
 })
 
+const createEinForm = (selector, props = {}) => createForm({
+    selector,
+    target: 'ein',
+    name: 'ein',
+    required,
+    label: {
+        content: 'EIN',
+        title: 'Employer Identification Number',
+    },
+    ...props,
+    validator: {
+        rule: 'numeric',
+        sanitizer: value => strip(value),
+    },
+})
+
 
 class CompanyForm {
     constructor(options = {}) {
@@ -105,21 +121,22 @@ class CompanyForm {
     static coType = createCoTypeForm(companySelector)
     static alias = createAliasForm()
     static confirmAlias = createAliasForm(true)
+    static ein = createEinForm(companySelector)
 
-    static ein = createForm({
-        selector: companySelector,
-        target: 'ein',
-        name: 'ein',
-        required,
-        label: {
-            content: 'EIN',
-            title: 'Employer Identification Number',
-        },
-        validator: {
-            rule: 'numeric',
-            sanitizer: value => strip(value),
-        },
-    })
+    // static ein = createForm({
+    //     selector: companySelector,
+    //     target: 'ein',
+    //     name: 'ein',
+    //     required,
+    //     label: {
+    //         content: 'EIN',
+    //         title: 'Employer Identification Number',
+    //     },
+    //     validator: {
+    //         rule: 'numeric',
+    //         sanitizer: value => strip(value),
+    //     },
+    // })
 
     static duns = createForm({
         selector: companySelector,
@@ -215,4 +232,4 @@ class OwnerForm {
 
 
 export default CompanyForm
-export { OwnerForm, createCategoryForm, createBusNameForm, createCoTypeForm }
+export { OwnerForm, createCategoryForm, createBusNameForm, createCoTypeForm, createEinForm }

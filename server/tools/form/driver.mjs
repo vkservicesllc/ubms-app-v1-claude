@@ -18,6 +18,7 @@ import {
     createUsStateForm,
     createYesNoForm,
 } from './reusable.mjs'
+import { createBusNameForm, createEinForm } from './company.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
@@ -836,6 +837,47 @@ class ApplicationForm {
         name: 'activeLLC',
         required,
         label: 'Active LLC',
+    })
+
+    static llcName = createBusNameForm(appSelector, {
+        target: 'llcName',
+        name: 'llcName',
+        required,
+        disabled,
+        label: 'Business Name',
+    })
+
+    static llcState = createUsStateForm({
+        selector: appSelector,
+        target: 'llcState',
+        name: 'state',
+        required,
+        disabled,
+        label: 'State',
+    })
+
+    static llcEin = createEinForm(appSelector, {
+        target: 'llcEin',
+        required: false,
+        disabled,
+    })
+
+    static llcAssistance = createYesNoForm({
+        selector: appSelector,
+        target: 'llcAssistance',
+        group: 'llcAssistance',
+        name: 'llcAssistance',
+        required,
+        disabled,
+        label: 'Assistance Starting LLC',
+    })
+
+    static llcProposedName = createBusNameForm(appSelector, {
+        target: 'llcProposedName',
+        name: 'proposedName',
+        required,
+        disabled,
+        label: 'Proposed Company Name',
     })
 
 

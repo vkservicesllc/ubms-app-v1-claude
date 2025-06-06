@@ -10,7 +10,7 @@
             <form id="business-form" action="{{actionUrl.business}}" method="POST" autocomplete="off">
                 <div class="row g-3 my-1">
                     <label class="form-label">
-                        Do you have an active LLC registered?
+                        Do you currently have an active <abbr title="Limited Liability Company">LLC</abbr> registered?
                     </label>
                     <div class="col-md-4 mt-0 mb-2">
                         <div class="form-check form-check-inline">
@@ -20,6 +20,49 @@
                         <div class="form-check form-check-inline">
                             {{{form.activeLLC.radio.no.input}}}
                             {{{form.activeLLC.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
+                <div id="business-details"{{{llcDetailsDisplay}}}>
+                    <div class="row g-3 my-1">
+                        <div class="col-md-6">
+                            {{{form.llcName.text.label}}}
+                            {{{form.llcName.text.input}}}
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Structure</label>
+                            <input type="text" class="form-control" value="LLC" readonly>
+                        </div>
+                    </div>
+                    <div class="row g-3 my-1">
+                        <div class="col-md-6">
+                            {{{form.llcState.select.label}}}
+                            {{{form.llcState.select.input}}}
+                        </div>
+                        <div class="col-md-4">
+                            {{{form.llcEin.text.label}}}
+                            {{{form.llcEin.text.input}}}
+                        </div>
+                    </div>
+                </div>
+                <div id="business-assistance"{{{llcAssistanceDisplay}}}>
+                    <div class="row g-3 my-1">
+                        <label class="form-label">
+                            Would you like assistance in establishing your business entity?
+                        </label>
+                        <div class="col-md-4 mt-0 mb-2">
+                            <div class="form-check form-check-inline">
+                                {{{form.llcAssistance.radio.yes.input}}}
+                                {{{form.llcAssistance.radio.yes.label}}}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{{form.llcAssistance.radio.no.input}}}
+                                {{{form.llcAssistance.radio.no.label}}}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-0"{{{llcProposedDisplay}}}>
+                            {{{form.llcProposedName.text.label}}}
+                            {{{form.llcProposedName.text.input}}}
                         </div>
                     </div>
                 </div>

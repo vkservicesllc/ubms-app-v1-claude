@@ -30,6 +30,8 @@ const selector = {
             emplEarnings: 'employment-earnings',
             emplEndDate: 'employment-end-date',
             emplRfl: 'employment-reason-for-leaving',
+            llcName: 'llc-name',
+            llcProposedName: 'llc-proposed-name',
         },
         select: {
             gender: 'gender',
@@ -50,6 +52,8 @@ const selector = {
             prevEmployed: 'previously-employed',
             emplFmcsr: 'employment-subject-to-fmcsr',
             emplDotDat: 'employment-subject-to-dot-drug-alcohol-test',
+            activeLLC: 'active-llc',
+            llcAssistance: 'llc-assistance',
         },
         checkbox: {
             straightExp: 'straight-truck-experience',
@@ -230,6 +234,14 @@ const selector = {
             operType: {
                 solo: 'operating-type-solo-preference',
                 team: 'operating-type-team-preference',
+            },
+            activeLLC: {
+                yes: 'active-llc',
+                no: 'no-active-llc',
+            },
+            llcAssistance: {
+                yes: 'llc-assistance-needed',
+                no: 'llc-assistance-not-needed',
             },
 
             //! gap -- NO NEED IN THIS QUESTION
