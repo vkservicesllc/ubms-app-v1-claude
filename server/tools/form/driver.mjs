@@ -819,6 +819,10 @@ class ApplicationForm {
         emptyOpt,
         required,
         label: 'Preference to start in:',
+        validator: {
+            rule: 'numeric',
+            sanitizer: value => +value,
+        },
     })
 
 

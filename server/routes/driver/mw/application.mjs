@@ -616,7 +616,7 @@ export const applicationProgress = async (req, res) => {
             }
 
             for (const prop in Application.vehicleList.semi) {
-                const checked = application?.preference?.equipmentPreference?.includes(prop)
+                const checked = application?.preference?.equipmentType?.includes(prop)
                 options.equipmentType.checkbox[prop] = { input: { ...checkProps.input, checked }, label: { ...checkProps.label } }
             }
 
@@ -624,6 +624,11 @@ export const applicationProgress = async (req, res) => {
                 startPref: application?.preference?.startPref,
             }
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
+        }
+
+        if (step >= 8) { /* BENEFICIARY */
+            hbs.button.seven = buttonProps.save
+            // hbs.accordion.seven = accordionProps.finished
         }
 
 

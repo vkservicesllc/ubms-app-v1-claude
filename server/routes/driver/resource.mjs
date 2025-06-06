@@ -64,6 +64,11 @@ const applicantEmployerFields = [
 applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(ApplicationForm[prop].validate()))
 
 
+const validateApplicantPreference = []
+const applicantPreferenceFields = ['operType', 'haulRegion', 'equipmentType', 'startPref']
+applicantPreferenceFields.forEach(prop => validateApplicantPreference.push(ApplicationForm[prop].validate()))
+
+
 const dynamicValidator = {
     applications: (req, res, next) => {
         const { step } = req.params
@@ -95,7 +100,7 @@ const dynamicValidator = {
                 validators = validateApplicantEmployers
                 break
             case 'preference':
-                validators = []
+                validators = validateApplicantPreference
                 break
         }
 
@@ -136,7 +141,7 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
         const { formId, step } = req.params
         const application = await Application.data(session, { formId })
         if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
-return res.send(req.body)
+// return res.send(req.body)
         const { error } = await application.modify(session, step, req.body)
         if (error) return throwErr.server(res, error)
 

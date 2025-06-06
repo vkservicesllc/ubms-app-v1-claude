@@ -658,6 +658,45 @@ class Application {
                 }
                 break
 
+            case 'preference':
+                target = 'aplPreferences'
+                idProp = 'aplId'
+
+                let { haulRegion, equipment } = data
+                delete data.haulRegion
+                delete data.equipment
+
+                if (haulRegion) haulRegion = JSON.stringify(haulRegion)
+                if (equipment) equipment = JSON.stringify(equipment)
+
+                if (!this.preference) {
+                    data = processData(data)
+                    data.aplId = id
+                    mainData.step = 8
+                    action = 'insert'
+                } else {
+                    currentData = { ...this.preference }
+                    currentUpdateLog = await this.log('updateLog', target)
+
+                    currentData.startPref = +currentData.startPref
+                    delete currentData.haulRegion
+                    delete currentData.equipmentType
+
+                    data = processData(data, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData,
+                        currentUpdateLog,
+                    })
+                }
+
+                if (this.deptId === 0) {
+                    data.haulRegion = haulRegion
+                    data.equipment = equipment
+                }
+                break
+
         }
 
         if (!error) {
