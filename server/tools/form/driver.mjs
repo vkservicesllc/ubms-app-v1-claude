@@ -841,6 +841,7 @@ class ApplicationForm {
 
     static llcName = createBusNameForm(appSelector, {
         target: 'llcName',
+        group: 'llcDetails',
         name: 'llcName',
         required,
         disabled,
@@ -850,6 +851,7 @@ class ApplicationForm {
     static llcState = createUsStateForm({
         selector: appSelector,
         target: 'llcState',
+        group: 'llcDetails',
         name: 'state',
         required,
         disabled,
@@ -858,6 +860,7 @@ class ApplicationForm {
 
     static llcEin = createEinForm(appSelector, {
         target: 'llcEin',
+        group: 'llcDetails',
         required: false,
         disabled,
     })

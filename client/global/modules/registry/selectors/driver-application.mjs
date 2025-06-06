@@ -12,6 +12,7 @@ const selector = {
             driverLicense: 'driver-license',
             medCard: 'medical-card',
             cdlSchool: 'cdl-school',
+            llcDetails: 'llc-details',
         },
         text: {
             citDate: 'citation-date',
@@ -31,6 +32,7 @@ const selector = {
             emplEndDate: 'employment-end-date',
             emplRfl: 'employment-reason-for-leaving',
             llcName: 'llc-name',
+            llcEin: 'llc-ein',
             llcProposedName: 'llc-proposed-name',
         },
         select: {
@@ -41,6 +43,7 @@ const selector = {
             accType: 'accident-type',
             accState: 'accident-state',
             emplAddrState: 'employer-address-state',
+            llcState: 'llc-state',
         },
         radio: {
             gender: 'gender',
