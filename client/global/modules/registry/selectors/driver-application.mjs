@@ -31,9 +31,6 @@ const selector = {
             emplEarnings: 'employment-earnings',
             emplEndDate: 'employment-end-date',
             emplRfl: 'employment-reason-for-leaving',
-            llcName: 'llc-name',
-            llcEin: 'llc-ein',
-            llcProposedName: 'llc-proposed-name',
         },
         select: {
             gender: 'gender',
@@ -43,7 +40,6 @@ const selector = {
             accType: 'accident-type',
             accState: 'accident-state',
             emplAddrState: 'employer-address-state',
-            llcState: 'llc-state',
         },
         radio: {
             gender: 'gender',
@@ -120,6 +116,9 @@ const selector = {
             emplEarnings: 'employment-earnings',
             emplEndDate: 'employment-end-date',
             emplRfl: 'employment-reason-for-leaving',
+            llcName: 'llc-name',
+            llcEin: 'llc-ein',
+            llcProposedName: 'llc-proposed-name',
 
             //! gap
             // currentVhlMake: 'current-vehicle-make',
@@ -142,6 +141,7 @@ const selector = {
             emplAddrState: 'employer-address-state',
             operType: 'operating-type-preference',
             startPref: 'start-preference',
+            llcState: 'llc-state',
 
             //!gap
             // currentVhlYear: 'current-vehicle-year',

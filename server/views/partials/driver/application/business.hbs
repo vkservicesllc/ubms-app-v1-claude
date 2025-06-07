@@ -25,13 +25,12 @@
                 </div>
                 <div id="business-details"{{{llcDetailsDisplay}}}>
                     <div class="row g-3 my-1">
-                        <div class="col-md-6">
+                        <div class="col-md-7">
                             {{{form.llcName.text.label}}}
-                            {{{form.llcName.text.input}}}
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Structure</label>
-                            <input type="text" class="form-control" value="LLC" readonly>
+                            <div class="input-group">
+                                {{{form.llcName.text.input}}}
+                                <span class="input-group-text">LLC</span>
+                            </div>
                         </div>
                     </div>
                     <div class="row g-3 my-1">
@@ -60,9 +59,12 @@
                                 {{{form.llcAssistance.radio.no.label}}}
                             </div>
                         </div>
-                        <div class="col-md-6 mt-0"{{{llcProposedDisplay}}}>
+                        <div class="col-md-7 mt-0"{{{llcProposedDisplay}}}>
                             {{{form.llcProposedName.text.label}}}
-                            {{{form.llcProposedName.text.input}}}
+                            <div class="input-group">
+                                {{{form.llcProposedName.text.input}}}
+                                <span class="input-group-text">LLC</span>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,8 +1,11 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { busNameEvent } from '/modules/events/company.mjs'
 import { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
+const llcAssistanceId = RS.llcAssistance
+const proposedNameId = TS.llcProposedName
 
 
 inputEvent(selector.class.radio.activeLLC, {
@@ -11,23 +14,32 @@ inputEvent(selector.class.radio.activeLLC, {
         const $businessAssistance = $('#business-assistance')
         const $business = $(selector.class.combo.llcDetails)
         const $assistance = $(selector.class.radio.llcAssistance)
+        const $proposedName = $(proposedNameId)
 
         switch (value) {
+
             case 'Y':
                 $businessAssistance.hide()
                 $assistance.prop('disabled', true)
+                $proposedName.prop('disabled', true)
                 $business.prop('disabled', false)
                 $businessDetails.show()
                 break
+
             case 'N':
                 $businessDetails.hide()
                 $business.prop('disabled', true)
                 $assistance.prop('disabled', false)
+                if ($(llcAssistanceId.yes).prop('checked')) $proposedName.prop('disabled', false)
                 $businessAssistance.show()
                 break
+
         }
     },
 })
 
+busNameEvent()
 
-onYesNoRadioChange(RS.llcAssistance, TS.llcProposedName) //! not working
+onYesNoRadioChange(llcAssistanceId, proposedNameId, 2)
+
+busNameEvent(proposedNameId) //! auth error
