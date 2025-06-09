@@ -7,7 +7,7 @@ export const inputEvent = (selector, options = {}) => {
     if (!selector) return
 
     const $input = $(selector)
-    const { onFocus, onBlur, mask, strip, word } = options
+    const { onFocus, onKeydown, onKeyup, onBlur, mask, onCompleted, strip, word } = options
     let { placeholder, caret, lower, upper, datepicker, capitalize } = options
     if (!['each', 'first'].includes(capitalize)) capitalize = false
 
@@ -21,15 +21,16 @@ export const inputEvent = (selector, options = {}) => {
                 placeholder,
                 completed() {
                     $(this).blur()
+                    if (onCompleted) onCompleted($(this).val(), $(this))
                 },
             })
             .click(reset)
             .focus(reset)
 
-        if (onInput)
+        if (onInput) //! needs more testing
             $input
                 .off('keydown')
-                .on('keydown', function() {
+                .on('keydown', function() { //? not sure about this method...
                     const value = slim(english($(this).val()))
 
                     onInput(value, $(this))
@@ -65,6 +66,20 @@ export const inputEvent = (selector, options = {}) => {
             .off('focus')
             .on('focus', function() {
                 onFocus($(this).val(), $(this))
+            })
+
+    if (onKeydown)
+        $input
+            .off('keydown')
+            .on('keydown', function() {
+                onKeydown($(this).val(), $(this))
+            })
+
+    if (onKeyup)
+        $input
+            .off('keyup')
+            .on('keyup', function() {
+                onKeyup($(this).val(), $(this))
             })
 
     $input

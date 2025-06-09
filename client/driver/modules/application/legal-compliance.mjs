@@ -1,5 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import formId, { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
+import formId, { check, onInput, onChange, onSubmit, onYesNoRadioChange, onCompleted } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const violations = $.ajax('/api/local-source/application?filter=violations', { method: 'POST', async: false }).responseJSON
@@ -218,10 +218,10 @@ function resetEvents() {
     inputEvent(TS.citDate, {
         mask: '99/99/9999',
         placeholder: 'MM/DD/YYYY',
-        onInput(date, $date) {
+        onKeyup(date, $date) {
             $date.removeClass('is-valid is-invalid').next().text(null)
         },
-        onChange(date, $date) {
+        onCompleted(date, $date) {
             if (date) {
                 const $help = $date.next()
                 date = moment(date, 'MM/DD/YYYY', true)

@@ -1,6 +1,6 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
-import { check, onInput, onChange, onBlur } from './support.mjs'
+import { check, onInput, onChange, onBlur, onKeyup, onCompleted } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio, CS = selector.id.checkbox
@@ -152,16 +152,16 @@ inputEvent(schNameId, {
     onChange,
 })
 
-telEvent(schPhoneId, { onInput, onChange })
+telEvent(schPhoneId, { onKeyup, onCompleted })
 
 inputEvent(schEndDateId, {
     mask: '99/99/9999',
     placeholder: 'MM/DD/YYYY',
-    onInput(endDate, $endDate) {
+    onKeyup(endDate, $endDate) {
         $help.schEnd.text(null)
         $endDate.removeClass('is-valid is-invalid')
     },
-    onChange(endDate, $endDate) {
+    onCompleted(endDate, $endDate) {
         if (endDate) {
             endDate = moment(endDate, 'MM/DD/YYYY', true)
 

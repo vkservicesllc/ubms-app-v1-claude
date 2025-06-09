@@ -118,7 +118,7 @@ router.post('/source/:source/:_id?', User.verify, async (req, res) => {
                 statuses: User.statusList,
                 locations: User.locationList,
             }
-            if (self == 'true') _id = req.session.user
+            if (self === 'true') _id = req.session.user
             break
 
         case 'company':
@@ -149,7 +149,7 @@ router.post('/source/:source/:_id?', User.verify, async (req, res) => {
     if (filter) {
         if (_id && Src) {
             const instance = await Src.data(res.session, { _id })
-            result = call == 'true'
+            result = call === 'true'
                 ? await instance[filter](res.session)
                 : instance[filter]
         } else

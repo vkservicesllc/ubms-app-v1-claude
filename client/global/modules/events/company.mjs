@@ -4,7 +4,7 @@ import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/utils/string.mjs'
 import strip from '../tools/utils/formatter.mjs'
 
-const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+const categories = $.ajax('/api/public/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 
 
 export const catIdEvent = (id, iconId, onChange, callback = {}) => {
@@ -106,7 +106,7 @@ export const aliasEvent = (id, callback = {}) => {
 
 
 export const einEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+    const { onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted } = callback
 
     inputEvent(id, {
         mask: '99-9999999',
@@ -119,12 +119,15 @@ export const einEvent = (id, callback = {}) => {
         },
         onFocus,
         onBlur,
+        onKeydown,
+        onKeyup,
+        onCompleted,
     })
 }
 
 
 export const dunsEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+    const { onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted } = callback
 
     inputEvent(id, {
         mask: '99-999-9999',
@@ -137,5 +140,8 @@ export const dunsEvent = (id, callback = {}) => {
         },
         onFocus,
         onBlur,
+        onKeydown,
+        onKeyup,
+        onCompleted,
     })
 }

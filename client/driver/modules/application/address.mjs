@@ -49,11 +49,11 @@ selectEvent(stateId, { onChange })
 inputEvent(addrSinceId, {
     mask: '99/99/9999',
     placeholder: 'MM/DD/YYYY',
-    onInput(since, $since) {
+    onKeyup(since, $since) {
         $help.addrSince.text(null)
         $since.removeClass('is-valid is-invalid')
     },
-    onChange(since, $since) {
+    onCompleted(since, $since) {
         if (since) {
             const date = moment(since, 'MM/DD/YYYY', true)
 

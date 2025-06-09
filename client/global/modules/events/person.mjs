@@ -44,17 +44,20 @@ export const nameEvent = (id, options = {}) => {
 
 
 export const ssnEvent = (id, options = {}) => {
-    const { last4, onInput, onChange, onFocus, onBlur } = options
+    const { last4, onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted } = options
     let mask = '999-99-9999'
 
     if (last4 === true) mask = '9999'
 
     inputEvent(id, {
         mask,
+        onFocus,
         onInput,
         onChange,
-        onFocus,
         onBlur,
+        onKeydown,
+        onKeyup,
+        onCompleted,
     })
 }
 

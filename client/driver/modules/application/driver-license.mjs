@@ -60,11 +60,11 @@ dlClassEvent(dlClassId)
 //! repetative
 inputEvent(dlIssId, {
     ...dateOpts,
-    onInput(issued, $issued) {
+    onKeyup(issued, $issued) {
         $help.issued.text(null)
         $issued.removeClass('is-valid is-invalid')
     },
-    onChange(issued, $issued) {
+    onCompleted(issued, $issued) {
         if (issued) {
             issued = moment(issued, 'MM/DD/YYYY', true)
 
@@ -96,11 +96,11 @@ inputEvent(dlIssId, {
 //! repetative
 inputEvent(dlExpId, {
     ...dateOpts,
-    onInput(expires, $expires) {
+    onKeyup(expires, $expires) {
         $help.expires.text(null).removeClass('text-danger text-warning')
         $expires.removeClass('is-valid is-invalid')
     },
-    onChange(expires, $expires) {
+    onCompleted(expires, $expires) {
         if (expires) {
             expires = moment(expires, 'MM/DD/YYYY', true)
 

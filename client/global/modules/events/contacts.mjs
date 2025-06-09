@@ -4,7 +4,7 @@ import patterns from '../registry/patterns.mjs'
 
 
 export const telEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+    const { onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted } = callback
 
     inputEvent(id, {
         mask: '(999) 999-9999',
@@ -13,6 +13,9 @@ export const telEvent = (id, callback = {}) => {
         onChange,
         onFocus,
         onBlur,
+        onKeydown,
+        onKeyup,
+        onCompleted,
     })
 }
 

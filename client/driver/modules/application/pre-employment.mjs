@@ -3,7 +3,7 @@ import { telEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import patterns from '/modules/registry/patterns.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
-import formId, { check, onInput, onChange, onBlur, onSubmit } from './support.mjs'
+import formId, { check, onInput, onChange, onBlur, onSubmit, onKeyup, onCompleted } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const RS = selector.id.radio
@@ -252,10 +252,10 @@ function resetEvents() {
 
     inputEvent(TS.emplStartDate, {
         ...dateOpts,
-        onInput(date, $date) {
+        onKeyup(date, $date) {
             $date.removeClass('is-valid is-invalid').next().text(null)
         },
-        onChange(start, $start) {console.log({ start, $start })
+        onCompleted(start, $start) {console.log({ start, $start })
             if (start) {
                 const $help = $start.next()
                 start = moment(start, 'MM/DD/YYYY', true)
@@ -321,7 +321,7 @@ function resetEvents() {
 
     inputEvent(TS.emplEndDate, {
         ...dateOpts,
-        onInput(date, $date) {
+        onKeyup(date, $date) {
             $date
                 .removeClass('is-invalid')
                 .next()
@@ -329,7 +329,7 @@ function resetEvents() {
                     .addClass('text-info')
                     .text('Blank if still employed')
         },
-        onChange(end, $end) {
+        onCompleted(end, $end) {
             if (end) {
                 const $help = $end.next()
                 end = moment(end, 'MM/DD/YYYY', true)

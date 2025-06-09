@@ -1,5 +1,5 @@
 import { inputEvent } from '/modules/events/form.mjs'
-import { check, onSubmit } from './support.mjs'
+import { check, onCompleted, onKeyup, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, CS = selector.id.checkbox
@@ -25,11 +25,11 @@ const $submit = $('#experience-submit')
 
 inputEvent(startDateId, {
     ...dateOpts,
-    onInput(startDate, $startDate) {
+    onKeyup(startDate, $startDate) {
         $help.expStart.text(null)
         $startDate.removeClass('is-valid is-invalid')
     },
-    onChange(startDate, $startDate) {
+    onCompleted(startDate, $startDate) {
         if (startDate) {
             startDate = moment(startDate, 'MM/DD/YYYY', true)
 
@@ -61,11 +61,11 @@ inputEvent(startDateId, {
 
 inputEvent(endDateId, {
     ...dateOpts,
-    onInput(endDate, $endDate) {
+    onKeyup(endDate, $endDate) {
         $help.expEnd.text(null)
         $endDate.removeClass('is-valid is-invalid')
     },
-    onChange(endDate, $endDate) {
+    onCompleted(endDate, $endDate) {
         if (endDate) {
             endDate = moment(endDate, 'MM/DD/YYYY', true)
 

@@ -1,7 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
-import { onInput, onChange, onSubmit } from './support.mjs'
+import { onInput, onChange, onKeyup, onCompleted, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
@@ -38,9 +38,9 @@ nameEvent(lastNameId, { sfxId: suffixId, onInput,
 
 selectEvent(suffixId, { onChange })
 
-ssnEvent(ssnId, { onInput, onChange })
+ssnEvent(ssnId, { onKeyup, onCompleted })
 
-telEvent(phoneId, { onInput, onChange })
+telEvent(phoneId, { onKeyup, onCompleted })
 
 emailEvent(emailId, {
     onInput(email, $email) {
@@ -59,11 +59,11 @@ emailEvent(emailId, {
 inputEvent(dobId, {
     mask: '99/99/9999',
     placeholder: 'MM/DD/YYYY',
-    onInput(dob, $dob) {
+    onKeyup(dob, $dob) {
         $help.dob.text(null)
         $dob.removeClass('is-valid is-invalid')
     },
-    onChange(dob, $dob) {
+    onCompleted(dob, $dob) {
         if (dob) {
             const date = moment(dob, 'MM/DD/YYYY', true)
 

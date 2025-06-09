@@ -1,9 +1,12 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { busNameEvent } from '/modules/events/company.mjs'
+import { busNameEvent, einEvent } from '/modules/events/company.mjs'
 import { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
+const llcNameId = TS.llcName
+const llcStateId = SS.llcState
+const llcEinId = TS.llcEin
 const llcAssistanceId = RS.llcAssistance
 const proposedNameId = TS.llcProposedName
 
@@ -38,8 +41,22 @@ inputEvent(selector.class.radio.activeLLC, {
     },
 })
 
-busNameEvent()
+busNameEvent(llcNameId, true, {
+    onInput,
+    onChange(busName, coType, $busName) {
+        onChange(busName, $busName)
+    },
+})
+
+selectEvent(llcStateId, { fill: true, onChange })
+
+einEvent(llcEinId, { onInput, onChange })
 
 onYesNoRadioChange(llcAssistanceId, proposedNameId, 2)
 
-busNameEvent(proposedNameId) //! auth error
+busNameEvent(proposedNameId, true, {
+    onInput,
+    onChange(busName, coType, $busName) {
+        onChange(busName, $busName)
+    },
+})

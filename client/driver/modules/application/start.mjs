@@ -158,6 +158,9 @@ $status.click(function() {
 })
 
 const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
+
+export const onKeyup = (value, $el) => onInput(value, $el)
+
 const onChange = (value, $el) => {
     if (!$el) return
 
@@ -169,6 +172,8 @@ const onChange = (value, $el) => {
     if (value !== null && id !== ssnId && id !== dobId && id !== statusExpId)
         sessionStorage.setItem(id.replace('#', ''), value)
 }
+
+const onCompleted = (value, $el) => onChange(value, $el)
 
 nameEvent(firstNameId, { onInput, onChange })
 
@@ -186,9 +191,9 @@ selectEvent(suffixId, { onChange })
 
 selectEvent(genderId, { fill: true, onChange })
 
-ssnEvent(ssnId, { onInput, onChange })
+ssnEvent(ssnId, { onKeyup, onCompleted })
 
-telEvent(phoneId, { onInput, onChange })
+telEvent(phoneId, { onKeyup, onCompleted })
 
 emailEvent(emailId, {
     onInput(email, $email) {
@@ -210,11 +215,11 @@ emailEvent(emailId, {
 
 inputEvent(dobId, {
     ...dateOpts,
-    onInput(dob, $dob) {
+    onKeyup(dob, $dob) {
         $help.dob.text(null)
         $dob.removeClass('is-valid is-invalid')
     },
-    onChange(dob, $dob) {
+    onCompleted(dob, $dob) {
         if (dob) {
             const date = moment(dob, 'MM/DD/YYYY', true)
             let invalid
