@@ -17,6 +17,7 @@ export const onChange = (value, $el) => {
         value = null
 
     const required = $el.prop('required')
+
     if (value && required) $el.addClass('is-valid')
 }
 

@@ -57,7 +57,7 @@ export const busNameEvent = (id, coTypeId, callback = {}) => {
 
             $busName.val(busName)
             if (onChange) {
-                if (!coType) coType = $coType.val()
+                if (!coType && coTypeId !== true) coType = $coType.val()
                 onChange(busName, coType, $busName, $coType)
             }
         },
