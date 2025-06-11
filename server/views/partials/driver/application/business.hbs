@@ -68,6 +68,53 @@
                         </div>
                     </div>
                 </div>
+                {{#if (eq position 'OO')}}
+                <div class="border-top mt-4">
+                    <label class="form-label mt-4 mb-0">
+                        Provide information about your vehicle:
+                    </label>
+                    {{#if (eq deptId 0)}}
+                    <div class="row g-3 my-1">
+                        <div class="col-md-6">
+                            {{{form.currentVhlType.select.label}}}
+                            {{{form.currentVhlType.select.input}}}
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{#if (eq deptId 1)}}
+                    <div class="row g-3 my-1">
+                        <div class="col-md-7">
+                            {{{form.currentVhlMMT.select.label}}}
+                            {{{form.currentVhlMMT.select.input}}}
+                        </div>
+                        <div class="col-md-5">
+                            {{{form.currentVhlType.select.label}}}
+                            {{{form.currentVhlType.select.input}}}
+                        </div>
+                    </div>
+                    <div class="row g-3 my-1">
+                        <div class="col-md-4">
+                            {{{form.currentVhlMake.text.label}}}
+                            {{{form.currentVhlMake.text.input}}}
+                        </div>
+                        <div class="col-md-5">
+                            {{{form.currentVhlModel.text.label}}}
+                            {{{form.currentVhlModel.text.input}}}
+                        </div>
+                        <div class="col-md-3">
+                            {{{form.currentVhlYear.select.label}}}
+                            {{{form.currentVhlYear.select.input}}}
+                        </div>
+                    </div>
+                    <div class="row g-3 my-1"{{{currentVhlLenDisplay}}}>
+                        <div class="col-md-5">
+                            {{{form.currentVhlLen.select.label}}}
+                            {{{form.currentVhlLen.select.input}}}
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+                {{/if}}
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">

@@ -240,14 +240,14 @@ class Application {
             }
         }
 
-        if (data.vhlMmt)
+        if (data.vhlType)
             this.ownedVhl = {
                 mmt: data.vhlMmt,
                 make: data.vhlMake,
                 model: data.vhlModel,
                 year: data.vhlYear,
                 type: data.vhlType,
-                sBoxLen: data.vhlLength,
+                length: data.vhlLength,
             }
     }
 
@@ -904,7 +904,7 @@ class Application {
             rollback: 'Rollback',
             pickup: 'Heavy-Duty Pickup',
         },
-        semi: {
+        semiTL: {
             van: 'Dry Van',
             reefer: 'Reefer',
             flat: 'Flatbed',
@@ -928,6 +928,19 @@ class Application {
         reg: 'Regional',
         otr: 'Long Haul (Domestic)',
         otrInt: 'Long Haul (International)',
+    }
+
+    static vhlTypeList = {
+        truckLoad: {
+            semiTR: 'Semi Tractor',
+            hotshot: 'Hotshot',
+            straightBox: 'Box Truck',
+            van: 'Cargo Van',
+        },
+        expedite: {
+            van: 'Cargo Van',
+            straightBox: 'Box Truck',
+        },
     }
 
 

@@ -428,7 +428,7 @@ export const updateFormOptions = (options, Form, data, instr = {}) => {
         values = data
     }
 
-    const { labelClass, labelClassRequired, textClass, textareaClass, selectClass , tabs, disabled } = instr
+    const { labelClass, labelClassRequired, textClass, textareaClass, selectClass, tabs, disabled } = instr
 
     fields.forEach(prop => {
         const form = Form[prop]

@@ -27,7 +27,7 @@ import { Truck, Van } from '../core/vehicle.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 
-const required = true, disabled = true
+const required = true, disabled = true, readOnly = true
 
 
 export const createDlCommercialFrom = (props = {}) => createYesNoForm({
@@ -511,7 +511,7 @@ class ApplicationForm {
         target: 'semiExp',
         group: 'semiExp',
         type: 'checkbox',
-        data: Application.vehicleList.semi,
+        data: Application.vehicleList.semiTL,
         name: 'vehicles[semi]',
         label: 'Semi Tractor/Trailer',
     })
@@ -892,11 +892,11 @@ class ApplicationForm {
         target: 'currentVhlMMT',
         type: 'select',
         name: 'mmt',
-        data: currentVehicleMakeModelData(),
+        data: currentExpediteVhlMMTData(),
         emptyOpt,
         required,
         // disabled,
-        label: 'Current Vehicle',
+        label: 'Vehicle <small>(Make/Model)</small>',
     })
 
     static currentVhlYear = createForm({
@@ -907,7 +907,6 @@ class ApplicationForm {
         data: descYears(),
         emptyOpt,
         required,
-        // disabled,
         label: 'Year',
         validator: {
             sanitizer: value => +(value.replace(':', '')),
@@ -921,7 +920,6 @@ class ApplicationForm {
         name: 'make',
         maxLength: 20,
         required,
-        // disabled,
         label: 'Make',
     })
 
@@ -931,7 +929,6 @@ class ApplicationForm {
         name: 'model',
         maxLength: 25,
         required,
-        // disabled,
         label: 'Model',
     })
 
@@ -940,10 +937,9 @@ class ApplicationForm {
         target: 'currentVhlType',
         type: 'select',
         name: 'type',
-        data: { van: 'Cargo Van', straightBox: 'Box Truck' },
+        data: {},
         emptyOpt,
         required,
-        // disabled,
         label: 'Type',
     })
 
@@ -952,18 +948,9 @@ class ApplicationForm {
         target: 'currentVhlLen',
         type: 'select',
         name: 'length',
-        data: { //? Temporary data (until other type require lengths as well)
-            '10': '10 ft (Small)',
-            '12': '12 ft (Medium-Small)',
-            '14': '14 ft (Medium)',
-            '16': '16 ft (Mid-Large)',
-            '20': '20 ft (Large)',
-            '24': '24 ft (Extra Large)',
-            '26': '26 ft (Heavy Duty)',
-        },
+        data: {},
         emptyOpt,
         required,
-        // disabled,
         label: 'Length',
         validator: {
             sanitizer: value => +value,
@@ -999,13 +986,13 @@ export default DriverForm
 export { ApplicationForm }
 
 
-export function currentVehicleMakeModelData() {
+export function currentExpediteVhlMMTData() {
     let vehicles = {
         van: {
             group: 'Cargo Van',
             data: Van.cargoMakeModelList,
         },
-        box: {
+        straightBox: {
             group: 'Box Truck',
             data: Truck.straightBoxMakeModelList,
         },
@@ -1036,7 +1023,7 @@ function descYears() {
     const year = new Date().getFullYear() + 1
     const list = {}
 
-    for (let i = 0; i < 20; i++)
+    for (let i = 0; i < 30; i++)
         list[`:${year - i}`] = year - i
 
     return list
