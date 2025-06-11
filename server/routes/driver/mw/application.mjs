@@ -642,27 +642,30 @@ export const applicationProgress = async (req, res) => {
                 options.llcAssistance.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
-            if (false) {
+            if (application.activeBusiness === true) {
                 options.activeLLC.radio.yes.input.checked = true
                 hbs.llcDetailsDisplay = ''
             }
 
-            if (false) {
+            if (application.activeBusiness === false) {
                 options.activeLLC.radio.no.input.checked = true
                 hbs.llcAssistanceDisplay = ''
 
-                if (false) {
+                if (application.businessAssist === true) {
                     options.llcAssistance.radio.yes.input.checked = true
-                    options.llcAssistance.radio.yes.input.disabled = false
                     hbs.llcProposedDisplay = ''
-                }
+                } else
+                    options.llcAssistance.radio.no.input.checked = true
+
+                options.llcAssistance.radio.yes.input.disabled = false
+                options.llcAssistance.radio.no.input.disabled = false
             }
 
             const values = {
-                llcName: null,
-                llcState: null,
-                llcEin: null,
-                llcProposedName: null,
+                llcName: application?.business?.busName,
+                llcState: application?.business?.state,
+                llcEin: application?.business?.ein,
+                llcProposedName: application.proposedBusName,
             }
             const placeholders = {
                 llcEin: '##-#######',

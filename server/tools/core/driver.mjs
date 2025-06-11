@@ -1,6 +1,7 @@
 require('dotenv').config({ path: '../../.env' })
-const { DB__MYSQL_AES_SSN } = process.env
+const { DB__MYSQL_AES_SSN, DB__MYSQL_AES_EIN } = process.env
 const ssnSecret = DB__MYSQL_AES_SSN
+const einSecret = DB__MYSQL_AES_EIN
 
 
 /* Settings */
@@ -239,6 +240,18 @@ class Application {
                 this.preference.equipmentType = data.equipmentType
             }
         }
+
+        this.activeBusiness = bool(data.activeBusiness)
+        this.businessAssist = bool(data.businessAssist)
+
+        if (this.activeBusiness)
+            this.business = {
+                busName: data.busName,
+                state: data.busState,
+                ein: data.busEin ? stringifyBuffer(data.busEin) : null,
+            }
+        if (this.businessAssist)
+            this.proposedBusName = data.proposedBusName
 
         if (data.vhlType)
             this.ownedVhl = {
@@ -1148,6 +1161,8 @@ class Application {
                     'accidents',
                     'experience',
                     'prevEmployed',
+                    'activeBusiness',
+                    'businessAssist',
                 ],
                 match,
             },
@@ -1206,7 +1221,16 @@ class Application {
                 ],
                 join: [ 'aplId', 'id' ],
             },
-            //! gap
+            {
+                table: 'application_businesses',
+                fields: [
+                    'busName',
+                    [ 'state', 'busState' ],
+                    [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
+                    [ 'proposedName', 'proposedBusName' ],
+                ],
+                join: [ 'aplId', 'id' ],
+            },
             {
                 table: 'application_vehicles',
                 fields: [
