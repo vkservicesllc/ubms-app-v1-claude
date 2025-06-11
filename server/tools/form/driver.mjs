@@ -917,6 +917,7 @@ class ApplicationForm {
     static currentVhlMake = createForm({
         selector: appSelector,
         target: 'currentVhlMake',
+        group: 'currentVhlMMT',
         name: 'make',
         maxLength: 20,
         required,
@@ -926,6 +927,7 @@ class ApplicationForm {
     static currentVhlModel = createForm({
         selector: appSelector,
         target: 'currentVhlModel',
+        group: 'currentVhlMMT',
         name: 'model',
         maxLength: 25,
         required,
@@ -935,6 +937,7 @@ class ApplicationForm {
     static currentVhlType = createForm({
         selector: appSelector,
         target: 'currentVhlType',
+        group: 'currentVhlMMT',
         type: 'select',
         name: 'type',
         data: {},

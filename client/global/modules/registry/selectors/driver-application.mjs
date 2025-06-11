@@ -13,6 +13,7 @@ const selector = {
             medCard: 'medical-card',
             cdlSchool: 'cdl-school',
             llcDetails: 'llc-details',
+            currentVhlMMT: 'current-vehicle-make-model-type',
         },
         text: {
             citDate: 'citation-date',
@@ -119,10 +120,8 @@ const selector = {
             llcName: 'llc-name',
             llcEin: 'llc-ein',
             llcProposedName: 'llc-proposed-name',
-
-            //! gap
-            // currentVhlMake: 'current-vehicle-make',
-            // currentVhlModel: 'current-vehicle-model',
+            currentVhlMake: 'current-vehicle-make',
+            currentVhlModel: 'current-vehicle-model',
         },
         select: {
             suffix: 'suffix',
@@ -142,12 +141,10 @@ const selector = {
             operType: 'operating-type-preference',
             startPref: 'start-preference',
             llcState: 'llc-state',
-
-            //!gap
-            // currentVhlYear: 'current-vehicle-year',
-            // currentVhlMMT: 'current-vehicle-make-model-type',
-            // currentVhlType: 'current-vehicle-type',
-            // currentVhlLen: 'current-vehicle-length',
+            currentVhlYear: 'current-vehicle-year',
+            currentVhlMMT: 'current-vehicle-make-model-type',
+            currentVhlType: 'current-vehicle-type',
+            currentVhlLen: 'current-vehicle-length',
         },
         radio: {
             gender: {
@@ -246,12 +243,6 @@ const selector = {
                 yes: 'llc-assistance-needed',
                 no: 'llc-assistance-not-needed',
             },
-
-            //! gap -- NO NEED IN THIS QUESTION
-            // currentVhl: {
-            //     yes: 'currently-driving',
-            //     no: 'currently-not-driving', 
-            // },
         },
         checkbox: {
             noMec: 'no-med-card',

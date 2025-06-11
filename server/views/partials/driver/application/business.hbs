@@ -107,7 +107,7 @@
                         </div>
                     </div>
                     <div class="row g-3 my-1"{{{currentVhlLenDisplay}}}>
-                        <div class="col-md-5">
+                        <div class="col-md-6">
                             {{{form.currentVhlLen.select.label}}}
                             {{{form.currentVhlLen.select.input}}}
                         </div>
@@ -124,6 +124,14 @@
                 </div>
             </form>
             <script type="module" src="/modules/application/business.mjs"></script>
+            {{#if (eq position 'OO')}}
+            {{#if (eq deptId 0)}}
+            <script type="module" src="/modules/application/vehicle.mjs"></script>
+            {{/if}}
+            {{#if (eq deptId 1)}}
+            <script type="module" src="/modules/application/vehicle.expedite.mjs"></script>
+            {{/if}}
+            {{/if}}
         </div>
     </div>
 </div>

@@ -700,6 +700,8 @@ export const applicationProgress = async (req, res) => {
                         options.currentVhlMake.text.input.disabled = true
                         options.currentVhlModel.text.input.disabled = true
                     }
+                    if (values.currentVhlType !== 'straightBox')
+                        options.currentVhlLen.select.input.disabled = true
 
                     options.currentVhlLen.select.input.data = { //? Temporary data (until other type require lengths as well)
                         //! Box Truck Only for now
