@@ -202,7 +202,7 @@ const createForm = (input = {}) => {
             : body(name).trim()
 
         if (typeof validator === 'object') {
-            const { caps, sanitizer, rule, match, length, optional, custom } = validator
+            const { caps, sanitizer, rule, match, length, optional, ignoreData, custom } = validator
 
             if (required && !disabled && !optional) //! Useless in case the default state is disabled (will use it for now)
                 chain = chain
@@ -212,7 +212,7 @@ const createForm = (input = {}) => {
                 .customSanitizer(value => value || null)
                 .optional({ nullable: true })
 
-            if (data) {
+            if (data && ignoreData !== true) {
                 const values = Object.keys(data)
 
                 chain = chain

@@ -43,6 +43,8 @@ const query = {
     aplExperiences: new Query(db.carrier, 'application_experiences'),
     aplEmployers: new Query(db.carrier, 'application_preemployments'),
     aplPreferences: new Query(db.carrier, 'application_preferences'),
+    aplBusinesses: new Query(db.carrier, 'application_businesses'),
+    aplVehicles: new Query(db.carrier, 'application_vehicles'),
 }
 
 
@@ -246,12 +248,14 @@ class Application {
 
         if (this.activeBusiness)
             this.business = {
-                busName: data.busName,
+                busName: data.ownBusName,
                 state: data.busState,
                 ein: data.busEin ? stringifyBuffer(data.busEin) : null,
             }
-        if (this.businessAssist)
-            this.proposedBusName = data.proposedBusName
+        else if (this.businessAssist)
+            this.business = {
+                proposedName: data.proposedBusName,
+            }
 
         if (data.vhlType)
             this.ownedVhl = {
@@ -710,9 +714,65 @@ class Application {
                 }
                 break
 
+            case 'business':
+                target = 'aplBusinesses'
+                idProp = 'aplId'
+
+                const { activeLLC, llcAssistance } = data
+                delete data.activeLLC
+                delete data.llcAssistance
+
+                mainData.activeBusiness = activeLLC
+                mainData.businessAssist = typeof llcAssistance === 'boolean' ? llcAssistance : null
+
+                if (this.position[0] === 'OO') {
+                    //! destruct consts and delete props
+                }
+
+                if (this.step < 9) {
+                    mainData = processData(mainData)
+                    mainData.step = 9
+
+                    action = 'insert'
+                    data = processData(data)
+                    data.aplId = id
+                    if (data.ein) data.ein = { aes: [ data.ein, einSecret ] }
+                } else {
+                    mainData = processData(mainData, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+
+                    if (activeLLC === true) data.proposedName = null
+                    else {
+                        data.busName = null
+                        data.state = null
+                        data.ein = null
+                    }
+
+                    data = processData(data, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: this.business,
+                        currentUpdateLog: await this.log('updateLog', 'aplBusinesses'),
+                    })
+                    if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
+                }
+
+                break
+
         }
 
         if (!error) {
+// console.log({ mainData, data })
+// console.log('----')
+// console.log(query[target][action](data, { [idProp]: id }))
+// console.log('----')
+// console.log(query.applications.update(mainData, { id }))
             if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
                 const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
                 if (result.affectedRows > 0) modified = true
@@ -1224,7 +1284,7 @@ class Application {
             {
                 table: 'application_businesses',
                 fields: [
-                    'busName',
+                    [ 'busName', 'ownBusName' ],
                     [ 'state', 'busState' ],
                     [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
                     [ 'proposedName', 'proposedBusName' ],

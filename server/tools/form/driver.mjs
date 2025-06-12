@@ -845,7 +845,7 @@ class ApplicationForm {
     static llcName = createBusNameForm(appSelector, {
         target: 'llcName',
         group: 'llcDetails',
-        name: 'llcName',
+        name: 'busName',
         required,
         disabled,
         label: 'Business Name',
@@ -916,6 +916,7 @@ class ApplicationForm {
         label: 'Vehicle <small>(Make/Model)</small>',
         validator: {
             optional: true,
+            ignoreData: true,
         },
     })
 

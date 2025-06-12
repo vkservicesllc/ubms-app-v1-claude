@@ -642,9 +642,25 @@ export const applicationProgress = async (req, res) => {
                 options.llcAssistance.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
+            const values = {
+                llcName: application?.business?.busName,
+                llcState: application?.business?.state,
+                llcEin: application?.business?.ein,
+                llcProposedName: application?.business?.proposedName,
+            }
+            const placeholders = {
+                llcEin: '##-#######',
+            }
+
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+
             if (application.activeBusiness === true) {
                 options.activeLLC.radio.yes.input.checked = true
                 hbs.llcDetailsDisplay = ''
+                options.llcName.text.input.disabled = false
+                options.llcState.select.input.disabled = false
+                options.llcEin.text.input.disabled = false
             }
 
             if (application.activeBusiness === false) {
@@ -653,6 +669,7 @@ export const applicationProgress = async (req, res) => {
 
                 if (application.businessAssist === true) {
                     options.llcAssistance.radio.yes.input.checked = true
+                    options.llcProposedName.text.input.disabled = false
                     hbs.llcProposedDisplay = ''
                 } else
                     options.llcAssistance.radio.no.input.checked = true
@@ -660,19 +677,6 @@ export const applicationProgress = async (req, res) => {
                 options.llcAssistance.radio.yes.input.disabled = false
                 options.llcAssistance.radio.no.input.disabled = false
             }
-
-            const values = {
-                llcName: application?.business?.busName,
-                llcState: application?.business?.state,
-                llcEin: application?.business?.ein,
-                llcProposedName: application.proposedBusName,
-            }
-            const placeholders = {
-                llcEin: '##-#######',
-            }
-
-            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
 
             if (application.position[0] === 'OO') {
                 const values = {
@@ -715,6 +719,11 @@ export const applicationProgress = async (req, res) => {
                     }
                 }
             }
+        }
+
+        if (step >= 9) { /* BENEFICIARY */
+            hbs.button.eight = buttonProps.save
+            // hbs.accordion.eight = accordionProps.finished
         }
 
 
