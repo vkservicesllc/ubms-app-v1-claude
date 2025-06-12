@@ -779,11 +779,25 @@ class Application {
                     if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
 
                     if (target2) {
-                        data2 = processData(data, {
+                        if (data2.mmt) {
+                            if (data2.mmt !== 'other') {
+                                data2.type = null
+                                data2.make = null
+                                data2.model = null
+
+                                if (data2.type !== 'straightBox')
+                                    data2.length = null
+                            } else {
+                                if (data2.mmt.split(':')[0] !== 'straightBox')
+                                    data2.length = null
+                            }
+                        }
+
+                        data2 = processData(data2, {
                             modifiedBy,
                             branch,
                             siteId,
-                            currentData: this.business,
+                            currentData: this.vehicle,
                             currentUpdateLog: await this.log('updateLog', target2),
                         })
                     }
@@ -794,7 +808,7 @@ class Application {
         }
 
         if (!error) {
-// console.log({ mainData, data })
+// console.log({ mainData, data, data2 })
 // console.log('----')
 // console.log(query[target][action](data, { [idProp]: id }))
 // console.log('----')

@@ -678,9 +678,9 @@ export const applicationProgress = async (req, res) => {
                 options.llcAssistance.radio.no.input.disabled = false
             }
 
-            if (application.position[0] === 'OO') {
+            if (application.position[0] === 'OO') { console.log(application.vehicle)
                 const values = {
-                    currentVhlType: application?.experience?.currentVhlType,
+                    currentVhlType: application?.vehicle?.type,
                 }
                 let vhlTypeData = {}
 
