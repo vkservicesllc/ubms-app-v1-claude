@@ -694,6 +694,13 @@ export const applicationProgress = async (req, res) => {
                     values.currentVhlLen = application?.vehicle?.length
                     hbs.currentVhlLenDisplay = values.currentVhlLen ? '' : ' style="display: none;"'
 
+                    if (values.currentVhlMMT && values.currentVhlMMT !== 'other') {
+                        const [ type, make, model ] = values.currentVhlMMT.split(':')
+
+                        values.currentVhlType = type
+                        values.currentVhlMake = make
+                        values.currentVhlModel = model
+                    }
                     if (values.currentVhlYear) values.currentVhlYear = ':' + values.currentVhlYear
                 }
 
@@ -701,11 +708,13 @@ export const applicationProgress = async (req, res) => {
                 options.currentVhlType.select.input.data = vhlTypeData
 
                 if (application.deptId === 1) {
+                    
                     if (values.currentVhlMMT !== 'other') {
                         options.currentVhlType.select.input.disabled = true
                         options.currentVhlMake.text.input.disabled = true
                         options.currentVhlModel.text.input.disabled = true
                     }
+
                     if (values.currentVhlType !== 'straightBox')
                         options.currentVhlLen.select.input.disabled = true
 
