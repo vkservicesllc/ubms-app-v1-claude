@@ -214,6 +214,7 @@ export const applicationProgress = async (req, res) => {
             preEmployment: `${recUrl}/pre-employment`,
             preference: `${recUrl}/preference`,
             business: `${recUrl}/business`,
+            beneficiary: `${recUrl}/beneficiary`,
         }
 
         for (const ct of ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {
@@ -678,7 +679,7 @@ export const applicationProgress = async (req, res) => {
                 options.llcAssistance.radio.no.input.disabled = false
             }
 
-            if (application.position[0] === 'OO') { console.log(application.vehicle)
+            if (application.position[0] === 'OO') {
                 const values = {
                     currentVhlType: application?.vehicle?.type,
                 }
@@ -734,27 +735,9 @@ export const applicationProgress = async (req, res) => {
 
         if (step >= 9) { /* BENEFICIARY */
             hbs.button.eight = buttonProps.save
-            // hbs.accordion.eight = accordionProps.finished
+            hbs.accordion.eight = accordionProps.finished
         }
 
-
-
-        {
-            //! OWNER OPERATOR...
-            //? No need to ask the question, obviously the person who applies for owner's position must have a vehicle
-            // hbs.currentVhlDisplay = ' style="display: none;"'
-            // options.currentVhl = { radio: {} }
-                // options.currentVhl.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-            // options.currentVhl.radio.yes.input.checked = application?.experience?.current === true
-            // options.currentVhl.radio.no.input.checked = application?.experience?.current === false
-                // currentVhlYear: application?.experience?.currentVhlYear,
-                // currentVhlMMT: application?.experience?.currentVhlMMT,
-                // currentVhlMake: application?.experience?.currentVhlMake,
-                // currentVhlModel: application?.experience?.currentVhlModel,
-                // currentVhlType: application?.experience?.currentVhlType,
-                // currentSBoxLen: application?.experience?.currentSBoxLen,
-            // if (application?.experience?.currentVhl === true) hbs.currentVhlDisplay = ''
-        }
 
         hbs.form = new ApplicationForm(options)
         hbs.agency = agency

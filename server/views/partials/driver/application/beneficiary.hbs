@@ -1,0 +1,20 @@
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button{{accordion.nine.head}}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-9">
+            <i class="{{accordion.nine.state}} accordion-button-state"></i>
+            <strong>{{idx steps 9}}</strong>
+        </button>
+    </h2>
+    <div id="collapse-9" class="text-start accordion-collapse collapse{{accordion.nine.body}}" data-bs-parent="#apl-accordion">
+        <form id="business-form" action="{{actionUrl.beneficiary}}" method="POST" autocomplete="off">
+            <div class="row g-3 my-2">
+                    <div class="col-md-4">
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-{{button.nine.class}}" id="preference-submit">{{button.nine.text}}</button>
+                        </div>
+                    </div>
+                </div>
+        </form>
+        <script type="module" src="/modules/application/beneficiary.mjs"></script>
+    </div>
+</div>
