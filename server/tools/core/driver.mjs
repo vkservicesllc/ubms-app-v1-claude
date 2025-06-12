@@ -266,6 +266,21 @@ class Application {
                 type: data.vhlType,
                 length: data.vhlLength,
             }
+
+        if (data.benefRelation)
+            this.beneficiary = {
+                firstName: data.benefFirstName,
+                lastName: data.benefLastName,
+                relation: data.benefRelation,
+                otherRel: data.benefOtherRel,
+                dob: data.benefDob,
+                phone: data.benefPhone,
+                address1: data.benefAddress1,
+                address2: data.benefAddress2,
+                city: data.benefAddrCity,
+                state: data.benefAddrState,
+                zip: data.benefAddrZip,
+            }
     }
 
 
@@ -942,7 +957,7 @@ class Application {
         'Previous Employment',
         'Driving Preference',
         'Business', //! if owner operator, concatenate " / Ownership"
-        'Beneficiary', // 'Occupational Accidental Insurance'
+        'Beneficiary', // 'Occupational Accident Insurance'
         'Emergency Contact',
     ]
 
@@ -1347,6 +1362,23 @@ class Application {
                     [ 'year', 'vhlYear' ],
                     [ 'type', 'vhlType' ],
                     [ 'length', 'vhlLength' ],
+                ],
+                join: [ 'aplId', 'id' ],
+            },
+            {
+                table: 'application_beneficiaries',
+                fields: [
+                    [ 'firstName', 'benefFirstName' ],
+                    [ 'lastName', 'benefLastName' ],
+                    [ 'relation', 'benefRelation' ],
+                    [ 'otherRel', 'benefOtherRel' ],
+                    [ 'dob', 'benefDob' ],
+                    [ 'phone', 'benefPhone' ],
+                    [ 'address1', 'benefAddress1' ],
+                    [ 'address2', 'benefAddress2' ],
+                    [ 'city', 'benefAddrCity' ],
+                    [ 'state', 'benefAddrState' ],
+                    [ 'zip', 'benefAddrZip' ],
                 ],
                 join: [ 'aplId', 'id' ],
             },

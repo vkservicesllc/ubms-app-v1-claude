@@ -736,6 +736,12 @@ export const applicationProgress = async (req, res) => {
         if (step >= 9) { /* BENEFICIARY */
             hbs.button.eight = buttonProps.save
             hbs.accordion.eight = accordionProps.finished
+
+            const values = {
+                benefFirstName: application?.beneficiary?.firstName,
+                benefLastName: application?.beneficiary?.lastName,
+            }
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
         }
 
 

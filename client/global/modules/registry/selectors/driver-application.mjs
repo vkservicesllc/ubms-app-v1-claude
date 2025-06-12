@@ -122,6 +122,8 @@ const selector = {
             llcProposedName: 'llc-proposed-name',
             currentVhlMake: 'current-vehicle-make',
             currentVhlModel: 'current-vehicle-model',
+            benefFirstName: 'beneficiary-first-name',
+            benefLastName: 'beneficiary-last-name',
         },
         select: {
             suffix: 'suffix',

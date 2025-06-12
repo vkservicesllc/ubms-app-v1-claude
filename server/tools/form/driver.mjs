@@ -994,6 +994,14 @@ class ApplicationForm {
 
 
 
+    /* BENEFICIARY */
+
+    static benefFirstName = createPersonNameForm('first', { selector: appSelector, target: 'benefFirstName' })
+
+    static benefLastName = createPersonNameForm('last', { selector: appSelector, target: 'benefLastName' })
+
+
+
 }
 
 
