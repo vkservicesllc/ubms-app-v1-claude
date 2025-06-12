@@ -837,6 +837,9 @@ class ApplicationForm {
         name: 'activeLLC',
         required,
         label: 'Active LLC',
+        validator: {
+            optional: true,
+        },
     })
 
     static llcName = createBusNameForm(appSelector, {
@@ -846,6 +849,9 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Business Name',
+        validator: {
+            optional: true,
+        },
     })
 
     static llcState = createUsStateForm({
@@ -856,6 +862,9 @@ class ApplicationForm {
         required,
         disabled,
         label: 'State',
+        validator: {
+            optional: true,
+        },
     })
 
     static llcEin = createEinForm(appSelector, {
@@ -863,6 +872,9 @@ class ApplicationForm {
         group: 'llcDetails',
         required: false,
         disabled,
+        validator: {
+            optional: true,
+        },
     })
 
     static llcAssistance = createYesNoForm({
@@ -873,6 +885,9 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Assistance Starting LLC',
+        validator: {
+            optional: true,
+        },
     })
 
     static llcProposedName = createBusNameForm(appSelector, {
@@ -881,6 +896,9 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Proposed Company Name',
+        validator: {
+            optional: true,
+        },
     })
 
 
@@ -895,8 +913,10 @@ class ApplicationForm {
         data: currentExpediteVhlMMTData(),
         emptyOpt,
         required,
-        // disabled,
         label: 'Vehicle <small>(Make/Model)</small>',
+        validator: {
+            optional: true,
+        },
     })
 
     static currentVhlYear = createForm({
@@ -911,6 +931,7 @@ class ApplicationForm {
         validator: {
             sanitizer: value => +(value.replace(':', '')),
             rule: 'numeric',
+            optional: true,
         },
     })
 
@@ -922,6 +943,9 @@ class ApplicationForm {
         maxLength: length.vehicle.make.max,
         required,
         label: 'Make',
+        validator: {
+            optional: true,
+        },
     })
 
     static currentVhlModel = createForm({
@@ -932,6 +956,9 @@ class ApplicationForm {
         maxLength: length.vehicle.model.max,
         required,
         label: 'Model',
+        validator: {
+            optional: true,
+        },
     })
 
     static currentVhlType = createForm({
@@ -944,6 +971,9 @@ class ApplicationForm {
         emptyOpt,
         required,
         label: 'Type',
+        validator: {
+            optional: true,
+        },
     })
 
     static currentVhlLen = createForm({
@@ -957,6 +987,7 @@ class ApplicationForm {
         label: 'Length',
         validator: {
             sanitizer: value => +value,
+            optional: true,
         },
     })
 
