@@ -1,6 +1,6 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { busNameEvent, einEvent } from '/modules/events/company.mjs'
-import { check, onInput, onChange, onKeyup, onCompleted, onSubmit, onYesNoRadioChange } from './support.mjs'
+import { onInput, onChange, onKeyup, onCompleted, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
@@ -9,6 +9,10 @@ const llcStateId = SS.llcState
 const llcEinId = TS.llcEin
 const llcAssistanceId = RS.llcAssistance
 const proposedNameId = TS.llcProposedName
+
+const $card = $('#apl-card')
+const $form = $('#business-form')
+const $submit = $('#business-submit')
 
 
 inputEvent(selector.class.radio.activeLLC, {
@@ -60,3 +64,6 @@ busNameEvent(proposedNameId, true, {
         onChange(busName, $busName)
     },
 })
+
+
+onSubmit($form, null, $submit, $card)
