@@ -919,7 +919,7 @@ class ApplicationForm {
         target: 'currentVhlMake',
         group: 'currentVhlMMT',
         name: 'make',
-        maxLength: 20,
+        maxLength: length.vehicle.make.max,
         required,
         label: 'Make',
     })
@@ -929,7 +929,7 @@ class ApplicationForm {
         target: 'currentVhlModel',
         group: 'currentVhlMMT',
         name: 'model',
-        maxLength: 25,
+        maxLength: length.vehicle.model.max,
         required,
         label: 'Model',
     })

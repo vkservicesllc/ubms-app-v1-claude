@@ -1,4 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { makeEvent, modelEvent } from '/modules/events/vehicle.mjs'
 import { onInput, onChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
@@ -65,9 +66,9 @@ selectEvent(vhlTypeId, {
 })
 
 
-inputEvent(vhlMakeId, { onInput, onChange })
+makeEvent(vhlMakeId, { onInput, onChange })
 
-inputEvent(vhlModelId, { onInput, onChange })
+modelEvent(vhlModelId, { onInput, onChange })
 
 selectEvent(vhlYearId, { fill: true, onChange })
 

@@ -80,4 +80,9 @@ export default {
         medList: { max: 100 },
     },
 
+    vehicle: {
+        make: { max: 20 },
+        model: { max: 25 },
+    },
+
 }

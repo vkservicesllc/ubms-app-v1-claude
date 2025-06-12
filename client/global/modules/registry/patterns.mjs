@@ -109,6 +109,16 @@ export default {
             [ /&+/g, '&' ],
             [ /'+/g, "'" ],
         ],
+        vhlMake: [
+            [ /[^\sA-Za-z\-]/g, '' ],
+            [ /\s+/g, ' ' ],
+            [ /-+/g, '-' ],
+        ],
+        vhlModel: [
+            [ /[^\sA-Za-z0-9\-]/g, '' ],
+            [ /\s+/g, ' ' ],
+            [ /-+/g, '-' ],
+        ],
     },
 
     replace: function(value, target) {
