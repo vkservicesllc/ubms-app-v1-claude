@@ -257,8 +257,8 @@ class Application {
                 proposedName: data.proposedBusName,
             }
 
-        if (data.vhlType)
-            this.ownedVhl = {
+        if (data.vhlType || data.vhlMmt)
+            this.vehicle = {
                 mmt: data.vhlMmt,
                 make: data.vhlMake,
                 model: data.vhlModel,
@@ -307,8 +307,10 @@ class Application {
             currentUpdateLog,
             action = 'update',
             target = 'applications',
+            target2 = null,
             idProp = 'id',
-            mainData = {}
+            mainData = {},
+            data2 = {}
         if (session.user && session.user !== true)
             modifiedBy = await session.user.id()
 
@@ -726,7 +728,16 @@ class Application {
                 mainData.businessAssist = typeof llcAssistance === 'boolean' ? llcAssistance : null
 
                 if (this.position[0] === 'OO') {
-                    //! destruct consts and delete props
+                    const { mmt, type, make, model, year, length } = data
+                    delete data.mmt
+                    delete data.type
+                    delete data.make
+                    delete data.model
+                    delete data.year
+                    delete data.length
+
+                    data2 = { mmt, type, make, model, year, length }
+                    target2 = 'aplVehicles'
                 }
 
                 if (this.step < 9) {
@@ -737,6 +748,11 @@ class Application {
                     data = processData(data)
                     data.aplId = id
                     if (data.ein) data.ein = { aes: [ data.ein, einSecret ] }
+
+                    if (target2) {
+                        data2 = processData(data2)
+                        data2.aplId = id
+                    }
                 } else {
                     mainData = processData(mainData, {
                         modifiedBy,
@@ -758,9 +774,19 @@ class Application {
                         branch,
                         siteId,
                         currentData: this.business,
-                        currentUpdateLog: await this.log('updateLog', 'aplBusinesses'),
+                        currentUpdateLog: await this.log('updateLog', target),
                     })
                     if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
+
+                    if (target2) {
+                        data2 = processData(data, {
+                            modifiedBy,
+                            branch,
+                            siteId,
+                            currentData: this.business,
+                            currentUpdateLog: await this.log('updateLog', target2),
+                        })
+                    }
                 }
 
                 break
@@ -773,6 +799,8 @@ class Application {
 // console.log(query[target][action](data, { [idProp]: id }))
 // console.log('----')
 // console.log(query.applications.update(mainData, { id }))
+// console.log('----')
+// console.log(query[target2][action](data2, { [idProp]: id }))
             if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
                 const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
                 if (result.affectedRows > 0) modified = true
@@ -781,6 +809,11 @@ class Application {
             if (Object.keys(mainData).length) {
                 const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
                 if (!modified && result.affectedRows === 1) modified = true
+            }
+
+            if ((Array.isArray(data2) && data2.length) || Object.keys(data2).length) {
+                const [ result ] = await mysql.execute(query[target2][action](data2, { [idProp]: id }))
+                if (result.affectedRows > 0) modified = true
             }
         }
 

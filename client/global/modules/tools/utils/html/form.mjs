@@ -192,7 +192,7 @@ const formSelectOptions = (data = {}, options = {}) => {
             html += nl + tabs + `<optgroup label="${group}">`
             for (let key in opts) {
                 const val = groupId + key
-                const sel = initializeAttr('selected', value && opts[key] == value)
+                const sel = initializeAttr('selected', value && key == value)
                 const dis = initializeAttr('disabled', disabled.includes(key))
                 const opt = !valOpt ? opts[key] : key
                 const tabspls = tabs ? tabs + `\t` : tabs

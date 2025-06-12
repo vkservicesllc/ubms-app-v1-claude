@@ -687,12 +687,14 @@ export const applicationProgress = async (req, res) => {
                 if (application.deptId === 0) vhlTypeData = Application.vhlTypeList.truckLoad
                 if (application.deptId === 1) {
                     vhlTypeData = Application.vhlTypeList.expedite
-                    values.currentVhlMMT = application?.ownedVhl?.mmt
-                    values.currentVhlMake = application?.ownedVhl?.make
-                    values.currentVhlModel = application?.ownedVhl?.model
-                    values.currentVhlYear = application?.ownedVhl?.year
-                    values.currentVhlLen = application?.ownedVhl?.length
+                    values.currentVhlMMT = application?.vehicle?.mmt
+                    values.currentVhlMake = application?.vehicle?.make
+                    values.currentVhlModel = application?.vehicle?.model
+                    values.currentVhlYear = application?.vehicle?.year
+                    values.currentVhlLen = application?.vehicle?.length
                     hbs.currentVhlLenDisplay = values.currentVhlLen ? '' : ' style="display: none;"'
+
+                    if (values.currentVhlYear) values.currentVhlYear = ':' + values.currentVhlYear
                 }
 
                 options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })

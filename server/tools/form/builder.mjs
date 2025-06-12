@@ -215,9 +215,10 @@ const createForm = (input = {}) => {
             if (data && ignoreData !== true) {
                 const values = Object.keys(data)
 
-                chain = chain
-                    .isIn(values)
-                    .withMessage(`Incorrect value provided in "${name}"`)
+                if (values.length)
+                    chain = chain
+                        .isIn(values)
+                        .withMessage(`Incorrect value provided in "${name}"`)
             }
 
             if (caps === true)
