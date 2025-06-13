@@ -740,8 +740,21 @@ export const applicationProgress = async (req, res) => {
             const values = {
                 benefFirstName: application?.beneficiary?.firstName,
                 benefLastName: application?.beneficiary?.lastName,
+                benefRelation: application?.beneficiary?.relation,
             }
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
+
+            const relationData = { ...Application.benefRelationList }
+            switch (application.marital) {
+                case 'm':
+                    delete relationData['Other']['Domestic Partner']
+                    if (application.gender[0] === 'M') delete relationData['Spouse']['Husband']
+                    if (application.gender[0] === 'F') delete relationData['Spouse']['Wife']
+                    break
+                default:
+                    delete relationData['Spouse']
+            }
+            options.benefRelation.select.input.data = relationData
         }
 
 

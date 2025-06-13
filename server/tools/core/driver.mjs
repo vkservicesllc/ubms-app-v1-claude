@@ -1078,6 +1078,8 @@ class Application {
         },
     }
 
+    static benefRelationList = createBenefRelationList()
+
 
     static #algorithm = 'SHA-224'
 
@@ -1751,3 +1753,26 @@ class DriverUser {
 
 export default Driver
 export { Application, DriverUser }
+
+
+function createBenefRelationList() {
+    const list = {
+        'Spouse': ['Husband', 'Wife'],
+        'Parent': ['Father', 'Mother', 'Stepfather', 'Stepmother'],
+        'Child': ['Son', 'Daughter', 'Stepson', 'Stepdaughter'],
+        'Sibling': ['Brother',  'Sister', 'Stepbrother', 'Stepsister'],
+        'Grandparent': ['Grandfather', 'Grandmother'],
+        'Grandchild': ['Grandson', 'Granddaughter'],
+        'Other': ['Uncle', 'Aunt', 'Nephew', 'Niece', 'Cousin', 'Fiancé(e)', 'Domestic Partner', 'Other'],
+    }
+    const data = {}
+
+    for (const group in list) {
+        data[group] = {}
+
+        for (const relation of list[group])
+            data[group][relation] = relation
+    }
+
+    return data
+}

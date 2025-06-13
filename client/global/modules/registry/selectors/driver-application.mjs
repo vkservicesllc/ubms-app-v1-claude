@@ -147,6 +147,7 @@ const selector = {
             currentVhlMMT: 'current-vehicle-make-model-type',
             currentVhlType: 'current-vehicle-type',
             currentVhlLen: 'current-vehicle-length',
+            benefRelation: 'beneficiary-relationship',
         },
         radio: {
             gender: {

@@ -1000,6 +1000,17 @@ class ApplicationForm {
 
     static benefLastName = createPersonNameForm('last', { selector: appSelector, target: 'benefLastName' })
 
+    static benefRelation = createForm({
+        selector: appSelector,
+        target: 'benefRelation',
+        type: 'select',
+        name: 'relation',
+        data: {},
+        emptyOpt,
+        required,
+        label: 'Relationship',
+    })
+
 
 
 }
