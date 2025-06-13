@@ -996,10 +996,6 @@ class ApplicationForm {
 
     /* BENEFICIARY */
 
-    static benefFirstName = createPersonNameForm('first', { selector: appSelector, target: 'benefFirstName' })
-
-    static benefLastName = createPersonNameForm('last', { selector: appSelector, target: 'benefLastName' })
-
     static benefRelation = createForm({
         selector: appSelector,
         target: 'benefRelation',
@@ -1010,6 +1006,22 @@ class ApplicationForm {
         required,
         label: 'Relationship',
     })
+
+    static benefOtherRel = createForm({
+        selector: appSelector,
+        target: 'benefOtherRel',
+        name: 'otherRel',
+        maxLength: 20,
+        required,
+        disabled,
+        label: '"Other" Relationship',
+    })
+
+    static benefFirstName = createPersonNameForm('first', { selector: appSelector, target: 'benefFirstName' })
+    static benefLastName = createPersonNameForm('last', { selector: appSelector, target: 'benefLastName' })
+    static benefDob = createDobForm({ selector: appSelector, target: 'benefDob' })
+    static benefGender = createGenderForm({ selector: appSelector, target: 'benefGender', required })
+    static benefSsn = createSsnForm({ selector: appSelector, target: 'benefSsn', required: false })
 
 
 

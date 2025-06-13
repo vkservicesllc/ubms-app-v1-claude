@@ -122,8 +122,11 @@ const selector = {
             llcProposedName: 'llc-proposed-name',
             currentVhlMake: 'current-vehicle-make',
             currentVhlModel: 'current-vehicle-model',
+            benefOtherRel: 'beneficiary-other-relationship',
             benefFirstName: 'beneficiary-first-name',
             benefLastName: 'beneficiary-last-name',
+            benefDob: 'beneficiary-dob',
+            benefSsn: 'beneficiary-ssn',
         },
         select: {
             suffix: 'suffix',
@@ -148,6 +151,7 @@ const selector = {
             currentVhlType: 'current-vehicle-type',
             currentVhlLen: 'current-vehicle-length',
             benefRelation: 'beneficiary-relationship',
+            benefGender: 'beneficiary-gender',
         },
         radio: {
             gender: {

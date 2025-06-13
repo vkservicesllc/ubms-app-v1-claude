@@ -736,13 +736,27 @@ export const applicationProgress = async (req, res) => {
         if (step >= 9) { /* BENEFICIARY */
             hbs.button.eight = buttonProps.save
             hbs.accordion.eight = accordionProps.finished
+            hbs.benefOtherRelDisplay = ' style="display: none;"'
 
             const values = {
+                benefRelation: application?.beneficiary?.relation,
+                benefOtherRel: application?.beneficiary?.otherRel,
                 benefFirstName: application?.beneficiary?.firstName,
                 benefLastName: application?.beneficiary?.lastName,
-                benefRelation: application?.beneficiary?.relation,
+                benefDob: application?.beneficiary?.dob
+                    ? moment(application.beneficiary.dob).format('MM/DD/YYYY')
+                    : null,
+                benefGender: application?.beneficiary?.gender?.[0],
+                benefSsn: application?.beneficiary?.ssn,
+                // benefPhone: application?.beneficiary?.phone,
+            }
+            const placeholders = {
+                benefDob: 'MM/DD/YYYY',
+                benefSsn: '###-##-####',
+                // benefPhone: '(###) ###-####',
             }
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
 
             const relationData = { ...Application.benefRelationList }
             switch (application.marital) {
@@ -753,6 +767,7 @@ export const applicationProgress = async (req, res) => {
                     break
                 default:
                     delete relationData['Spouse']
+                    delete relationData['Immediate In-Law']
             }
             options.benefRelation.select.input.data = relationData
         }

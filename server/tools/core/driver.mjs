@@ -267,13 +267,15 @@ class Application {
                 length: data.vhlLength,
             }
 
-        if (data.benefRelation)
+        if (data.benefRelation) {
             this.beneficiary = {
                 firstName: data.benefFirstName,
                 lastName: data.benefLastName,
                 relation: data.benefRelation,
                 otherRel: data.benefOtherRel,
                 dob: data.benefDob,
+                sex: data.benefSex,
+                ssn: data.benefSsn ? stringifyBuffer(data.benefSsn) : null,
                 phone: data.benefPhone,
                 address1: data.benefAddress1,
                 address2: data.benefAddress2,
@@ -281,6 +283,18 @@ class Application {
                 state: data.benefAddrState,
                 zip: data.benefAddrZip,
             }
+
+            switch (this.beneficiary.sex) {
+                case 0:
+                case '0':
+                    this.beneficiary.gender = [ 'F', 'Female' ]
+                    break
+                case 1:
+                case '1':
+                    this.beneficiary.gender = [ 'M', 'Male' ]
+                    break
+            }
+        }
     }
 
 
@@ -1375,6 +1389,8 @@ class Application {
                     [ 'relation', 'benefRelation' ],
                     [ 'otherRel', 'benefOtherRel' ],
                     [ 'dob', 'benefDob' ],
+                    [ 'sex', 'benefSex' ],
+                    [ { aes: [ 'ssn', ssnSecret ] }, 'benefSsn' ],
                     [ 'phone', 'benefPhone' ],
                     [ 'address1', 'benefAddress1' ],
                     [ 'address2', 'benefAddress2' ],
@@ -1763,7 +1779,8 @@ function createBenefRelationList() {
         'Sibling': ['Brother',  'Sister', 'Stepbrother', 'Stepsister'],
         'Grandparent': ['Grandfather', 'Grandmother'],
         'Grandchild': ['Grandson', 'Granddaughter'],
-        'Other': ['Uncle', 'Aunt', 'Nephew', 'Niece', 'Cousin', 'Fiancé(e)', 'Domestic Partner', 'Other'],
+        'Immediate In-Law': ['Father-in-law', 'Mother-in-law', 'Son-in-law', 'Daughter-in-law', 'Brother-in-law', 'Sister-in-law'],
+        'Other': ['Uncle', 'Aunt', 'Nephew', 'Niece', 'Cousin', 'Fiancé(e)', 'Friend', 'Domestic Partner', 'Other'],
     }
     const data = {}
 

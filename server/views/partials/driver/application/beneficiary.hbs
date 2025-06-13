@@ -9,11 +9,27 @@
         <div class="accordion-body">
             <form id="beneficiary-form" action="{{actionUrl.beneficiary}}" method="POST" autocomplete="off">
                 <label class="form-label text-secondary">Occupational Accident Insurance</label>
-                <p style="font-size: .8em;">
+                <p style="font-size: .84em;">
                     We require beneficiary information to ensure that, in the event of a serious injury or fatality on the job,
                     any insurance benefits from Occupational Accident Coverage are directed to the person you designate.
-                    This is a standard safety and compliance measure for professional driver positions.
+                    This is a standard safety and compliance measure for professional driver positions.<br/>
                 </p>
+                <label class="form-label fw-normal text-danger mb-0">
+                    <small>
+                        <i class="fas fa-circle-exclamation"></i>
+                        SSN can be provided later if currently unavailable
+                    </small>
+                </label>
+                <div class="row g-3 my-1">
+                    <div class="col-md-6">
+                        {{{form.benefRelation.select.label}}}
+                        {{{form.benefRelation.select.input}}}
+                    </div>
+                    <div class="col-md-6"{{{benefOtherRelDisplay}}}>
+                        {{{form.benefOtherRel.text.label}}}
+                        {{{form.benefOtherRel.text.input}}}
+                    </div>
+                </div>
                 <div class="row g-3 my-1">
                     <div class="col-md-6">
                         {{{form.benefFirstName.text.label}}}
@@ -25,9 +41,18 @@
                     </div>
                 </div>
                 <div class="row g-3 my-1">
-                    <div class="col-md-6">
-                        {{{form.benefRelation.select.label}}}
-                        {{{form.benefRelation.select.input}}}
+                    <div class="col-md-4">
+                        {{{form.benefDob.text.label}}}
+                        {{{form.benefDob.text.input}}}
+                        <div class="form-text text-danger" id="beneficiary-dob-help"></div>
+                    </div>
+                    <div class="col-md-4">
+                        {{{form.benefGender.select.label}}}
+                        {{{form.benefGender.select.input}}}
+                    </div>
+                    <div class="col-md-4">
+                        {{{form.benefSsn.text.label}}}
+                        {{{form.benefSsn.text.input}}}
                     </div>
                 </div>
                 <div class="row g-3 my-2">
