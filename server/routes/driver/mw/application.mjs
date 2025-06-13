@@ -748,15 +748,21 @@ export const applicationProgress = async (req, res) => {
                     : null,
                 benefGender: application?.beneficiary?.gender?.[0],
                 benefSsn: application?.beneficiary?.ssn,
-                // benefPhone: application?.beneficiary?.phone,
+                benefPhone: application?.beneficiary?.phone,
+                benefAddress1: '',
+                benefAddress2: '',
+                benefAddrZip: '',
+                benefAddrCity: '',
+                benefAddrState: '',
             }
             const placeholders = {
                 benefDob: 'MM/DD/YYYY',
                 benefSsn: '###-##-####',
-                // benefPhone: '(###) ###-####',
+                benefPhone: '(###) ###-####',
             }
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+            options.benefAddrState.select.input.options = { valOpt: true }
 
             const relationData = { ...Application.benefRelationList }
             switch (application.marital) {

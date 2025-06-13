@@ -1023,6 +1023,13 @@ class ApplicationForm {
     static benefGender = createGenderForm({ selector: appSelector, target: 'benefGender', required })
     static benefSsn = createSsnForm({ selector: appSelector, target: 'benefSsn', required: false })
 
+    static benefPhone = createPhoneForm({ selector: appSelector, target: 'benefPhone', required })
+    static benefAddress1 = createAddressForm({ selector: appSelector, target: 'benefAddress1' })
+    static benefAddress2 = createAddressForm({ selector: appSelector, target: 'benefAddress2' }, { idx: 2 })
+    static benefAddrZip = createAddrZipForm({ selector: appSelector, target: 'benefAddrZip' })
+    static benefAddrCity = createAddrCityForm({ selector: appSelector, target: 'benefAddrCity' })
+    static benefAddrState = createAddrStateForm({ selector: appSelector, target: 'benefAddrState' })
+
 
 
 }

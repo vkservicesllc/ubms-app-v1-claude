@@ -127,6 +127,11 @@ const selector = {
             benefLastName: 'beneficiary-last-name',
             benefDob: 'beneficiary-dob',
             benefSsn: 'beneficiary-ssn',
+            benefPhone: 'beneficiary-phone',
+            benefAddress1: 'beneficiary-address-1',
+            benefAddress2: 'beneficiary-address-2',
+            benefAddrZip: 'beneficiary-address-zip',
+            benefAddrCity: 'beneficiary-address-city',
         },
         select: {
             suffix: 'suffix',
@@ -152,6 +157,7 @@ const selector = {
             currentVhlLen: 'current-vehicle-length',
             benefRelation: 'beneficiary-relationship',
             benefGender: 'beneficiary-gender',
+            benefAddrState: 'beneficiary-address-state',
         },
         radio: {
             gender: {
