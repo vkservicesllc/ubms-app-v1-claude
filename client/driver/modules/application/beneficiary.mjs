@@ -1,3 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
+import { telEvent } from '/modules/events/contacts.mjs'
+import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import { check, onInput, onChange, onKeyup, onCompleted, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
+import { Relationship } from '/modules/tools/core/person.mjs'

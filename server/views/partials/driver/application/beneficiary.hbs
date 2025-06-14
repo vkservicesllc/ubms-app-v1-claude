@@ -14,12 +14,6 @@
                     any insurance benefits from Occupational Accident Coverage are directed to the person you designate.
                     This is a standard safety and compliance measure for professional driver positions.<br/>
                 </p>
-                <label class="form-label fw-normal text-danger mb-0">
-                    <small>
-                        <i class="fas fa-circle-exclamation"></i>
-                        SSN can be provided later if currently unavailable
-                    </small>
-                </label>
                 <div class="row g-3 my-1">
                     <div class="col-md-6">
                         {{{form.benefRelation.select.label}}}
@@ -36,8 +30,22 @@
                         {{{form.benefFirstName.text.input}}}
                     </div>
                     <div class="col-md-6">
+                        {{{form.benefMiddleName.text.label}}}
+                        {{{form.benefMiddleName.text.input}}}
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <div class="col-md-6">
                         {{{form.benefLastName.text.label}}}
                         {{{form.benefLastName.text.input}}}
+                    </div>
+                    <div class="col-md-2">
+                        {{{form.benefSuffix.select.label}}}
+                        {{{form.benefSuffix.select.input}}}
+                    </div>
+                    <div class="col-md-4">
+                        {{{form.benefGender.select.label}}}
+                        {{{form.benefGender.select.input}}}
                     </div>
                 </div>
                 <div class="row g-3 my-1">
@@ -46,16 +54,6 @@
                         {{{form.benefDob.text.input}}}
                         <div class="form-text text-danger" id="beneficiary-dob-help"></div>
                     </div>
-                    <div class="col-md-4">
-                        {{{form.benefGender.select.label}}}
-                        {{{form.benefGender.select.input}}}
-                    </div>
-                    <div class="col-md-4">
-                        {{{form.benefSsn.text.label}}}
-                        {{{form.benefSsn.text.input}}}
-                    </div>
-                </div>
-                <div class="row g-3 my-1">
                     <div class="col-md-5">
                         {{{form.benefPhone.text.label}}}
                         {{{form.benefPhone.text.input}}}
@@ -85,6 +83,18 @@
                         {{{form.benefAddrState.select.input}}}
                     </div>
                 </div>
+                <div class="row g-3 my-1">
+                    <div class="col-md-4">
+                        {{{form.benefSsn.text.label}}}
+                        {{{form.benefSsn.text.input}}}
+                    </div>
+                </div>
+                <label class="form-label fw-normal text-danger mt-3 mb-0">
+                    <small>
+                        <i class="fas fa-circle-exclamation"></i>
+                        SSN can be provided later if currently unavailable
+                    </small>
+                </label>
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">

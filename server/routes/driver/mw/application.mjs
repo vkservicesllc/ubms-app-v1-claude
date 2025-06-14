@@ -7,6 +7,7 @@ import Team from '../../../tools/core/team.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
 import { Application } from '../../../tools/core/driver.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
+import { Relationship } from '../../../../client/global/modules/tools/core/person.mjs'
 import { tel as formatTel, ssn as formatSsn } from '../../../../client/global/modules/tools/utils/formatter.mjs'
 
 /* Forms */
@@ -742,7 +743,9 @@ export const applicationProgress = async (req, res) => {
                 benefRelation: application?.beneficiary?.relation,
                 benefOtherRel: application?.beneficiary?.otherRel,
                 benefFirstName: application?.beneficiary?.firstName,
+                benefMiddleName: application?.beneficiary?.middleName,
                 benefLastName: application?.beneficiary?.lastName,
+                benefSuffix: application?.beneficiary?.suffix,
                 benefDob: application?.beneficiary?.dob
                     ? moment(application.beneficiary.dob).format('MM/DD/YYYY')
                     : null,
@@ -764,7 +767,8 @@ export const applicationProgress = async (req, res) => {
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.benefAddrState.select.input.options = { valOpt: true }
 
-            const relationData = { ...Application.benefRelationList }
+            const relationData = { ...Relationship.data() }
+console.log(relationData)
             switch (application.marital) {
                 case 'm':
                     delete relationData['Other']['Domestic Partner']

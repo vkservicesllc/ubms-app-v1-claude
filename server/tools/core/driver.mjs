@@ -270,7 +270,9 @@ class Application {
         if (data.benefRelation) {
             this.beneficiary = {
                 firstName: data.benefFirstName,
+                middleName: data.benefMiddleName,
                 lastName: data.benefLastName,
+                suffix: data.benefSuffix,
                 relation: data.benefRelation,
                 otherRel: data.benefOtherRel,
                 dob: data.benefDob,
@@ -1092,8 +1094,6 @@ class Application {
         },
     }
 
-    static benefRelationList = createBenefRelationList()
-
 
     static #algorithm = 'SHA-224'
 
@@ -1385,7 +1385,9 @@ class Application {
                 table: 'application_beneficiaries',
                 fields: [
                     [ 'firstName', 'benefFirstName' ],
+                    [ 'middleName', 'benefMiddleName' ],
                     [ 'lastName', 'benefLastName' ],
+                    [ 'suffix', 'benefSuffix' ],
                     [ 'relation', 'benefRelation' ],
                     [ 'otherRel', 'benefOtherRel' ],
                     [ 'dob', 'benefDob' ],
@@ -1769,27 +1771,3 @@ class DriverUser {
 
 export default Driver
 export { Application, DriverUser }
-
-
-function createBenefRelationList() {
-    const list = {
-        'Spouse': ['Husband', 'Wife'],
-        'Parent': ['Father', 'Mother', 'Stepfather', 'Stepmother'],
-        'Child': ['Son', 'Daughter', 'Stepson', 'Stepdaughter'],
-        'Sibling': ['Brother',  'Sister', 'Stepbrother', 'Stepsister'],
-        'Grandparent': ['Grandfather', 'Grandmother'],
-        'Grandchild': ['Grandson', 'Granddaughter'],
-        'Immediate In-Law': ['Father-in-law', 'Mother-in-law', 'Son-in-law', 'Daughter-in-law', 'Brother-in-law', 'Sister-in-law'],
-        'Other': ['Uncle', 'Aunt', 'Nephew', 'Niece', 'Cousin', 'Fiancé(e)', 'Friend', 'Domestic Partner', 'Other'],
-    }
-    const data = {}
-
-    for (const group in list) {
-        data[group] = {}
-
-        for (const relation of list[group])
-            data[group][relation] = relation
-    }
-
-    return data
-}

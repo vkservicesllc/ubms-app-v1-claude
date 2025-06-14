@@ -1018,7 +1018,9 @@ class ApplicationForm {
     })
 
     static benefFirstName = createPersonNameForm('first', { selector: appSelector, target: 'benefFirstName' })
+    static benefMiddleName = createPersonNameForm('middle', { selector: appSelector, target: 'benefMiddleName' })
     static benefLastName = createPersonNameForm('last', { selector: appSelector, target: 'benefLastName' })
+    static benefSuffix = createPersonNameForm('suffix', { selector: appSelector, target: 'benefSuffix' })
     static benefDob = createDobForm({ selector: appSelector, target: 'benefDob' })
     static benefGender = createGenderForm({ selector: appSelector, target: 'benefGender', required })
     static benefSsn = createSsnForm({ selector: appSelector, target: 'benefSsn', required: false })
