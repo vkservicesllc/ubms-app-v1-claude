@@ -209,6 +209,10 @@
                         {{> driver/application/beneficiary}}
 
                         {{/if}}
+                        {{#if (gte step 10)}}
+                        {{> driver/application/misc}}
+
+                        {{/if}}
                     </div>
 
                 </div>

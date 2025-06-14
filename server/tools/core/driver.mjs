@@ -45,6 +45,7 @@ const query = {
     aplPreferences: new Query(db.carrier, 'application_preferences'),
     aplBusinesses: new Query(db.carrier, 'application_businesses'),
     aplVehicles: new Query(db.carrier, 'application_vehicles'),
+    aplBeneficiaries: new Query(db.carrier, 'application_beneficiaries'),
 }
 
 
@@ -657,6 +658,7 @@ class Application {
                 } else data = {}
                 break
 
+
             case 'pre-employment':
                 target = 'aplEmployers'
                 action = 'insert' //! for now it is easier to delete and insert newly submitted employments, `updateLog` is redundant at this point
@@ -708,6 +710,7 @@ class Application {
                 }
                 break
 
+
             case 'preference':
                 target = 'aplPreferences'
                 idProp = 'aplId'
@@ -746,6 +749,7 @@ class Application {
                     data.equipment = equipment
                 }
                 break
+
 
             case 'business':
                 target = 'aplBusinesses'
@@ -835,6 +839,33 @@ class Application {
                 }
 
                 break
+
+
+            case 'beneficiary':
+                target = 'aplBeneficiaries'
+                idProp = 'aplId'
+
+                if (!this.beneficiary) {
+                    data = processData(data)
+                    data.aplId = id
+                    if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
+                    mainData.step = 10
+                    action = 'insert'
+                } else {
+                    if (data.relation !== 'Other')
+                        data.otherRel = null
+                    data = processData(data, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: this.beneficiary,
+                        currentUpdateLog: await this.log('updateLog', target)
+                    })
+                    if ('ssn' in data) data.ssn = { aes: [ data.ssn, ssnSecret ] }
+                }
+
+                break
+
 
         }
 
@@ -974,7 +1005,7 @@ class Application {
         'Driving Preference',
         'Business', //! if owner operator, concatenate " / Ownership"
         'Beneficiary', // 'Occupational Accident Insurance'
-        'Emergency Contact',
+        'Miscellaneous',
     ]
 
     static violationList = {

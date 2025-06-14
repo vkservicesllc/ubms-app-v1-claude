@@ -750,13 +750,13 @@ export const applicationProgress = async (req, res) => {
                     ? moment(application.beneficiary.dob).format('MM/DD/YYYY')
                     : null,
                 benefGender: application?.beneficiary?.gender?.[0],
-                benefSsn: application?.beneficiary?.ssn,
                 benefPhone: application?.beneficiary?.phone,
-                benefAddress1: '',
-                benefAddress2: '',
-                benefAddrZip: '',
-                benefAddrCity: '',
-                benefAddrState: '',
+                benefAddress1: application?.beneficiary?.address1,
+                benefAddress2: application?.beneficiary?.address2,
+                benefAddrZip: application?.beneficiary?.zip,
+                benefAddrCity: application?.beneficiary?.city,
+                benefAddrState: application?.beneficiary?.state,
+                benefSsn: application?.beneficiary?.ssn, //! may need to format
             }
             const placeholders = {
                 benefDob: 'MM/DD/YYYY',
@@ -780,6 +780,11 @@ export const applicationProgress = async (req, res) => {
                     delete relationData['Immediate In-Law']
             }
             options.benefRelation.select.input.data = relationData
+        }
+
+        if (step >= 10) { /* MISC */
+            hbs.button.nine = buttonProps.save
+            hbs.accordion.nine = accordionProps.finished
         }
 
 
