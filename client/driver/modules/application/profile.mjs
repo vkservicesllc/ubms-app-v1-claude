@@ -13,7 +13,6 @@ const dobId = TS.dob
 const ssnId = TS.ssn
 const phoneId = TS.phone
 const emailId = TS.email
-const positionId = SS.position
 
 const $card = $('#apl-card')
 const $help = {
@@ -83,8 +82,6 @@ inputEvent(dobId, {
         }
     },
 })
-
-selectEvent(positionId, { onChange })
 
 
 onSubmit($form, $help, $submit, $card)

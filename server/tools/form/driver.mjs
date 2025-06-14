@@ -1015,6 +1015,9 @@ class ApplicationForm {
         required,
         disabled,
         label: '"Other" Relationship',
+        validator: {
+            optional: true,
+        },
     })
 
     static benefFirstName = createPersonNameForm('first', { selector: appSelector, target: 'benefFirstName' })

@@ -766,9 +766,9 @@ export const applicationProgress = async (req, res) => {
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.benefAddrState.select.input.options = { valOpt: true }
+            options.benefMiddleName.text.label.content = 'Middle Name/Initial'
 
             const relationData = { ...Relationship.data() }
-console.log(relationData)
             switch (application.marital) {
                 case 'm':
                     delete relationData['Other']['Domestic Partner']
