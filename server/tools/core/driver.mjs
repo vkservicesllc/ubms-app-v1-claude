@@ -298,6 +298,13 @@ class Application {
                     break
             }
         }
+
+        if (data.emergPhone)
+            data.emergency = {
+                phone: data.emergPhone,
+                name: data.emergName,
+                relation: data.emergRelation,
+            }
     }
 
 
@@ -1430,6 +1437,15 @@ class Application {
                     [ 'city', 'benefAddrCity' ],
                     [ 'state', 'benefAddrState' ],
                     [ 'zip', 'benefAddrZip' ],
+                ],
+                join: [ 'aplId', 'id' ],
+            },
+            {
+                table: 'application_emergencies',
+                fields: [
+                    [ 'phone', 'emergPhone' ],
+                    [ 'name', 'emergName' ],
+                    [ 'relation', 'emergRelation' ],
                 ],
                 join: [ 'aplId', 'id' ],
             },

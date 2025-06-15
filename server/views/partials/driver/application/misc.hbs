@@ -8,6 +8,26 @@
     <div id="collapse-10" class="text-start accordion-collapse collapse{{accordion.ten.body}}" data-bs-parent="#apl-accordion">
         <div class="accordion-body">
             <form id="misc-form" action="{{actionUrl.misc}}" method="POST" autocomplete="off">
+                <label class="form-label text-secondary">Emergency Contact</label>
+                <p class="mb-0" style="font-size: .84em;">
+                    Who can we contact in case of emergency?
+                </p>
+                <div class="row g-3 my-1">
+                    <div class="col-md-5">
+                        {{{form.emergPhone.text.label}}}
+                        {{{form.emergPhone.text.input}}}
+                    </div>
+                </div>
+                <div class="row g-3 my-1">
+                    <div class="col-md-6">
+                        {{{form.emergName.text.label}}}
+                        {{{form.emergName.text.input}}}
+                    </div>
+                    <div class="col-md-6">
+                        {{{form.emergRelation.text.label}}}
+                        {{{form.emergRelation.text.input}}}
+                    </div>
+                </div>
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">
@@ -16,6 +36,7 @@
                     </div>
                 </div>
             </form>
+            <script type="module" src="/modules/application/emergency.mjs"></script>
         </div>
     </div>
 </div>

@@ -785,6 +785,17 @@ export const applicationProgress = async (req, res) => {
         if (step >= 10) { /* MISC */
             hbs.button.nine = buttonProps.save
             hbs.accordion.nine = accordionProps.finished
+
+            const values = {
+                emergPhone: application?.emergency?.phone,
+                emergName: application?.emergency?.name,
+                emergRelation: application?.emergency?.relation,
+            }
+            const placeholders = {
+                emergPhone: '(###) ###-####',
+            }
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
 
 

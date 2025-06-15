@@ -133,6 +133,9 @@ const selector = {
             benefAddress2: 'beneficiary-address-2',
             benefAddrZip: 'beneficiary-address-zip',
             benefAddrCity: 'beneficiary-address-city',
+            emergPhone: 'emergency-phone',
+            emergName: 'emergency-name',
+            emergRelation: 'emergency-relationship',
         },
         select: {
             suffix: 'suffix',

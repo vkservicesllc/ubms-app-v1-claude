@@ -1037,6 +1037,26 @@ class ApplicationForm {
 
 
 
+    /* MISC */
+
+    static emergPhone = createPhoneForm({ selector: appSelector, target: 'emergPhone', required })
+
+    static emergName = createForm({
+        selector: appSelector,
+        target: 'emergName',
+        name: 'name',
+        label: 'Name',
+    })
+
+    static emergRelation = createForm({
+        selector: appSelector,
+        target: 'emergRelation',
+        name: 'relation',
+        label: 'Relationship',
+    })
+
+
+
 }
 
 
