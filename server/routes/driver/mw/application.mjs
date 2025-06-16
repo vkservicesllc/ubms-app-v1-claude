@@ -794,6 +794,17 @@ export const applicationProgress = async (req, res) => {
             const placeholders = {
                 emergPhone: '(###) ###-####',
             }
+
+            //! work in progress
+            if (application.address.enough === false) {
+                options.livedAbroad = { radio: {} }
+                for (const prop of ['yes', 'no']) {
+                    options.livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                }
+
+                values.country = application.address.country
+            }
+
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
@@ -810,6 +821,7 @@ export const applicationProgress = async (req, res) => {
         hbs.applicantName = application.fullName
         hbs.applicantPosition = application.position[1]
         hbs.position = application.position[0]
+        hbs.addrEnough = application.address.enough
         hbs.cdl = application?.dl?.commercial === true
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET' //! Test time accuracy on live server
 

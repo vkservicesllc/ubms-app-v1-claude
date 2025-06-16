@@ -142,6 +142,8 @@ class Application {
         this.address = new Address(data)
         this.address.since = data.addrSince
         this.address.enough = !!data.addrEnough
+        this.address.livedAbroad = bool(data.livedAbroad)
+        this.address.country
         this.team = {
             name: data.teamName,
         }
@@ -1325,6 +1327,8 @@ class Application {
                     'city',
                     'state',
                     'zip',
+                    'livedAbroad',
+                    'country',
                     'medCard',
                     'underMeds',
                     'medList',

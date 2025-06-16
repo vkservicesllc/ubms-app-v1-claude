@@ -24,6 +24,7 @@ import selector from '../../../client/global/modules/registry/selectors/driver.m
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
 import Driver, { Application } from '../core/driver.mjs'
 import { Truck, Van } from '../core/vehicle.mjs'
+import Geography from '../../../client/global/modules/tools/core/geography.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 
@@ -1054,6 +1055,31 @@ class ApplicationForm {
         name: 'relation',
         label: 'Relationship',
     })
+
+    static livedAbroad = createYesNoForm({
+        selector: appSelector,
+        target: 'livedAbroad1',
+        name: 'livedAbroad',
+        required,
+        label: 'Lived Abroad',
+    })
+
+    static country = (function() {
+        const data = { ...Geography.countryList }
+        delete data.US
+
+        return createForm({
+            selector: appSelector,
+            target: 'country',
+            type: 'select',
+            name: 'country',
+            data,
+            emptyOpt,
+            required,
+            // disabled,
+            label: 'Country',
+        })
+    })()
 
 
 

@@ -261,6 +261,10 @@ const selector = {
                 yes: 'llc-assistance-needed',
                 no: 'llc-assistance-not-needed',
             },
+            livedAbroad1: {
+                yes: 'had-foreign-residence-before-last',
+                no: 'had-no-foreign-residence-before-last',
+            },
         },
         checkbox: {
             noMec: 'no-med-card',
