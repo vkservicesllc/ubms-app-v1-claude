@@ -50,7 +50,9 @@
                             </div>
                         </div>
                     </div>
-                    <div id="previous-addresses"></div>
+                    <div id="addresses">
+                        <div class="border-bottom pb-4" id="address-list"></div>
+                    </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-8">
                             {{{form.country.select.label}}}
@@ -67,6 +69,42 @@
                     </div>
                 </div>
             </form>
+            {{#if (eq addrEnough false)}}
+            <div id="address-form-template" style="display: ;">
+                <div class="border-top mt-4">
+                    <div class="row g-3 my-1">
+                        <div class="col-md-6">
+                            {{{form._address1.text.label}}}
+                            {{{form._address1.text.input}}}
+                        </div>
+                        <div class="col-md-3">
+                            {{{form._address2.text.label}}}
+                            {{{form._address2.text.input}}}
+                        </div>
+                        <div class="col-md-3">
+                            {{{form._addrZip.text.label}}}
+                            {{{form._addrZip.text.input}}}
+                        </div>
+                    </div>
+                    <div class="row g-3 my-1">
+                        <div class="col-md-5">
+                            {{{form._addrCity.text.label}}}
+                            {{{form._addrCity.text.input}}}
+                        </div>
+                        <div class="col-md-3">
+                            {{{form._addrState.select.label}}}
+                            {{{form._addrState.select.input}}}
+                        </div>
+                        <div class="col-md-4">
+                            {{{form._addrSince.text.label}}}
+                            {{{form._addrSince.text.input}}}
+                            <div class="form-text text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="row g-3 my-1"></div>
+                </div>
+            </div>
+            {{/if}}
             <script type="module" src="/modules/application/emergency.mjs"></script>
         </div>
     </div>

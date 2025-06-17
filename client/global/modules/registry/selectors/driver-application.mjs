@@ -32,6 +32,11 @@ const selector = {
             emplEarnings: 'employment-earnings',
             emplEndDate: 'employment-end-date',
             emplRfl: 'employment-reason-for-leaving',
+            prevAddrSince: 'prev-address-start-date',
+            prevAddress1: 'prev-address-1',
+            prevAddress2: 'prev-address-2',
+            prevAddrZip: 'prev-address-zip',
+            prevAddrCity: 'prev-address-city',
         },
         select: {
             gender: 'gender',
@@ -41,6 +46,7 @@ const selector = {
             accType: 'accident-type',
             accState: 'accident-state',
             emplAddrState: 'employer-address-state',
+            prevAddrState: 'prev-address-state',
         },
         radio: {
             gender: 'gender',
@@ -54,6 +60,7 @@ const selector = {
             emplDotDat: 'employment-subject-to-dot-drug-alcohol-test',
             activeLLC: 'active-llc',
             llcAssistance: 'llc-assistance',
+            prevLivedAbroad: 'prev-lived-abroad',
         },
         checkbox: {
             straightExp: 'straight-truck-experience',
@@ -136,6 +143,11 @@ const selector = {
             emergPhone: 'emergency-phone',
             emergName: 'emergency-name',
             emergRelation: 'emergency-relationship',
+            prevAddrSince: 'prev-address-start-date',
+            prevAddress1: 'prev-address-1',
+            prevAddress2: 'prev-address-2',
+            prevAddrZip: 'prev-address-zip',
+            prevAddrCity: 'prev-address-city',
         },
         select: {
             suffix: 'suffix',
@@ -163,6 +175,7 @@ const selector = {
             benefSuffix: 'beneficiary-suffix',
             benefGender: 'beneficiary-gender',
             benefAddrState: 'beneficiary-address-state',
+            prevAddrState: 'prev-address-state',
         },
         radio: {
             gender: {
@@ -264,6 +277,10 @@ const selector = {
             livedAbroad1: {
                 yes: 'had-foreign-residence-before-last',
                 no: 'had-no-foreign-residence-before-last',
+            },
+            livedAbroad2: {
+                yes: 'had-foreign-residence-before-prev',
+                no: 'had-no-foreign-residence-before-prev',
             },
         },
         checkbox: {

@@ -803,9 +803,15 @@ export const applicationProgress = async (req, res) => {
                 }
 
                 values.country = application.address.country
+
+                const fields = [
+                    '_address1', '_address2', '_addrZip',
+                    '_addrCity', '_addrState', '_addrSince',
+                ]
+                updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
             }
 
-            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
+            options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
 
