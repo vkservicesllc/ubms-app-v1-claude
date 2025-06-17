@@ -10,7 +10,7 @@
             <form id="misc-form" action="{{actionUrl.misc}}" method="POST" autocomplete="off">
                 <label class="form-label text-secondary">Emergency Contact</label>
                 <p class="mb-0" style="font-size: .84em;">
-                    Who can we contact in case of emergency?
+                    Please provide an emergency contact in case we cannot reach you during an urgent situation.
                 </p>
                 <div class="row g-3 my-1">
                     <div class="col-md-5">
@@ -37,7 +37,7 @@
                     </p>
                     <div class="row g-3 my-1">
                         <label class="form-label">
-                            Were you living outside the United States before your current address?
+                            Within the past 3 years, were you living outside the United States before your current address?
                         </label>
                         <div class="col-md-12 mt-0">
                             <div class="form-check form-check-inline">
@@ -50,10 +50,16 @@
                             </div>
                         </div>
                     </div>
-                    <div id="addresses">
+                    <div id="addresses"{{{addressesDisplay}}}>
+                        <label class="form-label fw-normal text-danger mt-3 mb-0">
+                            <small>
+                                <i class="fas fa-circle-exclamation"></i>
+                                Do not include your current address! Starting with the most recent!
+                            </small>
+                        </label>
                         <div class="border-bottom pb-4" id="address-list"></div>
                     </div>
-                    <div class="row g-3 my-1">
+                    <div class="row g-3 my-1"{{{countryDisplay}}}>
                         <div class="col-md-8">
                             {{{form.country.select.label}}}
                             {{{form.country.select.input}}}
@@ -70,7 +76,7 @@
                 </div>
             </form>
             {{#if (eq addrEnough false)}}
-            <div id="address-form-template" style="display: ;">
+            <div id="address-form-template" style="display: none;">
                 <div class="border-top mt-4">
                     <div class="row g-3 my-1">
                         <div class="col-md-6">
@@ -101,7 +107,21 @@
                             <div class="form-text text-danger"></div>
                         </div>
                     </div>
-                    <div class="row g-3 my-1"></div>
+                    <div class="row g-3 my-1" style="display: none;">
+                        <label class="form-label">
+                            Were you living outside the United States before this address?
+                        </label>
+                        <div class="col-md-12 mt-0">
+                            <div class="form-check form-check-inline">
+                                {{{form._livedAbroad.radio.yes.input}}}
+                                {{{form._livedAbroad.radio.yes.label}}}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{{form._livedAbroad.radio.no.input}}}
+                                {{{form._livedAbroad.radio.no.label}}}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             {{/if}}

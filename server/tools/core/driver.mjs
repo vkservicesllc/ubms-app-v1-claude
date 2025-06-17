@@ -995,6 +995,19 @@ class Application {
                 ]
                 break
 
+            case 'addresses':
+                src = 'aplAddresses'
+                fields = [
+                    'since',
+                    'address1',
+                    'address2',
+                    'city',
+                    'state',
+                    'zip',
+                    'livedAbroad',
+                ]
+                break
+
         }
 
         if (!src || !fields.length) return { error: 'Internal Server Error: Invalid Params' }

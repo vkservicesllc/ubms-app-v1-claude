@@ -797,9 +797,14 @@ export const applicationProgress = async (req, res) => {
 
             //! work in progress
             if (application.address.enough === false) {
+                hbs.addressesDisplay = ' style="display: none;"'
+                hbs.countryDisplay = ' style="display: none;"'
+
                 options.livedAbroad = { radio: {} }
+                options._livedAbroad = { radio: {} }
                 for (const prop of ['yes', 'no']) {
                     options.livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                    options._livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 }
 
                 values.country = application.address.country
