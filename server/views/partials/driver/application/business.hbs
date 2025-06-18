@@ -8,6 +8,13 @@
     <div id="collapse-8" class="text-start accordion-collapse collapse{{accordion.eight.body}}" data-bs-parent="#apl-accordion">
         <div class="accordion-body">
             <form id="business-form" action="{{actionUrl.business}}" method="POST" autocomplete="off">
+                {{#if (eq position 'OO')}}
+                <label class="form-label text-secondary">Business Entity</label>
+                {{/if}}
+                <p class="mb-0" style="font-size: .84em;">
+                    All drivers engaged with our company are treated as Independent Contractors;
+                    therefore, submission of a W-9 form for your business and a business checking account are both required.
+                </p>
                 <div class="row g-3 my-1">
                     <label class="form-label">
                         Do you currently have an active <abbr title="Limited Liability Company">LLC</abbr> registered?
@@ -68,11 +75,15 @@
                         </div>
                     </div>
                 </div>
+                <label class="form-label fw-normal text-danger mt-3 mb-0">
+                    <small>
+                        <i class="fas fa-circle-exclamation"></i>
+                        Your business account information will be collected if you are hired
+                    </small>
+                </label>
                 {{#if (eq position 'OO')}}
-                <div class="border-top mt-4">
-                    <label class="form-label mt-4 mb-0">
-                        Provide information about your vehicle:
-                    </label>
+                <div class="border-top mt-4 pt-3">
+                    <label class="form-label text-secondary">Motor Vehicle Owned</label>
                     {{#if (eq deptId 0)}}
                     <div class="row g-3 my-1">
                         <div class="col-md-6">

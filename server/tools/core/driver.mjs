@@ -1025,8 +1025,8 @@ class Application {
         'Driving Experience',
         'Previous Employment',
         'Driving Preference',
-        'Business', //! if owner operator, concatenate " / Ownership"
-        'Beneficiary', // 'Occupational Accident Insurance'
+        'Business Entity',
+        'Beneficiary',
         'Miscellaneous',
     ]
 

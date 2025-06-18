@@ -10,6 +10,13 @@ const phoneId = TS.emergPhone
 const nameId = TS.emergName
 const relationId = TS.emergRelation
 
+const $card = $('#apl-card')
+const $form = $('#misc-form')
+const $submit = $('#misc-submit')
+const $help = {
+    form: $('#misc-form-help'),
+}
+
 telEvent(phoneId, { onKeyup, onCompleted })
 
 nameEvent(nameId, { onChange })
@@ -23,3 +30,5 @@ inputEvent(relationId, {
     },
     onChange,
 })
+
+onSubmit($form, $help, $submit, $card)
