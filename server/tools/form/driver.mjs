@@ -1068,7 +1068,7 @@ class ApplicationForm {
         name: 'livedAbroad',
         required,
         label: 'Lived Abroad',
-    })
+    }, true)
 
     static country = (function() {
         const data = { ...Geography.countryList }
