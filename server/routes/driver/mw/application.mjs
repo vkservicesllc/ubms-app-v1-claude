@@ -795,7 +795,6 @@ export const applicationProgress = async (req, res) => {
                 emergPhone: '(###) ###-####',
             }
 
-            //! work in progress
             if (application.address.enough === false) {
                 hbs.addressesDisplay = ' style="display: none;"'
                 hbs.countryDisplay = ' style="display: none;"'
@@ -813,7 +812,9 @@ export const applicationProgress = async (req, res) => {
                     '_address1', '_address2', '_addrZip',
                     '_addrCity', '_addrState', '_addrSince',
                 ]
+                placeholders._addrSince = 'MM/DD/YYYY'
                 updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
+                options._addrState.select.input.options = { valOpt: true }
             }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })

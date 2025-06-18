@@ -255,7 +255,7 @@ function resetEvents() {
         onKeyup(date, $date) {
             $date.removeClass('is-valid is-invalid').next().text(null)
         },
-        onCompleted(start, $start) {console.log({ start, $start })
+        onCompleted(start, $start) {
             if (start) {
                 const $help = $start.next()
                 start = moment(start, 'MM/DD/YYYY', true)

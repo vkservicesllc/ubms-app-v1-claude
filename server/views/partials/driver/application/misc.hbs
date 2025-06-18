@@ -30,7 +30,7 @@
                 </div>
                 {{#if (eq addrEnough false)}}
                 <div class="border-top mt-4 pt-3">
-                    <label class="form-label text-secondary">Previous Address</label>
+                    <label class="form-label text-secondary">Prior Residence</label>
                     <p class="mb-0" style="font-size: .84em;">
                         As your current residence began less than 3 years ago,
                         we require your prior address(es) to complete your U.S. address history.
@@ -54,10 +54,11 @@
                         <label class="form-label fw-normal text-danger mt-3 mb-0">
                             <small>
                                 <i class="fas fa-circle-exclamation"></i>
-                                Do not include your current address! Starting with the most recent!
+                                Do not include your current address;
+                                start with the most recent address prior to your current one
                             </small>
                         </label>
-                        <div class="border-bottom pb-4" id="address-list"></div>
+                        <div class="pb-4" id="address-list"></div>
                     </div>
                     <div class="row g-3 my-1" id="country"{{{countryDisplay}}}>
                         <div class="col-md-8">
