@@ -176,6 +176,7 @@ const selector = {
             benefGender: 'beneficiary-gender',
             benefAddrState: 'beneficiary-address-state',
             prevAddrState: 'prev-address-state',
+            country: 'prev-country',
         },
         radio: {
             gender: {

@@ -4,9 +4,8 @@ import patterns from '/modules/registry/patterns.mjs'
 import formId, { check, onInput, onChange, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const RS = selector.id.radio
-const TS = selector.class.text, SS = selector.class.select
-const livedAbroadId = RS.livedAbroad1
+const TS = selector.class.text, SS = selector.class.select, RS = selector.class.radio
+const livedAbroadId = selector.id.radio.livedAbroad1
 const addrSinceId = selector.id.text.addrSince
 
 const $addresses = $('#addresses')
@@ -23,7 +22,7 @@ inputEvent(livedAbroadId.no, {
     onChange() {
         selected = true
 
-        $country.hide()
+        $country.hide().find('select').prop('disabled', true)
         drawAddressForms()
     },
 })
@@ -34,16 +33,18 @@ inputEvent(livedAbroadId.yes, {
             if (confirm('By confirming, you acknowledge that your address data will be erased!')) {
                 $addresses.hide()
                 $addrList.html(null)
-                $country.show()
+                $country.show().find('select').prop('disabled', false)
 
                 selected = false
             } else {
                 $el.prop('checked', false)
                 $(livedAbroadId.no).prop('checked', true)
             }
-        } else $country.show()
+        } else $country.show().find('select').prop('disabled', false)
     }
 })
+
+selectEvent(selector.id.select.country, { fill: true, onChange })
 
 
 function cloneAddrForm(i = 0, data = null) {
@@ -52,6 +53,7 @@ function cloneAddrForm(i = 0, data = null) {
 
     $clone.find('input, select').each(function() {
         const $field = $(this)
+        const type = $field.attr('type')
 
         const id = $field.attr('id')
         if (id) {
@@ -63,7 +65,7 @@ function cloneAddrForm(i = 0, data = null) {
 
         const name = $field.attr('name').replace('[]', '')
 
-        $field.prop('disabled', false)
+        if (type !== 'radio') $field.prop('disabled', false)
 
         if (data) {}
     })
@@ -172,12 +174,44 @@ function resetEvents() {
                     $since.addClass('is-invalid')
                     $help.html(msg)
                 } else {
+                    const $livedAbroad = $since.parent().parent().next()
                     const minDate = moment($(selector.id.hidden.appliedOn).val()).clone().subtract(3, 'years')
+
+                    if (since.isSameOrAfter(minDate)) $livedAbroad.show().find('input').prop('disabled', false)
+                    else {
+                        $livedAbroad.hide().find('input').prop('disabled', true)
+                        $country.hide().find('select').prop('disabled', true)
+                    }
 
                     $since.addClass('is-valid')
                 }
             }
 
+        },
+    })
+
+    inputEvent(RS.prevLivedAbroad, {
+        onChange(value, $el) {
+            const $form = $el.parent().parent().parent().parent().parent()
+            const $nextForms = $form.nextAll()
+            const idx = +$form.data('idx')
+            let action = 'show', disabled = false
+
+            if (value === 'Y') {
+                //? disable all next forms
+                $nextForms.hide()
+            } else {
+                action = 'hide'
+                disabled = true
+
+                //? enable next forms
+                if (!$nextForms.length) {
+                    $form.after(cloneAddrForm(idx + 1))
+                    resetEvents()
+                } else $nextForms.show()
+            }
+
+            $country[action]().find('select').prop('disabled', disabled)
         },
     })
 
