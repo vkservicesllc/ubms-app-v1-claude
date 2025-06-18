@@ -46,6 +46,7 @@ const query = {
     aplBusinesses: new Query(db.carrier, 'application_businesses'),
     aplVehicles: new Query(db.carrier, 'application_vehicles'),
     aplBeneficiaries: new Query(db.carrier, 'application_beneficiaries'),
+    aplEmergencies: new Query(db.carrier, 'application_emergencies'),
 }
 
 
@@ -401,10 +402,6 @@ class Application {
                     }
                 }
                 break
-
-
-            // case 'prev-address':
-            //     break
 
 
             case 'driver-license':
@@ -876,6 +873,20 @@ class Application {
                 break
 
 
+            case 'misc':
+                target = 'aplEmergencies'
+                idProp = 'aplId'
+
+                if (this.step <= 11) {
+                    mainData.step = 11
+                    action = 'insert'
+                } else {
+                    //
+                }
+
+                break
+
+
         }
 
         if (!error) {
@@ -1017,7 +1028,7 @@ class Application {
 
 
     static stepList = [
-        [ 'Profile', 'Address' ],  //, 'Previous Addresses' ],
+        [ 'Profile', 'Address' ],
         "Driver's License",
         'Medical Card',
         'Legal Compliance',
@@ -1028,6 +1039,7 @@ class Application {
         'Business Entity',
         'Beneficiary',
         'Miscellaneous',
+        'Documents',
     ]
 
     static violationList = {

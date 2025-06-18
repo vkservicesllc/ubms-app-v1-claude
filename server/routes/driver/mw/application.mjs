@@ -631,7 +631,7 @@ export const applicationProgress = async (req, res) => {
         }
 
         if (step >= 8) { /* BUSINESS / OWNERSHIP */
-            if (application.position[0] === 'OO') steps[8] += ' / Ownership'
+            if (application.position[0] === 'OO') steps[8] = 'Business / Ownership'
             hbs.button.seven = buttonProps.save
             hbs.accordion.seven = accordionProps.finished
             hbs.llcDetailsDisplay = ' style="display: none;"'
