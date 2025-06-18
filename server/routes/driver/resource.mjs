@@ -92,6 +92,18 @@ const applicantBeneficiaryFields = [
 ]
 applicantBeneficiaryFields.forEach(prop => validateApplicantBeneficiary.push(ApplicationForm[prop].validate()))
 
+const validateApplicantEmergency = []
+const applicantEmergencyFields = ['emergPhone', 'emergName', 'emergRelation']
+applicantEmergencyFields.forEach(prop => validateApplicantEmergency.push(ApplicationForm[prop].validate()))
+
+const validateApplicantPrevAddress = []
+const validatePrevAddressFields = [
+    'livedAbroad', 'country',
+    '_addrSince', '_address1', '_address2',
+    '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
+]
+validatePrevAddressFields.forEach(prop => validateApplicantPrevAddress.push(ApplicationForm[prop].validate()))
+
 
 const dynamicValidator = {
     applications: (req, res, next) => {
@@ -132,6 +144,9 @@ const dynamicValidator = {
             case 'beneficiary':
                 validators = validateApplicantBeneficiary
                 break
+            case 'misc':
+                validators = [ ...validateApplicantEmergency, ...validateApplicantPrevAddress ]
+                break
         }
 
         Promise.all(validators.map(validator => validator.run(req)))
@@ -171,7 +186,7 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
         const { formId, step } = req.params
         const application = await Application.data(session, { formId })
         if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
-// return res.send(req.body) //! TEMP
+return res.send(req.body) //! TEMP
         const { error } = await application.modify(session, step, req.body)
         if (error) return throwErr.server(res, error)
 

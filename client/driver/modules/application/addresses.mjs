@@ -152,10 +152,8 @@ function resetEvents() {
         },
         onCompleted(since, $since) {
             const $help = $since.next()
-            let idx = $since
-                .parent().parent().parent().parent()
-                .data('idx')
-            idx = +idx
+            const $form = $since.parent().parent().parent().parent()
+            const idx = +$form.data('idx')
 
             since = moment(since, 'MM/DD/YYYY', true)
 
@@ -174,16 +172,27 @@ function resetEvents() {
                     $since.addClass('is-invalid')
                     $help.html(msg)
                 } else {
-                    const $livedAbroad = $since.parent().parent().next()
-                    const minDate = moment($(selector.id.hidden.appliedOn).val()).clone().subtract(3, 'years')
+                    let nextSince = $form.next().find(TS.prevAddrSince).val()
+                    if (nextSince) nextSince = moment(nextSince, 'MM/DD/YYYY')
 
-                    if (since.isSameOrAfter(minDate)) $livedAbroad.show().find('input').prop('disabled', false)
-                    else {
-                        $livedAbroad.hide().find('input').prop('disabled', true)
-                        $country.hide().find('select').prop('disabled', true)
+                    if (nextSince && since.isSameOrBefore(nextSince)) {
+                        let msg = '* Date overlap'
+                        msg += `<br/>Date expected<br/>after ${moment(nextSince).format('ll')}`
+
+                        $since.addClass('is-invalid')
+                        $help.html(msg)
+                    } else {
+                        const $livedAbroad = $since.parent().parent().next()
+                        const minDate = moment($(selector.id.hidden.appliedOn).val()).clone().subtract(3, 'years')
+
+                        if (since.isSameOrAfter(minDate)) $livedAbroad.show().find('input').prop('disabled', false)
+                        else {
+                            $livedAbroad.hide().find('input').prop('disabled', true)
+                            $country.hide().find('select').prop('disabled', true)
+                        }
+
+                        $since.addClass('is-valid')
                     }
-
-                    $since.addClass('is-valid')
                 }
             }
 
@@ -197,14 +206,11 @@ function resetEvents() {
             const idx = +$form.data('idx')
             let action = 'show', disabled = false
 
-            if (value === 'Y') {
-                //? disable all next forms
-                $nextForms.hide()
-            } else {
+            if (value === 'Y') $nextForms.hide()
+            else {
                 action = 'hide'
                 disabled = true
 
-                //? enable next forms
                 if (!$nextForms.length) {
                     $form.after(cloneAddrForm(idx + 1))
                     resetEvents()
@@ -215,4 +221,15 @@ function resetEvents() {
         },
     })
 
+}
+
+
+export default () => {
+    if ($addrList.length) {
+        $addrList.children().each(function() {
+            const $livedAbroad = $(this).find(`${RS.prevLivedAbroad}[value="Y"]`).eq(0)
+
+            if ($livedAbroad.prop('checked')) $(this).nextAll().remove()
+        })
+    }
 }

@@ -216,6 +216,7 @@ export const applicationProgress = async (req, res) => {
             preference: `${recUrl}/preference`,
             business: `${recUrl}/business`,
             beneficiary: `${recUrl}/beneficiary`,
+            misc: `${recUrl}/misc`,
         }
 
         for (const ct of ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {

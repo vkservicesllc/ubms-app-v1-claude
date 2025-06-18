@@ -1047,6 +1047,9 @@ class ApplicationForm {
         target: 'emergName',
         name: 'name',
         label: 'Name',
+        validator: {
+            sanitizer: value => value || null,
+        },
     })
 
     static emergRelation = createForm({
@@ -1054,6 +1057,9 @@ class ApplicationForm {
         target: 'emergRelation',
         name: 'relation',
         label: 'Relationship',
+        validator: {
+            sanitizer: value => value || null,
+        },
     })
 
     static livedAbroad = createYesNoForm({
@@ -1085,7 +1091,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'prevAddrSince',
         group: 'prevAddrSince',
-        name: 'since[]',
+        name: 'addresses[since][]',
         disabled,
         label: 'Lived since'
     })
@@ -1094,7 +1100,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'prevAddress1',
         group: 'prevAddress1',
-        name: 'address1[]',
+        name: 'addresses[address1][]',
         disabled,
     })
 
@@ -1102,7 +1108,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'prevAddress2',
         group: 'prevAddress2',
-        name: 'address2[]',
+        name: 'addresses[address2][]',
         disabled,
     }, { idx: 2 })
 
@@ -1110,7 +1116,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'prevAddrZip',
         group: 'prevAddrZip',
-        name: 'zip[]',
+        name: 'addresses[zip][]',
         disabled,
     })
 
@@ -1118,7 +1124,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'prevAddrCity',
         group: 'prevAddrCity',
-        name: 'city[]',
+        name: 'addresses[city][]',
         disabled,
     })
 
@@ -1126,7 +1132,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'prevAddrState',
         group: 'prevAddrState',
-        name: 'state[]',
+        name: 'addresses[state][]',
         disabled,
     })
 
@@ -1134,7 +1140,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'livedAbroad2',
         group: 'prevLivedAbroad',
-        name: 'livedAbroad[]',
+        name: 'addresses[livedAbroad][]',
         required,
         disabled,
         label: 'Lived Abroad',
