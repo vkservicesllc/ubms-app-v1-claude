@@ -35,7 +35,6 @@ const throwErr = require('../utils/error')
 const query = {
     drivers: new Query(db.carrier, 'drivers'),
     applications: new Query(db.carrier, 'applications'),
-    aplAddresses: new Query(db.carrier, 'application_addresses'),
     aplDLs: new Query(db.carrier, 'application_DLs'),
     aplMECs: new Query(db.carrier, 'application_MECs'),
     aplCitations: new Query(db.carrier, 'application_citations'),
@@ -47,6 +46,7 @@ const query = {
     aplVehicles: new Query(db.carrier, 'application_vehicles'),
     aplBeneficiaries: new Query(db.carrier, 'application_beneficiaries'),
     aplEmergencies: new Query(db.carrier, 'application_emergencies'),
+    aplAddresses: new Query(db.carrier, 'application_addresses'),
 }
 
 
@@ -144,7 +144,7 @@ class Application {
         this.address.since = data.addrSince
         this.address.enough = !!data.addrEnough
         this.address.livedAbroad = bool(data.livedAbroad)
-        this.address.country
+        this.address.country = data.country
         this.team = {
             name: data.teamName,
         }
@@ -303,7 +303,7 @@ class Application {
         }
 
         if (data.emergPhone)
-            data.emergency = {
+            this.emergency = {
                 phone: data.emergPhone,
                 name: data.emergName,
                 relation: data.emergRelation,
@@ -877,11 +877,53 @@ class Application {
                 target = 'aplEmergencies'
                 idProp = 'aplId'
 
-                if (this.step <= 11) {
+                const { livedAbroad, addresses, country } = data
+                delete data.livedAbroad
+                delete data.addresses
+                delete data.country
+
+                mainData.livedAbroad = null
+                mainData.country = null
+                await mysql.execute(query.aplAddresses.delete({ aplId: id }))
+
+                if (!this.address.enough) {
+                    mainData.livedAbroad = livedAbroad
+                    if (country) mainData.country = country
+                    if (addresses) target2 = 'aplAddresses'
+                }
+
+                if (this.step < 11) {
+                    data = processData(data)
+                    data.aplId = id
                     mainData.step = 11
                     action = 'insert'
                 } else {
-                    //
+                    data = processData(data, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: this.emergency,
+                        currentUpdateLog: await this.log('updateLog', target)
+                    })
+                }
+
+                if (target2) {
+                    const { address1, address2, zip, city, state, since, livedAbroad } = addresses
+                    const count = zip.length
+                    data2 = []
+
+                    for (let i = 0; i < count; i++) {
+                        data2.push({
+                            aplId: id,
+                            address1: address1[i],
+                            address2: address2[i],
+                            zip: zip[i],
+                            city: city[i],
+                            state: state[i],
+                            since: since[i],
+                            livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
+                        })
+                    }
                 }
 
                 break
@@ -908,6 +950,9 @@ class Application {
             }
 
             if ((Array.isArray(data2) && data2.length) || Object.keys(data2).length) {
+                //* Data is deleted prior to insertion
+                if (Array.isArray(data2)) action = 'insert'
+
                 const [ result ] = await mysql.execute(query[target2][action](data2, { [idProp]: id }))
                 if (result.affectedRows > 0) modified = true
             }

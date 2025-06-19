@@ -186,7 +186,7 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
         const { formId, step } = req.params
         const application = await Application.data(session, { formId })
         if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
-return res.send(req.body) //! TEMP
+// return res.send(req.body) //! TEMP
         const { error } = await application.modify(session, step, req.body)
         if (error) return throwErr.server(res, error)
 

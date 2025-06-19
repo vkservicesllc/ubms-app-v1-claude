@@ -3,6 +3,7 @@ import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/add
 import patterns from '/modules/registry/patterns.mjs'
 import formId, { check, onInput, onChange, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 
 const TS = selector.class.text, SS = selector.class.select, RS = selector.class.radio
 const livedAbroadId = selector.id.radio.livedAbroad1
@@ -14,9 +15,12 @@ const $addrList = $('#address-list')
 const $addrForm = $('#address-form-template')
 
 
-if ($(livedAbroadId.no).is(':checked')) drawAddressForms()
-
 let selected = false
+
+if ($(livedAbroadId.no).is(':checked')) {
+    drawAddressForms()
+    selected = true
+}
 
 inputEvent(livedAbroadId.no, {
     onChange() {
@@ -48,8 +52,11 @@ selectEvent(selector.id.select.country, { fill: true, onChange })
 
 
 function cloneAddrForm(i = 0, data = null) {
+    const patt = /\[([^\]]+)\]/
     const $clone = $addrForm.clone().attr('id', `accident-form-${i}`)
     $clone.attr('data-idx', i)
+
+    if (data) data = sortArrayByObjectKey(data, 'since', false)
 
     $clone.find('input, select').each(function() {
         const $field = $(this)
@@ -63,11 +70,34 @@ function cloneAddrForm(i = 0, data = null) {
             $clone.find(`label[for="${id}"]`).attr('for', newId)
         }
 
-        const name = $field.attr('name').replace('[]', '')
+        const name = $field.attr('name')
+        const match = name.match(patt)
+        const prop = match ? match[1] : null
 
         if (type !== 'radio') $field.prop('disabled', false)
+        $field.attr('name', name.replace('[]', `[${i}]`))
 
-        if (data) {}
+        if (data) {
+            const type = $field.attr('type')
+            const value = data[i][prop]
+
+            if (value !== null) {
+                if (type === 'radio') {
+                    const _value = $field.attr('value')
+
+                    $field.prop('disabled', false)
+                    if ((_value === 'Y' && value === 1) || (_value === 'N' && value === 0))
+                        $field.prop('checked', true)
+
+                    $field.parent().parent().parent().show()
+                } else {
+                    $field.val(value).addClass('is-valid')
+
+                    if ($field.is('select')) $field.find('option[value=""]').remove()
+                    if ($field.parent().is(':hidden')) $field.parent().show()
+                }
+            }
+        }
     })
 
     return $clone.show()
@@ -206,8 +236,12 @@ function resetEvents() {
             const idx = +$form.data('idx')
             let action = 'show', disabled = false
 
-            if (value === 'Y') $nextForms.hide()
-            else {
+            if (value === 'Y') {
+                $nextForms.hide()
+                console.log($nextForms.length)
+
+                //! after hiding won't submit if there are unfilled required fields
+            } else {
                 action = 'hide'
                 disabled = true
 

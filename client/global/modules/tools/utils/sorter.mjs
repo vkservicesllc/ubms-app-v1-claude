@@ -1,4 +1,4 @@
-function sortArrayByObjectKey(array, key) {
+function sortArrayByObjectKey(array, key, asc = true) {
 
     return array.sort(function(a, b) {
         var x = a[key]
@@ -7,8 +7,8 @@ function sortArrayByObjectKey(array, key) {
         if (typeof x === 'string') x = x.toLowerCase()
         if (typeof y === 'string') y = y.toLowerCase()
         
-        if (x < y) return -1
-        if (x > y) return 1
+        if (x < y) return asc === true ? -1 : 1
+        if (x > y) return asc === true ? 1 : -1
         return 0
     })
 }

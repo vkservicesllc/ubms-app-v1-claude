@@ -1047,9 +1047,7 @@ class ApplicationForm {
         target: 'emergName',
         name: 'name',
         label: 'Name',
-        validator: {
-            sanitizer: value => value || null,
-        },
+        required,
     })
 
     static emergRelation = createForm({
@@ -1084,6 +1082,9 @@ class ApplicationForm {
             required,
             disabled,
             label: 'Country',
+            validator: {
+                optional: true,
+            },
         })
     })()
 

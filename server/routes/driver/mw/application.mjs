@@ -786,6 +786,7 @@ export const applicationProgress = async (req, res) => {
         if (step >= 10) { /* MISC */
             hbs.button.nine = buttonProps.save
             hbs.accordion.nine = accordionProps.finished
+            hbs.countryDisplay = ' style="display: none;"'
 
             const values = {
                 emergPhone: application?.emergency?.phone,
@@ -797,15 +798,14 @@ export const applicationProgress = async (req, res) => {
             }
 
             if (application.address.enough === false) {
-                hbs.addressesDisplay = ' style="display: none;"'
-                hbs.countryDisplay = ' style="display: none;"'
-
                 options.livedAbroad = { radio: {} }
                 options._livedAbroad = { radio: {} }
                 for (const prop of ['yes', 'no']) {
                     options.livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                     options._livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
                 }
+                options.livedAbroad.radio.yes.input.checked = application.address.livedAbroad === true
+                options.livedAbroad.radio.no.input.checked = application.address.livedAbroad === false
 
                 values.country = application.address.country
 
@@ -820,6 +820,16 @@ export const applicationProgress = async (req, res) => {
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+
+            if (values.country) {
+                hbs.countryDisplay = ''
+                options.country.select.input.disabled = false
+            }
+        }
+
+        if (step >= 11) {
+            hbs.button.ten = buttonProps.save
+            // hbs.accordion.ten = accordionProps.finished
         }
 
 
