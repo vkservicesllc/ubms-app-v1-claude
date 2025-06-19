@@ -6,6 +6,8 @@ import moment from 'moment'
 import Team from '../../../tools/core/team.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
 import { Application } from '../../../tools/core/driver.mjs'
+import Person from '../../../../client/global/modules/tools/core/person.mjs'
+import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
 import { Relationship } from '../../../../client/global/modules/tools/core/person.mjs'
 import { tel as formatTel, ssn as formatSsn } from '../../../../client/global/modules/tools/utils/formatter.mjs'
@@ -864,6 +866,8 @@ export const applicationProgress = async (req, res) => {
 export const applicationSummary = async (req, res) => {
     try {
         const { application: _id } = req.session
+        const { formId } = req.params
+
         if (!_id) {
             delete req.session.application
 
@@ -873,13 +877,46 @@ export const applicationSummary = async (req, res) => {
         const application = await Application.data(res.session, { _id })
         if (!application) return respond404(res)
 
-        const { formId } = req.params
-        if (formId != application.formId) return respond404(res)
+        if (formId !== application.formId) {
+            delete req.session.application
+
+            return res.redirect(`/application/${formId}`)
+        }
 
         const key = 'application.summary'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Summary' })
 
+        const na = (txt = 'None') => `<small class="text-danger">${txt}</small>`
+
+        hbs.application = application
+        hbs.application.fullLastName = application.lastName
+        if (!application.middleName) hbs.application.middleName = na()
+        if (application.suffix) hbs.application.fullLastName += `, ${application.suffix}`
+        hbs.application.dob = moment(application.dob).format('ll')
+        hbs.application.ssn = formatSsn(application.ssn)
+        hbs.application.maritalStatus = Person.maritalList[application.marital]
+        hbs.application.phone = formatTel(application.phone)
+        hbs.application.fullAddress = application.address.html({ inline: false })
+        hbs.application.address.since = moment(application.address.since).format('ll')
+        hbs.application.dl.type = application.dl.commercial ? 'Commercial' : 'Non-Commercial'
+        hbs.application.dl.state = Address.stateList[application.dl.state]
+        if (!application.dl.class) hbs.application.dl.class = na
+        hbs.application.dl.issuedOn = moment(application.dl.issuedOn).format('ll')
+        hbs.application.dl.expiresOn = moment(application.dl.expiresOn).format('ll')
+        if (!application.dl.endorsement) hbs.application.dl.endorsement = na()
+        if (!application.dl.restriction) hbs.application.dl.restriction = na()
+        if (!application.dl.revokedExpl) hbs.application.dl.revokedExpl = na('Never')
+        if (!application.dl.deniedExpl) hbs.application.dl.deniedExpl = na('Never')
+        if (!application.dl.revokedExpl) hbs.application.dl.revokedExpl = na('Never')
+        hbs.application.medCard = application.medCard ? 'Yes' : 'No'
+        if (application?.mec?.expiresOn)
+            hbs.application.mec.expiresOn = moment(application.mec.expiresOn).format('ll')
+        hbs.application.mec.issuedOn = application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('ll') : na()
+        if (!application.mec.nrcme) hbs.application.mec.nrcme = na()
+        if (!application.medList) hbs.application.medList = na()
+
+console.log(hbs.application)
         res.render('application/summary', hbs)
     } catch (err) {
         throwErr.server(res, null, err)

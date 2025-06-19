@@ -13,6 +13,17 @@
         .form-text {
             font-size: .8em;
         }
+        .table th {
+            font-size: .9em;
+            font-weight: 600;
+            padding-right: 0 !important;
+            width: 107px;
+            {{!-- outline: 1px dotted red; --}}
+        }
+        .table td {
+            {{!-- padding-left: 0 !important; --}}
+            {{!-- outline: 1px dotted blue; --}}
+        }
     </style>
 
     <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
@@ -20,6 +31,224 @@
         <div class="card text-center" id="apl-card" style="display: ;">
             <div class="card-body pt-4">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
+                <div class="card-text py-2" id="form-card">
+                    <p class="mb-0 px-5" style="font-size: .84em;">
+                        Review the summary of your professional driver application.<br/>
+                        Click <b><i>Edit</i></b> to correct any mistakes; otherwise, proceed further.
+                    </p>
+                </div>
+                <div class="text-start" style="font-size: .84em;">
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th class="text-secondary">Form ID:</th>
+                                    <td>{{application.formId}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th class="text-secondary">Position:</th>
+                                    <td>{{idx application.position 1}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Legal Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">First Name:</th>
+                                        <td>{{application.firstName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Middle Name:</th>
+                                        <td>{{{application.middleName}}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Last Name:</th>
+                                        <td>{{application.fullLastName}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Personal Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">Date of Birth:</th>
+                                        <td>{{application.dob}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Gender:</th>
+                                        <td>{{idx application.gender 1}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">SSN:</th>
+                                        <td>{{application.ssn}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Marital Status:</th>
+                                        <td>{{application.maritalStatus}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Contacts</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">Phone:</th>
+                                        <td>{{application.phone}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Email:</th>
+                                        <td>{{application.email}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Residence</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">Address:</th>
+                                        <td>
+                                            {{{application.fullAddress}}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Living since:</th>
+                                        <td>{{application.address.since}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Driver License</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">Type:</th>
+                                        <td>{{application.dl.type}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">State:</th>
+                                        <td>{{application.dl.state}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Number:</th>
+                                        <td>{{application.dl.number}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Class:</th>
+                                        <td>{{{application.dl.class}}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Issued on:</th>
+                                        <td>{{application.dl.issuedOn}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Expires on:</th>
+                                        <td>{{application.dl.expiresOn}}</td>
+                                    </tr>
+                                    {{#if (eq application.dl.commercial true)}}
+                                    <tr>
+                                        <th class="text-secondary">Endorsements:</th>
+                                        <td>{{{application.dl.endorsement}}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    <tr>
+                                        <th class="text-secondary">Restrictions:</th>
+                                        <td>{{{application.dl.restriction}}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Denied:</th>
+                                        <td>{{{application.dl.deniedExpl}}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Revoked:</th>
+                                        <td>{{{application.dl.revokedExpl}}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Medical Card</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    {{#if (eq application.medCard false)}}
+                                    <tr>
+                                        <th class="text-secondary"></th>
+                                        <td><small class="text-danger">Unavailable</small></td>
+                                    </tr>
+                                    {{else}}
+                                    <tr>
+                                        <th class="text-secondary">Expires on:</th>
+                                        <td>{{application.mec.expiresOn}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Exam Date:</th>
+                                        <td>{{{application.mec.issuedOn}}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">NRCME:</th>
+                                        <td>{{{application.mec.nrcme}}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    <tr>
+                                        <th class="text-secondary">Medications:</th>
+                                        <td>{{{application.medList}}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Legal Compliance</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-footer text-black-50">
                 {{{copyright}}}
