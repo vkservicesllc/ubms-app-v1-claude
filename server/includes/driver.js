@@ -36,4 +36,13 @@ module.exports = {
         },
     },
 
+    'application.summary': {
+        external: [ ...defaults.external ],
+        internal: {
+            css: [ ...defaults.internal.css, 'application' ],
+            js: [ ...defaults.internal.js, 'session.keep-alive' ],
+            mjs: [ ...defaults.internal.mjs ],
+        },
+    },
+
 }

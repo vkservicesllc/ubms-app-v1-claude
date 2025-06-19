@@ -1084,7 +1084,6 @@ class Application {
         'Business Entity',
         'Beneficiary',
         'Miscellaneous',
-        'Documents',
     ]
 
     static violationList = {

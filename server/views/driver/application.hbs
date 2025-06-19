@@ -32,9 +32,14 @@
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Position:</small> {{applicantPosition}}</p>
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Started at:</small> {{startedAt}}</p>
                         <div class="progress mt-2">
-                            <div class="progress-bar bg-success" style="width: {{progress}}%;">{{progress}}%</div>
+                            <div class="progress-bar bg-{{progressBg}}" style="width: {{progress}}%;">{{progress}}%</div>
                         </div>
                     </div>
+                    {{#if (eq progress 100)}}
+                    <div class="mt-3">
+                        <a href="{{href.summary}}">Back to Summary</a>
+                    </div>
+                    {{/if}}
 
                     <div class="accordion mt-3" id="apl-accordion">
                         {{{form.appliedOn.hidden.input}}}

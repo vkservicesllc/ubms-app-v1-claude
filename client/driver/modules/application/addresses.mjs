@@ -237,10 +237,28 @@ function resetEvents() {
             let action = 'show', disabled = false
 
             if (value === 'Y') {
-                $nextForms.hide()
-                console.log($nextForms.length)
+                if ($nextForms.length) {
+                    const $lastForm = $nextForms.eq($nextForms.length - 1)
+                    let filled = true
 
-                //! after hiding won't submit if there are unfilled required fields
+                    $lastForm.find('input[required], select[required]').each(function() {
+                        if (filled && !$(this).val()) filled = false
+                    })
+
+                    if (filled) {
+                        const $livedAbroad = $lastForm.find('input[type="radio"]:not(:disabled)')
+                        if ($livedAbroad.length) {
+                            filled = false
+
+                            $livedAbroad.each(function() {
+                                if ($(this).prop('checked')) filled = true
+                            })
+                        }
+                    }
+
+                    if (!filled) $lastForm.remove() //! WORKS BAD WITH $nextForms.length > 1
+                    $nextForms.hide()
+                }
             } else {
                 action = 'hide'
                 disabled = true

@@ -218,6 +218,9 @@ export const applicationProgress = async (req, res) => {
             beneficiary: `${recUrl}/beneficiary`,
             misc: `${recUrl}/misc`,
         }
+        hbs.href = {
+            summary: `/application/${formId}/summary`,
+        }
 
         for (const ct of ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {
             hbs.button[ct] = buttonProps.next
@@ -829,7 +832,9 @@ export const applicationProgress = async (req, res) => {
 
         if (step >= 11) {
             hbs.button.ten = buttonProps.save
-            // hbs.accordion.ten = accordionProps.finished
+            hbs.accordion.ten = accordionProps.finished
+
+            if (!('edit' in req.query)) return res.redirect(`/application/${formId}/summary`)
         }
 
 
@@ -837,6 +842,7 @@ export const applicationProgress = async (req, res) => {
         hbs.agency = agency
         hbs.carrier = carrier
         hbs.progress = Math.round(step / steps.length * 100)
+        hbs.progressBg = hbs.progress === 100 ? 'success' : 'primary'
         hbs.step = step
         hbs.steps = steps
         hbs.formId = formId
@@ -849,6 +855,32 @@ export const applicationProgress = async (req, res) => {
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET' //! Test time accuracy on live server
 
         res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+}
+
+
+export const applicationSummary = async (req, res) => {
+    try {
+        const { application: _id } = req.session
+        if (!_id) {
+            delete req.session.application
+
+            return res.redirect(`/application/${formId}`)
+        }
+
+        const application = await Application.data(res.session, { _id })
+        if (!application) return respond404(res)
+
+        const { formId } = req.params
+        if (formId != application.formId) return respond404(res)
+
+        const key = 'application.summary'
+        let { hbs } = res
+        hbs = hbs.set(key, { title: 'Driver Application Summary' })
+
+        res.render('application/summary', hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }
