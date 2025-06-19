@@ -20,6 +20,9 @@
             width: 107px;
             {{!-- outline: 1px dotted red; --}}
         }
+        .table th small {
+            font-weight: 500;
+        }
         .table td {
             {{!-- padding-left: 0 !important; --}}
             {{!-- outline: 1px dotted blue; --}}
@@ -37,7 +40,7 @@
                         Click <b><i>Edit</i></b> to correct any mistakes; otherwise, proceed further.
                     </p>
                 </div>
-                <div class="text-start" style="font-size: .84em;">
+                <div class="text-start" style="font-size: .82em;">
                     <div class="row mt-2">
                         <div class="col-md-6">
                             <table class="table table-sm">
@@ -152,6 +155,20 @@
                             </table>
                         </div>
                     </div>
+                    {{#if (eq application.address.enough false)}}
+                    <div class="row">
+                        <div class="col-md-9">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Prior Residence <small>(in the past 3 years)</small></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {{/if}}
                     <div class="row">
                         <div class="col-md-6">
                             <table class="table table-sm">
@@ -245,12 +262,48 @@
                                         <th colspan="2">Legal Compliance</th>
                                     </tr>
                                 </thead>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">DUI/DWI:</th>
+                                        <td>{{{application.dui}}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Criminal History:</th>
+                                        <td>{{{application.criminal}}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Drug/Alcohol Test:</th>
+                                        <td>{{application.dotDat}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Citations <small>(in the past 3 years)</small></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider" id="citations"></tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Accidents <small>(in the past 3 years)</small></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider" id="accidents"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card-footer text-black-50">
+            <div class="card-footer text-black-50" style="font-size: .7em;">
                 {{{copyright}}}
             </div>
         </div>

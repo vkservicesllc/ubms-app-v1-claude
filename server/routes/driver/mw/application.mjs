@@ -915,6 +915,13 @@ export const applicationSummary = async (req, res) => {
         hbs.application.mec.issuedOn = application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('ll') : na()
         if (!application.mec.nrcme) hbs.application.mec.nrcme = na()
         if (!application.medList) hbs.application.medList = na()
+        hbs.application.dui = !application.dui
+            ? na('Never')
+            : (application.duiInDecade ? 'Within past 10 years' : 'Before 10 years ago')
+        hbs.application.criminal = application.criminalExpl || na()
+        hbs.application.dotDat = application.dotDat
+            ? 'Refused/failed in the past 5 years'
+            : 'Never failed/refused in the past 5 years'
 
 console.log(hbs.application)
         res.render('application/summary', hbs)
