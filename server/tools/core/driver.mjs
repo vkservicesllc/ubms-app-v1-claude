@@ -932,13 +932,6 @@ class Application {
         }
 
         if (!error) {
-// console.log({ mainData, data, data2 })
-// console.log('----')
-// console.log(query[target][action](data, { [idProp]: id }))
-// console.log('----')
-// console.log(query.applications.update(mainData, { id }))
-// console.log('----')
-// console.log(query[target2][action](data2, { [idProp]: id }))
             if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
                 const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
                 if (result.affectedRows > 0) modified = true

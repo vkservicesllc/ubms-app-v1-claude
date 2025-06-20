@@ -1046,6 +1046,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'emergName',
         name: 'name',
+        maxLength: 20,
         label: 'Name',
         required,
     })
@@ -1054,6 +1055,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'emergRelation',
         name: 'relation',
+        maxLength: 20,
         label: 'Relationship',
         validator: {
             sanitizer: value => value || null,

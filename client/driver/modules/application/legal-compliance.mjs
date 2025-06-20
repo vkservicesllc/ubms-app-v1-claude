@@ -1,6 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import formId, { check, onInput, onChange, onSubmit, onYesNoRadioChange, onCompleted } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
+import { capitalizeEach } from '/modules/tools/utils/string.mjs'
 
 const violations = $.ajax('/api/local-source/application?filter=violations', { method: 'POST', async: false }).responseJSON
 
@@ -173,8 +174,20 @@ function resetEvents() {
             let desc = '<em class="text-danger">Empty Form</em>'
 
             if (reason) {
-                if (reason != 'other') reason = violations[reason]
-                else {
+                if (reason != 'other') {
+                    violationLoop:
+                    for (const group in violations) {
+                        const set = violations[group]
+
+                        if (typeof set === 'object')
+                            for (const prop in set) {
+                                if (reason !== prop) continue
+
+                                reason = set[prop]
+                                break violationLoop
+                            }
+                    }
+                } else {
                     const otherReason = $target.find(TS.citOtherReason).val()
                     if (otherReason) reason = otherReason
                     else reason = ''
@@ -213,7 +226,15 @@ function resetEvents() {
         },
     })
 
-    inputEvent(TS.citOtherReason, { strip: true, word: true, onInput, onChange })
+    inputEvent(TS.citOtherReason, {
+        strip: true,
+        word: true,
+        onInput(citation, $citation) {
+            $citation.val(capitalizeEach(citation))
+            onInput(citation, $citation)
+        },
+        onChange,
+    })
 
     inputEvent(TS.citDate, {
         mask: '99/99/9999',

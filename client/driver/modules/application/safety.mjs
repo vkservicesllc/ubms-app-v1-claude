@@ -1,6 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import formId, { check, onInput, onChange, onSubmit, onCompleted } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
+import { capitalizeEach } from '/modules/tools/utils/string.mjs'
 
 const accidents = $.ajax('/api/local-source/application?filter=accidents', { method: 'POST', async: false }).responseJSON
 
@@ -75,6 +76,7 @@ $removeButton.click(() => {
 
     if (!$accList.html()) $accList.append(cloneAccForm())
     resetEvents()
+    resetAccIdx()
 })
 
 $addButton.click(() => {
@@ -104,7 +106,7 @@ function cloneAccForm(i = 0, data = null) {
 
         const name = $field.attr('name').replace('[]', '')
 
-        $field.prop('disabled', false)
+        $field.prop('disabled', false).attr('name', name + `[${i}]`)
 
         if (data) {
             const type = $field.attr('type')
@@ -113,7 +115,7 @@ function cloneAccForm(i = 0, data = null) {
             if (value !== null) {
                 if (type === 'radio') {
                     const _value = $field.attr('value')
-                    if ((_value === 'Y' && value === true) || (_value === 'N' && value === false))
+                    if ((_value === 'Y' && value === 1) || (_value === 'N' && value === 0))
                         $field.prop('checked', true)
                 } else {
                     $field.val(value).addClass('is-valid')
@@ -170,8 +172,20 @@ function resetEvents() {
             let desc = '<em class="text-danger">Empty Form</em>'
 
             if (type) {
-                if (type != 'other') type = accidents[reason]
-                else {
+                if (type != 'other') {
+                    accidentLoop:
+                    for (const group in accidents) {
+                        const set = accidents[group]
+
+                        if (typeof set === 'object')
+                            for (const prop in set) {
+                                if (type !== prop) continue
+
+                                type = set[prop]
+                                break accidentLoop
+                            }
+                    }
+                } else {
                     const otherType = $target.find(TS.accOtherType).val()
                     if (otherType) type = otherType
                     else type = ''
@@ -210,7 +224,15 @@ function resetEvents() {
         },
     })
 
-    inputEvent(TS.accOtherType, { strip: true, word: true, onInput, onChange })
+    inputEvent(TS.accOtherType, {
+        strip: true,
+        word: true,
+        onInput(accident, $accident) {
+            $accident.val(capitalizeEach(accident))
+            onInput(accident, $accident)
+        },
+        onChange,
+    })
 
     inputEvent(TS.accDate, {
         mask: '99/99/9999',
@@ -249,4 +271,13 @@ function resetEvents() {
     
     selectEvent(SS.accState, { fill: true, onChange })
 
+}
+
+
+function resetAccIdx() {
+    $accList.find('.accident-form').each(function(i) {
+        $(this).find('input, select').each(function() {
+            $(this).attr('name', $(this).attr('name').split('[')[0] + `[${i}]`)
+        })
+    })
 }
