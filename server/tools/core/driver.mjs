@@ -229,8 +229,7 @@ class Application {
                 schState: data.schState,
                 schEndDate: data.schEndDate,
                 schDuration: data.schDuration,
-                currentVhl: bool(data.currentVhl),
-                
+                // currentVhl: bool(data.currentVhl),
             }
 
         this.prevEmployed = bool(data.prevEmployed)
@@ -1174,7 +1173,7 @@ class Application {
             rollback: 'Rollback',
             pickup: 'Heavy-Duty Pickup',
         },
-        semiTL: {
+        semi: {
             van: 'Dry Van',
             reefer: 'Reefer',
             flat: 'Flatbed',

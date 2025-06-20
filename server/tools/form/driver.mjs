@@ -512,7 +512,7 @@ class ApplicationForm {
         target: 'semiExp',
         group: 'semiExp',
         type: 'checkbox',
-        data: Application.vehicleList.semiTL,
+        data: Application.vehicleList.semi,
         name: 'vehicles[semi]',
         label: 'Semi Tractor/Trailer',
     })

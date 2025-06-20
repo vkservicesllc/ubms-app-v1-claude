@@ -904,19 +904,24 @@ export const applicationSummary = async (req, res) => {
         }
 
         hbs.application = application
+
         hbs.application.fullLastName = application.lastName
         if (!application.middleName) hbs.application.middleName = na()
         if (application.suffix) hbs.application.fullLastName += `, ${application.suffix}`
+
         hbs.application.dob = moment(application.dob).format('ll')
         hbs.application.ssn = formatSsn(application.ssn)
         hbs.application.maritalStatus = Person.maritalList[application.marital]
+
         hbs.application.phone = formatTel(application.phone)
         hbs.application.emergency.phone = formatTel(application.emergency.phone)
         if (application.emergency.relation) hbs.application.emergency.relation = ` <small>(${application.emergency.relation})</small>`
+
         hbs.application.fullAddress = application.address.html({ inline: false })
         hbs.application.address.since = moment(application.address.since).format('ll')
         if (application.address.country)
             hbs.application.address.country = Geography.countryList[application.address.country]
+
         hbs.application.dl.type = application.dl.commercial ? 'Commercial' : 'Non-Commercial'
         hbs.application.dl.state = Address.stateList[application.dl.state]
         if (!application.dl.class) hbs.application.dl.class = na
@@ -926,12 +931,14 @@ export const applicationSummary = async (req, res) => {
         if (!application.dl.restriction) hbs.application.dl.restriction = na()
         if (!application.dl.deniedExpl) hbs.application.dl.deniedExpl = 'Never'
         if (!application.dl.revokedExpl) hbs.application.dl.revokedExpl = 'Never'
+
         hbs.application.medCard = application.medCard ? 'Yes' : 'No'
         if (application?.mec?.expiresOn)
             hbs.application.mec.expiresOn = moment(application.mec.expiresOn).format('ll')
         hbs.application.mec.issuedOn = application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('ll') : na()
         if (!application.mec.nrcme) hbs.application.mec.nrcme = na()
         if (!application.medList) hbs.application.medList = na()
+
         hbs.application.dui = !application.dui
             ? 'Never'
             : (application.duiInDecade ? 'Within past 10 years' : 'Before 10 years ago')
@@ -939,6 +946,57 @@ export const applicationSummary = async (req, res) => {
         hbs.application.dotDat = application.dotDat
             ? 'Refused/failed in the past 5 years'
             : 'Never failed/refused in the past 5 years'
+
+        if (application.experience !== false) {
+            let { firstDate, lastDate } = application.experience
+            firstDate = moment(firstDate).format('ll')
+            lastDate = moment(lastDate).format('ll')
+
+            if (application.experience.cmv !== null)
+                hbs.application.experience.cmv = application.experience.cmv ? 'Yes' : 'No'
+
+            hbs.application.experience.vehicleList = na()
+            if (application.experience.vehicles) {
+                const miscList = { van: 'Cargo Van', tandem: 'Tandem Semi Tractor/Trailer' }
+                const groups = { straight: 'Straight Truck', semi: 'Semi Trailer', misc: null }
+                const { vehicles } = application.experience
+                let html = ''
+
+                for (let group in vehicles) {
+                    const array = vehicles[group], list = []
+                    const data = group !== 'misc' ? Application.vehicleList[group] : miscList
+                    const type = group === 'straight' ? ' Truck' : ''
+
+                    if (html) html += '<br/>'
+                    if (group !== 'misc') html += `<small><b>${groups[group]}:</b></small><br/>`
+
+                    array.forEach(prop => list.push(data[prop] + type))
+                    html += list.join(', ')
+                }
+
+                hbs.application.experience.vehicleList = html
+            }
+
+            hbs.application.experience.period = `${firstDate} — ${lastDate}`
+            if (application.experience.mileage)
+                hbs.application.experience.mileage = application.experience.mileage.toLocaleString()
+            if (application.experience.hours) {
+                let total = 0
+                application.experience.hours.forEach(hours => total += hours)
+                hbs.application.experience.hourList = application.experience.hours.join(' + ') + ' = ' + total
+            }
+
+            hbs.application.experience.schDesc = na('N/A')
+            if (application.experience.cdlSchool === true) {
+                let desc = application.experience.schName
+                desc += `<br/><small>Phone:</small> ${formatTel(application.experience.schPhone)}`
+                desc += `<br/><small>State:</small> ${Address.stateList[application.experience.schState]}`
+                desc += `<br/><small>Duration:</small> ${Application.schoolDurationList[application.experience.schDuration]}`
+                desc += `<br/><small>Graduated on</small> ${moment(application.experience.schEndDate).format('ll')}`
+
+                hbs.application.experience.schDesc = desc
+            }
+        }
 
 console.log(hbs.application)
         res.render('application/summary', hbs)

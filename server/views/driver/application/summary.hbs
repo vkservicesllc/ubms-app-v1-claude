@@ -301,13 +301,64 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-9">
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
                                         <th colspan="2">Driving Experience</th>
                                     </tr>
                                 </thead>
+                                <tbody class="table-group-divider">
+                                    {{#if (eq application.experience false)}}
+                                    <tr>
+                                        <td colspan="2"><small class="text-danger">None</small></td>
+                                    </tr>
+                                    {{else}}
+                                    {{#if (ne application.experience.cmv null)}}
+                                    <tr>
+                                        <th class="text-secondary">Commercial:</th>
+                                        <td>{{application.experience.cmv}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    <tr>
+                                        <th class="text-secondary">Vehicles:</th>
+                                        <td>
+                                            {{{application.experience.vehicleList}}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Driving Period:</th>
+                                        <td>
+                                            {{{application.experience.period}}}
+                                        </td>
+                                    </tr>
+                                    {{#if (hv application.experience.mileage)}}
+                                    <tr>
+                                        <th class="text-secondary">Total Mileage:</th>
+                                        <td>
+                                            {{{application.experience.mileage}}} mi
+                                        </td>
+                                    </tr>
+                                    {{/if}}
+                                    {{#if (hv application.experience.hours)}}
+                                    <tr>
+                                        <th class="text-secondary">Hours on Road:</th>
+                                        <td>
+                                            <small>Last 7 Days:</small><br/>
+                                            {{{application.experience.hourList}}}
+                                        </td>
+                                    </tr>
+                                    {{/if}}
+                                    {{#if (ne application.experience.cdlSchool null)}}
+                                    <tr>
+                                        <th class="text-secondary">CDL School:</th>
+                                        <td>
+                                            {{{application.experience.schDesc}}}
+                                        </td>
+                                    </tr>
+                                    {{/if}}
+                                    {{/if}}
+                                </tbody>
                             </table>
                         </div>
                     </div>
