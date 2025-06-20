@@ -4,6 +4,7 @@ import patterns from '/modules/registry/patterns.mjs'
 import formId, { check, onInput, onChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+// import checkForm from './emergency.mjs'
 
 const TS = selector.class.text, SS = selector.class.select, RS = selector.class.radio
 const livedAbroadId = selector.id.radio.livedAbroad1
@@ -13,6 +14,11 @@ const $addresses = $('#addresses')
 const $country = $('#country')
 const $addrList = $('#address-list')
 const $addrForm = $('#address-form-template')
+
+const $form = $('#misc-form')
+const $help = {
+    form: $('#misc-form-help'),
+}
 
 
 let selected = false
@@ -181,51 +187,54 @@ function resetEvents() {
             $date.removeClass('is-valid is-invalid').next().text(null)
         },
         onCompleted(since, $since) {
-            const $help = $since.next()
-            const $form = $since.parent().parent().parent().parent()
-            const idx = +$form.data('idx')
+            {
+                const $help = $since.next()
+                const $form = $since.parent().parent().parent().parent()
+                const idx = +$form.data('idx')
 
-            since = moment(since, 'MM/DD/YYYY', true)
+                since = moment(since, 'MM/DD/YYYY', true)
 
-            if (!since.isValid()) {
-                $since.addClass('is-invalid')
-                $help.text('* Invalid date')
-            } else {
-                const maxDate = idx
-                    ? moment($(`${selector.id.text.prevAddrSince}-${idx - 1}`).val() , 'MM/DD/YYYY').format('YYYY-MM-DD')
-                    : moment($(addrSinceId).val(), 'MM/DD/YYYY').format('YYYY-MM-DD')
-
-                if (since.isSameOrAfter(maxDate)) {
-                    let msg = '* Date overlap'
-                    msg += `<br/>Date expected<br/>before ${moment(maxDate).format('ll')}`
-
+                if (!since.isValid()) {
                     $since.addClass('is-invalid')
-                    $help.html(msg)
+                    $help.text('* Invalid date')
                 } else {
-                    let nextSince = $form.next().find(TS.prevAddrSince).val()
-                    if (nextSince) nextSince = moment(nextSince, 'MM/DD/YYYY')
+                    const maxDate = idx
+                        ? moment($(`${selector.id.text.prevAddrSince}-${idx - 1}`).val() , 'MM/DD/YYYY').format('YYYY-MM-DD')
+                        : moment($(addrSinceId).val(), 'MM/DD/YYYY').format('YYYY-MM-DD')
 
-                    if (nextSince && since.isSameOrBefore(nextSince)) {
+                    if (since.isSameOrAfter(maxDate)) {
                         let msg = '* Date overlap'
-                        msg += `<br/>Date expected<br/>after ${moment(nextSince).format('ll')}`
+                        msg += `<br/>Date expected<br/>before ${moment(maxDate).format('ll')}`
 
                         $since.addClass('is-invalid')
                         $help.html(msg)
                     } else {
-                        const $livedAbroad = $since.parent().parent().next()
-                        const minDate = moment($(selector.id.hidden.appliedOn).val()).clone().subtract(3, 'years')
+                        let nextSince = $form.next().find(TS.prevAddrSince).val()
+                        if (nextSince) nextSince = moment(nextSince, 'MM/DD/YYYY')
 
-                        if (since.isSameOrAfter(minDate)) $livedAbroad.show().find('input').prop('disabled', false)
-                        else {
-                            $livedAbroad.hide().find('input').prop('disabled', true)
-                            $country.hide().find('select').prop('disabled', true)
+                        if (nextSince && since.isSameOrBefore(nextSince)) {
+                            let msg = '* Date overlap'
+                            msg += `<br/>Date expected<br/>after ${moment(nextSince).format('ll')}`
+
+                            $since.addClass('is-invalid')
+                            $help.html(msg)
+                        } else {
+                            const $livedAbroad = $since.parent().parent().next()
+                            const minDate = moment($(selector.id.hidden.appliedOn).val()).clone().subtract(3, 'years')
+
+                            if (since.isSameOrAfter(minDate)) $livedAbroad.show().find('input').prop('disabled', false)
+                            else {
+                                $livedAbroad.hide().find('input').prop('disabled', true)
+                                $country.hide().find('select').prop('disabled', true)
+                            }
+
+                            $since.addClass('is-valid')
                         }
-
-                        $since.addClass('is-valid')
                     }
                 }
             }
 
+            if (check($form)) $help.form.hide().html(null)
         },
     })
 

@@ -178,6 +178,8 @@ export const applicationProgress = async (req, res) => {
         if (carrier) carrier = `<span title="${depts}">${carrier}</span>`
 
         const { step } = application
+        if (step === 12) return res.redirect(`/application/${formId}/agreement`)
+
         const { settings } = team
         const steps = [ ...Application.stepList ]
         const key = 'application'
@@ -897,6 +899,10 @@ export const applicationSummary = async (req, res) => {
             dox: `/application/${formId}/documents`,
             agreement: `/application/${formId}/agreement`,
         }
+        hbs.actionUrl = {
+            certify: `/resource/application/certify/form/${formId}`,
+        }
+
         hbs.application = application
         hbs.application.fullLastName = application.lastName
         if (!application.middleName) hbs.application.middleName = na()
@@ -905,6 +911,8 @@ export const applicationSummary = async (req, res) => {
         hbs.application.ssn = formatSsn(application.ssn)
         hbs.application.maritalStatus = Person.maritalList[application.marital]
         hbs.application.phone = formatTel(application.phone)
+        hbs.application.emergency.phone = formatTel(application.emergency.phone)
+        if (application.emergency.relation) hbs.application.emergency.relation = ` <small>(${application.emergency.relation})</small>`
         hbs.application.fullAddress = application.address.html({ inline: false })
         hbs.application.address.since = moment(application.address.since).format('ll')
         if (application.address.country)
@@ -960,7 +968,7 @@ export const applicationDocuments = async (req, res) => {
             return res.redirect(`/application/${formId}`)
         }
 
-        if (application.step < 11) return res.redirect(`/application/${formId}`)
+        if (application.step !== 11) return res.redirect(`/application/${formId}`)
 
         const key = 'application.documents'
         let { hbs } = res
@@ -993,7 +1001,7 @@ export const applicationAgreement = async (req, res) => {
             return res.redirect(`/application/${formId}`)
         }
 
-        if (application.step < 11) return res.redirect(`/application/${formId}`)
+        if (application.step !== 12) return res.redirect(`/application/${formId}`)
 
         const key = 'application.agreement'
         let { hbs } = res

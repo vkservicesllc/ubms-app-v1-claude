@@ -116,10 +116,42 @@
                                         <th class="text-secondary">Email:</th>
                                         <td>{{application.email}}</td>
                                     </tr>
+                                    <tr>
+                                        <th class="text-secondary">Emergency:</th>
+                                        <td>
+                                            {{application.emergency.phone}} —
+                                            {{application.emergency.name}}{{{application.emergency.relation}}}
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    {{!-- <div class="row">
+                        <div class="col-md-9">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Emergency Contact</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">Phone:</th>
+                                        <td>{{application.emergency.phone}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Name:</th>
+                                        <td>{{application.emergency.name}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Relationship:</th>
+                                        <td>{{{application.emergency.relation}}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> --}}
                     <div class="row">
                         <div class="col-md-9">
                             <table class="table table-sm">
@@ -132,12 +164,9 @@
                                     <tr>
                                         <th class="text-secondary">Address:</th>
                                         <td>
-                                            {{{application.fullAddress}}}
+                                            {{{application.fullAddress}}}<br/>
+                                            <small>Living since</small> {{application.address.since}}
                                         </td>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-secondary">Living since:</th>
-                                        <td>{{application.address.since}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -325,10 +354,12 @@
                         </p>
                     </div>
                     <div class="col-md-3">
-                        <div class="d-grid gap-2">
-                            <a class="btn btn-primary btn-sm" href="{{href.dox}}">Upload Document</a>
-                            <a class="btn btn-secondary btn-sm" href="{{href.agreement}}">Skip Upload</a>
-                        </div>
+                        <form id="certify-form" action="{{actionUrl.certify}}" method="POST">
+                            <div class="d-grid gap-2">
+                                <a class="btn btn-primary btn-sm" href="{{href.dox}}">Upload Document</a>
+                                <button type="submit" class="btn btn-secondary btn-sm">Skip Upload</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

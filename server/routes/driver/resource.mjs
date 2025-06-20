@@ -197,6 +197,23 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
 })
 
 
+router.post('/application/:action/form/:formId', async (req, res) => {
+    try {
+        const session = { ...res.session, user: true }
+        const { formId, action } = req.params
+        const application = await Application.data(session, { formId })
+        if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
+
+        const { error } = await application[action](session)
+        if (error) return throwErr.server(res, error)
+
+        res.redirect(`/application/${formId}/agreement`)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
 router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationCheck, async (req, res) => {
     try {
         const { _teamId, _carrierId } = req.params

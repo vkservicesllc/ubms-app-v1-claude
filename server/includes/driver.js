@@ -37,7 +37,7 @@ module.exports = {
     },
 
     'application.summary': {
-        external: [ ...defaults.external ],
+        external: [ ...defaults.external, 'moment' ],
         internal: {
             css: [ ...defaults.internal.css, 'application' ],
             js: [ ...defaults.internal.js, 'session.keep-alive' ],

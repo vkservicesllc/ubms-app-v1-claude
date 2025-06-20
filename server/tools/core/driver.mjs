@@ -961,6 +961,23 @@ class Application {
         return { modified, error }
     }
 
+    certify = async session => {
+        let modified = false,
+            error = sessionError(session, { branches: [ 'carrier', 'driver' ] })
+
+        if (!error && this.condition !== 'p') error = 'Permission Error: Application Locked'
+        if (error) return { modified, error }
+
+        if (this.step < 12) {
+            const id = await this.id()
+
+            const [ result ] = await mysql.execute(query.applications.update({ step: 12 }, { id }))
+            if (result.affectedRows > 0) modified = true
+        }
+
+        return { modified, error }
+    }
+
 
     delete = async session => {
         let deleted = false,

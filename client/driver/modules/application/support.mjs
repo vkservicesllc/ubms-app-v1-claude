@@ -1,8 +1,8 @@
-export default function() {
+export default function(offset = 1) {
     const { href } = window.location
     const x = href.split('/')
 
-    return x[x.length - 1].split('?')[0]
+    return x[x.length - offset].split('?')[0]
 }
 
 export const check = $form => $form.find('input[required]').filter('.is-invalid').length === 0
