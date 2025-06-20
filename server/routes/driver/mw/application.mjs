@@ -845,7 +845,7 @@ export const applicationProgress = async (req, res) => {
         hbs.agency = agency
         hbs.carrier = carrier
         hbs.progress = Math.round(step / steps.length * 100)
-        hbs.progressBg = hbs.progress === 100 ? 'success' : 'primary'
+        hbs.progressBg = hbs.progress === 100 ? 'success' : 'secondary'
         hbs.step = step
         hbs.steps = steps
         hbs.formId = formId
@@ -883,6 +883,8 @@ export const applicationSummary = async (req, res) => {
 
             return res.redirect(`/application/${formId}`)
         }
+
+        if (application.step !== 11) return res.redirect(`/application/${formId}`)
 
         const key = 'application.summary'
         let { hbs } = res
@@ -959,7 +961,9 @@ export const applicationDocuments = async (req, res) => {
             return res.redirect(`/application/${formId}`)
         }
 
-        const key = 'application.summary'
+        if (application.step < 11) return res.redirect(`/application/${formId}`)
+
+        const key = 'application.documents'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Documents' })
 
@@ -990,7 +994,9 @@ export const applicationAgreement = async (req, res) => {
             return res.redirect(`/application/${formId}`)
         }
 
-        const key = 'application.summary'
+        if (application.step < 11) return res.redirect(`/application/${formId}`)
+
+        const key = 'application.agreement'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Agreement' })
 
