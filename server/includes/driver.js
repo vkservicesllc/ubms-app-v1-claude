@@ -45,4 +45,22 @@ module.exports = {
         },
     },
 
+    'application.documents': {
+        external: [ ...defaults.external ],
+        internal: {
+            css: [ ...defaults.internal.css, 'application' ],
+            js: [ ...defaults.internal.js, 'session.keep-alive' ],
+            mjs: [ ...defaults.internal.mjs ],
+        },
+    },
+
+    'application.agreement': {
+        external: [ ...defaults.external ],
+        internal: {
+            css: [ ...defaults.internal.css, 'application' ],
+            js: [ ...defaults.internal.js, 'session.keep-alive' ],
+            mjs: [ ...defaults.internal.mjs ],
+        },
+    },
+
 }

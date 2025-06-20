@@ -37,8 +37,21 @@
                     </div>
                     {{#if (eq progress 100)}}
                     <div class="mt-3">
-                        <a href="{{href.summary}}">Back to Summary</a>
+                        <a href="{{href.summary}}" id="summary-link">Back to Summary</a>
                     </div>
+                    <script>
+                        $('#summary-link').click(function(evt) {
+                            evt.preventDefault()
+
+                            const href = $(this).attr('href')
+                            const duration = 750
+                            const $card = $('#apl-card')
+                            $card.fadeOut(duration)
+                            setTimeout(() => {
+                                location.href = href
+                            }, duration)
+                        })
+                    </script>
                     {{/if}}
 
                     <div class="accordion mt-3" id="apl-accordion">

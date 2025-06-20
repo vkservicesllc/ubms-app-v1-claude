@@ -1,18 +1,6 @@
 {{> head}}
 
     <style>
-        .apl-label {
-            display: inline-block;
-            width: 75px;
-            font-size: .8em;
-        }
-        .accordion-button-state {
-            display: inline-block;
-            margin-right: 10px;
-        }
-        .form-text {
-            font-size: .8em;
-        }
         .table th {
             font-size: .9em;
             font-weight: 600;
@@ -31,12 +19,12 @@
 
     <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
 
-        <div class="card text-center" id="apl-card" style="display: ;">
+        <div class="card text-center" id="apl-card" style="display: none;">
             <div class="card-body pt-4">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
                 <div class="card-text py-2" id="form-card">
                     <p class="mb-0 px-5" style="font-size: .84em;">
-                        Review the summary of your professional driver application.<br/>
+                        Please thoroughly review the summary of your application.<br/>
                         Click <b><i>Edit</i></b> to correct any mistakes; otherwise, proceed further.
                     </p>
                 </div>
@@ -164,7 +152,14 @@
                                         <th colspan="2">Prior Residence <small>(in the past 3 years)</small></th>
                                     </tr>
                                 </thead>
-                                <tbody class="table-group-divider"></tbody>
+                                <tbody class="table-group-divider" id="addresses">
+                                    {{#if (hv application.address.country)}}
+                                    <tr>
+                                        <th class="text-secondary">Country:</th>
+                                        <td>{{application.address.country}}</td>
+                                    </tr>
+                                    {{/if}}
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -302,6 +297,40 @@
                         </div>
                     </div>
                 </div>
+                <div class="row text-start g-3 mb-2 ps-1">
+                    <div class="col-md-4">
+                        <small style="font-size: .8em;">Found Mistakes?</small>&nbsp;
+                        <button class="btn btn-secondary btn-sm" data-href="{{href.form}}" id="edit-link">
+                            Edit
+                        </button>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="no-mistakes" />
+                            <label class="form-check-label" style="font-size: .8em;">
+                                I hereby certify that I have reviewed the summary and found no inaccuracies.
+                                To the best of my knowledge, all information provided is true and complete.
+                                I understand that any false or misleading information may result in disqualification from employment.
+                            </label>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="row text-start border-top g-3 my-2 ps-1" id="certified-section" style="display: none;">
+                    <div class="col-md-9">
+                        <p style="font-size: .8em;">
+                            To help expedite the processing of your application, we encourage you to upload the necessary documents.
+                            This step is entirely optional — if you prefer, you may bring the documents directly to our office instead.
+                            Rest assured, all transactions are secure, and we take every precaution to protect your information.
+                        </p>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-primary btn-sm" href="{{href.dox}}">Upload Document</a>
+                            <a class="btn btn-secondary btn-sm" href="{{href.agreement}}">Skip Upload</a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-footer text-black-50" style="font-size: .7em;">
                 {{{copyright}}}
@@ -309,5 +338,6 @@
         </div>
 
     </div>
+    <script type="module" src="/modules/application/summary.mjs"></script>
 
 {{> foot}}

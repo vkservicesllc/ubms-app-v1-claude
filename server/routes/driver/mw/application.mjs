@@ -8,6 +8,7 @@ import Carrier from '../../../tools/core/carrier.mjs'
 import { Application } from '../../../tools/core/driver.mjs'
 import Person from '../../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
+import Geography from '../../../../client/global/modules/tools/core/geography.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
 import { Relationship } from '../../../../client/global/modules/tools/core/person.mjs'
 import { tel as formatTel, ssn as formatSsn } from '../../../../client/global/modules/tools/utils/formatter.mjs'
@@ -889,6 +890,11 @@ export const applicationSummary = async (req, res) => {
 
         const na = (txt = 'None') => `<small class="text-danger">${txt}</small>`
 
+        hbs.href = {
+            form: `/application/${formId}?edit`,
+            dox: `/application/${formId}/documents`,
+            agreement: `/application/${formId}/agreement`,
+        }
         hbs.application = application
         hbs.application.fullLastName = application.lastName
         if (!application.middleName) hbs.application.middleName = na()
@@ -899,6 +905,8 @@ export const applicationSummary = async (req, res) => {
         hbs.application.phone = formatTel(application.phone)
         hbs.application.fullAddress = application.address.html({ inline: false })
         hbs.application.address.since = moment(application.address.since).format('ll')
+        if (application.address.country)
+            hbs.application.address.country = Geography.countryList[application.address.country]
         hbs.application.dl.type = application.dl.commercial ? 'Commercial' : 'Non-Commercial'
         hbs.application.dl.state = Address.stateList[application.dl.state]
         if (!application.dl.class) hbs.application.dl.class = na
@@ -925,6 +933,68 @@ export const applicationSummary = async (req, res) => {
 
 console.log(hbs.application)
         res.render('application/summary', hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+}
+
+
+export const applicationDocuments = async (req, res) => {
+    try {
+        const { application: _id } = req.session
+        const { formId } = req.params
+
+        if (!_id) {
+            delete req.session.application
+
+            return res.redirect(`/application/${formId}`)
+        }
+
+        const application = await Application.data(res.session, { _id })
+        if (!application) return respond404(res)
+
+        if (formId !== application.formId) {
+            delete req.session.application
+
+            return res.redirect(`/application/${formId}`)
+        }
+
+        const key = 'application.summary'
+        let { hbs } = res
+        hbs = hbs.set(key, { title: 'Driver Application Documents' })
+
+        res.render('application/documents', hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+}
+
+
+export const applicationAgreement = async (req, res) => {
+    try {
+        const { application: _id } = req.session
+        const { formId } = req.params
+
+        if (!_id) {
+            delete req.session.application
+
+            return res.redirect(`/application/${formId}`)
+        }
+
+        const application = await Application.data(res.session, { _id })
+        if (!application) return respond404(res)
+
+        if (formId !== application.formId) {
+            delete req.session.application
+
+            return res.redirect(`/application/${formId}`)
+        }
+
+        const key = 'application.summary'
+        let { hbs } = res
+        hbs = hbs.set(key, { title: 'Driver Application Agreement' })
+
+        res.render('application/agreement', hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }

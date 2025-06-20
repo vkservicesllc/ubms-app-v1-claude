@@ -1,7 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import patterns from '/modules/registry/patterns.mjs'
-import formId, { check, onInput, onChange, onSubmit } from './support.mjs'
+import formId, { check, onInput, onChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 

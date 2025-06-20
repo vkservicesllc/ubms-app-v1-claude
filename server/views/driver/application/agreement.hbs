@@ -1,0 +1,44 @@
+{{> head}}
+
+    <style>
+        h6 {
+            font-size: .9rem;
+            font-weight: 600;
+        }
+    </style>
+
+    <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
+
+        <div class="card text-center" id="apl-card" style="display: none;">
+            <div class="card-body pt-4">
+                <h5 class="card-title text-secondary">Professional Driver Agreement</h5>
+                <section class="border text-start py-3 px-2" style="min-height: 65%; border-radius: 5px; font-size: .75em;">
+                    <h6>Applicant Certification and Authorization Statement</h6>
+                    <div>
+                        <p class="my-2">
+                            By submitting this application, I certify that I have personally completed it and that all information provided is true and accurate to the best of my knowledge.
+                            I authorize the company, its agents, or contractors who receive this application to conduct, at any time, an investigation of my background for employment purposes.
+                            This investigation may include, but is not limited to, information regarding my character, general reputation, personal characteristics, lifestyle, criminal history, driving record, credit history, employment history, education, alcohol or drug test results (including any refusal to test), or any other relevant information.
+                            This information may be obtained from individuals, organizations, entities, agencies, or other sources with knowledge of such matters.
+                        </p>
+                        <p class="my-2">
+                            If I am hired or contracted, this authorization shall remain on file and shall serve as ongoing authorization for the company to obtain consumer reports at any time during my employment or contract term.
+                            I have completed this application voluntarily and release the employer, its agents, and contractors from any liability related to providing this application for my use.
+                        </p>
+                        <p class="my-2">
+                            I consent to receiving text (SMS) messages from the employer and/or its affiliates regarding my application for employment.
+                            I have read and understand the job description and certify that I am capable of meeting its requirements.
+                            I understand that I may be contacted by email, phone, or direct mail.
+                        </p>
+                    </div>
+                </section>
+            </div>
+            <div class="card-footer text-black-50">
+                {{{copyright}}}
+            </div>
+        </div>
+
+    </div>
+    <script type="module" src="/modules/application/agreement.mjs"></script>
+
+{{> foot}}
