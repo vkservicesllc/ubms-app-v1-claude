@@ -916,9 +916,8 @@ export const applicationSummary = async (req, res) => {
         hbs.application.dl.expiresOn = moment(application.dl.expiresOn).format('ll')
         if (!application.dl.endorsement) hbs.application.dl.endorsement = na()
         if (!application.dl.restriction) hbs.application.dl.restriction = na()
-        if (!application.dl.revokedExpl) hbs.application.dl.revokedExpl = na('Never')
-        if (!application.dl.deniedExpl) hbs.application.dl.deniedExpl = na('Never')
-        if (!application.dl.revokedExpl) hbs.application.dl.revokedExpl = na('Never')
+        if (!application.dl.deniedExpl) hbs.application.dl.deniedExpl = 'Never'
+        if (!application.dl.revokedExpl) hbs.application.dl.revokedExpl = 'Never'
         hbs.application.medCard = application.medCard ? 'Yes' : 'No'
         if (application?.mec?.expiresOn)
             hbs.application.mec.expiresOn = moment(application.mec.expiresOn).format('ll')
@@ -926,7 +925,7 @@ export const applicationSummary = async (req, res) => {
         if (!application.mec.nrcme) hbs.application.mec.nrcme = na()
         if (!application.medList) hbs.application.medList = na()
         hbs.application.dui = !application.dui
-            ? na('Never')
+            ? 'Never'
             : (application.duiInDecade ? 'Within past 10 years' : 'Before 10 years ago')
         hbs.application.criminal = application.criminalExpl || na()
         hbs.application.dotDat = application.dotDat
