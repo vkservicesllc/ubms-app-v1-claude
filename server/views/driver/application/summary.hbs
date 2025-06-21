@@ -139,9 +139,12 @@
                                     <tr>
                                         <th class="text-secondary">Address:</th>
                                         <td>
-                                            {{{application.fullAddress}}}<br/>
-                                            <small>Living since</small> {{application.address.since}}
+                                            {{{application.fullAddress}}}
                                         </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Living since:</th>
+                                        <td>{{application.address.since}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -151,12 +154,12 @@
                     <div class="row">
                         <div class="col-md-9">
                             <table class="table table-sm">
-                                <thead>
+                                <thead id="addresses">
                                     <tr>
                                         <th colspan="2">Prior Residence <small>(in the past 3 years)</small></th>
                                     </tr>
                                 </thead>
-                                <tbody class="table-group-divider" id="addresses">
+                                <tbody class="table-group-divider">
                                     {{#if (hv application.address.country)}}
                                     <tr>
                                         <th class="text-secondary">Country:</th>
@@ -280,23 +283,35 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <table class="table table-sm">
+                            <table class="table table-sm" id="citations">
                                 <thead>
                                     <tr>
                                         <th colspan="2">Citations <small>(in the past 3 years)</small></th>
                                     </tr>
                                 </thead>
-                                <tbody class="table-group-divider" id="citations"></tbody>
+                                {{#if (eq application.citations false)}}
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <td colspan="2"><small class="text-danger">None</small></td>
+                                    </tr>
+                                </tbody>
+                                {{/if}}
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <table class="table table-sm">
+                            <table class="table table-sm" id="accidents">
                                 <thead>
                                     <tr>
                                         <th colspan="2">Accidents <small>(in the past 3 years)</small></th>
                                     </tr>
                                 </thead>
-                                <tbody class="table-group-divider" id="accidents"></tbody>
+                                {{#if (eq application.accidents false)}}
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <td colspan="2"><small class="text-danger">None</small></td>
+                                    </tr>
+                                </tbody>
+                                {{/if}}
                             </table>
                         </div>
                     </div>
