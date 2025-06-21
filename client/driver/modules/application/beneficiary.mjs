@@ -5,7 +5,6 @@ import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/add
 import { check, onInput, onChange, onKeyup, onCompleted, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { Relationship } from '/modules/tools/core/person.mjs'
-import { capitalizeFirst } from '/modules/tools/utils/string.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
 const relationId = SS.benefRelation
@@ -50,15 +49,7 @@ selectEvent(relationId, {
     },
 })
 
-inputEvent(otherRelId, {
-    strip: true,
-    word: true,
-    onInput(relation, $relation) {
-        $relation.val(capitalizeFirst(relation))
-        onInput(relation, $relation)
-    },
-    onChange,
-})
+inputEvent(otherRelId, { strip: true, word: true, capitalize: 'first', onInput, onChange })
 
 nameEvent(firstNameId, { onInput, onChange })
 

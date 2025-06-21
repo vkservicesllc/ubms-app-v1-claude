@@ -38,7 +38,6 @@ $(noMecId).on('change', function() {
     $mecRow[action]().find('input').prop('disabled', disabled)
 })
 
-//! repetative
 inputEvent(mecIssId, {
     ...dateOpts,
     onKeyup(issued, $issued) {
@@ -74,7 +73,6 @@ inputEvent(mecIssId, {
     },
 })
 
-//! repetative
 inputEvent(mecExpId, {
     ...dateOpts,
     onKeyup(expires, $expires) {
@@ -133,7 +131,7 @@ inputEvent(mecNumId, {
 
 onYesNoRadioChange(underMedsId, medListId)
 
-inputEvent(medListId, { strip: true, onInput, onChange })
+inputEvent(medListId, { strip: true, capitalize: 'first', onInput, onChange })
 
 
 onSubmit($form, $help, $submit, $card)

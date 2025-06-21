@@ -1,4 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { busNameEvent } from '/modules/events/company.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import patterns from '/modules/registry/patterns.mjs'
@@ -79,6 +80,7 @@ $removeButton.click(() => {
 
     if (!$emplList.html()) $emplList.append(cloneEmplForm())
     resetEvents()
+    resetEmplIdx()
 })
 
 $addButton.click(() => {
@@ -106,8 +108,7 @@ function cloneEmplForm(i = 0, data = null) {
         }
 
         const name = $field.attr('name').replace('[]', '')
-
-        $field.prop('disabled', false)
+        $field.prop('disabled', false).attr('name', name + `[${i}]`)
 
         if (data) {
             const type = $field.attr('type')
@@ -202,11 +203,13 @@ function resetEvents() {
         .parent()
         .attr('style', countEmplList() > 1 ? '' : 'display: none !important;')
 
-    inputEvent(TS.prevEmployer, {
-        capitalize: 'each',
-        strip: true,
+    busNameEvent(TS.prevEmployer, true, {
         onInput,
-        onChange,
+        onChange(busName, coType, $busName) {
+
+            if (coType) $busName.val(`${busName}, ${coType}`)
+            onChange(busName, $busName)
+        },
     })
 
     telEvent(TS.emplPhone, { onInput, onChange })
@@ -379,4 +382,13 @@ function resetEvents() {
         },
     })
 
+}
+
+
+function resetEmplIdx() {
+    $emplList.find('.employer-form').each(function(i) {
+        $(this).find('input, select').each(function() {
+            $(this).attr('name', $(this).attr('name').split('[')[0] + `[${i}]`)
+        })
+    })
 }

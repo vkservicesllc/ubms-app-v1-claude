@@ -57,7 +57,6 @@ driverLicenseEvent(dlNumId, { onInput, onChange })
 
 dlClassEvent(dlClassId)
 
-//! repetative
 inputEvent(dlIssId, {
     ...dateOpts,
     onKeyup(issued, $issued) {
@@ -93,7 +92,6 @@ inputEvent(dlIssId, {
     },
 })
 
-//! repetative
 inputEvent(dlExpId, {
     ...dateOpts,
     onKeyup(expires, $expires) {
@@ -151,9 +149,9 @@ onYesNoRadioChange(dlDeniedId, dlDeniedExplId)
 
 onYesNoRadioChange(dlRevokedId, dlRevokedExplId)
 
-inputEvent(dlDeniedExplId, { strip: true, onInput, onChange })
+inputEvent(dlDeniedExplId, { strip: true, capitalize: 'first', onInput, onChange })
 
-inputEvent(dlRevokedExplId, { strip: true, onInput, onChange })
+inputEvent(dlRevokedExplId, { strip: true, capitalize: 'first', onInput, onChange })
 
 
 onSubmit($form, $help, $submit, $card, () => $(dlCommercialClass).prop('disabled', false))

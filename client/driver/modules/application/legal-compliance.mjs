@@ -37,6 +37,8 @@ onYesNoRadioChange(duiId, selector.class.radio.duiInDecade, 2)
 
 onYesNoRadioChange(criminalId, criminalExplId)
 
+inputEvent(criminalExplId, { strip: true, capitalize: 'first', onInput, onChange })
+
 let selected = false
 
 inputEvent(citationsId.yes, {

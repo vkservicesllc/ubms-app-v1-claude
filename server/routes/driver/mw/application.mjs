@@ -777,6 +777,11 @@ export const applicationProgress = async (req, res) => {
             options.benefAddrState.select.input.options = { valOpt: true }
             options.benefMiddleName.text.label.content = 'Middle Name/Initial'
 
+            if (values.benefOtherRel) {
+                hbs.benefOtherRelDisplay = ''
+                options.benefOtherRel.text.input.disabled = false
+            }
+
             const relationData = { ...Relationship.data() }
             switch (application.marital) {
                 case 'm':
@@ -932,12 +937,14 @@ export const applicationSummary = async (req, res) => {
         if (!application.dl.deniedExpl) hbs.application.dl.deniedExpl = 'Never'
         if (!application.dl.revokedExpl) hbs.application.dl.revokedExpl = 'Never'
 
-        hbs.application.medCard = application.medCard ? 'Yes' : 'No'
-        if (application?.mec?.expiresOn)
-            hbs.application.mec.expiresOn = moment(application.mec.expiresOn).format('ll')
-        hbs.application.mec.issuedOn = application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('ll') : na()
-        if (!application.mec.nrcme) hbs.application.mec.nrcme = na()
-        if (!application.medList) hbs.application.medList = na()
+        if (application.medCard) {
+            if (application.mec.expiresOn)
+                hbs.application.mec.expiresOn = moment(application.mec.expiresOn).format('ll')
+            hbs.application.mec.issuedOn = application.mec.issuedOn ? moment(application.mec.issuedOn).format('ll') : na()
+            if (!application.mec.nrcme) hbs.application.mec.nrcme = na()
+            if (!application.medList) hbs.application.medList = na()
+        }
+        // hbs.application.medCard = application.medCard ? 'Yes' : 'No'
 
         hbs.application.dui = !application.dui
             ? 'Never'
@@ -997,6 +1004,8 @@ export const applicationSummary = async (req, res) => {
                 hbs.application.experience.schDesc = desc
             }
         }
+
+        // pre-employments
 
 console.log(hbs.application)
         res.render('application/summary', hbs)

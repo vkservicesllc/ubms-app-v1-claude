@@ -105,7 +105,6 @@ function cloneAccForm(i = 0, data = null) {
         }
 
         const name = $field.attr('name').replace('[]', '')
-
         $field.prop('disabled', false).attr('name', name + `[${i}]`)
 
         if (data) {

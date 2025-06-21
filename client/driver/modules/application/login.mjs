@@ -21,7 +21,7 @@ const onInput = () => $help.hide().html(null)
 
 const onKeyup = () => onInput()
 
-const onBlur = (value, $el) => {
+const onCompleted = (value, $el) => {
     if (value) {
         const $next = $el.parent().parent().next().find('input')
 
@@ -33,13 +33,13 @@ const onBlur = (value, $el) => {
 }
 
 
-telEvent(phoneId, { onKeyup, onBlur })
+telEvent(phoneId, { onKeyup, onCompleted })
 
 inputEvent(dobId, {
     mask: '99/99/9999',
     placeholder: 'MM/DD/YYYY',
     onKeyup,
-    onBlur,
+    onCompleted,
 })
 
 inputEvent(pinId, {
@@ -49,7 +49,7 @@ inputEvent(pinId, {
         const length = $pin.attr('maxlength')
         if (pin.length == length) $pin.blur()
     },
-    onBlur,
+    onBlur: onCompleted,
 })
 
 

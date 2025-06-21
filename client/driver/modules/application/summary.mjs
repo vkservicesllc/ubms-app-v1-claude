@@ -1,6 +1,7 @@
 import extractFormId from './support.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 
 const $card = $('#apl-card')
 const duration = 750
@@ -119,6 +120,42 @@ $.ajax(`/api/application/${formId}/accidents`, {
         })
 
         $table.html(html)
+    },
+})
+
+
+$.ajax(`/api/application/${formId}/employers`, {
+    method: 'POST',
+    success(response) {
+        let { data, error } = response
+        if (error) return alert(error)
+
+        if (data.length) {
+            let html = ''
+
+            data.forEach(row => {
+                const address = new Address(row)
+                let period = `${moment(row.startedOn).format('ll')} — `
+                period += row.leftOn ? moment(row.leftOn).format('ll') : 'Present day'
+                let subject = ''
+                if (row.fmcsr !== null) subject += `<small>FMCSR —</small> ${row.fmcsr ? 'Yes' : 'No'}`
+                if (subject) subject += '<br/>'
+                subject += `<small>Drug/Alcohol Testing —</small> ${row.dotDat ? 'Yes' : 'No'}`
+
+                html += '<tbody class="table-group-divider">'
+                html += `<tr><th class="text-secondary">Employer:</th><td>${row.employer}</td></tr>`
+                html += `<tr><th class="text-secondary">Phone:</th><td>${formatTel(row.phone)}</td></tr>`
+                html += `<tr><th class="text-secondary">Address:</th><td>${address.html({ inline: false })}</td></tr>`
+                html += `<tr><th class="text-secondary">Period:</th><td>${period}</td></tr>`
+                html += `<tr><th class="text-secondary">Position/Title:</th><td>${row.position}</td></tr>`
+                html += `<tr><th class="text-secondary">Earnings/Salary:</th><td>$${row.earnings.toLocaleString()} per month</td></tr>`
+                html += `<tr><th class="text-secondary">Subject to:</th><td>${subject}</td></tr>`
+                html += `<tr><th class="text-secondary">Reason for Leaving:</th><td>${row.rfl}</td></tr>`
+                html += '</tbody>'
+            })
+
+            $('#pre-employments').append(html)
+        }
     },
 })
 

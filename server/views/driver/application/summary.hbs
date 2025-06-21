@@ -362,6 +362,24 @@
                             </table>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <table class="table table-sm" id="pre-employments">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Previous Employment</th>
+                                    </tr>
+                                </thead>
+                                {{#if (eq application.prevEmployed false)}}
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <td colspan="2"><small class="text-danger">None</small></td>
+                                    </tr>
+                                </tbody>
+                                {{/if}}
+                            </table>
+                        </div>
+                    </div>
                 </div>
                 <div class="row text-start g-3 mb-2 ps-1">
                     <div class="col-md-4">
