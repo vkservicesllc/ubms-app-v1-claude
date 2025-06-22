@@ -21,15 +21,19 @@ $.ajax(`/api/application/${formId}/addresses`, {
         let { data, error } = response
         if (error) return alert(error)
 
-        if (data.length) {
+        const length = data.length
+
+        if (length) {
             let html = ''
             data = sortArrayByObjectKey(data, 'since', false)
 
             data.forEach((row, i) => {
                 const address = new Address(row)
+                let label = 'Prior Address'
+                if (length > 1) label += ` ${i + 1}`
 
                 html += '<tbody class="table-group-divider">'
-                html += `<tr><th class="text-secondary">Address ${i + 1}:</th>`
+                html += `<tr><th class="text-secondary">${label}:</th>`
                 html += `<td>${address.html({ inline: false })}</td></tr>`
                 html += `<tr><th class="text-secondary">Lived since</th><td>${moment(row.since).format('ll')}</td></tr>`
                 html += '</tbody>'
@@ -47,12 +51,15 @@ $.ajax(`/api/application/${formId}/citations`, {
         const { data, error } = response
         if (error) return alert(error)
 
-        if (!data.length) return
+        const length = data.length
+        if (!length) return
 
         const violations = $.ajax('/api/local-source/application?filter=violations', { method: 'POST', async: false }).responseJSON
         let html = ''
 
         data.forEach((row, i) => {
+            let label = 'Violation'
+            if (length > 1) label += ` ${i + 1}`
             let { violation: reason } = row
             const { other, citedOn, state } = row
 
@@ -72,7 +79,7 @@ $.ajax(`/api/application/${formId}/citations`, {
                 }
 
             html += '<tbody class="table-group-divider">'
-            html += `<tr><th class="text-secondary">Violation ${i + 1}:</th><td>${reason}</td></tr>`
+            html += `<tr><th class="text-secondary">${label}:</th><td>${reason}</td></tr>`
             html += `<tr><th class="text-secondary">Date:</th><td>${moment(citedOn).format('ll')}</td></tr>`
             html += `<tr><th class="text-secondary">State:</th><td>${Address.stateList[state]}</td></tr>`
             html += '</tbody>'
@@ -89,12 +96,15 @@ $.ajax(`/api/application/${formId}/accidents`, {
         const { data, error } = response
         if (error) return alert(error)
 
-        if (!data.length) return
+        const length = data.length
+        if (!length) return
 
         const accidents = $.ajax('/api/local-source/application?filter=accidents', { method: 'POST', async: false }).responseJSON
         let html = ''
 
         data.forEach((row, i) => {
+            let label = 'Accident'
+            if (length > 1) label += ` ${i + 1}`
             let { collision: type, injuries, fatalities } = row
             const { other, date, state } = row
 
@@ -117,7 +127,7 @@ $.ajax(`/api/application/${formId}/accidents`, {
                 }
 
             html += '<tbody class="table-group-divider">'
-            html += `<tr><th class="text-secondary">Accident ${i + 1}:</th><td>${type}</td></tr>`
+            html += `<tr><th class="text-secondary">${label}:</th><td>${type}</td></tr>`
             html += `<tr><th class="text-secondary">Date:</th><td>${moment(date).format('ll')}</td></tr>`
             html += `<tr><th class="text-secondary">State:</th><td>${Address.stateList[state]}</td></tr>`
             html += `<tr><th class="text-secondary">Casualties:</th><td>${injuries}<br/>${fatalities}</td></tr>`
@@ -135,11 +145,15 @@ $.ajax(`/api/application/${formId}/employers`, {
         let { data, error } = response
         if (error) return alert(error)
 
-        if (data.length) {
+        const length = data.length
+
+        if (length) {
             let html = ''
 
             data.forEach((row, i) => {
                 const address = new Address(row)
+                let label = 'Employer'
+                if (length > 1) label += ` ${i + 1}`
                 let period = `${moment(row.startedOn).format('ll')} — `
                 period += row.leftOn ? moment(row.leftOn).format('ll') : 'Present day'
                 let subject = ''
@@ -148,7 +162,7 @@ $.ajax(`/api/application/${formId}/employers`, {
                 subject += `<small>Drug/Alcohol Testing —</small> ${row.dotDat ? 'Yes' : 'No'}`
 
                 html += '<tbody class="table-group-divider">'
-                html += `<tr><th class="text-secondary">Employer ${i + 1}:</th><td>${row.employer}</td></tr>`
+                html += `<tr><th class="text-secondary">${label}:</th><td>${row.employer}</td></tr>`
                 html += `<tr><th class="text-secondary">Phone:</th><td>${formatTel(row.phone)}</td></tr>`
                 html += `<tr><th class="text-secondary">Address:</th><td>${address.html({ inline: false })}</td></tr>`
                 html += `<tr><th class="text-secondary">Period:</th><td>${period}</td></tr>`

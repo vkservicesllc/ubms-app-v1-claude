@@ -367,8 +367,11 @@ class ApplicationForm {
         data: Application.violationList,
         emptyOpt,
         required: true,
-        disabled,
+        // disabled,
         label: 'Violation',
+        validator: {
+            optional: true,
+        },
     })
 
     static _citOtherReason = createForm({
@@ -388,8 +391,11 @@ class ApplicationForm {
         group: 'citDate',
         name: 'citedOn[]',
         required,
-        disabled,
+        // disabled,
         label: 'Cited on',
+        validator: {
+            optional: true,
+        },
     })
 
     static _citState = createUsStateForm({
@@ -398,8 +404,11 @@ class ApplicationForm {
         group: 'citState',
         name: 'state[]',
         required,
-        disabled,
+        // disabled,
         label: 'State',
+        validator: {
+            optional: true,
+        },
     })
 
 

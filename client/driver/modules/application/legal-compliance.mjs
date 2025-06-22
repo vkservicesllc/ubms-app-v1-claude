@@ -114,13 +114,15 @@ function cloneCitForm(i = 0, data = null) {
 
         const name = $field.attr('name').replace('[]', '')
 
-        $field.prop('disabled', false)
+        // $field.prop('disabled', false)
 
         if (data) {
             const value = data[i][name]
 
             if (value) {
                 $field.val(value).addClass('is-valid')
+                if ($field.prop('disabled') === true)
+                    $field.prop('disabled', false)
 
                 if ($field.is('select'))
                     $field.find('option[value=""]').remove()
