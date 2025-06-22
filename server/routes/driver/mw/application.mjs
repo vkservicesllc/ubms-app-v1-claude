@@ -993,19 +993,33 @@ export const applicationSummary = async (req, res) => {
                 hbs.application.experience.hourList = application.experience.hours.join(' + ') + ' = ' + total
             }
 
-            hbs.application.experience.schDesc = na('N/A')
             if (application.experience.cdlSchool === true) {
-                let desc = application.experience.schName
-                desc += `<br/><small>Phone:</small> ${formatTel(application.experience.schPhone)}`
-                desc += `<br/><small>State:</small> ${Address.stateList[application.experience.schState]}`
-                desc += `<br/><small>Duration:</small> ${Application.schoolDurationList[application.experience.schDuration]}`
-                desc += `<br/><small>Graduated on</small> ${moment(application.experience.schEndDate).format('ll')}`
+                hbs.application.experience.schPhone = formatTel(application.experience.schPhone)
+                hbs.application.experience.schState = Address.stateList[application.experience.schState]
+                hbs.application.experience.schDuration = Application.schoolDurationList[application.experience.schDuration]
+                hbs.application.experience.schEndDate = moment(application.experience.schEndDate).format('ll')
+            } else hbs.application.experience.schName = 'Never attended'
 
-                hbs.application.experience.schDesc = desc
-            }
         }
-
-        // pre-employments
+        
+        hbs.application.preference.operType = { s: 'Solo', t: 'Team' }[application.preference.operType]
+        if (application.preference?.haulRegion) {
+            const haulRegionList = []
+            application.preference.haulRegion.forEach(region => haulRegionList.push(Application.haulRegionList[region]))
+            hbs.application.preference.haulRegionList = haulRegionList.join(', ')
+        }
+        if (application.preference?.haulRegion) {
+            const equipmentList = []
+            application.preference.equipmentType.forEach(type => equipmentList.push(Application.vehicleList.semi[type]))
+            hbs.application.preference.equipmentList = equipmentList.join(', ')
+        }
+        hbs.application.preference.startPref = {
+            '0': 'Right Away',
+            '1': 'One Week',
+            '2': 'Two Weeks',
+            '3': 'Three Weeks',
+            '4': 'Four Weeks',
+        }[application.preference.startPref]
 
 console.log(hbs.application)
         res.render('application/summary', hbs)

@@ -364,16 +364,34 @@
                                         </td>
                                     </tr>
                                     {{/if}}
-                                    {{#if (ne application.experience.cdlSchool null)}}
-                                    <tr>
-                                        <th class="text-secondary">CDL School:</th>
-                                        <td>
-                                            {{{application.experience.schDesc}}}
-                                        </td>
-                                    </tr>
-                                    {{/if}}
                                     {{/if}}
                                 </tbody>
+                                {{#if (ne application.experience.cdlSchool null)}}
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">CDL School:</th>
+                                        <td>{{application.experience.schName}}</td>
+                                    </tr>
+                                    {{#if (eq application.experience.cdlSchool true)}}
+                                    <tr>
+                                        <th class="text-secondary">Phone:</th>
+                                        <td>{{application.experience.schPhone}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">State:</th>
+                                        <td>{{application.experience.schState}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Duration:</th>
+                                        <td>{{application.experience.schDuration}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Graduated on:</th>
+                                        <td>{{application.experience.schEndDate}}</td>
+                                    </tr>
+                                    {{/if}}
+                                </tbody>
+                                {{/if}}
                             </table>
                         </div>
                     </div>
@@ -392,6 +410,39 @@
                                     </tr>
                                 </tbody>
                                 {{/if}}
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Driving Preference</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">Operating Type:</th>
+                                        <td>{{application.preference.operType}}</td>
+                                    </tr>
+                                    {{#if (hv application.preference.haulRegion)}}
+                                    <tr>
+                                        <th class="text-secondary">Haul Region:</th>
+                                        <td>{{{application.preference.haulRegionList}}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    {{#if (hv application.preference.haulRegion)}}
+                                    <tr>
+                                        <th class="text-secondary">Equipment:</th>
+                                        <td>{{{application.preference.equipmentList}}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    <tr>
+                                        <th class="text-secondary">Start:</th>
+                                        <td>{{application.preference.startPref}}</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
