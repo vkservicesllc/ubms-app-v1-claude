@@ -445,6 +445,71 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Business</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    {{#if (eq application.activeBusiness false)}}
+                                    <tr>
+                                        <th></th>
+                                        <td><small class="text-danger">None</small></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Assistance:</th>
+                                        <td>{{{application.businessAssist}}}</td>
+                                    </tr>
+                                    {{else}}
+                                    <tr>
+                                        <th class="text-secondary">Name:</th>
+                                        <td>{{application.business.busName}}, LLC</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">State:</th>
+                                        <td>{{application.business.state}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">EIN:</th>
+                                        <td>{{{application.business.ein}}}</td>
+                                    </tr>
+                                    {{/if}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Beneficiary</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    <tbody class="table-group-divider">
+                                    <tr>
+                                        <th class="text-secondary">Full Name:</th>
+                                        <td>{{application.beneficiary.fullName}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Relationship:</th>
+                                        <td>{{application.beneficiary.relationship}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Phone:</th>
+                                        <td>{{{application.beneficiary.phone}}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Last Name:</th>
+                                        <td>{{{application.beneficiary.address}}}</td>
+                                    </tr>
+                                </tbody>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="row text-start g-3 mb-2 ps-1">

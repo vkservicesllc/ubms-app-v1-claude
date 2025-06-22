@@ -11,7 +11,7 @@ import Address from '../../../../client/global/modules/tools/core/address.us.mjs
 import Geography from '../../../../client/global/modules/tools/core/geography.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
 import { Relationship } from '../../../../client/global/modules/tools/core/person.mjs'
-import { tel as formatTel, ssn as formatSsn } from '../../../../client/global/modules/tools/utils/formatter.mjs'
+import { tel as formatTel, ssn as formatSsn, ein as formatEin } from '../../../../client/global/modules/tools/utils/formatter.mjs'
 
 /* Forms */
 import { ApplicationForm } from '../../../tools/form/driver.mjs'
@@ -1020,6 +1020,20 @@ export const applicationSummary = async (req, res) => {
             '3': 'Three Weeks',
             '4': 'Four Weeks',
         }[application.preference.startPref]
+
+        if (application.activeBusiness) {
+            hbs.application.business.state = Address.stateList[application.business.state]
+            hbs.application.business.ein = formatEin(application.ein) || na('N/A')
+        } else {
+            hbs.application.businessAssist = application.businessAssist
+                ? `<small>Proposed name</small><br/>"${application.business.proposedName}, LLC"`
+                : 'Not needed'
+        }
+
+        hbs.application.beneficiary.relationship = application.beneficiary.otherRel || application.beneficiary.relation
+        hbs.application.beneficiary.fullName = new Person(application.beneficiary).fullName('FMLs')
+        hbs.application.beneficiary.phone = formatTel(application.beneficiary.phone)
+        hbs.application.beneficiary.address = new Address(application.beneficiary).html({ inline: false })
 
 console.log(hbs.application)
         res.render('application/summary', hbs)
