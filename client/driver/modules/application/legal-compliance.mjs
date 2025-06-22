@@ -29,9 +29,13 @@ const $deleteCitDesc = $('#delete-citation-desc')
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const countCitList = () => $citList.children().length
+let selected = false
 
+if ($(citationsId.yes).is(':checked')) {
+    selected = true
+    drawCitationForms()
+}
 
-if ($(citationsId.yes).is(':checked')) drawCitationForms()
 
 onYesNoRadioChange(duiId, selector.class.radio.duiInDecade, 2)
 
@@ -39,12 +43,10 @@ onYesNoRadioChange(criminalId, criminalExplId)
 
 inputEvent(criminalExplId, { strip: true, capitalize: 'first', onInput, onChange })
 
-let selected = false
 
 inputEvent(citationsId.yes, {
     onChange() {
         selected = true
-
         drawCitationForms()
     },
 })
@@ -102,7 +104,6 @@ function cloneCitForm(i = 0, data = null) {
 
     $clone.find('input, select').each(function() {
         const $field = $(this)
-        let filled = false
 
         const id = $field.attr('id')
         if (id) {
@@ -114,24 +115,20 @@ function cloneCitForm(i = 0, data = null) {
 
         const name = $field.attr('name').replace('[]', '')
 
-        // $field.prop('disabled', false)
+        $field.prop('disabled', false)
 
         if (data) {
             const value = data[i][name]
 
             if (value) {
                 $field.val(value).addClass('is-valid')
-                if ($field.prop('disabled') === true)
-                    $field.prop('disabled', false)
 
                 if ($field.is('select'))
                     $field.find('option[value=""]').remove()
 
                 if ($field.parent().is(':hidden'))
                     $field.parent().show()
-
-                filled = true
-            } else if (filled) $field.val('-')
+            }
         }
     })
 
@@ -219,14 +216,14 @@ function resetEvents() {
             onChange(reason, $reason)
 
             const $otherReason = $reason.parent().parent().next().find(TS.citOtherReason)
-            $otherReason
-                .val('-')
-                .parent().hide()
+            let required = false, action = 'hide'
+            if (reason === 'other') {
+                required = true
+                action = 'show'
+            }
 
-            if (reason === 'other')
-                $otherReason
-                    .val(null).removeClass('is-valid')
-                    .parent().show()
+            $otherReason.prop('required', required)
+                .parent()[action]()
         },
     })
 

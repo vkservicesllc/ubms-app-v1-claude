@@ -26,16 +26,17 @@ const $deleteAccDesc = $('#delete-accident-desc')
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const countAccList = () => $accList.children().length
-
-
-if ($(accidentsId.yes).is(':checked')) drawAccidentForms()
-
 let selected = false
+
+if ($(accidentsId.yes).is(':checked')) {
+    selected = true
+    drawAccidentForms()
+}
+
 
 inputEvent(accidentsId.yes, {
     onChange() {
         selected = true
-
         drawAccidentForms()
     },
 })
@@ -94,7 +95,6 @@ function cloneAccForm(i = 0, data = null) {
 
     $clone.find('input, select').each(function() {
         const $field = $(this)
-        let filled = false
 
         const id = $field.attr('id')
         if (id) {
@@ -122,7 +122,7 @@ function cloneAccForm(i = 0, data = null) {
                     if ($field.is('select')) $field.find('option[value=""]').remove()
                     if ($field.parent().is(':hidden')) $field.parent().show()
                 }
-            } else if (filled) $field.val('-')
+            }
         }
     })
 
@@ -212,14 +212,14 @@ function resetEvents() {
             onChange(type, $type)
 
             const $otherType = $type.parent().parent().next().find(TS.accOtherType)
-            $otherType
-                .val('-')
-                .parent().hide()
+            let required = false, action = 'hide'
+            if (type === 'other') {
+                required = true
+                action = 'show'
+            }
 
-            if (type === 'other')
-                $otherType
-                    .val(null).removeClass('is-valid')
-                    .parent().show()
+            $otherType.prop('required', required)
+                .parent()[action]()
         },
     })
 
