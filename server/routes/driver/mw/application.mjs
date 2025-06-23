@@ -694,7 +694,7 @@ export const applicationProgress = async (req, res) => {
                     currentVhlType: application?.vehicle?.type,
                 }
                 let vhlTypeData = {}
-
+console.log(application.vehicle)
                 if (application.deptId === 0) vhlTypeData = Application.vhlTypeList.truckLoad
                 if (application.deptId === 1) {
                     vhlTypeData = Application.vhlTypeList.expedite
@@ -1035,7 +1035,17 @@ export const applicationSummary = async (req, res) => {
         hbs.application.beneficiary.phone = formatTel(application.beneficiary.phone)
         hbs.application.beneficiary.address = new Address(application.beneficiary).html({ inline: false })
 
-console.log(hbs.application)
+        if (application.vehicle) {
+            if (application?.vehicle?.mmt !== 'other') {
+                const [ type, make, model ] = application.vehicle.mmt.split(':')
+
+                application.vehicle.type = type
+                hbs.application.vehicle.make = make
+                hbs.application.vehicle.model = model
+            }
+            hbs.application.vehicle.type = { van: 'Cargo Van', straightBox: 'Box Truck' }[application.vehicle.type]
+        }
+
         res.render('application/summary', hbs)
     } catch (err) {
         throwErr.server(res, null, err)
@@ -1068,6 +1078,13 @@ export const applicationDocuments = async (req, res) => {
         const key = 'application.documents'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Documents' })
+
+        hbs.href = {
+            summary: `/application/${formId}/summary`,
+        }
+        hbs.actionUrl = {
+            certify: `/resource/application/certify/form/${formId}`,
+        }
 
         res.render('application/documents', hbs)
     } catch (err) {

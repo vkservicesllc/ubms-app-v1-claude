@@ -825,10 +825,10 @@ class Application {
                                 data2.make = null
                                 data2.model = null
 
-                                if (data2.type !== 'straightBox')
+                                if (data2.mmt.split(':')[0] !== 'straightBox')
                                     data2.length = null
                             } else {
-                                if (data2.mmt.split(':')[0] !== 'straightBox')
+                                if (data2.type !== 'straightBox')
                                     data2.length = null
                             }
                         }

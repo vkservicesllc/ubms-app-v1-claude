@@ -478,6 +478,47 @@
                                     {{/if}}
                                 </tbody>
                             </table>
+                            {{#if (hv application.vehicle)}}
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Vehicle Owned</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-group-divider">
+                                    {{#if (hv application.vehicle.type)}}
+                                    <tr>
+                                        <th class="text-secondary">Type</th>
+                                        <td>{{application.vehicle.type}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    {{#if (hv application.vehicle.make)}}
+                                    <tr>
+                                        <th class="text-secondary">Make</th>
+                                        <td>{{application.vehicle.make}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    {{#if (hv application.vehicle.model)}}
+                                    <tr>
+                                        <th class="text-secondary">Model</th>
+                                        <td>{{application.vehicle.model}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    {{#if (hv application.vehicle.year)}}
+                                    <tr>
+                                        <th class="text-secondary">Year</th>
+                                        <td>{{application.vehicle.year}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    {{#if (hv application.vehicle.length)}}
+                                    <tr>
+                                        <th class="text-secondary">Length</th>
+                                        <td>{{application.vehicle.length}} ft</td>
+                                    </tr>
+                                    {{/if}}
+                                </tbody>
+                            </table>
+                            {{/if}}
                         </div>
                     </div>
                     <div class="row">

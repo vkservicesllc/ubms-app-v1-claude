@@ -5,12 +5,28 @@
         <div class="card text-center" id="apl-card" style="display: none;">
             <div class="card-body pt-4">
                 <h5 class="card-title text-secondary">Professional Driver Application</h5>
+                <div class="card-text pt-1 pb-2">
+                    <div class="mb-3">
+                        <a href="{{href.summary}}" id="summary-link">Back to Summary</a>
+                    </div>
+                    <div>
+                        <p class="text-danger">Temporarily unavailable... Work in progress...</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <form id="certify-form" action="{{actionUrl.certify}}" method="POST">
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-secondary btn-sm">Skip Upload</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card-footer text-black-50">
                 {{{copyright}}}
             </div>
         </div>
-
     </div>
     <script type="module" src="/modules/application/documents.mjs"></script>
 
