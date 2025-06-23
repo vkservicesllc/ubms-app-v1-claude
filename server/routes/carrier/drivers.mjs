@@ -2,10 +2,12 @@ const router = require('express').Router()
 const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
+import moment from 'moment'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
+import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
 import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
 import { sortObjectByKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
@@ -200,32 +202,39 @@ console.log(application)
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
+        const { _carrierId } = application
+
         hbs.formId = formId
         hbs.position = application.position[1]
         hbs.applicant = new Person(application).fullName('FMLs') + ` <small>(${calculateYearAge(application.dob)})</small>`
+        // hbs.status = { '0': 'US Citizen', '1': 'Permanent Resident', '2': 'Work Authorization/Visa' }[application.legalStatus[0]]
+        hbs.appliedAt = moment(application.finishedAt).format('lll')
+        hbs.steps = [ ...Application.stepList ]
+        hbs.steps[6] = 'Pre-Employments'
+        if (application.position[0] === 'OO') hbs.steps[8] = 'Business / Vehicle'
 
-        let options = {}, dropdown = {}, t = `\t`.repeat(11)
+        let options = {}, dropdown = {}, t = `\t`.repeat(10)
 
         /* PROFILE */
         {
-            dropdown.suffixItems = ''
-            dropdown.genderItems = ''
-            dropdown.maritalItems = ''
-            dropdown.addrStateItems = ''
+            dropdown.suffix = ''
+            dropdown.gender = ''
+            dropdown.marital = ''
+            // dropdown.addrState = ''
 
             for (const sfx in Person.suffixList)
-                dropdown.suffixItems += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
+                dropdown.suffix += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
             for (const sex in Person.genderList)
-                dropdown.genderItems += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
+                dropdown.gender += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
             for (const stat in Person.maritalList)
-                dropdown.maritalItems += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
-            for (const state in Address.stateList)
-                dropdown.addrStateItems += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+                dropdown.marital += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
+            // for (const state in Address.stateList)
+            //     dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
 
             const fields = [
                 'firstName', 'middleName', 'lastName', 'suffix',
-                'dob', 'gender', 'ssn', 'marital', 'phone',
-                'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
+                'dob', 'gender', 'ssn', 'marital', 'phone', 'email',
+                // 'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             ]
             options = updateFormOptions(options, ApplicationForm, fields)
             options.phone.text.label.content = 'Phone'
@@ -233,7 +242,6 @@ console.log(application)
 
         hbs.form = new ApplicationForm(options)
         hbs.dropdown = dropdown
-
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {

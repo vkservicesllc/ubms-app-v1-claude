@@ -10,6 +10,7 @@ import db from '../../settings/mysql.mjs'
 
 /* Tools */
 import moment from 'moment'
+import { utcTimeStamp } from '../utils/date.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Individual from './individual.mjs'
@@ -982,7 +983,10 @@ class Application {
         if (this.condition === 'p') {
             const id = await this.id()
 
-            const [ result ] = await mysql.execute(query.applications.update({ condition: 'c' }, { id }))
+            const [ result ] = await mysql.execute(query.applications.update({
+                condition: 'c',
+                finishedAt: utcTimeStamp(),
+            }, { id }))
             if (result.affectedRows > 0) modified = true
         }
 
