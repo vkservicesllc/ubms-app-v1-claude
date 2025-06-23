@@ -1046,7 +1046,7 @@ export const applicationSummary = async (req, res) => {
         hbs.application.beneficiary.address = new Address(application.beneficiary).html({ inline: false })
 
         if (application.vehicle) {
-            if (application?.vehicle?.mmt !== 'other') {
+            if (application?.vehicle?.mmt && application?.vehicle?.mmt !== 'other') {
                 const [ type, make, model ] = application.vehicle.mmt.split(':')
 
                 application.vehicle.type = type
