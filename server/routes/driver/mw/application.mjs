@@ -132,8 +132,13 @@ export const applicationLogin = async (req, res, next) => {
         if (req.session.application) return next()
 
         if (application.condition !== 'p') {
-            //! Return another hbs
-            return res.send('APPLICATION SUBMITTED')
+            const key = 'application.submitted'
+            let { hbs } = res
+            hbs = hbs.set(key, { title: 'Driver Application Complete' })
+
+            hbs.formId = formId
+
+            return res.render('application/submitted', hbs)
         }
 
         const key = 'application.login'

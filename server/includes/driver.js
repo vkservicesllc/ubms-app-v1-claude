@@ -63,4 +63,13 @@ module.exports = {
         },
     },
 
+    'application.submitted': {
+        external: [ ...defaults.external ],
+        internal: {
+            css: [ ...defaults.internal.css, 'application' ],
+            js: [ ...defaults.internal.js ],
+            mjs: [ ...defaults.internal.mjs ],
+        },
+    },
+
 }
