@@ -190,7 +190,8 @@ router.get('/application-form/:formId', User.verify, Team.verify, async (req, re
 
         const { formId } = req.params
         const application = await Application.data(res.session, { formId })
-        if (!application || application.condition !== 'c') return res.redirect(aplUrl)
+        if (!application || application.condition !== 'c' || application._teamId !== team._id)
+            return res.redirect(aplUrl)
 console.log(application)
 
         const key = 'drivers.application-form'
