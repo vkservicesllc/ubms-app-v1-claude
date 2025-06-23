@@ -131,6 +131,11 @@ export const applicationLogin = async (req, res, next) => {
         res.session.application = application
         if (req.session.application) return next()
 
+        if (application.condition !== 'p') {
+            //! Return another hbs
+            return res.send('APPLICATION SUBMITTED')
+        }
+
         const key = 'application.login'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Sign-in' })
@@ -162,7 +167,7 @@ export const applicationProgress = async (req, res) => {
         const { formId, deptId } = application
 
         const { application: _id } = req.session
-        if (!_id || _id !== application._id) {
+        if (!_id || _id !== application._id || application.condition !== 'p') {
             delete req.session.application
 
             return res.redirect(`/application/${formId}`)
@@ -1118,6 +1123,10 @@ export const applicationAgreement = async (req, res) => {
         const key = 'application.agreement'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Agreement' })
+
+        hbs.actionUrl = {
+            submit: `/resource/application/submit/form/${formId}`,
+        }
 
         res.render('application/agreement', hbs)
     } catch (err) {

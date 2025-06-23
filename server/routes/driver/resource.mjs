@@ -207,7 +207,7 @@ router.post('/application/:action/form/:formId', async (req, res) => {
         const { error } = await application[action](session)
         if (error) return throwErr.server(res, error)
 
-        res.redirect(`/application/${formId}/agreement`)
+        res.redirect(`/application/${formId}`)
     } catch (err) {
         throwErr.server(res, null, err)
     }
