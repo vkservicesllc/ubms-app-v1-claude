@@ -188,8 +188,8 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             className: 'right aligned',
             width: '120px',
-            render(data, type, row) {
-                const { _id, condition } = row
+            render(data, type, row) {console.log(row)
+                const { _id, condition, formId } = row
                 const { comment, modify, delete: remove } = row.actions.data
                 const { access } = row.actions.file
 
@@ -197,10 +197,10 @@ const table = $('#driver-apl-table').DataTable({
 
                 if (condition != 'p') {
                     if (modify) {
-                        panel += `<a class="modify-apl"><i class="black text edit outline icon"></i></a>`
+                        panel += `<a class="modify-apl" href="/drivers/application-form/${formId}"><i class="black text edit outline icon"></i></a>`
                         panel += `<a class="assign-apl"><i class="black clipboard outline icon"></i></a>`
                     }
-                    if (access) panel += `<a class="assign-apl"><i class="black folder outline icon"></i></a>`
+                    if (access) panel += `<a class="apl-files"><i class="black folder outline icon"></i></a>`
                     if (comment) panel += `<a class="comment-apl"><i class="black text comment outline icon"></i></a>`
                 } else {
                     if (modify)

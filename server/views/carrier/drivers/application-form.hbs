@@ -1,0 +1,143 @@
+{{> carrier/nav.alpha}}
+
+    <div class="ui horizontal list" style="margin-bottom: 10px;">
+        <div class="item">
+            <div class="content">
+            <h5 class="ui header">Form:</h5>
+                {{formId}}
+            </div>
+        </div>
+        <div class="item">
+            <div class="content">
+            <h5 class="ui header">Position:</h5>
+                {{position}}
+            </div>
+        </div>
+        <div class="item">
+            <div class="content">
+            <h5 class="ui header">Applicant:</h5>
+                {{{applicant}}}
+            </div>
+        </div>
+    </div>
+
+    <div class="ui grid" style="width: 960px;">
+        <div class="three wide left attached column">
+            <div class="ui vertical fluid tabular menu">
+                <a class="item active" data-tab="profile">Profile</a>
+                <a class="item" data-tab="address">Address</a>
+                <a class="item" data-tab="dl">Driver License</a>
+                <a class="item" data-tab="mec">Medical Card</a>
+            </div>
+        </div>
+        <div class="thirteen wide stretched right attached column">
+            <div class="ui seamless right attached segment" style="padding: 20px;">
+                <div class="ui active tab" data-tab="profile">
+                    <form id="profile-form" class="ui form" action="" method="POST">
+                        <div class="ui four column compact grid">
+                            <div class="four wide field">
+                                {{{form.firstName.text.label}}}
+                                {{{form.firstName.text.input}}}
+                            </div>
+                            <div class="four wide field">
+                                {{{form.middleName.text.label}}}
+                                {{{form.middleName.text.input}}}
+                            </div>
+                            <div class="four wide field">
+                                {{{form.lastName.text.label}}}
+                                {{{form.lastName.text.input}}}
+                            </div>
+                            <div class="three wide field">
+                                {{{form.suffix.select.label}}}
+                                <div class="ui fluid clearable selection dropdown" id="suffix-dropdown">
+                                    {{{form.suffix.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.suffix}}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="ui tab" data-tab="address">
+                    Address content goes here.
+                </div>
+                <div class="ui tab" data-tab="dl">
+                    Driver License content goes here.
+                </div>
+                <div class="ui tab" data-tab="mec">
+                    Medical Card content goes here.
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('.menu .item').tab()
+    </script>
+
+    {{!-- <div class="ui four column grid">
+
+        <div class="column">
+
+            <div class="ui fluid card">
+                <div class="content">
+                    <div class="header">Profile</div>
+                    <div class="ui small form" style="margin-top: 20px; margin-bottom: 10px;">
+                        <form action="">
+                            <div class="ui two column grid">
+                                <div class="eight wide field">
+                                    {{{form.firstName.text.label}}}
+                                    {{{form.firstName.text.input}}}
+                                </div>
+                                <div class="eight wide field">
+                                    {{{form.middleName.text.label}}}
+                                    {{{form.middleName.text.input}}}
+                                </div>
+                            </div>
+                            <div class="ui two column grid">
+                                <div class="eight wide field">
+                                    {{{form.lastName.text.label}}}
+                                    {{{form.lastName.text.input}}}
+                                </div>
+                                <div class="five wide field">
+                                    {{{form.suffix.select.label}}}
+                                    <div class="ui fluid clearable selection dropdown" id="suffix-dropdown">
+                                        {{{form.suffix.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.suffix}}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="ui blue button">
+                    <i class="save icon"></i>
+                    Save Changes
+                </div>
+            </div>
+
+            <div class="ui fluid card">
+                <div class="content">
+                    <div class="header">Address</div>
+                    <div class="ui form">
+                        <form action="">
+                            PROFILE FORM
+                        </form>
+                    </div>
+                </div>
+                <div class="ui blue button">
+                    <i class="save icon"></i>
+                    Save Changes
+                </div>
+            </div>
+
+        </div>
+
+    </div> --}}
+
+
+{{> carrier/nav.omega}}

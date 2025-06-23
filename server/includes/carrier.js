@@ -102,6 +102,15 @@ module.exports = {
         },
     },
 
+    'drivers.application-form': {
+        external: [ ...online.external, 'jquery.masked-input', 'moment' ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
     'drivers.pre-employments': {
         external: [ ...online.external ],
         internal: {

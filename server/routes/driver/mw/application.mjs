@@ -704,7 +704,7 @@ export const applicationProgress = async (req, res) => {
                     currentVhlType: application?.vehicle?.type,
                 }
                 let vhlTypeData = {}
-console.log(application.vehicle)
+
                 if (application.deptId === 0) vhlTypeData = Application.vhlTypeList.truckLoad
                 if (application.deptId === 1) {
                     vhlTypeData = Application.vhlTypeList.expedite
