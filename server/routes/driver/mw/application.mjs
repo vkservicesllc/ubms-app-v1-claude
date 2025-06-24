@@ -18,7 +18,7 @@ import { ApplicationForm } from '../../../tools/form/driver.mjs'
 import { updateFormOptions } from '../../../tools/form/builder.mjs'
 
 const formInstr = {
-    labelClass: 'form-label fw-normal', // 'form-label text-black-50',
+    labelClass: 'form-label fw-normal text-secondary', // 'form-label text-black-50',
     labelClassRequired: 'form-label',
     textClass: 'form-control',
     textareaClass: 'form-control',
@@ -46,6 +46,7 @@ export const applicationStart = async (req, res, next) => {
         const key = 'application.registration'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
+        hbs.bodyAttrs = ' data-bs-theme="dark"'
         hbs.company = false
 
         const { param: route } = req.params
@@ -91,8 +92,9 @@ export const applicationStart = async (req, res, next) => {
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
         Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         options.position.select.label.content = 'Desired Position'
-        options.addrState.select.input.options = { valOpt: true }
         options.position.select.input.data = team.list.drivers.positions
+        options.phone.text.label.content = 'U.S. Phone'
+        options.addrState.select.input.options = { valOpt: true }
         options.marital = { radio: { label: { class: formInstr.labelClassRequired } } }
         options.status = { radio: { label: { class: formInstr.labelClassRequired } } }
 
@@ -238,7 +240,7 @@ export const applicationProgress = async (req, res) => {
             summary: `/application/${formId}/summary`,
         }
 
-        for (const ct of ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {
+        for (const ct of ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']) {
             hbs.button[ct] = buttonProps.next
             hbs.accordion[ct] = accordionProps.pending
         }
@@ -280,9 +282,49 @@ export const applicationProgress = async (req, res) => {
             options.addrState.select.input.options = { valOpt: true }
         }
 
+        if (step >= 0) { /* PRIOR RESIDENCE */
+            if (application.address.enough === false) {
+                hbs.countryDisplay = ' style="display: none;"'
+
+                options.livedAbroad = { radio: {} }
+                options._livedAbroad = { radio: {} }
+                for (const prop of ['yes', 'no']) {
+                    options.livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                    options._livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                }
+                options.livedAbroad.radio.yes.input.checked = application.address.livedAbroad === true
+                options.livedAbroad.radio.no.input.checked = application.address.livedAbroad === false
+
+                // values.country = application.address.country
+
+                const fields = [
+                    '_address1', '_address2', '_addrZip',
+                    '_addrCity', '_addrState', '_addrSince',
+                ]
+                const values = {
+                    country: application.address.country,
+                }
+                fields.forEach(field => values[field] = null)
+                const placeholders ={
+                    _addrSince: 'MM/DD/YYYY',
+                }
+                updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
+                options._addrState.select.input.options = { valOpt: true }
+                Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+
+                if (values.country) {
+                    hbs.countryDisplay = ''
+                    options.country.select.input.disabled = false
+                }
+            }
+        }
+
         const commercial = settings?.drivers?.cdl === true
 
         if (step >= 1) { /* DRIVER LICENSE */
+            hbs.button.zero = buttonProps.save
+            hbs.accordion.zero = accordionProps.finished
+
             const values = {
                 dlState: application?.dl?.state,
                 dlNumber: application?.dl?.number,
@@ -643,7 +685,7 @@ export const applicationProgress = async (req, res) => {
                 const checked = application?.preference?.equipmentType?.includes(prop)
                 options.equipmentType.checkbox[prop] = { input: { ...checkProps.input, checked }, label: { ...checkProps.label } }
             }
-console.log(application.preference)
+
             const values = {
                 teamName: application?.preference?.teamName,
                 teamPhone: application?.preference?.teamPhone ? formatTel(application?.preference?.teamPhone) : null,
@@ -824,7 +866,7 @@ console.log(application.preference)
         if (step >= 10) { /* MISC */
             hbs.button.nine = buttonProps.save
             hbs.accordion.nine = accordionProps.finished
-            hbs.countryDisplay = ' style="display: none;"'
+            // hbs.countryDisplay = ' style="display: none;"'
 
             const values = {
                 emergPhone: application?.emergency?.phone,
@@ -835,34 +877,34 @@ console.log(application.preference)
                 emergPhone: '(###) ###-####',
             }
 
-            if (application.address.enough === false) {
-                options.livedAbroad = { radio: {} }
-                options._livedAbroad = { radio: {} }
-                for (const prop of ['yes', 'no']) {
-                    options.livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                    options._livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                }
-                options.livedAbroad.radio.yes.input.checked = application.address.livedAbroad === true
-                options.livedAbroad.radio.no.input.checked = application.address.livedAbroad === false
+            // if (application.address.enough === false) {
+            //     options.livedAbroad = { radio: {} }
+            //     options._livedAbroad = { radio: {} }
+            //     for (const prop of ['yes', 'no']) {
+            //         options.livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            //         options._livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            //     }
+            //     options.livedAbroad.radio.yes.input.checked = application.address.livedAbroad === true
+            //     options.livedAbroad.radio.no.input.checked = application.address.livedAbroad === false
 
-                values.country = application.address.country
+            //     values.country = application.address.country
 
-                const fields = [
-                    '_address1', '_address2', '_addrZip',
-                    '_addrCity', '_addrState', '_addrSince',
-                ]
-                placeholders._addrSince = 'MM/DD/YYYY'
-                updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
-                options._addrState.select.input.options = { valOpt: true }
-            }
+            //     const fields = [
+            //         '_address1', '_address2', '_addrZip',
+            //         '_addrCity', '_addrState', '_addrSince',
+            //     ]
+            //     placeholders._addrSince = 'MM/DD/YYYY'
+            //     updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
+            //     options._addrState.select.input.options = { valOpt: true }
+            // }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
 
-            if (values.country) {
-                hbs.countryDisplay = ''
-                options.country.select.input.disabled = false
-            }
+            // if (values.country) {
+            //     hbs.countryDisplay = ''
+            //     options.country.select.input.disabled = false
+            // }
         }
 
         if (step >= 11) {

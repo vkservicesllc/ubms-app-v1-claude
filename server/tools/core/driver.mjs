@@ -1326,7 +1326,7 @@ class Application {
         if (dateAfter(data.addrSince, 3, 'years')) {
             /* Database has default values for the else condition */
             data.addrEnough = false
-            // data.step = 0 //! come back to this subject later
+            data.step = 0
         }
 
         let found = true

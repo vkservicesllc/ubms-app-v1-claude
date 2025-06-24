@@ -28,7 +28,7 @@
                         {{{form.emergRelation.text.input}}}
                     </div>
                 </div>
-                {{#if (eq addrEnough false)}}
+                {{!-- {{#if (eq addrEnough false)}}
                 <div class="border-top mt-4 pt-3">
                     <label class="form-label text-secondary">Prior Residence</label>
                     <p class="mb-0" style="font-size: .84em;">
@@ -67,7 +67,7 @@
                         </div>
                     </div>
                 </div>
-                {{/if}}
+                {{/if}} --}}
                 <p class="form-text text-danger mt-4" id="misc-form-help" style="display: none;"></p>
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
@@ -77,7 +77,7 @@
                     </div>
                 </div>
             </form>
-            {{#if (eq addrEnough false)}}
+            {{!-- {{#if (eq addrEnough false)}}
             <div id="address-form-template" style="display: none;">
                 <div class="border-top mt-4">
                     <div class="row g-3 my-1">
@@ -127,7 +127,7 @@
                 </div>
             </div>
             <script type="module" src="/modules/application/addresses.mjs"></script>
-            {{/if}}
+            {{/if}} --}}
             <script type="module" src="/modules/application/emergency.mjs"></script>
         </div>
     </div>

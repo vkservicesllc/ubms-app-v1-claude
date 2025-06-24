@@ -31,3 +31,21 @@
     background-color: rgb(5, 27, 17);
     border-color: rgb(25, 135, 84) !important;
 }
+
+.form-check-input:checked {
+  background-color: rgb(25, 135, 84); /* green */
+  border-color: rgb(25, 135, 84);
+}
+
+label.input-required::after {
+    content: ' *';
+    color: #f16d6d;
+}
+
+.text-secondary {
+    color: silver !important;
+}
+
+.text-danger {
+    color: #f16d6d !important;
+}

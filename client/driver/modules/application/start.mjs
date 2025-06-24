@@ -274,11 +274,11 @@ selectEvent(stateId, { fill: true, onChange })
 
 inputEvent(addrSinceId, {
     ...dateOpts,
-    onInput(since, $since) {
+    onKeyup(since, $since) {
         $help.addrSince.text(null)
         $since.removeClass('is-valid is-invalid')
     },
-    onChange(since, $since) {
+    onCompleted(since, $since) {
         if (since) {
             const date = moment(since, 'MM/DD/YYYY', true)
 
@@ -304,11 +304,11 @@ inputEvent(addrSinceId, {
 
 inputEvent(statusExpId, {
     ...dateOpts,
-    onInput() {
+    onKeyup() {
         $help.statusExp.text(null)
         $expiration.removeClass('is-valid is-invalid')
     },
-    onChange(expiration) {
+    onCompleted(expiration) {
         if (expiration) {
             const date = moment(expiration, 'MM/DD/YYYY', true)
 

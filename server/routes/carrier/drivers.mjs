@@ -160,7 +160,6 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
                 'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             ]
             options = updateFormOptions(options, ApplicationForm, fields, { disabled: true })
-            options.phone.text.label.content = 'Phone'
 
             hbs.form = new ApplicationForm(options)
             hbs.dropdown = {
@@ -238,7 +237,6 @@ console.log(application)
                 // 'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             ]
             options = updateFormOptions(options, ApplicationForm, fields)
-            options.phone.text.label.content = 'Phone'
         }
 
         hbs.form = new ApplicationForm(options)

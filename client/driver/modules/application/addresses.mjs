@@ -4,7 +4,6 @@ import patterns from '/modules/registry/patterns.mjs'
 import formId, { check, onInput, onChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
-// import checkForm from './emergency.mjs'
 
 const TS = selector.class.text, SS = selector.class.select, RS = selector.class.radio
 const livedAbroadId = selector.id.radio.livedAbroad1
@@ -15,9 +14,13 @@ const $country = $('#country')
 const $addrList = $('#address-list')
 const $addrForm = $('#address-form-template')
 
-const $form = $('#misc-form')
+// const $form = $('#misc-form')
+// const $help = {
+//     form: $('#misc-form-help'),
+// }
+const $form = $('#address-form')
 const $help = {
-    form: $('#misc-form-help'),
+    form: $('#address-form-help'),
 }
 
 

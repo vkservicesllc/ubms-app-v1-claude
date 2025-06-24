@@ -18,7 +18,7 @@
     <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
         <div class="card text-center" id="new-apl-card" style="display: none;">
             <div class="card-body pt-4">
-                <h5 class="card-title text-secondary">Professional Driver Application</h5>
+                <h5 class="card-title text-info">Professional Driver Application</h5>
                 <div class="card-text" id="intro-card">
                     {{#if (ne company false)}}
                     <div class="border-top border-bottom py-2">
@@ -27,7 +27,7 @@
                         {{company.phone}}
                     </div>
                     {{/if}}
-                    <div class="text-start text-success pt-3" id="intro">
+                    <div class="text-start text-light pt-3" id="intro">
                         <p>
                             We're looking for experienced and reliable drivers to join our carrier team.
                             If you meet the qualifications and are committed to safety, efficiency,
@@ -42,7 +42,7 @@
                             <li>are able to meet DOT and company safety requirements</li>
                         </ul>
                     </div>
-                    <button class="btn btn-success" id="apply">APPLY NOW</button>
+                    <button class="btn btn-success bg-success-subtle" id="apply">APPLY NOW</button>
                 </div>
                 <div class="card-text" id="privacy-card" style="display: none;">
                     <div class="text-start pt-2" id="privacy">
@@ -65,7 +65,7 @@
                         <p>If you have any questions about our data protection practices, please feel free to contact us at {{company.phone}}.</p>
                         {{/if}}
                     </div>
-                    <button class="btn btn-success" id="confirm">I Understand & Agree</button>
+                    <button class="btn btn-success bg-success-subtle" id="confirm">I Understand & Agree</button>
                 </div>
                 <div class="card-text text-start px-2" id="form-card" style="display: none;">
                     <form class="pt-2" id="apl-start-form" action="{{formUrl}}" method="POST" autocomplete="off">
@@ -155,7 +155,7 @@
                                     <div class="form-text text-danger" id="email-help"></div>
                                 </div>
                             </div>
-                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Current / Most Recent Address in the US</h6>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Current / Most Recent Address in the U.S.</h6>
                             <div class="row g-3 my-1">
                                 <div class="col-md-6">
                                     {{{form.address1.text.label}}}
@@ -227,13 +227,13 @@
                             </div>
                             <p class="form-text text-danger mt-4" id="form-help" style="display: none;"></p>
                             <div class="d-grid gap-2 mt-4 mb-2">
-                                <button type="submit" class="btn btn-primary">Start Application</button>
+                                <button type="submit" class="btn btn-primary bg-primary-subtle">Start Application</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-            <div class="card-footer text-black-50">
+            <div class="card-footer text-secondary">
                 {{{copyright}}}
             </div>
         </div>

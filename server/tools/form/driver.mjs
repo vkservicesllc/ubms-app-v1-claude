@@ -211,7 +211,7 @@ class ApplicationForm {
     static ssn = createSsnForm({ selector: appSelector, target: 'ssn' })
     static gender = createGenderForm({ selector: appSelector, target: 'gender', group: 'gender', required })
 
-    static phone = createPhoneForm({ selector: appSelector, target: 'phone', required, label: 'US Phone' })
+    static phone = createPhoneForm({ selector: appSelector, target: 'phone', required })
     static email = createEmailForm({ selector: appSelector, target: 'email', required })
 
     static addrSince = createSinceForm({ selector: appSelector, target: 'addrSince', name: 'addrSince', label: 'Living since' })
