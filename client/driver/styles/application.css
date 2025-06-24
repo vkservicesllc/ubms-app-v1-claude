@@ -1,3 +1,7 @@
+/* body {
+    background: linear-gradient(to bottom, #0066ff 0%, #66ffff 100%);
+    background: linear-gradient(to bottom, #ccffff 0%, #33ccff 100%);
+} */
 .card {
     width: 600px;
     max-width: 100%;
@@ -16,4 +20,14 @@
 }
 .form-control, .form-select {
     font-size: .95em;
+}
+
+[data-bs-theme="dark"] .accordion-button {
+    color: #9df3c5;
+}
+
+[data-bs-theme="dark"] .accordion-button:not(.collapsed) {
+    /* background-color: #1f1f1f; */
+    background-color: rgb(5, 27, 17);
+    border-color: rgb(25, 135, 84) !important;
 }

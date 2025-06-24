@@ -43,23 +43,28 @@
                         {{{form.benefSuffix.select.label}}}
                         {{{form.benefSuffix.select.input}}}
                     </div>
-                    <div class="col-md-4">
+                    {{!-- <div class="col-md-4">
                         {{{form.benefGender.select.label}}}
                         {{{form.benefGender.select.input}}}
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="row g-3 my-1">
-                    <div class="col-md-4">
+                    {{!-- <div class="col-md-4">
                         {{{form.benefDob.text.label}}}
                         {{{form.benefDob.text.input}}}
                         <div class="form-text text-danger" id="beneficiary-dob-help"></div>
-                    </div>
+                    </div> --}}
                     <div class="col-md-5">
                         {{{form.benefPhone.text.label}}}
                         {{{form.benefPhone.text.input}}}
                     </div>
+                    {{!-- New version --}}
+                    <div class="col-md-4">
+                        {{{form.benefSsn.text.label}}}
+                        {{{form.benefSsn.text.input}}}
+                    </div>
                 </div>
-                <div class="row g-3 my-1">
+                {{!-- <div class="row g-3 my-1">
                     <div class="col-md-6">
                         {{{form.benefAddress1.text.label}}}
                         {{{form.benefAddress1.text.input}}}
@@ -88,7 +93,7 @@
                         {{{form.benefSsn.text.label}}}
                         {{{form.benefSsn.text.input}}}
                     </div>
-                </div>
+                </div> --}}
                 <label class="form-label fw-normal text-danger mt-3 mb-0">
                     <small>
                         <i class="fas fa-circle-exclamation"></i>

@@ -18,7 +18,7 @@ import { ApplicationForm } from '../../../tools/form/driver.mjs'
 import { updateFormOptions } from '../../../tools/form/builder.mjs'
 
 const formInstr = {
-    labelClass: 'form-label text-black-50',
+    labelClass: 'form-label fw-normal', // 'form-label text-black-50',
     labelClassRequired: 'form-label',
     textClass: 'form-control',
     textareaClass: 'form-control',
@@ -195,12 +195,13 @@ export const applicationProgress = async (req, res) => {
         const key = 'application'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
+        hbs.bodyAttrs = ' data-bs-theme="dark"'
 
         const recUrl = `/resource/application/form/${formId}`
 
         const buttonProps = {
-            next: { class: 'primary', text: 'Next' },
-            save: { class: 'success', text: 'Save Changes' }
+            next: { class: 'primary bg-primary-subtle', text: 'Next' },
+            save: { class: 'success bg-success-subtle', text: 'Save Changes' }
         }
 
         const accordionProps = {
@@ -621,6 +622,7 @@ export const applicationProgress = async (req, res) => {
         if (step >= 7) { /* DRIVING PREFERENCES */
             hbs.button.six = buttonProps.save
             hbs.accordion.six = accordionProps.finished
+            hbs.partnerDisplay = ' style="display: none;"'
 
             options.operType = {
                 radio: {
@@ -641,11 +643,23 @@ export const applicationProgress = async (req, res) => {
                 const checked = application?.preference?.equipmentType?.includes(prop)
                 options.equipmentType.checkbox[prop] = { input: { ...checkProps.input, checked }, label: { ...checkProps.label } }
             }
-
+console.log(application.preference)
             const values = {
+                teamName: application?.preference?.teamName,
+                teamPhone: application?.preference?.teamPhone ? formatTel(application?.preference?.teamPhone) : null,
                 startPref: application?.preference?.startPref,
             }
+            const placeholders = {
+                teamPhone: '(###) ###-####',
+            }
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+
+            if (application?.preference?.operType === 't') {
+                hbs.partnerDisplay = ''
+                options.teamName.text.input.disabled = false
+                options.teamPhone.text.input.disabled = false
+            }
         }
 
         if (step >= 8) { /* BUSINESS / OWNERSHIP */
@@ -765,27 +779,27 @@ export const applicationProgress = async (req, res) => {
                 benefMiddleName: application?.beneficiary?.middleName,
                 benefLastName: application?.beneficiary?.lastName,
                 benefSuffix: application?.beneficiary?.suffix,
-                benefDob: application?.beneficiary?.dob
-                    ? moment(application.beneficiary.dob).format('MM/DD/YYYY')
-                    : null,
-                benefGender: application?.beneficiary?.gender?.[0],
+                // benefDob: application?.beneficiary?.dob
+                //     ? moment(application.beneficiary.dob).format('MM/DD/YYYY')
+                //     : null,
+                // benefGender: application?.beneficiary?.gender?.[0],
                 benefPhone: application?.beneficiary?.phone,
-                benefAddress1: application?.beneficiary?.address1,
-                benefAddress2: application?.beneficiary?.address2,
-                benefAddrZip: application?.beneficiary?.zip,
-                benefAddrCity: application?.beneficiary?.city,
-                benefAddrState: application?.beneficiary?.state,
+                // benefAddress1: application?.beneficiary?.address1,
+                // benefAddress2: application?.beneficiary?.address2,
+                // benefAddrZip: application?.beneficiary?.zip,
+                // benefAddrCity: application?.beneficiary?.city,
+                // benefAddrState: application?.beneficiary?.state,
                 benefSsn: application?.beneficiary?.ssn, //! may need to format
             }
             const placeholders = {
-                benefDob: 'MM/DD/YYYY',
+                // benefDob: 'MM/DD/YYYY',
                 benefSsn: '###-##-####',
                 benefPhone: '(###) ###-####',
             }
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
-            options.benefAddrState.select.input.options = { valOpt: true }
             options.benefMiddleName.text.label.content = 'Middle Name/Initial'
+            // options.benefAddrState.select.input.options = { valOpt: true }
 
             if (values.benefOtherRel) {
                 hbs.benefOtherRelDisplay = ''
@@ -795,6 +809,7 @@ export const applicationProgress = async (req, res) => {
             const relationData = { ...Relationship.data() }
             switch (application.marital) {
                 case 'm':
+                    delete relationData['Other']['Fiancé(e)']
                     delete relationData['Other']['Domestic Partner']
                     if (application.gender[0] === 'M') delete relationData['Spouse']['Husband']
                     if (application.gender[0] === 'F') delete relationData['Spouse']['Wife']
@@ -1043,7 +1058,7 @@ export const applicationSummary = async (req, res) => {
         hbs.application.beneficiary.relationship = application.beneficiary.otherRel || application.beneficiary.relation
         hbs.application.beneficiary.fullName = new Person(application.beneficiary).fullName('FMLs')
         hbs.application.beneficiary.phone = formatTel(application.beneficiary.phone)
-        hbs.application.beneficiary.address = new Address(application.beneficiary).html({ inline: false })
+        // hbs.application.beneficiary.address = new Address(application.beneficiary).html({ inline: false })
 
         if (application.vehicle) {
             if (application?.vehicle?.mmt && application?.vehicle?.mmt !== 'other') {

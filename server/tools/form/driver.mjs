@@ -323,7 +323,7 @@ class ApplicationForm {
         target: 'duiInDecade',
         name: 'duiInDecade',
         group: 'duiInDecade',
-        data: { 'Y': 'within the past 10 years', 'N': 'earlier than 10 years ago' },
+        data: { 'Y': 'within the past 10 years', 'N': 'more than 10 years ago' },
         disabled,
         label: 'The the most recent arrest occurred:',
     })
@@ -781,6 +781,7 @@ class ApplicationForm {
     static operType = createForm({
         selector: appSelector,
         target: 'operType',
+        group: 'operType',
         type: 'select/radio',
         name: 'operType',
         emptyOpt,
@@ -789,6 +790,17 @@ class ApplicationForm {
         required,
         label: 'Operating Type',
     })
+
+    static teamName = createForm({
+        selector: appSelector,
+        target: 'teamName',
+        group: 'teamPartner',
+        name: 'teamName',
+        disabled,
+        label: "Partner's Full Name",
+    })
+
+    static teamPhone = createPhoneForm({ selector: appSelector, target: 'teamPhone', group: 'teamPartner', name: 'teamPhone', disabled, label: "Partner's Phone" })
 
     static haulRegion = createForm({
         selector: appSelector,
@@ -817,7 +829,7 @@ class ApplicationForm {
         target: 'startPref',
         type: 'select',
         name: 'startPref',
-        data: { '0': 'Right Away', '1': 'One Week', '2': 'Two Weeks', '3': 'Three Weeks', '4': 'Four Weeks' },
+        data: { '0': 'Right away', '1': 'In 1 week', '2': 'In 2 weeks', '3': 'In 3 weeks', '4': 'In 4 weeks' },
         emptyOpt,
         required,
         label: 'Preference to start in:',
@@ -1025,16 +1037,16 @@ class ApplicationForm {
     static benefMiddleName = createPersonNameForm('middle', { selector: appSelector, target: 'benefMiddleName' })
     static benefLastName = createPersonNameForm('last', { selector: appSelector, target: 'benefLastName' })
     static benefSuffix = createPersonNameForm('suffix', { selector: appSelector, target: 'benefSuffix' })
-    static benefDob = createDobForm({ selector: appSelector, target: 'benefDob' })
-    static benefGender = createGenderForm({ selector: appSelector, target: 'benefGender', required })
+    // static benefDob = createDobForm({ selector: appSelector, target: 'benefDob' })
+    // static benefGender = createGenderForm({ selector: appSelector, target: 'benefGender', required })
     static benefSsn = createSsnForm({ selector: appSelector, target: 'benefSsn', required: false })
 
     static benefPhone = createPhoneForm({ selector: appSelector, target: 'benefPhone', required })
-    static benefAddress1 = createAddressForm({ selector: appSelector, target: 'benefAddress1' })
-    static benefAddress2 = createAddressForm({ selector: appSelector, target: 'benefAddress2' }, { idx: 2 })
-    static benefAddrZip = createAddrZipForm({ selector: appSelector, target: 'benefAddrZip' })
-    static benefAddrCity = createAddrCityForm({ selector: appSelector, target: 'benefAddrCity' })
-    static benefAddrState = createAddrStateForm({ selector: appSelector, target: 'benefAddrState' })
+    // static benefAddress1 = createAddressForm({ selector: appSelector, target: 'benefAddress1' })
+    // static benefAddress2 = createAddressForm({ selector: appSelector, target: 'benefAddress2' }, { idx: 2 })
+    // static benefAddrZip = createAddrZipForm({ selector: appSelector, target: 'benefAddrZip' })
+    // static benefAddrCity = createAddrCityForm({ selector: appSelector, target: 'benefAddrCity' })
+    // static benefAddrState = createAddrStateForm({ selector: appSelector, target: 'benefAddrState' })
 
 
 

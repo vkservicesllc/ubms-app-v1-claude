@@ -1,9 +1,33 @@
+import { inputEvent } from '/modules/events/form.mjs'
+import { nameEvent } from '/modules/events/person.mjs'
+import { telEvent } from '/modules/events/contacts.mjs'
 import { onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const $card = $('#apl-card')
 const $form = $('#preference-form')
 const $submit = $('#preference-submit')
+
+const $partner = $('#partner')
+
+
+inputEvent(selector.class.radio.operType, {
+    onChange(value) {
+        let disabled = true, action = 'hide'
+
+        if (value === 't') {
+            disabled = false
+            action = 'show'
+        }
+
+        $(selector.class.combo.teamPartner).prop('disabled', disabled)
+        $partner[action]()
+    },
+})
+
+nameEvent(selector.id.text.teamName)
+
+telEvent(selector.id.text.teamPhone)
 
 
 onSubmit($form, null, $submit, $card, {

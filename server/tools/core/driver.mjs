@@ -242,6 +242,8 @@ class Application {
             }
 
             if (this.deptId === 0) {
+                this.preference.teamName = data.partnerName
+                this.preference.teamPhone = data.partnerPhone
                 this.preference.haulRegion = data.haulRegion
                 this.preference.equipmentType = data.equipmentType
             }
@@ -727,6 +729,11 @@ class Application {
 
                 if (haulRegion) haulRegion = JSON.stringify(haulRegion)
                 if (equipment) equipment = JSON.stringify(equipment)
+
+                if (data.operType === 's') {
+                    data.teamName = null
+                    data.teamPhone = null
+                }
 
                 if (!this.preference) {
                     data = processData(data)
@@ -1319,7 +1326,7 @@ class Application {
         if (dateAfter(data.addrSince, 3, 'years')) {
             /* Database has default values for the else condition */
             data.addrEnough = false
-            data.step = 0
+            // data.step = 0 //! come back to this subject later
         }
 
         let found = true
@@ -1496,6 +1503,8 @@ class Application {
                 table: 'application_preferences',
                 fields: [
                     'operType',
+                    [ 'teamName', 'partnerName' ],
+                    [ 'teamPhone', 'partnerPhone' ],
                     'haulRegion',
                     [ 'equipment', 'equipmentType' ],
                     'startPref',
@@ -1533,15 +1542,15 @@ class Application {
                     [ 'suffix', 'benefSuffix' ],
                     [ 'relation', 'benefRelation' ],
                     [ 'otherRel', 'benefOtherRel' ],
-                    [ 'dob', 'benefDob' ],
-                    [ 'sex', 'benefSex' ],
+                    // [ 'dob', 'benefDob' ],
+                    // [ 'sex', 'benefSex' ],
                     [ { aes: [ 'ssn', ssnSecret ] }, 'benefSsn' ],
                     [ 'phone', 'benefPhone' ],
-                    [ 'address1', 'benefAddress1' ],
-                    [ 'address2', 'benefAddress2' ],
-                    [ 'city', 'benefAddrCity' ],
-                    [ 'state', 'benefAddrState' ],
-                    [ 'zip', 'benefAddrZip' ],
+                    // [ 'address1', 'benefAddress1' ],
+                    // [ 'address2', 'benefAddress2' ],
+                    // [ 'city', 'benefAddrCity' ],
+                    // [ 'state', 'benefAddrState' ],
+                    // [ 'zip', 'benefAddrZip' ],
                 ],
                 join: [ 'aplId', 'id' ],
             },

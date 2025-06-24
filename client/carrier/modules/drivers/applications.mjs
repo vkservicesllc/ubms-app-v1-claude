@@ -7,10 +7,11 @@ import filterDropdown from '/modules/tools/filter-dropdown.mjs'
 
 const interval = 60000
 const conditions = {
-    p: [ '<span class="ui grey text">In progress...</small>', 'spinner' ],
-    c: [ '<span class="ui blue text">Completed</small>', 'blue text clock' ],
-    a: [ '<span class="ui dark green text">Approved</small>', 'dark green text thumbs up' ],
-    r: [ '<span class="ui red text">Rejected</small>', 'red text thumbs down' ],
+    p: [ '<span class="ui grey text">In progress...</span>', 'spinner' ],
+    c: [ '<span class="ui blue text">Completed</span>', 'blue text clock' ],
+    a: [ '<span class="ui dark green text">Approved</span>', 'dark green text thumbs up' ],
+    r: [ '<span class="ui red text">Waiting List</span>', 'red text hourglass half' ],
+    b: [ '<span class="ui red text">Disqualified</span>', 'red text thumbs down' ],
     h: [ 'Hired', 'truck moving' ],
 }
 const positions = $.ajax('/api/source/driver?filter=positions', { method: 'POST', async: false }).responseJSON
@@ -68,9 +69,10 @@ const table = $('#driver-apl-table').DataTable({
             searchable: false,
             orderable: false,
             data(row) {
-                const { condition } = row
+                let { condition } = row
+                condition = conditions[condition]
 
-                return `<i class="${conditions[condition][1]} icon"></i>`
+                return `<span title="${$(condition[0]).text()}"><i class="${condition[1]} icon"></i></span>`
             },
         },
 
@@ -245,9 +247,9 @@ const table = $('#driver-apl-table').DataTable({
 
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
         const dropdown = {
-            condition: filterDropdown('condition-filter', 'Conditions', { multiple: true, clearable: true, element: 'div' }),
-            position: filterDropdown('position-filter', 'Positions', { multiple: true, clearable: true, element: 'div' }),
-            company: filterDropdown('company-filter', 'Companies', { multiple: true, clearable: true, element: 'div' }),
+            condition: filterDropdown('condition-filter', 'Status', { multiple: true, clearable: true, element: 'div' }),
+            position: filterDropdown('position-filter', 'Position', { multiple: true, clearable: true, element: 'div' }),
+            company: filterDropdown('company-filter', 'Company', { multiple: true, clearable: true, element: 'div' }),
             user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
         }
 

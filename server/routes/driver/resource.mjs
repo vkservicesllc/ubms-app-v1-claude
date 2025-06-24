@@ -65,7 +65,7 @@ applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(Applicat
 
 
 const validateApplicantPreference = []
-const applicantPreferenceFields = ['operType', 'haulRegion', 'equipmentType', 'startPref']
+const applicantPreferenceFields = ['operType', 'teamName', 'teamPhone', 'haulRegion', 'equipmentType', 'startPref']
 applicantPreferenceFields.forEach(prop => validateApplicantPreference.push(ApplicationForm[prop].validate()))
 
 
@@ -87,8 +87,9 @@ const validateApplicantBeneficiary = []
 const applicantBeneficiaryFields = [
     'benefRelation', 'benefOtherRel',
     'benefFirstName', 'benefMiddleName', 'benefLastName', 'benefSuffix',
-    'benefDob', 'benefGender', 'benefSsn',
-    'benefPhone', 'benefAddress1', 'benefAddress2', 'benefAddrZip', 'benefAddrCity', 'benefAddrState',
+    // 'benefDob', 'benefGender',
+    'benefPhone', // 'benefAddress1', 'benefAddress2', 'benefAddrZip', 'benefAddrCity', 'benefAddrState',
+    'benefSsn',
 ]
 applicantBeneficiaryFields.forEach(prop => validateApplicantBeneficiary.push(ApplicationForm[prop].validate()))
 

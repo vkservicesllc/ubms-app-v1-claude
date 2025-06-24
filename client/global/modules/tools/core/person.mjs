@@ -181,7 +181,7 @@ class Relationship {
         'Grandparent': [['Grandfather', 'M'], ['Grandmother', 'F']],
         'Grandchild': [['Grandson', 'M'], ['Granddaughter', 'F']],
         'Immediate In-Law': [['Father-in-law', 'M'], ['Mother-in-law', 'F'], ['Son-in-law', 'M'], ['Daughter-in-law', 'F'], ['Brother-in-law', 'M'], ['Sister-in-law', 'F']],
-        'Other': [['Uncle', 'M'], ['Aunt', 'F'], ['Nephew', 'M'], ['Niece', 'F'], 'Cousin', 'Fiancé(e)', 'Friend', 'Domestic Partner', 'Other'],
+        'Other': [['Uncle', 'M'], ['Aunt', 'F'], ['Nephew', 'M'], ['Niece', 'F'], 'Cousin', 'Fiancé(e)', 'Domestic Partner', 'Friend', 'Other'],
     }
 
     static data = () => {
