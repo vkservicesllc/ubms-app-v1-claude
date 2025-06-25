@@ -23,6 +23,14 @@ applicantFields.forEach(prop => validateApplicant.push(ApplicationForm[prop].val
 applicantProfileFields.forEach(prop => validateApplicantProfile.push(ApplicationForm[prop].validate()))
 applicantAddressFields.forEach(prop => validateApplicantAddress.push(ApplicationForm[prop].validate()))
 
+const validateApplicantPrevAddress = []
+const validatePrevAddressFields = [
+    'livedAbroad', 'country',
+    '_addrSince', '_address1', '_address2',
+    '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
+]
+validatePrevAddressFields.forEach(prop => validateApplicantPrevAddress.push(ApplicationForm[prop].validate()))
+
 const validateApplicantLogin = []
 const applicantLoginFields = ['phone', 'dob', 'pin']
 applicantLoginFields.forEach(prop => validateApplicantLogin.push(ApplicationForm[prop].validate()))
@@ -97,14 +105,6 @@ const validateApplicantEmergency = []
 const applicantEmergencyFields = ['emergPhone', 'emergName', 'emergRelation']
 applicantEmergencyFields.forEach(prop => validateApplicantEmergency.push(ApplicationForm[prop].validate()))
 
-const validateApplicantPrevAddress = []
-const validatePrevAddressFields = [
-    'livedAbroad', 'country',
-    '_addrSince', '_address1', '_address2',
-    '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
-]
-validatePrevAddressFields.forEach(prop => validateApplicantPrevAddress.push(ApplicationForm[prop].validate()))
-
 
 const dynamicValidator = {
     applications: (req, res, next) => {
@@ -116,7 +116,7 @@ const dynamicValidator = {
                 validators = validateApplicantProfile
                 break
             case 'address':
-                validators = validateApplicantAddress
+                validators = [ ...validateApplicantAddress, ...validateApplicantPrevAddress ]
                 break
             case 'driver-license':
                 validators = validateApplicantDL
@@ -146,7 +146,7 @@ const dynamicValidator = {
                 validators = validateApplicantBeneficiary
                 break
             case 'misc':
-                validators = [ ...validateApplicantEmergency, ...validateApplicantPrevAddress ]
+                validators = validateApplicantEmergency
                 break
         }
 
@@ -187,10 +187,10 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
         const { formId, step } = req.params
         const application = await Application.data(session, { formId })
         if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
-
+// res.send(req.body)
         const { error } = await application.modify(session, step, req.body)
         if (error) return throwErr.server(res, error)
-
+// return
         res.redirect(`/application/${formId}`)
     } catch (err) {
         throwErr.server(res, null, err)

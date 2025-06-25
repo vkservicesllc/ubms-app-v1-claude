@@ -378,6 +378,7 @@ class Application {
                 })
                 if (data.ssn)
                     data.ssn = { aes: [ data.ssn, ssnSecret ] }
+
                 break
 
             
@@ -385,24 +386,49 @@ class Application {
                 currentData = { ...this.address }
                 currentData.state = currentData.state[0]
                 currentData.addrSince = currentData.since
+                currentData.addrEnough = currentData.enough
                 currentUpdateLog = await this.log('updateLog')
 
-                data = processData(data, {
+                const addrEnough = !dateAfter(data.addrSince, 3, 'years', this.finishedAt)
+                const { addresses, livedAbroad } = data
+
+                mainData = { ...data }
+                delete mainData.addresses
+                data = []
+                await mysql.execute(query.aplAddresses.delete({ aplId: id }))
+
+                mainData.addrEnough = addrEnough
+
+                mainData = processData(mainData, {
                     modifiedBy,
                     branch,
                     siteId,
                     currentData,
                     currentUpdateLog,
                 })
-                if (data.addrSince) {
-                    if (dateAfter(data.addrSince, 3, 'years', this.finishedAt)) {
-                        if (this.step === 1) data.step = 0
-                        data.addrEnough = false
-                    } else {
-                        if (this.step === 0) data.step = 1
-                        data.addrEnough = true
+                if (this.step === 0) mainData.step = 1
+
+                if (!addrEnough && !livedAbroad) {
+                    target = 'aplAddresses'
+                    idProp = 'aplId'
+                    action = 'insert'
+
+                    const { address1, address2, zip, city, state, since, livedAbroad } = addresses
+                    const count = zip.length
+                    for (let i = 0; i < count; i++) {
+                        data.push({
+                            aplId: id,
+                            address1: address1[i],
+                            address2: address2[i],
+                            zip: zip[i],
+                            city: city[i],
+                            state: state[i],
+                            since: since[i],
+                            livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
+                        })
                     }
                 }
+
                 break
 
 
@@ -449,6 +475,7 @@ class Application {
 
                     error = checkExpl(data)
                 }
+
                 break
 
 
@@ -518,6 +545,7 @@ class Application {
                         currentUpdateLog: await this.log('updateLog'),
                     })
                 }
+
                 break
 
 
@@ -575,6 +603,7 @@ class Application {
                         })
                     }
                 }
+
                 break
 
 
@@ -620,6 +649,7 @@ class Application {
                         })
                     }
                 }
+
                 break
 
 
@@ -664,6 +694,7 @@ class Application {
 
                     data.aplId = id
                 } else data = {}
+
                 break
 
 
@@ -716,6 +747,7 @@ class Application {
                             leftOn: leftOn[i],
                         })
                 }
+
                 break
 
 
@@ -761,6 +793,7 @@ class Application {
                     data.haulRegion = haulRegion
                     data.equipment = equipment
                 }
+
                 break
 
 
@@ -884,21 +917,6 @@ class Application {
                 target = 'aplEmergencies'
                 idProp = 'aplId'
 
-                // const { livedAbroad, addresses, country } = data
-                // delete data.livedAbroad
-                // delete data.addresses
-                // delete data.country
-
-                // mainData.livedAbroad = null
-                // mainData.country = null
-                // await mysql.execute(query.aplAddresses.delete({ aplId: id }))
-
-                // if (!this.address.enough) {
-                //     mainData.livedAbroad = livedAbroad
-                //     if (country) mainData.country = country
-                //     if (addresses) target2 = 'aplAddresses'
-                // }
-
                 if (this.step < 11) {
                     data = processData(data)
                     data.aplId = id
@@ -913,25 +931,6 @@ class Application {
                         currentUpdateLog: await this.log('updateLog', target)
                     })
                 }
-
-                // if (target2) {
-                //     const { address1, address2, zip, city, state, since, livedAbroad } = addresses
-                //     const count = zip.length
-                //     data2 = []
-
-                //     for (let i = 0; i < count; i++) {
-                //         data2.push({
-                //             aplId: id,
-                //             address1: address1[i],
-                //             address2: address2[i],
-                //             zip: zip[i],
-                //             city: city[i],
-                //             state: state[i],
-                //             since: since[i],
-                //             livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
-                //         })
-                //     }
-                // }
 
                 break
 
@@ -1301,7 +1300,7 @@ class Application {
         })
     }
 
-    
+
     static create = async (session, data) => {
         if (!session.team) return
 

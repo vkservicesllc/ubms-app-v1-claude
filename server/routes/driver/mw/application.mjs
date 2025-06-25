@@ -299,7 +299,7 @@ export const applicationProgress = async (req, res) => {
                 '_addrCity', '_addrState', '_addrSince',
             ]
             const values = {
-                country: application.address.country,
+                country: null,
             }
             fields.forEach(field => values[field] = null)
             const placeholders ={
@@ -314,15 +314,17 @@ export const applicationProgress = async (req, res) => {
                 options.livedAbroad.radio.yes.input.checked = application.address.livedAbroad === true
                 options.livedAbroad.radio.no.input.checked = application.address.livedAbroad === false
 
-                if (values.country) {
-                    hbs.countryDisplay = ''
-                    options.country.select.input.disabled = false
-                }
+                values.country = application.address.country
             }
 
             updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 13 })
             options._addrState.select.input.options = { valOpt: true }
             Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+
+            if (values.country) {
+                hbs.countryDisplay = ''
+                options.country.select.input.disabled = false
+            }
         }
 
         const commercial = settings?.drivers?.cdl === true
