@@ -245,6 +245,94 @@ class ApplicationForm {
         label: 'Status Expires on',
     })
 
+    static livedAbroad = createYesNoForm({
+        selector: appSelector,
+        target: 'livedAbroad1',
+        name: 'livedAbroad',
+        required,
+        disabled,
+        label: 'Lived Abroad',
+    }, true)
+
+    static country = (function() {
+        const data = { ...Geography.countryList }
+        delete data.US
+
+        return createForm({
+            selector: appSelector,
+            target: 'country',
+            type: 'select',
+            name: 'country',
+            data,
+            emptyOpt,
+            required,
+            disabled,
+            label: 'Country',
+            validator: {
+                optional: true,
+            },
+        })
+    })()
+
+    static _addrSince = createSinceForm({
+        selector: appSelector,
+        target: 'prevAddrSince',
+        group: 'prevAddrSince',
+        name: 'addresses[since][]',
+        disabled,
+        label: 'Lived since'
+    })
+
+    static _address1 = createAddressForm({
+        selector: appSelector,
+        target: 'prevAddress1',
+        group: 'prevAddress1',
+        name: 'addresses[address1][]',
+        disabled,
+    })
+
+    static _address2 = createAddressForm({
+        selector: appSelector,
+        target: 'prevAddress2',
+        group: 'prevAddress2',
+        name: 'addresses[address2][]',
+        disabled,
+    }, { idx: 2 })
+
+    static _addrZip = createAddrZipForm({
+        selector: appSelector,
+        target: 'prevAddrZip',
+        group: 'prevAddrZip',
+        name: 'addresses[zip][]',
+        disabled,
+    })
+
+    static _addrCity = createAddrCityForm({
+        selector: appSelector,
+        target: 'prevAddrCity',
+        group: 'prevAddrCity',
+        name: 'addresses[city][]',
+        disabled,
+    })
+
+    static _addrState = createAddrStateForm({
+        selector: appSelector,
+        target: 'prevAddrState',
+        group: 'prevAddrState',
+        name: 'addresses[state][]',
+        disabled,
+    })
+
+    static _livedAbroad = createYesNoForm({
+        selector: appSelector,
+        target: 'livedAbroad2',
+        group: 'prevLivedAbroad',
+        name: 'addresses[livedAbroad][]',
+        required,
+        disabled,
+        label: 'Lived Abroad',
+    })
+
 
     /* DRIVER LICENSE */
 
@@ -1073,93 +1161,6 @@ class ApplicationForm {
         validator: {
             sanitizer: value => value || null,
         },
-    })
-
-    static livedAbroad = createYesNoForm({
-        selector: appSelector,
-        target: 'livedAbroad1',
-        name: 'livedAbroad',
-        required,
-        label: 'Lived Abroad',
-    }, true)
-
-    static country = (function() {
-        const data = { ...Geography.countryList }
-        delete data.US
-
-        return createForm({
-            selector: appSelector,
-            target: 'country',
-            type: 'select',
-            name: 'country',
-            data,
-            emptyOpt,
-            required,
-            disabled,
-            label: 'Country',
-            validator: {
-                optional: true,
-            },
-        })
-    })()
-
-    static _addrSince = createSinceForm({
-        selector: appSelector,
-        target: 'prevAddrSince',
-        group: 'prevAddrSince',
-        name: 'addresses[since][]',
-        disabled,
-        label: 'Lived since'
-    })
-
-    static _address1 = createAddressForm({
-        selector: appSelector,
-        target: 'prevAddress1',
-        group: 'prevAddress1',
-        name: 'addresses[address1][]',
-        disabled,
-    })
-
-    static _address2 = createAddressForm({
-        selector: appSelector,
-        target: 'prevAddress2',
-        group: 'prevAddress2',
-        name: 'addresses[address2][]',
-        disabled,
-    }, { idx: 2 })
-
-    static _addrZip = createAddrZipForm({
-        selector: appSelector,
-        target: 'prevAddrZip',
-        group: 'prevAddrZip',
-        name: 'addresses[zip][]',
-        disabled,
-    })
-
-    static _addrCity = createAddrCityForm({
-        selector: appSelector,
-        target: 'prevAddrCity',
-        group: 'prevAddrCity',
-        name: 'addresses[city][]',
-        disabled,
-    })
-
-    static _addrState = createAddrStateForm({
-        selector: appSelector,
-        target: 'prevAddrState',
-        group: 'prevAddrState',
-        name: 'addresses[state][]',
-        disabled,
-    })
-
-    static _livedAbroad = createYesNoForm({
-        selector: appSelector,
-        target: 'livedAbroad2',
-        group: 'prevLivedAbroad',
-        name: 'addresses[livedAbroad][]',
-        required,
-        disabled,
-        label: 'Lived Abroad',
     })
 
 

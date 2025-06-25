@@ -285,41 +285,44 @@ export const applicationProgress = async (req, res) => {
 
         if (step >= 0) { /* PRIOR RESIDENCE */
             hbs.priorResidenceDisplay = ' style="display: none;"'
+            hbs.countryDisplay = ' style="display: none;"'
+
+            options.livedAbroad = { radio: {} }
+            options._livedAbroad = { radio: {} }
+            for (const prop of ['yes', 'no']) {
+                options.livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                options._livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+            }
+
+            const fields = [
+                '_address1', '_address2', '_addrZip',
+                '_addrCity', '_addrState', '_addrSince',
+            ]
+            const values = {
+                country: application.address.country,
+            }
+            fields.forEach(field => values[field] = null)
+            const placeholders ={
+                _addrSince: 'MM/DD/YYYY',
+            }
+    
             if (application.address.enough === false) {
                 hbs.priorResidenceDisplay = ''
-                hbs.countryDisplay = ' style="display: none;"'
 
-                options.livedAbroad = { radio: {} }
-                options._livedAbroad = { radio: {} }
-                for (const prop of ['yes', 'no']) {
-                    options.livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                    options._livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                }
+                options.livedAbroad.radio.yes.input.disabled = false
+                options.livedAbroad.radio.no.input.disabled = false
                 options.livedAbroad.radio.yes.input.checked = application.address.livedAbroad === true
                 options.livedAbroad.radio.no.input.checked = application.address.livedAbroad === false
-
-                // values.country = application.address.country
-
-                const fields = [
-                    '_address1', '_address2', '_addrZip',
-                    '_addrCity', '_addrState', '_addrSince',
-                ]
-                const values = {
-                    country: application.address.country,
-                }
-                fields.forEach(field => values[field] = null)
-                const placeholders ={
-                    _addrSince: 'MM/DD/YYYY',
-                }
-                updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
-                options._addrState.select.input.options = { valOpt: true }
-                Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
 
                 if (values.country) {
                     hbs.countryDisplay = ''
                     options.country.select.input.disabled = false
                 }
             }
+
+            updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 13 })
+            options._addrState.select.input.options = { valOpt: true }
+            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
 
         const commercial = settings?.drivers?.cdl === true

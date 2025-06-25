@@ -14,10 +14,6 @@ const $country = $('#country')
 const $addrList = $('#address-list')
 const $addrForm = $('#address-form-template')
 
-// const $form = $('#misc-form')
-// const $help = {
-//     form: $('#misc-form-help'),
-// }
 const $form = $('#address-form')
 const $help = {
     form: $('#address-form-help'),
