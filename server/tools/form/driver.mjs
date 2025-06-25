@@ -248,6 +248,7 @@ class ApplicationForm {
     static livedAbroad = createYesNoForm({
         selector: appSelector,
         target: 'livedAbroad1',
+        group: 'livedAbroad',
         name: 'livedAbroad',
         required,
         disabled,

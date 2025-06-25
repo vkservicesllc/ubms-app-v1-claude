@@ -52,6 +52,7 @@ const selector = {
         radio: {
             gender: 'gender',
             marital: 'marital-status',
+            livedAbroad: 'lived-abroad',
             dlCategory: 'driver-license-category',
             duiInDecade: 'had-dui-in-decade',
             citations: 'citations',

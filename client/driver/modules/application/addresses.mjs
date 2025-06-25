@@ -58,7 +58,7 @@ selectEvent(selector.id.select.country, { fill: true, onChange })
 
 function cloneAddrForm(i = 0, data = null) {
     const patt = /\[([^\]]+)\]/
-    const $clone = $addrForm.clone().attr('id', `accident-form-${i}`)
+    const $clone = $addrForm.clone().attr('id', `address-form-${i}`)
     $clone.attr('data-idx', i)
 
     if (data) data = sortArrayByObjectKey(data, 'since', false)

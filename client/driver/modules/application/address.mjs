@@ -3,13 +3,15 @@ import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/add
 import { check, onInput, onChange, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
-const TS = selector.id.text, SS = selector.id.select
+const TS = selector.id.text, SS = selector.id.select, TR = selector.id.radio
 const addr1Id = TS.address1
 const addr2Id = TS.address2
 const zipId = TS.addrZip
 const cityId = TS.addrCity
 const stateId = SS.addrState
 const addrSinceId = TS.addrSince
+const livedAbroadId = TR.livedAbroad1
+const countryId = SS.country
 
 const $card = $('#apl-card')
 const $help = {
@@ -55,19 +57,68 @@ inputEvent(addrSinceId, {
     },
     onCompleted(since, $since) {
         if (since) {
-            const date = moment(since, 'MM/DD/YYYY', true)
+            since = moment(since, 'MM/DD/YYYY', true)
 
-            if (!date.isValid()) {
+            if (!since.isValid()) {
                 $since.addClass('is-invalid')
                 $help.addrSince.text('* Invalid date')
             } else {
                 const today = moment()
 
-                if (date.isAfter(today)) {
+                if (since.isAfter(today)) {
                     $since.addClass('is-invalid')
                     $help.addrSince.text('* Future date forbidden')
-                } else
-                    $since.addClass('is-valid')
+                } else {
+                    const limit = moment($(selector.id.hidden.appliedOn).val()).clone().subtract(3, 'years')
+                    const $prior = $('#prior-residence')
+
+                    if (since.isBefore(limit)) {
+                        $prior.hide().find('input, select').prop('disabled', true)
+                        $since.addClass('is-valid')
+                    } else {
+                        const livedAbroad = {}, props = ['yes', 'no']
+                        let minDate
+
+                        props.forEach(prop => livedAbroad[prop] = $(livedAbroadId[prop]).prop('checked'))
+                        $(selector.class.radio.livedAbroad).prop('disabled', false)
+
+                        $prior.show()
+
+                        if (livedAbroad.yes) $(countryId).prop('disabled', false)
+                        if (livedAbroad.no) {
+                            $('#address-list').find('.address-form').each(function(i) {
+                                $(this).find('input:not([type="radio"]), select').prop('disabled', false)
+                                const $livedAbroad = {
+                                    yes: $(this).find(TR.livedAbroad2.yes + `-${i}`),
+                                }
+                                const $container = $livedAbroad.yes.parent().parent().parent()
+                                const visible = $container.is(':visible')
+
+                                if (visible) {
+                                    $livedAbroad.no = $(this).find(TR.livedAbroad2.no + `-${i}`)
+                                    props.forEach(prop => $livedAbroad[prop].prop('disabled', false))
+
+                                    if ($livedAbroad.yes.prop('checked'))
+                                        $(countryId).prop('disabled', false)
+                                }
+
+                                if (!i) minDate = $(this).find(selector.class.text.prevAddrSince).val()
+                            })
+                        }
+
+                        if (minDate) {
+                            minDate = moment(minDate, 'MM/DD/YYYY', true)
+
+                            if (since.isSameOrBefore(minDate)) {
+                                let msg = '* Date overlap'
+                                msg += `<br/>Date expected<br/>after ${moment(minDate).format('ll')}`
+
+                                $since.addClass('is-invalid')
+                                $help.addrSince.html(msg)
+                            } else $since.addClass('is-valid')
+                        } else $since.addClass('is-valid')
+                    }
+                }
             }
         }
 
