@@ -146,6 +146,7 @@ export const applicationLogin = async (req, res, next) => {
         const key = 'application.login'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Sign-in' })
+        hbs.bodyAttrs = ' data-bs-theme="dark"'
 
         let options = {}
         const placeholders = {
@@ -156,8 +157,8 @@ export const applicationLogin = async (req, res, next) => {
         const fields = Object.keys(placeholders)
         options = updateFormOptions(options, ApplicationForm, fields, formInstr)
         fields.forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
-        options.phone.text.label.content = 'Phone'
 
+        hbs.firstName = application.firstName
         hbs.form = new ApplicationForm(options)
         hbs.formUrl = `/resource/application/login/${formId}`
 
@@ -283,7 +284,9 @@ export const applicationProgress = async (req, res) => {
         }
 
         if (step >= 0) { /* PRIOR RESIDENCE */
+            hbs.priorResidenceDisplay = ' style="display: none;"'
             if (application.address.enough === false) {
+                hbs.priorResidenceDisplay = ''
                 hbs.countryDisplay = ' style="display: none;"'
 
                 options.livedAbroad = { radio: {} }

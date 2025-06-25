@@ -39,7 +39,7 @@
 
 label.input-required::after {
     content: ' *';
-    color: #f16d6d;
+    color: #f57575;
 }
 
 .text-secondary {
@@ -47,5 +47,13 @@ label.input-required::after {
 }
 
 .text-danger {
-    color: #f16d6d !important;
+    color: #f57575 !important;
+}
+
+.text-success {
+    color: #73c373 !important;
+}
+
+.text-warning {
+    color: #c7c74e !important;
 }

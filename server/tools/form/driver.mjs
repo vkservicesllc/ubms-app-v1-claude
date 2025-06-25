@@ -184,6 +184,7 @@ class ApplicationForm {
         required: true,
         disabled: true,
         label: 'PIN',
+        requiredLabel: false,
     })
 
     static position = createForm({

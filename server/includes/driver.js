@@ -19,7 +19,7 @@ module.exports = {
     },
 
     'application.login': {
-        external: [ ...defaults.external, 'jquery.masked-input' ],
+        external: [ ...defaults.external, 'jquery.masked-input', 'font-awesome' ],
         internal: {
             css: [ ...defaults.internal.css, 'application' ],
             js: [ ...defaults.internal.js ],

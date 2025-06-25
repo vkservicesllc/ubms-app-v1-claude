@@ -13,6 +13,7 @@ const $form = $('#apl-login-form')
 const $help = $('#form-help')
 
 $(selector.class.global).val(null)
+$('label.input-required').removeClass('input-required')
 
 const duration = 750
 $card.fadeIn(duration)

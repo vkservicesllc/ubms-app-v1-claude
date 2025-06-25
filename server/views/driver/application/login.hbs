@@ -3,9 +3,15 @@
     <div class="d-flex justify-content-center align-items-lg-center min-vh-100">
         <div class="card text-center" id="apl-login-card" style="display: none;">
             <div class="card-body pt-4">
-                <h5 class="card-title text-secondary">Professional Driver Application</h5>
+                <h5 class="card-title text-info">Professional Driver Application</h5>
                 <div class="card-text px-2" id="form-card">
-                    <h6 class="text-success border-top py-3">Sign in to proceed</h6>
+                    <h6 class="text-secondary border-top pt-4 pb-3">
+                        <p class="mb-1">Welcome back, {{firstName}}!</p>
+                        <small>
+                            It looks like your application is still incomplete.
+                            Please sign in to continue.
+                        </small>
+                    </h6>
                     <form id="apl-login-form" action="{{formUrl}}" method="POST" autocomplete="off">
                         <div class="row g-3 mb-1">
                             <div class="col-md-5">
@@ -27,12 +33,17 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="form-text text-danger mt-4" id="form-help" style="display: none;"></p>
-                        <div class="row g-3 my-2">
+                        <label class="form-label fw-normal text-warning my-3">
+                            <small>
+                                Check your email for the PIN
+                            </small>
+                        </label>
+                        <p class="form-text text-danger mt-0" id="form-help" style="display: none;"></p>
+                        <div class="row g-3 mb-3">
                             <div class="col-md-3"></div>
                             <div class="col-md-6">
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary">Continue Application</button>
+                                    <button type="submit" class="btn btn-primary bg-primary-subtle">Continue Application</button>
                                 </div>
                             </div>
                             <div class="col-md-3"></div>
@@ -40,7 +51,7 @@
                     </form>
                 </div>
             </div>
-            <div class="card-footer text-black-50">
+            <div class="card-footer text-secondary">
                 {{{copyright}}}
             </div>
         </div>

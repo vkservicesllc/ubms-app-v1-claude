@@ -884,20 +884,20 @@ class Application {
                 target = 'aplEmergencies'
                 idProp = 'aplId'
 
-                const { livedAbroad, addresses, country } = data
-                delete data.livedAbroad
-                delete data.addresses
-                delete data.country
+                // const { livedAbroad, addresses, country } = data
+                // delete data.livedAbroad
+                // delete data.addresses
+                // delete data.country
 
-                mainData.livedAbroad = null
-                mainData.country = null
-                await mysql.execute(query.aplAddresses.delete({ aplId: id }))
+                // mainData.livedAbroad = null
+                // mainData.country = null
+                // await mysql.execute(query.aplAddresses.delete({ aplId: id }))
 
-                if (!this.address.enough) {
-                    mainData.livedAbroad = livedAbroad
-                    if (country) mainData.country = country
-                    if (addresses) target2 = 'aplAddresses'
-                }
+                // if (!this.address.enough) {
+                //     mainData.livedAbroad = livedAbroad
+                //     if (country) mainData.country = country
+                //     if (addresses) target2 = 'aplAddresses'
+                // }
 
                 if (this.step < 11) {
                     data = processData(data)
@@ -914,24 +914,24 @@ class Application {
                     })
                 }
 
-                if (target2) {
-                    const { address1, address2, zip, city, state, since, livedAbroad } = addresses
-                    const count = zip.length
-                    data2 = []
+                // if (target2) {
+                //     const { address1, address2, zip, city, state, since, livedAbroad } = addresses
+                //     const count = zip.length
+                //     data2 = []
 
-                    for (let i = 0; i < count; i++) {
-                        data2.push({
-                            aplId: id,
-                            address1: address1[i],
-                            address2: address2[i],
-                            zip: zip[i],
-                            city: city[i],
-                            state: state[i],
-                            since: since[i],
-                            livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
-                        })
-                    }
-                }
+                //     for (let i = 0; i < count; i++) {
+                //         data2.push({
+                //             aplId: id,
+                //             address1: address1[i],
+                //             address2: address2[i],
+                //             zip: zip[i],
+                //             city: city[i],
+                //             state: state[i],
+                //             since: since[i],
+                //             livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
+                //         })
+                //     }
+                // }
 
                 break
 
@@ -1112,7 +1112,7 @@ class Application {
 
 
     static stepList = [
-        [ 'Profile', 'Address' ],
+        [ 'Profile', 'Residence' ],
         "Driver's License",
         'Medical Card',
         'Legal Compliance',
