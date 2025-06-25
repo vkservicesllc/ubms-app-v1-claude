@@ -4,6 +4,7 @@ import { telEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import patterns from '/modules/registry/patterns.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import formId, { check, onInput, onChange, onBlur, onSubmit, onKeyup, onCompleted } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
@@ -139,7 +140,7 @@ function drawEmployerForms() {
     $.ajax(`/api/application/${formId()}/employers`, {
         method: 'POST',
         success(response) {
-            const { data, error } = response
+            let { data, error } = response
             if (error) return alert(error)
 
             if (!data.length) {
@@ -163,13 +164,16 @@ function drawEmployerForms() {
 
                 fields.forEach(field => employer[field] = null)
                 data.push(employer)
-            } else
+            } else {
+                data = sortArrayByObjectKey(data, 'startedOn', false)
+
                 data.forEach(row => {
                     row.phone = formatTel(row.phone)
                     row.startedOn = moment(row.startedOn).format('MM/DD/YYYY')
                     row.earnings = row.earnings.toLocaleString()
                     if (row.leftOn) row.leftOn = moment(row.leftOn).format('MM/DD/YYYY')
                 })
+            }
 
             const count = data.length
             for (let i = 0; i < count; i++) $emplList.append(cloneEmplForm(i, data))
