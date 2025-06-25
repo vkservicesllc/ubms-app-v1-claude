@@ -137,6 +137,7 @@ export const applicationLogin = async (req, res, next) => {
             const key = 'application.submitted'
             let { hbs } = res
             hbs = hbs.set(key, { title: 'Driver Application Complete' })
+            hbs.bodyAttrs = ' data-bs-theme="dark"'
 
             hbs.formId = formId
 
@@ -971,6 +972,7 @@ export const applicationSummary = async (req, res) => {
         const key = 'application.summary'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Summary' })
+        hbs.bodyAttrs = ' data-bs-theme="dark"'
 
         const na = (txt = 'None') => `<small class="text-danger">${txt}</small>`
 
@@ -1050,7 +1052,7 @@ export const applicationSummary = async (req, res) => {
                     const type = group === 'straight' ? ' Truck' : ''
 
                     if (html) html += '<br/>'
-                    if (group !== 'misc') html += `<small><b>${groups[group]}:</b></small><br/>`
+                    if (group !== 'misc') html += `<small class="text-secondary"><b>${groups[group]}:</b></small><br/>`
 
                     array.forEach(prop => list.push(data[prop] + type))
                     html += list.join(', ')
@@ -1076,8 +1078,9 @@ export const applicationSummary = async (req, res) => {
             } else hbs.application.experience.schName = 'Never attended'
 
         }
-        
+
         hbs.application.preference.operType = { s: 'Solo', t: 'Team' }[application.preference.operType]
+        if (application.preference.teamPhone) hbs.application.preference.teamPhone = formatTel(application.preference.teamPhone)
         if (application.preference?.haulRegion) {
             const haulRegionList = []
             application.preference.haulRegion.forEach(region => haulRegionList.push(Application.haulRegionList[region]))
@@ -1089,11 +1092,11 @@ export const applicationSummary = async (req, res) => {
             hbs.application.preference.equipmentList = equipmentList.join(', ')
         }
         hbs.application.preference.startPref = {
-            '0': 'Right Away',
-            '1': 'One Week',
-            '2': 'Two Weeks',
-            '3': 'Three Weeks',
-            '4': 'Four Weeks',
+            '0': 'Right away',
+            '1': 'In 1 week',
+            '2': 'In 2 weeks',
+            '3': 'In 3 weeks',
+            '4': 'In 4 weeks',
         }[application.preference.startPref]
 
         if (application.activeBusiness) {
@@ -1153,6 +1156,7 @@ export const applicationDocuments = async (req, res) => {
         const key = 'application.documents'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Documents' })
+        hbs.bodyAttrs = ' data-bs-theme="dark"'
 
         hbs.href = {
             summary: `/application/${formId}/summary`,
@@ -1193,6 +1197,7 @@ export const applicationAgreement = async (req, res) => {
         const key = 'application.agreement'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Agreement' })
+        hbs.bodyAttrs = ' data-bs-theme="dark"'
 
         hbs.actionUrl = {
             submit: `/resource/application/submit/form/${formId}`,

@@ -426,6 +426,18 @@
                                         <th class="text-secondary">Operating Type:</th>
                                         <td>{{application.preference.operType}}</td>
                                     </tr>
+                                    {{#if (hv application.preference.teamName)}}
+                                    <tr>
+                                        <th class="text-secondary">Partner's Name:</th>
+                                        <td>{{application.preference.teamName}}</td>
+                                    </tr>
+                                    {{/if}}
+                                    {{#if (hv application.preference.teamPhone)}}
+                                    <tr>
+                                        <th class="text-secondary">Partner's Phone:</th>
+                                        <td>{{application.preference.teamPhone}}</td>
+                                    </tr>
+                                    {{/if}}
                                     {{#if (hv application.preference.haulRegion)}}
                                     <tr>
                                         <th class="text-secondary">Haul Region:</th>
@@ -583,14 +595,14 @@
                     <div class="col-md-3">
                         <form id="certify-form" action="{{actionUrl.certify}}" method="POST">
                             <div class="d-grid gap-2">
-                                <a class="btn btn-primary btn-sm" href="{{href.dox}}">Upload Document</a>
+                                <a class="btn btn-primary bg-primary-subtle btn-sm" href="{{href.dox}}">Upload Document</a>
                                 <button type="submit" class="btn btn-secondary btn-sm">Skip Upload</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-            <div class="card-footer text-black-50" style="font-size: .7em;">
+            <div class="card-footer text-secondary" style="font-size: .7em;">
                 {{{copyright}}}
             </div>
         </div>

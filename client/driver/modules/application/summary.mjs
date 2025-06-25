@@ -150,6 +150,8 @@ $.ajax(`/api/application/${formId}/employers`, {
         if (length) {
             let html = ''
 
+            data = sortArrayByObjectKey(data, 'startedOn', false)
+
             data.forEach((row, i) => {
                 const address = new Address(row)
                 let label = 'Employer'
