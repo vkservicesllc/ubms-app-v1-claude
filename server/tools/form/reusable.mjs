@@ -113,7 +113,7 @@ export const createPhoneForm = (props = {}) => createForm({
     validator: {
         rule: 'numeric',
         length: { min: 10, max: 10 },
-        sanitizer: value => strip(value),
+        sanitizer: value => strip(value.reaplce(/^\+\d+\s/, '')),
     },
 })
 

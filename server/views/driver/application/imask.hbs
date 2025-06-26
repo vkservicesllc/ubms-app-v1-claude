@@ -1,0 +1,78 @@
+{{> head}}
+
+<div class="d-flex justify-content-center align-items-lg-center min-vh-100">
+    <div class="card text-center" id="apl-card" data-bs-theme="dark">
+        <div class="card-body pt-4 text-start">
+
+            <form action="/resource/application/imask" method="POST">
+
+                <div class="row my-3">
+                    <div class="col-md-4">
+                        <label for="us-date-1" class="form-label">US Date 1</label>
+                        <input type="text" class="form-control us-date" id="us-date-1" name="us-date[]">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="us-date-2" class="form-label">US Date 2</label>
+                        <input type="text" class="form-control us-date" id="us-date-2" name="us-date[]">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="us-date-3" class="form-label">US Date 3</label>
+                        <input type="text" class="form-control us-date" id="us-date-3" name="us-date[]">
+                    </div>
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-md-4">
+                        <label for="ssn-1" class="form-label">SSN 1</label>
+                        <input type="text" class="form-control ssn" id="ssn-1" name="ssn[]">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ssn-2" class="form-label">SSN 2</label>
+                        <input type="text" class="form-control ssn" id="ssn-2" name="ssn[]">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ssn-3" class="form-label">SSN 3</label>
+                        <input type="text" class="form-control ssn" id="ssn-3" name="ssn[]">
+                    </div>
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-md-5">
+                        <label for="us-phone-1" class="form-label">US Phone 1</label>
+                        <input type="text" class="form-control us-phone" id="us-phone-1" name="us-phone[]">
+                    </div>
+                    <div class="col-md-5">
+                        <label for="us-phone-2" class="form-label">US Phone 2</label>
+                        <input type="text" class="form-control us-phone" id="us-phone-2" name="us-phone[]">
+                    </div>
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-md-5">
+                        <label for="phone-1" class="form-label">Phone 1</label>
+                        <input type="text" class="form-control phone" id="phone-1" name="phone[]">
+                    </div>
+                    <div class="col-md-5">
+                        <label for="phone-2" class="form-label">Phone 2</label>
+                        <input type="text" class="form-control phone" id="phone-2" name="phone[]">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary bg-primary-subtle">Submit</button>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { dateMask, idMask, telMask } from '/modules/events/imask.mjs'
+
+    dateMask('.us-date', { pattern: 'us' })
+    idMask('.ssn', 'ssn')
+    telMask('.us-phone', { region: 'us' })
+    telMask('.phone')
+</script>
+
+{{> foot}}

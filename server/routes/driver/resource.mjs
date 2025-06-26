@@ -161,6 +161,12 @@ const dynamicValidator = {
 /* Application Resource */
 
 
+//! TEMP
+router.post('/application/imask', (req, res) => {
+    res.send(req.body)
+})
+
+
 router.post('/application/login/:formId', validateApplicantLogin, validationCheck, async (req, res) => {
     try {
         const { formId } = req.params

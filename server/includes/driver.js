@@ -72,4 +72,14 @@ module.exports = {
         },
     },
 
+    //! TEMP
+    'application.imask': {
+        external: [ ...defaults.external, 'moment', 'imask' ],
+        internal: {
+            css: [ ...defaults.internal.css, 'application' ],
+            js: [ ...defaults.internal.js ],
+            mjs: [ ...defaults.internal.mjs ],
+        },
+    },
+
 }

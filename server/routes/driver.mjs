@@ -8,6 +8,9 @@ import { capitalizeEach } from '../../client/global/modules/tools/utils/string.m
 import {
     applicationStart, applicationLogin, applicationProgress,
     applicationSummary, applicationDocuments, applicationAgreement,
+
+    applicationImask, //! TEMP
+
 } from './driver/mw/application.mjs'
 
 
@@ -32,6 +35,9 @@ router.use((req, res, next) => {
 
     next()
 })
+
+
+router.get('/application/imask', applicationImask) //! TEMP
 
 
 router.get('/application/:param?', applicationStart, applicationLogin, applicationProgress)

@@ -1208,3 +1208,14 @@ export const applicationAgreement = async (req, res) => {
         throwErr.server(res, null, err)
     }
 }
+
+
+
+//! TEMP
+export const applicationImask = (req, res) => {
+    const key = 'application.imask'
+    let { hbs } = res
+    hbs = hbs.set(key, { title: 'Imask Test' })
+
+    res.render('application/imask', hbs)
+}
