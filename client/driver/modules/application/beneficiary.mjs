@@ -1,8 +1,8 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
-import { telEvent } from '/modules/events/contacts.mjs'
+import { telMask, idMask } from '/modules/events/imask.mjs'
+import { nameEvent } from '/modules/events/person.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
-import { check, onInput, onChange, onKeyup, onCompleted, onSubmit } from './support.mjs'
+import { onInput, onAccept, onChange, onComplete, onKeyup, onCompleted, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { Relationship } from '/modules/tools/core/person.mjs'
 
@@ -14,7 +14,6 @@ const middleNameId = TS.benefMiddleName
 const lastNameId = TS.benefLastName
 const suffixId = SS.benefSuffix
 const genderId = SS.benefGender
-const dobId = TS.benefDob
 const phoneId = TS.benefPhone
 const addr1Id = TS.benefAddress1
 const addr2Id = TS.benefAddress2
@@ -24,10 +23,6 @@ const stateId = SS.benefAddrState
 const ssnId = TS.benefSsn
 
 const $card = $('#apl-card')
-const $help = {
-    dob: $('#beneficiary-dob-help'),
-    form: $('#beneficiary-form-help'),
-}
 const $submit = $('#beneficiary-submit')
 const $form = $('#beneficiary-form')
 
@@ -67,37 +62,6 @@ selectEvent(suffixId, { onChange })
 
 selectEvent(genderId, { fill: true, onChange })
 
-inputEvent(dobId, {
-    mask: '99/99/9999',
-    placeholder: 'MM/DD/YYYY',
-    onKeyup(dob, $dob) {
-        $help.dob.text(null)
-        $dob.removeClass('is-valid is-invalid')
-    },
-    onCompleted(dob, $dob) {
-        if (dob) {
-            const date = moment(dob, 'MM/DD/YYYY', true)
-
-            if (!date.isValid()) {
-                $dob.addClass('is-invalid')
-                $help.dob.text('* Invalid date')
-            } else {
-                const today = moment()
-
-                if (date.isAfter(today)) {
-                    $dob.addClass('is-invalid')
-                    $help.dob.text("* Future date forbidden")
-                } else
-                    $dob.addClass('is-valid')
-            }
-        }
-
-        if (check($form)) $help.form.hide().html(null)
-    },
-})
-
-telEvent(phoneId, { onKeyup, onCompleted })
-
 addr1Event(addr1Id, {
     addr2Id,
     onInput,
@@ -124,7 +88,9 @@ cityEvent(cityId, { onInput, onChange })
 
 selectEvent(stateId, { onChange })
 
-ssnEvent(ssnId, { onKeyup, onCompleted })
+telMask(phoneId, { onAccept, onComplete })
+
+idMask(ssnId, 'ssn')
 
 
-onSubmit($form, $help, $submit, $card)
+onSubmit($form, null, $submit, $card)

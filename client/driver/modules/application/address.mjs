@@ -1,4 +1,5 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { selectEvent } from '/modules/events/form.mjs'
+import { dateMask } from '/modules/events/imask.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import { check, onInput, onChange, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
@@ -48,14 +49,15 @@ cityEvent(cityId, { onInput, onChange })
 
 selectEvent(stateId, { onChange })
 
-inputEvent(addrSinceId, {
-    mask: '99/99/9999',
-    placeholder: 'MM/DD/YYYY',
-    onKeyup(since, $since) {
+dateMask(addrSinceId, {
+    pattern: 'us',
+    onAccept(mask, $since) {
         $help.addrSince.text(null)
         $since.removeClass('is-valid is-invalid')
     },
-    onCompleted(since, $since) {
+    onComplete(mask, $since) {
+        let since = mask.value
+
         if (since) {
             since = moment(since, 'MM/DD/YYYY', true)
 

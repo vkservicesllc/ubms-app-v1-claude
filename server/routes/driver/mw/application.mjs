@@ -264,15 +264,8 @@ export const applicationProgress = async (req, res) => {
                 addrState: application.address.state[0],
                 addrSince: moment(application.address.since).format('MM/DD/YYYY'),
             }
-            const placeholders = {
-                dob: 'MM/DD/YYYY',
-                ssn: '###-##-####',
-                phone: '(###) ###-####',
-                addrSince: 'MM/DD/YYYY',
-            }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.addrState.select.input.options = { valOpt: true }
         }
 
@@ -295,9 +288,6 @@ export const applicationProgress = async (req, res) => {
                 country: null,
             }
             fields.forEach(field => values[field] = null)
-            const placeholders ={
-                _addrSince: 'MM/DD/YYYY',
-            }
     
             if (application.address.enough === false) {
                 hbs.priorResidenceDisplay = ''
@@ -312,7 +302,6 @@ export const applicationProgress = async (req, res) => {
 
             updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 13 })
             options._addrState.select.input.options = { valOpt: true }
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
 
             if (values.country) {
                 hbs.countryDisplay = ''
@@ -338,8 +327,6 @@ export const applicationProgress = async (req, res) => {
                 dlRevokedExpl: application?.dl?.revokedExpl,
             }
             const placeholders = {
-                dlIss: 'MM/DD/YYYY',
-                dlExp: 'MM/DD/YYYY',
                 dlEndrs: 'None',
                 dlRestr: 'None',
             }
@@ -395,13 +382,8 @@ export const applicationProgress = async (req, res) => {
                 mecNumber: application?.mec?.nrcme,
                 medList: application.medList,
             }
-            const placeholders = {
-                mecIss: 'MM/DD/YYYY',
-                mecExp: 'MM/DD/YYYY',
-            }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.noMec = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
             options.underMeds = { radio: {} }
             for (const prop of ['yes', 'no'])
@@ -478,11 +460,6 @@ export const applicationProgress = async (req, res) => {
 
             const fields = ['_citReason', '_citOtherReason', '_citDate', '_citState']
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
-
-            const placeholders = {
-                _citDate: 'MM/DD/YYYY',
-            }
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
 
         if (step >= 4) { /* SAFETY */
@@ -510,11 +487,6 @@ export const applicationProgress = async (req, res) => {
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
             options._accInjuries.radio.label = { class: labelClassRequired }
             options._accFatalities.radio.label = { class: labelClassRequired }
-
-            const placeholders = {
-                _accDate: 'MM/DD/YYYY',
-            }
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
 
         if (step >= 5) { /* DRIVING EXPERIENCE */
@@ -590,15 +562,8 @@ export const applicationProgress = async (req, res) => {
                     : null,
                 schDuration: application?.experience?.schDuration,
             }
-            const placeholders = {
-                expStartDate: 'MM/DD/YYYY',
-                expEndDate: 'MM/DD/YYYY',
-                schEndDate: 'MM/DD/YYYY',
-                schPhone: '(###) ###-####',
-            }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, disabled, tabs: 8 })
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.schState.select.input.options = { valOpt: true }
 
             const appliedOn = moment(application.appliedOn)
@@ -653,13 +618,6 @@ export const applicationProgress = async (req, res) => {
             ]
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
             options._emplAddrState.select.input.options = { valOpt: true }
-
-            const placeholders = {
-                _emplPhone: '(###) ###-####',
-                _emplStartDate: 'MM/DD/YYYY',
-                _emplEndDate: 'MM/DD/YYYY',
-            }
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         }
 
         if (step >= 7) { /* DRIVING PREFERENCES */
@@ -692,11 +650,7 @@ export const applicationProgress = async (req, res) => {
                 teamPhone: application?.preference?.teamPhone ? formatTel(application?.preference?.teamPhone) : null,
                 startPref: application?.preference?.startPref,
             }
-            const placeholders = {
-                teamPhone: '(###) ###-####',
-            }
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
 
             if (application?.preference?.operType === 't') {
                 hbs.partnerDisplay = ''
@@ -726,12 +680,8 @@ export const applicationProgress = async (req, res) => {
                 llcEin: application?.business?.ein,
                 llcProposedName: application?.business?.proposedName,
             }
-            const placeholders = {
-                llcEin: '##-#######',
-            }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
 
             if (application.activeBusiness === true) {
                 options.activeLLC.radio.yes.input.checked = true
@@ -834,13 +784,7 @@ export const applicationProgress = async (req, res) => {
                 // benefAddrState: application?.beneficiary?.state,
                 benefSsn: application?.beneficiary?.ssn, //! may need to format
             }
-            const placeholders = {
-                // benefDob: 'MM/DD/YYYY',
-                benefSsn: '###-##-####',
-                benefPhone: '(###) ###-####',
-            }
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 6 })
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
             options.benefMiddleName.text.label.content = 'Middle Name/Initial'
             // options.benefAddrState.select.input.options = { valOpt: true }
 
@@ -867,45 +811,13 @@ export const applicationProgress = async (req, res) => {
         if (step >= 10) { /* MISC */
             hbs.button.nine = buttonProps.save
             hbs.accordion.nine = accordionProps.finished
-            // hbs.countryDisplay = ' style="display: none;"'
 
             const values = {
                 emergPhone: application?.emergency?.phone,
                 emergName: application?.emergency?.name,
                 emergRelation: application?.emergency?.relation,
             }
-            const placeholders = {
-                emergPhone: '(###) ###-####',
-            }
-
-            // if (application.address.enough === false) {
-            //     options.livedAbroad = { radio: {} }
-            //     options._livedAbroad = { radio: {} }
-            //     for (const prop of ['yes', 'no']) {
-            //         options.livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-            //         options._livedAbroad.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-            //     }
-            //     options.livedAbroad.radio.yes.input.checked = application.address.livedAbroad === true
-            //     options.livedAbroad.radio.no.input.checked = application.address.livedAbroad === false
-
-            //     values.country = application.address.country
-
-            //     const fields = [
-            //         '_address1', '_address2', '_addrZip',
-            //         '_addrCity', '_addrState', '_addrSince',
-            //     ]
-            //     placeholders._addrSince = 'MM/DD/YYYY'
-            //     updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
-            //     options._addrState.select.input.options = { valOpt: true }
-            // }
-
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
-            Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
-
-            // if (values.country) {
-            //     hbs.countryDisplay = ''
-            //     options.country.select.input.disabled = false
-            // }
         }
 
         if (step >= 11) {

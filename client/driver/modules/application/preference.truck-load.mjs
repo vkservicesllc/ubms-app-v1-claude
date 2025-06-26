@@ -1,6 +1,6 @@
 import { inputEvent } from '/modules/events/form.mjs'
+import { telMask } from '/modules/events/imask.mjs'
 import { nameEvent } from '/modules/events/person.mjs'
-import { telEvent } from '/modules/events/contacts.mjs'
 import { onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
@@ -25,9 +25,14 @@ inputEvent(selector.class.radio.operType, {
     },
 })
 
-nameEvent(selector.id.text.teamName)
+nameEvent(selector.id.text.teamName, {
+    sfxId: true,
+    onChange(name, $name, suffix) {
+        if (suffix) $name.val(`${name}, ${suffix}`)
+    },
+})
 
-telEvent(selector.id.text.teamPhone)
+telMask(selector.id.text.teamPhone)
 
 
 onSubmit($form, null, $submit, $card, {

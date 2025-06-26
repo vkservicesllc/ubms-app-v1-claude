@@ -28,47 +28,6 @@
                         {{{form.emergRelation.text.input}}}
                     </div>
                 </div>
-                {{!-- {{#if (eq addrEnough false)}}
-                <div class="border-top mt-4 pt-3">
-                    <label class="form-label text-secondary">Prior Residence</label>
-                    <p class="mb-0" style="font-size: .84em;">
-                        As your current residence began less than 3 years ago,
-                        we require your prior address(es) to complete your U.S. address history.
-                    </p>
-                    <div class="row g-3 my-1">
-                        <label class="form-label">
-                            Within the past 3 years, were you living outside the United States before your current address?
-                        </label>
-                        <div class="col-md-12 mt-0">
-                            <div class="form-check form-check-inline">
-                                {{{form.livedAbroad.radio.yes.input}}}
-                                {{{form.livedAbroad.radio.yes.label}}}
-                            </div>
-                            <div class="form-check form-check-inline">
-                                {{{form.livedAbroad.radio.no.input}}}
-                                {{{form.livedAbroad.radio.no.label}}}
-                            </div>
-                        </div>
-                    </div>
-                    <div id="addresses" style="display: none;">
-                        <label class="form-label fw-normal text-danger mt-3 mb-0">
-                            <small>
-                                <i class="fas fa-circle-exclamation"></i>
-                                Do not include your current address;
-                                start with the most recent address prior to your current one
-                            </small>
-                        </label>
-                        <div class="pb-4" id="address-list"></div>
-                    </div>
-                    <div class="row g-3 my-1" id="country"{{{countryDisplay}}}>
-                        <div class="col-md-8">
-                            {{{form.country.select.label}}}
-                            {{{form.country.select.input}}}
-                        </div>
-                    </div>
-                </div>
-                {{/if}} --}}
-                <p class="form-text text-danger mt-4" id="misc-form-help" style="display: none;"></p>
                 <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">
@@ -77,57 +36,6 @@
                     </div>
                 </div>
             </form>
-            {{!-- {{#if (eq addrEnough false)}}
-            <div id="address-form-template" style="display: none;">
-                <div class="border-top mt-4">
-                    <div class="row g-3 my-1">
-                        <div class="col-md-6">
-                            {{{form._address1.text.label}}}
-                            {{{form._address1.text.input}}}
-                        </div>
-                        <div class="col-md-3">
-                            {{{form._address2.text.label}}}
-                            {{{form._address2.text.input}}}
-                        </div>
-                        <div class="col-md-3">
-                            {{{form._addrZip.text.label}}}
-                            {{{form._addrZip.text.input}}}
-                        </div>
-                    </div>
-                    <div class="row g-3 my-1">
-                        <div class="col-md-5">
-                            {{{form._addrCity.text.label}}}
-                            {{{form._addrCity.text.input}}}
-                        </div>
-                        <div class="col-md-3">
-                            {{{form._addrState.select.label}}}
-                            {{{form._addrState.select.input}}}
-                        </div>
-                        <div class="col-md-4">
-                            {{{form._addrSince.text.label}}}
-                            {{{form._addrSince.text.input}}}
-                            <div class="form-text text-danger"></div>
-                        </div>
-                    </div>
-                    <div class="row g-3 my-1" style="display: none;">
-                        <label class="form-label">
-                            Were you living outside the United States before this address?
-                        </label>
-                        <div class="col-md-12 mt-0">
-                            <div class="form-check form-check-inline">
-                                {{{form._livedAbroad.radio.yes.input}}}
-                                {{{form._livedAbroad.radio.yes.label}}}
-                            </div>
-                            <div class="form-check form-check-inline">
-                                {{{form._livedAbroad.radio.no.input}}}
-                                {{{form._livedAbroad.radio.no.label}}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <script type="module" src="/modules/application/addresses.mjs"></script>
-            {{/if}} --}}
             <script type="module" src="/modules/application/emergency.mjs"></script>
         </div>
     </div>

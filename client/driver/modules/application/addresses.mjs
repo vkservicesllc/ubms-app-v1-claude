@@ -1,4 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { dateMask } from '/modules/events/imask.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import patterns from '/modules/registry/patterns.mjs'
 import formId, { check, onInput, onChange } from './support.mjs'
@@ -179,19 +180,18 @@ function resetEvents() {
     
     selectEvent(SS.prevAddrState, { fill: true, onChange })
 
-    inputEvent(TS.prevAddrSince, {
-        mask: '99/99/9999',
-        placeholder: 'MM/DD/YYYY',
-        onKeyup(date, $date) {
+    dateMask(TS.prevAddrSince, {
+        pattern: 'us',
+        onAccept(mask, $date) {
             $date.removeClass('is-valid is-invalid').next().text(null)
         },
-        onCompleted(since, $since) {
+        onComplete(mask, $since) {
             {
                 const $help = $since.next()
                 const $form = $since.parent().parent().parent().parent()
                 const idx = +$form.data('idx')
 
-                since = moment(since, 'MM/DD/YYYY', true)
+                const since = moment(mask.value, 'MM/DD/YYYY', true)
 
                 if (!since.isValid()) {
                     $since.addClass('is-invalid')

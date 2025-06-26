@@ -1,6 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { telEvent } from '/modules/events/contacts.mjs'
-import { check, onInput, onChange, onBlur, onKeyup, onCompleted } from './support.mjs'
+import { dateMask, telMask } from '/modules/events/imask.mjs'
+import { busNameEvent } from '/modules/events/company.mjs'
+import { check, onInput, onAccept, onChange, onComplete, onBlur } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio, CS = selector.id.checkbox
@@ -145,23 +146,25 @@ inputEvent(`${cdlSchoolId.yes}, ${cdlSchoolId.no}`, {
 })
 
 
-inputEvent(schNameId, {
-    capitalize: 'each',
-    strip: true,
+busNameEvent(schNameId, true, {
     onInput,
-    onChange,
+    onChange(schName, type, $schName) {
+        if (type) $schName.val(`${schName}, ${type}`)
+        onChange(schName, $schName)
+    },
 })
 
-telEvent(schPhoneId, { onKeyup, onCompleted })
+telMask(schPhoneId, { onAccept, onComplete })
 
-inputEvent(schEndDateId, {
-    mask: '99/99/9999',
-    placeholder: 'MM/DD/YYYY',
-    onKeyup(endDate, $endDate) {
+dateMask(schEndDateId, {
+    pattern: 'us',
+    onAccept(mask, $endDate) {
         $help.schEnd.text(null)
         $endDate.removeClass('is-valid is-invalid')
     },
-    onCompleted(endDate, $endDate) {
+    onComplete(mask, $endDate) {
+        let endDate = mask.value
+
         if (endDate) {
             endDate = moment(endDate, 'MM/DD/YYYY', true)
 

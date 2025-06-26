@@ -1,5 +1,6 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import formId, { check, onInput, onChange, onSubmit, onCompleted } from './support.mjs'
+import { dateMask } from '/modules/events/imask.mjs'
+import formId, { check, onInput, onChange, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
 
@@ -233,13 +234,14 @@ function resetEvents() {
         onChange,
     })
 
-    inputEvent(TS.accDate, {
-        mask: '99/99/9999',
-        placeholder: 'MM/DD/YYYY',
-        onKeyup(date, $date) {
+    dateMask(TS.accDate, {
+        pattern: 'us',
+        onAccept(mask, $date) {
             $date.removeClass('is-valid is-invalid').next().text(null)
         },
-        onCompleted(date, $date) {
+        onComplete(mask, $date) {
+            let date = mask.value
+
             if (date) {
                 const $help = $date.next()
                 date = moment(date, 'MM/DD/YYYY', true)

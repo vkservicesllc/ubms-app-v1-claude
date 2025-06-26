@@ -1,4 +1,5 @@
 import { inputEvent } from '/modules/events/form.mjs'
+import { dateMask } from '/modules/events/imask.mjs'
 import { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
@@ -23,7 +24,6 @@ const $form = $('#mec-form')
 const $issued = $(mecIssId)
 const $expires = $(mecExpId)
 
-const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 $(noMecId).on('change', function() {
@@ -38,13 +38,15 @@ $(noMecId).on('change', function() {
     $mecRow[action]().find('input').prop('disabled', disabled)
 })
 
-inputEvent(mecIssId, {
-    ...dateOpts,
-    onKeyup(issued, $issued) {
+dateMask(mecIssId, {
+    pattern: 'us',
+    onAccept(mask, $issued) {
         $help.issued.text(null)
         $issued.removeClass('is-valid is-invalid')
     },
-    onCompleted(issued, $issued) {
+    onComplete(mask, $issued) {
+        let issued = mask.value
+
         if (issued) {
             issued = moment(issued, 'MM/DD/YYYY', true)
 
@@ -73,13 +75,15 @@ inputEvent(mecIssId, {
     },
 })
 
-inputEvent(mecExpId, {
-    ...dateOpts,
-    onKeyup(expires, $expires) {
+dateMask(mecExpId, {
+    pattern: 'us',
+    onAccept(mask, $expires) {
         $help.expires.text(null).removeClass('text-danger text-warning')
         $expires.removeClass('is-valid is-invalid')
     },
-    onCompleted(expires, $expires) {
+    onComplete(mask, $expires) {
+        let expires = mask.value
+
         if (expires) {
             expires = moment(expires, 'MM/DD/YYYY', true)
 

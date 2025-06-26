@@ -1,11 +1,11 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { telMask, dateMask } from '/modules/events/imask.mjs'
 import { busNameEvent } from '/modules/events/company.mjs'
-import { telEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import patterns from '/modules/registry/patterns.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
-import formId, { check, onInput, onChange, onBlur, onSubmit, onKeyup, onCompleted } from './support.mjs'
+import formId, { check, onInput, onAccept, onChange, onComplete, onBlur, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const RS = selector.id.radio
@@ -27,7 +27,6 @@ const $deleteModal = $('#delete-preempl-modal')
 const $deleteTarget = $('#delete-preempl-target')
 const $deleteEmplDesc = $('#delete-preempl-desc')
 
-const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const countEmplList = () => $emplList.children().length
@@ -210,13 +209,12 @@ function resetEvents() {
     busNameEvent(TS.prevEmployer, true, {
         onInput,
         onChange(busName, coType, $busName) {
-
             if (coType) $busName.val(`${busName}, ${coType}`)
             onChange(busName, $busName)
         },
     })
 
-    telEvent(TS.emplPhone, { onInput, onChange })
+    telMask(TS.emplPhone, { onAccept, onComplete })
 
     addr1Event(TS.emplAddress1, {
         onInput,
@@ -257,12 +255,14 @@ function resetEvents() {
 
     selectEvent(SS.emplAddrState, { fill: true, onChange })
 
-    inputEvent(TS.emplStartDate, {
-        ...dateOpts,
-        onKeyup(date, $date) {
+    dateMask(TS.emplStartDate, {
+        pattern: 'us',
+        onAccept(mask, $date) {
             $date.removeClass('is-valid is-invalid').next().text(null)
         },
-        onCompleted(start, $start) {
+        onComplete(mask, $start) {
+            let start = mask.value
+
             if (start) {
                 const $help = $start.next()
                 start = moment(start, 'MM/DD/YYYY', true)
@@ -326,9 +326,9 @@ function resetEvents() {
         onChange,
     })
 
-    inputEvent(TS.emplEndDate, {
-        ...dateOpts,
-        onKeyup(date, $date) {
+    dateMask(TS.emplEndDate, {
+        pattern: 'us',
+        onAccept(mask, $date) {
             $date
                 .removeClass('is-invalid')
                 .next()
@@ -336,7 +336,9 @@ function resetEvents() {
                     .addClass('text-info')
                     .text('Blank if still employed')
         },
-        onCompleted(end, $end) {
+        onComplete(mask, $end) {
+            let end = mask.value
+
             if (end) {
                 const $help = $end.next()
                 end = moment(end, 'MM/DD/YYYY', true)
@@ -357,7 +359,7 @@ function resetEvents() {
                             .addClass('text-danger')
                             .text('* Future date forbidden')
                     } else {
-                        const $start = $end.parent().parent().prev().prev().find(TS.emplStartDate)
+                        const $start = $end.parent().parent().prev().prev().prev().find(TS.emplStartDate)
                         let start = $start.val()
                         start = moment(start, 'MM/DD/YYYY', true)
 

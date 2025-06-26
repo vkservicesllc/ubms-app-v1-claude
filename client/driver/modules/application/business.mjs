@@ -1,6 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { busNameEvent, einEvent } from '/modules/events/company.mjs'
-import { onInput, onChange, onKeyup, onCompleted, onSubmit, onYesNoRadioChange } from './support.mjs'
+import { idMask } from '/modules/events/imask.mjs'
+import { busNameEvent } from '/modules/events/company.mjs'
+import { onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
@@ -54,7 +55,7 @@ busNameEvent(llcNameId, true, {
 
 selectEvent(llcStateId, { fill: true, onChange })
 
-einEvent(llcEinId, { onKeyup, onCompleted })
+idMask(llcEinId, 'ein')
 
 onYesNoRadioChange(llcAssistanceId, proposedNameId, 2)
 

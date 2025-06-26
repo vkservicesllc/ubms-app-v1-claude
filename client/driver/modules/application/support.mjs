@@ -9,8 +9,6 @@ export const check = $form => $form.find('input[required]').filter('.is-invalid'
 
 export const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
 
-export const onKeyup = (value, $el) => onInput(value, $el)
-
 export const onAccept = (mask, $el) => onInput(mask.value, $el)
 
 export const onChange = (value, $el) => {
@@ -23,7 +21,7 @@ export const onChange = (value, $el) => {
     if (value && required) $el.addClass('is-valid')
 }
 
-export const onCompleted = (value, $el) => onChange(value, $el)
+export const onComplete = (mask, $el) => onChange(mask.value, $el)
 
 export const onBlur = (value, $el) => onChange(value, $el)
 

@@ -1,7 +1,8 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
-import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
-import { onInput, onChange, onKeyup, onCompleted, onSubmit } from './support.mjs'
+import { selectEvent } from '/modules/events/form.mjs'
+import { dateMask, idMask, telMask } from '/modules/events/imask.mjs'
+import { nameEvent } from '/modules/events/person.mjs'
+import { emailEvent } from '/modules/events/contacts.mjs'
+import { onInput, onChange, onAccept, onComplete, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
@@ -37,32 +38,15 @@ nameEvent(lastNameId, { sfxId: suffixId, onInput,
 
 selectEvent(suffixId, { onChange })
 
-ssnEvent(ssnId, { onKeyup, onCompleted })
-
-telEvent(phoneId, { onKeyup, onCompleted })
-
-emailEvent(emailId, {
-    onInput(email, $email) {
-        $help.email.text(null)
-        $email.removeClass('is-valid is-invalid')
-    },
-    onChange(email, valid, $email) {
-        if (email)
-            if (!valid) {
-                $help.email.text('* Invalid email address')
-                $email.addClass('is-invalid')
-            } else $email.addClass('is-valid')
-    },
-})
-
-inputEvent(dobId, {
-    mask: '99/99/9999',
-    placeholder: 'MM/DD/YYYY',
-    onKeyup(dob, $dob) {
+dateMask(dobId, {
+    pattern: 'us',
+    onAccept(mask, $dob) {
         $help.dob.text(null)
         $dob.removeClass('is-valid is-invalid')
     },
-    onCompleted(dob, $dob) {
+    onComplete(mask, $dob) {
+        const dob = mask.value
+
         if (dob) {
             const date = moment(dob, 'MM/DD/YYYY', true)
 
@@ -80,6 +64,24 @@ inputEvent(dobId, {
                     $dob.addClass('is-valid')
             }
         }
+    },
+})
+
+idMask(ssnId, 'ssn', { onAccept, onComplete })
+
+telMask(phoneId, { onAccept, onComplete })
+
+emailEvent(emailId, {
+    onInput(email, $email) {
+        $help.email.text(null)
+        $email.removeClass('is-valid is-invalid')
+    },
+    onChange(email, valid, $email) {
+        if (email)
+            if (!valid) {
+                $help.email.text('* Invalid email address')
+                $email.addClass('is-invalid')
+            } else $email.addClass('is-valid')
     },
 })
 

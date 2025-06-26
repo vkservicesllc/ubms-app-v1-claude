@@ -1,4 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { dateMask } from '/modules/events/imask.mjs'
 import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
 import { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
@@ -36,7 +37,6 @@ const $expl = {
 for (const key in $expl)
     if ($expl[key].val()) $expl[key].parent().show()
 
-const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const $endorsement = $(dlEndrsId)
@@ -57,13 +57,15 @@ driverLicenseEvent(dlNumId, { onInput, onChange })
 
 dlClassEvent(dlClassId)
 
-inputEvent(dlIssId, {
-    ...dateOpts,
-    onKeyup(issued, $issued) {
+dateMask(dlIssId, {
+    pattern: 'us',
+    onAccept(mask, $issued) {
         $help.issued.text(null)
         $issued.removeClass('is-valid is-invalid')
     },
-    onCompleted(issued, $issued) {
+    onComplete(mask, $issued) {
+        let issued = mask.value
+
         if (issued) {
             issued = moment(issued, 'MM/DD/YYYY', true)
 
@@ -92,13 +94,15 @@ inputEvent(dlIssId, {
     },
 })
 
-inputEvent(dlExpId, {
-    ...dateOpts,
-    onKeyup(expires, $expires) {
+dateMask(dlExpId, {
+    pattern: 'us',
+    onAccept(mask, $expires) {
         $help.expires.text(null).removeClass('text-danger text-warning')
         $expires.removeClass('is-valid is-invalid')
     },
-    onCompleted(expires, $expires) {
+    onComplete(mask, $expires) {
+        let expires = mask.value
+
         if (expires) {
             expires = moment(expires, 'MM/DD/YYYY', true)
 

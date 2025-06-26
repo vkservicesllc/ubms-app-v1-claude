@@ -28,7 +28,9 @@ module.exports = {
     },
 
     'application': {
-        external: [ ...defaults.external, 'jquery.masked-input', 'font-awesome', 'moment' ],
+        external: [ ...defaults.external,
+            'jquery.masked-input', //! TEMP
+            'imask', 'font-awesome', 'moment' ],
         internal: {
             css: [ ...defaults.internal.css, 'bootstrap.form', 'application' ],
             js: [ ...defaults.internal.js, 'session.keep-alive' ],

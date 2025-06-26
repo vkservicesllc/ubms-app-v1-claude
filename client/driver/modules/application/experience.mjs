@@ -1,5 +1,5 @@
-import { inputEvent } from '/modules/events/form.mjs'
-import { check, onCompleted, onKeyup, onSubmit } from './support.mjs'
+import { dateMask } from '/modules/events/imask.mjs'
+import { check, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, CS = selector.id.checkbox
@@ -7,7 +7,6 @@ const noExpId = CS.noExp
 const startDateId = TS.expStartDate
 const endDateId = TS.expEndDate
 
-const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const $card = $('#apl-card')
@@ -23,13 +22,15 @@ const $form = $('#experience-form')
 const $submit = $('#experience-submit')
 
 
-inputEvent(startDateId, {
-    ...dateOpts,
-    onKeyup(startDate, $startDate) {
+dateMask(startDateId, {
+    pattern: 'us',
+    onAccept(mask, $startDate) {
         $help.expStart.text(null)
         $startDate.removeClass('is-valid is-invalid')
     },
-    onCompleted(startDate, $startDate) {
+    onComplete(mask, $startDate) {
+        let startDate = mask.value
+
         if (startDate) {
             startDate = moment(startDate, 'MM/DD/YYYY', true)
 
@@ -59,13 +60,15 @@ inputEvent(startDateId, {
 })
 
 
-inputEvent(endDateId, {
-    ...dateOpts,
-    onKeyup(endDate, $endDate) {
+dateMask(endDateId, {
+    pattern: 'us',
+    onAccept(mask, $endDate) {
         $help.expEnd.text(null)
         $endDate.removeClass('is-valid is-invalid')
     },
-    onCompleted(endDate, $endDate) {
+    onComplete(mask, $endDate) {
+        let endDate = mask.value
+
         if (endDate) {
             endDate = moment(endDate, 'MM/DD/YYYY', true)
 
