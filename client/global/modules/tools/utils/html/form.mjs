@@ -20,6 +20,7 @@ export const formLabel = (props = {}) => {
 
 export const formInput = (props = {}) => {
     const {
+        mode,
         id,
         name,
         value,
@@ -38,6 +39,7 @@ export const formInput = (props = {}) => {
     const classes = initializeClass(props)
     const type = props.type || 'text'
 
+    const modeAttr = initializeAttr('inputmode',mode)
     const classAttr = initializeAttr('class', classes)
     const idAttr = initializeAttr('id', id)
     const nameAttr = initializeAttr('name', name)
@@ -53,7 +55,8 @@ export const formInput = (props = {}) => {
     const checkedAttr = initializeAttr('checked', checked)
     const disabledAttr = initializeAttr('disabled', disabled)
     const readOnlyAttr = initializeAttr('readonly', readOnly)
-    const attrs = classAttr
+    const attrs = modeAttr
+        + classAttr
         + idAttr
         + nameAttr
         + valueAttr
