@@ -1,5 +1,5 @@
 import { inputEvent } from '/modules/events/form.mjs'
-import { telEvent } from '/modules/events/contacts.mjs'
+import { telMask, dateMask } from '/modules/events/imask.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text
@@ -20,9 +20,7 @@ $card.fadeIn(duration)
 
 const onInput = () => $help.hide().html(null)
 
-const onKeyup = () => onInput()
-
-const onCompleted = (value, $el) => {
+const onBlur = (value, $el) => {
     if (value) {
         const $next = $el.parent().parent().next().find('input')
 
@@ -34,14 +32,9 @@ const onCompleted = (value, $el) => {
 }
 
 
-telEvent(phoneId, { onKeyup, onCompleted })
+telMask(phoneId, { onAccept: onInput, onComplete: onBlur })
 
-inputEvent(dobId, {
-    mask: '99/99/9999',
-    placeholder: 'MM/DD/YYYY',
-    onKeyup,
-    onCompleted,
-})
+dateMask(dobId, { pattern: 'us', onAccept: onInput, onComplete: onBlur })
 
 inputEvent(pinId, {
     onInput(pin, $pin) {
@@ -50,7 +43,7 @@ inputEvent(pinId, {
         const length = $pin.attr('maxlength')
         if (pin.length == length) $pin.blur()
     },
-    onBlur: onCompleted,
+    onBlur,
 })
 
 

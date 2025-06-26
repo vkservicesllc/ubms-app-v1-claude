@@ -34,11 +34,11 @@ export const dateMask = (selector, options = {}) => {
 
     $(selector).each(function(i) {
         const $el = $(this)
-        const $mask = IMask(this, maskOpts)
+        const mask = IMask(this, maskOpts)
 
-        if (onAccept) $mask.on('accept', onAccept)
-        $mask.on('complete', function(event) {
-            if (onComplete) onComplete($mask, event)
+        if (onAccept) mask.on('accept', onAccept)
+        mask.on('complete', function(event) {
+            if (onComplete) onComplete(mask, $el, event)
             $el.blur()
         })
 
@@ -68,11 +68,11 @@ export const idMask = (selector, pattern, options = {}) => {
 
     $(selector).each(function(i) {
         const $el = $(this)
-        const $mask = IMask(this, maskOpts)
+        const mask = IMask(this, maskOpts)
 
-        if (onAccept) $mask.on('accept', onAccept)
-        $mask.on('complete', function(event) {
-            if (onComplete) onComplete($mask, event)
+        if (onAccept) mask.on('accept', onAccept)
+        mask.on('complete', function(event) {
+            if (onComplete) onComplete(mask, $el, event)
             $el.blur()
         })
 
@@ -104,11 +104,11 @@ export const telMask = (selector, options = {}) => {
 
     $(selector).each(function(i) {
         const $el = $(this)
-        const $mask = IMask(this, maskOpts)
+        const mask = IMask(this, maskOpts)
 
-        if (onAccept) $mask.on('accept', onAccept)
-        $mask.on('complete', function(event) {
-            if (onComplete) onComplete($mask, event)
+        if (onAccept) mask.on('accept', onAccept)
+        mask.on('complete', function(event) {
+            if (onComplete) onComplete(mask, $el, event)
             $el.blur()
         })
 
