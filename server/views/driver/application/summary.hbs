@@ -25,7 +25,7 @@
                 <div class="card-text py-2" id="form-card">
                     <p class="mb-0 px-5" style="font-size: .84em;">
                         Please thoroughly review the summary of your application.<br/>
-                        Click <b><i>Edit</i></b> to correct any mistakes; otherwise, proceed further.
+                        Click <i class="text-secondary">Edit</i> to correct any mistakes; otherwise, proceed further.
                     </p>
                 </div>
                 <div class="text-start" style="font-size: .84em;">
@@ -555,10 +555,10 @@
                                         <th class="text-secondary">Phone:</th>
                                         <td>{{{application.beneficiary.phone}}}</td>
                                     </tr>
-                                    {{!-- <tr>
-                                        <th class="text-secondary">Address:</th>
-                                        <td>{{{application.beneficiary.address}}}</td>
-                                    </tr> --}}
+                                    <tr>
+                                        <th class="text-secondary">SSN:</th>
+                                        <td>{{{application.beneficiary.ssn}}}</td>
+                                    </tr>
                                 </tbody>
                                 </tbody>
                             </table>
@@ -568,7 +568,7 @@
                 <div class="row text-start g-3 mb-2 ps-1">
                     <div class="col-md-4">
                         <small style="font-size: .8em;">Found Mistakes?</small>&nbsp;
-                        <button class="btn btn-secondary btn-sm" data-href="{{href.form}}" id="edit-link">
+                        <button class="btn btn-secondary bg-info-subtle btn-sm" data-href="{{href.form}}" id="edit-link">
                             Edit
                         </button>
                     </div>
@@ -581,7 +581,6 @@
                                 I understand that any false or misleading information may result in disqualification from employment.
                             </label>
                         </div>
-                        
                     </div>
                 </div>
                 <div class="row text-start border-top g-3 my-2 ps-1" id="certified-section" style="display: none;">
@@ -596,7 +595,7 @@
                         <form id="certify-form" action="{{actionUrl.certify}}" method="POST">
                             <div class="d-grid gap-2">
                                 <a class="btn btn-primary bg-primary-subtle btn-sm" href="{{href.dox}}">Upload Document</a>
-                                <button type="submit" class="btn btn-secondary btn-sm">Skip Upload</button>
+                                <button type="submit" class="btn btn-secondary bg-secondary-subtle btn-sm">Skip Upload</button>
                             </div>
                         </form>
                     </div>

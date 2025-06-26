@@ -921,8 +921,8 @@ export const applicationSummary = async (req, res) => {
         if (application.medCard) {
             if (application.mec.expiresOn)
                 hbs.application.mec.expiresOn = moment(application.mec.expiresOn).format('ll')
-            hbs.application.mec.issuedOn = application.mec.issuedOn ? moment(application.mec.issuedOn).format('ll') : na()
-            if (!application.mec.nrcme) hbs.application.mec.nrcme = na()
+            hbs.application.mec.issuedOn = application.mec.issuedOn ? moment(application.mec.issuedOn).format('ll') : na('N/A')
+            if (!application.mec.nrcme) hbs.application.mec.nrcme = na('N/A')
             if (!application.medList) hbs.application.medList = na()
         }
         // hbs.application.medCard = application.medCard ? 'Yes' : 'No'
@@ -1005,7 +1005,7 @@ export const applicationSummary = async (req, res) => {
 
         if (application.activeBusiness) {
             hbs.application.business.state = Address.stateList[application.business.state]
-            hbs.application.business.ein = formatEin(application.ein) || na('N/A')
+            hbs.application.business.ein = formatEin(application.business.ein) || na('N/A')
         } else {
             hbs.application.businessAssist = application.businessAssist
                 ? `<small>Proposed name</small><br/>"${application.business.proposedName}, LLC"`
@@ -1015,7 +1015,7 @@ export const applicationSummary = async (req, res) => {
         hbs.application.beneficiary.relationship = application.beneficiary.otherRel || application.beneficiary.relation
         hbs.application.beneficiary.fullName = new Person(application.beneficiary).fullName('FMLs')
         hbs.application.beneficiary.phone = formatTel(application.beneficiary.phone)
-        // hbs.application.beneficiary.address = new Address(application.beneficiary).html({ inline: false })
+        hbs.application.beneficiary.ssn = application.beneficiary.ssn ? formatSsn(application.beneficiary.ssn) : na('N/A')
 
         if (application.vehicle) {
             if (application?.vehicle?.mmt && application?.vehicle?.mmt !== 'other') {
