@@ -2,7 +2,7 @@
 
 
 export const dateMask = (selector, options = {}) => {
-    let { pattern, lazy, placeholder } = options
+    let { pattern, lazy, overwrite, placeholder } = options
     const { onAccept, onComplete } = options
 
     const defPat = 'YYYY-MM-DD', usPat = 'MM/DD/YYYY', intPat = 'DD.MM.YYYY'
@@ -12,6 +12,7 @@ export const dateMask = (selector, options = {}) => {
     if (pattern === 'int') pattern = intPat
 
     if (typeof lazy !== 'boolean') lazy = true
+    if (typeof overwrite !== 'boolean') overwrite = true
     if (typeof placeholder !== 'boolean') placeholder = true
 
     const now = { date: new Date() }
@@ -25,6 +26,7 @@ export const dateMask = (selector, options = {}) => {
     const maskOpts = {
         mask: pattern,
         lazy,
+        overwrite,
         blocks: {
             YYYY: { mask: IMask.MaskedRange, from, to, maxLength: 4 },
             MM: { mask: IMask.MaskedRange, from: 1, to: 12 },
@@ -36,7 +38,11 @@ export const dateMask = (selector, options = {}) => {
         const $el = $(this)
         const mask = IMask(this, maskOpts)
 
-        if (onAccept) mask.on('accept', onAccept)
+        if (onAccept)
+            mask.on('accept', function(event) {
+                onAccept(mask, $el, event)
+            })
+
         mask.on('complete', function(event) {
             if (onComplete) onComplete(mask, $el, event)
             $el.blur()
@@ -70,7 +76,11 @@ export const idMask = (selector, pattern, options = {}) => {
         const $el = $(this)
         const mask = IMask(this, maskOpts)
 
-        if (onAccept) mask.on('accept', onAccept)
+        if (onAccept)
+            mask.on('accept', function(event) {
+                onAccept(mask, $el, event)
+            })
+
         mask.on('complete', function(event) {
             if (onComplete) onComplete(mask, $el, event)
             $el.blur()
@@ -106,7 +116,11 @@ export const telMask = (selector, options = {}) => {
         const $el = $(this)
         const mask = IMask(this, maskOpts)
 
-        if (onAccept) mask.on('accept', onAccept)
+        if (onAccept)
+            mask.on('accept', function(event) {
+                onAccept(mask, $el, event)
+            })
+
         mask.on('complete', function(event) {
             if (onComplete) onComplete(mask, $el, event)
             $el.blur()

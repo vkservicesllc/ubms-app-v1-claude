@@ -76,13 +76,6 @@ export const applicationStart = async (req, res, next) => {
         if (settings?.drivers?.cdl) hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
 
         let options = {}
-        const placeholders = {
-            dob: 'MM/DD/YYYY',
-            ssn: '###-##-####',
-            phone: '(###) ###-####',
-            addrSince: 'MM/DD/YYYY',
-            statusExp: 'MM/DD/YYYY',
-        }
         const fields = [
             'firstName', 'middleName', 'lastName', 'suffix',
             'gender', 'dob', 'ssn', 'phone', 'email',
@@ -90,7 +83,6 @@ export const applicationStart = async (req, res, next) => {
             'statusExp', 'position',
         ]
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
-        Object.keys(placeholders).forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
         options.position.select.label.content = 'Desired Position'
         options.position.select.input.data = team.list.drivers.positions
         options.phone.text.label.content = 'U.S. Phone'

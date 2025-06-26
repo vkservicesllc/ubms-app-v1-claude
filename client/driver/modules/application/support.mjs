@@ -11,6 +11,8 @@ export const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
 
 export const onKeyup = (value, $el) => onInput(value, $el)
 
+export const onAccept = (mask, $el) => onInput(mask.value, $el)
+
 export const onChange = (value, $el) => {
     if (!$el) return
     if (['MM/DD/YYYY', '(###) ###-####', '###-##-####'].includes(value))

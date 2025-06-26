@@ -10,7 +10,7 @@ const defaults = {
 module.exports = {
 
     'application.registration': {
-        external: [ ...defaults.external, 'jquery.masked-input', 'font-awesome', 'moment' ],
+        external: [ ...defaults.external, 'imask', 'font-awesome', 'moment' ],
         internal: {
             css: [ ...defaults.internal.css, 'bootstrap.form', 'application' ],
             js: [ ...defaults.internal.js ],

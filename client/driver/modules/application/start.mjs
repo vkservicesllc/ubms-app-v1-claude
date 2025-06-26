@@ -1,9 +1,10 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
-import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
+import { selectEvent } from '/modules/events/form.mjs'
+import { dateMask, idMask, telMask } from '/modules/events/imask.mjs'
+import { nameEvent } from '/modules/events/person.mjs'
+import { emailEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import { check } from './support.mjs'
+import { check, onInput, onAccept } from './support.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
 const firstNameId = TS.firstName
@@ -45,8 +46,6 @@ const $label = {
 const $submit = $('[type=submit]')
 const $form = $('#apl-start-form')
 let positionDetermined = false
-
-const dateOpts = { mask: '99/99/9999', placeholder: 'MM/DD/YYYY' }
 
 
 /* Reset Form on Refresh */
@@ -157,10 +156,6 @@ $status.click(function() {
     $help.statusExp.text(null)
 })
 
-const onInput = (value, $el) => $el.removeClass('is-valid is-invalid')
-
-export const onKeyup = (value, $el) => onInput(value, $el)
-
 const onChange = (value, $el) => {
     if (!$el) return
 
@@ -173,7 +168,7 @@ const onChange = (value, $el) => {
         sessionStorage.setItem(id.replace('#', ''), value)
 }
 
-const onCompleted = (value, $el) => onChange(value, $el)
+const onComplete = (mask, $el) => onChange(mask.value, $el)
 
 nameEvent(firstNameId, { onInput, onChange })
 
@@ -191,35 +186,15 @@ selectEvent(suffixId, { onChange })
 
 selectEvent(genderId, { fill: true, onChange })
 
-ssnEvent(ssnId, { onKeyup, onCompleted })
-
-telEvent(phoneId, { onKeyup, onCompleted })
-
-emailEvent(emailId, {
-    onInput(email, $email) {
-        $help.email.text(null)
-        $email.removeClass('is-valid is-invalid')
-    },
-    onChange(email, valid, $email) {
-        if (!email || (email && valid)) sessionStorage.setItem(emailId.replace('#', ''), email)
-
-        if (email)
-            if (!valid) {
-                $help.email.text('* Invalid email address')
-                $email.addClass('is-invalid')
-            } else $email.addClass('is-valid')
-
-        if (check($form)) $help.form.hide().html(null)
-    },
-})
-
-inputEvent(dobId, {
-    ...dateOpts,
-    onKeyup(dob, $dob) {
+dateMask(dobId, {
+    pattern: 'us',
+    onAccept(mask, $dob) {
         $help.dob.text(null)
         $dob.removeClass('is-valid is-invalid')
     },
-    onCompleted(dob, $dob) {
+    onComplete(mask, $dob) {
+        const dob = mask.value
+
         if (dob) {
             const date = moment(dob, 'MM/DD/YYYY', true)
             let invalid
@@ -241,6 +216,28 @@ inputEvent(dobId, {
             if (invalid) $help.dob.text(invalid)
             else sessionStorage.setItem(dobId.replace('#', ''), dob)
         } else sessionStorage.setItem(dobId.replace('#', ''), dob)
+
+        if (check($form)) $help.form.hide().html(null)
+    },
+})
+
+idMask(ssnId, 'ssn', { onAccept, onComplete })
+
+telMask(phoneId, { region: 'us', onAccept, onComplete })
+
+emailEvent(emailId, {
+    onInput(email, $email) {
+        $help.email.text(null)
+        $email.removeClass('is-valid is-invalid')
+    },
+    onChange(email, valid, $email) {
+        if (!email || (email && valid)) sessionStorage.setItem(emailId.replace('#', ''), email)
+
+        if (email)
+            if (!valid) {
+                $help.email.text('* Invalid email address')
+                $email.addClass('is-invalid')
+            } else $email.addClass('is-valid')
 
         if (check($form)) $help.form.hide().html(null)
     },
@@ -272,13 +269,15 @@ cityEvent(cityId, { onInput, onChange })
 
 selectEvent(stateId, { fill: true, onChange })
 
-inputEvent(addrSinceId, {
-    ...dateOpts,
-    onKeyup(since, $since) {
+dateMask(addrSinceId, {
+    pattern: 'us',
+    onAccept(mask, $since) {
         $help.addrSince.text(null)
         $since.removeClass('is-valid is-invalid')
     },
-    onCompleted(since, $since) {
+    onComplete(mask, $since) {
+        const since = mask.value
+
         if (since) {
             const date = moment(since, 'MM/DD/YYYY', true)
 
@@ -302,13 +301,15 @@ inputEvent(addrSinceId, {
     },
 })
 
-inputEvent(statusExpId, {
-    ...dateOpts,
-    onKeyup() {
+dateMask(statusExpId, {
+    pattern: 'us',
+    onAccept() {
         $help.statusExp.text(null)
         $expiration.removeClass('is-valid is-invalid')
     },
-    onCompleted(expiration) {
+    onComplete(mask) {
+        const expiration = mask.value
+
         if (expiration) {
             const date = moment(expiration, 'MM/DD/YYYY', true)
 
