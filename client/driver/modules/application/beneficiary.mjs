@@ -2,7 +2,7 @@ import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { telMask, idMask } from '/modules/events/imask.mjs'
 import { nameEvent } from '/modules/events/person.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
-import { onInput, onAccept, onChange, onComplete, onKeyup, onCompleted, onSubmit } from './support.mjs'
+import { onInput, onAccept, onChange, onComplete, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { Relationship } from '/modules/tools/core/person.mjs'
 
