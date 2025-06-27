@@ -1249,7 +1249,7 @@ class Application {
     static matchIdHash = value => matchHash(value, Application.#algorithm)
 
 
-    static invite = async (session, email, carrierId) => {
+    static invite = async (session, email, carrierId, selfAssign = false) => {
         if (!session.team || !session.user) return
 
         const { team, user } = session
@@ -1271,6 +1271,8 @@ class Application {
 
         if (companyName) from = `"${companyName}" <${senderParams.email}>`
         url += `?env=${team._id}`
+        if (selfAssign) url += `&rec=${user._simpleId}`
+        //! No department yet
 
         const options = {
             from,

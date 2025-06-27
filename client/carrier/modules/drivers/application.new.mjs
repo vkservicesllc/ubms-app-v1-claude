@@ -257,17 +257,19 @@ $('#copy-apl-url').click(function(evt) {
 $form.submit(function(evt) {
     evt.preventDefault()
 
-    if (!$dropdown.gender.dropdown('get value'))
-        return alert("Applicant's gender is required")
+    if ($registerApl.prop('checked')) {
+        if (!$dropdown.gender.dropdown('get value'))
+            return alert("Applicant's gender is required")
 
-    if (!$dropdown.marital.dropdown('get value'))
-        return alert("Applicant's marital status is required")
+        if (!$dropdown.marital.dropdown('get value'))
+            return alert("Applicant's marital status is required")
 
-    if (!$dropdown.addrState.dropdown('get value'))
-        return alert("Applicant's address state is required")
+        if (!$dropdown.addrState.dropdown('get value'))
+            return alert("Applicant's address state is required")
 
-    if (!$dropdown.position.dropdown('get value'))
-        return alert("Applicant's position is required")
+        if (!$dropdown.position.dropdown('get value'))
+            return alert("Applicant's position is required")
+    }
 
     this.submit()
 })

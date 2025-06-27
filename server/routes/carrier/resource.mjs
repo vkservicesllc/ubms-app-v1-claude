@@ -60,8 +60,10 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
 
         if (req.body.lastName) next()
         else {
-            const { email, carrierId } = req.body
-            await Application.invite(res.session, email, carrierId)
+            const { email, carrierId, selfAssign } = req.body
+            //! No department yet
+
+            await Application.invite(res.session, email, carrierId, selfAssign === 'on')
 
             res.redirect(url.drivers.applications)
         }
