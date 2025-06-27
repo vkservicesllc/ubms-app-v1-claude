@@ -89,6 +89,7 @@ const createAliasForm = (confirm = false) => createForm({
 const createEinForm = (selector, props = {}) => createForm({
     selector,
     target: 'ein',
+    mode: 'numeric',
     name: 'ein',
     required,
     label: {

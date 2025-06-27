@@ -107,6 +107,7 @@ export const createMaritalStatus = (props = {}) => createForm({
 
 export const createPhoneForm = (props = {}) => createForm({
     target: 'phone',
+    mode: 'tel',
     name: 'phone',
     label: 'Phone',
     ...props,
@@ -160,6 +161,7 @@ export const createAddressForm = (props = {}, options) => {
 export const createAddrZipForm = (props = {}, mail = null) => createForm({
     target: mail === true ? 'mailAddrZip' : 'addrZip',
     group: 'address',
+    mode: 'numeric',
     name: addrField('zip', mail),
     required,
     label: 'Zip',
@@ -208,6 +210,7 @@ export const createEmailForm = (props = {}) => createForm({
     label: 'Email',
     ...props,
     type: 'email',
+    mode: 'email',
     maxLength: length.contact.email.max,
     validator: {
         rule: 'email',
@@ -221,6 +224,7 @@ export const createWebsiteForm = (props = {}) => createForm({
     label: 'Website',
     ...props,
     type: 'url',
+    mode: 'url',
     maxLength: length.web.url.max,
     validator: {
         rule: 'url',
@@ -235,6 +239,7 @@ export const createDateForm = (props = {}, optional) => {
 
     return createForm({
         type: 'date',
+        mode: 'numeric',
         ...props,  //* When "min" and/or "max" are supplied, the validator will check as well
         validator,
     })
@@ -261,6 +266,7 @@ export const createSinceForm = (props = {}) => createDateForm({
 
 export const createSsnForm = (props = {}) => createForm({
     target: 'ssn',
+    mode: 'numeric',
     name: 'ssn',
     label: 'SSN',
     required,

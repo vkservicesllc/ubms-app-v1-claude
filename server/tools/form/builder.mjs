@@ -10,7 +10,7 @@ const lockedLabelProps = ['defaultClass', 'for']
 
 
 const createForm = (input = {}) => {
-    const { selector, target, group, data, keys, defaultClass, id, required, disabled } = input
+    const { selector, target, group, mode, data, keys, defaultClass, id, required, disabled } = input
     let { type, label, name, validator, requiredLabel } = input
     if (typeof requiredLabel !== 'boolean') requiredLabel = true
 
@@ -27,7 +27,7 @@ const createForm = (input = {}) => {
     const form = { properties: { required: required === true, initialType: type } }
 
     const initializeInput = (type, key, i) => {
-        if (!key) lockedInput[type] = { defaultClass, id, name, required }
+        if (!key) lockedInput[type] = { mode, defaultClass, id, name, required }
         else {
             if (!lockedInput[type]) lockedInput[type] = {}
 
