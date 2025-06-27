@@ -74,7 +74,12 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
         if (status == 2 && !statusExpiresOn)
             return throwErr.server(res, 'DB Error: Invalid data provided', err)
 
+        const { team } = res.session
+
         req.body.selfAssign = !!req.body.selfAssign
+
+        //! There is no Department Switch, therefore identifying department by Team Settings
+        req.body.deptId = team.settings.deptId[0]
 
         const { error } = await Application.create(res.session, req.body)
         if (error) return throwErr.server(res, error, err)

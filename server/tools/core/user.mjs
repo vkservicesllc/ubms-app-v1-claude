@@ -55,9 +55,9 @@ class User extends Person {
         if (!data?._id || !Object.keys(this).length)
             throw new Error('User instantiation failed: Invalid data')
 
-        const { _id, fails, lastUrl, lastLogin, branch, siteId, _hash } = data
+        const { _id, _simpleId, fails, lastUrl, lastLogin, branch, siteId, _hash } = data
         const properties = {
-            _id,
+            _id, _simpleId,
             username: data.username,
             status: [ data.status, User.statusList[data.status] ],
             condition: [ data.condition, User.conditionList[data.condition] ],
@@ -742,8 +742,10 @@ class User extends Person {
 
 
     static hashId = (field = 'id') => hash(field, User.#algorithm)
+    static hashSimpleId = (field = 'id') => hash(field)
 
     static matchIdHash = value => matchHash(value, User.#algorithm)
+    static matchSimpleIdHash = value => matchHash(value)
 
 
     static create = async (session, data) => {
@@ -845,6 +847,7 @@ class User extends Person {
                 table: 'users',
                 fields: [
                     User.hashId(),
+                    [ User.hashSimpleId(), 'simpleId' ],
                     'username',
                     'email',
                     'phone',
@@ -869,7 +872,7 @@ class User extends Person {
         if (!params) params = {}
         if (!filter) filter = {}
 
-        const { _id, id, username, email, allowDeleted } = params
+        const { _id, id, _simpleId, username, email, allowDeleted } = params
         const { id: ids, firstName, lastName, alias, sex, status, location, condition, decliner, deleted } = filter
         let deletedBy = null
         if (deleted === true) deletedBy = { null: false }
@@ -883,6 +886,7 @@ class User extends Person {
         if (allowDeleted === true) delete batch[0].match.deletedBy
         if (!id && _id) batch[0].match.id = User.matchIdHash(_id)
         if (!id && !_id) batch[0].match.id = ids
+        if (_simpleId) batch[0].match.id = User.matchSimpleIdHash(_simpleId)
 
         if (_id || id || username) batch[1].fields.push('lastUrl')
 
@@ -905,7 +909,7 @@ class User extends Person {
 
 
     static data = async (session, params = {}) => {
-        if (!params._id && !params.id && !params.username && !params.email) return
+        if (!params._id && !params.id && !params._simpleId && !params.username && !params.email) return
 
         const batch = User.#batch(session, { params })
         const data = (await mysql.execute(Query.select(db.online, batch)))[0][0]

@@ -4,6 +4,7 @@ const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
 import moment from 'moment'
+import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
@@ -161,12 +162,6 @@ const dynamicValidator = {
 /* Application Resource */
 
 
-//! TEMP
-router.post('/application/imask', (req, res) => {
-    res.send(req.body)
-})
-
-
 router.post('/application/login/:formId', validateApplicantLogin, validationCheck, async (req, res) => {
     try {
         const { formId } = req.params
@@ -193,10 +188,10 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
         const { formId, step } = req.params
         const application = await Application.data(session, { formId })
         if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
-// res.send(req.body)
+
         const { error } = await application.modify(session, step, req.body)
         if (error) return throwErr.server(res, error)
-// return
+
         res.redirect(`/application/${formId}`)
     } catch (err) {
         throwErr.server(res, null, err)
@@ -224,7 +219,7 @@ router.post('/application/:action/form/:formId', async (req, res) => {
 router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationCheck, async (req, res) => {
     try {
         const { _teamId, _carrierId } = req.params
-        const { dept: deptId } = req.query
+        const { dept: deptId, rec: userId } = req.query
         const session = { ...res.session, user: true }
 
         const team = await Team.data(session, { _id: _teamId })
@@ -234,11 +229,19 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
         if (_carrierId) {
             const carrier = await Carrier.data(session, { _id: _carrierId })
             if (!carrier) return throwErr.server(res, 'Server Internal Error: Unidentified Carrier')
+
             req.body.carrierId = await carrier.id()
         }
 
         if (deptId) req.body.deptId = deptId
         else req.body.deptId = team.settings.deptId[0]
+
+        if (userId) {
+            const user = await User.data(session, { _simpleId: userId })
+            if (!user) return throwErr.server(res, 'Server Internal Error: Unidentified Agent')
+
+            req.body.userId = await user.id()
+        }
 
         const { error, url, data: application } = await Application.create(res.session, req.body)
         if (error) return throwErr.server(res, error)

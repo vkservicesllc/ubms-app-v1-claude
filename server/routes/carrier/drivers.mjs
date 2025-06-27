@@ -11,7 +11,9 @@ import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
 import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
 import { sortObjectByKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+import Query from '../../tools/utils/query.mjs'
 import { respond404 } from '../../tools/utils/response.mjs'
+import { encrypt } from '../../tools/utils/crypto.mjs'
 import { calculateYearAge } from '../../../client/global/modules/tools/utils/date.mjs'
 import { navBuilder } from './tools.mjs'
 
@@ -125,6 +127,9 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
             hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=${req.session.team}`
             //! if the team has more than 1 departments, add the first (default) department id (integer) to the query += `&dept${deptId}`
             //! in this case an additional dropdown to be added for deparment selection with the default department selected
+            //? if (!DS)
+            if (true)
+                hbs.applicationUrl += `&rec=${user._simpleId}`
 
             const driverPositions = team.list.drivers.positions
             let suffixItems = '', genderItems = '', maritalItems = '', positionItems = '', addrStateItems = ''

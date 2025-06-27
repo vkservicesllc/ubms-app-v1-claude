@@ -38,6 +38,8 @@ class Query {
         return `SELECT ${sha2} AS sha2`
     }
 
+    static unMd5 = (db, table, field, md5Str) => `SELECT ${field} FROM ${db}.${table} WHERE MD5(${field}) = '${md5Str}'`
+
     static timeStamp = 'NOW()'
 
 

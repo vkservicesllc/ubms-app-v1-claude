@@ -3,6 +3,7 @@ const throwErr = require('../../../tools/utils/error').data
 import moment from 'moment'
 
 /* Tools */
+import User from '../../../tools/core/user.mjs'
 import Team from '../../../tools/core/team.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
 import { Application } from '../../../tools/core/driver.mjs'
@@ -34,14 +35,20 @@ const checkProps = {
 
 export const applicationStart = async (req, res, next) => {
     try {
-        const { env, dept: deptId } = req.query
+        const session = { ...res.session, user: true }
+        const { env, dept: deptId, rec: userId } = req.query
         if (!env) return next()
 
-        const team = await Team.data({ ...res.session, user: true }, { _id: env })
+        const team = await Team.data(session, { _id: env })
         if (!team) return respond404(res)
 
         const { settings } = team
         if (settings.deptId.length > 1 && !deptId) return respond404(res)
+
+        if (userId) {
+            const user = await User.data(session, { _simpleId: userId })
+            if (!user) return respond404(res)
+        }
 
         const key = 'application.registration'
         let { hbs } = res
@@ -53,7 +60,7 @@ export const applicationStart = async (req, res, next) => {
         let _carrierId
 
         if (route) {
-            const carrier = await Carrier.data({ ...res.session, user: true }, { route })
+            const carrier = await Carrier.data(session, { route })
 
             if (!carrier) return respond404(res)
 
@@ -107,6 +114,10 @@ export const applicationStart = async (req, res, next) => {
         hbs.formUrl = `/resource/application/${team._id}`
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
         if (deptId) hbs.formUrl += `?dept=${deptId}`
+        if (userId) {
+            const x = deptId ? '&' : '?'
+            hbs.formUrl += `${x}rec=${userId}`
+        }
 
         res.render('application/registration', hbs)
     } catch (err) {
@@ -1111,15 +1122,4 @@ export const applicationAgreement = async (req, res) => {
     } catch (err) {
         throwErr.server(res, null, err)
     }
-}
-
-
-
-//! TEMP
-export const applicationImask = (req, res) => {
-    const key = 'application.imask'
-    let { hbs } = res
-    hbs = hbs.set(key, { title: 'Imask Test' })
-
-    res.render('application/imask', hbs)
 }

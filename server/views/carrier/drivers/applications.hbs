@@ -3,10 +3,13 @@
         <style>
             .dt-container { min-width: 1150px; }
             .dt-column-order { display: none; }
+            .dt-monospace { font-family: monospace; }
             .custom-dt-toolbar { min-width: 67%; }
             .custom-dt-toolbar > * { width: 24.5%; }
             .ui.dropdown .transition i.icon { margin-right: 2px !important; }
             .help { margin-top: 5px; padding-left: 2px; }
+            .toast-box { max-width: 250px !important; }
+            .ui.toast {  width: 250px !important; }
             th { padding-top: 5px !important; padding-bottom: 5px !important; }
         </style>
         <table class="ui compact table" id="driver-apl-table" style="width: 100%;"></table>
@@ -47,6 +50,12 @@
                                     <span class="ui grey text">Please enter valid email address</span>
                                 </p>
                             </div>
+                            <div class="field" id="self-assign-field">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" name="selfAssign" id="self-assign" checked />
+                                    <label for="self-assign">Self-assign to Application</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="ui vertical divider"></div>
@@ -55,7 +64,7 @@
                             <div class="field">
                                 <div class="ui toggle checkbox">
                                     <input type="checkbox" id="register-new-apl" />
-                                    <label>New Applicant Profile</label>
+                                    <label><strong>New Applicant</strong></label>
                                 </div>
                             </div>
                         </div>
@@ -213,12 +222,6 @@
                                         <div class="default text"></div>
                                         <div class="menu">{{{dropdown.position}}}
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="disabled field" id="self-assign-field">
-                                    <div class="ui checkbox">
-                                        <input type="checkbox" name="selfAssign" id="self-assign" checked disabled />
-                                        <label for="self-assign">Self-assign to Application</label>
                                     </div>
                                 </div>
                             </div>

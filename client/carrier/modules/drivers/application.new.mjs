@@ -27,6 +27,7 @@ const $form = $('#new-apl-form')
 const $email = $(emailId)
 const $expiration = $(TS.statusExp)
 const $registerApl = $('#register-new-apl')
+const $selfAssign = $('#self-assign')
 
 const $dropdown = {
     company: $('#new-apl-company-dropdown'),
@@ -70,6 +71,10 @@ const calSettings = {
     },
 }
 
+$selfAssign.click(function() {
+    let url = ''
+})
+
 $('#dob-calendar').calendar({
     ...calSettings,
     maxDate: moment().subtract(18, 'years').toDate(),
@@ -86,7 +91,7 @@ $('#status-exp-calendar').calendar({
 
 const enableApplicant = () => {
     $field.applicant.removeClass('disabled').find('input').prop('disabled', false)
-    $('#self-assign-field').removeClass('disabled').find('input').prop('disabled', false)
+    // $('#self-assign-field').removeClass('disabled').find('input').prop('disabled', false)
     $submit.text('Register & Invite')
 }
 
@@ -102,7 +107,7 @@ const disableApplicant = () => {
     $expiration.val(null)
     $field.status.addClass('disabled')
     $field.expiration.addClass('disabled')
-    $('#self-assign-field').addClass('disabled').find('input').prop('disabled', true).prop('checked', true)
+    // $('#self-assign-field').addClass('disabled').find('input').prop('disabled', true).prop('checked', true)
     $submit.text('Invite')
 }
 
@@ -237,7 +242,7 @@ $('#copy-apl-url').click(function(evt) {
 
             $('.ui.toast-container').css({
                 top: '75px',
-                left: `${$aplUrl.outerWidth() + 50}px`
+                left: `${$aplUrl.outerWidth() + 50}px`,
             })
         })
 })
