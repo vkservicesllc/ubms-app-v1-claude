@@ -1,170 +1,196 @@
 {{> carrier/nav.alpha}}
 
-    <div class="ui horizontal list" style="margin-bottom: 10px;">
-        <div class="item">
-            <div class="content">
-            <h5 class="ui header">Form:</h5>
-                {{formId}}
-            </div>
-        </div>
-        <div class="item">
-            <div class="content">
-            <h5 class="ui header">Applicant:</h5>
-                {{{applicant}}}
-            </div>
-        </div>
-        <div class="item">
-            <div class="content">
-            <h5 class="ui header">Position:</h5>
-                {{position}}
-            </div>
-        </div>
-        <div class="item">
-            <div class="content">
-            <h5 class="ui header">Submitted at:</h5>
-                {{{appliedAt}}} ET
-            </div>
-        </div>
-        {{!-- <div class="item">
-            <div class="content">
-            <h5 class="ui header">Legal Status:</h5>
-                {{{status}}}
-            </div>
-        </div> --}}
-    </div>
+    <div class="ui grid" style="padding: 10px;">
 
-    <div class="ui grid" style="width: 960px;">
-        <div class="three wide left attached column">
-            <div class="ui vertical fluid tabular menu">
-                <a class="item active" data-tab="profile">Profile</a>
-                <a class="item" data-tab="address">Address</a>
-                <a class="item" data-tab="dl">{{idx steps 1}}</a>
-                <a class="item" data-tab="mec">{{idx steps 2}}</a>
-                <a class="item" data-tab="legal">{{idx steps 3}}</a>
-                <a class="item" data-tab="safety">{{idx steps 4}}</a>
-                <a class="item" data-tab="experience">{{idx steps 5}}</a>
-                <a class="item" data-tab="employers">{{idx steps 6}}</a>
-                <a class="item" data-tab="preference">{{idx steps 7}}</a>
-                <a class="item" data-tab="business">{{idx steps 8}}</a>
-                <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
-                <a class="item" data-tab="misc">{{idx steps 10}}</a>
+        <div class="nine wide column">
+            <div class="ui grid">
+                <div class="three wide left attached column">
+                    <div class="ui vertical fluid tabular menu">
+                        <a class="item active" data-tab="profile">Profile</a>
+                        <a class="item" data-tab="address">Address</a>
+                        <a class="item" data-tab="dl">{{idx steps 1}}</a>
+                        <a class="item" data-tab="mec">{{idx steps 2}}</a>
+                        <a class="item" data-tab="legal">{{idx steps 3}}</a>
+                        <a class="item" data-tab="safety">{{idx steps 4}}</a>
+                        <a class="item" data-tab="experience">{{idx steps 5}}</a>
+                        <a class="item" data-tab="employers">{{idx steps 6}}</a>
+                        <a class="item" data-tab="preference">{{idx steps 7}}</a>
+                        <a class="item" data-tab="business">{{idx steps 8}}</a>
+                        <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
+                        <a class="item" data-tab="misc">{{idx steps 10}}</a>
+                    </div>
+                </div>
+                <div class="thirteen wide stretched right attached column">
+                    <div class="ui seamless right attached segment" style="padding: 20px;">
+                        <div class="ui active tab" data-tab="profile">
+                            <form id="profile-form" class="ui form" action="" method="POST">
+                                <div class="ui compact grid">
+                                    <div class="five wide field">
+                                        {{{form.firstName.text.label}}}
+                                        {{{form.firstName.text.input}}}
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.middleName.text.label}}}
+                                        {{{form.middleName.text.input}}}
+                                    </div>
+                                    <div class="five wide field">
+                                        {{{form.lastName.text.label}}}
+                                        {{{form.lastName.text.input}}}
+                                    </div>
+                                    <div class="two wide field">
+                                        {{{form.suffix.select.label}}}
+                                        <div class="ui fluid clearable selection dropdown" id="suffix-dropdown">
+                                            {{{form.suffix.hidden.input}}}
+                                            <i class="dropdown icon"></i>
+                                            <div class="default text"></div>
+                                            <div class="menu">{{{dropdown.suffix}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ui compact grid">
+                                    <div class="four wide field">
+                                        {{{form.dob.text.label}}}
+                                        <div class="ui calendar" id="dob-calendar">
+                                            <div class="ui fluid input left icon">
+                                                {{{form.dob.text.input}}}
+                                                <i class="calendar icon"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.gender.select.label}}}
+                                        <div class="ui fluid clearable selection required dropdown" id="gender-dropdown">
+                                            {{{form.gender.hidden.input}}}
+                                            <i class="dropdown icon"></i>
+                                            <div class="default text"></div>
+                                            <div class="menu">{{{dropdown.gender}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.ssn.text.label}}}
+                                        {{{form.ssn.text.input}}}
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.marital.select.label}}}
+                                        <div class="ui fluid clearable selection required dropdown" id="marital-dropdown">
+                                            {{{form.marital.hidden.input}}}
+                                            <i class="dropdown icon"></i>
+                                            <div class="default text"></div>
+                                            <div class="menu">{{{dropdown.marital}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ui divider"></div>
+                                <div class="ui compact grid">
+                                    <div class="four wide field">
+                                        {{{form.phone.text.label}}}
+                                        {{{form.phone.text.input}}}
+                                    </div>
+                                    <div class="seven wide field">
+                                        {{{form.email.text.label}}}
+                                        {{{form.email.text.input}}}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="ui tab" data-tab="address">
+                            Address content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="dl">
+                            Driver License content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="mec">
+                            Medical Card content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="legal">
+                            Legal Compliance content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="safety">
+                            Safety content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="experience">
+                            Experience content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="employers">
+                            Pre-Employment content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="preference">
+                            Preference content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="business">
+                            Business content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="beneficiary">
+                            Beneficiary content goes here.
+                        </div>
+                        <div class="ui tab" data-tab="misc">
+                            Beneficiary content goes here.
+                        </div>
+                    </div>
+                </div>
             </div>
+            <script>
+                $('.menu .item').tab()
+            </script>
         </div>
-        <div class="thirteen wide stretched right attached column">
-            <div class="ui seamless right attached segment" style="padding: 20px;">
-                <div class="ui active tab" data-tab="profile">
-                    <form id="profile-form" class="ui form" action="" method="POST">
-                        <div class="ui compact grid">
-                            <div class="five wide field">
-                                {{{form.firstName.text.label}}}
-                                {{{form.firstName.text.input}}}
-                            </div>
-                            <div class="four wide field">
-                                {{{form.middleName.text.label}}}
-                                {{{form.middleName.text.input}}}
-                            </div>
-                            <div class="five wide field">
-                                {{{form.lastName.text.label}}}
-                                {{{form.lastName.text.input}}}
-                            </div>
-                            <div class="two wide field">
-                                {{{form.suffix.select.label}}}
-                                <div class="ui fluid clearable selection dropdown" id="suffix-dropdown">
-                                    {{{form.suffix.hidden.input}}}
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text"></div>
-                                    <div class="menu">{{{dropdown.suffix}}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ui compact grid">
-                            <div class="four wide field">
-                                {{{form.dob.text.label}}}
-                                <div class="ui calendar" id="dob-calendar">
-                                    <div class="ui fluid input left icon">
-                                        {{{form.dob.text.input}}}
-                                        <i class="calendar icon"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="four wide field">
-                                {{{form.gender.select.label}}}
-                                <div class="ui fluid clearable selection required dropdown" id="gender-dropdown">
-                                    {{{form.gender.hidden.input}}}
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text"></div>
-                                    <div class="menu">{{{dropdown.gender}}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="four wide field">
-                                {{{form.ssn.text.label}}}
-                                {{{form.ssn.text.input}}}
-                            </div>
-                            <div class="four wide field">
-                                {{{form.marital.select.label}}}
-                                <div class="ui fluid clearable selection required dropdown" id="marital-dropdown">
-                                    {{{form.marital.hidden.input}}}
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text"></div>
-                                    <div class="menu">{{{dropdown.marital}}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ui divider"></div>
-                        <div class="ui compact grid">
-                            <div class="four wide field">
-                                {{{form.phone.text.label}}}
-                                {{{form.phone.text.input}}}
-                            </div>
-                            <div class="seven wide field">
-                                {{{form.email.text.label}}}
-                                {{{form.email.text.input}}}
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="ui tab" data-tab="address">
-                    Address content goes here.
-                </div>
-                <div class="ui tab" data-tab="dl">
-                    Driver License content goes here.
-                </div>
-                <div class="ui tab" data-tab="mec">
-                    Medical Card content goes here.
-                </div>
-                <div class="ui tab" data-tab="legal">
-                    Legal Compliance content goes here.
-                </div>
-                <div class="ui tab" data-tab="safety">
-                    Safety content goes here.
-                </div>
-                <div class="ui tab" data-tab="experience">
-                    Experience content goes here.
-                </div>
-                <div class="ui tab" data-tab="employers">
-                    Pre-Employment content goes here.
-                </div>
-                <div class="ui tab" data-tab="preference">
-                    Preference content goes here.
-                </div>
-                <div class="ui tab" data-tab="business">
-                    Business content goes here.
-                </div>
-                <div class="ui tab" data-tab="beneficiary">
-                    Beneficiary content goes here.
-                </div>
-                <div class="ui tab" data-tab="misc">
-                    Beneficiary content goes here.
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-        $('.menu .item').tab()
-    </script>
 
+        <div class="seven wide column">
+            <div class="ui relaxed list">
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Applicant:</h5>
+                        {{{applicant}}}
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Position:</h5>
+                        {{position}}
+                    </div>
+                </div>
+                {{#if (hv carrier)}}
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Carrier:</h5>
+                        {{{carrier}}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            <div class="ui divider"></div>
+            <div class="ui relaxed list">
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Form:</h5>
+                        {{formId}}
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Created at:</h5>
+                        {{{appliedAt}}} ET
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Submitted at:</h5>
+                        {{{finishedAt}}} ET
+                    </div>
+                </div>
+                {{#if (hv recruiter)}}
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Recruiter:</h5>
+                        {{{recruiter}}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+
+    </div>
 
 {{> carrier/nav.omega}}

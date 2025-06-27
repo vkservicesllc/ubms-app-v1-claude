@@ -197,7 +197,7 @@ router.get('/application-form/:formId', User.verify, Team.verify, async (req, re
         const application = await Application.data(res.session, { formId })
         if (!application || application.condition !== 'c' || application._teamId !== team._id)
             return res.redirect(aplUrl)
-console.log(application)
+console.log(application.createdAt, application.finishedAt)
 
         const key = 'drivers.application-form'
         let { hbs } = res
@@ -208,13 +208,28 @@ console.log(application)
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-        const { _carrierId } = application
+        const { _carrierId, _userId } = application
+
+        if (_carrierId) {
+            hbs.carrier = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch carrier</span>'
+
+            const carrier = await Carrier.data(res.session, { _id: _carrierId })
+            if (carrier) hbs.carrier = carrier.name
+        }
+
+        if (_userId) {
+            hbs.recruiter = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch recruiter</span>'
+
+            const user = await User.data(res.session, { _id: _userId })
+            if (user) hbs.recruiter = user.name
+        }
 
         hbs.formId = formId
         hbs.position = application.position[1]
         hbs.applicant = new Person(application).fullName('FMLs') + ` <small>(${calculateYearAge(application.dob)})</small>`
         // hbs.status = { '0': 'US Citizen', '1': 'Permanent Resident', '2': 'Work Authorization/Visa' }[application.legalStatus[0]]
-        hbs.appliedAt = moment(application.finishedAt).format('lll')
+        hbs.appliedAt = moment(application.appliedAt).format('lll')
+        hbs.finishedAt = moment(application.finishedAt).format('lll')
         hbs.steps = [ ...Application.stepList ]
         hbs.steps[6] = 'Pre-Employments'
         if (application.position[0] === 'OO') hbs.steps[8] = 'Business / Vehicle'

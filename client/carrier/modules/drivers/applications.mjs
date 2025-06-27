@@ -15,7 +15,7 @@ const conditions = {
     h: [ 'Hired', 'truck moving' ],
 }
 const positions = $.ajax('/api/source/driver?filter=positions', { method: 'POST', async: false }).responseJSON
-const defaultContent = '<span style="color: pink; font-size: .9em;">Unassigned</span>'
+const defaultContent = '<i style="color: pink; font-size: .9em;">Unassigned</i>'
 
 const styleSearch = () => {
     $('.dt-search').find('label').remove()
@@ -147,14 +147,23 @@ const table = $('#driver-apl-table').DataTable({
         },
 
         {
-            data: null,
+            data: 'createdAt',
             title: 'Applied on',
             searchable: false,
             orderable: false,
-            render(data, type, row) {
-                data = row.finishedAt || row.createdAt
-
+            render(data, type) {
                 return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
+            },
+        },
+
+        {
+            data: 'finishedAt',
+            title: 'Submitted on',
+            searchable: false,
+            orderable: false,
+            defaultContent: '<i style="color: pink; font-size: .9em;">...pending</i>',
+            render(data, type) {
+                return type == 'display' && data ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
         },
 
@@ -200,11 +209,11 @@ const table = $('#driver-apl-table').DataTable({
 
                 if (condition != 'p') {
                     if (modify) {
-                        panel += `<a class="modify-apl" href="/drivers/application-form/${formId}"><i class="black text edit outline icon"></i></a>`
-                        panel += `<a class="assign-apl"><i class="black clipboard outline icon"></i></a>`
+                        panel += `<a class="modify-apl" href="/drivers/application-form/${formId}"><i class="dark green text edit outline icon"></i></a>`
+                        panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`
                     }
-                    if (access) panel += `<a class="apl-files"><i class="black folder outline icon"></i></a>`
-                    if (comment) panel += `<a class="comment-apl"><i class="black text comment outline icon"></i></a>`
+                    if (access) panel += `<a class="apl-files"><i class="black text folder outline icon"></i></a>`
+                    if (comment) panel += `<a class="comment-apl"><i class="purple text comment outline icon"></i></a>`
                 } else {
                     if (modify)
                         panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank"><i class="blue text external alternate icon"></i></a>`

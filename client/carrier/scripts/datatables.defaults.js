@@ -8,7 +8,7 @@ $.extend(true, $.fn.dataTable.defaults, {
     columnDefs: [
 
         {
-            defaultContent: '<i style="color: pink; font-size: .8em;">N/A</i>',
+            defaultContent: '<i style="color: pink; font-size: .9em;">N/A</i>',
             targets: '_all',
         },
 
