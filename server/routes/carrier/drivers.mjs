@@ -184,7 +184,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/application-form/:formId', User.verify, Team.verify, async (req, res) => {
+router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, res) => {
     try {
         const aplUrl = '/drivers/applications'
         const { user, team } = res.session
@@ -197,9 +197,9 @@ router.get('/application-form/:formId', User.verify, Team.verify, async (req, re
         const application = await Application.data(res.session, { formId })
         if (!application || application.condition !== 'c' || application._teamId !== team._id)
             return res.redirect(aplUrl)
-console.log(application.createdAt, application.finishedAt)
+// console.log(application)
 
-        const key = 'drivers.application-form'
+        const key = 'drivers.application.e-form'
         let { hbs } = res
         hbs = await hbs.set(key, { titlePfx: 'Driver Form ' + formId })
 
@@ -224,6 +224,7 @@ console.log(application.createdAt, application.finishedAt)
             if (user) hbs.recruiter = user.name
         }
 
+        hbs._id = application._id
         hbs.formId = formId
         hbs.position = application.position[1]
         hbs.applicant = new Person(application).fullName('FMLs') + ` <small>(${calculateYearAge(application.dob)})</small>`
@@ -263,7 +264,7 @@ console.log(application.createdAt, application.finishedAt)
         hbs.form = new ApplicationForm(options)
         hbs.dropdown = dropdown
 
-        res.render(key.replace('.', '/'), hbs)
+        res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }

@@ -209,7 +209,7 @@ const table = $('#driver-apl-table').DataTable({
 
                 if (condition != 'p') {
                     if (modify) {
-                        panel += `<a class="modify-apl" href="/drivers/application-form/${formId}"><i class="dark green text edit outline icon"></i></a>`
+                        panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form"><i class="dark green text edit outline icon"></i></a>`
                         panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`
                     }
                     if (access) panel += `<a class="apl-files"><i class="black text folder outline icon"></i></a>`

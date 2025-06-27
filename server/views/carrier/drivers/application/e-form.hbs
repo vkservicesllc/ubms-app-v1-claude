@@ -1,13 +1,19 @@
 {{> carrier/nav.alpha}}
 
+    <style>
+        .header:not(.first) {
+            margin-top: 10px !important;
+        }
+    </style>
+
     <div class="ui grid" style="padding: 10px;">
 
         <div class="nine wide column">
             <div class="ui grid">
                 <div class="three wide left attached column">
                     <div class="ui vertical fluid tabular menu">
-                        <a class="item active" data-tab="profile">Profile</a>
-                        <a class="item" data-tab="address">Address</a>
+                        <a class="item active" data-tab="profile">{{idx (idx steps 0) 0}}</a>
+                        <a class="item" data-tab="address">{{idx (idx steps 0) 1}}</a>
                         <a class="item" data-tab="dl">{{idx steps 1}}</a>
                         <a class="item" data-tab="mec">{{idx steps 2}}</a>
                         <a class="item" data-tab="legal">{{idx steps 3}}</a>
@@ -22,8 +28,10 @@
                 </div>
                 <div class="thirteen wide stretched right attached column">
                     <div class="ui seamless right attached segment" style="padding: 20px;">
+                        <input type="hidden" id="id" value="{{_id}}" />
                         <div class="ui active tab" data-tab="profile">
-                            <form id="profile-form" class="ui form" action="" method="POST">
+                            <form id="profile-form" class="ui loading form" action="" method="POST">
+                                <h5 class="ui blue text first header">Legal Name</h5>
                                 <div class="ui compact grid">
                                     <div class="five wide field">
                                         {{{form.firstName.text.label}}}
@@ -48,6 +56,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <h5 class="ui blue text header">Personal Information</h5>
                                 <div class="ui compact grid">
                                     <div class="four wide field">
                                         {{{form.dob.text.label}}}
@@ -58,7 +67,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="four wide field">
+                                    <div class="four wide disabled field">
                                         {{{form.gender.select.label}}}
                                         <div class="ui fluid clearable selection required dropdown" id="gender-dropdown">
                                             {{{form.gender.hidden.input}}}
@@ -68,11 +77,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="four wide field">
-                                        {{{form.ssn.text.label}}}
-                                        {{{form.ssn.text.input}}}
-                                    </div>
-                                    <div class="four wide field">
+                                    <div class="four wide disabled field">
                                         {{{form.marital.select.label}}}
                                         <div class="ui fluid clearable selection required dropdown" id="marital-dropdown">
                                             {{{form.marital.hidden.input}}}
@@ -82,8 +87,12 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="four wide disabled field">
+                                        {{{form.ssn.text.label}}}
+                                        {{{form.ssn.text.input}}}
+                                    </div>
                                 </div>
-                                <div class="ui divider"></div>
+                                <h5 class="ui blue text header">Contacts</h5>
                                 <div class="ui compact grid">
                                     <div class="four wide field">
                                         {{{form.phone.text.label}}}
@@ -94,40 +103,45 @@
                                         {{{form.email.text.input}}}
                                     </div>
                                 </div>
+                                <div class="ui divider"></div>
+                                <div class="actions">
+                                    <button type="submit" class="ui right floated circular blue button">Save Changes</button>
+                                </div>
                             </form>
+                            <script type="module" src="/modules/drivers/application/profile.mjs"></script>
                         </div>
                         <div class="ui tab" data-tab="address">
-                            Address content goes here.
+                            ADDRESS FORMS
                         </div>
                         <div class="ui tab" data-tab="dl">
-                            Driver License content goes here.
+                            DRIVER'S LICENSE FORM
                         </div>
                         <div class="ui tab" data-tab="mec">
-                            Medical Card content goes here.
+                            MEDICAL CARD FORM
                         </div>
                         <div class="ui tab" data-tab="legal">
-                            Legal Compliance content goes here.
+                            LEGAL COMPLIANCE FORMS
                         </div>
                         <div class="ui tab" data-tab="safety">
-                            Safety content goes here.
+                            SAFETY FORMS
                         </div>
                         <div class="ui tab" data-tab="experience">
-                            Experience content goes here.
+                            EXPERIENCE FORM
                         </div>
                         <div class="ui tab" data-tab="employers">
-                            Pre-Employment content goes here.
+                            PRE-EMPLOYMENT FORMS
                         </div>
                         <div class="ui tab" data-tab="preference">
-                            Preference content goes here.
+                            PREFERENCE FORM
                         </div>
                         <div class="ui tab" data-tab="business">
-                            Business content goes here.
+                            BUSINESS FORM
                         </div>
                         <div class="ui tab" data-tab="beneficiary">
-                            Beneficiary content goes here.
+                            BENEFICIARY FORM
                         </div>
                         <div class="ui tab" data-tab="misc">
-                            Beneficiary content goes here.
+                            MISC FORM
                         </div>
                     </div>
                 </div>
