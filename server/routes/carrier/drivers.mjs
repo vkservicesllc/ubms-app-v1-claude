@@ -125,6 +125,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
         if (hbs.permissions.create) {
             hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=${req.session.team}`
+            hbs.userSimpleId = user._simpleId
             //! if the team has more than 1 departments, add the first (default) department id (integer) to the query += `&dept${deptId}`
             //! in this case an additional dropdown to be added for deparment selection with the default department selected
             //? if (!DS)

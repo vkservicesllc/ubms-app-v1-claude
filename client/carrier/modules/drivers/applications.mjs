@@ -191,7 +191,7 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             className: 'right aligned',
             width: '120px',
-            render(data, type, row) {console.log(row)
+            render(data, type, row) {
                 const { _id, condition, formId } = row
                 const { comment, modify, delete: remove } = row.actions.data
                 const { access } = row.actions.file

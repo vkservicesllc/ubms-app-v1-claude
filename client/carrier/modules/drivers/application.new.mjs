@@ -72,7 +72,15 @@ const calSettings = {
 }
 
 $selfAssign.click(function() {
-    let url = ''
+    const checked = $(this).prop('checked')
+    let [ base, query ] = $aplUrl.text().split('?')
+    query = query.split('&')
+
+    if (!checked) query = query.filter(item => !item.startsWith('rec='))
+    else query.push(`rec=${$('#recruiter-id').val()}`)
+
+    const url = base + '?' + query.join('&')
+    $aplUrl.text(url).attr('href', url)
 })
 
 $('#dob-calendar').calendar({
@@ -196,15 +204,12 @@ table.on('draw', function() {
 
                     $dropdown.company.dropdown().on('change', function() {
                         const route = $(this).dropdown('get value')
-                        let url = aplUrl
+                        let [ base ] = aplUrl.split('?')
+                        let query = $aplUrl.text().split('?')[1]
 
-                        if (route) {
-                            let [ base, query ] = aplUrl.split('?')
-                            base += `/${route}`
+                        if (route) base += `/${route}`
 
-                            url = base + '?' + query
-                        }
-
+                        const url = base + '?' + query
                         $aplUrl.text(url).attr('href', url)
                     })
 
@@ -217,6 +222,7 @@ table.on('draw', function() {
                             $email.val(null)
                             $message.email.html(message.email)
                             $registerApl.prop('checked', false)
+                            $selfAssign.prop('checked', true)
                             disableApplicant()
                         },
                     }).modal('show')
