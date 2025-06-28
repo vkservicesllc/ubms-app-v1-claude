@@ -8,7 +8,7 @@
 
     <div class="ui grid" style="padding: 10px;">
 
-        <div class="nine wide column">
+        <div class="nine wide column" style="min-width: 960px; max-width: 1080px;">
             <div class="ui grid">
                 <div class="three wide left attached column">
                     <div class="ui vertical fluid tabular menu">
@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="four wide disabled field">
                                         {{{form.gender.select.label}}}
-                                        <div class="ui fluid clearable selection required dropdown" id="gender-dropdown">
+                                        <div class="ui fluid selection required dropdown" id="gender-dropdown">
                                             {{{form.gender.hidden.input}}}
                                             <i class="dropdown icon"></i>
                                             <div class="default text"></div>
@@ -79,7 +79,7 @@
                                     </div>
                                     <div class="four wide disabled field">
                                         {{{form.marital.select.label}}}
-                                        <div class="ui fluid clearable selection required dropdown" id="marital-dropdown">
+                                        <div class="ui fluid selection required dropdown" id="marital-dropdown">
                                             {{{form.marital.hidden.input}}}
                                             <i class="dropdown icon"></i>
                                             <div class="default text"></div>
@@ -111,7 +111,6 @@
                                     <button type="submit" class="ui right floated circular blue button">Save Changes</button>
                                 </div>
                             </form>
-                            <script type="module" src="/modules/drivers/application/profile.mjs"></script>
                         </div>
                         <div class="ui tab" data-tab="address">
                             ADDRESS FORMS
@@ -146,6 +145,7 @@
                         <div class="ui tab" data-tab="misc">
                             MISC FORM
                         </div>
+                        <script type="module" src="/modules/drivers/application/profile.mjs"></script>
                     </div>
                 </div>
             </div>
@@ -154,7 +154,7 @@
             </script>
         </div>
 
-        <div class="seven wide column">
+        <div class="seven wide column" style="min-width: 540px;">
             <div class="ui relaxed list">
                 <div class="item">
                     <div class="content">
@@ -176,9 +176,17 @@
                     </div>
                 </div>
                 {{/if}}
+                {{#if (hv recruiter)}}
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Recruiter:</h5>
+                        {{{recruiter}}}
+                    </div>
+                </div>
+                {{/if}}
             </div>
             <div class="ui divider"></div>
-            <div class="ui relaxed list">
+            <div class="ui relaxed horizontal list">
                 <div class="item">
                     <div class="content">
                     <h5 class="ui header">Form:</h5>
@@ -197,14 +205,6 @@
                         {{{finishedAt}}} ET
                     </div>
                 </div>
-                {{#if (hv recruiter)}}
-                <div class="item">
-                    <div class="content">
-                    <h5 class="ui header">Recruiter:</h5>
-                        {{{recruiter}}}
-                    </div>
-                </div>
-                {{/if}}
             </div>
         </div>
 
