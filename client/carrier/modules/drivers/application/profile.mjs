@@ -1,66 +1,80 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
-import selector from '/modules/registry/selectors/driver-application.mjs'
 import { tel as formatTel, ssn as formatSsn } from '/modules/tools/utils/formatter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
+import selector from '/modules/registry/selectors/driver-application.mjs'
+import application from './hub.mjs'
 
-const TS = selector.id.text, SS = selector.id.select
-const firstNameId = TS.firstName
-const middleNameId = TS.middleName
-const lastNameId = TS.lastName
-const suffixId = SS.suffix
-const dobId = TS.dob
-const ssnId = TS.ssn
-const phoneId = TS.phone
-const emailId = TS.email
 
-const _id = $('#id').val()
+(() => {
+    if (!application || !Object.keys(application).length) return
 
-const $dropdown = {
-    suffix: $('#suffix-dropdown'),
-    gender: $('#gender-dropdown'),
-    marital: $('#marital-dropdown'),
-}
+    const TS = selector.id.text, SS = selector.id.select
 
-const $calendar = {
-    dob: $('#dob-calendar'),
-}
+    const $help = {
+        email: $('#email-help'),
+    }
 
-Object.keys($dropdown).forEach(prop => $dropdown[prop].dropdown())
+    const $dropdown = {
+        suffix: $('#suffix-dropdown'),
+        gender: $('#gender-dropdown'),
+        marital: $('#marital-dropdown'),
+    }
 
-$calendar.dob.calendar({
-    ...calSettings,
-    maxDate: moment().subtract(18, 'years').toDate(),
-})
+    const $calendar = {
+        dob: $('#dob-calendar'),
+    }
 
-ssnEvent(ssnId)
+    Object.keys($dropdown).forEach(prop => $dropdown[prop].dropdown())
 
-telEvent(phoneId)
+    $calendar.dob.calendar({
+        ...calSettings,
+        maxDate: moment().subtract(18, 'years').toDate(),
+    })
 
-$.ajax(`/api/drivers/application/${_id}`, {
-    method: 'POST',
-    success(response) {
-        const { data, error } = response
-        if (error) return alert(error)
+    nameEvent(TS.firstName)
+    
+    nameEvent(TS.middleName)
+    
+    nameEvent(TS.lastName, {
+        sfxId: true,
+        onChange(lastName, $lastName, suffix) {
+            if (suffix)
+                $dropdown.suffix.dropdown('set selected', suffix)
+        },
+    })
 
-        const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email } = data
+    ssnEvent(TS.ssn)
 
-        $(firstNameId).val(firstName)
-        $(middleNameId).val(middleName)
-        $(lastNameId).val(lastName)
+    telEvent(TS.phone)
 
-        $(ssnId).val(formatSsn(ssn))
+    emailEvent(TS.email, {
+        onInput() {
+            $help.email.text(null)
+        },
+        onChange(email, valid) {
+            if (!valid) $help.email.text('Invalid email')
+        },
+    })
 
-        $(phoneId).val(formatTel(phone))
-        $(emailId).val(email)
+    const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email } = application
 
-        $dropdown.suffix.dropdown('set selected', suffix)
-        $dropdown.gender.dropdown('set selected', gender[0])
-        $dropdown.marital.dropdown('set selected', marital)
+    $(TS.firstName).val(firstName)
+    $(TS.middleName).val(middleName)
+    $(TS.lastName).val(lastName)
 
-        $calendar.dob.calendar('set date', new Date(moment(dob).toDate()))
+    $(TS.ssn).val(formatSsn(ssn))
 
-        $('#profile-form').removeClass('loading')
-    },
-})
+    $(TS.phone).val(formatTel(phone))
+    $(TS.email).val(email)
+
+    $dropdown.suffix.dropdown('set selected', suffix)
+    $dropdown.gender.dropdown('set selected', gender[0])
+    $dropdown.marital.dropdown('set selected', marital)
+
+    $calendar.dob.calendar('set date', new Date(moment(dob).toDate()))
+
+    $('#profile-form').removeClass('loading')
+})()
+

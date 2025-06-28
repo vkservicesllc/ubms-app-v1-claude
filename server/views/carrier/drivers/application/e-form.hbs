@@ -58,7 +58,7 @@
                                 </div>
                                 <h5 class="ui blue text header">Personal Information</h5>
                                 <div class="ui compact grid">
-                                    <div class="four wide field">
+                                    <div class="four wide disabled field">
                                         {{{form.dob.text.label}}}
                                         <div class="ui calendar" id="dob-calendar">
                                             <div class="ui fluid input left icon">
@@ -101,6 +101,9 @@
                                     <div class="seven wide field">
                                         {{{form.email.text.label}}}
                                         {{{form.email.text.input}}}
+                                        <p class="help">
+                                            <span class="ui red text"><small id="email-help"></small></span>
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="ui divider"></div>
