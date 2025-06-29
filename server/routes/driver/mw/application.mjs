@@ -7,11 +7,10 @@ import User from '../../../tools/core/user.mjs'
 import Team from '../../../tools/core/team.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
 import { Application } from '../../../tools/core/driver.mjs'
-import Person from '../../../../client/global/modules/tools/core/person.mjs'
+import Person, { Relationship } from '../../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
 import Geography from '../../../../client/global/modules/tools/core/geography.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
-import { Relationship } from '../../../../client/global/modules/tools/core/person.mjs'
 import { tel as formatTel, ssn as formatSsn, ein as formatEin } from '../../../../client/global/modules/tools/utils/formatter.mjs'
 
 /* Forms */

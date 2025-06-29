@@ -3,7 +3,7 @@ const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
 import moment from 'moment'
-import Person from '../../../client/global/modules/tools/core/person.mjs'
+import Person, { Relationship } from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
@@ -235,14 +235,13 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.steps[6] = 'Pre-Employments'
         if (application.position[0] === 'OO') hbs.steps[8] = 'Business / Vehicle'
 
-        let options = {}, dropdown = {}, t = `\t`.repeat(10)
+        let options = {}, dropdown = {}, t = `\t`.repeat(12)
 
         /* PROFILE */
         {
             dropdown.suffix = ''
             dropdown.gender = ''
             dropdown.marital = ''
-            // dropdown.addrState = ''
 
             for (const sfx in Person.suffixList)
                 dropdown.suffix += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
@@ -250,15 +249,39 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                 dropdown.gender += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
             for (const stat in Person.maritalList)
                 dropdown.marital += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
-            // for (const state in Address.stateList)
-            //     dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+        }
 
-            const fields = [
-                'firstName', 'middleName', 'lastName', 'suffix',
-                'dob', 'gender', 'ssn', 'marital', 'phone', 'email',
-                // 'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
-            ]
-            options = updateFormOptions(options, ApplicationForm, fields)
+        /* RESIDENCE */
+        {
+            dropdown.addrState = ''
+
+            for (const state in Address.stateList)
+                dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+        }
+
+        /* BENEFICIARY */
+        {
+            dropdown.relationship = ''
+
+            const relationData = { ...Relationship.data() }
+            switch (application.marital) {
+                case 'm':
+                    delete relationData['Other']['Fiancé(e)']
+                    delete relationData['Other']['Domestic Partner']
+                    if (application.gender[0] === 'M') delete relationData['Spouse']['Husband']
+                    if (application.gender[0] === 'F') delete relationData['Spouse']['Wife']
+                    break
+                default:
+                    delete relationData['Spouse']
+                    delete relationData['Immediate In-Law']
+            }
+
+            for (const group in relationData) {
+                dropdown.relationship += `\n${t}<div class="header"><span class="ui blue text">${group}:</span></div>`
+
+                for (const relation in relationData[group])
+                    dropdown.relationship += `\n${t}<div class="item" data-value="${relation}">${relation}</div>`
+            }
         }
 
         hbs.form = new ApplicationForm(options)

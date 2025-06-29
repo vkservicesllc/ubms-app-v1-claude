@@ -1,4 +1,3 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import { tel as formatTel, ssn as formatSsn } from '/modules/tools/utils/formatter.mjs'
@@ -10,18 +9,15 @@ import application from './hub.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const TS = selector.id.text, SS = selector.id.select
-
+    const TS = selector.id.text
     const $help = {
         email: $('#email-help'),
     }
-
     const $dropdown = {
         suffix: $('#suffix-dropdown'),
         gender: $('#gender-dropdown'),
         marital: $('#marital-dropdown'),
     }
-
     const $calendar = {
         dob: $('#dob-calendar'),
     }
