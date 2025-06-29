@@ -1,7 +1,6 @@
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
 import { tel as formatTel, ssn as formatSsn } from '/modules/tools/utils/formatter.mjs'
-import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application from './hub.mjs'
 

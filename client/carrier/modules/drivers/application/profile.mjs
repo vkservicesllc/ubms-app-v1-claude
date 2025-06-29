@@ -73,4 +73,3 @@ import application from './hub.mjs'
 
     $('#profile-form').removeClass('loading')
 })()
-

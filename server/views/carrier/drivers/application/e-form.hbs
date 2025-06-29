@@ -12,7 +12,7 @@
             <div class="ui grid">
                 <div class="three wide left attached column">
                     <div class="ui vertical fluid tabular menu">
-                        <a class="item" data-tab="profile">{{idx (idx steps 0) 0}}</a>
+                        <a class="item active" data-tab="profile">{{idx (idx steps 0) 0}}</a>
                         <a class="item" data-tab="address">{{idx (idx steps 0) 1}}</a>
                         <a class="item" data-tab="dl">{{idx steps 1}}</a>
                         <a class="item" data-tab="mec">{{idx steps 2}}</a>
@@ -22,14 +22,14 @@
                         <a class="item" data-tab="employers">{{idx steps 6}}</a>
                         <a class="item" data-tab="preference">{{idx steps 7}}</a>
                         <a class="item" data-tab="business">{{idx steps 8}}</a>
-                        <a class="item active" data-tab="beneficiary">{{idx steps 9}}</a>
+                        <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
                         <a class="item" data-tab="misc">{{idx steps 10}}</a>
                     </div>
                 </div>
                 <div class="thirteen wide stretched right attached column">
                     <div class="ui seamless right attached segment" style="padding: 20px;">
                         <input type="hidden" id="id" value="{{_id}}" />
-                        <div class="ui tab" data-tab="profile">
+                        <div class="ui active tab" data-tab="profile">
                             <form id="profile-form" class="ui loading form" action="" method="POST">
                                 <h5 class="ui blue text first header">Legal Name</h5>
                                 <div class="ui compact grid">
@@ -139,7 +139,7 @@
                         <div class="ui tab" data-tab="business">
                             BUSINESS FORM
                         </div>
-                        <div class="ui active tab" data-tab="beneficiary">
+                        <div class="ui tab" data-tab="beneficiary">
                             <form id="beneficiary-form" class="ui form" action="" method="POST">
                                 <h5 class="ui blue text first header">Beneficiary</h5>
                                 <div class="ui compact grid" style="margin-top: 20px;">
