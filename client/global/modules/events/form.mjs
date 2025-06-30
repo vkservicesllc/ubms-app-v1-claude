@@ -7,7 +7,7 @@ export const inputEvent = (selector, options = {}) => {
     if (!selector) return
 
     const $input = $(selector)
-    const { onFocus, onKeydown, onKeyup, onBlur, mask, onCompleted, strip, word } = options
+    const { onFocus, onKeydown, onKeyup, onBlur, mask, onCompleted, strip, word, value } = options
     let { placeholder, caret, lower, upper, datepicker, capitalize } = options
     if (!['each', 'first'].includes(capitalize)) capitalize = false
 
@@ -112,12 +112,14 @@ export const inputEvent = (selector, options = {}) => {
             .on('blur', function() {
                 onBlur($(this).val(), $(this))
             })
+
+    if (value !== undefined) $input.val(value)
 }
 
 
 export const selectEvent = (selector, options = {}) => {
     const $select = $(selector)
-    const { fill, onChange, onFocus, onBlur } = options
+    const { fill, onChange, onFocus, onBlur, value } = options
 
     if (fill || onChange)
         $select
@@ -142,4 +144,6 @@ export const selectEvent = (selector, options = {}) => {
             .on('blur', function() {
                 onBlur($(this).val(), $(this))
             })
+
+    if (value !== undefined) $select.val(value)
 }
