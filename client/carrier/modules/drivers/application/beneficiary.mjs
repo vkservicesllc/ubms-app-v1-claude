@@ -1,59 +1,58 @@
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
-import { tel as formatTel, ssn as formatSsn } from '/modules/tools/utils/formatter.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import application from './hub.mjs'
+import application, { dropdownEvent } from './hub.mjs'
 
 
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { beneficiary } = application
-console.log(beneficiary)
+    const { firstName, middleName, lastName, suffix, relation, otherRel, phone, ssn } = application.beneficiary
 
     const TS = selector.id.text
+    const $otherRel = $(TS.benefOtherRel)
+
+    const relationOnChange = value => {
+        let disabled = true, action = 'hide'
+
+        if (value === 'Other') {
+            disabled = false
+            action = 'show'
+        }
+
+        $otherRel.prop('disabled', disabled)
+        $field.otherRel[action]()
+    }
+
     const $dropdown = {
-        suffix: $('#beneficiary-suffix-dropdown'),
-        relationship: $('#beneficiary-relationship-dropdown'),
+        suffix: [ $('#beneficiary-suffix-dropdown'), suffix ],
+        relationship: [ $('#beneficiary-relationship-dropdown'), relation, relationOnChange ],
     }
     const $field = {
         otherRel: $('#beneficiary-other-relationship-field'),
     }
 
-    Object.keys($dropdown).forEach(prop => $dropdown[prop].dropdown())
+    dropdownEvent($dropdown)
 
-    nameEvent(TS.benefFirstName)
+    nameEvent(TS.benefFirstName, { value: firstName })
     
-    nameEvent(TS.benefMiddleName)
+    nameEvent(TS.benefMiddleName, { value: middleName })
     
     nameEvent(TS.benefLastName, {
         sfxId: true,
+        value: lastName,
         onChange(lastName, $lastName, suffix) {
             if (suffix)
                 $dropdown.suffix.dropdown('set selected', suffix)
         },
     })
 
-    // need event listener for relationship dropdown and for otherRel text input (easy)
+    telEvent(TS.benefPhone, { value: phone })
 
-    telEvent(TS.benefPhone)
-
-    ssnEvent(TS.benefSsn)
-
-    const { firstName, middleName, lastName, suffix, relation, otherRel, phone, ssn } = beneficiary
-
-    $(TS.benefFirstName).val(firstName)
-    $(TS.benefMiddleName).val(middleName)
-    $(TS.benefLastName).val(lastName)
+    ssnEvent(TS.benefSsn, { value: ssn })
 
     if (otherRel) {
-        $(TS.benefOtherRel).val(otherRel).prop('disabled', false)
+        $otherRel.val(otherRel).prop('disabled', false)
         $field.otherRel.show()
     }
-
-    $(TS.benefPhone).val(formatTel(phone))
-    $(TS.benefSsn).val(formatSsn(ssn))
-
-    $dropdown.suffix.dropdown('set selected', suffix)
-    $dropdown.relationship.dropdown('set selected', relation)
 })()

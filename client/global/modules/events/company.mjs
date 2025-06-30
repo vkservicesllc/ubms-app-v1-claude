@@ -7,11 +7,12 @@ import strip from '../tools/utils/formatter.mjs'
 const categories = $.ajax('/api/public/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 
 
-export const catIdEvent = (id, iconId, onChange, callback = {}) => {
-    const { onFocus, onBlur } = callback
+export const catIdEvent = (id, iconId, onChange, options = {}) => {
+    const { onFocus, onBlur, value } = options
 
     selectEvent(id, {
         fill: true,
+        value,
         onChange(catId, $catId) {
             if (iconId) {
                 const $icon = $(`#${iconId}`)
@@ -28,12 +29,13 @@ export const catIdEvent = (id, iconId, onChange, callback = {}) => {
 }
 
 
-export const busNameEvent = (id, coTypeId, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const busNameEvent = (id, coTypeId, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         strip: true,
         word: true,
+        value,
         onInput(busName, $busName) {
             busName = capitalizeEach(busName)
             busName = patterns.replace(busName, 'busName')
@@ -67,11 +69,12 @@ export const busNameEvent = (id, coTypeId, callback = {}) => {
 }
 
 
-export const coTypeEvent = (id, busNameId, onChange, callback = {}) => {
-    const { onFocus, onBlur } = callback
+export const coTypeEvent = (id, busNameId, onChange, options = {}) => {
+    const { onFocus, onBlur, value } = options
 
     selectEvent(id, {
         fill: true,
+        value,
         onChange(coType, $coType) {
             if (onChange) {
                 const $busName = $(busNameId)
@@ -86,12 +89,13 @@ export const coTypeEvent = (id, busNameId, onChange, callback = {}) => {
 }
 
 
-export const aliasEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const aliasEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         upper: true,
         word: true,
+        value,
         onInput(alias, $alias) {
             alias = alias.replace(/[^A-Z]/, '')
 
@@ -105,8 +109,8 @@ export const aliasEvent = (id, callback = {}) => {
 }
 
 
-export const einEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted } = callback
+export const einEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted, value } = options
 
     inputEvent(id, {
         mask: '99-9999999',
@@ -122,12 +126,13 @@ export const einEvent = (id, callback = {}) => {
         onKeydown,
         onKeyup,
         onCompleted,
+        value,
     })
 }
 
 
-export const dunsEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted } = callback
+export const dunsEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted, value } = options
 
     inputEvent(id, {
         mask: '99-999-9999',
@@ -143,5 +148,6 @@ export const dunsEvent = (id, callback = {}) => {
         onKeydown,
         onKeyup,
         onCompleted,
+        value,
     })
 }

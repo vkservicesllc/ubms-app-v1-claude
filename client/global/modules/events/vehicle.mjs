@@ -4,8 +4,8 @@ import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/utils/string.mjs'
 
 
-export const makeEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const makeEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         strip: true,
@@ -24,12 +24,13 @@ export const makeEvent = (id, callback = {}) => {
 }
 
 
-export const modelEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const modelEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         strip: true,
         word: true,
+        value,
         onInput(model, $model) {
             model = capitalizeEach(model)
             model = patterns.replace(model, 'vhlModel')

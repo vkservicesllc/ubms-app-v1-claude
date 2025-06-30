@@ -5,14 +5,15 @@ import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/utils/string.mjs'
 
 
-export const usernameEvent = (callback = {}) => {
-    const { onInput, onChange, onAjax, onFocus, onBlur } = callback
+export const usernameEvent = (options = {}) => {
+    const { onInput, onChange, onAjax, onFocus, onBlur, value } = options
     const { username , newUsername } = selector.id.text
 
     inputEvent(`${username}, ${newUsername}`, {
         lower: true,
         word: true,
         strip: true,
+        value,
         onInput(username, $username) {
             username = patterns.replace(username, 'username')
 
@@ -190,13 +191,14 @@ export const registerEvent = onSubmit => {
 }
 
 
-export const roleNameEvent = (ajaxData = {}, callback = {}) => {
+export const roleNameEvent = (ajaxData = {}, options = {}) => {
     const { catId, $id, $location } = ajaxData
-    const { onInput, onChange, onAjax, onFocus, onBlur } = callback
+    const { onInput, onChange, onAjax, onFocus, onBlur, value } = options
 
     inputEvent(selector.class.text.roleName, {
         strip: true,
         word: true,
+        value,
         onInput(name, $name) {
             name = patterns.replace(name, 'roleName')
             name = capitalizeEach(name)
@@ -229,11 +231,12 @@ export const roleNameEvent = (ajaxData = {}, callback = {}) => {
 }
 
 
-export const roleLocationEvent = (ajaxData = {}, callback = {}) => {
+export const roleLocationEvent = (ajaxData = {}, options = {}) => {
     const { catId, $id, $name } = ajaxData
-    const { onChange, onAjax, onFocus, onBlur } = callback
+    const { onChange, onAjax, onFocus, onBlur, value } = options
 
     selectEvent(selector.class.select.roleLocation, {
+        value,
         onChange(location, $location) {
             if (onChange) onChange(location, $location)
 

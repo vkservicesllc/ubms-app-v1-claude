@@ -2,14 +2,16 @@
 import { inputEvent } from './form.mjs'
 import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/utils/string.mjs'
+import strip, { ssn as formatSsn } from '../tools/utils/formatter.mjs'
 
 
 export const nameEvent = (id, options = {}) => {
-    const { sfxId, onInput, onChange, onFocus, onBlur } = options
+    const { sfxId, onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         strip: true,
         word: true,
+        value,
         onInput(name, $name) {
             name = patterns.replace(name, 'name')
             name = capitalizeEach(name)
@@ -44,7 +46,7 @@ export const nameEvent = (id, options = {}) => {
 
 
 export const ssnEvent = (id, options = {}) => {
-    const { last4, onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted } = options
+    const { last4, onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted, value } = options
     let mask = '999-99-9999'
 
     if (last4 === true) mask = '9999'
@@ -58,16 +60,18 @@ export const ssnEvent = (id, options = {}) => {
         onKeydown,
         onKeyup,
         onCompleted,
+        value: formatSsn(strip(value)),
     })
 }
 
 
-export const driverLicenseEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const driverLicenseEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         strip: true,
         word: true,
+        value,
         onInput(dl, $dl) {
             dl = patterns.replace(dl, 'driverLicense')
             dl = dl.toUpperCase()
@@ -82,12 +86,13 @@ export const driverLicenseEvent = (id, callback = {}) => {
 }
 
 
-export const dlClassEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const dlClassEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         strip: true,
         word: true,
+        value,
         onInput(dlClass, $dlClass) {
             dlClass = patterns.replace(dlClass, 'dlClass')
             dlClass = dlClass.toUpperCase()

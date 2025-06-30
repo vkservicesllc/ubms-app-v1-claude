@@ -5,12 +5,13 @@ import patterns from '../registry/patterns.mjs'
 import { capitalizeEach, capitalizeAfterPunctuation } from '../tools/utils/string.mjs'
 
 
-export const teamNameEvent = (callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const teamNameEvent = (options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(selector.id.text.name, {
         strip: true,
         word: true,
+        value,
         onInput(name, $name) {
             name = patterns.replace(name, 'teamName')
             name = capitalizeEach(name)
@@ -25,11 +26,12 @@ export const teamNameEvent = (callback = {}) => {
 }
 
 
-export const teamDescEvent = (callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const teamDescEvent = (options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(selector.id.text.desc, {
         strip: true,
+        value,
         onInput(desc, $desc) {
             desc = capitalizeAfterPunctuation(desc)
 

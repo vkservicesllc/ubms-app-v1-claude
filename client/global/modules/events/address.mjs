@@ -5,13 +5,14 @@ import { capitalizeEach } from '../tools/utils/string.mjs'
 
 
 export const addr1Event = (id, options = {}) => {
-    const { addr2Id, onInput, onChange, onFocus, onBlur } = options
+    const { addr2Id, onInput, onChange, onFocus, onBlur, value } = options
     let { mail } = options
     if (mail === undefined || typeof mail != 'boolean') mail = false
 
     inputEvent(id, {
         strip: true,
         word: true,
+        value,
         onInput(addr1, $addr1) {
             addr1 = capitalizeEach(addr1)
 
@@ -48,12 +49,13 @@ export const addr1Event = (id, options = {}) => {
 }
 
 
-export const addr2Event = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const addr2Event = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         strip: true,
         word: true,
+        value,
         onInput(addr2, $addr2) {
             addr2 = capitalizeEach(addr2)
 
@@ -73,9 +75,10 @@ export const addr2Event = (id, callback = {}) => {
 
 
 export const zipEvent = (id, options = {}) => {
-    const { cityId, stateId, onInput, onChange, onFocus, onBlur } = options
+    const { cityId, stateId, onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
+        value,
         onInput(zip, $zip) {
             zip = patterns.replace(zip, 'zip')
 
@@ -124,12 +127,13 @@ export const zipEvent = (id, options = {}) => {
 }
 
 
-export const cityEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const cityEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         strip: true,
         word: true,
+        value,
         onInput(city, $city) {
             city = capitalizeEach(city)
             city = patterns.replace(city, 'city')

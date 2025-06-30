@@ -3,11 +3,12 @@ import { inputEvent } from './form.mjs'
 import patterns from '../registry/patterns.mjs'
 
 
-export const urlEvent = (id, callback = {}) => {
-    const { onInput, onChange, onFocus, onBlur } = callback
+export const urlEvent = (id, options = {}) => {
+    const { onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         lower: true,
+        value,
         onInput(url, $url) {
             url = patterns.replace(url, 'url')
 

@@ -8,3 +8,12 @@ if (error) alert(error)
 application = data
 
 export default application
+
+
+export const dropdownEvent = $dropdown => {
+    Object.keys($dropdown).forEach(prop => {
+        const [ $el, value, onChange ] = $dropdown[prop]
+
+        $el.dropdown('set value', value).dropdown({ onChange })
+    })
+}
