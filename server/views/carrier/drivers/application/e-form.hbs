@@ -9,7 +9,7 @@
         }
     </style>
 
-    <div style="margin-left: 10px;">
+    <div style="margin-left: 20px;">
         <div class="ui relaxed horizontal list" style="margin-bottom: 15px; min-width: 1440px;">
             <div class="item">
                 <div class="content">
@@ -74,7 +74,7 @@
                     <a class="item"><span class="ui grey text">{{idx steps 7}}</span></a>
                     <a class="item"><span class="ui grey text">{{idx steps 8}}</span></a>
                     <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
-                    <a class="item"><span class="ui grey text">{{idx steps 10}}</span></a>
+                    <a class="item" data-tab="misc">{{idx steps 10}}</a>
                 </div>
             </div>
             <div class="thirteen wide stretched right attached column">
@@ -84,7 +84,7 @@
                     <div class="ui active tab" data-tab="profile">
                         <form class="ui loading form" id="profile-form" action="{{actionUrl.profile}}" method="POST">
                             <h5 class="ui blue text first header">Legal Name</h5>
-                            <div class="ui compact grid">
+                            <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="five wide field">
                                     {{{form.firstName.text.label}}}
                                     {{{form.firstName.text.input}}}
@@ -109,7 +109,7 @@
                                 </div>
                             </div>
                             <h5 class="ui blue text header">Personal Information</h5>
-                            <div class="ui compact grid">
+                            <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="four wide field">
                                     {{{form.dob.text.label}}}
                                     <div class="ui calendar" id="dob-calendar">
@@ -145,7 +145,7 @@
                                 </div>
                             </div>
                             <h5 class="ui blue text header">Contacts</h5>
-                            <div class="ui compact grid">
+                            <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="four wide field">
                                     {{{form.phone.text.label}}}
                                     {{{form.phone.text.input}}}
@@ -172,7 +172,7 @@
                     <div class="ui tab" data-tab="legal-status">
                         <form class="ui loading form" id="status-form" action="{{actionUrl.status}}" method="POST">
                             <h5 class="ui blue text first header">Legal Presence</h5>
-                            <div class="ui compact grid">
+                            <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="five wide field">
                                     {{{form.status.radio.label}}}
                                     <div class="ui fluid selection required dropdown" id="legal-status-dropdown">
@@ -235,7 +235,7 @@
                     <div class="ui tab" data-tab="beneficiary">
                         <form class="ui loading form" id="beneficiary-form" action="{{actionUrl.beneficiary}}" method="POST">
                             <h5 class="ui blue text first header">Beneficiary</h5>
-                            <div class="ui compact grid" style="margin-top: 20px;">
+                            <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="five wide field">
                                     {{{form.benefFirstName.text.label}}}
                                     {{{form.benefFirstName.text.input}}}
@@ -259,7 +259,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="ui compact grid" style="margin-top: 10px;">
+                            <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="four wide field">
                                     {{{form.benefRelation.select.label}}}
                                     <div class="ui fluid selection required dropdown" id="beneficiary-relationship-dropdown">
@@ -291,7 +291,27 @@
                     </div>
 
                     <div class="ui tab" data-tab="misc">
-                        MISC FORM
+                        <form class="ui loading form" id="misc-form" action="{{actionUrl.misc}}" method="POST">
+                            <h5 class="ui blue text first header">Emergency Contact</h5>
+                            <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="four wide field">
+                                    {{{form.emergPhone.text.label}}}
+                                    {{{form.emergPhone.text.input}}}
+                                </div>
+                                <div class="five wide field">
+                                    {{{form.emergName.text.label}}}
+                                    {{{form.emergName.text.input}}}
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.emergRelation.text.label}}}
+                                    {{{form.emergRelation.text.input}}}
+                                </div>
+                            </div>
+                            <div class="ui divider"></div>
+                            <div class="actions">
+                                <button type="submit" class="ui right floated circular blue button">Save Changes</button>
+                            </div>
+                        </form>
                     </div>
 
                 </div>
@@ -300,6 +320,7 @@
         <script>$('.menu .item').tab()</script>
         <script type="module" src="/modules/drivers/application/legal-status.mjs"></script>
         <script type="module" src="/modules/drivers/application/beneficiary.mjs"></script>
+        <script type="module" src="/modules/drivers/application/misc.mjs"></script>
         <script type="module" src="/modules/drivers/application/profile.mjs"></script>
 
     </div>
