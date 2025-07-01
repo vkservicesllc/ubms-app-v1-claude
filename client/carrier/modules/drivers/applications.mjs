@@ -76,16 +76,16 @@ const table = $('#driver-apl-table').DataTable({
 
                 if (row.marital === 'm') {
                     let { sex, benefRelation, benefOtherRel } = row
-console.log({ sex, benefRelation, benefOtherRel })
-                    // benefRelation = benefRelation.toLowerCase().trim()
-                    // if (benefOtherRel) benefOtherRel.toLowerCase().trim()
 
-                    // switch (true) {
-                    //     case sex === 0 && (benefRelation === 'wife' || benefOtherRel === 'wife'):
-                    //     case sex === 1 && (benefRelation === 'husband' || benefOtherRel === 'husband'):
-                    //         data += `<span title="Logical Error: Incorrect Gender"><i class="ui red text exclamation triangle icon"></i></span>`
-                    //         break
-                    // }
+                    if (benefOtherRel) benefRelation = benefRelation.toLowerCase().trim()
+                    if (benefOtherRel) benefOtherRel.toLowerCase().trim()
+
+                    switch (true) {
+                        case sex === 0 && (benefRelation === 'wife' || benefOtherRel === 'wife'):
+                        case sex === 1 && (benefRelation === 'husband' || benefOtherRel === 'husband'):
+                            data += `<span title="Logical Error: Incorrect Gender"><i class="ui red text exclamation triangle icon"></i></span>`
+                            break
+                    }
                 }
 
                 return data
