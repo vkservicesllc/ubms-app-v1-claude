@@ -1,14 +1,6 @@
 {{> head}}
 
     <style>
-
-:root {
-  --vh: 100%;
-}
-.full-height-fix {
-  min-height: calc(var(--vh, 1vh) * 100);
-}
-
         #company-name {
             font-weight: 500;
         }
@@ -22,17 +14,6 @@
             font-size: .95em;
         }
     </style>
-
-<script defer>
-  function updateViewportHeight() {
-    const vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-  }
-
-  window.addEventListener('resize', updateViewportHeight);
-  window.addEventListener('orientationchange', updateViewportHeight);
-  updateViewportHeight();
-</script>
 
     <div class="d-flex justify-content-center align-items-lg-center full-height-fix">
         <div class="card text-center" id="new-apl-card" style="display: none;">

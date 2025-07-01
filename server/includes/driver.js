@@ -13,7 +13,7 @@ module.exports = {
         external: [ ...defaults.external, 'imask', 'font-awesome', 'moment' ],
         internal: {
             css: [ ...defaults.internal.css, 'bootstrap.form', 'application' ],
-            js: [ ...defaults.internal.js ],
+            js: [ ...defaults.internal.js, '^application' ],
             mjs: [ ...defaults.internal.mjs ],
         },
     },
@@ -22,7 +22,7 @@ module.exports = {
         external: [ ...defaults.external, 'imask', 'font-awesome' ],
         internal: {
             css: [ ...defaults.internal.css, 'application' ],
-            js: [ ...defaults.internal.js ],
+            js: [ ...defaults.internal.js, '^application' ],
             mjs: [ ...defaults.internal.mjs ],
         },
     },
@@ -33,7 +33,7 @@ module.exports = {
             'imask', 'font-awesome', 'moment' ],
         internal: {
             css: [ ...defaults.internal.css, 'bootstrap.form', 'application' ],
-            js: [ ...defaults.internal.js, 'session.keep-alive' ],
+            js: [ ...defaults.internal.js, '^application', 'session.keep-alive' ],
             mjs: [ ...defaults.internal.mjs ],
         },
     },
@@ -42,7 +42,7 @@ module.exports = {
         external: [ ...defaults.external, 'moment' ],
         internal: {
             css: [ ...defaults.internal.css, 'application' ],
-            js: [ ...defaults.internal.js, 'session.keep-alive' ],
+            js: [ ...defaults.internal.js, '^application', 'session.keep-alive' ],
             mjs: [ ...defaults.internal.mjs ],
         },
     },
@@ -51,7 +51,7 @@ module.exports = {
         external: [ ...defaults.external ],
         internal: {
             css: [ ...defaults.internal.css, 'application' ],
-            js: [ ...defaults.internal.js, 'session.keep-alive' ],
+            js: [ ...defaults.internal.js, '^application', 'session.keep-alive' ],
             mjs: [ ...defaults.internal.mjs ],
         },
     },
@@ -60,7 +60,7 @@ module.exports = {
         external: [ ...defaults.external ],
         internal: {
             css: [ ...defaults.internal.css, 'application' ],
-            js: [ ...defaults.internal.js, 'session.keep-alive' ],
+            js: [ ...defaults.internal.js, '^application', 'session.keep-alive' ],
             mjs: [ ...defaults.internal.mjs ],
         },
     },
@@ -69,7 +69,7 @@ module.exports = {
         external: [ ...defaults.external ],
         internal: {
             css: [ ...defaults.internal.css, 'application' ],
-            js: [ ...defaults.internal.js ],
+            js: [ ...defaults.internal.js, '^application' ],
             mjs: [ ...defaults.internal.mjs ],
         },
     },
