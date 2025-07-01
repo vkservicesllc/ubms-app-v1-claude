@@ -11,7 +11,7 @@ import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
-import { validateApplicant } from '../driver/resource.mjs'
+import { validateApplicant, dynamicValidator as dynamicApplicantValidator } from '../driver/resource.mjs'
 
 const url = {
     drivers: {
@@ -111,6 +111,25 @@ router.post('/driver/application/delete', User.verify, Team.verify, async (req, 
         throwErr.server(res, null, err)
     }
 })
+
+router.post('/driver/application/:formId/edit/:step',
+    User.verify, Team.verify,
+    dynamicApplicantValidator.applications,
+    async (req, res) => {
+        try {
+            const { formId, step } = req.params
+            const application = await Application.data(res.session, { formId })
+            if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
+    
+            const { error } = await application.modify(res.session, step, req.body)
+            if (error) return throwErr.server(res, error)
+
+            res.redirect(`/drivers/application/${formId}/e-form`)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+)
 
 
 

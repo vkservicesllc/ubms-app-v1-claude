@@ -116,6 +116,9 @@ const dynamicValidator = {
             case 'profile':
                 validators = validateApplicantProfile
                 break
+            case 'legal-status':
+                validators = []
+                break
             case 'address':
                 validators = [ ...validateApplicantAddress, ...validateApplicantPrevAddress ]
                 break
@@ -258,4 +261,4 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
 
 export default router
 
-export { validateApplicant, validateApplicantLogin }
+export { validateApplicant, validateApplicantLogin, dynamicValidator }
