@@ -6,14 +6,65 @@
         }
     </style>
 
-    <div class="ui grid" style="padding: 10px;">
+    {{!-- <div class="ui grid" style="padding: 10px;">
 
-        <div class="nine wide column" style="min-width: 960px; max-width: 1080px;">
-            <div class="ui grid">
+        <div class="nine wide column" style="min-width: 960px; max-width: 1080px;"> --}}
+        <div style="margin-left: 10px;">
+            <div class="ui relaxed horizontal list" style="margin-bottom: 15px; min-width: 1440px;">
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Applicant:</h5>
+                        {{{applicant}}}
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Position:</h5>
+                        {{position}}
+                    </div>
+                </div>
+                {{#if (hv carrier)}}
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Carrier:</h5>
+                        {{{carrier}}}
+                    </div>
+                </div>
+                {{/if}}
+                {{#if (hv recruiter)}}
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Recruiter:</h5>
+                        {{{recruiter}}}
+                    </div>
+                </div>
+                {{/if}}
+                <div class="item" style="border-left: 1px solid rgba(34,36,38,0.15); padding-left: 1.8rem;">
+                    <div class="content">
+                    <h5 class="ui header">Form:</h5>
+                        {{formId}}
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Created at:</h5>
+                        {{{appliedAt}}} ET
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="content">
+                    <h5 class="ui header">Submitted at:</h5>
+                        {{{finishedAt}}} ET
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui grid" style="min-width: 960px; max-width: 1080px;">
                 <div class="three wide left attached column">
                     <div class="ui vertical fluid tabular menu">
                         <a class="item active" data-tab="profile">{{idx (idx steps 0) 0}}</a>
-                        <a class="item" data-tab="address">{{idx (idx steps 0) 1}}</a>
+                        <a class="item" data-tab="residence">{{idx (idx steps 0) 1}}</a>
+                        <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
                         <a class="item" data-tab="dl">{{idx steps 1}}</a>
                         <a class="item" data-tab="mec">{{idx steps 2}}</a>
                         <a class="item" data-tab="legal">{{idx steps 3}}</a>
@@ -30,7 +81,7 @@
                     <div class="ui seamless right attached segment" style="padding: 20px;">
                         <input type="hidden" id="id" value="{{_id}}" />
                         <div class="ui active tab" data-tab="profile">
-                            <form id="profile-form" class="ui loading form" action="" method="POST">
+                            <form class="ui loading form" action="" method="POST">
                                 <h5 class="ui blue text first header">Legal Name</h5>
                                 <div class="ui compact grid">
                                     <div class="five wide field">
@@ -58,7 +109,7 @@
                                 </div>
                                 <h5 class="ui blue text header">Personal Information</h5>
                                 <div class="ui compact grid">
-                                    <div class="four wide disabled field">
+                                    <div class="four wide field">
                                         {{{form.dob.text.label}}}
                                         <div class="ui calendar" id="dob-calendar">
                                             <div class="ui fluid input left icon">
@@ -67,7 +118,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="four wide disabled field">
+                                    <div class="four wide field">
                                         {{{form.gender.select.label}}}
                                         <div class="ui fluid selection required dropdown" id="gender-dropdown">
                                             {{{form.gender.hidden.input}}}
@@ -81,7 +132,7 @@
                                         {{{form.ssn.text.label}}}
                                         {{{form.ssn.text.input}}}
                                     </div>
-                                    <div class="four wide disabled field">
+                                    <div class="four wide field">
                                         {{{form.marital.select.label}}}
                                         <div class="ui fluid selection required dropdown" id="marital-dropdown">
                                             {{{form.marital.hidden.input}}}
@@ -112,8 +163,11 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="ui tab" data-tab="address">
+                        <div class="ui tab" data-tab="residence">
                             ADDRESS FORMS
+                        </div>
+                        <div class="ui tab" data-tab="legal-status">
+                            LEGAL STATUS
                         </div>
                         <div class="ui tab" data-tab="dl">
                             DRIVER'S LICENSE FORM
@@ -140,7 +194,7 @@
                             BUSINESS FORM
                         </div>
                         <div class="ui tab" data-tab="beneficiary">
-                            <form id="beneficiary-form" class="ui form" action="" method="POST">
+                            <form class="ui loading form" action="" method="POST">
                                 <h5 class="ui blue text first header">Beneficiary</h5>
                                 <div class="ui compact grid" style="margin-top: 20px;">
                                     <div class="five wide field">
@@ -205,7 +259,10 @@
                 </div>
             </div>
             <script>$('.menu .item').tab()</script>
+
         </div>
+
+        {{!-- </div>
 
         <div class="seven wide column" style="min-width: 540px;">
             <div class="ui relaxed list">
@@ -259,7 +316,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
     </div>
 

@@ -9,6 +9,7 @@ import application, { dropdownEvent } from './hub.mjs'
     if (!application || !Object.keys(application).length) return
 
     const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email } = application
+    let { relation, otherRel } = application.beneficiary
     const TS = selector.id.text
 
     const $help = {
@@ -31,6 +32,19 @@ import application, { dropdownEvent } from './hub.mjs'
             maxDate: moment().subtract(18, 'years').toDate(),
         })
         .calendar('set date', new Date(moment(dob).toDate()))
+
+    if (marital === 'm') {
+        const locked = ['husband', 'wife', 'spouse']
+        relation = relation.toLowerCase().trim()
+        if (otherRel) otherRel = otherRel.toLowerCase().trim()
+
+        if (locked.includes(relation) || locked.includes(otherRel))
+            $dropdown.marital[0].parent().addClass('disabled')
+
+        if (relation === locked[0] || otherRel === locked[0]) {
+            //
+        }
+    }
 
     nameEvent(TS.firstName, { value: firstName })
     
@@ -59,5 +73,5 @@ import application, { dropdownEvent } from './hub.mjs'
         },
     })
 
-    $('#profile-form').removeClass('loading')
+    $('.loading.form').removeClass('loading')
 })()
