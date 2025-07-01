@@ -96,9 +96,11 @@ const table = $('#driver-apl-table').DataTable({
             data: 'formId',
             title: `Form ID ${searchTag}`,
             orderable: false,
-            className: 'dt-monospace',
             render(data) {
                 return escapeHTML(data)
+            },
+            createdCell(td) {
+                $(td).css('font-family', 'monospace')
             },
         },
 
