@@ -367,14 +367,13 @@ class Application {
                 currentData = { ...this }
                 if (currentData.position)
                     currentData.position = currentData.position[0]
-                currentUpdateLog = await this.log('updateLog')
 
                 data = processData(data, {
                     modifiedBy,
                     branch,
                     siteId,
                     currentData,
-                    currentUpdateLog,
+                    currentUpdateLog: await this.log('updateLog'),
                 })
                 if (data.ssn)
                     data.ssn = { aes: [ data.ssn, ssnSecret ] }
@@ -428,6 +427,24 @@ class Application {
                         })
                     }
                 }
+
+                break
+
+
+            case 'legal-status':
+                currentData = {
+                    status: this.legalStatus[0],
+                    statusExpiresOn: this.legalStatus[1],
+                }
+                if (data.status < 2) data.statusExpiresOn = null
+
+                data = processData(data, {
+                    modifiedBy,
+                    branch,
+                    siteId,
+                    currentData,
+                    currentUpdateLog: await this.log('updateLog'),
+                })
 
                 break
 
@@ -1123,6 +1140,8 @@ class Application {
         'Beneficiary',
         'Miscellaneous',
     ]
+
+    static legalStatusList = { '0': 'US Citizen', '1': 'Permanent Resident', '2': 'Work Authorization/Visa' }
 
     static violationList = {
         "Moving Violations": {

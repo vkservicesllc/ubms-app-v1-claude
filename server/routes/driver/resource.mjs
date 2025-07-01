@@ -32,6 +32,10 @@ const validatePrevAddressFields = [
 ]
 validatePrevAddressFields.forEach(prop => validateApplicantPrevAddress.push(ApplicationForm[prop].validate()))
 
+const validateApplicantLegalStatus = []
+const validateLegalStatusFields = ['status', 'statusExp']
+validateLegalStatusFields.forEach(prop => validateApplicantLegalStatus.push(ApplicationForm[prop].validate()))
+
 const validateApplicantLogin = []
 const applicantLoginFields = ['phone', 'dob', 'pin']
 applicantLoginFields.forEach(prop => validateApplicantLogin.push(ApplicationForm[prop].validate()))
@@ -117,7 +121,7 @@ const dynamicValidator = {
                 validators = validateApplicantProfile
                 break
             case 'legal-status':
-                validators = []
+                validators = validateApplicantLegalStatus
                 break
             case 'address':
                 validators = [ ...validateApplicantAddress, ...validateApplicantPrevAddress ]

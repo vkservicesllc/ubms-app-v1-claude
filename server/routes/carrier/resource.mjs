@@ -120,7 +120,7 @@ router.post('/driver/application/:formId/edit/:step',
             const { formId, step } = req.params
             const application = await Application.data(res.session, { formId })
             if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
-    
+
             const { error } = await application.modify(res.session, step, req.body)
             if (error) return throwErr.server(res, error)
 

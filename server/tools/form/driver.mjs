@@ -229,11 +229,15 @@ class ApplicationForm {
         target: 'status',
         type: 'select/radio',
         name: 'status',
-        data: { '0': 'US Citizen', '1': 'Permanent Resident', '2': 'Work Authorization/Visa' },
+        data: Application.legalStatusList,
         keys: [ 'citizen', 'resident', 'authorized' ],
         required,
         disabled,
         label: 'Immigration Status',
+        validator: {
+            rule: 'numeric',
+            sanitizer: value => +value,
+        },
     })
 
     static statusExp = createDateForm({

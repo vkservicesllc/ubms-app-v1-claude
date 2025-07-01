@@ -252,7 +252,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.steps[6] = 'Pre-Employments'
         if (application.position[0] === 'OO') hbs.steps[8] = 'Business / Vehicle'
 
-        let options = {}, dropdown = {}, t = `\t`.repeat(12)
+        let options = {}, dropdown = {}, t = `\t`.repeat(11)
 
         /* PROFILE */
         {
@@ -274,6 +274,15 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
             for (const state in Address.stateList)
                 dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+        }
+
+        /* LEGAL STATUS */
+        {
+            dropdown.status = ''
+            options.status = { hidden: { input: { disabled: false } } }
+
+            for (const status in Application.legalStatusList)
+                dropdown.status += `\n${t}<div class="item" data-value="${status}">${Application.legalStatusList[status]}</div>`
         }
 
         /* BENEFICIARY */

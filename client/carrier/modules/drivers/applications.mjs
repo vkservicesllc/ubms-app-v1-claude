@@ -76,7 +76,7 @@ const table = $('#driver-apl-table').DataTable({
 
                 if (row.marital === 'm') {
                     let { sex, benefRelation, benefOtherRel } = row
-console.log({ sex, benefRelation, benefOtherRel })
+
                     if (benefRelation) benefRelation = benefRelation.toLowerCase().trim()
                     if (benefOtherRel) benefOtherRel.toLowerCase().trim()
 
