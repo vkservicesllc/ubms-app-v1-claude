@@ -224,6 +224,23 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             if (user) hbs.recruiter = user.name
         }
 
+        const recUrl = `/resource/drivers/application/${formId}/e-form`
+        hbs.actionUrl = {
+            profile: `${recUrl}/profile`,
+            address: `${recUrl}/address`,
+            status: `${recUrl}/legal-status`,
+            dl: `${recUrl}/driver-license`,
+            mec: `${recUrl}/medical-card`,
+            legal: `${recUrl}/legal-compliance`,
+            safety: `${recUrl}/safety`,
+            experience: `${recUrl}/experience`,
+            preEmployment: `${recUrl}/pre-employment`,
+            preference: `${recUrl}/preference`,
+            business: `${recUrl}/business`,
+            beneficiary: `${recUrl}/beneficiary`,
+            misc: `${recUrl}/misc`,
+        }
+
         hbs._id = application._id
         hbs.formId = formId
         hbs.position = application.position[1]

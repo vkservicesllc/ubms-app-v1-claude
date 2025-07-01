@@ -2,7 +2,7 @@ import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import application, { dropdownEvent } from './hub.mjs'
+import application, { dropdownEvent, errorMessage } from './hub.mjs'
 
 
 (() => {
@@ -23,6 +23,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const $calendar = {
         dob: $('#dob-calendar'),
     }
+    const $form = $('#profile-form')
 
     dropdownEvent($dropdown)
 
@@ -35,14 +36,29 @@ import application, { dropdownEvent } from './hub.mjs'
 
     if (marital === 'm') {
         const locked = ['husband', 'wife', 'spouse']
+        const message = "The applicant's gender must align with the selected beneficiary relationship"
+        const list = [`Applicant's Gender: ${gender[1]}`, `Beneficiary Relationship: ${otherRel || relation}`]
+        const $errorMsg = errorMessage('Logical Error', message, list)
+
         relation = relation.toLowerCase().trim()
         if (otherRel) otherRel = otherRel.toLowerCase().trim()
 
         if (locked.includes(relation) || locked.includes(otherRel))
             $dropdown.marital[0].parent().addClass('disabled')
 
+
         if (relation === locked[0] || otherRel === locked[0]) {
-            //
+            if (gender[0] === 'F') disableGender()
+            else $form.after($errorMsg)
+        }
+
+        if (relation === locked[1] || otherRel === locked[1]) {
+            if (gender[0] === 'M') disableGender()
+            else $form.after($errorMsg)
+        }
+
+        function disableGender() {
+            $dropdown.gender[0].parent().addClass('disabled')
         }
     }
 

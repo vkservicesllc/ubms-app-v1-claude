@@ -1699,7 +1699,8 @@ class Application {
                     })
 
                 query
-                    .leftJoin(`${db.carrier}.application_DLs AS adl`, 'adl.aplId', 'apl.id')
+                    .leftJoin(`${db.carrier}.application_DLs AS dl`, 'dl.aplId', 'apl.id')
+                    .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.aplId', 'apl.id')
                     .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
                     .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
                     .leftJoin(
@@ -1731,7 +1732,10 @@ class Application {
                     'apl.email',
                     'apl.phone',
                     'apl.state',
-                    'adl.state as dlState',
+                    'apl.marital',
+                    'dl.state as dlState',
+                    'benef.relation as benefRelation',
+                    'benef.otherRel as benefOtherRel',
                     'cnm.busName',
                     'cnm.coType',
                     'cnm.alias AS companyAlias',
