@@ -249,7 +249,7 @@ export const applicationProgress = async (req, res) => {
             hbs.accordion[ct] = accordionProps.pending
         }
 
-        const scrollAttr = ' id="scroll-point"'
+        const scrollAttr = ' data-scroll-point="#"'
         hbs.scrollPoint = {}
 
         let options = {
@@ -311,6 +311,8 @@ export const applicationProgress = async (req, res) => {
                 options.livedAbroad.radio.no.input.checked = application.address.livedAbroad === false
 
                 values.country = application.address.country
+
+                if (application.address.livedAbroad === null) hbs.scrollPoint.priorAddr = scrollAttr
             }
 
             updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 13 })
@@ -392,8 +394,8 @@ export const applicationProgress = async (req, res) => {
             hbs.medListDisplay = ' style="display: none;"'
 
             const values = {
-                mecIss: application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('MM/DD/YYYY') : null,
                 mecExp: application?.mec?.expiresOn ? moment(application.mec.expiresOn).format('MM/DD/YYYY') : null,
+                mecIss: application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('MM/DD/YYYY') : null,
                 mecNumber: application?.mec?.nrcme,
                 medList: application.medList,
             }
@@ -422,6 +424,8 @@ export const applicationProgress = async (req, res) => {
                 options.medList.text.input.disabled = false
                 hbs.medListDisplay = ''
             }
+
+            if (application.underMeds === null) hbs.scrollPoint.mec = scrollAttr
         }
 
         if (step >= 3) { /* LEGAL COMPLIANCE */
@@ -475,6 +479,8 @@ export const applicationProgress = async (req, res) => {
 
             const fields = ['_citReason', '_citOtherReason', '_citDate', '_citState']
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
+
+            if (application.citations === null) hbs.scrollPoint.legal = scrollAttr
         }
 
         if (step >= 4) { /* SAFETY */
@@ -502,6 +508,8 @@ export const applicationProgress = async (req, res) => {
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
             options._accInjuries.radio.label = { class: labelClassRequired }
             options._accFatalities.radio.label = { class: labelClassRequired }
+
+            if (application.accidents === null) hbs.scrollPoint.safety = scrollAttr
         }
 
         if (step >= 5) { /* DRIVING EXPERIENCE */
@@ -606,6 +614,7 @@ export const applicationProgress = async (req, res) => {
             if (application?.experience?.cdlSchool === true) hbs.schoolDisplay = ''
             if (application?.experience?.cmv === false) hbs.cmvExpDisplay = ' style="display: none;"'
 
+            if (application.experience === null) hbs.scrollPoint.experience = scrollAttr
         }
 
         if (step >= 6) { /* PREVIOUS EMPLOYMENT */
@@ -633,6 +642,8 @@ export const applicationProgress = async (req, res) => {
             ]
             options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
             options._emplAddrState.select.input.options = { valOpt: true }
+
+            if (application.prevEmployed === null) hbs.scrollPoint.employment = scrollAttr
         }
 
         if (step >= 7) { /* DRIVING PREFERENCES */
@@ -672,6 +683,8 @@ export const applicationProgress = async (req, res) => {
                 options.teamName.text.input.disabled = false
                 options.teamPhone.text.input.disabled = false
             }
+
+            if (!application?.preference?.startPref) hbs.scrollPoint.preference = scrollAttr
         }
 
         if (step >= 8) { /* BUSINESS / OWNERSHIP */
@@ -773,6 +786,8 @@ export const applicationProgress = async (req, res) => {
                     }
                 }
             }
+
+            if (application.activeBusiness === null) hbs.scrollPoint.business = scrollAttr
         }
 
         if (step >= 9) { /* BENEFICIARY */
@@ -821,6 +836,8 @@ export const applicationProgress = async (req, res) => {
                     delete relationData['Immediate In-Law']
             }
             options.benefRelation.select.input.data = relationData
+
+            if (!application.beneficiary) hbs.scrollPoint.beneficiary = scrollAttr
         }
 
         if (step >= 10) { /* MISC */
@@ -833,6 +850,8 @@ export const applicationProgress = async (req, res) => {
                 emergRelation: application?.emergency?.relation,
             }
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
+
+            if (!application.emergency) hbs.scrollPoint.misc = scrollAttr
         }
 
         if (step >= 11) {
