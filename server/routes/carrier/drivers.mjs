@@ -208,7 +208,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-        const { _carrierId, _userId } = application
+        const { _carrierId, _userId, deptId } = application
 
         if (_carrierId) {
             hbs.carrier = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch carrier</span>'
@@ -229,6 +229,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             profile: `${recUrl}/profile`,
             address: `${recUrl}/address`,
             status: `${recUrl}/legal-status`,
+            position: `${recUrl}/position`,
             dl: `${recUrl}/driver-license`,
             mec: `${recUrl}/medical-card`,
             legal: `${recUrl}/legal-compliance`,
@@ -243,6 +244,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         hbs._id = application._id
         hbs.formId = formId
+        hbs.deptId = deptId
         hbs.position = application.position[1]
         hbs.applicant = new Person(application).fullName('FMLs') + ` <small>(${calculateYearAge(application.dob)})</small>`
         // hbs.status = { '0': 'US Citizen', '1': 'Permanent Resident', '2': 'Work Authorization/Visa' }[application.legalStatus[0]]
@@ -250,7 +252,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.finishedAt = moment(application.finishedAt).format('lll')
         hbs.steps = [ ...Application.stepList ]
         hbs.steps[6] = 'Pre-Employments'
-        if (application.position[0] === 'OO') hbs.steps[8] = 'Business / Vehicle'
+        // if (application.position[0] === 'OO') hbs.steps[8] = 'Business / Vehicle'
 
         let options = {}, dropdown = {}, t = `\t`.repeat(11)
 
@@ -283,6 +285,20 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
             for (const status in Application.legalStatusList)
                 dropdown.status += `\n${t}<div class="item" data-value="${status}">${Application.legalStatusList[status]}</div>`
+        }
+
+        /* POSITION */
+        {
+            const driverPositions = team.list.drivers.positions
+            dropdown.position = ''
+            dropdown.vehicleType = ''
+
+            const vhlTypeData = Application.vhlTypeList[['truckLoad', 'expedite'][deptId]]
+console.log(vhlTypeData)
+            for (const pos in driverPositions)
+                dropdown.position += `\n${t}<div class="item" data-value="${pos}">${driverPositions[pos]}</div>`
+            for (const type in vhlTypeData)
+                dropdown.vehicleType += `\n${t}\t<div class="item" data-value="${type}">${vhlTypeData[type]}</div>`
         }
 
         /* BENEFICIARY */
