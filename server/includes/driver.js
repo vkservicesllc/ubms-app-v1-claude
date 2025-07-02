@@ -33,7 +33,7 @@ module.exports = {
             'imask', 'font-awesome', 'moment' ],
         internal: {
             css: [ ...defaults.internal.css, 'bootstrap.form', 'application' ],
-            js: [ ...defaults.internal.js, '^application', 'session.keep-alive' ],
+            js: [ ...defaults.internal.js, '^application', 'session.keep-alive', '^application/scroller' ],
             mjs: [ ...defaults.internal.mjs ],
         },
     },

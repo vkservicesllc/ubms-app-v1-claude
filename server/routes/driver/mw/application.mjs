@@ -249,6 +249,9 @@ export const applicationProgress = async (req, res) => {
             hbs.accordion[ct] = accordionProps.pending
         }
 
+        const scrollAttr = ' id="scroll-point"'
+        hbs.scrollPoint = {}
+
         let options = {
             appliedOn: {
                 hidden: {
@@ -377,6 +380,8 @@ export const applicationProgress = async (req, res) => {
             options.dlRevoked.radio.no.input.checked = application?.dl?.revoked === false
             if (values.dlDeniedExpl) options.dlDeniedExpl.text.input.disabled = false
             if (values.dlRevokedExpl) options.dlRevokedExpl.text.input.disabled = false
+
+            if (!values.dlState) hbs.scrollPoint.dl = scrollAttr
         }
 
         if (step >= 2) { /* MEDICAL CARD */

@@ -1293,6 +1293,8 @@ class Application {
         if (selfAssign) url += `&rec=${user._simpleId}`
         //! No department yet
 
+        if (email.split('@')[1] === 'bogus.xyz') email = senderParams.email
+
         const options = {
             from,
             to: email,
@@ -1370,7 +1372,8 @@ class Application {
             application = await Application.data(session, { id })
 
             const { carrierId } = data
-            const { fullName, email, formId } = application
+            const { fullName, formId } = application
+            let { email } = application
             let { from } = senderParams
             let companyName
 
@@ -1385,6 +1388,8 @@ class Application {
                 companyName = team.profile.company
 
             if (companyName) from = `"${companyName}" <${senderParams.email}>`
+
+            if (email.split('@')[1] === 'bogus.xyz') email = senderParams.email
 
             const options = {
                 from,
