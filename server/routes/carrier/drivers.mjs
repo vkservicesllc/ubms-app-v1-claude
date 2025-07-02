@@ -19,7 +19,7 @@ import { navBuilder } from './tools.mjs'
 
 /* Forms */
 import { updateFormOptions } from '../../tools/form/builder.mjs'
-import DriverForm, { ApplicationForm } from '../../tools/form/driver.mjs'
+import DriverForm, { ApplicationForm, currentExpediteVhlMMTData } from '../../tools/form/driver.mjs'
 
 
 
@@ -293,12 +293,24 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             dropdown.position = ''
             dropdown.vehicleType = ''
 
-            const vhlTypeData = Application.vhlTypeList[['truckLoad', 'expedite'][deptId]]
-console.log(vhlTypeData)
+            const typeData = Application.vhlTypeList[['truckLoad', 'expedite'][deptId]]
+
             for (const pos in driverPositions)
                 dropdown.position += `\n${t}<div class="item" data-value="${pos}">${driverPositions[pos]}</div>`
-            for (const type in vhlTypeData)
-                dropdown.vehicleType += `\n${t}\t<div class="item" data-value="${type}">${vhlTypeData[type]}</div>`
+            for (const type in typeData)
+                dropdown.vehicleType += `\n${t}\t<div class="item" data-value="${type}">${typeData[type]}</div>`
+
+            if (deptId === 1) {
+                const mmtData = currentExpediteVhlMMTData()
+                dropdown.vehicleMMT = ''
+console.log(mmtData)
+                for (const group in mmtData) {
+                    dropdown.vehicleMMT += `\n${t}\t<div class="header"><span class="ui blue text">${group}:</span></div>`
+
+                    for (const mmt in mmtData[group])
+                        dropdown.vehicleMMT += `\n${t}\t<div class="item" data-value="${mmt}">${mmtData[group][mmt]}</div>`
+                }
+            }
         }
 
         /* BENEFICIARY */

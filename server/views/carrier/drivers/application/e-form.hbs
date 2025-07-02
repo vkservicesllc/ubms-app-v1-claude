@@ -232,6 +232,19 @@
                                     </div>
                                     <div class="one wide field"></div>
                                     {{/if}}
+                                    {{#if (eq deptId 1)}}
+                                    <div class="five wide field">
+                                        {{{form.currentVhlMMT.select.label}}}
+                                        <div class="ui fluid selection required dropdown" id="vehicle-type-dropdown">
+                                            {{{form.currentVhlMMT.hidden.input}}}
+                                            <i class="dropdown icon"></i>
+                                            <div class="default text"></div>
+                                            <div class="menu">{{{dropdown.vehicleMMT}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="one wide field"></div>
+                                    {{/if}}
                                 </div>
                             </div>
                             <div class="ui divider"></div>
