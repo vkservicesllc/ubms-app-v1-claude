@@ -764,7 +764,6 @@ export const applicationProgress = async (req, res) => {
                 options.currentVhlType.select.input.data = vhlTypeData
 
                 if (application.deptId === 1) {
-                    
                     if (values.currentVhlMMT !== 'other') {
                         options.currentVhlType.select.input.disabled = true
                         options.currentVhlMake.text.input.disabled = true
@@ -774,16 +773,7 @@ export const applicationProgress = async (req, res) => {
                     if (values.currentVhlType !== 'straightBox')
                         options.currentVhlLen.select.input.disabled = true
 
-                    options.currentVhlLen.select.input.data = { //? Temporary data (until other type require lengths as well)
-                        //! Box Truck Only for now
-                        '10': '10 ft (Small)',
-                        '12': '12 ft (Medium-Small)',
-                        '14': '14 ft (Medium)',
-                        '16': '16 ft (Mid-Large)',
-                        '20': '20 ft (Large)',
-                        '24': '24 ft (Extra Large)',
-                        '26': '26 ft (Heavy Duty)',
-                    }
+                    options.currentVhlLen.select.input.data = Application.vhlLengthList.straightBox
                 }
             }
 

@@ -1,4 +1,4 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { selectEvent } from '/modules/events/form.mjs'
 import { makeEvent, modelEvent } from '/modules/events/vehicle.mjs'
 import { onInput, onChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'

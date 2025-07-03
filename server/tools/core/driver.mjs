@@ -1260,6 +1260,18 @@ class Application {
         },
     }
 
+    static vhlLengthList = {
+        straightBox: {
+            '10': '10 ft (Small)',
+            '12': '12 ft (Medium-Small)',
+            '14': '14 ft (Medium)',
+            '16': '16 ft (Mid-Large)',
+            '20': '20 ft (Large)',
+            '24': '24 ft (Extra Large)',
+            '26': '26 ft (Heavy Duty)',
+        },
+    }
+
 
     static #algorithm = 'SHA-224'
 

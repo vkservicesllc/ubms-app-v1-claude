@@ -647,6 +647,7 @@ class ApplicationForm {
     static expMileage = createForm({
         selector: appSelector,
         target: 'expMileage',
+        mode: 'numeric',
         name: 'mileage',
         maxLength: 7,
         required,
@@ -819,6 +820,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'emplEarnings',
         group: 'emplEarnings',
+        mode: 'numeric',
         name: 'earnings[]',
         maxLength: 4,
         required,
@@ -1230,7 +1232,7 @@ export function currentExpediteVhlMMTData() {
 }
 
 
-function descYears() {
+export function descYears() {
     const year = new Date().getFullYear() + 1
     const list = {}
 

@@ -19,7 +19,7 @@ import { navBuilder } from './tools.mjs'
 
 /* Forms */
 import { updateFormOptions } from '../../tools/form/builder.mjs'
-import DriverForm, { ApplicationForm, currentExpediteVhlMMTData } from '../../tools/form/driver.mjs'
+import DriverForm, { ApplicationForm, currentExpediteVhlMMTData, descYears } from '../../tools/form/driver.mjs'
 
 
 
@@ -302,13 +302,25 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
             if (deptId === 1) {
                 const mmtData = currentExpediteVhlMMTData()
+                const yearData = descYears()
+                const lenData = Application.vhlLengthList.straightBox
                 dropdown.vehicleMMT = ''
-console.log(mmtData)
+                dropdown.vehicleYear = ''
+                dropdown.vehicleLength = ''
+
                 for (const group in mmtData) {
                     dropdown.vehicleMMT += `\n${t}\t<div class="header"><span class="ui blue text">${group}:</span></div>`
 
                     for (const mmt in mmtData[group])
                         dropdown.vehicleMMT += `\n${t}\t<div class="item" data-value="${mmt}">${mmtData[group][mmt]}</div>`
+                }
+
+                for (const year in yearData)
+                    dropdown.vehicleYear += `\n${t}\t<div class="item" data-value="${year}">${yearData[year]}</div>`
+
+                for (const len in lenData) {
+                    const option = lenData[len].replace('(', '<small><span class="ui text grey">(').replace(')', ')</span></small>')
+                    dropdown.vehicleLength += `\n${t}\t<div class="item" data-value="${len}">${option}</div>`
                 }
             }
         }

@@ -10,6 +10,7 @@ export const makeEvent = (id, options = {}) => {
     inputEvent(id, {
         strip: true,
         word: true,
+        value,
         onInput(make, $make) {
             make = capitalizeEach(make)
             make = patterns.replace(make, 'vhlMake')

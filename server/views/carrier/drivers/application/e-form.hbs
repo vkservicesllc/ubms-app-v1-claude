@@ -62,10 +62,10 @@
         <div class="ui grid" style="width: 1080px;">
             <div class="three wide left attached column">
                 <div class="ui vertical fluid tabular menu">
-                    <a class="item" data-tab="profile">{{idx (idx steps 0) 0}}</a>
+                    <a class="item active" data-tab="profile">{{idx (idx steps 0) 0}}</a>
                     <a class="item disabled" data-tab="residence">{{idx (idx steps 0) 1}}</a>
                     <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
-                    <a class="item active" data-tab="position">{{idx (idx steps 0) 3}}</a>
+                    <a class="item disabled" data-tab="position">{{idx (idx steps 0) 3}}</a>
                     <a class="item disabled" data-tab="dl">{{idx steps 1}}</a>
                     <a class="item disabled" data-tab="mec">{{idx steps 2}}</a>
                     <a class="item disabled" data-tab="legal">{{idx steps 3}}</a>
@@ -82,7 +82,7 @@
                 <div class="ui seamless right attached segment" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
-                    <div class="ui tab" data-tab="profile">
+                    <div class="ui active tab" data-tab="profile">
                         <form class="ui loading form" id="profile-form" action="{{actionUrl.profile}}" method="POST">
                             <h5 class="ui blue text first header">Legal Name</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -201,7 +201,7 @@
                         </form>
                     </div>
 
-                    <div class="ui active tab" data-tab="position">
+                    <div class="ui tab" data-tab="position">
                         <form class="ui loading form" id="position-form" action="{{actionUrl.position}}" method="POST">
                             <h5 class="ui blue text first header">Desired Position</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -414,7 +414,12 @@
         </div>
         <script>$('.menu .item').tab()</script>
         <script type="module" src="/modules/drivers/application/legal-status.mjs"></script>
-        <script type="module" src="/modules/drivers/application/position.mjs"></script>
+        {{#if (eq deptId 0)}}
+        <script type="module" src="/modules/drivers/application/position.truck-load.mjs"></script>
+        {{/if}}
+        {{#if (eq deptId 1)}}
+        <script type="module" src="/modules/drivers/application/position.expedite.mjs"></script>
+        {{/if}}
         <script type="module" src="/modules/drivers/application/beneficiary.mjs"></script>
         <script type="module" src="/modules/drivers/application/misc.mjs"></script>
         <script type="module" src="/modules/drivers/application/profile.mjs"></script>
