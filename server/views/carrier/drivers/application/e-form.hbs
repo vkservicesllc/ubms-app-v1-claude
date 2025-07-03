@@ -218,8 +218,8 @@
                             </div>
                             <div id="vehicle-section">
                                 <h5 class="ui blue text header">Motor Vehicle</h5>
+                                {{#if (eq deptId 0)}}
                                 <div class="ui compact grid" style="margin-top: 5px;">
-                                    {{#if (eq deptId 0)}}
                                     <div class="four wide field">
                                         {{{form.currentVhlType.select.label}}}
                                         <div class="ui fluid selection required dropdown" id="vehicle-type-dropdown">
@@ -231,11 +231,13 @@
                                         </div>
                                     </div>
                                     <div class="one wide field"></div>
-                                    {{/if}}
-                                    {{#if (eq deptId 1)}}
+                                </div>
+                                {{/if}}
+                                {{#if (eq deptId 1)}}
+                                <div class="ui compact grid" style="margin-top: 5px;">
                                     <div class="five wide field">
                                         {{{form.currentVhlMMT.select.label}}}
-                                        <div class="ui fluid selection required dropdown" id="vehicle-type-dropdown">
+                                        <div class="ui fluid selection required dropdown" id="vehicle-mmt-dropdown">
                                             {{{form.currentVhlMMT.hidden.input}}}
                                             <i class="dropdown icon"></i>
                                             <div class="default text"></div>
@@ -243,9 +245,48 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="one wide field"></div>
-                                    {{/if}}
+                                    <div class="three wide field">
+                                        {{{form.currentVhlYear.select.label}}}
+                                        <div class="ui fluid selection required dropdown" id="vehicle-year-dropdown">
+                                            {{{form.currentVhlYear.hidden.input}}}
+                                            <i class="dropdown icon"></i>
+                                            <div class="default text"></div>
+                                            <div class="menu">{{{dropdown.vehicleYear}}}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="ui compact grid" style="margin-top: 5px;">
+                                    <div class="four wide field">
+                                        {{{form.currentVhlType.select.label}}}
+                                        <div class="ui fluid selection required dropdown" id="vehicle-type-dropdown">
+                                            {{{form.currentVhlType.hidden.input}}}
+                                            <i class="dropdown icon"></i>
+                                            <div class="default text"></div>
+                                            <div class="menu">{{{dropdown.vehicleType}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.currentVhlMake.text.label}}}
+                                        {{{form.currentVhlMake.text.input}}}
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.currentVhlModel.text.label}}}
+                                        {{{form.currentVhlModel.text.input}}}
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.currentVhlLen.select.label}}}
+                                        <div class="ui fluid selection required dropdown" id="vehicle-length-dropdown">
+                                            {{{form.currentVhlLen.hidden.input}}}
+                                            <i class="dropdown icon"></i>
+                                            <div class="default text"></div>
+                                            <div class="menu">{{{dropdown.vehicleLength}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{/if}}
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
