@@ -12,6 +12,15 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
     const vehicle = application.vehicle || {}
     const { mmt, length } = vehicle
     let { year, type, make, model } = vehicle
+    const $vehicle = $('#vehicle-section')
+
+    if (mmt) {
+        if (mmt === 'other') {
+            //
+        }
+
+        $vehicle.show()
+    } else $vehicle.find('input').prop('disabled', true)
 
     if (year) year = `:${year}`
     if (mmt && mmt !== 'other') [ type, make, model ] = mmt.split(':')

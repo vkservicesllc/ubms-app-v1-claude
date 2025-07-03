@@ -5,6 +5,10 @@ import application, { dropdownEvent } from './hub.mjs'
     if (!application || !Object.keys(application).length) return
 
     const { position, vehicle } = application
+    const $vehicle = $('#vehicle-section')
+
+    if (vehicle?.type) $vehicle.show()
+    else $vehicle.find('input').prop('disabled', true)
 
     const $dropdown = {
         position: [
@@ -18,12 +22,12 @@ import application, { dropdownEvent } from './hub.mjs'
                     action = 'show'
                 }
 
-                //
+                $vehicle[action]().find('input').prop('disabled', disabled)
             },
         ],
         vehicleType: [
             $('#vehicle-type-dropdown'),
-            vehicle.type,
+            vehicle?.type,
         ],
     }
 
