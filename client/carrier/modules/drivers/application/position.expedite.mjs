@@ -6,21 +6,13 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const TS = selector.id.text
+    const TS = selector.id.text, TH = selector.id.hidden
 
     const { position } = application
     const vehicle = application.vehicle || {}
     const { mmt, length } = vehicle
     let { year, type, make, model } = vehicle
     const $vehicle = $('#vehicle-section')
-
-    if (mmt) {
-        if (mmt === 'other') {
-            //
-        }
-
-        $vehicle.show()
-    } else $vehicle.find('input').prop('disabled', true)
 
     if (year) year = `:${year}`
     if (mmt && mmt !== 'other') [ type, make, model ] = mmt.split(':')
@@ -71,8 +63,25 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
         ],
     }
 
+    if (mmt) {
+        if (mmt !== 'other') {
+            disabledDropdown('vehicleType')
+            $(TS.currentVhlMake).parent().addClass('disabled')
+            $(TS.currentVhlModel).parent().addClass('disabled')
+        }
+        if (type !== 'straightBox') disabledDropdown('vehicleLength').parent().hide()
+
+        $vehicle.show()
+    } else $vehicle.find('input').prop('disabled', true)
+
     dropdownEvent($dropdown)
 
     makeEvent(TS.currentVhlMake, { value: make })
     modelEvent(TS.currentVhlModel, { value: model })
+
+    function disabledDropdown(prop) {
+        $dropdown[prop][0].parent().addClass('disabled').find('input').prop('disabled', true)
+
+        return $dropdown[prop][0]
+    }
 })()
