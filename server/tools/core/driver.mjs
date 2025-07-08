@@ -1885,24 +1885,32 @@ class Application {
             /* STEP 1: Set up Select, Join and Count Default States */
 
             const applyJoins = query => {
-                const subQuery = knex
+                const subQuery = (db, table, maxField, groupId) => knex
                     .select('*')
-                    .from(`${db.business}.company_names`)
-                    .whereIn('since', function() {
-                        this.select(knex.raw('MAX(since)'))
-                            .from(`${db.business}.company_names`)
-                            .groupBy('companyId')
+                    .from(`${db}.${table}`)
+                    .whereIn(maxField, function() {
+                        this.select(knex.raw(`MAX(${maxField})`))
+                            .from(`${db}.${table}`)
+                            .groupBy(groupId)
                     })
+
+                const nameSubQuery = subQuery(db.person, 'names', 'since', 'personId')
+                const companySubQuery = subQuery(db.business, 'company_names', 'since', 'companyId')
 
                 query
                     .leftJoin(`${db.carrier}.drivers as drv`, 'drv.id', 'apl.driverId')
-                    .leftJoin(`${db.person}.individuals as prn`, 'prn.id', 'drv.personId' )
+                    .leftJoin(`${db.person}.individuals as psn`, 'psn.id', 'drv.personId')
+                    .leftJoin(
+                        knex.raw('? as nms', [ nameSubQuery ]),
+                        'nms.personId',
+                        'psn.id'
+                    )
                     .leftJoin(`${db.carrier}.application_DLs AS dl`, 'dl.aplId', 'apl.id')
                     .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.aplId', 'apl.id')
                     .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
                     .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
                     .leftJoin(
-                        knex.raw('? as cnm', [ subQuery ]),
+                        knex.raw('? as cnm', [ companySubQuery ]),
                         'cnm.companyId',
                         'cmp.id'
                     )
@@ -1932,8 +1940,12 @@ class Application {
                     'apl.phone',
                     'apl.state',
                     'apl.marital',
-                    'prn.dob AS originalDob',
-                    'prn.sex AS originalSex',
+                    'psn.dob AS originalDob',
+                    'psn.sex AS originalSex',
+                    'nms.firstName AS originalFirstName',
+                    'nms.middleName AS originalMiddleName',
+                    'nms.lastName AS originalLastName',
+                    'nms.suffix AS originalSuffix',
                     'dl.state AS dlState',
                     'benef.relation AS benefRelation',
                     'benef.otherRel AS benefOtherRel',

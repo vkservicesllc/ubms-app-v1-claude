@@ -8,7 +8,7 @@ const {
 
 const knex = require('knex')({
     client: 'mysql2',
-    connection: { host, user, password },
+    connection: { host, user, password, dateStrings: true },
 })
 
 module.exports = knex

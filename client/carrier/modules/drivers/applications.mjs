@@ -53,7 +53,7 @@ const table = $('#driver-apl-table').DataTable({
                 if (row.condition == 'p')
                     row.aplAddress = aplAddress + row.formId
             })
-
+console.log(data)
             return data
         },
     },
@@ -86,7 +86,16 @@ const table = $('#driver-apl-table').DataTable({
                             data += `<span title="Logical Error: Incorrect Gender"><i class="ui red text exclamation triangle icon"></i></span>`
                             break
                     }
-                }
+                } else if (row.dob !== row.originalDob || row.sex !== row.originalSex)
+                    data += `<span title="Identity Error: False DOB or Gender"><i class="ui red text exclamation triangle icon"></i></span>`
+
+                if (
+                    row.firstName !== row.originalFirstName ||
+                    row.middleName !== row.originalMiddleName ||
+                    row.lastName !== row.originalLastName ||
+                    row.suffix !== row.originalSuffix
+                )
+                    data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange text id badge outline icon"></i></span>`
 
                 return data
             },
@@ -109,7 +118,16 @@ const table = $('#driver-apl-table').DataTable({
             title: `Last Name ${searchTag}`,
             orderable: false,
             render(data, type, row) {
-                return escapeHTML(new Person(row).fullLastName())
+                data = escapeHTML(new Person(row).fullLastName())
+
+                const { originalLastName, originalSuffix } = row
+                if (row.lastName !== originalLastName || row.suffix !== originalSuffix) {
+                    const original = new Person({ ...row, lastName: originalLastName, suffix: originalSuffix })
+
+                    data += ` <small><span class="ui orange text">(${escapeHTML(original.fullLastName())})</span></small>`
+                }
+
+                return data
             },
         },
 
@@ -118,7 +136,16 @@ const table = $('#driver-apl-table').DataTable({
             title: `First Name ${searchTag}`,
             orderable: false,
             render(data, type, row) {
-                return escapeHTML(new Person(row).fullFirstName())
+                data = escapeHTML(new Person(row).fullFirstName())
+
+                const { originalFirstName, originalMiddleName } = row
+                if (row.firstName !== originalFirstName || row.middleName !== originalMiddleName) {
+                    const original = new Person({ ...row, firstName: originalFirstName, middleName: originalMiddleName })
+
+                    data += ` <small><span class="ui orange text">(${escapeHTML(original.fullFirstName())})</span></small>`
+                }
+
+                return data
             },
         },
 
