@@ -53,20 +53,7 @@ const query = {
 
 
 class Driver extends Individual {
-    constructor(data = {}) {
-        super(data, true)
-        if (!data?._id || !data?._personId || !Object.keys(this).length)
-            throw new Error('Driver instantiation failed: Invalid data')
-
-        const { _id, _personId } = data
-        const properties = {} //! add driver properties
-
-        reSuper(this, { _id, _personId }, properties)
-
-        this.id = async () => (await mysql.execute(query.drivers.select('id', {
-            match: { id: Driver.matchIdHash(this._id) },
-        })))[0][0].id
-    }
+    constructor(data = {}, light = false) {}
 
 
     static positionList = {
@@ -117,87 +104,6 @@ class Driver extends Individual {
     static matchIdHash = value => matchHash(value, Driver.#algorithm)
 
 
-    static create = async (session, data) => {
-        let created = false, id
-        const { user } = session
-
-        const { ssn } = data
-        let person = await Individual.data(session, { ssn })
-
-        if (!person) {
-            const result = await Individual.create(session, data)
-            person = result.data
-        }
-
-        const driverData = { personId: await person.id() }
-        if (user && user !== true)
-            driverData.createdBy = await user.id()
-
-        const [ result ] = await mysql.execute(query.drivers.insert(driverData))
-        if (result.affectedRows === 1) created = true
-        id = result.insertId
-
-        return { created, data: await Driver.data(session, { id })}
-    }
-
-
-    static data = async (session, params = {}) => {
-        if (!params._id && !params.id && !params._personId && !params.personId) return
-
-        const { _id, id, _personId, personId } = params
-        const match = { id, personId }
-        if (!id) match.id = Driver.matchIdHash(_id)
-        if (!personId) match.personId = Individual.matchIdHash(_personId)
-
-        const batch = !session.user
-            ? []
-            : [
-                {
-                    table: 'drivers',
-                    fields: [
-                        Driver.hashId(),
-                        Individual.hashId('personId'),
-                    ],
-                    match,
-                },
-                {
-                    db: db.person,
-                    table: 'individuals',
-                    fields: [ 'dob', 'sex', { aes: [ 'ssn', ssnSecret ] } ],
-                    join: [ 'id', 'personId' ],
-                },
-                {
-                    db: db.person,
-                    table: 'names',
-                    fields: [
-                        'firstName',
-                        'middleName',
-                        'lastName',
-                        'suffix',
-                    ],
-                    join: [ 'personId', 'id', {
-                        table: 'individuals',
-                        max: 'since',
-                    } ],
-                },
-                {
-                    db: db.person,
-                    table: 'phones',
-                    fields: [ [ 'number', 'phone' ] ],
-                    join: [ 'personId', 'id', {
-                        table: 'individuals',
-                        max: 'since',
-                    } ],
-                },
-                //! continue with driver licenses and other props
-            ]
-
-        const data = (await mysql.execute(Query.select(db.carrier, batch)))[0][0]
-
-        return !data ? data : new Driver(data)
-    }
-
-
 }
 
 
@@ -207,7 +113,6 @@ class Application {
         const { firstName, middleName, lastName, suffix } = data
 
         this._id = data._id
-        this._driverId = data._driverId
         this._teamId = data._teamId
         this._userId = data._userId
         this._carrierId = data._carrierId
@@ -422,7 +327,7 @@ class Application {
 
     log = async (field, target = 'applications') => {
         const fields = [ 'updateLog' ]
-        let idProp = 'aplId'
+        let idProp = 'appId'
 
         if (target === 'applications') {
             idProp = 'id'
@@ -496,7 +401,7 @@ class Application {
                 mainData = { ...data }
                 delete mainData.addresses
                 data = []
-                await mysql.execute(query.aplAddresses.delete({ aplId: id }))
+                await mysql.execute(query.aplAddresses.delete({ appId: id }))
 
                 mainData.addrEnough = addrEnough
 
@@ -511,14 +416,14 @@ class Application {
 
                 if (!addrEnough && !livedAbroad) {
                     target = 'aplAddresses'
-                    idProp = 'aplId'
+                    idProp = 'appId'
                     action = 'insert'
 
                     const { address1, address2, zip, city, state, since, livedAbroad } = addresses
                     const count = zip.length
                     for (let i = 0; i < count; i++) {
                         data.push({
-                            aplId: id,
+                            appId: id,
                             address1: address1[i],
                             address2: address2[i],
                             zip: zip[i],
@@ -553,7 +458,7 @@ class Application {
 
             case 'driver-license':
                 target = 'aplDLs'
-                idProp = 'aplId'
+                idProp = 'appId'
 
                 checkExpl = data => {
                     if (
@@ -567,7 +472,7 @@ class Application {
 
                 if (!this.dl) {
                     data = processData(data)
-                    data.aplId = id
+                    data.appId = id
                     mainData.step = 2
                     action = 'insert'
 
@@ -600,7 +505,7 @@ class Application {
 
             case 'medical-card':
                 target = 'aplMECs'
-                idProp = 'aplId'
+                idProp = 'appId'
 
                 if (data.underMeds && !data.medList)
                     error = 'Data Submission Error: Medical List not provided'
@@ -622,14 +527,14 @@ class Application {
                         if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
                         else {
                             data = processData(data)
-                            data.aplId = id
+                            data.appId = id
                             action = 'insert'
                         }
                     }
                 } else {
                     if (mainData.medCard === false) {
                         if (this.mec) {
-                            const [ result ] = await mysql.execute(query.aplMECs.delete({ aplId: id }))
+                            const [ result ] = await mysql.execute(query.aplMECs.delete({ appId: id }))
                             if (result.affectedRows !== 1) error = 'DB Error: Could not delete MEC record'
                         }
                     } else {
@@ -650,7 +555,7 @@ class Application {
                                 })
                             } else {
                                 data = processData(data)
-                                data.aplId = id
+                                data.appId = id
                                 action = 'insert'
                             }
                         }
@@ -689,7 +594,7 @@ class Application {
                 mainData.dotDat = data.dotDat
                 mainData.citations = citations
 
-                await mysql.execute(query.aplCitations.delete({ aplId: id }))
+                await mysql.execute(query.aplCitations.delete({ appId: id }))
 
                 const { violation, other: otherViolation, citedOn, state: citState  } = data
                 data = []
@@ -714,7 +619,7 @@ class Application {
 
                     for (let i = 0; i < count; i++) {
                         data.push({
-                            aplId: id,
+                            appId: id,
                             violation: violation[i],
                             other: violation[i] === 'other' ? otherViolation?.[i] : null,
                             citedOn: citedOn[i],
@@ -733,7 +638,7 @@ class Application {
                 const { accidents } = data
                 mainData.accidents = accidents
 
-                await mysql.execute(query.aplAccidents.delete({ aplId: id }))
+                await mysql.execute(query.aplAccidents.delete({ appId: id }))
 
                 const { collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = data
                 data = []
@@ -758,7 +663,7 @@ class Application {
 
                     for (let i = 0; i < count; i++) {
                         data.push({
-                            aplId: id,
+                            appId: id,
                             collision: collision[i],
                             other: collision[i] === 'other' ? otherCollision?.[i] : null,
                             date: accDate[i],
@@ -776,7 +681,7 @@ class Application {
                 target = 'aplExperiences'
                 action = 'insert' //! for now it is easier to delete and insert newly submitted experiences, `updateLog` is redundant at this point
 
-                await mysql.execute(query.aplExperiences.delete({ aplId: id }))
+                await mysql.execute(query.aplExperiences.delete({ appId: id }))
 
                 const experience = data.noExp !== true
                 mainData.experience = experience
@@ -811,7 +716,7 @@ class Application {
                     if (data.vehicles) data.vehicles = JSON.stringify(data.vehicles)
                     if (data.hours) data.hours = JSON.stringify(data.hours.map(value => +value))
 
-                    data.aplId = id
+                    data.appId = id
                 } else data = {}
 
                 break
@@ -824,7 +729,7 @@ class Application {
                 const { prevEmployed } = data
                 mainData.prevEmployed = prevEmployed
 
-                await (mysql.execute(query.aplEmployers.delete({ aplId: id })))
+                await (mysql.execute(query.aplEmployers.delete({ appId: id })))
 
                 const {
                     employer, phone, address1, address2, zip, city, state,
@@ -849,7 +754,7 @@ class Application {
 
                     for (let i = 0; i < count; i++)
                         data.push({
-                            aplId: id,
+                            appId: id,
                             employer: employer[i],
                             phone: phone[i],
                             address1: address1[i],
@@ -872,7 +777,7 @@ class Application {
 
             case 'preference':
                 target = 'aplPreferences'
-                idProp = 'aplId'
+                idProp = 'appId'
 
                 let { haulRegion, equipment } = data
                 delete data.haulRegion
@@ -888,7 +793,7 @@ class Application {
 
                 if (!this.preference) {
                     data = processData(data)
-                    data.aplId = id
+                    data.appId = id
                     mainData.step = 8
                     action = 'insert'
                 } else {
@@ -918,7 +823,7 @@ class Application {
 
             case 'business':
                 target = 'aplBusinesses'
-                idProp = 'aplId'
+                idProp = 'appId'
 
                 const { activeLLC, llcAssistance } = data
                 delete data.activeLLC
@@ -946,12 +851,12 @@ class Application {
 
                     action = 'insert'
                     data = processData(data)
-                    data.aplId = id
+                    data.appId = id
                     if (data.ein) data.ein = { aes: [ data.ein, einSecret ] }
 
                     if (target2) {
                         data2 = processData(data2)
-                        data2.aplId = id
+                        data2.appId = id
                     }
                 } else {
                     mainData = processData(mainData, {
@@ -1008,11 +913,11 @@ class Application {
 
             case 'beneficiary':
                 target = 'aplBeneficiaries'
-                idProp = 'aplId'
+                idProp = 'appId'
 
                 if (!this.beneficiary) {
                     data = processData(data)
-                    data.aplId = id
+                    data.appId = id
                     if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
                     mainData.step = 10
                     action = 'insert'
@@ -1034,11 +939,11 @@ class Application {
 
             case 'misc':
                 target = 'aplEmergencies'
-                idProp = 'aplId'
+                idProp = 'appId'
 
                 if (this.step < 11) {
                     data = processData(data)
-                    data.aplId = id
+                    data.appId = id
                     mainData.step = 11
                     action = 'insert'
                 } else {
@@ -1162,7 +1067,7 @@ class Application {
         if (error) return { error }
 
         let src, fields = []
-        const filter = { match: { aplId: await this.id() } }
+        const filter = { match: { appId: await this.id() } }
 
         switch (target) {
 
@@ -1444,36 +1349,14 @@ class Application {
         let created = false
 
         const { branch, siteId, user, team } = session
-        if (!user) session = { ...session, user: true }
         const createdIn = { branch }
         if (siteId) data.siteId = siteId
 
-        const { selfAssign, ssn } = data
+        const { selfAssign } = data
         delete data.selfAssign
 
         data = processData(data)
-
-        const person = await Individual.data(session, { ssn })
-        let driver
-
-        if (person) {
-            if (person.dob === data.dob) { // Individual confirmed via SSN and DOB
-                if (person.sex === null)
-                    await person.modify(session, { sex: data.sex })
-            }
-
-            driver = await Driver.data(session, { personId: await person.id() })
-            if (!driver) driver = await Driver.create(session, data)
-        } else
-            driver = await Driver.create(session, data)
-
-        if (!driver) return { created, error: 'DB Error: Failed to create Driver Entity' }
-console.log({ driver, idFunc: driver.id })
-        const driverId = await driver.id()
-console.log({ driverId })
-
-        data.driverId = driverId
-        data.ssn = { aes: [ ssn, ssnSecret ] }
+        data.ssn = { aes: [ data.ssn, ssnSecret ] }
         data.teamId = await team.id()
         if (user) {
             data.createdBy = await user.id()
@@ -1516,6 +1399,7 @@ console.log({ driverId })
             url = `/application/${formId}`
 
             if (carrierId) {
+                if (!user) session = { ...session, user: true }
                 const carrier = await Carrier.data(session, { id: carrierId })
 
                 if (carrier) companyName = carrier.name
@@ -1560,6 +1444,11 @@ console.log({ driverId })
         const match = { id, formId }
         if (!id) match.id = Application.matchIdHash(_id)
 
+        const join = [ 'personId', 'id', {
+            table: 'individuals',
+            max: [ 'since', { lessEq: [ { date: 'createdAt' }, 'applications' ] } ],
+        } ]
+
         const batch = [
             {
                 table: 'applications',
@@ -1571,31 +1460,34 @@ console.log({ driverId })
                     Carrier.hashId('carrierId'),
                     'deptId',
                     'formId',
+                    'position',
                     'condition',
                     'step',
+
                     'createdBy',
                     'createdAt',
                     'finishedAt',
-                    'status',
-                    'statusExpiresOn',
-                    'position',
-                    'firstName',
-                    'middleName',
-                    'lastName',
-                    'suffix',
-                    'dob',
-                    { aes: [ 'ssn', ssnSecret ] },
-                    'sex',
-                    'marital',
-                    'email',
-                    'phone',
+
+                    // 'status',
+                    // 'statusExpiresOn',
+                    // 'firstName',
+                    // 'middleName',
+                    // 'lastName',
+                    // 'suffix',
+                    // 'dob',
+                    // { aes: [ 'ssn', ssnSecret ] },
+                    // 'sex',
+                    // 'marital',
+
+                    // 'email',
+                    // 'phone',
                     'addrEnough', //? could be redundant
-                    'addrSince',
-                    'address1',
-                    'address2',
-                    'city',
-                    'state',
-                    'zip',
+                    // 'addrSince',
+                    // 'address1',
+                    // 'address2',
+                    // 'city',
+                    // 'state',
+                    // 'zip',
                     'livedAbroad',
                     'country',
                     'medCard',
@@ -1616,146 +1508,200 @@ console.log({ driverId })
                 match,
             },
             {
-                table: 'application_DLs',
-                fields: [
-                    [ 'commercial', 'dlCommercial' ],
-                    [ 'number', 'dlNumber' ],
-                    [ 'class', 'dlClass' ],
-                    [ 'state', 'dlState' ],
-                    [ 'issuedOn', 'dlIssuedOn' ],
-                    [ 'expiresOn', 'dlExpiresOn' ],
-                    [ 'endorsement', 'dlEndors' ],
-                    [ 'restriction', 'dlRestr' ],
-                    [ 'denied', 'dlDenied' ],
-                    [ 'deniedExpl', 'dlDeniedExpl' ],
-                    [ 'revoked', 'dlRevoked' ],
-                    [ 'revokedExpl', 'dlRevokedExpl' ],
+                table: 'driver',
+                fields: 'personId',
+                join: [ 'id', 'driverId' ],
+            },
+            {
+                db: db.person,
+                table: 'individuals',
+                fields: [ 'dob', 'sex', { aes: [ 'ssn', ssnSecret ] } ],
+                join: [ 'id', 'personId', 1 ],
+            },
+            {
+                db: db.person,
+                table: 'names',
+                fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
+                join,
+            },
+            {
+                db: db.person,
+                table: 'legal_presence',
+                fields: [ 'status', [ 'expiresOn', 'statusExpiresOn' ] ],
+                join,
+            },
+            {
+                db: db.person,
+                table: 'maritals',
+                fields: [ [ 'status', 'marital' ] ],
+                join,
+            },
+            {
+                db: db.person,
+                table: 'phones',
+                fields: [ [ 'number', 'phone' ] ],
+                join,
+            },
+            {
+                db: db.person,
+                table: 'emails',
+                fields: 'email',
+                join,
+            },
+            {
+                db: db.person,
+                table: 'addresses',
+                fields: [ 
+                    [ 'since', 'addrSince' ],
+                    'address1',
+                    'address2',
+                    'city',
+                    'state',
+                    'zip',
                 ],
-                join: [ 'aplId', 'id' ],
+                join,
             },
-            {
-                table: 'application_MECs',
-                fields: [
-                    'nrcme',
-                    [ 'issuedOn', 'mecIssuedOn' ],
-                    [ 'expiresOn', 'mecExpiresOn' ],
-                ],
-                join: [ 'aplId', 'id' ],
-            },
-            {
-                table: 'application_experiences',
-                fields: [
-                    [ 'cmv', 'cmvExp' ],
-                    [ 'vehicles', 'expVehicles' ],
-                    [ 'firstDate', 'expFirstDate' ],
-                    [ 'lastDate', 'expLastDate' ],
-                    [ 'mileage', 'expMileage' ],
-                    [ 'hours', 'expHours' ],
-                    'cdlSchool',
-                    'schName',
-                    'schPhone',
-                    'schState',
-                    'schEndDate',
-                    'schDuration',
-                ],
-                join: [ 'aplId', 'id' ],
-            },
-            {
-                table: 'application_preferences',
-                fields: [
-                    'operType',
-                    [ 'teamName', 'partnerName' ],
-                    [ 'teamPhone', 'partnerPhone' ],
-                    'haulRegion',
-                    [ 'equipment', 'equipmentType' ],
-                    'startPref',
-                ],
-                join: [ 'aplId', 'id' ],
-            },
-            {
-                table: 'application_businesses',
-                fields: [
-                    [ 'busName', 'ownBusName' ],
-                    [ 'state', 'busState' ],
-                    [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
-                    [ 'proposedName', 'proposedBusName' ],
-                ],
-                join: [ 'aplId', 'id' ],
-            },
-            {
-                table: 'application_vehicles',
-                fields: [
-                    [ 'mmt', 'vhlMmt' ],
-                    [ 'make', 'vhlMake' ],
-                    [ 'model', 'vhlModel' ],
-                    [ 'year', 'vhlYear' ],
-                    [ 'type', 'vhlType' ],
-                    [ 'length', 'vhlLength' ],
-                ],
-                join: [ 'aplId', 'id' ],
-            },
-            {
-                table: 'application_beneficiaries',
-                fields: [
-                    [ 'firstName', 'benefFirstName' ],
-                    [ 'middleName', 'benefMiddleName' ],
-                    [ 'lastName', 'benefLastName' ],
-                    [ 'suffix', 'benefSuffix' ],
-                    [ 'relation', 'benefRelation' ],
-                    [ 'otherRel', 'benefOtherRel' ],
-                    [ { aes: [ 'ssn', ssnSecret ] }, 'benefSsn' ],
-                    [ 'phone', 'benefPhone' ],
-                ],
-                join: [ 'aplId', 'id' ],
-            },
-            {
-                table: 'application_emergencies',
-                fields: [
-                    [ 'phone', 'emergPhone' ],
-                    [ 'name', 'emergName' ],
-                    [ 'relation', 'emergRelation' ],
-                ],
-                join: [ 'aplId', 'id' ],
-            },
-            {
-                table: 'carriers',
-                join: [ 'id', 'carrierId' ],
-            },
-            {
-                db: db.business,
-                table: 'companies',
-                join: [ 'id', 'companyId', 'carriers' ],
-            },
-            {
-                db: db.business,
-                table: 'company_names',
-                fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
-                join: [ 'companyId', 'id', { max: 'since', table: 'companies' } ],
-            },
-            {
-                db: db.online,
-                table: 'users',
-                fields: [
-                    [ 'firstName', 'userFirstName' ],
-                    [ 'lastName', 'userLastName' ],
-                    [ 'alias', 'userAlias' ],
-                    [ 'condition', 'userCondition' ],
-                    [ 'location', 'userLocation' ],
-                    [ 'deletedAt', 'userDeletedAt' ],
-                ],
-                join: [ 'id', 'userId' ],
-            },
-            {
-                db: db.business,
-                table: 'teams',
-                fields: [ [ 'name', 'teamName' ] ],
-                join: [ 'id', 'teamId' ],
-            },
+            // {
+            //     table: 'application_DLs',
+            //     fields: [
+            //         [ 'commercial', 'dlCommercial' ],
+            //         [ 'number', 'dlNumber' ],
+            //         [ 'class', 'dlClass' ],
+            //         [ 'state', 'dlState' ],
+            //         [ 'issuedOn', 'dlIssuedOn' ],
+            //         [ 'expiresOn', 'dlExpiresOn' ],
+            //         [ 'endorsement', 'dlEndors' ],
+            //         [ 'restriction', 'dlRestr' ],
+            //         [ 'denied', 'dlDenied' ],
+            //         [ 'deniedExpl', 'dlDeniedExpl' ],
+            //         [ 'revoked', 'dlRevoked' ],
+            //         [ 'revokedExpl', 'dlRevokedExpl' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_MECs',
+            //     fields: [
+            //         'nrcme',
+            //         [ 'issuedOn', 'mecIssuedOn' ],
+            //         [ 'expiresOn', 'mecExpiresOn' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_experiences',
+            //     fields: [
+            //         [ 'cmv', 'cmvExp' ],
+            //         [ 'vehicles', 'expVehicles' ],
+            //         [ 'firstDate', 'expFirstDate' ],
+            //         [ 'lastDate', 'expLastDate' ],
+            //         [ 'mileage', 'expMileage' ],
+            //         [ 'hours', 'expHours' ],
+            //         'cdlSchool',
+            //         'schName',
+            //         'schPhone',
+            //         'schState',
+            //         'schEndDate',
+            //         'schDuration',
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_preferences',
+            //     fields: [
+            //         'operType',
+            //         [ 'teamName', 'partnerName' ],
+            //         [ 'teamPhone', 'partnerPhone' ],
+            //         'haulRegion',
+            //         [ 'equipment', 'equipmentType' ],
+            //         'startPref',
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_businesses',
+            //     fields: [
+            //         [ 'busName', 'ownBusName' ],
+            //         [ 'state', 'busState' ],
+            //         [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
+            //         [ 'proposedName', 'proposedBusName' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_vehicles',
+            //     fields: [
+            //         [ 'mmt', 'vhlMmt' ],
+            //         [ 'make', 'vhlMake' ],
+            //         [ 'model', 'vhlModel' ],
+            //         [ 'year', 'vhlYear' ],
+            //         [ 'type', 'vhlType' ],
+            //         [ 'length', 'vhlLength' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_beneficiaries',
+            //     fields: [
+            //         [ 'firstName', 'benefFirstName' ],
+            //         [ 'middleName', 'benefMiddleName' ],
+            //         [ 'lastName', 'benefLastName' ],
+            //         [ 'suffix', 'benefSuffix' ],
+            //         [ 'relation', 'benefRelation' ],
+            //         [ 'otherRel', 'benefOtherRel' ],
+            //         [ { aes: [ 'ssn', ssnSecret ] }, 'benefSsn' ],
+            //         [ 'phone', 'benefPhone' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_emergencies',
+            //     fields: [
+            //         [ 'phone', 'emergPhone' ],
+            //         [ 'name', 'emergName' ],
+            //         [ 'relation', 'emergRelation' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'carriers',
+            //     join: [ 'id', 'carrierId' ],
+            // },
+            // {
+            //     db: db.business,
+            //     table: 'companies',
+            //     join: [ 'id', 'companyId', 'carriers' ],
+            // },
+            // {
+            //     db: db.business,
+            //     table: 'company_names',
+            //     fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
+            //     join: [ 'companyId', 'id', { max: 'since', table: 'companies' } ],
+            // },
+            // {
+            //     db: db.online,
+            //     table: 'users',
+            //     fields: [
+            //         [ 'firstName', 'userFirstName' ],
+            //         [ 'lastName', 'userLastName' ],
+            //         [ 'alias', 'userAlias' ],
+            //         [ 'condition', 'userCondition' ],
+            //         [ 'location', 'userLocation' ],
+            //         [ 'deletedAt', 'userDeletedAt' ],
+            //     ],
+            //     join: [ 'id', 'userId' ],
+            // },
+            // {
+            //     db: db.business,
+            //     table: 'teams',
+            //     fields: [ [ 'name', 'teamName' ] ],
+            //     join: [ 'id', 'teamId' ],
+            // },
         ]
+console.log(Query.select(db.carrier, batch))
+        // const data = (await mysql.execute(Query.select(db.carrier, batch)))[0][0]
 
-        const data = (await mysql.execute(Query.select(db.carrier, batch)))[0][0]
-
-        return !data ? data : new Application(data)
+        // return !data ? data : new Application(data)
     }
 
 
@@ -1842,51 +1788,61 @@ console.log({ driverId })
             /* STEP 1: Set up Select, Join and Count Default States */
 
             const applyJoins = query => {
-                const subQuery = knex
+                const subQuery = (db, table, maxField = 'since', groupId = 'personId') => knex
                     .select('*')
-                    .from(`${db.business}.company_names`)
-                    .whereIn('since', function() {
-                        this.select(knex.raw('MAX(since)'))
-                            .from(`${db.business}.company_names`)
-                            .groupBy('companyId')
+                    .from(`${db}.${table}`)
+                    .whereIn(maxField, function() {
+                        this.select(knex.raw(`MAX(${maxField})`))
+                            .from(`${db}.${table}`)
+                            .groupBy(groupId)
                     })
 
+                const nameSubQuery = subQuery(db.person, 'names')
+                const dlSubQuery = subQuery(db.person, 'identifications', 'issuedOn')
+                const phoneSubQuery = subQuery(db.person, 'phones')
+                const emailSubQuery = subQuery(db.person, 'emails')
+                const addressSubQuery = subQuery(db.person, 'addresses')
+                const maritalSubQuery = subQuery(db.person, 'maritals')
+                const companySubQuery = subQuery(db.business, 'company_names', 'since', 'companyId')
+
                 query
-                    .leftJoin(`${db.carrier}.application_DLs AS dl`, 'dl.aplId', 'apl.id')
-                    .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.aplId', 'apl.id')
+                    .leftJoin(`${db.carrier}.drivers AS drv`, 'drv.id', 'apl.driverId')
+                    .leftJoin(`${db.person}.individuals as ind`, 'ind.id', 'drv.personId')
+                    .leftJoin(knex.raw('? as nms', [ nameSubQuery ]), 'nms.personId', 'ind.id')
+                    .leftJoin(knex.raw('? as dl', [ dlSubQuery ]), 'dl.personId', 'ind.id')
+                    .leftJoin(knex.raw('? as phn', [ phoneSubQuery ]), 'phn.personId', 'ind.id')
+                    .leftJoin(knex.raw('? as eml', [ emailSubQuery ]), 'eml.personId', 'ind.id')
+                    .leftJoin(knex.raw('? as adr', [ addressSubQuery ]), 'adr.personId', 'ind.id')
+                    .leftJoin(knex.raw('? as mar', [ maritalSubQuery ]),'mar.personId','ind.id')
+                    .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.appId', 'apl.id')
                     .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
                     .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
-                    .leftJoin(
-                        knex.raw('? as cnm', [ subQuery ]),
-                        'cnm.companyId',
-                        'cmp.id'
-                    )
+                    .leftJoin(knex.raw('? as cnm', [ companySubQuery ]),'cnm.companyId','cmp.id')
                     .leftJoin(knex.raw(`${db.online}.users AS usr ON apl.userId = usr.id`))
             }
 
             const baseQuery = knex(`${db.carrier}.applications AS apl`)
                 .select(
                     knex.raw(Query.hashField(Application.hashId(), 'apl')),
-                    knex.raw(Query.hashField(Driver.hashId('driverId'))),
                     knex.raw(Query.hashField(Team.hashId('teamId'))),
-                    knex.raw(Query.hashField(User.hashId('userId'))),
                     knex.raw(Query.hashField(Carrier.hashId('carrierId'))),
+                    knex.raw(Query.hashField(User.hashId('userId'))),
                     'apl.deptId',
                     'apl.formId',
                     'apl.condition',
                     'apl.createdAt', //! will return ISO 8601 UTC timestamp (YYYY-MM-DDTHH:mm:ss.sssZ)
                     'apl.finishedAt',
                     'apl.position',
-                    'apl.firstName',
-                    'apl.middleName',
-                    'apl.lastName',
-                    'apl.suffix',
-                    'apl.dob',
-                    'apl.sex',
-                    'apl.email',
-                    'apl.phone',
-                    'apl.state',
-                    'apl.marital',
+                    'nms.firstName',
+                    'nms.middleName',
+                    'nms.lastName',
+                    'nms.suffix',
+                    'ind.dob',
+                    'ind.sex',
+                    'eml.email',
+                    'phn.number as phone',
+                    'adr.state',
+                    'mar.status as marital',
                     'dl.state as dlState',
                     'benef.relation as benefRelation',
                     'benef.otherRel as benefOtherRel',
