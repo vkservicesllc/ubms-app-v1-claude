@@ -90,16 +90,27 @@ class Query {
 
                 if (max || min) {
                     const purpose = max || min
-                    let field, groups = [ id ], groupMatch = ''
+                    let field, groups = [ id ], groupMatch = '', comparison = ''
 
                     if (Array.isArray(purpose)) {
                         field = purpose[0]
 
                         if (typeof purpose[1] === 'object') {
-                            groups = groups.concat(Object.keys(purpose[1]))
-                        }
+                            if ('lessEq' in purpose[1]) {
+                                let [ outterField, outterTable, outterId ] = purpose[1].lessEq
+                                outterField = Query.#field(outterField, outterTable)
+                                if (outterTable) {
+                                    if (!outterId) outterId = 'id'
+                                    comparison += ` LEFT JOIN ${outterTable} ON ${outterTable}.${foreignId} = ${table}.${id}`
+                                }
 
-                        groupMatch = ` WHERE ${Query.#match(purpose[1])}`
+                                comparison += ` WHERE ${outterField} <= ${field}`
+                            } else {
+                                groups = groups.concat(Object.keys(purpose[1]))
+
+                                groupMatch = ` WHERE ${Query.#match(purpose[1])}`
+                            }
+                        }
                     } else field = purpose
 
                     const func = max ? 'MAX' : 'MIN'
@@ -107,6 +118,7 @@ class Query {
                     joiner.table = `(SELECT * FROM ${table} WHERE ${field} IN\n`
                     joiner.table += `(SELECT ${func}(${field}) FROM ${table}`
                     joiner.table += groupMatch
+                    joiner.table += comparison
                     joiner.table += ` GROUP BY ${groups.join(', ')}))\n`
                     joiner.table += `AS ${Query.#_table(table, false)}`
                 }
@@ -294,6 +306,11 @@ class Query {
                 if (!resField) resField = field.replace(/^_/, '')
 
                 field = `AES_DECRYPT(${Query.#_field(field, table)}, '${secret}')`
+            }
+
+            else if ('date' in field) {
+                field = field.date
+                field = `DATE(${Query.#_field(field, table)})`
             }
 
             else if ('ip' in field) {

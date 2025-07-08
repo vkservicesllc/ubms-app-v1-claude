@@ -97,6 +97,13 @@ class Driver extends Individual {
     // ]
 
 
+    static #algorithm = 'SHA-224'
+
+    static hashId = (field = 'id') => hash(field, Driver.#algorithm)
+
+    static matchIdHash = value => matchHash(value, Driver.#algorithm)
+
+
 }
 
 
@@ -1273,7 +1280,7 @@ class Application {
     }
 
 
-    static #algorithm = 'SHA-224'
+    static #algorithm = 'SHA-256'
 
     static hashId = (field = 'id') => hash(field, Application.#algorithm)
 
@@ -1437,41 +1444,50 @@ class Application {
         const match = { id, formId }
         if (!id) match.id = Application.matchIdHash(_id)
 
+        const join = [ 'personId', 'id', {
+            table: 'individuals',
+            max: [ 'since', { lessEq: [ { date: 'createdAt' }, 'applications' ] } ],
+        } ]
+
         const batch = [
             {
                 table: 'applications',
                 fields: [
                     Application.hashId(),
+                    Driver.hashId('driverId'),
                     Team.hashId('teamId'),
-                    Carrier.hashId('carrierId'),
                     User.hashId('userId'),
+                    Carrier.hashId('carrierId'),
                     'deptId',
                     'formId',
+                    'position',
                     'condition',
                     'step',
+
                     'createdBy',
                     'createdAt',
                     'finishedAt',
-                    'status',
-                    'statusExpiresOn',
-                    'position',
-                    'firstName',
-                    'middleName',
-                    'lastName',
-                    'suffix',
-                    'dob',
-                    { aes: [ 'ssn', ssnSecret ] },
-                    'sex',
-                    'marital',
-                    'email',
-                    'phone',
+
+                    // 'status',
+                    // 'statusExpiresOn',
+                    // 'firstName',
+                    // 'middleName',
+                    // 'lastName',
+                    // 'suffix',
+                    // 'dob',
+                    // { aes: [ 'ssn', ssnSecret ] },
+                    // 'sex',
+                    // 'marital',
+
+                    // 'email',
+                    // 'phone',
                     'addrEnough', //? could be redundant
-                    'addrSince',
-                    'address1',
-                    'address2',
-                    'city',
-                    'state',
-                    'zip',
+                    // 'addrSince',
+                    // 'address1',
+                    // 'address2',
+                    // 'city',
+                    // 'state',
+                    // 'zip',
                     'livedAbroad',
                     'country',
                     'medCard',
@@ -1492,153 +1508,200 @@ class Application {
                 match,
             },
             {
-                table: 'application_DLs',
-                fields: [
-                    [ 'commercial', 'dlCommercial' ],
-                    [ 'number', 'dlNumber' ],
-                    [ 'class', 'dlClass' ],
-                    [ 'state', 'dlState' ],
-                    [ 'issuedOn', 'dlIssuedOn' ],
-                    [ 'expiresOn', 'dlExpiresOn' ],
-                    [ 'endorsement', 'dlEndors' ],
-                    [ 'restriction', 'dlRestr' ],
-                    [ 'denied', 'dlDenied' ],
-                    [ 'deniedExpl', 'dlDeniedExpl' ],
-                    [ 'revoked', 'dlRevoked' ],
-                    [ 'revokedExpl', 'dlRevokedExpl' ],
+                table: 'driver',
+                fields: 'personId',
+                join: [ 'id', 'driverId' ],
+            },
+            {
+                db: db.person,
+                table: 'individuals',
+                fields: [ 'dob', 'sex', { aes: [ 'ssn', ssnSecret ] } ],
+                join: [ 'id', 'personId', 1 ],
+            },
+            {
+                db: db.person,
+                table: 'names',
+                fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
+                join,
+            },
+            {
+                db: db.person,
+                table: 'legal_presence',
+                fields: [ 'status', [ 'expiresOn', 'statusExpiresOn' ] ],
+                join,
+            },
+            {
+                db: db.person,
+                table: 'maritals',
+                fields: [ [ 'status', 'marital' ] ],
+                join,
+            },
+            {
+                db: db.person,
+                table: 'phones',
+                fields: [ [ 'number', 'phone' ] ],
+                join,
+            },
+            {
+                db: db.person,
+                table: 'emails',
+                fields: 'email',
+                join,
+            },
+            {
+                db: db.person,
+                table: 'addresses',
+                fields: [ 
+                    [ 'since', 'addrSince' ],
+                    'address1',
+                    'address2',
+                    'city',
+                    'state',
+                    'zip',
                 ],
-                join: [ 'appId', 'id' ],
+                join,
             },
-            {
-                table: 'application_MECs',
-                fields: [
-                    'nrcme',
-                    [ 'issuedOn', 'mecIssuedOn' ],
-                    [ 'expiresOn', 'mecExpiresOn' ],
-                ],
-                join: [ 'appId', 'id' ],
-            },
-            {
-                table: 'application_experiences',
-                fields: [
-                    [ 'cmv', 'cmvExp' ],
-                    [ 'vehicles', 'expVehicles' ],
-                    [ 'firstDate', 'expFirstDate' ],
-                    [ 'lastDate', 'expLastDate' ],
-                    [ 'mileage', 'expMileage' ],
-                    [ 'hours', 'expHours' ],
-                    'cdlSchool',
-                    'schName',
-                    'schPhone',
-                    'schState',
-                    'schEndDate',
-                    'schDuration',
-                ],
-                join: [ 'appId', 'id' ],
-            },
-            {
-                table: 'application_preferences',
-                fields: [
-                    'operType',
-                    [ 'teamName', 'partnerName' ],
-                    [ 'teamPhone', 'partnerPhone' ],
-                    'haulRegion',
-                    [ 'equipment', 'equipmentType' ],
-                    'startPref',
-                ],
-                join: [ 'appId', 'id' ],
-            },
-            {
-                table: 'application_businesses',
-                fields: [
-                    [ 'busName', 'ownBusName' ],
-                    [ 'state', 'busState' ],
-                    [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
-                    [ 'proposedName', 'proposedBusName' ],
-                ],
-                join: [ 'appId', 'id' ],
-            },
-            {
-                table: 'application_vehicles',
-                fields: [
-                    [ 'mmt', 'vhlMmt' ],
-                    [ 'make', 'vhlMake' ],
-                    [ 'model', 'vhlModel' ],
-                    [ 'year', 'vhlYear' ],
-                    [ 'type', 'vhlType' ],
-                    [ 'length', 'vhlLength' ],
-                ],
-                join: [ 'appId', 'id' ],
-            },
-            {
-                table: 'application_beneficiaries',
-                fields: [
-                    [ 'firstName', 'benefFirstName' ],
-                    [ 'middleName', 'benefMiddleName' ],
-                    [ 'lastName', 'benefLastName' ],
-                    [ 'suffix', 'benefSuffix' ],
-                    [ 'relation', 'benefRelation' ],
-                    [ 'otherRel', 'benefOtherRel' ],
-                    // [ 'dob', 'benefDob' ],
-                    // [ 'sex', 'benefSex' ],
-                    [ { aes: [ 'ssn', ssnSecret ] }, 'benefSsn' ],
-                    [ 'phone', 'benefPhone' ],
-                    // [ 'address1', 'benefAddress1' ],
-                    // [ 'address2', 'benefAddress2' ],
-                    // [ 'city', 'benefAddrCity' ],
-                    // [ 'state', 'benefAddrState' ],
-                    // [ 'zip', 'benefAddrZip' ],
-                ],
-                join: [ 'appId', 'id' ],
-            },
-            {
-                table: 'application_emergencies',
-                fields: [
-                    [ 'phone', 'emergPhone' ],
-                    [ 'name', 'emergName' ],
-                    [ 'relation', 'emergRelation' ],
-                ],
-                join: [ 'appId', 'id' ],
-            },
-            {
-                table: 'carriers',
-                join: [ 'id', 'carrierId' ],
-            },
-            {
-                db: db.business,
-                table: 'companies',
-                join: [ 'id', 'companyId', 'carriers' ],
-            },
-            {
-                db: db.business,
-                table: 'company_names',
-                fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
-                join: [ 'companyId', 'id', { max: 'since', table: 'companies' } ],
-            },
-            {
-                db: db.online,
-                table: 'users',
-                fields: [
-                    [ 'firstName', 'userFirstName' ],
-                    [ 'lastName', 'userLastName' ],
-                    [ 'alias', 'userAlias' ],
-                    [ 'condition', 'userCondition' ],
-                    [ 'location', 'userLocation' ],
-                    [ 'deletedAt', 'userDeletedAt' ],
-                ],
-                join: [ 'id', 'userId' ],
-            },
-            {
-                db: db.business,
-                table: 'teams',
-                fields: [ [ 'name', 'teamName' ] ],
-                join: [ 'id', 'teamId' ],
-            },
+            // {
+            //     table: 'application_DLs',
+            //     fields: [
+            //         [ 'commercial', 'dlCommercial' ],
+            //         [ 'number', 'dlNumber' ],
+            //         [ 'class', 'dlClass' ],
+            //         [ 'state', 'dlState' ],
+            //         [ 'issuedOn', 'dlIssuedOn' ],
+            //         [ 'expiresOn', 'dlExpiresOn' ],
+            //         [ 'endorsement', 'dlEndors' ],
+            //         [ 'restriction', 'dlRestr' ],
+            //         [ 'denied', 'dlDenied' ],
+            //         [ 'deniedExpl', 'dlDeniedExpl' ],
+            //         [ 'revoked', 'dlRevoked' ],
+            //         [ 'revokedExpl', 'dlRevokedExpl' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_MECs',
+            //     fields: [
+            //         'nrcme',
+            //         [ 'issuedOn', 'mecIssuedOn' ],
+            //         [ 'expiresOn', 'mecExpiresOn' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_experiences',
+            //     fields: [
+            //         [ 'cmv', 'cmvExp' ],
+            //         [ 'vehicles', 'expVehicles' ],
+            //         [ 'firstDate', 'expFirstDate' ],
+            //         [ 'lastDate', 'expLastDate' ],
+            //         [ 'mileage', 'expMileage' ],
+            //         [ 'hours', 'expHours' ],
+            //         'cdlSchool',
+            //         'schName',
+            //         'schPhone',
+            //         'schState',
+            //         'schEndDate',
+            //         'schDuration',
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_preferences',
+            //     fields: [
+            //         'operType',
+            //         [ 'teamName', 'partnerName' ],
+            //         [ 'teamPhone', 'partnerPhone' ],
+            //         'haulRegion',
+            //         [ 'equipment', 'equipmentType' ],
+            //         'startPref',
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_businesses',
+            //     fields: [
+            //         [ 'busName', 'ownBusName' ],
+            //         [ 'state', 'busState' ],
+            //         [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
+            //         [ 'proposedName', 'proposedBusName' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_vehicles',
+            //     fields: [
+            //         [ 'mmt', 'vhlMmt' ],
+            //         [ 'make', 'vhlMake' ],
+            //         [ 'model', 'vhlModel' ],
+            //         [ 'year', 'vhlYear' ],
+            //         [ 'type', 'vhlType' ],
+            //         [ 'length', 'vhlLength' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_beneficiaries',
+            //     fields: [
+            //         [ 'firstName', 'benefFirstName' ],
+            //         [ 'middleName', 'benefMiddleName' ],
+            //         [ 'lastName', 'benefLastName' ],
+            //         [ 'suffix', 'benefSuffix' ],
+            //         [ 'relation', 'benefRelation' ],
+            //         [ 'otherRel', 'benefOtherRel' ],
+            //         [ { aes: [ 'ssn', ssnSecret ] }, 'benefSsn' ],
+            //         [ 'phone', 'benefPhone' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'application_emergencies',
+            //     fields: [
+            //         [ 'phone', 'emergPhone' ],
+            //         [ 'name', 'emergName' ],
+            //         [ 'relation', 'emergRelation' ],
+            //     ],
+            //     join: [ 'appId', 'id' ],
+            // },
+            // {
+            //     table: 'carriers',
+            //     join: [ 'id', 'carrierId' ],
+            // },
+            // {
+            //     db: db.business,
+            //     table: 'companies',
+            //     join: [ 'id', 'companyId', 'carriers' ],
+            // },
+            // {
+            //     db: db.business,
+            //     table: 'company_names',
+            //     fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
+            //     join: [ 'companyId', 'id', { max: 'since', table: 'companies' } ],
+            // },
+            // {
+            //     db: db.online,
+            //     table: 'users',
+            //     fields: [
+            //         [ 'firstName', 'userFirstName' ],
+            //         [ 'lastName', 'userLastName' ],
+            //         [ 'alias', 'userAlias' ],
+            //         [ 'condition', 'userCondition' ],
+            //         [ 'location', 'userLocation' ],
+            //         [ 'deletedAt', 'userDeletedAt' ],
+            //     ],
+            //     join: [ 'id', 'userId' ],
+            // },
+            // {
+            //     db: db.business,
+            //     table: 'teams',
+            //     fields: [ [ 'name', 'teamName' ] ],
+            //     join: [ 'id', 'teamId' ],
+            // },
         ]
+console.log(Query.select(db.carrier, batch))
+        // const data = (await mysql.execute(Query.select(db.carrier, batch)))[0][0]
 
-        const data = (await mysql.execute(Query.select(db.carrier, batch)))[0][0]
-
-        return !data ? data : new Application(data)
+        // return !data ? data : new Application(data)
     }
 
 
