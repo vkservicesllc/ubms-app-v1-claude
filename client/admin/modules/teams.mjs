@@ -431,6 +431,9 @@ $button.add.click(() => {
 
     //! TEMP: enable carrier departments only (visible by default for now)
     $radio.crrDept.prop('disabled', false)
+
+    //! TEMP: set default value to catId
+    $(catId).val('crr')
 })
 
 //! TEST VERSION: Deleting via API

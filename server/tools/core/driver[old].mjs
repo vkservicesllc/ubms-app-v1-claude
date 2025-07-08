@@ -320,7 +320,7 @@ class Application {
 
     log = async (field, target = 'applications') => {
         const fields = [ 'updateLog' ]
-        let idProp = 'appId'
+        let idProp = 'aplId'
 
         if (target === 'applications') {
             idProp = 'id'
@@ -394,7 +394,7 @@ class Application {
                 mainData = { ...data }
                 delete mainData.addresses
                 data = []
-                await mysql.execute(query.aplAddresses.delete({ appId: id }))
+                await mysql.execute(query.aplAddresses.delete({ aplId: id }))
 
                 mainData.addrEnough = addrEnough
 
@@ -409,14 +409,14 @@ class Application {
 
                 if (!addrEnough && !livedAbroad) {
                     target = 'aplAddresses'
-                    idProp = 'appId'
+                    idProp = 'aplId'
                     action = 'insert'
 
                     const { address1, address2, zip, city, state, since, livedAbroad } = addresses
                     const count = zip.length
                     for (let i = 0; i < count; i++) {
                         data.push({
-                            appId: id,
+                            aplId: id,
                             address1: address1[i],
                             address2: address2[i],
                             zip: zip[i],
@@ -451,7 +451,7 @@ class Application {
 
             case 'driver-license':
                 target = 'aplDLs'
-                idProp = 'appId'
+                idProp = 'aplId'
 
                 checkExpl = data => {
                     if (
@@ -465,7 +465,7 @@ class Application {
 
                 if (!this.dl) {
                     data = processData(data)
-                    data.appId = id
+                    data.aplId = id
                     mainData.step = 2
                     action = 'insert'
 
@@ -498,7 +498,7 @@ class Application {
 
             case 'medical-card':
                 target = 'aplMECs'
-                idProp = 'appId'
+                idProp = 'aplId'
 
                 if (data.underMeds && !data.medList)
                     error = 'Data Submission Error: Medical List not provided'
@@ -520,14 +520,14 @@ class Application {
                         if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
                         else {
                             data = processData(data)
-                            data.appId = id
+                            data.aplId = id
                             action = 'insert'
                         }
                     }
                 } else {
                     if (mainData.medCard === false) {
                         if (this.mec) {
-                            const [ result ] = await mysql.execute(query.aplMECs.delete({ appId: id }))
+                            const [ result ] = await mysql.execute(query.aplMECs.delete({ aplId: id }))
                             if (result.affectedRows !== 1) error = 'DB Error: Could not delete MEC record'
                         }
                     } else {
@@ -548,7 +548,7 @@ class Application {
                                 })
                             } else {
                                 data = processData(data)
-                                data.appId = id
+                                data.aplId = id
                                 action = 'insert'
                             }
                         }
@@ -587,7 +587,7 @@ class Application {
                 mainData.dotDat = data.dotDat
                 mainData.citations = citations
 
-                await mysql.execute(query.aplCitations.delete({ appId: id }))
+                await mysql.execute(query.aplCitations.delete({ aplId: id }))
 
                 const { violation, other: otherViolation, citedOn, state: citState  } = data
                 data = []
@@ -612,7 +612,7 @@ class Application {
 
                     for (let i = 0; i < count; i++) {
                         data.push({
-                            appId: id,
+                            aplId: id,
                             violation: violation[i],
                             other: violation[i] === 'other' ? otherViolation?.[i] : null,
                             citedOn: citedOn[i],
@@ -631,7 +631,7 @@ class Application {
                 const { accidents } = data
                 mainData.accidents = accidents
 
-                await mysql.execute(query.aplAccidents.delete({ appId: id }))
+                await mysql.execute(query.aplAccidents.delete({ aplId: id }))
 
                 const { collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = data
                 data = []
@@ -656,7 +656,7 @@ class Application {
 
                     for (let i = 0; i < count; i++) {
                         data.push({
-                            appId: id,
+                            aplId: id,
                             collision: collision[i],
                             other: collision[i] === 'other' ? otherCollision?.[i] : null,
                             date: accDate[i],
@@ -674,7 +674,7 @@ class Application {
                 target = 'aplExperiences'
                 action = 'insert' //! for now it is easier to delete and insert newly submitted experiences, `updateLog` is redundant at this point
 
-                await mysql.execute(query.aplExperiences.delete({ appId: id }))
+                await mysql.execute(query.aplExperiences.delete({ aplId: id }))
 
                 const experience = data.noExp !== true
                 mainData.experience = experience
@@ -709,7 +709,7 @@ class Application {
                     if (data.vehicles) data.vehicles = JSON.stringify(data.vehicles)
                     if (data.hours) data.hours = JSON.stringify(data.hours.map(value => +value))
 
-                    data.appId = id
+                    data.aplId = id
                 } else data = {}
 
                 break
@@ -722,7 +722,7 @@ class Application {
                 const { prevEmployed } = data
                 mainData.prevEmployed = prevEmployed
 
-                await (mysql.execute(query.aplEmployers.delete({ appId: id })))
+                await (mysql.execute(query.aplEmployers.delete({ aplId: id })))
 
                 const {
                     employer, phone, address1, address2, zip, city, state,
@@ -747,7 +747,7 @@ class Application {
 
                     for (let i = 0; i < count; i++)
                         data.push({
-                            appId: id,
+                            aplId: id,
                             employer: employer[i],
                             phone: phone[i],
                             address1: address1[i],
@@ -770,7 +770,7 @@ class Application {
 
             case 'preference':
                 target = 'aplPreferences'
-                idProp = 'appId'
+                idProp = 'aplId'
 
                 let { haulRegion, equipment } = data
                 delete data.haulRegion
@@ -786,7 +786,7 @@ class Application {
 
                 if (!this.preference) {
                     data = processData(data)
-                    data.appId = id
+                    data.aplId = id
                     mainData.step = 8
                     action = 'insert'
                 } else {
@@ -816,7 +816,7 @@ class Application {
 
             case 'business':
                 target = 'aplBusinesses'
-                idProp = 'appId'
+                idProp = 'aplId'
 
                 const { activeLLC, llcAssistance } = data
                 delete data.activeLLC
@@ -844,12 +844,12 @@ class Application {
 
                     action = 'insert'
                     data = processData(data)
-                    data.appId = id
+                    data.aplId = id
                     if (data.ein) data.ein = { aes: [ data.ein, einSecret ] }
 
                     if (target2) {
                         data2 = processData(data2)
-                        data2.appId = id
+                        data2.aplId = id
                     }
                 } else {
                     mainData = processData(mainData, {
@@ -906,11 +906,11 @@ class Application {
 
             case 'beneficiary':
                 target = 'aplBeneficiaries'
-                idProp = 'appId'
+                idProp = 'aplId'
 
                 if (!this.beneficiary) {
                     data = processData(data)
-                    data.appId = id
+                    data.aplId = id
                     if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
                     mainData.step = 10
                     action = 'insert'
@@ -932,11 +932,11 @@ class Application {
 
             case 'misc':
                 target = 'aplEmergencies'
-                idProp = 'appId'
+                idProp = 'aplId'
 
                 if (this.step < 11) {
                     data = processData(data)
-                    data.appId = id
+                    data.aplId = id
                     mainData.step = 11
                     action = 'insert'
                 } else {
@@ -1060,7 +1060,7 @@ class Application {
         if (error) return { error }
 
         let src, fields = []
-        const filter = { match: { appId: await this.id() } }
+        const filter = { match: { aplId: await this.id() } }
 
         switch (target) {
 
@@ -1507,7 +1507,7 @@ class Application {
                     [ 'revoked', 'dlRevoked' ],
                     [ 'revokedExpl', 'dlRevokedExpl' ],
                 ],
-                join: [ 'appId', 'id' ],
+                join: [ 'aplId', 'id' ],
             },
             {
                 table: 'application_MECs',
@@ -1516,7 +1516,7 @@ class Application {
                     [ 'issuedOn', 'mecIssuedOn' ],
                     [ 'expiresOn', 'mecExpiresOn' ],
                 ],
-                join: [ 'appId', 'id' ],
+                join: [ 'aplId', 'id' ],
             },
             {
                 table: 'application_experiences',
@@ -1534,7 +1534,7 @@ class Application {
                     'schEndDate',
                     'schDuration',
                 ],
-                join: [ 'appId', 'id' ],
+                join: [ 'aplId', 'id' ],
             },
             {
                 table: 'application_preferences',
@@ -1546,7 +1546,7 @@ class Application {
                     [ 'equipment', 'equipmentType' ],
                     'startPref',
                 ],
-                join: [ 'appId', 'id' ],
+                join: [ 'aplId', 'id' ],
             },
             {
                 table: 'application_businesses',
@@ -1556,7 +1556,7 @@ class Application {
                     [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
                     [ 'proposedName', 'proposedBusName' ],
                 ],
-                join: [ 'appId', 'id' ],
+                join: [ 'aplId', 'id' ],
             },
             {
                 table: 'application_vehicles',
@@ -1568,7 +1568,7 @@ class Application {
                     [ 'type', 'vhlType' ],
                     [ 'length', 'vhlLength' ],
                 ],
-                join: [ 'appId', 'id' ],
+                join: [ 'aplId', 'id' ],
             },
             {
                 table: 'application_beneficiaries',
@@ -1589,7 +1589,7 @@ class Application {
                     // [ 'state', 'benefAddrState' ],
                     // [ 'zip', 'benefAddrZip' ],
                 ],
-                join: [ 'appId', 'id' ],
+                join: [ 'aplId', 'id' ],
             },
             {
                 table: 'application_emergencies',
@@ -1598,7 +1598,7 @@ class Application {
                     [ 'name', 'emergName' ],
                     [ 'relation', 'emergRelation' ],
                 ],
-                join: [ 'appId', 'id' ],
+                join: [ 'aplId', 'id' ],
             },
             {
                 table: 'carriers',
@@ -1725,36 +1725,25 @@ class Application {
             /* STEP 1: Set up Select, Join and Count Default States */
 
             const applyJoins = query => {
-                const subQuery = (db, table, maxField = 'since', groupId = 'personId') => knex
+                const subQuery = knex
                     .select('*')
-                    .from(`${db}.${table}`)
-                    .whereIn(maxField, function() {
-                        this.select(knex.raw(`MAX(${maxField})`))
-                            .from(`${db}.${table}`)
-                            .groupBy(groupId)
+                    .from(`${db.business}.company_names`)
+                    .whereIn('since', function() {
+                        this.select(knex.raw('MAX(since)'))
+                            .from(`${db.business}.company_names`)
+                            .groupBy('companyId')
                     })
 
-                const nameSubQuery = subQuery(db.person, 'names')
-                const dlSubQuery = subQuery(db.person, 'identifications', 'issuedOn')
-                const phoneSubQuery = subQuery(db.person, 'phones')
-                const emailSubQuery = subQuery(db.person, 'emails')
-                const addressSubQuery = subQuery(db.person, 'addresses')
-                const maritalSubQuery = subQuery(db.person, 'maritals')
-                const companySubQuery = subQuery(db.business, 'company_names', 'since', 'companyId')
-
                 query
-                    .leftJoin(`${db.carrier}.drivers AS drv`, 'drv.id', 'apl.driverId')
-                    .leftJoin(`${db.person}.individuals as ind`, 'ind.id', 'drv.personId')
-                    .leftJoin(knex.raw('? as nms', [ nameSubQuery ]), 'nms.personId', 'ind.id')
-                    .leftJoin(knex.raw('? as dl', [ dlSubQuery ]), 'dl.personId', 'ind.id')
-                    .leftJoin(knex.raw('? as phn', [ phoneSubQuery ]), 'phn.personId', 'ind.id')
-                    .leftJoin(knex.raw('? as eml', [ emailSubQuery ]), 'eml.personId', 'ind.id')
-                    .leftJoin(knex.raw('? as adr', [ addressSubQuery ]), 'adr.personId', 'ind.id')
-                    .leftJoin(knex.raw('? as mar', [ maritalSubQuery ]),'mar.personId','ind.id')
-                    .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.appId', 'apl.id')
+                    .leftJoin(`${db.carrier}.application_DLs AS dl`, 'dl.aplId', 'apl.id')
+                    .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.aplId', 'apl.id')
                     .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
                     .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
-                    .leftJoin(knex.raw('? as cnm', [ companySubQuery ]),'cnm.companyId','cmp.id')
+                    .leftJoin(
+                        knex.raw('? as cnm', [ subQuery ]),
+                        'cnm.companyId',
+                        'cmp.id'
+                    )
                     .leftJoin(knex.raw(`${db.online}.users AS usr ON apl.userId = usr.id`))
             }
 
@@ -1770,16 +1759,16 @@ class Application {
                     'apl.createdAt', //! will return ISO 8601 UTC timestamp (YYYY-MM-DDTHH:mm:ss.sssZ)
                     'apl.finishedAt',
                     'apl.position',
-                    'nms.firstName',
-                    'nms.middleName',
-                    'nms.lastName',
-                    'nms.suffix',
-                    'ind.dob',
-                    'ind.sex',
-                    'eml.email',
-                    'phn.number as phone',
-                    'adr.state',
-                    'mar.status as marital',
+                    'apl.firstName',
+                    'apl.middleName',
+                    'apl.lastName',
+                    'apl.suffix',
+                    'apl.dob',
+                    'apl.sex',
+                    'apl.email',
+                    'apl.phone',
+                    'apl.state',
+                    'apl.marital',
                     'dl.state as dlState',
                     'benef.relation as benefRelation',
                     'benef.otherRel as benefOtherRel',
