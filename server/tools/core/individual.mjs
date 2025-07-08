@@ -298,7 +298,7 @@ class Individual extends Person {
         } else {
             const { branch, siteId, user } = session
             const { dob, sex, prefix, firstName, middleName, lastName, suffix, alias } = data
-            const createdBy = await user?.id() || null
+            const createdBy = user?.id ? await user.id() : null
             let createdIn = null
 
             if (branch) {

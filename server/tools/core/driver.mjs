@@ -240,6 +240,23 @@ class Application {
                 this.gender = [ 'M', 'Male' ]
                 break
         }
+
+        this.individual = new Person({
+            firstName: data.personFirstName,
+            middleName: data.personMiddleName,
+            lastName: data.personLastName,
+            suffix: data.personSuffix,
+            dob: data.personDob,
+            sex: data.personSex,
+            ssn: data.personSsn,
+        })
+        this.individual.ssn = stringifyBuffer(data.personSsn)
+        this.individual.nameSince = data.personNameSince
+
+        this.identityMismatch = {}
+        const personProps = ['ssn', 'dob', 'sex', 'firstName', 'middleName', 'lastName', 'suffix']
+        personProps.forEach(prop => this.identityMismatch[prop] = this[prop] !== this.individual[prop])
+
         this.marital = data.marital
         this.email = data.email
         this.phone = data.phone
@@ -1613,6 +1630,35 @@ class Application {
                 match,
             },
             {
+                table: 'drivers',
+                join: [ 'id', 'driverId' ],
+            },
+            {
+                db: db.person,
+                table: 'individuals',
+                fields: [
+                    [ 'dob', 'personDob' ],
+                    [ 'sex', 'personSex' ],
+                    [ { aes: [ 'ssn', ssnSecret ] }, 'personSsn' ],
+                ],
+                join: [ 'id', 'personId', 1 ],
+            },
+            {
+                db: db.person,
+                table: 'names',
+                fields: [
+                    [ 'firstName', 'personFirstName' ],
+                    [ 'middleName', 'personMiddleName' ],
+                    [ 'lastName', 'personLastName' ],
+                    [ 'suffix', 'personSuffix' ],
+                    [ 'since', 'personNameSince' ],
+                ],
+                join: [ 'personId', 'id', {
+                    table: 'individuals',
+                    max: 'since',
+                } ],
+            },
+            {
                 table: 'application_DLs',
                 fields: [
                     [ 'commercial', 'dlCommercial' ],
@@ -1849,6 +1895,8 @@ class Application {
                     })
 
                 query
+                    .leftJoin(`${db.carrier}.drivers as drv`, 'drv.id', 'apl.driverId')
+                    .leftJoin(`${db.person}.individuals as prn`, 'prn.id', 'drv.personId' )
                     .leftJoin(`${db.carrier}.application_DLs AS dl`, 'dl.aplId', 'apl.id')
                     .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.aplId', 'apl.id')
                     .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
@@ -1884,9 +1932,11 @@ class Application {
                     'apl.phone',
                     'apl.state',
                     'apl.marital',
-                    'dl.state as dlState',
-                    'benef.relation as benefRelation',
-                    'benef.otherRel as benefOtherRel',
+                    'prn.dob AS originalDob',
+                    'prn.sex AS originalSex',
+                    'dl.state AS dlState',
+                    'benef.relation AS benefRelation',
+                    'benef.otherRel AS benefOtherRel',
                     'cnm.busName',
                     'cnm.coType',
                     'cnm.alias AS companyAlias',
