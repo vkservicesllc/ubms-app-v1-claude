@@ -1463,16 +1463,13 @@ class Application {
             }
 
             driver = await Driver.data(session, { personId: await person.id() })
-            if (!driver) driver = await Driver.create(session, data)
+            if (!driver) driver = (await Driver.create(session, data)).data
         } else
-            driver = await Driver.create(session, data)
+            driver = (await Driver.create(session, data)).data
 
         if (!driver) return { created, error: 'DB Error: Failed to create Driver Entity' }
-console.log({ driver, idFunc: driver.id })
-        const driverId = await driver.id()
-console.log({ driverId })
 
-        data.driverId = driverId
+        data.driverId = await driver.id()
         data.ssn = { aes: [ ssn, ssnSecret ] }
         data.teamId = await team.id()
         if (user) {
