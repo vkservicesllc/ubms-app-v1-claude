@@ -225,7 +225,7 @@ class Application {
         this.middleName = middleName
         this.lastName = lastName
         this.suffix = suffix
-        this.fullName = new Person({ firstName, middleName, lastName, suffix }).fullName()
+        this.fullName = new Person({ firstName, middleName, lastName, suffix }).fullName('FMLs')
         this.dob = data.dob
         this.ssn = stringifyBuffer(data.ssn)
         this.sex = data.sex
@@ -250,6 +250,7 @@ class Application {
             sex: data.personSex,
             ssn: data.personSsn,
         })
+        this.individual.name = this.individual.fullName('FMLs')
         this.individual.ssn = stringifyBuffer(data.personSsn)
         this.individual.nameSince = data.personNameSince
 

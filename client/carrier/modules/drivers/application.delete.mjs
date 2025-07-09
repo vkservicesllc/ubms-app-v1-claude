@@ -37,11 +37,12 @@ table.on('draw', function() {
             method: 'POST',
             success(response) {
                 const { data, log } = response
-                const { position, dob, ssn, phone, address, carrier, user } = data
+                const { position, dob, ssn, gender, phone, address, carrier, user, identityMismatch } = data
                 const { createdAt, finishedAt } = log
                 const na = '<span class="ui dark red text"><small><i>N/A</i></small></span>'
 
                 data.appliedOn = moment(finishedAt || createdAt).format('ll')
+                data.gender = gender[1]
                 data.dob = moment(dob).format('ll')
                 data.ssn = formatSsn(ssn)
                 data.phone = formatTel(phone)
@@ -52,12 +53,23 @@ table.on('draw', function() {
 
                 const items = [
                     'formId', 'appliedOn',
-                    'fullName', 'dob','ssn',
+                    'fullName', 'gender', 'dob','ssn',
                     'phone', 'email', 'residence',
                     'company', 'position', 'user',
                 ]
 
-                items.forEach(item => $(`#delete-apl\\:${item}`).html(escapeHTML(data[item]) || na))
+                items.forEach(item => {
+                    let html = escapeHTML(data[item]) || na
+                    if (html) {
+                        if (item === 'gender' && identityMismatch.sex) html += ' <i class="ui red text exclamation triangle icon"></i>'
+                        if (item === 'fullName')
+                            if (identityMismatch.firstName || identityMismatch.middleName || identityMismatch.lastName || identityMismatch.suffix)
+                                html += ` <small><span class="ui dark orange text">(aka ${escapeHTML(data.individual.name)})</span></small>`
+                        if (item === 'dob' && identityMismatch.dob) html += ' <i class="ui red text exclamation triangle icon"></i>'
+                    }
+
+                    $(`#delete-apl\\:${item}`).html(html)
+                })
                 $id.val(data._id)
 
                 $modal.modal('show')
