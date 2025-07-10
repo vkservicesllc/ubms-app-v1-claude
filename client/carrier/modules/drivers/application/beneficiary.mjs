@@ -1,3 +1,4 @@
+import { inputEvent } from '/modules/events/form.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
@@ -33,6 +34,8 @@ import application, { dropdownEvent } from './hub.mjs'
     }
 
     dropdownEvent($dropdown)
+
+    inputEvent(TS.benefOtherRel, { strip: true, word: true, capitalize: 'first' })
 
     nameEvent(TS.benefFirstName, { value: firstName })
     

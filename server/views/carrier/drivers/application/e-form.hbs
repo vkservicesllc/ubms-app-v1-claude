@@ -109,6 +109,23 @@
                                     </div>
                                 </div>
                             </div>
+                            {{#if (eq nameMismatch true)}}
+                            <div id="identity-name-mismatch">
+                                <div class="ui inverted nag" style="margin: 5px 0 10px;">
+                                    <div class="title">
+                                        <i class="ui dark orange text id badge outline icon"></i>
+                                        The system has identified that the provided SSN is associated with a different name!
+                                    </div>
+                                </div>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" name="nameMismatch" />
+                                    <label>
+                                        I confirm that the applicant's driver's license reflects a legal name change<br/>
+                                        from <i><span class="ui dark red text">{{originalFullName}}</span></i> to <b><span class="ui dark green text">{{fullName}}</span></b>
+                                    </label>
+                                </div>
+                            </div>
+                            {{/if}}
                             <h5 class="ui blue text header">Personal Information</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="four wide field">

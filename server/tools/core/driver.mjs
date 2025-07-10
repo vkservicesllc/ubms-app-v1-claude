@@ -226,6 +226,8 @@ class Application {
         this.lastName = lastName
         this.suffix = suffix
         this.fullName = new Person({ firstName, middleName, lastName, suffix }).fullName('FMLs')
+        this.nameMismatch = bool(data.nameMismatch)
+
         this.dob = data.dob
         this.ssn = stringifyBuffer(data.ssn)
         this.sex = data.sex
@@ -488,6 +490,9 @@ class Application {
                 if (currentData.position)
                     currentData.position = currentData.position[0]
 
+                if (data.nameMismatch === 'on')
+                    data.nameMismatch = false
+
                 data = processData(data, {
                     modifiedBy,
                     branch,
@@ -497,6 +502,9 @@ class Application {
                 })
                 if (data.ssn)
                     data.ssn = { aes: [ data.ssn, ssnSecret ] }
+
+                if (data.firstName || 'middleName' in data || data.lastName || 'suffix' in data)
+                    data.nameMismatch = true
 
                 break
 
@@ -1598,6 +1606,7 @@ class Application {
                     'middleName',
                     'lastName',
                     'suffix',
+                    'nameMismatch',
                     'dob',
                     { aes: [ 'ssn', ssnSecret ] },
                     'sex',
@@ -1935,6 +1944,7 @@ class Application {
                     'apl.middleName',
                     'apl.lastName',
                     'apl.suffix',
+                    'apl.nameMismatch',
                     'apl.dob',
                     'apl.sex',
                     'apl.email',

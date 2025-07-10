@@ -60,33 +60,33 @@ nameEvent(lastNameId, { sfxId: suffixId, onInput,
 
 selectEvent(suffixId, { onChange })
 
-selectEvent(genderId, { fill: true, onChange })
+// selectEvent(genderId, { fill: true, onChange })
 
-addr1Event(addr1Id, {
-    addr2Id,
-    onInput,
-    onChange(addr1, $addr1, addr2, $addr2) {
-        onChange(addr1, $addr1)
-        onChange(addr2, $addr2)
-    },
-})
+// addr1Event(addr1Id, {
+//     addr2Id,
+//     onInput,
+//     onChange(addr1, $addr1, addr2, $addr2) {
+//         onChange(addr1, $addr1)
+//         onChange(addr2, $addr2)
+//     },
+// })
 
-addr2Event(addr2Id, { onInput, onChange })
+// addr2Event(addr2Id, { onInput, onChange })
 
-zipEvent(zipId, {
-    cityId,
-    stateId,
-    onInput,
-    onChange(zip, $zip, city, state, $city, $state) {
-        onChange(zip, $zip)
-        onChange(city, $city)
-        onChange(state, $state)
-    },
-})
+// zipEvent(zipId, {
+//     cityId,
+//     stateId,
+//     onInput,
+//     onChange(zip, $zip, city, state, $city, $state) {
+//         onChange(zip, $zip)
+//         onChange(city, $city)
+//         onChange(state, $state)
+//     },
+// })
 
-cityEvent(cityId, { onInput, onChange })
+// cityEvent(cityId, { onInput, onChange })
 
-selectEvent(stateId, { onChange })
+// selectEvent(stateId, { onChange })
 
 telMask(phoneId, { onAccept, onComplete })
 

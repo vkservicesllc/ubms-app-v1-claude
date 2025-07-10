@@ -208,7 +208,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-        const { _carrierId, _userId, deptId } = application
+        const { _carrierId, _userId, deptId, identityMismatch } = application
 
         if (_carrierId) {
             hbs.carrier = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch carrier</span>'
@@ -352,6 +352,14 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         hbs.form = new ApplicationForm(options)
         hbs.dropdown = dropdown
+        hbs.fullName = application.fullName
+        hbs.originalFullName = application.individual.name
+        hbs.nameMismatch = (application.nameMismatch && (
+            identityMismatch.firstName ||
+            identityMismatch.middleName ||
+            identityMismatch.lastName ||
+            identityMismatch.sufix
+        ))
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {

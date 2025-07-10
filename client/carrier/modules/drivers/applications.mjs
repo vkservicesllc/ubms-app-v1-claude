@@ -53,7 +53,7 @@ const table = $('#driver-apl-table').DataTable({
                 if (row.condition == 'p')
                     row.aplAddress = aplAddress + row.formId
             })
-console.log(data)
+
             return data
         },
     },
@@ -78,7 +78,7 @@ console.log(data)
                     let { sex, benefRelation, benefOtherRel } = row
 
                     if (benefRelation) benefRelation = benefRelation.toLowerCase().trim()
-                    if (benefOtherRel) benefOtherRel.toLowerCase().trim()
+                    if (benefOtherRel) benefOtherRel = benefOtherRel.toLowerCase().trim()
 
                     switch (true) {
                         case sex === 0 && (benefRelation === 'wife' || benefOtherRel === 'wife'):
@@ -86,15 +86,16 @@ console.log(data)
                             data += `<span title="Logical Error: Incorrect Gender"><i class="ui red text exclamation triangle icon"></i></span>`
                             break
                     }
-                } else if (row.dob !== row.originalDob || row.sex !== row.originalSex)
+                }
+                if (row.dob !== row.originalDob || row.sex !== row.originalSex)
                     data += `<span title="Identity Error: False DOB or Gender"><i class="ui red text exclamation triangle icon"></i></span>`
 
-                if (
+                if (row.nameMismatch && (
                     row.firstName !== row.originalFirstName ||
                     row.middleName !== row.originalMiddleName ||
                     row.lastName !== row.originalLastName ||
                     row.suffix !== row.originalSuffix
-                )
+                ))
                     data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange text id badge outline icon"></i></span>`
 
                 return data
@@ -121,7 +122,7 @@ console.log(data)
                 data = escapeHTML(new Person(row).fullLastName())
 
                 const { originalLastName, originalSuffix } = row
-                if (row.lastName !== originalLastName || row.suffix !== originalSuffix) {
+                if (row.nameMismatch && (row.lastName !== originalLastName || row.suffix !== originalSuffix)) {
                     const original = new Person({ ...row, lastName: originalLastName, suffix: originalSuffix })
 
                     data += ` <small><span class="ui orange text">(${escapeHTML(original.fullLastName())})</span></small>`
@@ -139,7 +140,7 @@ console.log(data)
                 data = escapeHTML(new Person(row).fullFirstName())
 
                 const { originalFirstName, originalMiddleName } = row
-                if (row.firstName !== originalFirstName || row.middleName !== originalMiddleName) {
+                if (row.nameMismatch && (row.firstName !== originalFirstName || row.middleName !== originalMiddleName)) {
                     const original = new Person({ ...row, firstName: originalFirstName, middleName: originalMiddleName })
 
                     data += ` <small><span class="ui orange text">(${escapeHTML(original.fullFirstName())})</span></small>`

@@ -7,11 +7,15 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
 
 (() => {
     if (!application || !Object.keys(application).length) return
-
-    const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email } = application
+console.log(application) //!TEMP
+    const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email, identityMismatch } = application
     let { relation, otherRel } = application.beneficiary
-    const TS = selector.id.text
+    const TS = selector.id.text, SS = selector.id.select
 
+    const $label = {
+        dob: $(`label[for="${TS.dob.replace('#', '')}"]`),
+        gender: $(`label[for="${SS.gender.replace('#', '')}"]`),
+    }
     const $help = {
         email: $('#email-help'),
     }
@@ -24,6 +28,8 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
         dob: $('#dob-calendar'),
     }
     const $form = $('#profile-form')
+
+    const errorIcon = '<i class="ui red text exclamation triangle icon"></i>'
 
     dropdownEvent($dropdown)
 
@@ -89,5 +95,14 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
         },
     })
 
+    if (identityMismatch.dob) $label.dob.prepend(errorIcon).parent().addClass('error')
+    if (identityMismatch.sex) $label.gender.prepend(errorIcon).parent().addClass('error')
+    if (identityMismatch.dob || identityMismatch.sex) {
+        $(TS.ssn).parent().removeClass('disabled')
+        $('.item[data-tab="profile"]').append(errorIcon)
+    }
+
     $('.loading.form').removeClass('loading')
 })()
+
+$('#identity-name-mismatch .nag').nag()
