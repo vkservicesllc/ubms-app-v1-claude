@@ -251,8 +251,8 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.appliedAt = moment(application.appliedAt).format('lll')
         hbs.finishedAt = moment(application.finishedAt).format('lll')
         hbs.steps = [ ...Application.stepList ]
+        if (application.position[0] === 'OO') hbs.steps[0][3] = 'Position / Vehicle'
         hbs.steps[6] = 'Pre-Employments'
-        // if (application.position[0] === 'OO') hbs.steps[8] = 'Business / Vehicle'
 
         let options = {}, dropdown = {}, t = `\t`.repeat(11)
 

@@ -45,6 +45,10 @@ console.log(application) //!TEMP
         const message = "The applicant's gender must align with the selected beneficiary relationship"
         const list = [`Applicant's Gender: ${gender[1]}`, `Beneficiary Relationship: ${otherRel || relation}`]
         const $errorMsg = errorMessage('Logical Error', message, list)
+        const displayErrorMsg = () => {
+            $form.after($errorMsg)
+            $('.item[data-tab="beneficiary"]').append(errorIcon)
+        }
 
         relation = relation.toLowerCase().trim()
         if (otherRel) otherRel = otherRel.toLowerCase().trim()
@@ -55,12 +59,12 @@ console.log(application) //!TEMP
 
         if (relation === locked[0] || otherRel === locked[0]) {
             if (gender[0] === 'F') disableGender()
-            else $form.after($errorMsg)
+            else displayErrorMsg()
         }
 
         if (relation === locked[1] || otherRel === locked[1]) {
             if (gender[0] === 'M') disableGender()
-            else $form.after($errorMsg)
+            else displayErrorMsg()
         }
 
         function disableGender() {

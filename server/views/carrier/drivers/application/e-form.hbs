@@ -76,6 +76,8 @@
                     <a class="item disabled" data-tab="business">{{idx steps 8}}</a>
                     <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
                     <a class="item" data-tab="misc">{{idx steps 10}}</a>
+                    <a class="item disabled" data-tab="assignment">Assignment</a>
+                    <a class="item disabled" data-tab="documents">Documents</a>
                 </div>
             </div>
             <div class="thirteen wide stretched right attached column">
@@ -83,7 +85,7 @@
                     <input type="hidden" id="id" value="{{_id}}" />
 
                     <div class="ui tab" data-tab="profile">
-                        <form class="ui loading form" id="profile-form" action="{{actionUrl.profile}}" method="POST">
+                        <form class="ui loading form" id="profile-form" action="{{actionUrl.profile}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Legal Name</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="five wide field">
@@ -121,7 +123,14 @@
                                     <input type="checkbox" name="nameMismatch" />
                                     <label>
                                         I confirm that the applicant's driver's license reflects a legal name change<br/>
-                                        from <i><span class="ui dark red text">{{originalFullName}}</span></i> to <b><span class="ui dark green text">{{fullName}}</span></b>
+                                        from <i><span class="ui dark red text">{{originalFullName}}</span></i> to <b><span class="ui dark green text">{{fullName}}</span></b><br/>
+                                        <small>
+                                            <span class="ui dark red text">
+                                                <i class="exclamation circle icon"></i>
+                                                If confirmed, the SSN will be linked to the new name;
+                                                otherwise, revise the application to match the existing record
+                                            </span>
+                                        </small>
                                     </label>
                                 </div>
                             </div>
@@ -188,7 +197,7 @@
                     </div>
 
                     <div class="ui tab" data-tab="legal-status">
-                        <form class="ui loading form" id="status-form" action="{{actionUrl.status}}" method="POST">
+                        <form class="ui loading form" id="status-form" action="{{actionUrl.status}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Legal Presence</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="five wide field">
@@ -219,7 +228,7 @@
                     </div>
 
                     <div class="ui active tab" data-tab="position">
-                        <form class="ui loading form" id="position-form" action="{{actionUrl.position}}" method="POST">
+                        <form class="ui loading form" id="position-form" action="{{actionUrl.position}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Desired Position</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="five wide field">
@@ -345,7 +354,7 @@
                     </div>
 
                     <div class="ui tab" data-tab="beneficiary">
-                        <form class="ui loading form" id="beneficiary-form" action="{{actionUrl.beneficiary}}" method="POST">
+                        <form class="ui loading form" id="beneficiary-form" action="{{actionUrl.beneficiary}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Beneficiary</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="five wide field">
@@ -403,7 +412,7 @@
                     </div>
 
                     <div class="ui tab" data-tab="misc">
-                        <form class="ui loading form" id="misc-form" action="{{actionUrl.misc}}" method="POST">
+                        <form class="ui loading form" id="misc-form" action="{{actionUrl.misc}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Emergency Contact</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="four wide field">
@@ -424,6 +433,14 @@
                                 <button type="submit" class="ui right floated circular blue button">Save</button>
                             </div>
                         </form>
+                    </div>
+
+                    <div class="ui tab" data-tab="assignment">
+                        ASSIGNMENT FORMS
+                    </div>
+
+                    <div class="ui tab" data-tab="documents">
+                        DOCUMENT FORMS
                     </div>
 
                 </div>

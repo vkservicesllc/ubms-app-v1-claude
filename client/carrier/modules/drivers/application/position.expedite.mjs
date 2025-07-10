@@ -29,7 +29,7 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
                     action = 'show'
                 }
 
-                //
+                //! need to reset if other than "other"
             },
         ],
         vehicleMMT: [
@@ -47,6 +47,8 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
                 $(TS.currentVhlModel).val(model)
 
                 if (type !== 'straightBox') $dropdown.vehicleLength[0].dropdown('clear')
+
+                //! need to add more to length
             },
         ],
         vehicleYear: [
