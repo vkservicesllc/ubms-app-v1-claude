@@ -77,10 +77,6 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
         vehicleType: [
             $('#vehicle-type-dropdown'),
             type,
-        ],
-        vehicleLength: [
-            $('#vehicle-length-dropdown'),
-            length,
             value => {
                 const $field = $dropdown.vehicleLength[0].parent()
                 let classAction = 'addClass', fieldAction = 'hide', disabled = 'true'
@@ -90,9 +86,13 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
                     fieldAction = 'show'
                 }
 
-                $field.length[classAction]('disabled')[fieldAction]()
+                $field[classAction]('disabled')[fieldAction]()
                 //! Check whether need to activate/deactive hidden input
             },
+        ],
+        vehicleLength: [
+            $('#vehicle-length-dropdown'),
+            length,
         ],
     }
 
