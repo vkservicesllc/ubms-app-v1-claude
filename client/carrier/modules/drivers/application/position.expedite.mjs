@@ -37,18 +37,37 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
             mmt,
             value => {
                 let type, make, model
+                const $make = $(TS.currentVhlMake), $model = $(TS.currentVhlModel)
+                const $field = {
+                    type: $dropdown.vehicleType[0].parent(),
+                    make: $make.parent(),
+                    model: $model.parent(),
+                    length: $dropdown.vehicleLength[0].parent(),
+                }
+                let classAction = 'removeClass',
+                    lenClassAction = 'addClass',
+                    lenFieldAction = 'hide'
 
-                if (value !== 'other')
-                [ type, make, model ] = value.split(':')
+                if (value !== 'other') {
+                    [ type, make, model ] = value.split(':')
+                    classAction = 'addClass'
+                    if (type !== 'straightBox') $dropdown.vehicleLength[0].dropdown('clear')
+                    else {
+                        lenClassAction = 'removeClass'
+                        lenFieldAction = 'show'
+                    }
+                }
 
                 if (type) $dropdown.vehicleType[0].dropdown('set selected', type)
                 else $dropdown.vehicleType[0].dropdown('clear')
                 $(TS.currentVhlMake).val(make)
                 $(TS.currentVhlModel).val(model)
 
-                if (type !== 'straightBox') $dropdown.vehicleLength[0].dropdown('clear')
-
-                //! need to add more to length
+                $field.type[classAction]('disabled')
+                $field.make[classAction]('disabled')
+                $field.model[classAction]('disabled')
+                $field.length[lenClassAction]('disabled')[lenFieldAction]()
+                //! Check whether need to activate/deactive hidden input
             },
         ],
         vehicleYear: [
@@ -62,6 +81,18 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
         vehicleLength: [
             $('#vehicle-length-dropdown'),
             length,
+            value => {
+                const $field = $dropdown.vehicleLength[0].parent()
+                let classAction = 'addClass', fieldAction = 'hide', disabled = 'true'
+
+                if (value === 'straightBox') {
+                    classAction = 'removeClass'
+                    fieldAction = 'show'
+                }
+
+                $field.length[classAction]('disabled')[fieldAction]()
+                //! Check whether need to activate/deactive hidden input
+            },
         ],
     }
 

@@ -119,7 +119,7 @@ class Driver extends Individual {
 
     static create = async (session, data) => {
         let created = false, id
-        const { user } = session
+        const { branch, user } = session
 
         const { ssn } = data
         let person = await Individual.data(session, { ssn })
@@ -130,8 +130,9 @@ class Driver extends Individual {
         }
 
         const driverData = { personId: await person.id() }
-        if (user && user !== true)
-            driverData.createdBy = await user.id()
+        if (user && user !== true)driverData.createdBy = await user.id()
+        const createdIn = { branch }
+        driverData.createdIn = JSON.stringify(createdIn)
 
         const [ result ] = await mysql.execute(query.drivers.insert(driverData))
         if (result.affectedRows === 1) created = true

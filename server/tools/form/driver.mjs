@@ -1226,7 +1226,7 @@ export function currentExpediteVhlMMTData() {
         }
     }
 
-    data['Not found'] = { other: 'Other...' }
+    data['Not found'] = { other: 'Other' }
 
     return data
 }
