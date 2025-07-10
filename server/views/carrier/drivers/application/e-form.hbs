@@ -1,7 +1,7 @@
 {{> carrier/nav.alpha}}
 
     <style>
-        .header:not(.first) {
+        .ui.header:not(.first) {
             margin-top: 10px !important;
         }
         .ui.message {
@@ -13,20 +13,20 @@
         <div class="ui relaxed horizontal list" style="margin-bottom: 15px; min-width: 1440px;">
             <div class="item">
                 <div class="content">
-                <h5 class="ui header">Applicant:</h5>
+                <h5 class="ui header"><span class="ui grey text">Applicant:</span></h5>
                     {{{applicant}}}
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header">Position:</h5>
+                <h5 class="ui header"><span class="ui grey text">Position:</span></h5>
                     {{position}}
                 </div>
             </div>
             {{#if (hv carrier)}}
             <div class="item">
                 <div class="content">
-                <h5 class="ui header">Carrier:</h5>
+                <h5 class="ui header"><span class="ui grey text">Carrier:</span></h5>
                     {{{carrier}}}
                 </div>
             </div>
@@ -34,26 +34,26 @@
             {{#if (hv recruiter)}}
             <div class="item">
                 <div class="content">
-                <h5 class="ui header">Recruiter:</h5>
+                <h5 class="ui header"><span class="ui grey text">Recruiter:</span></h5>
                     {{{recruiter}}}
                 </div>
             </div>
             {{/if}}
             <div class="item" style="border-left: 1px solid rgba(34,36,38,0.15); padding-left: 1.8rem;">
                 <div class="content">
-                <h5 class="ui header">Form:</h5>
+                <h5 class="ui header"><span class="ui grey text">Form:</span></h5>
                     {{formId}}
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header">Created at:</h5>
+                <h5 class="ui header"><span class="ui grey text">Created at:</span></h5>
                     {{{appliedAt}}} ET
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header">Submitted at:</h5>
+                <h5 class="ui header"><span class="ui grey text">Submitted at:</span></h5>
                     {{{finishedAt}}} ET
                 </div>
             </div>
@@ -62,10 +62,10 @@
         <div class="ui grid" style="width: 1080px;">
             <div class="three wide left attached column">
                 <div class="ui vertical fluid tabular menu">
-                    <a class="item" data-tab="profile">{{idx (idx steps 0) 0}}</a>
+                    <a class="item active" data-tab="profile">{{idx (idx steps 0) 0}}</a>
                     <a class="item disabled" data-tab="residence">{{idx (idx steps 0) 1}}</a>
                     <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
-                    <a class="item active" data-tab="position">{{idx (idx steps 0) 3}}</a>
+                    <a class="item" data-tab="position">{{idx (idx steps 0) 3}}</a>
                     <a class="item disabled" data-tab="dl">{{idx steps 1}}</a>
                     <a class="item disabled" data-tab="mec">{{idx steps 2}}</a>
                     <a class="item disabled" data-tab="legal">{{idx steps 3}}</a>
@@ -84,7 +84,7 @@
                 <div class="ui seamless right attached segment" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
-                    <div class="ui tab" data-tab="profile">
+                    <div class="ui active tab" data-tab="profile">
                         <form class="ui loading form" id="profile-form" action="{{actionUrl.profile}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Legal Name</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -227,7 +227,7 @@
                         </form>
                     </div>
 
-                    <div class="ui active tab" data-tab="position">
+                    <div class="ui tab" data-tab="position">
                         <form class="ui loading form" id="position-form" action="{{actionUrl.position}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Desired Position</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -446,7 +446,23 @@
                 </div>
             </div>
         </div>
-        <script>$('.menu .item').tab()</script>
+        <script>
+            const $menu = $('.ui.menu .item'), $tabs = $('.ui.tab')
+            let href = location.href, query
+            [ href, query ] = href.split('?')
+
+            if (query) {
+                $menu.removeClass('active')
+                $tabs.removeClass('active')
+
+                $(`.ui.menu .item[data-tab="${query}"]`).addClass('active')
+                $(`.ui.tab[data-tab="${query}"]`).addClass('active')
+
+                history.replaceState({}, '', href)
+            }
+
+            $menu.tab()
+        </script>
         <script type="module" src="/modules/drivers/application/legal-status.mjs"></script>
         {{#if (eq deptId 0)}}
         <script type="module" src="/modules/drivers/application/position.truck-load.mjs"></script>
