@@ -13,6 +13,7 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
     const { mmt, length } = vehicle
     let { year, type, make, model } = vehicle
     const $vehicle = $('#vehicle-section')
+    const $make = $(TS.currentVhlMake), $model = $(TS.currentVhlModel)
 
     if (year) year = `:${year}`
     if (mmt && mmt !== 'other') [ type, make, model ] = mmt.split(':')
@@ -22,52 +23,38 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
             $('#position-dropdown'),
             position[0],
             value => {
-                let disabled = true, action = 'hide'
+                if (value !== 'OO') $vehicle.hide().find('input').prop('disabled', true)
+                else {
+                    const type = $dropdown.vehicleType[0].dropdown('get value')
 
-                if (value === 'OO') {
-                    disabled = false
-                    action = 'show'
+                    $dropdown.vehicleMMT[0].find('input').prop('disabled', false)
+                    $dropdown.vehicleType[0].find('input').prop('disabled', false)
+                    $make.prop('disabled', false)
+                    $model.prop('disabled', false)
+                    $dropdown.vehicleYear[0].find('input').prop('disabled', false)
+                    if (type === 'straightBox')
+                        $dropdown.vehicleLength[0].find('input').prop('disabled', false)
+
+                    $vehicle.show()
                 }
-
-                //! need to reset if other than "other"
             },
         ],
         vehicleMMT: [
             $('#vehicle-mmt-dropdown'),
             mmt,
             value => {
-                let type, make, model
-                const $make = $(TS.currentVhlMake), $model = $(TS.currentVhlModel)
-                const $field = {
-                    type: $dropdown.vehicleType[0].parent(),
-                    make: $make.parent(),
-                    model: $model.parent(),
-                    length: $dropdown.vehicleLength[0].parent(),
-                }
-                let classAction = 'removeClass',
-                    lenClassAction = 'addClass',
-                    lenFieldAction = 'hide'
+                let type = null, make, model
+                let onOff = 'on', action = 'removeClass'
 
                 if (value !== 'other') {
                     [ type, make, model ] = value.split(':')
-                    classAction = 'addClass'
-                    if (type !== 'straightBox') $dropdown.vehicleLength[0].dropdown('clear')
-                    else {
-                        lenClassAction = 'removeClass'
-                        lenFieldAction = 'show'
-                    }
+                    onOff = 'off'
+                    action = 'addClass'
                 }
 
-                if (type) $dropdown.vehicleType[0].dropdown('set selected', type)
-                else $dropdown.vehicleType[0].dropdown('clear')
-                $(TS.currentVhlMake).val(make)
-                $(TS.currentVhlModel).val(model)
-
-                $field.type[classAction]('disabled')
-                $field.make[classAction]('disabled')
-                $field.model[classAction]('disabled')
-                $field.length[lenClassAction]('disabled')[lenFieldAction]()
-                //! Check whether need to activate/deactive hidden input
+                toggleDropdown('vehicleType', onOff, type)
+                $make.val(make).parent()[action]('disabled')
+                $model.val(model).parent()[action]('disabled')
             },
         ],
         vehicleYear: [
@@ -78,16 +65,13 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
             $('#vehicle-type-dropdown'),
             type,
             value => {
-                const $field = $dropdown.vehicleLength[0].parent()
-                let classAction = 'addClass', fieldAction = 'hide', disabled = 'true'
-
+                let onOff = 'off', action = 'hide'
                 if (value === 'straightBox') {
-                    classAction = 'removeClass'
-                    fieldAction = 'show'
+                    onOff = 'on'
+                    action = 'show'
                 }
 
-                $field[classAction]('disabled')[fieldAction]()
-                //! Check whether need to activate/deactive hidden input
+                toggleDropdown('vehicleLength', onOff).parent()[action]()
             },
         ],
         vehicleLength: [
@@ -98,11 +82,11 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
 
     if (mmt) {
         if (mmt !== 'other') {
-            disabledDropdown('vehicleType')
-            $(TS.currentVhlMake).parent().addClass('disabled')
-            $(TS.currentVhlModel).parent().addClass('disabled')
+            toggleDropdown('vehicleType', 'off')
+            $make.parent().addClass('disabled')
+            $model.parent().addClass('disabled')
         }
-        if (type !== 'straightBox') disabledDropdown('vehicleLength').parent().hide()
+        if (type !== 'straightBox') toggleDropdown('vehicleLength', 'off').parent().hide()
 
         $vehicle.show()
     } else $vehicle.find('input').prop('disabled', true)
@@ -112,8 +96,13 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
     makeEvent(TS.currentVhlMake, { value: make })
     modelEvent(TS.currentVhlModel, { value: model })
 
-    function disabledDropdown(prop) {
-        $dropdown[prop][0].parent().addClass('disabled').find('input').prop('disabled', true)
+    function toggleDropdown(prop, onOff = 'on', value) {
+        const action = onOff === 'off' ? 'add' : 'remove'
+        const disabled = onOff === 'off'
+
+        $dropdown[prop][0].parent()[`${action}Class`]('disabled').find('input').prop('disabled', disabled)
+        if (value === null) $dropdown[prop][0].dropdown('clear')
+        else if (value) $dropdown[prop][0].dropdown('set selected', value)
 
         return $dropdown[prop][0]
     }
