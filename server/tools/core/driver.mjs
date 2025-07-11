@@ -454,7 +454,7 @@ class Application {
             match: { [idProp]: Application.matchIdHash(this._id) },
         })))[0][0]
 
-        if (fields.includes(field)) log = log[field]
+        if (log && fields.includes(field)) log = log[field]
 
         return log
     }
@@ -509,6 +509,61 @@ class Application {
 
                 break
 
+
+            case 'legal-status':
+                currentData = {
+                    status: this.legalStatus[0],
+                    statusExpiresOn: this.legalStatus[1],
+                }
+                if (data.status < 2) data.statusExpiresOn = null
+
+                data = processData(data, {
+                    modifiedBy,
+                    branch,
+                    siteId,
+                    currentData,
+                    currentUpdateLog: await this.log('updateLog'),
+                })
+
+                break
+
+
+            case 'position':
+                currentData = {
+                    position: this.position[0],
+                }
+
+                mainData.position = data.position
+                mainData = processData(mainData, {
+                    modifiedBy,
+                    branch,
+                    siteId,
+                    currentData: this,
+                    currentUpdateLog: await this.log('updateLog'),
+                })
+
+                {
+                    const { mmt, type, make, model, year, length } = data
+                        delete data.mmt
+                        delete data.type
+                        delete data.make
+                        delete data.model
+                        delete data.year
+                        delete data.length
+
+                    if (data.position !== 'OO')
+                        await mysql.execute(query.aplVehicles.delete({ aplId: id }))
+                    else {
+                        data2 = { mmt, type, make, model, year, length }
+                        target2 = 'aplVehicles'
+                        idProp = 'aplId'
+
+                        //
+                    }
+                }
+
+                break
+
             
             case 'address':
                 currentData = { ...this.address }
@@ -556,24 +611,6 @@ class Application {
                         })
                     }
                 }
-
-                break
-
-
-            case 'legal-status':
-                currentData = {
-                    status: this.legalStatus[0],
-                    statusExpiresOn: this.legalStatus[1],
-                }
-                if (data.status < 2) data.statusExpiresOn = null
-
-                data = processData(data, {
-                    modifiedBy,
-                    branch,
-                    siteId,
-                    currentData,
-                    currentUpdateLog: await this.log('updateLog'),
-                })
 
                 break
 

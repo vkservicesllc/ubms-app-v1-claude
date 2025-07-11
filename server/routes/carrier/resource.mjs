@@ -124,7 +124,7 @@ router.post('/driver/application/:formId/edit/:step',
             const { error } = await application.modify(res.session, step, req.body)
             if (error) return throwErr.server(res, error)
 
-            res.redirect(`/drivers/application/${formId}/e-form`)
+            res.redirect(`/drivers/application/${formId}/e-form?${step}`)
         } catch (err) {
             throwErr.server(res, null, err)
         }

@@ -63,15 +63,15 @@
             <div class="three wide left attached column">
                 <div class="ui vertical fluid tabular menu">
                     <a class="item active" data-tab="profile">{{idx (idx steps 0) 0}}</a>
-                    <a class="item disabled" data-tab="residence">{{idx (idx steps 0) 1}}</a>
                     <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
                     <a class="item" data-tab="position">{{idx (idx steps 0) 3}}</a>
-                    <a class="item disabled" data-tab="dl">{{idx steps 1}}</a>
-                    <a class="item disabled" data-tab="mec">{{idx steps 2}}</a>
-                    <a class="item disabled" data-tab="legal">{{idx steps 3}}</a>
+                    <a class="item disabled" data-tab="address">{{idx (idx steps 0) 1}}</a>
+                    <a class="item disabled" data-tab="driver-license">{{idx steps 1}}</a>
+                    <a class="item disabled" data-tab="medical-card">{{idx steps 2}}</a>
+                    <a class="item disabled" data-tab="legal-compliance">{{idx steps 3}}</a>
                     <a class="item disabled" data-tab="safety">{{idx steps 4}}</a>
                     <a class="item disabled" data-tab="experience">{{idx steps 5}}</a>
-                    <a class="item disabled" data-tab="employers">{{idx steps 6}}</a>
+                    <a class="item disabled" data-tab="pre-employment">{{idx steps 6}}</a>
                     <a class="item disabled" data-tab="preference">{{idx steps 7}}</a>
                     <a class="item disabled" data-tab="business">{{idx steps 8}}</a>
                     <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
@@ -190,10 +190,6 @@
                                 <button type="submit" class="ui right floated circular blue button">Save</button>
                             </div>
                         </form>
-                    </div>
-
-                    <div class="ui tab" data-tab="residence">
-                        ADDRESS FORMS
                     </div>
 
                     <div class="ui tab" data-tab="legal-status">
@@ -321,15 +317,19 @@
                         </form>
                     </div>
 
-                    <div class="ui tab" data-tab="dl">
+                    <div class="ui tab" data-tab="address">
+                        ADDRESS FORMS
+                    </div>
+
+                    <div class="ui tab" data-tab="driver-license">
                         DRIVER'S LICENSE FORM
                     </div>
 
-                    <div class="ui tab" data-tab="mec">
+                    <div class="ui tab" data-tab="medical-card">
                         MEDICAL CARD FORM
                     </div>
 
-                    <div class="ui tab" data-tab="legal">
+                    <div class="ui tab" data-tab="legal-compliance">
                         LEGAL COMPLIANCE FORMS
                     </div>
 
@@ -341,7 +341,7 @@
                         EXPERIENCE FORM
                     </div>
 
-                    <div class="ui tab" data-tab="employers">
+                    <div class="ui tab" data-tab="pre-employment">
                         PRE-EMPLOYMENT FORMS
                     </div>
 

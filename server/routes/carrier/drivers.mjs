@@ -227,9 +227,9 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         const recUrl = `/resource/driver/application/${formId}/edit`
         hbs.actionUrl = {
             profile: `${recUrl}/profile`,
-            address: `${recUrl}/address`,
             status: `${recUrl}/legal-status`,
             position: `${recUrl}/position`,
+            address: `${recUrl}/address`,
             dl: `${recUrl}/driver-license`,
             mec: `${recUrl}/medical-card`,
             legal: `${recUrl}/legal-compliance`,
@@ -251,7 +251,6 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.appliedAt = moment(application.appliedAt).format('lll')
         hbs.finishedAt = moment(application.finishedAt).format('lll')
         hbs.steps = [ ...Application.stepList ]
-        console.log(hbs.steps)
         hbs.steps[0][3] = 'Position' + (application.position[0] === 'OO' ? ' / Vehicle' : '')
         hbs.steps[6] = 'Pre-Employments'
 
@@ -269,14 +268,6 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                 dropdown.gender += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
             for (const stat in Person.maritalList)
                 dropdown.marital += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
-        }
-
-        /* RESIDENCE */
-        {
-            dropdown.addrState = ''
-
-            for (const state in Address.stateList)
-                dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
         }
 
         /* LEGAL STATUS */
@@ -324,6 +315,14 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                     dropdown.vehicleLength += `\n${t}\t<div class="item" data-value="${len}">${option}</div>`
                 }
             }
+        }
+
+        /* RESIDENCE */
+        {
+            dropdown.addrState = ''
+
+            for (const state in Address.stateList)
+                dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
         }
 
         /* BENEFICIARY */
