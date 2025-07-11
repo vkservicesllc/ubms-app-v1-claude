@@ -588,6 +588,100 @@ class Application {
                 }
                 break
 
+            case 'driver-license':
+                {
+                    if (!data['denied']) data['deniedExpl'] = null
+                    if (!data['revoked']) data['revokedExpl'] = null
+
+                    if (!this.dl) {
+                        data = processData(data)
+                        data.aplId = id
+
+                        const [ result ] = await mysql.execute(query.aplDLs.insert(data))
+                        if (result.affectedRows === 1) modified = true
+                        if (modified) await mysql.execute(query.applications.update({ step: 2 }, { id }))
+                    } else {
+                        const currentData = { driverLicense: this.dl.number }
+                        const props = [
+                            'class', 'state',
+                            'issuedOn', 'expiresOn',
+                            'endorsement', 'restriction',
+                            'denied', 'deniedExpl',
+                            'revoked', 'revokedExpl',
+                        ]
+                        props.forEach(prop => currentData[`DL_${prop}`] = this.dl[prop])
+
+                        data = processData(data, {
+                            modifiedBy,
+                            branch,
+                            siteId,
+                            currentData,
+                            currentUpdateLog: await this.log('updateLog', 'aplDLs'),
+                        })
+
+                        const [ result ] = await mysql.execute(query.aplDLs.update(data, { aplId: id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
+                }
+                break
+
+            case 'medical-card':
+                {
+                    const mainData = {}
+
+                    if (!data.underMeds) data.medList = null
+                    if (!this.dl.commercial && data.mecAbsent && !data.expiresOn) mainData.medCard = false
+                    delete data.mecAbsent
+
+                    mainData.underMeds = data.underMeds
+                    mainData.medList = data.medList || null
+                    delete data.underMeds
+                    delete data.medList
+
+                    if (this.step < 3) {
+                        mainData = processData(mainData)
+                        mainData.step = 3
+
+                        if (mainData.medCard !== false) {
+                            data = processData(data)
+                            data.aplId = id
+
+                            const [ result ] = await mysql.execute(query.aplMECs.insert(data))
+                            if (result.affectedRows === 1) modified = true
+                        }
+                    } else {
+                        if (mainData.medCard === false) {
+                            if (this.mec) await mysql.execute(query.aplMECs.delete({ aplId: id }))
+                            else {
+                                mainData.medCard = true
+
+                                if (this.mec) {
+                                    data = processData(data, {
+                                        modifiedBy,
+                                        branch,
+                                        siteId,
+                                        currentData: this.mec,
+                                        currentUpdateLog: await this.log('updateLog', 'aplMECs'),
+                                    })
+
+                                    const [ result ] = await mysql.execute(query.aplMECs.update(data, { aplId: id }))
+                                    if (result.affectedRows === 1) modified = true
+                                } else {
+                                    data = processData(data)
+                                    data.aplId = id
+
+                                    const [ result ] = await mysql.execute(query.aplMECs.insert(data))
+                                    if (result.affectedRows === 1) modified = true
+                                }
+                            }
+                        }
+                    }
+
+                    const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
+                    if (result.affectedRows > 0) modified = true
+                }
+                break
+
         }
 
         async function modifyVehicle(applicant, data) {
@@ -773,121 +867,121 @@ class Application {
             //     break
 
 
-            case 'driver-license':
-                target = 'aplDLs'
-                idProp = 'aplId'
+            // case 'driver-license':
+            //     target = 'aplDLs'
+            //     idProp = 'aplId'
 
-                checkExpl = data => {
-                    if (
-                        (data['denied'] && !data['deniedExpl']) ||
-                        (data['revoked'] && !data['revokedExpl'])
-                    ) return 'Data Submission Error: Explanation not provided'
-                }
+            //     checkExpl = data => {
+            //         if (
+            //             (data['denied'] && !data['deniedExpl']) ||
+            //             (data['revoked'] && !data['revokedExpl'])
+            //         ) return 'Data Submission Error: Explanation not provided'
+            //     }
 
-                if (!data['denied']) data['deniedExpl'] = null
-                if (!data['revoked']) data['revokedExpl'] = null
+            //     if (!data['denied']) data['deniedExpl'] = null
+            //     if (!data['revoked']) data['revokedExpl'] = null
 
-                if (!this.dl) {
-                    data = processData(data)
-                    data.aplId = id
-                    mainData.step = 2
-                    action = 'insert'
+            //     if (!this.dl) {
+            //         data = processData(data)
+            //         data.aplId = id
+            //         mainData.step = 2
+            //         action = 'insert'
 
-                    error = checkExpl(data)
-                } else {
-                    currentData.driverLicense = this.dl.number
-                    const props = [
-                        'class', 'state',
-                        'issuedOn', 'expiresOn',
-                        'endorsement', 'restriction',
-                        'denied', 'deniedExpl',
-                        'revoked', 'revokedExpl',
-                    ]
-                    props.forEach(prop => currentData[`DL_${prop}`] = this.dl[prop])
-                    currentUpdateLog = await this.log('updateLog', target)
+            //         error = checkExpl(data)
+            //     } else {
+            //         currentData.driverLicense = this.dl.number
+            //         const props = [
+            //             'class', 'state',
+            //             'issuedOn', 'expiresOn',
+            //             'endorsement', 'restriction',
+            //             'denied', 'deniedExpl',
+            //             'revoked', 'revokedExpl',
+            //         ]
+            //         props.forEach(prop => currentData[`DL_${prop}`] = this.dl[prop])
+            //         currentUpdateLog = await this.log('updateLog', target)
 
-                    data = processData(data, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData,
-                        currentUpdateLog,
-                    })
+            //         data = processData(data, {
+            //             modifiedBy,
+            //             branch,
+            //             siteId,
+            //             currentData,
+            //             currentUpdateLog,
+            //         })
 
-                    error = checkExpl(data)
-                }
+            //         error = checkExpl(data)
+            //     }
 
-                break
+            //     break
 
 
-            case 'medical-card':
-                target = 'aplMECs'
-                idProp = 'aplId'
+            // case 'medical-card':
+            //     target = 'aplMECs'
+            //     idProp = 'aplId'
 
-                if (data.underMeds && !data.medList)
-                    error = 'Data Submission Error: Medical List not provided'
-                if (!data.underMeds) data.medList = null
+            //     if (data.underMeds && !data.medList)
+            //         error = 'Data Submission Error: Medical List not provided'
+            //     if (!data.underMeds) data.medList = null
 
-                if (!this.dl.commercial && data.mecAbsent && !data.expiresOn) mainData.medCard = false
-                delete data.mecAbsent
+            //     if (!this.dl.commercial && data.mecAbsent && !data.expiresOn) mainData.medCard = false
+            //     delete data.mecAbsent
 
-                mainData.underMeds = data.underMeds
-                mainData.medList = data.medList || null
-                delete data.underMeds
-                delete data.medList
+            //     mainData.underMeds = data.underMeds
+            //     mainData.medList = data.medList || null
+            //     delete data.underMeds
+            //     delete data.medList
 
-                if (this.step < 3) {
-                    mainData = processData(mainData)
-                    mainData.step = 3
+            //     if (this.step < 3) {
+            //         mainData = processData(mainData)
+            //         mainData.step = 3
 
-                    if (mainData.medCard !== false) {
-                        if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
-                        else {
-                            data = processData(data)
-                            data.aplId = id
-                            action = 'insert'
-                        }
-                    }
-                } else {
-                    if (mainData.medCard === false) {
-                        if (this.mec) {
-                            const [ result ] = await mysql.execute(query.aplMECs.delete({ aplId: id }))
-                            if (result.affectedRows !== 1) error = 'DB Error: Could not delete MEC record'
-                        }
-                    } else {
-                        mainData.medCard = true
+            //         if (mainData.medCard !== false) {
+            //             if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
+            //             else {
+            //                 data = processData(data)
+            //                 data.aplId = id
+            //                 action = 'insert'
+            //             }
+            //         }
+            //     } else {
+            //         if (mainData.medCard === false) {
+            //             if (this.mec) {
+            //                 const [ result ] = await mysql.execute(query.aplMECs.delete({ aplId: id }))
+            //                 if (result.affectedRows !== 1) error = 'DB Error: Could not delete MEC record'
+            //             }
+            //         } else {
+            //             mainData.medCard = true
 
-                        if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
-                        else {
-                            if (this.mec) {
-                                currentData = this.mec
-                                currentUpdateLog = await this.log('updateLog', target)
+            //             if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
+            //             else {
+            //                 if (this.mec) {
+            //                     currentData = this.mec
+            //                     currentUpdateLog = await this.log('updateLog', target)
 
-                                data = processData(data, {
-                                    modifiedBy,
-                                    branch,
-                                    siteId,
-                                    currentData,
-                                    currentUpdateLog,
-                                })
-                            } else {
-                                data = processData(data)
-                                data.aplId = id
-                                action = 'insert'
-                            }
-                        }
-                    }
+            //                     data = processData(data, {
+            //                         modifiedBy,
+            //                         branch,
+            //                         siteId,
+            //                         currentData,
+            //                         currentUpdateLog,
+            //                     })
+            //                 } else {
+            //                     data = processData(data)
+            //                     data.aplId = id
+            //                     action = 'insert'
+            //                 }
+            //             }
+            //         }
 
-                    mainData = processData(mainData, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: this,
-                        currentUpdateLog: await this.log('updateLog'),
-                    })
-                }
+            //         mainData = processData(mainData, {
+            //             modifiedBy,
+            //             branch,
+            //             siteId,
+            //             currentData: this,
+            //             currentUpdateLog: await this.log('updateLog'),
+            //         })
+            //     }
 
-                break
+            //     break
 
 
             case 'legal-compliance':
