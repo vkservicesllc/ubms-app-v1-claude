@@ -627,7 +627,7 @@ class Application {
 
             case 'medical-card':
                 {
-                    const mainData = {}
+                    let mainData = {}
 
                     if (!data.underMeds) data.medList = null
                     if (!this.dl.commercial && data.mecAbsent && !data.expiresOn) mainData.medCard = false
@@ -688,7 +688,6 @@ class Application {
             if (!applicant.vehicle) {
                 data = processData(data)
                 data.aplId = id
-                data.createdBy = modifiedBy
 
                 const [ result ] = await mysql.execute(query.aplVehicles.insert(data))
                 if (result.affectedRows > 0) modified = true
