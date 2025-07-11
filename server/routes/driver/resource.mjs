@@ -130,7 +130,7 @@ const dynamicValidator = {
             case 'position':
                 validators = [ ...validateApplicantPosition, ...validateApplicantVehicle ]
                 break
-            case 'address':
+            case 'residence':
                 validators = [ ...validateApplicantAddress, ...validateApplicantPrevAddress ]
                 break
             case 'driver-license':

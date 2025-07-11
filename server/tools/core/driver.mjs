@@ -469,6 +469,164 @@ class Application {
 
         const id = await this.id()
         const { branch, siteId } = session
+        const modifiedBy = session.user && session.user !== true
+            ? await session.user.id()
+            : null
+
+        switch (step) {
+
+            case 'profile':
+                {
+                    if (data.nameMismatch === 'on')
+                    data.nameMismatch = false
+
+                    data = processData(data, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+                    if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
+
+                    if (data.firstName || 'middleName' in data || data.lastName || 'suffix' in data)
+                        data.nameMismatch = true
+
+                    const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                    if (result.affectedRows > 0) modified = true
+                }
+                break
+
+            case 'legal-status': //* Carrier UI only
+                {
+                    if (data.status < 2) data.statusExpiresOn = null
+                    data = processData(data, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: {
+                            status: this.legalStatus[0],
+                            statusExpiresOn: this.legalStatus[1],
+                        },
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+
+                    const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                    if (result.affectedRows > 0) modified = true
+                }
+                break
+
+            case 'position': //* Carrier UI only
+                {
+                    const { position, mmt, type, make, model, year, length } = data
+                    data = { position }
+
+                    data = processData(data, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData: { condition: this.condition[0] },
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+
+                    if (position !== 'OO') await mysql.execute(query.aplVehicles.delete({ aplId: id }))
+                    else
+                        modified = await modifyVehicle(this, { mmt, type, make, model, year, length })
+
+                    const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                    if (result.affectedRows > 0) modified = true
+                }
+                break
+
+            case 'residence':
+                {
+                    const currentData = { ...this.address }
+                    currentData.state = currentData.state[0]
+                    currentData.addrSince = currentData.since
+                    currentData.addrEnough = currentData.enough
+
+                    const addrEnough = !dateAfter(data.addrSince, 3, 'years', this.finishedAt)
+                    const { addresses, livedAbroad } = data
+                    delete data.addresses
+                    data.addrEnough = addrEnough
+                    if (this.step === 0) data.step = 1
+
+                    data = processData(data, {
+                        modifiedBy,
+                        branch,
+                        siteId,
+                        currentData,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+
+                    await mysql.execute(query.aplAddresses.delete({ aplId: id }))
+
+                    if (!addrEnough && !livedAbroad) {
+                        const addrData = []
+                        const { address1, address2, zip, city, state, since, livedAbroad } = addresses
+                        const count = zip.length
+
+                        for (let i = 0; i < count; i++) {
+                            addrData.push({
+                                aplId: id,
+                                address1: address1[i],
+                                address2: address2[i],
+                                zip: zip[i],
+                                city: city[i],
+                                state: state[i],
+                                since: since[i],
+                                livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
+                            })
+                        }
+
+                        const [ result ] = await mysql.execute(query.aplAddresses.insert(addrData))
+                        if (result.affectedRows) modified = true
+                    }
+
+                    const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                    if (result.affectedRows > 0) modified = true
+                }
+                break
+
+        }
+
+        async function modifyVehicle(applicant, data) {
+            if (!applicant.vehicle) {
+                data = processData(data)
+                data.aplId = id
+                data.createdBy = modifiedBy
+
+                const [ result ] = await mysql.execute(query.aplVehicles.insert(data))
+                if (result.affectedRows > 0) modified = true
+            } else {
+                data = processData(data, {
+                    modifiedBy,
+                    branch,
+                    siteId,
+                    currentData: applicant.vehicle,
+                    currentUpdateLog: await applicant.log('updateLog', 'aplVehicles'),
+                })
+
+                const [ result ] = await mysql.execute(query.aplVehicles.update(data, { aplId: id }))
+                if (result.affectedRows > 0) modified = true
+            }
+
+            return modified
+        }
+
+        return { modified, error }
+    }
+
+
+    modify_OLD = async (session, step, data) => {
+        let modified = false,
+            error = sessionError(session, { branches: [ 'carrier', 'driver' ] })
+
+        if (!error && !['p', 'c'].includes(this.condition)) error = 'Permission Error: Application Locked'
+        if (error) return { modified, error }
+
+        const id = await this.id()
+        const { branch, siteId } = session
         let modifiedBy = null,
             currentData = {},
             currentUpdateLog,
@@ -486,133 +644,133 @@ class Application {
         switch (step) {
 
 
-            case 'profile':
-                currentData = { ...this }
-                if (currentData.position)
-                    currentData.position = currentData.position[0]
+            // case 'profile':
+            //     currentData = { ...this }
+            //     if (currentData.position)
+            //         currentData.position = currentData.position[0]
 
-                if (data.nameMismatch === 'on')
-                    data.nameMismatch = false
+            //     if (data.nameMismatch === 'on')
+            //         data.nameMismatch = false
 
-                data = processData(data, {
-                    modifiedBy,
-                    branch,
-                    siteId,
-                    currentData,
-                    currentUpdateLog: await this.log('updateLog'),
-                })
-                if (data.ssn)
-                    data.ssn = { aes: [ data.ssn, ssnSecret ] }
+            //     data = processData(data, {
+            //         modifiedBy,
+            //         branch,
+            //         siteId,
+            //         currentData,
+            //         currentUpdateLog: await this.log('updateLog'),
+            //     })
+            //     if (data.ssn)
+            //         data.ssn = { aes: [ data.ssn, ssnSecret ] }
 
-                if (data.firstName || 'middleName' in data || data.lastName || 'suffix' in data)
-                    data.nameMismatch = true
+            //     if (data.firstName || 'middleName' in data || data.lastName || 'suffix' in data)
+            //         data.nameMismatch = true
 
-                break
-
-
-            case 'legal-status':
-                currentData = {
-                    status: this.legalStatus[0],
-                    statusExpiresOn: this.legalStatus[1],
-                }
-                if (data.status < 2) data.statusExpiresOn = null
-
-                data = processData(data, {
-                    modifiedBy,
-                    branch,
-                    siteId,
-                    currentData,
-                    currentUpdateLog: await this.log('updateLog'),
-                })
-
-                break
+            //     break
 
 
-            case 'position':
-                currentData = {
-                    position: this.position[0],
-                }
+            // case 'legal-status':
+            //     currentData = {
+            //         status: this.legalStatus[0],
+            //         statusExpiresOn: this.legalStatus[1],
+            //     }
+            //     if (data.status < 2) data.statusExpiresOn = null
 
-                mainData.position = data.position
-                mainData = processData(mainData, {
-                    modifiedBy,
-                    branch,
-                    siteId,
-                    currentData: this,
-                    currentUpdateLog: await this.log('updateLog'),
-                })
+            //     data = processData(data, {
+            //         modifiedBy,
+            //         branch,
+            //         siteId,
+            //         currentData,
+            //         currentUpdateLog: await this.log('updateLog'),
+            //     })
 
-                {
-                    const { mmt, type, make, model, year, length } = data
-                        delete data.mmt
-                        delete data.type
-                        delete data.make
-                        delete data.model
-                        delete data.year
-                        delete data.length
+            //     break
 
-                    if (data.position !== 'OO')
-                        await mysql.execute(query.aplVehicles.delete({ aplId: id }))
-                    else {
-                        data2 = { mmt, type, make, model, year, length }
-                        target2 = 'aplVehicles'
-                        idProp = 'aplId'
 
-                        //
-                    }
-                }
+            // case 'position':
+            //     currentData = {
+            //         position: this.position[0],
+            //     }
 
-                break
+            //     mainData.position = data.position
+            //     mainData = processData(mainData, {
+            //         modifiedBy,
+            //         branch,
+            //         siteId,
+            //         currentData: this,
+            //         currentUpdateLog: await this.log('updateLog'),
+            //     })
+
+            //     {
+            //         const { mmt, type, make, model, year, length } = data
+            //         delete data.mmt
+            //         delete data.type
+            //         delete data.make
+            //         delete data.model
+            //         delete data.year
+            //         delete data.length
+
+            //         if (data.position !== 'OO')
+            //             await mysql.execute(query.aplVehicles.delete({ aplId: id }))
+            //         else {
+            //             data2 = { mmt, type, make, model, year, length }
+            //             target2 = 'aplVehicles'
+            //             idProp = 'aplId'
+
+            //             //
+            //         }
+            //     }
+
+            //     break
 
             
-            case 'address':
-                currentData = { ...this.address }
-                currentData.state = currentData.state[0]
-                currentData.addrSince = currentData.since
-                currentData.addrEnough = currentData.enough
-                currentUpdateLog = await this.log('updateLog')
+            // case 'address':
+            //     currentData = { ...this.address }
+            //     currentData.state = currentData.state[0]
+            //     currentData.addrSince = currentData.since
+            //     currentData.addrEnough = currentData.enough
+            //     currentUpdateLog = await this.log('updateLog')
 
-                const addrEnough = !dateAfter(data.addrSince, 3, 'years', this.finishedAt)
-                const { addresses, livedAbroad } = data
+            //     const addrEnough = !dateAfter(data.addrSince, 3, 'years', this.finishedAt)
+            //     const { addresses, livedAbroad } = data
 
-                mainData = { ...data }
-                delete mainData.addresses
-                data = []
-                await mysql.execute(query.aplAddresses.delete({ aplId: id }))
+            //     mainData = { ...data }
+            //     delete mainData.addresses
+            //     data = []
+            //     await mysql.execute(query.aplAddresses.delete({ aplId: id }))
 
-                mainData.addrEnough = addrEnough
+            //     mainData.addrEnough = addrEnough
 
-                mainData = processData(mainData, {
-                    modifiedBy,
-                    branch,
-                    siteId,
-                    currentData,
-                    currentUpdateLog,
-                })
-                if (this.step === 0) mainData.step = 1
+            //     mainData = processData(mainData, {
+            //         modifiedBy,
+            //         branch,
+            //         siteId,
+            //         currentData,
+            //         currentUpdateLog,
+            //     })
+            //     if (this.step === 0) mainData.step = 1
 
-                if (!addrEnough && !livedAbroad) {
-                    target = 'aplAddresses'
-                    idProp = 'aplId'
-                    action = 'insert'
+            //     if (!addrEnough && !livedAbroad) {
+            //         target = 'aplAddresses'
+            //         idProp = 'aplId'
+            //         action = 'insert'
 
-                    const { address1, address2, zip, city, state, since, livedAbroad } = addresses
-                    const count = zip.length
-                    for (let i = 0; i < count; i++) {
-                        data.push({
-                            aplId: id,
-                            address1: address1[i],
-                            address2: address2[i],
-                            zip: zip[i],
-                            city: city[i],
-                            state: state[i],
-                            since: since[i],
-                            livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
-                        })
-                    }
-                }
+            //         const { address1, address2, zip, city, state, since, livedAbroad } = addresses
+            //         const count = zip.length
+            //         for (let i = 0; i < count; i++) {
+            //             data.push({
+            //                 aplId: id,
+            //                 address1: address1[i],
+            //                 address2: address2[i],
+            //                 zip: zip[i],
+            //                 city: city[i],
+            //                 state: state[i],
+            //                 since: since[i],
+            //                 livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
+            //             })
+            //         }
+            //     }
 
-                break
+            //     break
 
 
             case 'driver-license':
@@ -1120,25 +1278,25 @@ class Application {
 
         }
 
-        if (!error) {
-            if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
-                const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
-                if (result.affectedRows > 0) modified = true
-            }
+        // if (!error) {
+        //     if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
+        //         const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
+        //         if (result.affectedRows > 0) modified = true
+        //     }
 
-            if (Object.keys(mainData).length) {
-                const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
-                if (!modified && result.affectedRows === 1) modified = true
-            }
+        //     if (Object.keys(mainData).length) {
+        //         const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
+        //         if (!modified && result.affectedRows === 1) modified = true
+        //     }
 
-            if ((Array.isArray(data2) && data2.length) || Object.keys(data2).length) {
-                //* Data is deleted prior to insertion
-                if (Array.isArray(data2)) action = 'insert'
+        //     if ((Array.isArray(data2) && data2.length) || Object.keys(data2).length) {
+        //         //* Data is deleted prior to insertion
+        //         if (Array.isArray(data2)) action = 'insert'
 
-                const [ result ] = await mysql.execute(query[target2][action](data2, { [idProp]: id }))
-                if (result.affectedRows > 0) modified = true
-            }
-        }
+        //         const [ result ] = await mysql.execute(query[target2][action](data2, { [idProp]: id }))
+        //         if (result.affectedRows > 0) modified = true
+        //     }
+        // }
 
         return { modified, error }
     }

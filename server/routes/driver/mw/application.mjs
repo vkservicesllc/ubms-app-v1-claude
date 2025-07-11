@@ -228,7 +228,7 @@ export const applicationProgress = async (req, res) => {
 
         hbs.actionUrl = {
             profile: `${recUrl}/profile`,
-            address: `${recUrl}/address`,
+            address: `${recUrl}/residence`,
             dl: `${recUrl}/driver-license`,
             mec: `${recUrl}/medical-card`,
             legal: `${recUrl}/legal-compliance`,
