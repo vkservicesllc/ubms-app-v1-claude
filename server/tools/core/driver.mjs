@@ -472,6 +472,7 @@ class Application {
         const modifiedBy = session.user && session.user !== true
             ? await session.user.id()
             : null
+        const dataLen = data => Object.keys(data).length > 0
 
         switch (step) {
 
@@ -492,8 +493,10 @@ class Application {
                     if (data.firstName || 'middleName' in data || data.lastName || 'suffix' in data)
                         data.nameMismatch = true
 
-                    const [ result ] = await mysql.execute(query.applications.update(data, { id }))
-                    if (result.affectedRows > 0) modified = true
+                    if (dataLen(data)) {
+                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
                 }
                 break
 
@@ -511,8 +514,10 @@ class Application {
                         currentUpdateLog: await this.log('updateLog'),
                     })
 
-                    const [ result ] = await mysql.execute(query.applications.update(data, { id }))
-                    if (result.affectedRows > 0) modified = true
+                    if (dataLen(data)) {
+                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
                 }
                 break
 
@@ -533,8 +538,10 @@ class Application {
                     else
                         modified = await modifyVehicle(this, { mmt, type, make, model, year, length })
 
-                    const [ result ] = await mysql.execute(query.applications.update(data, { id }))
-                    if (result.affectedRows > 0) modified = true
+                    if (dataLen(data)) {
+                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
                 }
                 break
 
@@ -580,11 +587,13 @@ class Application {
                         }
 
                         const [ result ] = await mysql.execute(query.aplAddresses.insert(addrData))
-                        if (result.affectedRows) modified = true
+                        if (result.affectedRows === 1) modified = true
                     }
 
-                    const [ result ] = await mysql.execute(query.applications.update(data, { id }))
-                    if (result.affectedRows > 0) modified = true
+                    if (dataLen(data)) {
+                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
                 }
                 break
 
@@ -619,8 +628,10 @@ class Application {
                             currentUpdateLog: await this.log('updateLog', 'aplDLs'),
                         })
 
-                        const [ result ] = await mysql.execute(query.aplDLs.update(data, { aplId: id }))
-                        if (result.affectedRows === 1) modified = true
+                        if (dataLen(data)) {
+                            const [ result ] = await mysql.execute(query.aplDLs.update(data, { aplId: id }))
+                            if (result.affectedRows === 1) modified = true
+                        }
                     }
                 }
                 break
@@ -664,8 +675,10 @@ class Application {
                                         currentUpdateLog: await this.log('updateLog', 'aplMECs'),
                                     })
 
-                                    const [ result ] = await mysql.execute(query.aplMECs.update(data, { aplId: id }))
-                                    if (result.affectedRows === 1) modified = true
+                                    if (dataLen(data)) {
+                                        const [ result ] = await mysql.execute(query.aplMECs.update(data, { aplId: id }))
+                                        if (result.affectedRows === 1) modified = true
+                                    }
                                 } else {
                                     data = processData(data)
                                     data.aplId = id
@@ -677,9 +690,280 @@ class Application {
                         }
                     }
 
-                    const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
-                    if (result.affectedRows > 0) modified = true
+                    if (dataLen(mainData)) {
+                        const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
                 }
+                break
+
+            case 'legal-compliance':
+                {
+                    if (!data.dui) data.duiInDecade = null
+                    if (!data.criminal) data.criminalExpl = null
+
+                    const { citations, violation, other: otherViolation, citedOn, state: citState } = data
+                    delete data.violation
+                    delete data.other
+                    delete data.citedOn
+                    delete data.state
+                    if (!violation && data.citations) data.citations = false
+
+                    if (this.step < 4) {
+                        data = processData(data)
+                        data.step = 4
+                    } else {
+                        data = processData(data, {
+                            modifiedBy,
+                            branch,
+                            siteId,
+                            currentData: this,
+                            currentUpdateLog: await this.log('updateLog'),
+                        })
+                    }
+
+                    if (dataLen(data)) {
+                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
+
+                    await mysql.execute(query.aplCitations.delete({ aplId: id }))
+
+                    if (citations) {
+                        const count = violation.length
+                        data = []
+
+                        for (let i = 0; i < count; i++) {
+                            data.push({
+                                aplId: id,
+                                violation: violation[i],
+                                other: violation[i] === 'other' ? otherViolation?.[i] : null,
+                                citedOn: citedOn[i],
+                                state: citState[i],
+                            })
+                        }
+
+                        const [ result ] = await mysql.execute(query.aplCitations.insert(data))
+                        if (result.affectedRows > 0) modified = true
+                    }
+                }
+                break
+
+            case 'safety':
+                {
+                    const { accidents, collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = data
+                    data = { accidents }
+                    if (!collision && data.accidents) data.accidents = false
+
+                    if (this.step < 5) {
+                        data = processData(data)
+                        data.step = 5
+                    } else {
+                        data = processData(data, {
+                            modifiedBy,
+                            branch,
+                            siteId,
+                            currentData: this,
+                            currentUpdateLog: await this.log('updateLog'),
+                        })
+                    }
+
+                    if (dataLen(data)) {
+                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
+
+                    await mysql.execute(query.aplAccidents.delete({ aplId: id }))
+
+                    if (accidents) {
+                        const count = collision.length
+                        data = []
+
+                        for (let i = 0; i < count; i++) {
+                            data.push({
+                                aplId: id,
+                                collision: collision[i],
+                                other: collision[i] === 'other' ? otherCollision?.[i] : null,
+                                date: accDate[i],
+                                state: accState[i],
+                                injuries: injuries[i],
+                                fatalities: fatalities[i],
+                            })
+                        }
+
+                        const [ result ] = await mysql.execute(query.aplAccidents.insert(data))
+                        if (result.affectedRows > 0) modified = true
+                    }
+                }
+                break
+
+            case 'experience':
+                {
+                    const experience = data.noExp !== true
+                    delete data.experience
+                    let mainData = { experience }
+
+                    if (this.step < 6) {
+                        mainData = processData(mainData)
+                        mainData.step = 6
+                    } else
+                        mainData = processData(mainData, {
+                            modifiedBy,
+                            branch,
+                            siteId,
+                            currentData: { experience: !!this.experience },
+                            currentUpdateLog: await this.log('updateLog'),
+                        })
+
+                    if (dataLen(mainData)) {
+                        const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
+
+                    await mysql.execute(query.aplExperiences.delete({ aplId: id }))
+
+                    if (experience) {
+                        if (data?.vehicles?.misc) {
+                            const { misc } = data.vehicles
+                            data.vehicles.misc = []
+
+                            for (const prop in misc)
+                                data.vehicles.misc.push(prop)
+                        }
+
+                        if (data.cmv === false) {
+                            if (data?.vehicles?.semi) delete data.vehicles.semi
+                            if (data?.vehicles?.misc) data.vehicles.misc = data.vehicles.misc.filter(value => value !== 'tandem')
+                        }
+
+                        if (data.vehicles) data.vehicles = JSON.stringify(data.vehicles)
+                        if (data.hours) data.hours = JSON.stringify(data.hours.map(value => +value))
+
+                        data.aplId = id
+
+                        const [ result ] = await mysql.execute(query.aplExperiences.insert(data))
+                        if (result.affectedRows === 1) modified = true
+                    }
+                }
+                break
+
+            case 'pre-employment':
+                {
+                    const {
+                        prevEmployed,
+                        employer, phone, address1, address2, zip, city, state,
+                        startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
+                    } = data
+                    data = { prevEmployed }
+
+                    if (this.step < 7) {
+                        data = processData(data)
+                        data.step = 7
+                    } else
+                        data = processData(data, {
+                            modifiedBy,
+                            branch,
+                            siteId,
+                            currentData: this,
+                            currentUpdateLog: await this.log('updateLog'),
+                        })
+
+                    if (dataLen(data)) {
+                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
+
+                    await (mysql.execute(query.aplEmployers.delete({ aplId: id })))
+
+                    if (prevEmployed) {
+                        const count = employer.length
+                        data = []
+
+                        for (let i = 0; i < count; i++)
+                            data.push({
+                                aplId: id,
+                                employer: employer[i],
+                                phone: phone[i],
+                                address1: address1[i],
+                                address2: address2[i],
+                                city: city[i],
+                                state: state[i],
+                                zip: zip[i],
+                                startedOn: startedOn[i],
+                                position: position[i],
+                                earnings: earnings[i],
+                                fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
+                                dotDat: dotDat[i],
+                                rfl: rfl[i],
+                                leftOn: leftOn[i],
+                            })
+
+                        const [ result ] = await mysql.execute(query.aplEmployers.insert(data))
+                        if (result.affectedRows > 0) modified = true
+                    }
+                }
+                break
+
+            case 'preference':
+                {
+                    let { haulRegion, equipment } = data
+                    delete data.haulRegion
+                    delete data.equipment
+
+                    if (haulRegion) haulRegion = JSON.stringify(haulRegion)
+                    if (equipment) equipment = JSON.stringify(equipment)
+
+                    if (data.operType === 's') {
+                        data.teamName = null
+                        data.teamPhone = null
+                    }
+
+                    if (this.deptId === 0) {
+                        data.haulRegion = haulRegion
+                        data.equipment = equipment
+                    }
+
+                    if (!this.preference) {
+                        data = processData(data)
+                        data.aplId = id
+
+                        let [ result ] = await mysql.execute(query.applications.update({ step: 8 }, { id }))
+                        if (result.affectedRows === 1) modified = true
+
+                        [ result ] = await mysql.execute(query.aplPreferences.insert(data))
+                    } else {
+                        const currentData = { ...this.preference }
+
+                        currentData.startPref = +currentData.startPref
+                        delete currentData.haulRegion
+                        delete currentData.equipmentType
+
+                        data = processData(data, {
+                            modifiedBy,
+                            branch,
+                            siteId,
+                            currentData,
+                            currentUpdateLog: await this.log('updateLog', 'aplPreferences'),
+                        })
+
+                        if (dataLen(data)) {
+                            const [ result ] = await mysql.execute(query.aplPreferences.update(data, { aplId: id }))
+                            if (result.affectedRows === 1) modified = true
+                        }
+                    }
+                }
+                break
+
+            case 'business':
+                {}
+                break
+
+            case 'beneficiary':
+                {}
+                break
+
+            case 'misc':
+                {}
                 break
 
         }
@@ -983,252 +1267,252 @@ class Application {
             //     break
 
 
-            case 'legal-compliance':
-                target = 'aplCitations'
-                action = 'insert' //! for now it is easier to delete and insert newly submitted citations, `updateLog` is redundant at this point
+            // case 'legal-compliance':
+            //     target = 'aplCitations'
+            //     action = 'insert' //! for now it is easier to delete and insert newly submitted citations, `updateLog` is redundant at this point
 
-                if (data.dui && typeof data.duiInDecade !== 'boolean')
-                    error = 'Data Submission Error: Explanation not provided for DUI'
-                if (!data.dui) data.duiInDecade = null
+            //     if (data.dui && typeof data.duiInDecade !== 'boolean')
+            //         error = 'Data Submission Error: Explanation not provided for DUI'
+            //     if (!data.dui) data.duiInDecade = null
 
-                if (data.criminal && !data.criminalExpl)
-                    error = 'Data Submission Error: Explanation not provided for Criminal Record'
-                if (!data.criminal) data.criminalExpl = null
+            //     if (data.criminal && !data.criminalExpl)
+            //         error = 'Data Submission Error: Explanation not provided for Criminal Record'
+            //     if (!data.criminal) data.criminalExpl = null
 
-                const { citations } = data
+            //     const { citations } = data
 
-                mainData.dui = data.dui
-                mainData.duiInDecade = data.duiInDecade
-                mainData.criminal = data.criminal
-                mainData.criminalExpl = data.criminalExpl
-                mainData.dotDat = data.dotDat
-                mainData.citations = citations
+            //     mainData.dui = data.dui
+            //     mainData.duiInDecade = data.duiInDecade
+            //     mainData.criminal = data.criminal
+            //     mainData.criminalExpl = data.criminalExpl
+            //     mainData.dotDat = data.dotDat
+            //     mainData.citations = citations
 
-                await mysql.execute(query.aplCitations.delete({ aplId: id }))
+            //     await mysql.execute(query.aplCitations.delete({ aplId: id }))
 
-                const { violation, other: otherViolation, citedOn, state: citState  } = data
-                data = []
+            //     const { violation, other: otherViolation, citedOn, state: citState  } = data
+            //     data = []
 
-                //! DOESN'T MAKE SENSE
-                if (!violation && data.citations) data.citations = false
+            //     //! DOESN'T MAKE SENSE
+            //     if (!violation && data.citations) data.citations = false
 
-                if (this.step < 4) {
-                    mainData = processData(mainData)
-                    mainData.step = 4
-                } else
-                    mainData = processData(mainData, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: this,
-                        currentUpdateLog: await this.log('updateLog'),
-                    })
+            //     if (this.step < 4) {
+            //         mainData = processData(mainData)
+            //         mainData.step = 4
+            //     } else
+            //         mainData = processData(mainData, {
+            //             modifiedBy,
+            //             branch,
+            //             siteId,
+            //             currentData: this,
+            //             currentUpdateLog: await this.log('updateLog'),
+            //         })
 
-                if (citations) {
-                    const count = violation.length
+            //     if (citations) {
+            //         const count = violation.length
 
-                    for (let i = 0; i < count; i++) {
-                        data.push({
-                            aplId: id,
-                            violation: violation[i],
-                            other: violation[i] === 'other' ? otherViolation?.[i] : null,
-                            citedOn: citedOn[i],
-                            state: citState[i],
-                        })
-                    }
-                }
+            //         for (let i = 0; i < count; i++) {
+            //             data.push({
+            //                 aplId: id,
+            //                 violation: violation[i],
+            //                 other: violation[i] === 'other' ? otherViolation?.[i] : null,
+            //                 citedOn: citedOn[i],
+            //                 state: citState[i],
+            //             })
+            //         }
+            //     }
 
-                break
-
-
-            case 'safety':
-                target = 'aplAccidents'
-                action = 'insert' //! for now it is easier to delete and insert newly submitted accidents, `updateLog` is redundant at this point
-
-                const { accidents } = data
-                mainData.accidents = accidents
-
-                await mysql.execute(query.aplAccidents.delete({ aplId: id }))
-
-                const { collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = data
-                data = []
-
-                //! DOESN'T MAKE SENSE
-                if (!collision && data.accidents) data.accidents = false
-
-                if (this.step < 5) {
-                    mainData = processData(mainData)
-                    mainData.step = 5
-                } else
-                    mainData = processData(mainData, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: this,
-                        currentUpdateLog: await this.log('updateLog'),
-                    })
-
-                if (accidents) {
-                    const count = collision.length
-
-                    for (let i = 0; i < count; i++) {
-                        data.push({
-                            aplId: id,
-                            collision: collision[i],
-                            other: collision[i] === 'other' ? otherCollision?.[i] : null,
-                            date: accDate[i],
-                            state: accState[i],
-                            injuries: injuries[i],
-                            fatalities: fatalities[i],
-                        })
-                    }
-                }
-
-                break
+            //     break
 
 
-            case 'experience':
-                target = 'aplExperiences'
-                action = 'insert' //! for now it is easier to delete and insert newly submitted experiences, `updateLog` is redundant at this point
+            // case 'safety':
+            //     target = 'aplAccidents'
+            //     action = 'insert' //! for now it is easier to delete and insert newly submitted accidents, `updateLog` is redundant at this point
 
-                await mysql.execute(query.aplExperiences.delete({ aplId: id }))
+            //     const { accidents } = data
+            //     mainData.accidents = accidents
 
-                const experience = data.noExp !== true
-                mainData.experience = experience
-                delete data.noExp
+            //     await mysql.execute(query.aplAccidents.delete({ aplId: id }))
 
-                if (this.step < 6) {
-                    mainData = processData(mainData)
-                    mainData.step = 6
-                } else
-                    mainData = processData(mainData, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: { experience: !!this.experience },
-                        currentUpdateLog: await this.log('updateLog'),
-                    })
+            //     const { collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = data
+            //     data = []
 
-                if (experience) {
-                    if (data?.vehicles?.misc) {
-                        const { misc } = data.vehicles
-                        data.vehicles.misc = []
+            //     //! DOESN'T MAKE SENSE
+            //     if (!collision && data.accidents) data.accidents = false
 
-                        for (const prop in misc)
-                            data.vehicles.misc.push(prop)
-                    }
+            //     if (this.step < 5) {
+            //         mainData = processData(mainData)
+            //         mainData.step = 5
+            //     } else
+            //         mainData = processData(mainData, {
+            //             modifiedBy,
+            //             branch,
+            //             siteId,
+            //             currentData: this,
+            //             currentUpdateLog: await this.log('updateLog'),
+            //         })
 
-                    if (data.cmv === false) {
-                        if (data?.vehicles?.semi) delete data.vehicles.semi
-                        if (data?.vehicles?.misc) data.vehicles.misc = data.vehicles.misc.filter(value => value !== 'tandem')
-                    }
+            //     if (accidents) {
+            //         const count = collision.length
 
-                    if (data.vehicles) data.vehicles = JSON.stringify(data.vehicles)
-                    if (data.hours) data.hours = JSON.stringify(data.hours.map(value => +value))
+            //         for (let i = 0; i < count; i++) {
+            //             data.push({
+            //                 aplId: id,
+            //                 collision: collision[i],
+            //                 other: collision[i] === 'other' ? otherCollision?.[i] : null,
+            //                 date: accDate[i],
+            //                 state: accState[i],
+            //                 injuries: injuries[i],
+            //                 fatalities: fatalities[i],
+            //             })
+            //         }
+            //     }
 
-                    data.aplId = id
-                } else data = {}
-
-                break
-
-
-            case 'pre-employment':
-                target = 'aplEmployers'
-                action = 'insert' //! for now it is easier to delete and insert newly submitted employments, `updateLog` is redundant at this point
-
-                const { prevEmployed } = data
-                mainData.prevEmployed = prevEmployed
-
-                await (mysql.execute(query.aplEmployers.delete({ aplId: id })))
-
-                const {
-                    employer, phone, address1, address2, zip, city, state,
-                    startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
-                } = data
-                data = []
-
-                if (this.step < 7) {
-                    mainData = processData(mainData)
-                    mainData.step = 7
-                } else
-                    mainData = processData(mainData, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: this,
-                        currentUpdateLog: await this.log('updateLog'),
-                    })
-
-                if (prevEmployed) {
-                    const count = employer.length
-
-                    for (let i = 0; i < count; i++)
-                        data.push({
-                            aplId: id,
-                            employer: employer[i],
-                            phone: phone[i],
-                            address1: address1[i],
-                            address2: address2[i],
-                            city: city[i],
-                            state: state[i],
-                            zip: zip[i],
-                            startedOn: startedOn[i],
-                            position: position[i],
-                            earnings: earnings[i],
-                            fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
-                            dotDat: dotDat[i],
-                            rfl: rfl[i],
-                            leftOn: leftOn[i],
-                        })
-                }
-
-                break
+            //     break
 
 
-            case 'preference':
-                target = 'aplPreferences'
-                idProp = 'aplId'
+            // case 'experience':
+            //     target = 'aplExperiences'
+            //     action = 'insert' //! for now it is easier to delete and insert newly submitted experiences, `updateLog` is redundant at this point
 
-                let { haulRegion, equipment } = data
-                delete data.haulRegion
-                delete data.equipment
+            //     await mysql.execute(query.aplExperiences.delete({ aplId: id }))
 
-                if (haulRegion) haulRegion = JSON.stringify(haulRegion)
-                if (equipment) equipment = JSON.stringify(equipment)
+            //     const experience = data.noExp !== true
+            //     mainData.experience = experience
+            //     delete data.noExp
 
-                if (data.operType === 's') {
-                    data.teamName = null
-                    data.teamPhone = null
-                }
+            //     if (this.step < 6) {
+            //         mainData = processData(mainData)
+            //         mainData.step = 6
+            //     } else
+            //         mainData = processData(mainData, {
+            //             modifiedBy,
+            //             branch,
+            //             siteId,
+            //             currentData: { experience: !!this.experience },
+            //             currentUpdateLog: await this.log('updateLog'),
+            //         })
 
-                if (!this.preference) {
-                    data = processData(data)
-                    data.aplId = id
-                    mainData.step = 8
-                    action = 'insert'
-                } else {
-                    currentData = { ...this.preference }
-                    currentUpdateLog = await this.log('updateLog', target)
+            //     if (experience) {
+            //         if (data?.vehicles?.misc) {
+            //             const { misc } = data.vehicles
+            //             data.vehicles.misc = []
 
-                    currentData.startPref = +currentData.startPref
-                    delete currentData.haulRegion
-                    delete currentData.equipmentType
+            //             for (const prop in misc)
+            //                 data.vehicles.misc.push(prop)
+            //         }
 
-                    data = processData(data, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData,
-                        currentUpdateLog,
-                    })
-                }
+            //         if (data.cmv === false) {
+            //             if (data?.vehicles?.semi) delete data.vehicles.semi
+            //             if (data?.vehicles?.misc) data.vehicles.misc = data.vehicles.misc.filter(value => value !== 'tandem')
+            //         }
 
-                if (this.deptId === 0) {
-                    data.haulRegion = haulRegion
-                    data.equipment = equipment
-                }
+            //         if (data.vehicles) data.vehicles = JSON.stringify(data.vehicles)
+            //         if (data.hours) data.hours = JSON.stringify(data.hours.map(value => +value))
 
-                break
+            //         data.aplId = id
+            //     } else data = {}
+
+            //     break
+
+
+            // case 'pre-employment':
+            //     target = 'aplEmployers'
+            //     action = 'insert' //! for now it is easier to delete and insert newly submitted employments, `updateLog` is redundant at this point
+
+            //     const { prevEmployed } = data
+            //     mainData.prevEmployed = prevEmployed
+
+            //     await (mysql.execute(query.aplEmployers.delete({ aplId: id })))
+
+            //     const {
+            //         employer, phone, address1, address2, zip, city, state,
+            //         startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
+            //     } = data
+            //     data = []
+
+            //     if (this.step < 7) {
+            //         mainData = processData(mainData)
+            //         mainData.step = 7
+            //     } else
+            //         mainData = processData(mainData, {
+            //             modifiedBy,
+            //             branch,
+            //             siteId,
+            //             currentData: this,
+            //             currentUpdateLog: await this.log('updateLog'),
+            //         })
+
+            //     if (prevEmployed) {
+            //         const count = employer.length
+
+            //         for (let i = 0; i < count; i++)
+            //             data.push({
+            //                 aplId: id,
+            //                 employer: employer[i],
+            //                 phone: phone[i],
+            //                 address1: address1[i],
+            //                 address2: address2[i],
+            //                 city: city[i],
+            //                 state: state[i],
+            //                 zip: zip[i],
+            //                 startedOn: startedOn[i],
+            //                 position: position[i],
+            //                 earnings: earnings[i],
+            //                 fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
+            //                 dotDat: dotDat[i],
+            //                 rfl: rfl[i],
+            //                 leftOn: leftOn[i],
+            //             })
+            //     }
+
+            //     break
+
+
+            // case 'preference':
+            //     target = 'aplPreferences'
+            //     idProp = 'aplId'
+
+            //     let { haulRegion, equipment } = data
+            //     delete data.haulRegion
+            //     delete data.equipment
+
+            //     if (haulRegion) haulRegion = JSON.stringify(haulRegion)
+            //     if (equipment) equipment = JSON.stringify(equipment)
+
+            //     if (data.operType === 's') {
+            //         data.teamName = null
+            //         data.teamPhone = null
+            //     }
+
+            //     if (!this.preference) {
+            //         data = processData(data)
+            //         data.aplId = id
+            //         mainData.step = 8
+            //         action = 'insert'
+            //     } else {
+            //         currentData = { ...this.preference }
+            //         currentUpdateLog = await this.log('updateLog', target)
+
+            //         currentData.startPref = +currentData.startPref
+            //         delete currentData.haulRegion
+            //         delete currentData.equipmentType
+
+            //         data = processData(data, {
+            //             modifiedBy,
+            //             branch,
+            //             siteId,
+            //             currentData,
+            //             currentUpdateLog,
+            //         })
+            //     }
+
+            //     if (this.deptId === 0) {
+            //         data.haulRegion = haulRegion
+            //         data.equipment = equipment
+            //     }
+
+            //     break
 
 
             case 'business':
