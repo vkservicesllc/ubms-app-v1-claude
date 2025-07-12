@@ -482,11 +482,8 @@ class Application {
                     data.nameMismatch = false
 
                     data = processData(data, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: this,
-                        currentUpdateLog: await this.log('updateLog'),
+                        modifiedBy, branch, siteId,
+                        currentData: this, currentUpdateLog: await this.log('updateLog'),
                     })
                     if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
 
@@ -504,9 +501,7 @@ class Application {
                 {
                     if (data.status < 2) data.statusExpiresOn = null
                     data = processData(data, {
-                        modifiedBy,
-                        branch,
-                        siteId,
+                        modifiedBy, branch, siteId,
                         currentData: {
                             status: this.legalStatus[0],
                             statusExpiresOn: this.legalStatus[1],
@@ -527,9 +522,7 @@ class Application {
                     data = { position }
 
                     data = processData(data, {
-                        modifiedBy,
-                        branch,
-                        siteId,
+                        modifiedBy, branch, siteId,
                         currentData: { condition: this.condition[0] },
                         currentUpdateLog: await this.log('updateLog'),
                     })
@@ -559,11 +552,8 @@ class Application {
                     if (this.step === 0) data.step = 1
 
                     data = processData(data, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData,
-                        currentUpdateLog: await this.log('updateLog'),
+                        modifiedBy, branch, siteId,
+                        currentData, currentUpdateLog: await this.log('updateLog'),
                     })
 
                     await mysql.execute(query.aplAddresses.delete({ aplId: id }))
@@ -621,11 +611,8 @@ class Application {
                         props.forEach(prop => currentData[`DL_${prop}`] = this.dl[prop])
 
                         data = processData(data, {
-                            modifiedBy,
-                            branch,
-                            siteId,
-                            currentData,
-                            currentUpdateLog: await this.log('updateLog', 'aplDLs'),
+                            modifiedBy, branch, siteId,
+                            currentData, currentUpdateLog: await this.log('updateLog', 'aplDLs'),
                         })
 
                         if (dataLen(data)) {
@@ -668,9 +655,7 @@ class Application {
 
                                 if (this.mec) {
                                     data = processData(data, {
-                                        modifiedBy,
-                                        branch,
-                                        siteId,
+                                        modifiedBy, branch, siteId,
                                         currentData: this.mec,
                                         currentUpdateLog: await this.log('updateLog', 'aplMECs'),
                                     })
@@ -714,11 +699,8 @@ class Application {
                         data.step = 4
                     } else {
                         data = processData(data, {
-                            modifiedBy,
-                            branch,
-                            siteId,
-                            currentData: this,
-                            currentUpdateLog: await this.log('updateLog'),
+                            modifiedBy, branch, siteId,
+                            currentData: this, currentUpdateLog: await this.log('updateLog'),
                         })
                     }
 
@@ -760,9 +742,7 @@ class Application {
                         data.step = 5
                     } else {
                         data = processData(data, {
-                            modifiedBy,
-                            branch,
-                            siteId,
+                            modifiedBy, branch, siteId,
                             currentData: this,
                             currentUpdateLog: await this.log('updateLog'),
                         })
@@ -808,9 +788,7 @@ class Application {
                         mainData.step = 6
                     } else
                         mainData = processData(mainData, {
-                            modifiedBy,
-                            branch,
-                            siteId,
+                            modifiedBy, branch, siteId,
                             currentData: { experience: !!this.experience },
                             currentUpdateLog: await this.log('updateLog'),
                         })
@@ -861,11 +839,8 @@ class Application {
                         data.step = 7
                     } else
                         data = processData(data, {
-                            modifiedBy,
-                            branch,
-                            siteId,
-                            currentData: this,
-                            currentUpdateLog: await this.log('updateLog'),
+                            modifiedBy, branch, siteId,
+                            currentData: this, currentUpdateLog: await this.log('updateLog'),
                         })
 
                     if (dataLen(data)) {
@@ -939,11 +914,8 @@ class Application {
                         delete currentData.equipmentType
 
                         data = processData(data, {
-                            modifiedBy,
-                            branch,
-                            siteId,
-                            currentData,
-                            currentUpdateLog: await this.log('updateLog', 'aplPreferences'),
+                            modifiedBy, branch, siteId,
+                            currentData, currentUpdateLog: await this.log('updateLog', 'aplPreferences'),
                         })
 
                         if (dataLen(data)) {
@@ -955,7 +927,58 @@ class Application {
                 break
 
             case 'business':
-                {}
+                {
+                    const {
+                        activeLLC, busName, state, ein,
+                        llcAssistance, proposedName,
+                        mmt, type, make, model, year, length,
+                    } = data
+                    let mainData = { activeBusiness: activeLLC, businessAssist: llcAssistance }
+                    data = { busName, state, ein, proposedName }
+
+                    if (this.step < 9) {
+                        mainData = processData(mainData)
+                        mainData.step = 9
+
+                        data.aplId = id
+                        if (ein) data.ein = { aes: [ data.ein, einSecret ] }
+
+                        const [ result ] = await mysql.execute(query.aplBusinesses.insert(data))
+                        if (result.affectedRows === 1) modified = true
+                    } else {
+                        mainData = processData(mainData, {
+                            modifiedBy, branch, siteId,
+                            currentData: this, currentUpdateLog: await this.log('updateLog'),
+                        })
+
+                        if (activeLLC === true) data.proposedName = null
+                        else {
+                            data.busName = null
+                            data.state = null
+                            data.ein = null
+                        }
+
+                        data = processData(data, {
+                            modifiedBy, branch, siteId,
+                            currentData: this.business, currentUpdateLog: await this.log('updateLog', 'aplBusinesses'),
+                        })
+                        if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
+
+                        if (dataLen(data)) {
+                            const [ result ] = await mysql.execute(query.aplBusinesses.update(data, { aplId:  id }))
+                            if (result.affectedRows === 1) modified = true
+                        }
+                    }
+
+                    if (dataLen(mainData)) {
+                        const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
+
+                    //* Driver Application only
+                    if (this.position[0] === 'OO')
+                        modified = await modifyVehicle(this, { mmt, type, make, model, year, length })
+                }
                 break
 
             case 'beneficiary':
@@ -969,6 +992,20 @@ class Application {
         }
 
         async function modifyVehicle(applicant, data) {
+            if (data.mmt) {
+                if (data.mmt !== 'other') {
+                    data.type = null
+                    data.make = null
+                    data.model = null
+
+                    if (data.mmt.split(':')[0] !== 'straightBox')
+                        data.length = null
+                } else {
+                    if (data.type !== 'straightBox')
+                        data.length = null
+                }
+            }
+
             if (!applicant.vehicle) {
                 data = processData(data)
                 data.aplId = id
@@ -977,9 +1014,7 @@ class Application {
                 if (result.affectedRows > 0) modified = true
             } else {
                 data = processData(data, {
-                    modifiedBy,
-                    branch,
-                    siteId,
+                    modifiedBy, branch, siteId,
                     currentData: applicant.vehicle,
                     currentUpdateLog: await applicant.log('updateLog', 'aplVehicles'),
                 })
@@ -1515,94 +1550,94 @@ class Application {
             //     break
 
 
-            case 'business':
-                target = 'aplBusinesses'
-                idProp = 'aplId'
+            // case 'business':
+            //     target = 'aplBusinesses'
+            //     idProp = 'aplId'
 
-                const { activeLLC, llcAssistance } = data
-                delete data.activeLLC
-                delete data.llcAssistance
+            //     const { activeLLC, llcAssistance } = data
+            //     delete data.activeLLC
+            //     delete data.llcAssistance
 
-                mainData.activeBusiness = activeLLC
-                mainData.businessAssist = typeof llcAssistance === 'boolean' ? llcAssistance : null
+            //     mainData.activeBusiness = activeLLC
+            //     mainData.businessAssist = typeof llcAssistance === 'boolean' ? llcAssistance : null
 
-                if (this.position[0] === 'OO') {
-                    const { mmt, type, make, model, year, length } = data
-                    delete data.mmt
-                    delete data.type
-                    delete data.make
-                    delete data.model
-                    delete data.year
-                    delete data.length
+            //     if (this.position[0] === 'OO') {
+            //         const { mmt, type, make, model, year, length } = data
+            //         delete data.mmt
+            //         delete data.type
+            //         delete data.make
+            //         delete data.model
+            //         delete data.year
+            //         delete data.length
 
-                    data2 = { mmt, type, make, model, year, length }
-                    target2 = 'aplVehicles'
-                }
+            //         data2 = { mmt, type, make, model, year, length }
+            //         target2 = 'aplVehicles'
+            //     }
 
-                if (this.step < 9) {
-                    mainData = processData(mainData)
-                    mainData.step = 9
+            //     if (this.step < 9) {
+            //         mainData = processData(mainData)
+            //         mainData.step = 9
 
-                    action = 'insert'
-                    data = processData(data)
-                    data.aplId = id
-                    if (data.ein) data.ein = { aes: [ data.ein, einSecret ] }
+            //         action = 'insert'
+            //         data = processData(data)
+            //         data.aplId = id
+            //         if (data.ein) data.ein = { aes: [ data.ein, einSecret ] }
 
-                    if (target2) {
-                        data2 = processData(data2)
-                        data2.aplId = id
-                    }
-                } else {
-                    mainData = processData(mainData, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: this,
-                        currentUpdateLog: await this.log('updateLog'),
-                    })
+            //         if (target2) {
+            //             data2 = processData(data2)
+            //             data2.aplId = id
+            //         }
+            //     } else {
+            //         mainData = processData(mainData, {
+            //             modifiedBy,
+            //             branch,
+            //             siteId,
+            //             currentData: this,
+            //             currentUpdateLog: await this.log('updateLog'),
+            //         })
 
-                    if (activeLLC === true) data.proposedName = null
-                    else {
-                        data.busName = null
-                        data.state = null
-                        data.ein = null
-                    }
+            //         if (activeLLC === true) data.proposedName = null
+            //         else {
+            //             data.busName = null
+            //             data.state = null
+            //             data.ein = null
+            //         }
 
-                    data = processData(data, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: this.business,
-                        currentUpdateLog: await this.log('updateLog', target),
-                    })
-                    if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
+            //         data = processData(data, {
+            //             modifiedBy,
+            //             branch,
+            //             siteId,
+            //             currentData: this.business,
+            //             currentUpdateLog: await this.log('updateLog', target),
+            //         })
+            //         if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
 
-                    if (target2) {
-                        if (data2.mmt) {
-                            if (data2.mmt !== 'other') {
-                                data2.type = null
-                                data2.make = null
-                                data2.model = null
+            //         if (target2) {
+            //             if (data2.mmt) {
+            //                 if (data2.mmt !== 'other') {
+            //                     data2.type = null
+            //                     data2.make = null
+            //                     data2.model = null
 
-                                if (data2.mmt.split(':')[0] !== 'straightBox')
-                                    data2.length = null
-                            } else {
-                                if (data2.type !== 'straightBox')
-                                    data2.length = null
-                            }
-                        }
+            //                     if (data2.mmt.split(':')[0] !== 'straightBox')
+            //                         data2.length = null
+            //                 } else {
+            //                     if (data2.type !== 'straightBox')
+            //                         data2.length = null
+            //                 }
+            //             }
 
-                        data2 = processData(data2, {
-                            modifiedBy,
-                            branch,
-                            siteId,
-                            currentData: this.vehicle,
-                            currentUpdateLog: await this.log('updateLog', target2),
-                        })
-                    }
-                }
+            //             data2 = processData(data2, {
+            //                 modifiedBy,
+            //                 branch,
+            //                 siteId,
+            //                 currentData: this.vehicle,
+            //                 currentUpdateLog: await this.log('updateLog', target2),
+            //             })
+            //         }
+            //     }
 
-                break
+            //     break
 
 
             case 'beneficiary':
