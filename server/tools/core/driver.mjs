@@ -965,7 +965,7 @@ class Application {
                         if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
 
                         if (dataLen(data)) {
-                            const [ result ] = await mysql.execute(query.aplBusinesses.update(data, { aplId:  id }))
+                            const [ result ] = await mysql.execute(query.aplBusinesses.update(data, { aplId: id }))
                             if (result.affectedRows === 1) modified = true
                         }
                     }
@@ -982,11 +982,68 @@ class Application {
                 break
 
             case 'beneficiary':
-                {}
+                {
+                   if (!this.beneficiary) {
+                        data = processData(data)
+                        data.aplId = id
+                        if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
+
+                        const [ result ] = await mysql.execute(query.aplBeneficiaries.insert(data))
+                        if (result.affectedRows === 1) modified = true
+
+                        if (modified) await mysql.execute(query.applications.update({ step: 10 }, { id }))
+                    } else {
+                        if (data.relation !== 'Other') data.otherRel = null
+                        data = processData(data, {
+                            modifiedBy, branch, siteId,
+                            currentData: this.beneficiary, currentUpdateLog: await this.log('updateLog', 'aplBeneficiaries'),
+                        })
+                        if ('ssn' in data) data.ssn = { aes: [ data.ssn, ssnSecret ] }
+
+                        if (dataLen(data)) {
+                            const [ result ] = await mysql.execute(query.aplBeneficiaries.update(data, { aplId: id }))
+                            if (result.affectedRows === 1) modified = true
+                        }
+                    }
+                }
                 break
 
             case 'misc':
-                {}
+                {
+                    if (this.step < 11) {
+                        data = processData(data)
+                        data.aplId = id
+
+                        const [ result ] = await mysql.execute(query.aplEmergencies.insert(data))
+                        if (result.affectedRows === 1) modified = true
+
+                        if (modified) await mysql.execute(query.applications.update({ step: 10 }, { id }))
+                    } else {
+                        data = processData(data, {
+                            modifiedBy, branch, siteId,
+                            currentData: this.emergency, currentUpdateLog: await this.log('updateLog', 'aplEmergencies'),
+                        })
+
+                        if (dataLen(data)) {
+                            const [ result ] = await mysql.execute(query.aplEmergencies.update(data, { aplId: id }))
+                            if (result.affectedRows === 1) modified = true
+                        }
+                    }
+                }
+                break
+
+            case 'assignment': //* Carrier UI only
+                {
+                    data = processData(data, {
+                        modifiedBy, branch, siteId,
+                        currentData: this, currentUpdateLog: await this.log('updateLog'),
+                    })
+
+                    if (dataLen(data)) {
+                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
+                }
                 break
 
         }
@@ -1030,688 +1087,688 @@ class Application {
     }
 
 
-    modify_OLD = async (session, step, data) => {
-        let modified = false,
-            error = sessionError(session, { branches: [ 'carrier', 'driver' ] })
+    // modify_OLD = async (session, step, data) => {
+    //     let modified = false,
+    //         error = sessionError(session, { branches: [ 'carrier', 'driver' ] })
 
-        if (!error && !['p', 'c'].includes(this.condition)) error = 'Permission Error: Application Locked'
-        if (error) return { modified, error }
+    //     if (!error && !['p', 'c'].includes(this.condition)) error = 'Permission Error: Application Locked'
+    //     if (error) return { modified, error }
 
-        const id = await this.id()
-        const { branch, siteId } = session
-        let modifiedBy = null,
-            currentData = {},
-            currentUpdateLog,
-            action = 'update',
-            target = 'applications',
-            target2 = null,
-            idProp = 'id',
-            mainData = {},
-            data2 = {}
-        if (session.user && session.user !== true)
-            modifiedBy = await session.user.id()
+    //     const id = await this.id()
+    //     const { branch, siteId } = session
+    //     let modifiedBy = null,
+    //         currentData = {},
+    //         currentUpdateLog,
+    //         action = 'update',
+    //         target = 'applications',
+    //         target2 = null,
+    //         idProp = 'id',
+    //         mainData = {},
+    //         data2 = {}
+    //     if (session.user && session.user !== true)
+    //         modifiedBy = await session.user.id()
 
-        let checkExpl
+    //     let checkExpl
 
-        switch (step) {
-
-
-            // case 'profile':
-            //     currentData = { ...this }
-            //     if (currentData.position)
-            //         currentData.position = currentData.position[0]
-
-            //     if (data.nameMismatch === 'on')
-            //         data.nameMismatch = false
-
-            //     data = processData(data, {
-            //         modifiedBy,
-            //         branch,
-            //         siteId,
-            //         currentData,
-            //         currentUpdateLog: await this.log('updateLog'),
-            //     })
-            //     if (data.ssn)
-            //         data.ssn = { aes: [ data.ssn, ssnSecret ] }
-
-            //     if (data.firstName || 'middleName' in data || data.lastName || 'suffix' in data)
-            //         data.nameMismatch = true
-
-            //     break
+    //     switch (step) {
 
 
-            // case 'legal-status':
-            //     currentData = {
-            //         status: this.legalStatus[0],
-            //         statusExpiresOn: this.legalStatus[1],
-            //     }
-            //     if (data.status < 2) data.statusExpiresOn = null
+    //         // case 'profile':
+    //         //     currentData = { ...this }
+    //         //     if (currentData.position)
+    //         //         currentData.position = currentData.position[0]
 
-            //     data = processData(data, {
-            //         modifiedBy,
-            //         branch,
-            //         siteId,
-            //         currentData,
-            //         currentUpdateLog: await this.log('updateLog'),
-            //     })
+    //         //     if (data.nameMismatch === 'on')
+    //         //         data.nameMismatch = false
 
-            //     break
+    //         //     data = processData(data, {
+    //         //         modifiedBy,
+    //         //         branch,
+    //         //         siteId,
+    //         //         currentData,
+    //         //         currentUpdateLog: await this.log('updateLog'),
+    //         //     })
+    //         //     if (data.ssn)
+    //         //         data.ssn = { aes: [ data.ssn, ssnSecret ] }
+
+    //         //     if (data.firstName || 'middleName' in data || data.lastName || 'suffix' in data)
+    //         //         data.nameMismatch = true
+
+    //         //     break
 
 
-            // case 'position':
-            //     currentData = {
-            //         position: this.position[0],
-            //     }
+    //         // case 'legal-status':
+    //         //     currentData = {
+    //         //         status: this.legalStatus[0],
+    //         //         statusExpiresOn: this.legalStatus[1],
+    //         //     }
+    //         //     if (data.status < 2) data.statusExpiresOn = null
 
-            //     mainData.position = data.position
-            //     mainData = processData(mainData, {
-            //         modifiedBy,
-            //         branch,
-            //         siteId,
-            //         currentData: this,
-            //         currentUpdateLog: await this.log('updateLog'),
-            //     })
+    //         //     data = processData(data, {
+    //         //         modifiedBy,
+    //         //         branch,
+    //         //         siteId,
+    //         //         currentData,
+    //         //         currentUpdateLog: await this.log('updateLog'),
+    //         //     })
 
-            //     {
-            //         const { mmt, type, make, model, year, length } = data
-            //         delete data.mmt
-            //         delete data.type
-            //         delete data.make
-            //         delete data.model
-            //         delete data.year
-            //         delete data.length
+    //         //     break
 
-            //         if (data.position !== 'OO')
-            //             await mysql.execute(query.aplVehicles.delete({ aplId: id }))
-            //         else {
-            //             data2 = { mmt, type, make, model, year, length }
-            //             target2 = 'aplVehicles'
-            //             idProp = 'aplId'
 
-            //             //
-            //         }
-            //     }
+    //         // case 'position':
+    //         //     currentData = {
+    //         //         position: this.position[0],
+    //         //     }
 
-            //     break
+    //         //     mainData.position = data.position
+    //         //     mainData = processData(mainData, {
+    //         //         modifiedBy,
+    //         //         branch,
+    //         //         siteId,
+    //         //         currentData: this,
+    //         //         currentUpdateLog: await this.log('updateLog'),
+    //         //     })
+
+    //         //     {
+    //         //         const { mmt, type, make, model, year, length } = data
+    //         //         delete data.mmt
+    //         //         delete data.type
+    //         //         delete data.make
+    //         //         delete data.model
+    //         //         delete data.year
+    //         //         delete data.length
+
+    //         //         if (data.position !== 'OO')
+    //         //             await mysql.execute(query.aplVehicles.delete({ aplId: id }))
+    //         //         else {
+    //         //             data2 = { mmt, type, make, model, year, length }
+    //         //             target2 = 'aplVehicles'
+    //         //             idProp = 'aplId'
+
+    //         //             //
+    //         //         }
+    //         //     }
+
+    //         //     break
 
             
-            // case 'address':
-            //     currentData = { ...this.address }
-            //     currentData.state = currentData.state[0]
-            //     currentData.addrSince = currentData.since
-            //     currentData.addrEnough = currentData.enough
-            //     currentUpdateLog = await this.log('updateLog')
-
-            //     const addrEnough = !dateAfter(data.addrSince, 3, 'years', this.finishedAt)
-            //     const { addresses, livedAbroad } = data
-
-            //     mainData = { ...data }
-            //     delete mainData.addresses
-            //     data = []
-            //     await mysql.execute(query.aplAddresses.delete({ aplId: id }))
-
-            //     mainData.addrEnough = addrEnough
-
-            //     mainData = processData(mainData, {
-            //         modifiedBy,
-            //         branch,
-            //         siteId,
-            //         currentData,
-            //         currentUpdateLog,
-            //     })
-            //     if (this.step === 0) mainData.step = 1
-
-            //     if (!addrEnough && !livedAbroad) {
-            //         target = 'aplAddresses'
-            //         idProp = 'aplId'
-            //         action = 'insert'
-
-            //         const { address1, address2, zip, city, state, since, livedAbroad } = addresses
-            //         const count = zip.length
-            //         for (let i = 0; i < count; i++) {
-            //             data.push({
-            //                 aplId: id,
-            //                 address1: address1[i],
-            //                 address2: address2[i],
-            //                 zip: zip[i],
-            //                 city: city[i],
-            //                 state: state[i],
-            //                 since: since[i],
-            //                 livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
-            //             })
-            //         }
-            //     }
-
-            //     break
-
-
-            // case 'driver-license':
-            //     target = 'aplDLs'
-            //     idProp = 'aplId'
-
-            //     checkExpl = data => {
-            //         if (
-            //             (data['denied'] && !data['deniedExpl']) ||
-            //             (data['revoked'] && !data['revokedExpl'])
-            //         ) return 'Data Submission Error: Explanation not provided'
-            //     }
-
-            //     if (!data['denied']) data['deniedExpl'] = null
-            //     if (!data['revoked']) data['revokedExpl'] = null
-
-            //     if (!this.dl) {
-            //         data = processData(data)
-            //         data.aplId = id
-            //         mainData.step = 2
-            //         action = 'insert'
-
-            //         error = checkExpl(data)
-            //     } else {
-            //         currentData.driverLicense = this.dl.number
-            //         const props = [
-            //             'class', 'state',
-            //             'issuedOn', 'expiresOn',
-            //             'endorsement', 'restriction',
-            //             'denied', 'deniedExpl',
-            //             'revoked', 'revokedExpl',
-            //         ]
-            //         props.forEach(prop => currentData[`DL_${prop}`] = this.dl[prop])
-            //         currentUpdateLog = await this.log('updateLog', target)
-
-            //         data = processData(data, {
-            //             modifiedBy,
-            //             branch,
-            //             siteId,
-            //             currentData,
-            //             currentUpdateLog,
-            //         })
-
-            //         error = checkExpl(data)
-            //     }
-
-            //     break
-
-
-            // case 'medical-card':
-            //     target = 'aplMECs'
-            //     idProp = 'aplId'
-
-            //     if (data.underMeds && !data.medList)
-            //         error = 'Data Submission Error: Medical List not provided'
-            //     if (!data.underMeds) data.medList = null
-
-            //     if (!this.dl.commercial && data.mecAbsent && !data.expiresOn) mainData.medCard = false
-            //     delete data.mecAbsent
-
-            //     mainData.underMeds = data.underMeds
-            //     mainData.medList = data.medList || null
-            //     delete data.underMeds
-            //     delete data.medList
-
-            //     if (this.step < 3) {
-            //         mainData = processData(mainData)
-            //         mainData.step = 3
-
-            //         if (mainData.medCard !== false) {
-            //             if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
-            //             else {
-            //                 data = processData(data)
-            //                 data.aplId = id
-            //                 action = 'insert'
-            //             }
-            //         }
-            //     } else {
-            //         if (mainData.medCard === false) {
-            //             if (this.mec) {
-            //                 const [ result ] = await mysql.execute(query.aplMECs.delete({ aplId: id }))
-            //                 if (result.affectedRows !== 1) error = 'DB Error: Could not delete MEC record'
-            //             }
-            //         } else {
-            //             mainData.medCard = true
-
-            //             if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
-            //             else {
-            //                 if (this.mec) {
-            //                     currentData = this.mec
-            //                     currentUpdateLog = await this.log('updateLog', target)
-
-            //                     data = processData(data, {
-            //                         modifiedBy,
-            //                         branch,
-            //                         siteId,
-            //                         currentData,
-            //                         currentUpdateLog,
-            //                     })
-            //                 } else {
-            //                     data = processData(data)
-            //                     data.aplId = id
-            //                     action = 'insert'
-            //                 }
-            //             }
-            //         }
-
-            //         mainData = processData(mainData, {
-            //             modifiedBy,
-            //             branch,
-            //             siteId,
-            //             currentData: this,
-            //             currentUpdateLog: await this.log('updateLog'),
-            //         })
-            //     }
-
-            //     break
-
-
-            // case 'legal-compliance':
-            //     target = 'aplCitations'
-            //     action = 'insert' //! for now it is easier to delete and insert newly submitted citations, `updateLog` is redundant at this point
-
-            //     if (data.dui && typeof data.duiInDecade !== 'boolean')
-            //         error = 'Data Submission Error: Explanation not provided for DUI'
-            //     if (!data.dui) data.duiInDecade = null
-
-            //     if (data.criminal && !data.criminalExpl)
-            //         error = 'Data Submission Error: Explanation not provided for Criminal Record'
-            //     if (!data.criminal) data.criminalExpl = null
-
-            //     const { citations } = data
-
-            //     mainData.dui = data.dui
-            //     mainData.duiInDecade = data.duiInDecade
-            //     mainData.criminal = data.criminal
-            //     mainData.criminalExpl = data.criminalExpl
-            //     mainData.dotDat = data.dotDat
-            //     mainData.citations = citations
-
-            //     await mysql.execute(query.aplCitations.delete({ aplId: id }))
-
-            //     const { violation, other: otherViolation, citedOn, state: citState  } = data
-            //     data = []
-
-            //     //! DOESN'T MAKE SENSE
-            //     if (!violation && data.citations) data.citations = false
-
-            //     if (this.step < 4) {
-            //         mainData = processData(mainData)
-            //         mainData.step = 4
-            //     } else
-            //         mainData = processData(mainData, {
-            //             modifiedBy,
-            //             branch,
-            //             siteId,
-            //             currentData: this,
-            //             currentUpdateLog: await this.log('updateLog'),
-            //         })
-
-            //     if (citations) {
-            //         const count = violation.length
-
-            //         for (let i = 0; i < count; i++) {
-            //             data.push({
-            //                 aplId: id,
-            //                 violation: violation[i],
-            //                 other: violation[i] === 'other' ? otherViolation?.[i] : null,
-            //                 citedOn: citedOn[i],
-            //                 state: citState[i],
-            //             })
-            //         }
-            //     }
-
-            //     break
-
-
-            // case 'safety':
-            //     target = 'aplAccidents'
-            //     action = 'insert' //! for now it is easier to delete and insert newly submitted accidents, `updateLog` is redundant at this point
-
-            //     const { accidents } = data
-            //     mainData.accidents = accidents
-
-            //     await mysql.execute(query.aplAccidents.delete({ aplId: id }))
-
-            //     const { collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = data
-            //     data = []
-
-            //     //! DOESN'T MAKE SENSE
-            //     if (!collision && data.accidents) data.accidents = false
-
-            //     if (this.step < 5) {
-            //         mainData = processData(mainData)
-            //         mainData.step = 5
-            //     } else
-            //         mainData = processData(mainData, {
-            //             modifiedBy,
-            //             branch,
-            //             siteId,
-            //             currentData: this,
-            //             currentUpdateLog: await this.log('updateLog'),
-            //         })
-
-            //     if (accidents) {
-            //         const count = collision.length
-
-            //         for (let i = 0; i < count; i++) {
-            //             data.push({
-            //                 aplId: id,
-            //                 collision: collision[i],
-            //                 other: collision[i] === 'other' ? otherCollision?.[i] : null,
-            //                 date: accDate[i],
-            //                 state: accState[i],
-            //                 injuries: injuries[i],
-            //                 fatalities: fatalities[i],
-            //             })
-            //         }
-            //     }
-
-            //     break
-
-
-            // case 'experience':
-            //     target = 'aplExperiences'
-            //     action = 'insert' //! for now it is easier to delete and insert newly submitted experiences, `updateLog` is redundant at this point
-
-            //     await mysql.execute(query.aplExperiences.delete({ aplId: id }))
-
-            //     const experience = data.noExp !== true
-            //     mainData.experience = experience
-            //     delete data.noExp
-
-            //     if (this.step < 6) {
-            //         mainData = processData(mainData)
-            //         mainData.step = 6
-            //     } else
-            //         mainData = processData(mainData, {
-            //             modifiedBy,
-            //             branch,
-            //             siteId,
-            //             currentData: { experience: !!this.experience },
-            //             currentUpdateLog: await this.log('updateLog'),
-            //         })
-
-            //     if (experience) {
-            //         if (data?.vehicles?.misc) {
-            //             const { misc } = data.vehicles
-            //             data.vehicles.misc = []
-
-            //             for (const prop in misc)
-            //                 data.vehicles.misc.push(prop)
-            //         }
-
-            //         if (data.cmv === false) {
-            //             if (data?.vehicles?.semi) delete data.vehicles.semi
-            //             if (data?.vehicles?.misc) data.vehicles.misc = data.vehicles.misc.filter(value => value !== 'tandem')
-            //         }
-
-            //         if (data.vehicles) data.vehicles = JSON.stringify(data.vehicles)
-            //         if (data.hours) data.hours = JSON.stringify(data.hours.map(value => +value))
-
-            //         data.aplId = id
-            //     } else data = {}
-
-            //     break
-
-
-            // case 'pre-employment':
-            //     target = 'aplEmployers'
-            //     action = 'insert' //! for now it is easier to delete and insert newly submitted employments, `updateLog` is redundant at this point
-
-            //     const { prevEmployed } = data
-            //     mainData.prevEmployed = prevEmployed
-
-            //     await (mysql.execute(query.aplEmployers.delete({ aplId: id })))
-
-            //     const {
-            //         employer, phone, address1, address2, zip, city, state,
-            //         startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
-            //     } = data
-            //     data = []
-
-            //     if (this.step < 7) {
-            //         mainData = processData(mainData)
-            //         mainData.step = 7
-            //     } else
-            //         mainData = processData(mainData, {
-            //             modifiedBy,
-            //             branch,
-            //             siteId,
-            //             currentData: this,
-            //             currentUpdateLog: await this.log('updateLog'),
-            //         })
-
-            //     if (prevEmployed) {
-            //         const count = employer.length
-
-            //         for (let i = 0; i < count; i++)
-            //             data.push({
-            //                 aplId: id,
-            //                 employer: employer[i],
-            //                 phone: phone[i],
-            //                 address1: address1[i],
-            //                 address2: address2[i],
-            //                 city: city[i],
-            //                 state: state[i],
-            //                 zip: zip[i],
-            //                 startedOn: startedOn[i],
-            //                 position: position[i],
-            //                 earnings: earnings[i],
-            //                 fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
-            //                 dotDat: dotDat[i],
-            //                 rfl: rfl[i],
-            //                 leftOn: leftOn[i],
-            //             })
-            //     }
-
-            //     break
-
-
-            // case 'preference':
-            //     target = 'aplPreferences'
-            //     idProp = 'aplId'
-
-            //     let { haulRegion, equipment } = data
-            //     delete data.haulRegion
-            //     delete data.equipment
-
-            //     if (haulRegion) haulRegion = JSON.stringify(haulRegion)
-            //     if (equipment) equipment = JSON.stringify(equipment)
-
-            //     if (data.operType === 's') {
-            //         data.teamName = null
-            //         data.teamPhone = null
-            //     }
-
-            //     if (!this.preference) {
-            //         data = processData(data)
-            //         data.aplId = id
-            //         mainData.step = 8
-            //         action = 'insert'
-            //     } else {
-            //         currentData = { ...this.preference }
-            //         currentUpdateLog = await this.log('updateLog', target)
-
-            //         currentData.startPref = +currentData.startPref
-            //         delete currentData.haulRegion
-            //         delete currentData.equipmentType
-
-            //         data = processData(data, {
-            //             modifiedBy,
-            //             branch,
-            //             siteId,
-            //             currentData,
-            //             currentUpdateLog,
-            //         })
-            //     }
-
-            //     if (this.deptId === 0) {
-            //         data.haulRegion = haulRegion
-            //         data.equipment = equipment
-            //     }
-
-            //     break
-
-
-            // case 'business':
-            //     target = 'aplBusinesses'
-            //     idProp = 'aplId'
-
-            //     const { activeLLC, llcAssistance } = data
-            //     delete data.activeLLC
-            //     delete data.llcAssistance
-
-            //     mainData.activeBusiness = activeLLC
-            //     mainData.businessAssist = typeof llcAssistance === 'boolean' ? llcAssistance : null
-
-            //     if (this.position[0] === 'OO') {
-            //         const { mmt, type, make, model, year, length } = data
-            //         delete data.mmt
-            //         delete data.type
-            //         delete data.make
-            //         delete data.model
-            //         delete data.year
-            //         delete data.length
-
-            //         data2 = { mmt, type, make, model, year, length }
-            //         target2 = 'aplVehicles'
-            //     }
-
-            //     if (this.step < 9) {
-            //         mainData = processData(mainData)
-            //         mainData.step = 9
-
-            //         action = 'insert'
-            //         data = processData(data)
-            //         data.aplId = id
-            //         if (data.ein) data.ein = { aes: [ data.ein, einSecret ] }
-
-            //         if (target2) {
-            //             data2 = processData(data2)
-            //             data2.aplId = id
-            //         }
-            //     } else {
-            //         mainData = processData(mainData, {
-            //             modifiedBy,
-            //             branch,
-            //             siteId,
-            //             currentData: this,
-            //             currentUpdateLog: await this.log('updateLog'),
-            //         })
-
-            //         if (activeLLC === true) data.proposedName = null
-            //         else {
-            //             data.busName = null
-            //             data.state = null
-            //             data.ein = null
-            //         }
-
-            //         data = processData(data, {
-            //             modifiedBy,
-            //             branch,
-            //             siteId,
-            //             currentData: this.business,
-            //             currentUpdateLog: await this.log('updateLog', target),
-            //         })
-            //         if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
-
-            //         if (target2) {
-            //             if (data2.mmt) {
-            //                 if (data2.mmt !== 'other') {
-            //                     data2.type = null
-            //                     data2.make = null
-            //                     data2.model = null
-
-            //                     if (data2.mmt.split(':')[0] !== 'straightBox')
-            //                         data2.length = null
-            //                 } else {
-            //                     if (data2.type !== 'straightBox')
-            //                         data2.length = null
-            //                 }
-            //             }
-
-            //             data2 = processData(data2, {
-            //                 modifiedBy,
-            //                 branch,
-            //                 siteId,
-            //                 currentData: this.vehicle,
-            //                 currentUpdateLog: await this.log('updateLog', target2),
-            //             })
-            //         }
-            //     }
-
-            //     break
-
-
-            case 'beneficiary':
-                target = 'aplBeneficiaries'
-                idProp = 'aplId'
-
-                if (!this.beneficiary) {
-                    data = processData(data)
-                    data.aplId = id
-                    if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
-                    mainData.step = 10
-                    action = 'insert'
-                } else {
-                    if (data.relation !== 'Other')
-                        data.otherRel = null
-                    data = processData(data, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: this.beneficiary,
-                        currentUpdateLog: await this.log('updateLog', target)
-                    })
-                    if ('ssn' in data) data.ssn = { aes: [ data.ssn, ssnSecret ] }
-                }
-
-                break
-
-
-            case 'misc':
-                target = 'aplEmergencies'
-                idProp = 'aplId'
-
-                if (this.step < 11) {
-                    data = processData(data)
-                    data.aplId = id
-                    mainData.step = 11
-                    action = 'insert'
-                } else {
-                    data = processData(data, {
-                        modifiedBy,
-                        branch,
-                        siteId,
-                        currentData: this.emergency,
-                        currentUpdateLog: await this.log('updateLog', target)
-                    })
-                }
-
-                break
-
-
-        }
-
-        // if (!error) {
-        //     if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
-        //         const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
-        //         if (result.affectedRows > 0) modified = true
-        //     }
-
-        //     if (Object.keys(mainData).length) {
-        //         const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
-        //         if (!modified && result.affectedRows === 1) modified = true
-        //     }
-
-        //     if ((Array.isArray(data2) && data2.length) || Object.keys(data2).length) {
-        //         //* Data is deleted prior to insertion
-        //         if (Array.isArray(data2)) action = 'insert'
-
-        //         const [ result ] = await mysql.execute(query[target2][action](data2, { [idProp]: id }))
-        //         if (result.affectedRows > 0) modified = true
-        //     }
-        // }
-
-        return { modified, error }
-    }
+    //         // case 'address':
+    //         //     currentData = { ...this.address }
+    //         //     currentData.state = currentData.state[0]
+    //         //     currentData.addrSince = currentData.since
+    //         //     currentData.addrEnough = currentData.enough
+    //         //     currentUpdateLog = await this.log('updateLog')
+
+    //         //     const addrEnough = !dateAfter(data.addrSince, 3, 'years', this.finishedAt)
+    //         //     const { addresses, livedAbroad } = data
+
+    //         //     mainData = { ...data }
+    //         //     delete mainData.addresses
+    //         //     data = []
+    //         //     await mysql.execute(query.aplAddresses.delete({ aplId: id }))
+
+    //         //     mainData.addrEnough = addrEnough
+
+    //         //     mainData = processData(mainData, {
+    //         //         modifiedBy,
+    //         //         branch,
+    //         //         siteId,
+    //         //         currentData,
+    //         //         currentUpdateLog,
+    //         //     })
+    //         //     if (this.step === 0) mainData.step = 1
+
+    //         //     if (!addrEnough && !livedAbroad) {
+    //         //         target = 'aplAddresses'
+    //         //         idProp = 'aplId'
+    //         //         action = 'insert'
+
+    //         //         const { address1, address2, zip, city, state, since, livedAbroad } = addresses
+    //         //         const count = zip.length
+    //         //         for (let i = 0; i < count; i++) {
+    //         //             data.push({
+    //         //                 aplId: id,
+    //         //                 address1: address1[i],
+    //         //                 address2: address2[i],
+    //         //                 zip: zip[i],
+    //         //                 city: city[i],
+    //         //                 state: state[i],
+    //         //                 since: since[i],
+    //         //                 livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
+    //         //             })
+    //         //         }
+    //         //     }
+
+    //         //     break
+
+
+    //         // case 'driver-license':
+    //         //     target = 'aplDLs'
+    //         //     idProp = 'aplId'
+
+    //         //     checkExpl = data => {
+    //         //         if (
+    //         //             (data['denied'] && !data['deniedExpl']) ||
+    //         //             (data['revoked'] && !data['revokedExpl'])
+    //         //         ) return 'Data Submission Error: Explanation not provided'
+    //         //     }
+
+    //         //     if (!data['denied']) data['deniedExpl'] = null
+    //         //     if (!data['revoked']) data['revokedExpl'] = null
+
+    //         //     if (!this.dl) {
+    //         //         data = processData(data)
+    //         //         data.aplId = id
+    //         //         mainData.step = 2
+    //         //         action = 'insert'
+
+    //         //         error = checkExpl(data)
+    //         //     } else {
+    //         //         currentData.driverLicense = this.dl.number
+    //         //         const props = [
+    //         //             'class', 'state',
+    //         //             'issuedOn', 'expiresOn',
+    //         //             'endorsement', 'restriction',
+    //         //             'denied', 'deniedExpl',
+    //         //             'revoked', 'revokedExpl',
+    //         //         ]
+    //         //         props.forEach(prop => currentData[`DL_${prop}`] = this.dl[prop])
+    //         //         currentUpdateLog = await this.log('updateLog', target)
+
+    //         //         data = processData(data, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData,
+    //         //             currentUpdateLog,
+    //         //         })
+
+    //         //         error = checkExpl(data)
+    //         //     }
+
+    //         //     break
+
+
+    //         // case 'medical-card':
+    //         //     target = 'aplMECs'
+    //         //     idProp = 'aplId'
+
+    //         //     if (data.underMeds && !data.medList)
+    //         //         error = 'Data Submission Error: Medical List not provided'
+    //         //     if (!data.underMeds) data.medList = null
+
+    //         //     if (!this.dl.commercial && data.mecAbsent && !data.expiresOn) mainData.medCard = false
+    //         //     delete data.mecAbsent
+
+    //         //     mainData.underMeds = data.underMeds
+    //         //     mainData.medList = data.medList || null
+    //         //     delete data.underMeds
+    //         //     delete data.medList
+
+    //         //     if (this.step < 3) {
+    //         //         mainData = processData(mainData)
+    //         //         mainData.step = 3
+
+    //         //         if (mainData.medCard !== false) {
+    //         //             if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
+    //         //             else {
+    //         //                 data = processData(data)
+    //         //                 data.aplId = id
+    //         //                 action = 'insert'
+    //         //             }
+    //         //         }
+    //         //     } else {
+    //         //         if (mainData.medCard === false) {
+    //         //             if (this.mec) {
+    //         //                 const [ result ] = await mysql.execute(query.aplMECs.delete({ aplId: id }))
+    //         //                 if (result.affectedRows !== 1) error = 'DB Error: Could not delete MEC record'
+    //         //             }
+    //         //         } else {
+    //         //             mainData.medCard = true
+
+    //         //             if (!Object.keys(data).length) error = 'Request Error: No MEC data submitted'
+    //         //             else {
+    //         //                 if (this.mec) {
+    //         //                     currentData = this.mec
+    //         //                     currentUpdateLog = await this.log('updateLog', target)
+
+    //         //                     data = processData(data, {
+    //         //                         modifiedBy,
+    //         //                         branch,
+    //         //                         siteId,
+    //         //                         currentData,
+    //         //                         currentUpdateLog,
+    //         //                     })
+    //         //                 } else {
+    //         //                     data = processData(data)
+    //         //                     data.aplId = id
+    //         //                     action = 'insert'
+    //         //                 }
+    //         //             }
+    //         //         }
+
+    //         //         mainData = processData(mainData, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData: this,
+    //         //             currentUpdateLog: await this.log('updateLog'),
+    //         //         })
+    //         //     }
+
+    //         //     break
+
+
+    //         // case 'legal-compliance':
+    //         //     target = 'aplCitations'
+    //         //     action = 'insert' //! for now it is easier to delete and insert newly submitted citations, `updateLog` is redundant at this point
+
+    //         //     if (data.dui && typeof data.duiInDecade !== 'boolean')
+    //         //         error = 'Data Submission Error: Explanation not provided for DUI'
+    //         //     if (!data.dui) data.duiInDecade = null
+
+    //         //     if (data.criminal && !data.criminalExpl)
+    //         //         error = 'Data Submission Error: Explanation not provided for Criminal Record'
+    //         //     if (!data.criminal) data.criminalExpl = null
+
+    //         //     const { citations } = data
+
+    //         //     mainData.dui = data.dui
+    //         //     mainData.duiInDecade = data.duiInDecade
+    //         //     mainData.criminal = data.criminal
+    //         //     mainData.criminalExpl = data.criminalExpl
+    //         //     mainData.dotDat = data.dotDat
+    //         //     mainData.citations = citations
+
+    //         //     await mysql.execute(query.aplCitations.delete({ aplId: id }))
+
+    //         //     const { violation, other: otherViolation, citedOn, state: citState  } = data
+    //         //     data = []
+
+    //         //     //! DOESN'T MAKE SENSE
+    //         //     if (!violation && data.citations) data.citations = false
+
+    //         //     if (this.step < 4) {
+    //         //         mainData = processData(mainData)
+    //         //         mainData.step = 4
+    //         //     } else
+    //         //         mainData = processData(mainData, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData: this,
+    //         //             currentUpdateLog: await this.log('updateLog'),
+    //         //         })
+
+    //         //     if (citations) {
+    //         //         const count = violation.length
+
+    //         //         for (let i = 0; i < count; i++) {
+    //         //             data.push({
+    //         //                 aplId: id,
+    //         //                 violation: violation[i],
+    //         //                 other: violation[i] === 'other' ? otherViolation?.[i] : null,
+    //         //                 citedOn: citedOn[i],
+    //         //                 state: citState[i],
+    //         //             })
+    //         //         }
+    //         //     }
+
+    //         //     break
+
+
+    //         // case 'safety':
+    //         //     target = 'aplAccidents'
+    //         //     action = 'insert' //! for now it is easier to delete and insert newly submitted accidents, `updateLog` is redundant at this point
+
+    //         //     const { accidents } = data
+    //         //     mainData.accidents = accidents
+
+    //         //     await mysql.execute(query.aplAccidents.delete({ aplId: id }))
+
+    //         //     const { collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = data
+    //         //     data = []
+
+    //         //     //! DOESN'T MAKE SENSE
+    //         //     if (!collision && data.accidents) data.accidents = false
+
+    //         //     if (this.step < 5) {
+    //         //         mainData = processData(mainData)
+    //         //         mainData.step = 5
+    //         //     } else
+    //         //         mainData = processData(mainData, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData: this,
+    //         //             currentUpdateLog: await this.log('updateLog'),
+    //         //         })
+
+    //         //     if (accidents) {
+    //         //         const count = collision.length
+
+    //         //         for (let i = 0; i < count; i++) {
+    //         //             data.push({
+    //         //                 aplId: id,
+    //         //                 collision: collision[i],
+    //         //                 other: collision[i] === 'other' ? otherCollision?.[i] : null,
+    //         //                 date: accDate[i],
+    //         //                 state: accState[i],
+    //         //                 injuries: injuries[i],
+    //         //                 fatalities: fatalities[i],
+    //         //             })
+    //         //         }
+    //         //     }
+
+    //         //     break
+
+
+    //         // case 'experience':
+    //         //     target = 'aplExperiences'
+    //         //     action = 'insert' //! for now it is easier to delete and insert newly submitted experiences, `updateLog` is redundant at this point
+
+    //         //     await mysql.execute(query.aplExperiences.delete({ aplId: id }))
+
+    //         //     const experience = data.noExp !== true
+    //         //     mainData.experience = experience
+    //         //     delete data.noExp
+
+    //         //     if (this.step < 6) {
+    //         //         mainData = processData(mainData)
+    //         //         mainData.step = 6
+    //         //     } else
+    //         //         mainData = processData(mainData, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData: { experience: !!this.experience },
+    //         //             currentUpdateLog: await this.log('updateLog'),
+    //         //         })
+
+    //         //     if (experience) {
+    //         //         if (data?.vehicles?.misc) {
+    //         //             const { misc } = data.vehicles
+    //         //             data.vehicles.misc = []
+
+    //         //             for (const prop in misc)
+    //         //                 data.vehicles.misc.push(prop)
+    //         //         }
+
+    //         //         if (data.cmv === false) {
+    //         //             if (data?.vehicles?.semi) delete data.vehicles.semi
+    //         //             if (data?.vehicles?.misc) data.vehicles.misc = data.vehicles.misc.filter(value => value !== 'tandem')
+    //         //         }
+
+    //         //         if (data.vehicles) data.vehicles = JSON.stringify(data.vehicles)
+    //         //         if (data.hours) data.hours = JSON.stringify(data.hours.map(value => +value))
+
+    //         //         data.aplId = id
+    //         //     } else data = {}
+
+    //         //     break
+
+
+    //         // case 'pre-employment':
+    //         //     target = 'aplEmployers'
+    //         //     action = 'insert' //! for now it is easier to delete and insert newly submitted employments, `updateLog` is redundant at this point
+
+    //         //     const { prevEmployed } = data
+    //         //     mainData.prevEmployed = prevEmployed
+
+    //         //     await (mysql.execute(query.aplEmployers.delete({ aplId: id })))
+
+    //         //     const {
+    //         //         employer, phone, address1, address2, zip, city, state,
+    //         //         startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
+    //         //     } = data
+    //         //     data = []
+
+    //         //     if (this.step < 7) {
+    //         //         mainData = processData(mainData)
+    //         //         mainData.step = 7
+    //         //     } else
+    //         //         mainData = processData(mainData, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData: this,
+    //         //             currentUpdateLog: await this.log('updateLog'),
+    //         //         })
+
+    //         //     if (prevEmployed) {
+    //         //         const count = employer.length
+
+    //         //         for (let i = 0; i < count; i++)
+    //         //             data.push({
+    //         //                 aplId: id,
+    //         //                 employer: employer[i],
+    //         //                 phone: phone[i],
+    //         //                 address1: address1[i],
+    //         //                 address2: address2[i],
+    //         //                 city: city[i],
+    //         //                 state: state[i],
+    //         //                 zip: zip[i],
+    //         //                 startedOn: startedOn[i],
+    //         //                 position: position[i],
+    //         //                 earnings: earnings[i],
+    //         //                 fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
+    //         //                 dotDat: dotDat[i],
+    //         //                 rfl: rfl[i],
+    //         //                 leftOn: leftOn[i],
+    //         //             })
+    //         //     }
+
+    //         //     break
+
+
+    //         // case 'preference':
+    //         //     target = 'aplPreferences'
+    //         //     idProp = 'aplId'
+
+    //         //     let { haulRegion, equipment } = data
+    //         //     delete data.haulRegion
+    //         //     delete data.equipment
+
+    //         //     if (haulRegion) haulRegion = JSON.stringify(haulRegion)
+    //         //     if (equipment) equipment = JSON.stringify(equipment)
+
+    //         //     if (data.operType === 's') {
+    //         //         data.teamName = null
+    //         //         data.teamPhone = null
+    //         //     }
+
+    //         //     if (!this.preference) {
+    //         //         data = processData(data)
+    //         //         data.aplId = id
+    //         //         mainData.step = 8
+    //         //         action = 'insert'
+    //         //     } else {
+    //         //         currentData = { ...this.preference }
+    //         //         currentUpdateLog = await this.log('updateLog', target)
+
+    //         //         currentData.startPref = +currentData.startPref
+    //         //         delete currentData.haulRegion
+    //         //         delete currentData.equipmentType
+
+    //         //         data = processData(data, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData,
+    //         //             currentUpdateLog,
+    //         //         })
+    //         //     }
+
+    //         //     if (this.deptId === 0) {
+    //         //         data.haulRegion = haulRegion
+    //         //         data.equipment = equipment
+    //         //     }
+
+    //         //     break
+
+
+    //         // case 'business':
+    //         //     target = 'aplBusinesses'
+    //         //     idProp = 'aplId'
+
+    //         //     const { activeLLC, llcAssistance } = data
+    //         //     delete data.activeLLC
+    //         //     delete data.llcAssistance
+
+    //         //     mainData.activeBusiness = activeLLC
+    //         //     mainData.businessAssist = typeof llcAssistance === 'boolean' ? llcAssistance : null
+
+    //         //     if (this.position[0] === 'OO') {
+    //         //         const { mmt, type, make, model, year, length } = data
+    //         //         delete data.mmt
+    //         //         delete data.type
+    //         //         delete data.make
+    //         //         delete data.model
+    //         //         delete data.year
+    //         //         delete data.length
+
+    //         //         data2 = { mmt, type, make, model, year, length }
+    //         //         target2 = 'aplVehicles'
+    //         //     }
+
+    //         //     if (this.step < 9) {
+    //         //         mainData = processData(mainData)
+    //         //         mainData.step = 9
+
+    //         //         action = 'insert'
+    //         //         data = processData(data)
+    //         //         data.aplId = id
+    //         //         if (data.ein) data.ein = { aes: [ data.ein, einSecret ] }
+
+    //         //         if (target2) {
+    //         //             data2 = processData(data2)
+    //         //             data2.aplId = id
+    //         //         }
+    //         //     } else {
+    //         //         mainData = processData(mainData, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData: this,
+    //         //             currentUpdateLog: await this.log('updateLog'),
+    //         //         })
+
+    //         //         if (activeLLC === true) data.proposedName = null
+    //         //         else {
+    //         //             data.busName = null
+    //         //             data.state = null
+    //         //             data.ein = null
+    //         //         }
+
+    //         //         data = processData(data, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData: this.business,
+    //         //             currentUpdateLog: await this.log('updateLog', target),
+    //         //         })
+    //         //         if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
+
+    //         //         if (target2) {
+    //         //             if (data2.mmt) {
+    //         //                 if (data2.mmt !== 'other') {
+    //         //                     data2.type = null
+    //         //                     data2.make = null
+    //         //                     data2.model = null
+
+    //         //                     if (data2.mmt.split(':')[0] !== 'straightBox')
+    //         //                         data2.length = null
+    //         //                 } else {
+    //         //                     if (data2.type !== 'straightBox')
+    //         //                         data2.length = null
+    //         //                 }
+    //         //             }
+
+    //         //             data2 = processData(data2, {
+    //         //                 modifiedBy,
+    //         //                 branch,
+    //         //                 siteId,
+    //         //                 currentData: this.vehicle,
+    //         //                 currentUpdateLog: await this.log('updateLog', target2),
+    //         //             })
+    //         //         }
+    //         //     }
+
+    //         //     break
+
+
+    //         // case 'beneficiary':
+    //         //     target = 'aplBeneficiaries'
+    //         //     idProp = 'aplId'
+
+    //         //     if (!this.beneficiary) {
+    //         //         data = processData(data)
+    //         //         data.aplId = id
+    //         //         if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
+    //         //         mainData.step = 10
+    //         //         action = 'insert'
+    //         //     } else {
+    //         //         if (data.relation !== 'Other')
+    //         //             data.otherRel = null
+    //         //         data = processData(data, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData: this.beneficiary,
+    //         //             currentUpdateLog: await this.log('updateLog', target)
+    //         //         })
+    //         //         if ('ssn' in data) data.ssn = { aes: [ data.ssn, ssnSecret ] }
+    //         //     }
+
+    //         //     break
+
+
+    //         // case 'misc':
+    //         //     target = 'aplEmergencies'
+    //         //     idProp = 'aplId'
+
+    //         //     if (this.step < 11) {
+    //         //         data = processData(data)
+    //         //         data.aplId = id
+    //         //         mainData.step = 11
+    //         //         action = 'insert'
+    //         //     } else {
+    //         //         data = processData(data, {
+    //         //             modifiedBy,
+    //         //             branch,
+    //         //             siteId,
+    //         //             currentData: this.emergency,
+    //         //             currentUpdateLog: await this.log('updateLog', target)
+    //         //         })
+    //         //     }
+
+    //         //     break
+
+
+    //     }
+
+    //     // if (!error) {
+    //     //     if ((Array.isArray(data) && data.length) || Object.keys(data).length) {
+    //     //         const [ result ] = await mysql.execute(query[target][action](data, { [idProp]: id }))
+    //     //         if (result.affectedRows > 0) modified = true
+    //     //     }
+
+    //     //     if (Object.keys(mainData).length) {
+    //     //         const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
+    //     //         if (!modified && result.affectedRows === 1) modified = true
+    //     //     }
+
+    //     //     if ((Array.isArray(data2) && data2.length) || Object.keys(data2).length) {
+    //     //         //* Data is deleted prior to insertion
+    //     //         if (Array.isArray(data2)) action = 'insert'
+
+    //     //         const [ result ] = await mysql.execute(query[target2][action](data2, { [idProp]: id }))
+    //     //         if (result.affectedRows > 0) modified = true
+    //     //     }
+    //     // }
+
+    //     return { modified, error }
+    // }
 
 
     certify = async session => {

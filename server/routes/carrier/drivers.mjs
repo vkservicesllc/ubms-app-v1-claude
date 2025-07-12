@@ -240,6 +240,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             business: `${recUrl}/business`,
             beneficiary: `${recUrl}/beneficiary`,
             misc: `${recUrl}/misc`,
+            assignment: `${recUrl}/assignment`,
         }
 
         hbs._id = application._id
