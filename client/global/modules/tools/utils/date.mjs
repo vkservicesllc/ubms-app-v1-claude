@@ -33,11 +33,11 @@ export const reformatDateString = (dateStr, format) => {
 }
 
 
-export const calculateYearAge = date => {
+export const calculateYearAge = (date, asOf = null) => {
     if (typeof date == 'string') date = getDateFromString(date)
     if (!date) return
 
-    const today = new Date
+    const today = asOf ? getDateFromString(asOf) : new Date
 
     date.setUTCHours(0, 0, 0, 0)
     today.setUTCHours(0, 0, 0, 0)
