@@ -902,10 +902,10 @@ class Application {
                         data = processData(data)
                         data.aplId = id
 
-                        let [ result ] = await mysql.execute(query.applications.update({ step: 8 }, { id }))
+                        const [ result ] = await mysql.execute(query.applications.update({ step: 8 }, { id }))
                         if (result.affectedRows === 1) modified = true
 
-                        [ result ] = await mysql.execute(query.aplPreferences.insert(data))
+                        await mysql.execute(query.aplPreferences.insert(data))
                     } else {
                         const currentData = { ...this.preference }
 
@@ -934,7 +934,7 @@ class Application {
                         mmt, type, make, model, year, length,
                     } = data
                     let mainData = { activeBusiness: activeLLC, businessAssist: llcAssistance }
-                    data = { busName, state, ein, proposedName }
+                    data = { busName, state, proposedName }
 
                     if (this.step < 9) {
                         mainData = processData(mainData)
@@ -950,6 +950,7 @@ class Application {
                             modifiedBy, branch, siteId,
                             currentData: this, currentUpdateLog: await this.log('updateLog'),
                         })
+                        data.ein = ein
 
                         if (activeLLC === true) data.proposedName = null
                         else {
@@ -957,7 +958,6 @@ class Application {
                             data.state = null
                             data.ein = null
                         }
-
                         data = processData(data, {
                             modifiedBy, branch, siteId,
                             currentData: this.business, currentUpdateLog: await this.log('updateLog', 'aplBusinesses'),
@@ -1017,7 +1017,7 @@ class Application {
                         const [ result ] = await mysql.execute(query.aplEmergencies.insert(data))
                         if (result.affectedRows === 1) modified = true
 
-                        if (modified) await mysql.execute(query.applications.update({ step: 10 }, { id }))
+                        if (modified) await mysql.execute(query.applications.update({ step: 11 }, { id }))
                     } else {
                         data = processData(data, {
                             modifiedBy, branch, siteId,

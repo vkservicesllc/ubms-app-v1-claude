@@ -145,9 +145,9 @@ dateMask(dlExpId, {
     },
 })
 
-inputEvent(dlEndrsId, { strip: true })
+inputEvent(dlEndrsId, { strip: true, capitalize: 'first' })
 
-inputEvent(dlRestrId, { strip: true })
+inputEvent(dlRestrId, { strip: true, capitalize: 'first' })
 
 onYesNoRadioChange(dlDeniedId, dlDeniedExplId)
 
