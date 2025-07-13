@@ -56,7 +56,6 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
         if (locked.includes(relation) || locked.includes(otherRel))
             $dropdown.marital[0].parent().addClass('disabled')
 
-
         if (relation === locked[0] || otherRel === locked[0]) {
             if (gender[0] === 'F') disableGender()
             else displayErrorMsg()
