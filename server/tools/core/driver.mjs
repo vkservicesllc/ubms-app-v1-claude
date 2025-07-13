@@ -220,6 +220,17 @@ class Application {
         this.appliedOn = moment(data.createdAt).format('YYYY-MM-DD')
         this.finishedAt = data.finishedAt
 
+        this.lock = {
+            ssn: true,
+            dob: true,
+            gender: true,
+            marital: false,
+        }
+        this.error = {
+            dob: false,
+            gender: false,
+        }
+
         this.legalStatus = [ data.status, data.statusExpiresOn ]
         this.step = data.step
         this.firstName = firstName
@@ -397,13 +408,15 @@ class Application {
             }
 
         if (data.benefRelation) {
+            let { benefRelation: relation, benefOtherRel: otherRel } = data
+
             this.beneficiary = {
                 firstName: data.benefFirstName,
                 middleName: data.benefMiddleName,
                 lastName: data.benefLastName,
                 suffix: data.benefSuffix,
-                relation: data.benefRelation,
-                otherRel: data.benefOtherRel,
+                relation: relation,
+                otherRel: otherRel,
                 dob: data.benefDob,
                 sex: data.benefSex,
                 ssn: data.benefSsn ? stringifyBuffer(data.benefSsn) : null,
@@ -424,6 +437,17 @@ class Application {
                 case '1':
                     this.beneficiary.gender = [ 'M', 'Male' ]
                     break
+            }
+
+            if (this.marital) {
+                const locked = ['husband', 'wife', 'spouse']
+                relation = relation.toLowerCase().trim()
+                if (otherRel) otherRel = otherRel.toLowerCase().trim()
+
+                if (locked.includes(relation) || locked.includes(otherRel))
+                    this.locked.marital = true
+
+                //! to be continued...
             }
         }
 
