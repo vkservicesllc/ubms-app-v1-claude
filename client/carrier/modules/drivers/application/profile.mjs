@@ -7,7 +7,7 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
 
 (() => {
     if (!application || !Object.keys(application).length) return
-console.log(application) //!TEMP
+
     const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email, identityMismatch } = application
     let { relation, otherRel } = application.beneficiary
     const TS = selector.id.text, SS = selector.id.select
