@@ -7,7 +7,7 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
 
 (() => {
     if (!application || !Object.keys(application).length) return
-
+console.log(application)
     const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email, identityMismatch } = application
     let { relation, otherRel } = application.beneficiary
     const TS = selector.id.text, SS = selector.id.select
@@ -27,7 +27,9 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
     const $calendar = {
         dob: $('#dob-calendar'),
     }
-    const $form = $('#profile-form')
+    const $form = {
+        beneficiary: $('#beneficiary-form'),
+    }
 
     const errorIcon = '<i class="ui red text exclamation triangle icon"></i>'
 
@@ -46,7 +48,7 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
         const list = [`Applicant's Gender: ${gender[1]}`, `Beneficiary Relationship: ${otherRel || relation}`]
         const $errorMsg = errorMessage('Logical Error', message, list)
         const displayErrorMsg = () => {
-            $form.after($errorMsg)
+            $form.beneficiary.after($errorMsg)
             $('.item[data-tab="beneficiary"]').append(errorIcon)
         }
 

@@ -130,7 +130,7 @@ class Driver extends Individual {
         }
 
         const driverData = { personId: await person.id() }
-        if (user && user !== true)driverData.createdBy = await user.id()
+        if (user && user !== true) driverData.createdBy = await user.id()
         const createdIn = { branch }
         driverData.createdIn = JSON.stringify(createdIn)
 
@@ -445,9 +445,12 @@ class Application {
                 if (otherRel) otherRel = otherRel.toLowerCase().trim()
 
                 if (locked.includes(relation) || locked.includes(otherRel))
-                    this.locked.marital = true
+                    this.lock.marital = true
 
-                //! to be continued...
+                if (relation === locked[0] || otherRel === locked[0])
+                    if (this.gender[0] === 'F') this.lock.gender = true
+                if (relation === locked[1] || otherRel === locked[1])
+                    if (this.gender[0] === 'M') this.lock.gender = true
             }
         }
 
@@ -1508,7 +1511,7 @@ class Application {
             if (selfAssign) data.userId = data.createdBy
         }
         data.createdIn = JSON.stringify(createdIn)
-        
+
         if (dateAfter(data.addrSince, 3, 'years')) {
             /* Database has default values for the else condition */
             data.addrEnough = false
