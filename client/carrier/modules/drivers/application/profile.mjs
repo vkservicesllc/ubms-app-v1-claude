@@ -2,7 +2,7 @@ import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import application, { identity, count, dropdownEvent, errorMessage } from './hub.mjs'
+import application, { identity, count, dropdownEvent, errorMessage, errorIcon } from './hub.mjs'
 
 
 (() => {
@@ -26,8 +26,6 @@ import application, { identity, count, dropdownEvent, errorMessage } from './hub
     const $calendar = {
         dob: $('#dob-calendar'),
     }
-
-    const errorIcon = '<i class="ui red text exclamation triangle icon"></i>'
 
     dropdownEvent($dropdown)
 
@@ -70,6 +68,17 @@ import application, { identity, count, dropdownEvent, errorMessage } from './hub
 
     if (identity.mismatch.sex) $label.gender.prepend(errorIcon).parent().addClass('error')
     else if (count.matched) $dropdown.gender[0].parent().addClass('disabled')
+
+    if (identity.mismatch.dob || identity.mismatch.sex) {
+        const message = 'The system identified the SSN, but the gender or DOB entered does not match'
+        const list = [
+            'Review the SSN for possible errors',
+            'Or revise the indicated fields accordingly',
+        ]
+
+        $('.item[data-tab="profile"]').append(errorIcon)
+        $('#profile-form').after(errorMessage('Identity Error', message, list))
+    }
 
     if (count.matched) $(TS.ssn).parent().addClass('disabled')
 

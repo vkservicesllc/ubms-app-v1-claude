@@ -11,6 +11,9 @@ export default application
 export { identity, count }
 
 
+export const errorIcon = '<i class="ui red text exclamation triangle icon"></i>'
+
+
 export const dropdownEvent = $dropdown => {
     Object.keys($dropdown).forEach(prop => {
         const [ $el, value, onChange ] = $dropdown[prop]
