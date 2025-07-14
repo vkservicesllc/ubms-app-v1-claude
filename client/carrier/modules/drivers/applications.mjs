@@ -90,12 +90,12 @@ const table = $('#driver-apl-table').DataTable({
                 if (row.dob !== row.originalDob || row.sex !== row.originalSex)
                     data += `<span title="Identity Error: False DOB or Gender"><i class="ui red text exclamation triangle icon"></i></span>`
 
-                if (row.nameMismatch && (
+                if (
                     row.firstName !== row.originalFirstName ||
                     row.middleName !== row.originalMiddleName ||
                     row.lastName !== row.originalLastName ||
                     row.suffix !== row.originalSuffix
-                ))
+                )
                     data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange text id badge outline icon"></i></span>`
 
                 return data
@@ -122,7 +122,7 @@ const table = $('#driver-apl-table').DataTable({
                 data = escapeHTML(new Person(row).fullLastName())
 
                 const { originalLastName, originalSuffix } = row
-                if (row.nameMismatch && (row.lastName !== originalLastName || row.suffix !== originalSuffix)) {
+                if (row.lastName !== originalLastName || row.suffix !== originalSuffix) {
                     const original = new Person({ ...row, lastName: originalLastName, suffix: originalSuffix })
 
                     data += ` <small><span class="ui orange text">(${escapeHTML(original.fullLastName())})</span></small>`
@@ -140,7 +140,7 @@ const table = $('#driver-apl-table').DataTable({
                 data = escapeHTML(new Person(row).fullFirstName())
 
                 const { originalFirstName, originalMiddleName } = row
-                if (row.nameMismatch && (row.firstName !== originalFirstName || row.middleName !== originalMiddleName)) {
+                if (row.firstName !== originalFirstName || row.middleName !== originalMiddleName) {
                     const original = new Person({ ...row, firstName: originalFirstName, middleName: originalMiddleName })
 
                     data += ` <small><span class="ui orange text">(${escapeHTML(original.fullFirstName())})</span></small>`

@@ -36,6 +36,7 @@ const throwErr = require('../utils/error')
 const query = {
     drivers: new Query(db.carrier, 'drivers'),
     applications: new Query(db.carrier, 'applications'),
+    aplAddresses: new Query(db.carrier, 'application_addresses'),
     aplDLs: new Query(db.carrier, 'application_DLs'),
     aplMECs: new Query(db.carrier, 'application_MECs'),
     aplCitations: new Query(db.carrier, 'application_citations'),
@@ -47,7 +48,7 @@ const query = {
     aplVehicles: new Query(db.carrier, 'application_vehicles'),
     aplBeneficiaries: new Query(db.carrier, 'application_beneficiaries'),
     aplEmergencies: new Query(db.carrier, 'application_emergencies'),
-    aplAddresses: new Query(db.carrier, 'application_addresses'),
+    aplChecklists: new Query(db.carrier, 'application_checklists'),
 }
 
 
@@ -66,6 +67,34 @@ class Driver extends Individual {
         this.id = async () => (await mysql.execute(query.drivers.select('id', {
             match: { id: Driver.matchIdHash(this._id) },
         })))[0][0].id
+
+        this.applications = async (session, ) => {
+            let error = sessionError(session, { branches: [ 'carrier', 'driver' ] })
+            if (error) return { error }
+
+            const count = { total: 0, submitted: 0, matched: 0 }
+            const applications = (await mysql.execute(query.applications.select([
+                Application.hashId(),
+                Driver.hashId('driverId'),
+                Team.hashId('teamId'),
+                User.hashId('userId'),
+                Carrier.hashId('carrierId'),
+                'formId',
+                'position',
+                'condition',
+                'matched',
+            ], { match: { driverId: Driver.matchIdHash(this._id) } })))[0]
+
+            applications.forEach(application => {
+                count.total += 1
+                if (application.condition !== 'p') {
+                    count.submitted += 1
+                    if (application.matched) count.matched += 1
+                }
+            })
+
+            return { applications, count }
+        }
     }
 
 
@@ -209,6 +238,7 @@ class Application {
 
         this._id = data._id
         this._driverId = data._driverId
+        this._personId = data._personId
         this._teamId = data._teamId
         this._userId = data._userId
         this._carrierId = data._carrierId
@@ -219,26 +249,32 @@ class Application {
         this.appliedAt = data.createdAt
         this.appliedOn = moment(data.createdAt).format('YYYY-MM-DD')
         this.finishedAt = data.finishedAt
+        this.matched = data.matched
 
-        this.lock = {
-            ssn: true,
-            dob: true,
-            gender: true,
-            marital: false,
-        }
-        this.error = {
-            dob: false,
-            gender: false,
+        this.checklist = {
+            dlScn: data.dlScn,
+            dlScnId: data.dlScnId,
+            dlVrfId: data.dlVrfId,
+            mecScn: data.mecScn,
+            mecScnId: data.mecScnId,
+            mecVrfId: data.mecVrfId,
+            docScn: data.docScn,
+            docScnId: data.docScnId,
+            docVrfId: data.docVrfId,
+            mvrUplId: data.mvrUplId,
+            pspUplId: data.pspUplId,
         }
 
         this.legalStatus = [ data.status, data.statusExpiresOn ]
         this.step = data.step
+
+        const person = new Person({ firstName, middleName, lastName, suffix })
         this.firstName = firstName
         this.middleName = middleName
         this.lastName = lastName
         this.suffix = suffix
-        this.fullName = new Person({ firstName, middleName, lastName, suffix }).fullName('FMLs')
-        this.nameMismatch = bool(data.nameMismatch)
+        this.name = person.fullName()
+        this.fullName = person.fullName('FMLs')
 
         this.dob = data.dob
         this.ssn = stringifyBuffer(data.ssn)
@@ -254,23 +290,6 @@ class Application {
                 this.gender = [ 'M', 'Male' ]
                 break
         }
-
-        this.individual = new Person({
-            firstName: data.personFirstName,
-            middleName: data.personMiddleName,
-            lastName: data.personLastName,
-            suffix: data.personSuffix,
-            dob: data.personDob,
-            sex: data.personSex,
-            ssn: data.personSsn,
-        })
-        this.individual.name = this.individual.fullName('FMLs')
-        this.individual.ssn = stringifyBuffer(data.personSsn)
-        this.individual.nameSince = data.personNameSince
-
-        this.identityMismatch = {}
-        const personProps = ['ssn', 'dob', 'sex', 'firstName', 'middleName', 'lastName', 'suffix']
-        personProps.forEach(prop => this.identityMismatch[prop] = this[prop] !== this.individual[prop])
 
         this.marital = data.marital
         this.email = data.email
@@ -438,20 +457,6 @@ class Application {
                     this.beneficiary.gender = [ 'M', 'Male' ]
                     break
             }
-
-            if (this.marital) {
-                const locked = ['husband', 'wife', 'spouse']
-                relation = relation.toLowerCase().trim()
-                if (otherRel) otherRel = otherRel.toLowerCase().trim()
-
-                if (locked.includes(relation) || locked.includes(otherRel))
-                    this.lock.marital = true
-
-                if (relation === locked[0] || otherRel === locked[0])
-                    if (this.gender[0] === 'F') this.lock.gender = true
-                if (relation === locked[1] || otherRel === locked[1])
-                    if (this.gender[0] === 'M') this.lock.gender = true
-            }
         }
 
         if (data.emergPhone)
@@ -505,17 +510,15 @@ class Application {
 
             case 'profile':
                 {
-                    if (data.nameMismatch === 'on')
-                    data.nameMismatch = false
+                    if (data.nameMismatch === 'on') {
+                        //! another action
+                    }
 
                     data = processData(data, {
                         modifiedBy, branch, siteId,
                         currentData: this, currentUpdateLog: await this.log('updateLog'),
                     })
                     if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
-
-                    if (data.firstName || 'middleName' in data || data.lastName || 'suffix' in data)
-                        data.nameMismatch = true
 
                     if (dataLen(data)) {
                         const [ result ] = await mysql.execute(query.applications.update(data, { id }))
@@ -1263,6 +1266,25 @@ class Application {
     }
 
 
+    identity = async session => {
+        let error = sessionError(session, { branches: [ 'carrier' ] })
+        if (error) return { error }
+
+        const individual = await Individual.data(session, { _id: this._personId })
+        if (!individual) return { error: 'App Error: Individual not found' }
+
+        const mismatch = {}
+
+        let props = ['dob', 'sex', 'firstName', 'middleName', 'lastName', 'suffix']
+        props.forEach(prop => mismatch[prop] = this[prop] !== individual[prop])
+
+        props = ['phone', 'email', 'marital']
+        props.forEach(prop => mismatch[prop] = !!individual[prop] && this[prop] !== individual[prop])
+
+        return { individual, mismatch }
+    }
+
+
     static stepList = [
         [ 'Profile', 'Residence', 'Legal Status', 'Position' ],
         "Driver's License",
@@ -1532,10 +1554,13 @@ class Application {
         const id = result.insertId
 
         if (id) created = true
-        else return { error: 'DB Error' }
+        else return { error: 'DB Error: Stage 1' }
 
         let application, url
         if (created) {
+            const [ result ] = await mysql.execute(query.aplChecklists.insert({ aplId: id }))
+            if (result.affectedRows !== 1) return { error: 'DB Error: Stage 2' }
+
             application = await Application.data(session, { id })
 
             const { carrierId } = data
@@ -1604,6 +1629,7 @@ class Application {
                     'formId',
                     'condition',
                     'step',
+                    'matched',
                     'createdBy',
                     'createdAt',
                     'finishedAt',
@@ -1614,7 +1640,6 @@ class Application {
                     'middleName',
                     'lastName',
                     'suffix',
-                    'nameMismatch',
                     'dob',
                     { aes: [ 'ssn', ssnSecret ] },
                     'sex',
@@ -1648,33 +1673,19 @@ class Application {
                 match,
             },
             {
+                table: 'application_checklists',
+                fields: [
+                    'dlScn', 'dlScnId', 'dlVrfId',
+                    'mecScn', 'mecScnId', 'mecVrfId',
+                    'docScn', 'docScnId', 'docVrfId',
+                    'mvrUplId', 'pspUplId',
+                ],
+                join: [ 'aplId', 'id' ],
+            },
+            {
                 table: 'drivers',
+                fields: Individual.hashId('personId'),
                 join: [ 'id', 'driverId' ],
-            },
-            {
-                db: db.person,
-                table: 'individuals',
-                fields: [
-                    [ 'dob', 'personDob' ],
-                    [ 'sex', 'personSex' ],
-                    [ { aes: [ 'ssn', ssnSecret ] }, 'personSsn' ],
-                ],
-                join: [ 'id', 'personId', 1 ],
-            },
-            {
-                db: db.person,
-                table: 'names',
-                fields: [
-                    [ 'firstName', 'personFirstName' ],
-                    [ 'middleName', 'personMiddleName' ],
-                    [ 'lastName', 'personLastName' ],
-                    [ 'suffix', 'personSuffix' ],
-                    [ 'since', 'personNameSince' ],
-                ],
-                join: [ 'personId', 'id', {
-                    table: 'individuals',
-                    max: 'since',
-                } ],
             },
             {
                 table: 'application_DLs',
@@ -1952,7 +1963,6 @@ class Application {
                     'apl.middleName',
                     'apl.lastName',
                     'apl.suffix',
-                    'apl.nameMismatch',
                     'apl.dob',
                     'apl.sex',
                     'apl.email',

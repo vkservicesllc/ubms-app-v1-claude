@@ -5,6 +5,7 @@ const { DB__MYSQL_AES_SSN: secret } = process.env
 import db from '../../settings/mysql.mjs'
 
 /* Tools */
+import moment from 'moment'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import { sessionError } from './user.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
@@ -20,7 +21,10 @@ const mysql = require('../utils/mysql')
 const query = {
     individuals: new Query(db.person, 'individuals'),
     names: new Query(db.person, 'names'),
+    legalPresence: new Query(db.person, 'legal_presence'),
     phones: new Query(db.person, 'phones'),
+    addresses: new Query(db.person, 'addresses'),
+    //! ...add more
 }
 const targets = Object.keys(query)
 
@@ -32,9 +36,31 @@ class Individual extends Person {
         if (!data?._id || !Object.keys(this).length)
             throw new Error('Individual instantiation failed: Invalid data')
 
-        const { _id, phone } = data
+        const { _id, phone, email, marital } = data
+        const legalPresence = {
+            status: data.status,
+            expiresOn: data.statusExpiresOn,
+        }
+        const address = {
+            address1: data.address1,
+            address2: data.address2,
+            city: data.city,
+            state: data.state,
+            zip: data.zip,
+        }
+        const identification = {
+            driver: data.driver,
+            commercial: data.commercial,
+            number: data.idNumber,
+            class: data.idClass,
+            state: data.idState,
+            issuedOn: data.idIssuedOn,
+            expiresOn: data.idExpiresOn,
+            endorsement: data.idEndorsement,
+            restriction: data.idRestriction,
+        }
 
-        reSuper(this, { _id }, { phone })
+        reSuper(this, { _id }, { legalPresence, phone, email, marital, address, identification })
 
         if (!light) {
 
@@ -300,6 +326,7 @@ class Individual extends Person {
             const { dob, sex, prefix, firstName, middleName, lastName, suffix, alias } = data
             const createdBy = user?.id ? await user.id() : null
             let createdIn = null
+            const today = moment().format('YYYY-MM-DD')
 
             if (branch) {
                 createdIn = { branch }
@@ -350,8 +377,43 @@ class Individual extends Person {
                 join,
             },
             {
+                table: 'legal_presence',
+                fields: [ 'status', [ 'expiresOn', 'statusExpiredOn' ] ],
+                join,
+            },
+            {
                 table: 'phones',
                 fields: [ [ 'number', 'phone' ] ],
+                join,
+            },
+            {
+                table: 'addresses',
+                fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
+                join,
+            },
+            {
+                table: 'emails',
+                fields: 'email',
+                join,
+            },
+            {
+                table: 'identifications',
+                fields: [
+                    'driver',
+                    'commercial',
+                    [ 'number', 'idNumber' ],
+                    [ 'class', 'idClass' ],
+                    [ 'state', 'idState' ],
+                    [ 'issuedOn', 'idIssuedOn' ],
+                    [ 'expiresOn', 'idExpiresOn' ],
+                    [ 'endorsement', 'idEndorsement' ],
+                    [ 'restriction', 'idRestriction' ],
+                ],
+                join: [ 'personId', 'id', { max: 'issuedOn' } ],
+            },
+            {
+                table: 'maritals',
+                fields: [ [ 'status', 'marital' ] ],
                 join,
             },
         ]

@@ -14,4 +14,6 @@ import application from './hub.mjs'
     telEvent(TS.emergPhone, { value: phone })
     nameEvent(TS.emergName, { value: name })
     inputEvent(TS.emergRelation, { strip: true, word: true, capitalize: 'first', value: relation })
+
+    $('.loading.form').removeClass('loading')
 })()

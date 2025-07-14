@@ -182,6 +182,18 @@ class Query {
     }
 
 
+    count(match = {}, field = 'id') {
+        const table = Query.#_table(this.table, this.db)
+
+        let query = `\nSELECT COUNT(${field}) AS count\n`
+        query += `\nFROM ${table}\n`
+        if (match && Object.keys(match).length)
+            query += `WHERE ${Query.#match(match)}\n`
+
+        return query
+    }
+
+
     insert(data) {
         if (!Array.isArray(data)) data = [ data ]
         const table = Query.#_table(this.table, this.db)

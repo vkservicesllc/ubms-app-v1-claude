@@ -197,7 +197,8 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         const application = await Application.data(res.session, { formId })
         if (!application || application.condition !== 'c' || application._teamId !== team._id)
             return res.redirect(aplUrl)
-// console.log(application)
+
+        const identity = await application.identity(res.session)
 
         const key = 'drivers.application.e-form'
         let { hbs } = res
@@ -356,13 +357,13 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.form = new ApplicationForm(options)
         hbs.dropdown = dropdown
         hbs.fullName = application.fullName
-        hbs.originalFullName = application.individual.name
-        hbs.nameMismatch = (application.nameMismatch && (
-            identityMismatch.firstName ||
-            identityMismatch.middleName ||
-            identityMismatch.lastName ||
-            identityMismatch.sufix
-        ))
+        hbs.originalFullName = identity.individual.fullName('FMLs')
+        hbs.nameMismatch = (
+            identity.mismatch.firstName ||
+            identity.mismatch.middleName ||
+            identity.mismatch.lastName ||
+            identity.mismatch.sufix
+        )
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {

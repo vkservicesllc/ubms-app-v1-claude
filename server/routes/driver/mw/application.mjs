@@ -6,7 +6,7 @@ import moment from 'moment'
 import User from '../../../tools/core/user.mjs'
 import Team from '../../../tools/core/team.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
-import { Application } from '../../../tools/core/driver.mjs'
+import Driver, { Application } from '../../../tools/core/driver.mjs'
 import Person, { Relationship } from '../../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
 import Geography from '../../../../client/global/modules/tools/core/geography.mjs'
@@ -174,7 +174,8 @@ export const applicationLogin = async (req, res, next) => {
 
 export const applicationProgress = async (req, res) => {
     try {
-        const { application } = res.session
+        const session = { ...res.session, user: true }
+        const { application } = session
         const { formId, deptId } = application
 
         const { application: _id } = req.session
@@ -184,7 +185,10 @@ export const applicationProgress = async (req, res) => {
             return res.redirect(`/application/${formId}`)
         }
 
-        const team = await Team.data({ ...res.session, user: true }, { _id: application._teamId })
+        const driver = await Driver.data(session, { _id: application._driverId })
+        if (!driver) return throwErr.server(res, 'Internal Server Error: Unidentified Driver')
+
+        const team = await Team.data(session, { _id: application._teamId })
         if (!team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
 
         const depts = team.depts.join(', ')
@@ -263,6 +267,7 @@ export const applicationProgress = async (req, res) => {
         }
 
         {
+            const count = (await driver.applications(session)).count
             const { firstName, middleName, lastName, suffix, email } = application
             const { address1, address2, zip: addrZip, city: addrCity } = application.address
             const values = {
@@ -280,6 +285,7 @@ export const applicationProgress = async (req, res) => {
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
             options.addrState.select.input.options = { valOpt: true }
+            if (count.matched) options.ssn.text.input.readOnly = true
         }
 
         if (step >= 0) { /* PRIOR RESIDENCE */
