@@ -50,11 +50,14 @@ router.post('/drivers/application/:_id', User.verify, Team.verify, async (req, r
         const driver = await Driver.data(res.session, { _id: application._driverId })
         if (!driver) return res.send({ error: 'Internal Server Error: Driver not found' })
 
+        const { formId } = application
+        const { applications, count } = await driver.applications(res.session)
+        const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
+
         const identity = await application.identity(res.session)
         const log = await application.log()
-        const count = (await driver.applications(res.session)).count
 
-        res.send({ data: { application, identity, count, log } })
+        res.send({ data: { application, identity, count, unmatchedIdx, log } })
     } catch (err) {
         throwErr.server(res, null, err)
     }

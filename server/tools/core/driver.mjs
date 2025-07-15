@@ -83,10 +83,14 @@ class Driver extends Individual {
                 'position',
                 'condition',
                 'matched',
-            ], { match: { driverId: Driver.matchIdHash(this._id) } })))[0]
+                'createdAt',
+            ], { match: { driverId: Driver.matchIdHash(this._id) }, sort: [ 'id' ] })))[0]
 
-            applications.forEach(application => {
+            let idx = 1
+            applications.forEach((application, i) => {
+                if (!application.matched) applications[i].unmatchedIdx = idx++
                 count.total += 1
+
                 if (application.condition !== 'p') {
                     count.submitted += 1
                     if (application.matched) count.matched += 1

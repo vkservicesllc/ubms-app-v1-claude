@@ -4,11 +4,10 @@ const response = $.ajax(`/api/drivers/application/${_id}`, { method: 'POST', asy
 const { data, error } = response
 
 if (error) alert(error)
-const { application, identity, count } = data
-console.log(data)
+const { application, identity, count, unmatchedIdx } = data
 
 export default application
-export { identity, count }
+export { identity, count, unmatchedIdx }
 
 
 export const errorIcon = '<i class="ui red text exclamation triangle icon"></i>'
