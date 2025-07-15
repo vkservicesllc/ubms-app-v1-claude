@@ -61,7 +61,7 @@
 
         <div class="ui grid" style="width: 1080px;">
             <div class="three wide left attached column">
-                <div class="ui vertical fluid tabular menu">
+                <div class="ui vertical fluid tabular menu" id="section-menu">
                     <a class="item" data-tab="workflow">Workflow</a>
                     <a class="item disabled" data-tab="documents">Documents</a>
                     <a class="item active" data-tab="profile">{{idx (idx steps 0) 0}}</a>
@@ -81,7 +81,7 @@
                 </div>
             </div>
             <div class="thirteen wide stretched right attached column">
-                <div class="ui seamless right attached segment" style="padding: 20px;">
+                <div class="ui seamless right attached segment" id="sections" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
                     <div class="ui tab" data-tab="workflow">
@@ -493,7 +493,7 @@
             </div>
         </div>
         <script>
-            const $menu = $('.ui.menu .item'), $tabs = $('.ui.tab')
+            const $menu = $('#section-menu.ui.menu .item'), $tabs = $('#sections .ui.tab')
             let href = location.href, query
             [ href, query ] = href.split('?')
 
@@ -501,8 +501,8 @@
                 $menu.removeClass('active')
                 $tabs.removeClass('active')
 
-                $(`.ui.menu .item[data-tab="${query}"]`).addClass('active')
-                $(`.ui.tab[data-tab="${query}"]`).addClass('active')
+                $(`#section-menu.ui.menu .item[data-tab="${query}"]`).addClass('active')
+                $(`#sections .ui.tab[data-tab="${query}"]`).addClass('active')
 
                 history.replaceState({}, '', href)
             }

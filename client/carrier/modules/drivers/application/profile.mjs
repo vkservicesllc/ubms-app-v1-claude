@@ -93,5 +93,8 @@ import application, { identity, count, dropdownEvent, errorMessage, errorIcon } 
             $dropdown.marital[0].parent().addClass('disabled')
     }
 
-    $('#identity-name-mismatch .nag').nag()
+    if ($('#identity-name-mismatch').length) {
+        $('.item[data-tab="profile"]').append('<i class="ui dark orange text id badge outline icon"></i>')
+        $('#identity-name-mismatch .nag').nag()
+    }
 })()
