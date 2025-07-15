@@ -248,7 +248,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.formId = formId
         hbs.deptId = deptId
         hbs.position = application.position[1]
-        hbs.department = Team.deptList.crr[deptId]
+        hbs.division = Team.deptList.crr[deptId]
         hbs.applicant = `<strong style="font-size: 1.2em;">${new Person(application).fullName('FMLs')}</strong>`
         hbs.applicant += ` <small>(${calculateYearAge(application.dob, application.finishedAt.split(' ')[0])} yo`
         hbs.applicant += ` / ***-**-${application.ssn.slice(-4)})</small>`
