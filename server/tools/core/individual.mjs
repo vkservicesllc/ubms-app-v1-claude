@@ -24,6 +24,7 @@ const query = {
     legalPresence: new Query(db.person, 'legal_presence'),
     phones: new Query(db.person, 'phones'),
     addresses: new Query(db.person, 'addresses'),
+    maritals: new Query(db.person, 'maritals'),
     //! ...add more
 }
 const targets = Object.keys(query)
@@ -323,7 +324,11 @@ class Individual extends Person {
             return { created, ...await person.modify(session, data) }
         } else {
             const { branch, siteId, user } = session
-            const { dob, sex, prefix, firstName, middleName, lastName, suffix, alias } = data
+            const {
+                dob, sex,
+                prefix, firstName, middleName, lastName, suffix, alias,
+                marital,
+            } = data
             const createdBy = user?.id ? await user.id() : null
             let createdIn = null
             const today = moment().format('YYYY-MM-DD')
@@ -355,6 +360,15 @@ class Individual extends Person {
                     createdIn,
                 }))
                 if (result.affectedRows === 1) created = true
+
+                if (created && marital)
+                    await mysql.execute(query.maritals.insert({
+                        personId: id,
+                        since: today,
+                        status: marital,
+                        createdBy,
+                        createdIn,
+                    }))
             }
 
             return { created, data: await Individual.data(session, { id }) }
