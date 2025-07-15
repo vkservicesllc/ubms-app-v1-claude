@@ -46,24 +46,33 @@
                 </div>
                 <div class="card-text" id="privacy-card" style="display: none;">
                     <div class="text-start pt-2" id="privacy">
-                        <h6 class="mb-3">Privacy & Data Security Notice</h6>
-                        <p>
-                            To proceed with the application process,
-                            we are required by the Department of Transportation to obtain your Motor Vehicle Report.
-                            To access this report, we will need your Social Security Number.
+                        <h6 class="text-success mb-3">Privacy & Data Security Notice</h6>
+                        <div style="font-size: .9em;">
+                            <p>
+                                To proceed with the application process,
+                                we are required by the Department of Transportation to obtain your Motor Vehicle Report.
+                                To access this report, we will need your Social Security Number.
+                            </p>
+                            <p>
+                                Please rest assured that all information you submit will be securely stored,
+                                with the most sensitive data — such as Social Security numbers — being encrypted for maximum protection.
+                                We will not share your information with any third party under any circumstances, except as required by law.
+                            </p>
+                            <p>
+                                Your privacy and security are our top priorities.
+                                Our commitment is to handle your data with the highest level of confidentiality and security.
+                            </p>
+                            {{#if (ne company false)}}
+                            <p>If you have any questions about our data protection practices, please feel free to contact us at {{company.phone}}.</p>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div class="text-start pt-2" id="warning">
+                        <h6 class="text-warning mb-3">Important</h6>
+                        <p class="text-danger" style="font-size: .9em;">
+                            If you’ve already submitted an application, please do not reapply.
+                            Multiple submissions may cause delays.
                         </p>
-                        <p>
-                            Please rest assured that all information you submit will be securely stored,
-                            with the most sensitive data — such as Social Security numbers — being encrypted for maximum protection.
-                            We will not share your information with any third party under any circumstances, except as required by law.
-                        </p>
-                        <p>
-                            Your privacy and security are our top priorities.
-                            Our commitment is to handle your data with the highest level of confidentiality and security.
-                        </p>
-                        {{#if (ne company false)}}
-                        <p>If you have any questions about our data protection practices, please feel free to contact us at {{company.phone}}.</p>
-                        {{/if}}
                     </div>
                     <button class="btn btn-success bg-success-subtle" id="confirm">I Understand & Agree</button>
                 </div>

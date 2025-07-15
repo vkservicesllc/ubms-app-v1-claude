@@ -22,9 +22,10 @@ const query = {
     individuals: new Query(db.person, 'individuals'),
     names: new Query(db.person, 'names'),
     legalPresence: new Query(db.person, 'legal_presence'),
+    maritals: new Query(db.person, 'maritals'),
+    //?...
     phones: new Query(db.person, 'phones'),
     addresses: new Query(db.person, 'addresses'),
-    maritals: new Query(db.person, 'maritals'),
     //! ...add more
 }
 const targets = Object.keys(query)
@@ -148,8 +149,50 @@ class Individual extends Person {
 
                 switch (target) {
 
-                    case targets[2]:
-                        const { phone: number } = data
+                    case 'legalPresence':
+                        {
+                            let { status, statusExpiresOn: expiresOn } = data
+                            if (status < 2) expiresOn = null
+
+                            const update = processData({ status, expiresOn }, {
+                                currentData: this.legalPresence,
+                                currentUpdateLog: await this.log('legalPresence', 'updateLog'),
+                                modifiedBy, branch, siteId,
+                            })
+
+                            const [ result ] = await mysql.execute(query.legalPresence.update(update, { personId: id, max: 'since' }))
+                            if (result.affectedRows === 1) modified = true
+                        }
+                        break
+
+                    case 'maritals':
+                        {
+                            const { marital } = data
+
+                            const update = processData({ status: marital }, {
+                                currentData,
+                                currentUpdateLog: await this.log('maritals', 'updateLog'),
+                                modifiedBy, branch, siteId,
+                            })
+
+                            const [ result ] = await mysql.execute(query.maritals.update(update, { personId: id, max: 'since' }))
+                            if (result.affectedRows === 1) modified = true
+                        }
+                        break
+
+                    case 'phones':
+                        {
+                            const { phone: number } = data
+
+                            const update = processData({ number }, {
+                                currentData: { number: this.phone },
+                                currentUpdateLog: await this.log('phones', 'updateLog'),
+                                modifiedBy, branch, siteId,
+                            })
+
+                            const [ result ] = await mysql.execute(query.phones.update(update, { personId: id, max: 'since' }))
+                            if (result.affectedRows === 1) modified = true
+                        }
                         break
 
                     default:
@@ -169,23 +212,12 @@ class Individual extends Person {
                             individuals: processData({ dob, sex, ssn }, {
                                 currentData,
                                 currentUpdateLog: await this.log(null, 'updateLog'),
-                                modifiedBy,
-                                branch,
-                                siteId,
+                                modifiedBy, branch, siteId,
                             }),
-                            names: processData({
-                                prefix,
-                                firstName,
-                                middleName,
-                                lastName,
-                                suffix,
-                                alias,
-                            }, {
+                            names: processData({ prefix, firstName, middleName, lastName, suffix, alias }, {
                                 currentData,
                                 currentUpdateLog: await this.log('names', 'updateLog'),
-                                modifiedBy,
-                                branch,
-                                siteId,
+                                modifiedBy, branch, siteId,
                             }),
                         }
 
@@ -327,7 +359,7 @@ class Individual extends Person {
             const {
                 dob, sex,
                 prefix, firstName, middleName, lastName, suffix, alias,
-                marital,
+                status, statusExpiresOn, marital,
             } = data
             const createdBy = user?.id ? await user.id() : null
             let createdIn = null
@@ -361,14 +393,33 @@ class Individual extends Person {
                 }))
                 if (result.affectedRows === 1) created = true
 
-                if (created && marital)
-                    await mysql.execute(query.maritals.insert({
-                        personId: id,
-                        since: today,
-                        status: marital,
-                        createdBy,
-                        createdIn,
-                    }))
+                if (created) {
+                    if ([0, 1, 2].includes(status)) {
+                        const data = {
+                            personId: id,
+                            since: today,
+                            status,
+                            createdBy,
+                            createdIn,
+                        }
+
+                        if (statusExpiresOn && status === 2)
+                            data.expiresOn = statusExpiresOn
+
+                        await mysql.execute(query.legalPresence.insert(data))
+                    }
+
+                    if (marital)
+                        await mysql.execute(query.maritals.insert({
+                            personId: id,
+                            since: today,
+                            status: marital,
+                            createdBy,
+                            createdIn,
+                        }))
+                }
+
+
             }
 
             return { created, data: await Individual.data(session, { id }) }

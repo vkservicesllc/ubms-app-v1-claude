@@ -156,7 +156,7 @@ class Driver extends Individual {
 
         const { ssn } = data
         let person = await Individual.data(session, { ssn })
-
+console.log('Driver.create: data', data)
         if (!person) {
             const result = await Individual.create(session, data)
             person = result.data
@@ -166,7 +166,7 @@ class Driver extends Individual {
         if (user && user !== true) driverData.createdBy = await user.id()
         const createdIn = { branch }
         driverData.createdIn = JSON.stringify(createdIn)
-
+console.log('Driver.create: driverData', driverData)
         const [ result ] = await mysql.execute(query.drivers.insert(driverData))
         if (result.affectedRows === 1) created = true
         id = result.insertId
