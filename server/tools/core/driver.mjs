@@ -522,11 +522,34 @@ class Application {
                         modifiedBy, branch, siteId,
                         currentData: this, currentUpdateLog: await this.log('updateLog'),
                     })
-                    if (data.ssn) data.ssn = { aes: [ data.ssn, ssnSecret ] }
 
+                    const { ssn } = data
+                    if (ssn) data.ssn = { aes: [ ssn, ssnSecret ] }
                     if (dataLen(data)) {
                         const [ result ] = await mysql.execute(query.applications.update(data, { id }))
                         if (result.affectedRows === 1) modified = true
+
+                        if (ssn) {
+                            //! check if person exists
+                            //? if yes, check if driver exists
+                                //? if yes, get driver, update driverId in the application
+                                //! else add driver, get driverId and update it in the application
+                            //! else add person, add driver, update driverId
+                        } else if (data.sex !== undefined || data.dob) {
+                            const driver = await Driver.data(session, { _id: this._driverId })
+                            const { applications, count } = await driver.applications(session)
+
+                            if (!count.matched) {
+                                const { unmatchedIdx } = applications.filter(application => application.formId === this.formId)[0]
+                                if (unmatchedIdx === 1) {
+                                    const { sex, dob } = data
+                                    const individual = await Individual.data(session, { _id: driver._personId })
+
+                                    const result = await individual.modify(session, { sex, dob })
+                                    if (result.error) error = result.error
+                                }
+                            }
+                        }
                     }
                 }
                 break
