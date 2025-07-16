@@ -277,6 +277,15 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         let options = {}, dropdown = {}, t = `\t`.repeat(11)
 
+        /* WORKFLOW */
+        {
+            dropdown.user = ''
+            dropdown.carrier = ''
+
+            const urData = await team.userData(res.session, 'users', true)
+            console.log(urData)
+        }
+
         /* PROFILE */
         {
             dropdown.suffix = ''

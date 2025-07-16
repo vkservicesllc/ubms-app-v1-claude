@@ -74,19 +74,22 @@ class Query {
             table = Query.#_table(table, db)
 
             if (primaryTable && join) {
-                joiner = { table: '', id: '' }
+                joiner = { table: '', id: '', type: 'left' }
                 const [ id, foreignId, param3 ] = join
-                let foreignTable, foreignMatch, min, max
+                let foreignTable, foreignMatch, min, max, type
 
                 if (typeof param3 === 'string')
                     foreignTable = param3
                 else if (typeof param3 === 'number')
                     foreignTable = tables[param3]
                 else if (typeof param3 === 'object')
-                    ({ min, max, match: foreignMatch, table: foreignTable } = param3)
+                    ({ min, max, match: foreignMatch, table: foreignTable, type } = param3)
 
                 if (!foreignTable) foreignTable = primaryTable
                 foreignTable = Query.#_table(foreignTable, false)
+
+                if (['left', 'right', 'inner', 'outter', null].includes(type))
+                    joiner.type = type
 
                 if (max || min) {
                     const purpose = max || min
@@ -149,8 +152,10 @@ class Query {
         query += columns.join(`,\n`)
         query += `\nFROM ${primaryTable}\n`
         joins.map(joiner => {
-            const { table, id } = joiner
-            query += `LEFT JOIN ${table}\nON ${id}\n`
+            const { table, id, type } = joiner
+            const  join = (type ? `${type.toUpperCase()} ` : '') + 'JOIN '
+
+            query += `${join + table}\nON ${id}\n`
         })
         if (matches.length)
             query += `WHERE ${matches.join(`\nAND `)}\n`
