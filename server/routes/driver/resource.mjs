@@ -89,7 +89,7 @@ applicantPreferenceFields.forEach(prop => validateApplicantPreference.push(Appli
 const validateApplicantBusiness = []
 const applicantBusinessFields = [
     'activeLLC', 'llcName', 'llcState', 'llcEin',
-    'llcAssistance', 'llcProposedName',
+    // 'llcAssistance', 'llcProposedName',
 ]
 applicantBusinessFields.forEach(prop => validateApplicantBusiness.push(ApplicationForm[prop].validate()))
 

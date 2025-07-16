@@ -986,29 +986,29 @@ class ApplicationForm {
         },
     })
 
-    static llcAssistance = createYesNoForm({
-        selector: appSelector,
-        target: 'llcAssistance',
-        group: 'llcAssistance',
-        name: 'llcAssistance',
-        required,
-        disabled,
-        label: 'Assistance Starting LLC',
-        validator: {
-            optional: true,
-        },
-    })
+    // static llcAssistance = createYesNoForm({
+    //     selector: appSelector,
+    //     target: 'llcAssistance',
+    //     group: 'llcAssistance',
+    //     name: 'llcAssistance',
+    //     required,
+    //     disabled,
+    //     label: 'Assistance Starting LLC',
+    //     validator: {
+    //         optional: true,
+    //     },
+    // })
 
-    static llcProposedName = createBusNameForm(appSelector, {
-        target: 'llcProposedName',
-        name: 'proposedName',
-        required,
-        disabled,
-        label: 'Proposed Company Name',
-        validator: {
-            optional: true,
-        },
-    })
+    // static llcProposedName = createBusNameForm(appSelector, {
+    //     target: 'llcProposedName',
+    //     name: 'proposedName',
+    //     required,
+    //     disabled,
+    //     label: 'Proposed Company Name',
+    //     validator: {
+    //         optional: true,
+    //     },
+    // })
 
 
 

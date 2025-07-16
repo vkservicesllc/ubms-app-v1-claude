@@ -698,21 +698,21 @@ export const applicationProgress = async (req, res) => {
             hbs.button.seven = buttonProps.save
             hbs.accordion.seven = accordionProps.finished
             hbs.llcDetailsDisplay = ' style="display: none;"'
-            hbs.llcAssistanceDisplay = ' style="display: none;"'
-            hbs.llcProposedDisplay = ' style="display: none;"'
+            // hbs.llcAssistanceDisplay = ' style="display: none;"'
+            // hbs.llcProposedDisplay = ' style="display: none;"'
 
             options.activeLLC = { radio: {} }
-            options.llcAssistance = { radio: {} }
+            // options.llcAssistance = { radio: {} }
             for (const prop of ['yes', 'no']) {
                 options.activeLLC.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                options.llcAssistance.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                // options.llcAssistance.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
             const values = {
                 llcName: application?.business?.busName,
                 llcState: application?.business?.state,
                 llcEin: application?.business?.ein,
-                llcProposedName: application?.business?.proposedName,
+                // llcProposedName: application?.business?.proposedName,
             }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr })
@@ -727,17 +727,17 @@ export const applicationProgress = async (req, res) => {
 
             if (application.activeBusiness === false) {
                 options.activeLLC.radio.no.input.checked = true
-                hbs.llcAssistanceDisplay = ''
+                // hbs.llcAssistanceDisplay = ''
 
-                if (application.businessAssist === true) {
-                    options.llcAssistance.radio.yes.input.checked = true
-                    options.llcProposedName.text.input.disabled = false
-                    hbs.llcProposedDisplay = ''
-                } else
-                    options.llcAssistance.radio.no.input.checked = true
+                // if (application.businessAssist === true) {
+                //     options.llcAssistance.radio.yes.input.checked = true
+                //     options.llcProposedName.text.input.disabled = false
+                //     hbs.llcProposedDisplay = ''
+                // } else
+                //     options.llcAssistance.radio.no.input.checked = true
 
-                options.llcAssistance.radio.yes.input.disabled = false
-                options.llcAssistance.radio.no.input.disabled = false
+                // options.llcAssistance.radio.yes.input.disabled = false
+                // options.llcAssistance.radio.no.input.disabled = false
             }
 
             if (application.position[0] === 'OO') {
@@ -1036,11 +1036,11 @@ export const applicationSummary = async (req, res) => {
         if (application.activeBusiness) {
             hbs.application.business.state = Address.stateList[application.business.state]
             hbs.application.business.ein = formatEin(application.business.ein) || na('N/A')
-        } else {
-            hbs.application.businessAssist = application.businessAssist
-                ? `<small>Proposed name</small><br/>"${application.business.proposedName}, LLC"`
-                : 'Not needed'
-        }
+        } // else {
+        //     hbs.application.businessAssist = application.businessAssist
+        //         ? `<small>Proposed name</small><br/>"${application.business.proposedName}, LLC"`
+        //         : 'Not needed'
+        // }
 
         hbs.application.beneficiary.relationship = application.beneficiary.otherRel || application.beneficiary.relation
         hbs.application.beneficiary.fullName = new Person(application.beneficiary).fullName('FMLs')

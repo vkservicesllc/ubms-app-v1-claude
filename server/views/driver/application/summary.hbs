@@ -467,13 +467,16 @@
                                 <tbody class="table-group-divider">
                                     {{#if (eq application.activeBusiness false)}}
                                     <tr>
+                                        <td colspan="2"><small class="text-danger">None</small></td>
+                                    </tr>
+                                    {{!-- <tr>
                                         <th></th>
                                         <td><small class="text-danger">None</small></td>
-                                    </tr>
-                                    <tr>
+                                    </tr> --}}
+                                    {{!-- <tr>
                                         <th class="text-secondary">Assistance:</th>
                                         <td>{{{application.businessAssist}}}</td>
-                                    </tr>
+                                    </tr> --}}
                                     {{else}}
                                     <tr>
                                         <th class="text-secondary">Name:</th>

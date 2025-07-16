@@ -408,7 +408,7 @@ class Application {
         }
 
         this.activeBusiness = bool(data.activeBusiness)
-        this.businessAssist = bool(data.businessAssist)
+        // this.businessAssist = bool(data.businessAssist)
 
         if (this.activeBusiness)
             this.business = {
@@ -416,10 +416,10 @@ class Application {
                 state: data.busState,
                 ein: data.busEin ? stringifyBuffer(data.busEin) : null,
             }
-        else if (this.businessAssist)
-            this.business = {
-                proposedName: data.proposedBusName,
-            }
+        // else if (this.businessAssist)
+        //     this.business = {
+        //         proposedName: data.proposedBusName,
+        //     }
 
         if (data.vhlType || data.vhlMmt)
             this.vehicle = {
@@ -1703,7 +1703,7 @@ class Application {
                     'experience',
                     'prevEmployed',
                     'activeBusiness',
-                    'businessAssist',
+                    // 'businessAssist',
                 ],
                 match,
             },
@@ -1785,7 +1785,7 @@ class Application {
                     [ 'busName', 'ownBusName' ],
                     [ 'state', 'busState' ],
                     [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
-                    [ 'proposedName', 'proposedBusName' ],
+                    // [ 'proposedName', 'proposedBusName' ],
                 ],
                 join: [ 'aplId', 'id' ],
             },
