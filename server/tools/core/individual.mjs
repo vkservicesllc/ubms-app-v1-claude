@@ -142,7 +142,7 @@ class Individual extends Person {
 
                 const { branch, siteId, user } = session
                 const id = await this.id()
-                const modifiedBy = await user?.id() || null
+                const modifiedBy = typeof user !== 'boolean' ? await user?.id() : null
                 const currentData = { ...this }
 
                 if (!targets.includes(target) || targets.indexOf(target) <= 1) target = undefined

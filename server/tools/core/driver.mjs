@@ -156,7 +156,7 @@ class Driver extends Individual {
 
         const { ssn } = data
         let person = await Individual.data(session, { ssn })
-console.log('Driver.create: data', data)
+
         if (!person) {
             const result = await Individual.create(session, data)
             person = result.data
@@ -166,7 +166,7 @@ console.log('Driver.create: data', data)
         if (user && user !== true) driverData.createdBy = await user.id()
         const createdIn = { branch }
         driverData.createdIn = JSON.stringify(createdIn)
-console.log('Driver.create: driverData', driverData)
+
         const [ result ] = await mysql.execute(query.drivers.insert(driverData))
         if (result.affectedRows === 1) created = true
         id = result.insertId
@@ -535,18 +535,25 @@ class Application {
                                 //? if yes, get driver, update driverId in the application
                                 //! else add driver, get driverId and update it in the application
                             //! else add person, add driver, update driverId
-                        } else if (data.sex !== undefined || data.dob) {
+                        } else if (data.sex !== undefined || data.dob || data.marital) {
                             const driver = await Driver.data(session, { _id: this._driverId })
                             const { applications, count } = await driver.applications(session)
 
                             if (!count.matched) {
                                 const { unmatchedIdx } = applications.filter(application => application.formId === this.formId)[0]
                                 if (unmatchedIdx === 1) {
-                                    const { sex, dob } = data
+                                    const { sex, dob, marital } = data
                                     const individual = await Individual.data(session, { _id: driver._personId })
 
-                                    const result = await individual.modify(session, { sex, dob })
-                                    if (result.error) error = result.error
+                                    if (sex !== undefined || dob) {
+                                        const result = await individual.modify(session, { sex, dob })
+                                        if (result.error) error = result.error
+                                    }
+
+                                    if (marital) {
+                                        const result = await individual.modify(session, { marital }, 'maritals')
+                                        if (result.error) error = result.error
+                                    }
                                 }
                             }
                         }
