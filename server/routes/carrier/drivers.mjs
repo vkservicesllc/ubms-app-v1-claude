@@ -209,7 +209,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-        const { _carrierId, _userId, deptId, identityMismatch } = application
+        const { _carrierId, _userId, deptId } = application
 
         if (_carrierId) {
             hbs.carrier = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch carrier</span>'
@@ -259,6 +259,22 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.steps[0][3] = 'Position' + (application.position[0] === 'OO' ? ' / Vehicle' : '')
         hbs.steps[6] = 'Pre-Employments'
 
+        let complete = true
+        const checkMark = {
+            unchecked: 'red text times',
+            halfChecked: 'orange text check',
+            checked: 'green text check',
+            doubleChecked: 'green text double check',
+        }
+
+        const checkList = {
+            application: checkMark.checked,
+            legalDox: checkMark.unchecked,
+            ssc: checkMark.unchecked,
+            dl: checkMark.unchecked,
+            mec: checkMark.unchecked,
+        }
+
         let options = {}, dropdown = {}, t = `\t`.repeat(11)
 
         /* PROFILE */
@@ -273,6 +289,13 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                 dropdown.gender += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
             for (const stat in Person.maritalList)
                 dropdown.marital += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
+
+            for (const prop in identity.mismatch) {
+                if (identity.mismatch[prop] === true) {
+                    checkList.application = checkMark.unchecked
+                    break
+                }
+            }
         }
 
         /* LEGAL STATUS */
@@ -341,6 +364,15 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                     delete relationData['Other']['Domestic Partner']
                     if (application.gender[0] === 'M') delete relationData['Spouse']['Husband']
                     if (application.gender[0] === 'F') delete relationData['Spouse']['Wife']
+
+                    const { sex } = application
+                    let { relation, otherRel } = application.beneficiary
+                    relation = relation.toLowerCase().trim()
+                    if (otherRel) otherRel = otherRel.toLowerCase().trim()
+                    if (
+                        ((relation === 'husband' || otherRel === 'husband') && sex === 1) ||
+                        ((relation === 'wife' || otherRel === 'wife') && sex === 0)
+                    ) checkList.application = checkMark.unchecked
                     break
                 default:
                     delete relationData['Spouse']
@@ -355,6 +387,16 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             }
         }
 
+        if (complete) {
+            const { unchecked, halfChecked } = checkMark
+            for (const step in checkList) {
+                const check = checkList[step]
+
+                if (check !== unchecked && check !== halfChecked) continue
+                complete = false
+            }
+        }
+
         hbs.form = new ApplicationForm(options)
         hbs.dropdown = dropdown
         hbs.fullName = application.fullName
@@ -365,6 +407,8 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             identity.mismatch.lastName ||
             identity.mismatch.sufix
         )
+        hbs.checkList = checkList
+        hbs.complete = complete
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {

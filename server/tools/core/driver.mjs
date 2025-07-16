@@ -59,10 +59,10 @@ class Driver extends Individual {
         if (!data?._id || !data?._personId || !Object.keys(this).length)
             throw new Error('Driver instantiation failed: Invalid data')
 
-        const { _id, _personId } = data
+        const { _id, _personId, blackListed } = data
         const properties = {} //! add driver properties
 
-        reSuper(this, { _id, _personId }, properties)
+        reSuper(this, { _id, _personId, blackListed }, properties)
 
         this.id = async () => (await mysql.execute(query.drivers.select('id', {
             match: { id: Driver.matchIdHash(this._id) },
@@ -191,6 +191,7 @@ class Driver extends Individual {
                     fields: [
                         Driver.hashId(),
                         Individual.hashId('personId'),
+                        'blackListed',
                     ],
                     match,
                 },
