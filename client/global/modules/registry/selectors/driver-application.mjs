@@ -155,6 +155,7 @@ const selector = {
             prevAddrCity: 'prev-address-city',
         },
         select: {
+            carrier: 'carrier',
             suffix: 'suffix',
             gender: 'gender',
             marital: 'marital-status',

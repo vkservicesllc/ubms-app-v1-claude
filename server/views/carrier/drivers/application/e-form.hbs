@@ -148,12 +148,13 @@
                                     </div>
                                 </div>
                                 <div class="five wide field">
-                                    <label>Carrier</label>
+                                    {{{form.carrier.select.label}}}
                                     <div class="ui fluid selection dropdown" id="carrier-dropdown">
-                                        <input type="hidden" name="_carrierId" />
+                                        {{{form.carrier.hidden.input}}}
                                         <i class="dropdown icon"></i>
                                         <div class="default text"></div>
-                                        <div class="menu"></div>
+                                        <div class="menu">{{{dropdown.carrier}}}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

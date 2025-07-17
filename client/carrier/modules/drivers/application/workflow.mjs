@@ -5,25 +5,31 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { _userId, _carrierId } = application
-
     const $dropdown = {
-        user: [ $('#user-dropdown'), _userId ],
-        carrier: [ $('#carrier-dropdown'), _carrierId ],
+        carrier: $('#carrier-dropdown'),
     }
 
-    $.ajax('/api/team/carriers', {
-        method: 'POST',
-        success(carriers) {
-            let items = ''
+    $dropdown.carrier.dropdown()
 
-            carriers.forEach(carrier => {
-                const { _id, name } = carrier
-                items += `<div class="item" data-value="${_id}">${name}</div>`
-            })
-            $dropdown.carrier[0].find('.menu').html(items)
+    // const { _userId, _carrierId } = application
 
-            dropdownEvent($dropdown)
-        },
-    })
+    // const $dropdown = {
+    //     user: [ $('#user-dropdown'), _userId ],
+    //     carrier: [ $('#carrier-dropdown'), _carrierId ],
+    // }
+
+    // $.ajax('/api/team/carriers', {
+    //     method: 'POST',
+    //     success(carriers) {
+    //         let items = ''
+
+    //         carriers.forEach(carrier => {
+    //             const { _id, name } = carrier
+    //             items += `<div class="item" data-value="${_id}">${name}</div>`
+    //         })
+    //         $dropdown.carrier[0].find('.menu').html(items)
+
+    //         dropdownEvent($dropdown)
+    //     },
+    // })
 })()

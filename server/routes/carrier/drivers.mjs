@@ -282,8 +282,19 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             dropdown.user = ''
             dropdown.carrier = ''
 
-            const urData = await team.userData(res.session, 'users', true)
+            // const urData = await team.userData(res.session, 'users', true)
             // console.log(urData)
+
+            const carriers = (await res.session.team.data(res.session, 'carriers'))
+            console.log(carriers)
+            console.log(application._carrierId)
+
+            carriers.forEach(carrier => {
+                const { _id, name } = carrier
+                dropdown.carrier += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+            })
+            if (application._carrierId)
+                options.carrier = { hidden: { input: { value: application._carrierId } } }
         }
 
         /* PROFILE */

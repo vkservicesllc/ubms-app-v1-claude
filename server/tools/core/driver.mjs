@@ -519,6 +519,11 @@ class Application {
                     delete data._userId
                     delete data._carrierId
 
+                    if (_userId) {
+                        const user = await User.data(session, { _id: _userId })
+                        data.userId = await user.id()
+                    }
+
                     if (_carrierId) {
                         const carrier = await Carrier.data(session, { _id: _carrierId })
                         data.carrierId = await carrier.id()
