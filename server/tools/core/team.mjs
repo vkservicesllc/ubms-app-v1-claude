@@ -4,6 +4,7 @@ import db from '../../settings/mysql.mjs'
 /* Tools */
 import User from './user.mjs'
 import Company from './company.mjs'
+import Carrier from './carrier.mjs'
 import Driver from './driver.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import { sessionError } from './user.mjs'
@@ -139,38 +140,39 @@ class Team {
                 if (!session?.user) return
 
                 const teamId = await this.id()
+                const { catId } = this
                 const data = {
                     [type]: { all: [], available: [], applied: [] },
                 }
                 const appliedIds = []
                 let batch
+                const companyBatch = [
+                    {
+                        table: 'teams_companies',
+                        match: { teamId },
+                    },
+                    {
+                        table: 'companies',
+                        fields: Company.hashId(),
+                        join: [ 'id', 'companyId' ],
+                        match: { catId },
+                    },
+                    {
+                        table: 'company_names',
+                        fields: [
+                            { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
+                            { route: [ [ 'busName', 'coType' ] ] },
+                        ],
+                        join: [ 'companyId', 'id', 1 ],
+                    },
+                ]
 
                 switch (type) {
 
                     case 'companies':
-                        const { catId } = this
                         const companies = await Company.list(session, { catId, confirmed: true })
 
-                        batch = [
-                            {
-                                table: 'teams_companies',
-                                match: { teamId },
-                            },
-                            {
-                                table: 'companies',
-                                fields: Company.hashId(),
-                                join: [ 'id', 'companyId' ],
-                                match: { catId },
-                            },
-                            {
-                                table: 'company_names',
-                                fields: [
-                                    { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
-                                    { route: [ [ 'busName', 'coType' ] ] },
-                                ],
-                                join: [ 'companyId', 'id', 1 ],
-                            },
-                        ]
+                        batch = companyBatch
 
                         data[type].applied = (await mysql.execute(Query.select(db.business, batch)))[0]
                         data[type].applied.forEach(company => appliedIds.push(company._id))
@@ -182,6 +184,21 @@ class Team {
                             if (appliedIds.includes(_id)) data[type].all[i].applied = true
                             else data[type].available.push({ _id, name })
                         })
+                        break
+
+                    case 'carriers':
+                        if (catId !== 'crr') return
+
+                        batch = companyBatch
+                        batch[1].fields = [ [ Company.hashId(), 'companyId' ] ]
+                        batch.push({
+                            db: db.carrier,
+                            table: 'carriers',
+                            fields: [ [ Carrier.hashId(), 'id' ] ],
+                            join: [ 'companyId', 'id', 1 ],
+                        })
+
+                        return (await mysql.execute(Query.select(db.business, batch)))[0]
                         break
 
                     case 'users':
@@ -233,7 +250,7 @@ class Team {
             }
 
 
-            this.userData = async (session, permissions, DS = false) => {
+            this.userData = async (session, permissions, DS = false) => { //! STUCK HERE...
                 if (!session?.user) return
 
                 const teamId = await this.id()

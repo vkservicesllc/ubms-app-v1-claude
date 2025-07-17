@@ -198,7 +198,6 @@ table.on('draw', function() {
                         const { _id, route, name } = company
 
                         items += `<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
-
                     })
                     $dropdown.company.find('.menu').html(items)
 

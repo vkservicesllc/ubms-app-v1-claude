@@ -227,6 +227,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         const recUrl = `/resource/driver/application/${formId}/edit`
         hbs.actionUrl = {
+            assignment: `${recUrl}/assignment`,
             profile: `${recUrl}/profile`,
             status: `${recUrl}/legal-status`,
             position: `${recUrl}/position`,
@@ -241,7 +242,6 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             business: `${recUrl}/business`,
             beneficiary: `${recUrl}/beneficiary`,
             misc: `${recUrl}/misc`,
-            assignment: `${recUrl}/assignment`,
         }
 
         hbs._id = application._id
@@ -283,7 +283,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             dropdown.carrier = ''
 
             const urData = await team.userData(res.session, 'users', true)
-            console.log(urData)
+            // console.log(urData)
         }
 
         /* PROFILE */

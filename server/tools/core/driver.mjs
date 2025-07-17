@@ -513,6 +513,29 @@ class Application {
 
         switch (step) {
 
+            case 'assignment':
+                {
+                    const { _userId, _carrierId } = data
+                    delete data._userId
+                    delete data._carrierId
+
+                    if (_carrierId) {
+                        const carrier = await Carrier.data(session, { _id: _carrierId })
+                        data.carrierId = await carrier.id()
+                    }
+
+                    data = processData(data, {
+                        modifiedBy, branch, siteId,
+                        currentData: this, currentUpdateLog: await this.log('updateLog'),
+                    })
+
+                    if (dataLen(data)) {
+                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                        if (result.affectedRows === 1) modified = true
+                    }
+                }
+                break
+
             case 'profile':
                 {
                     if (data.nameMismatch === 'on') {

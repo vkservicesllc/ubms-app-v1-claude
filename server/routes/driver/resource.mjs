@@ -121,6 +121,9 @@ const dynamicValidator = {
         let validators
 
         switch (step) {
+            case 'assignment':
+                validators = []
+                break
             case 'profile':
                 validators = validateApplicantProfile
                 break
