@@ -5,7 +5,7 @@ const throwErr = require('../../tools/utils/error').data
 import moment from 'moment'
 import Person, { Relationship } from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
-import User from '../../tools/core/user.mjs'
+import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
@@ -282,14 +282,32 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             dropdown.user = ''
             dropdown.carrier = ''
 
-            // const urData = await team.userData(res.session, 'users', true)
-            // console.log(urData)
+            const { applied: teamUsers } = (await team.data(res.session, 'users')).users
+            const allUsers = await User.list(res.session)
+            const users = []
+            const userId = []
+            const _ids = []
+            for (let user of teamUsers) {
+                user = await User.data(res.session, { _id: user._id })
+                _ids.push(user._id)
+                userId.push(await user.id())
+            }
 
-            const carriers = (await res.session.team.data(res.session, 'carriers'))
-            console.log(carriers)
-            console.log(application._carrierId)
+            const permissions = await Role.userPermissions(res.session, userId)
+console.log(permissions)
+console.log({ teamUsers })
+            allUsers.forEach(user => {
+                const { _id, DS, name } = user
 
-            carriers.forEach(carrier => {
+                if (DS && _id === application._userId) users.push({ _id, name })
+                else if (_ids.includes(_id)) {
+                    /* Accesses Team Users */
+                    //
+                }
+            })
+
+            const carriers = await team.data(res.session, 'carriers')
+            carriers.forEach(carrier => { //! This list will not include the current carrier if it was removed from the team
                 const { _id, name } = carrier
                 dropdown.carrier += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
             })

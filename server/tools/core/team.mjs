@@ -250,57 +250,6 @@ class Team {
             }
 
 
-            this.userData = async (session, permissions, DS = false) => { //! STUCK HERE...
-                if (!session?.user) return
-
-                const teamId = await this.id()
-                const status = [ 'U', 'A' ]
-                const admins = DS ? await User.list(session, { status: ['S', 'D'] }) : []
-
-                const data = []
-                const batch = [
-                    {
-                        table: 'teams_users',
-                        match: { teamId },
-                    },
-                    {
-                        db: db.online,
-                        table: 'users',
-                        fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'email' ],
-                        join: [ 'id', 'userId' ],
-                        match: { status },
-                    },
-                    {
-                        db: db.online,
-                        table: 'users_roles',
-                        join: [ 'userId', 'id', 1 ],
-                    },
-                    {
-                        db: db.online,
-                        table: 'user_roles',
-                        fields: [ 'name', 'permissions' ],
-                        join: [ 'id', 'roleId', 2 ],
-                    },
-                ]
-
-                const users = (await mysql.execute(Query.select(db.business, batch)))[0]
-                let combined = admins.concat(users)
-                combined = sortArrayByObjectKey(combined, '_id')
-                const ids = []
-
-                combined.map(row => {
-                    const { _id, firstName, lastName, alias } = row
-                    const included = ids.includes(_id)
-
-                    //! stuck
-
-                    if (!included) ids.push(_id)
-                })
-
-                return data
-            }
-
-
             this.profileData = async (session, data) => {
                 let error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { error }

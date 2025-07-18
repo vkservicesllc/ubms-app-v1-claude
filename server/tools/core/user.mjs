@@ -1507,6 +1507,26 @@ class Role {
     }
 
 
+    static userPermissions = async (session, userId) => {
+        if (!session?.user) return []
+
+        const [ permissions ] = await mysql.execute(Query.select(db.online, [
+            {
+                table: 'users_roles',
+                fields: User.hashId('userId'),
+                match: { userId },
+            },
+            {
+                table: 'user_roles',
+                fields: 'permissions',
+                join: [ 'id', 'roleId' ],
+            },
+        ]))
+
+        return permissions
+    }
+
+
 }
 
 
