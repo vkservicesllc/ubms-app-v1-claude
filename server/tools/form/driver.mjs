@@ -175,6 +175,14 @@ class ApplicationForm {
     static id = createIdForm({ selector: appSelector })
     static deleteId = createIdForm({ selector: appSelector, target: 'deleteId' })
 
+    static user = createForm({
+        selector: appSelector,
+        target: 'user',
+        type: 'select',
+        name: '_userId',
+        label: 'User',
+    })
+
     static carrier = createForm({
         selector: appSelector,
         target: 'carrier',

@@ -38,17 +38,6 @@ router.post('/team/companies', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.post('/team/carriers', User.verify, Team.verify, async (req, res) => {
-    try {
-        const carriers = (await res.session.team.data(res.session, 'carriers'))
-
-        res.send(carriers)
-    } catch (err) {
-        throwErr.server(res, null, err)
-    }
-})
-
-
 
 
 router.post('/drivers/application/:_id', User.verify, Team.verify, async (req, res) => {

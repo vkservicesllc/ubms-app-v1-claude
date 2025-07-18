@@ -139,12 +139,13 @@
                             <h5 class="ui blue text first header">Assignment</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="five wide field">
-                                    <label>User</label>
+                                    {{{form.user.select.label}}}
                                     <div class="ui fluid selection dropdown" id="user-dropdown">
-                                        <input type="hidden" name="_userId" />
+                                        {{{form.user.hidden.input}}}
                                         <i class="dropdown icon"></i>
                                         <div class="default text"></div>
-                                        <div class="menu"></div>
+                                        <div class="menu">{{{dropdown.user}}}
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="five wide field">

@@ -294,17 +294,27 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             }
 
             const permissions = await Role.userPermissions(res.session, userId)
-console.log(permissions)
-console.log({ teamUsers })
             allUsers.forEach(user => {
                 const { _id, DS, name } = user
 
                 if (DS && _id === application._userId) users.push({ _id, name })
                 else if (_ids.includes(_id)) {
                     /* Accesses Team Users */
-                    //
+                    permissions.forEach(row => {
+                        const { permissions: perms } = row
+                        const permIdx = perms['d:drv/apl']
+
+                        if (permIdx && [3, 4, '3', '4'].some(val => perms['d:drv/apl'].includes(val)))
+                            users.push({ _id, name })
+                    })
                 }
             })
+            users.forEach(user => {
+                const { _id, name } = user
+                dropdown.user += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+            })
+            if (application._userId)
+                options.user = { hidden: { input: { value: application._userId } } }
 
             const carriers = await team.data(res.session, 'carriers')
             carriers.forEach(carrier => { //! This list will not include the current carrier if it was removed from the team
