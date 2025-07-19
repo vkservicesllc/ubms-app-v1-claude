@@ -277,6 +277,14 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         let options = {}, dropdown = {}, t = `\t`.repeat(11)
 
+        const legalStatuses = Application.legalStatusList
+        const legalDocs = [
+            'US Passport (Card)',
+            'Green Card',
+            'Valid Work Visa/Authorization',
+        ]
+        hbs.legalStatusDocDesc = legalDocs[application.legalStatus[0]]
+
         const driverPositions = team.list.drivers.positions
         dropdown.apprPosition = ''
         dropdown.position = ''
@@ -352,6 +360,11 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             }
         }
 
+        /* FILES */
+        {
+
+        }
+
         /* PROFILE */
         {
             dropdown.suffix = ''
@@ -378,8 +391,8 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             dropdown.status = ''
             options.status = { hidden: { input: { disabled: false } } }
 
-            for (const status in Application.legalStatusList)
-                dropdown.status += `\n${t}<div class="item" data-value="${status}">${Application.legalStatusList[status]}</div>`
+            for (const status in legalStatuses)
+                dropdown.status += `\n${t}<div class="item" data-value="${status}">${legalStatuses[status]}</div>`
         }
 
         /* POSITION */
