@@ -3,6 +3,7 @@ const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
 import moment from 'moment'
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import Person, { Relationship } from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import User, { Role } from '../../tools/core/user.mjs'
@@ -20,6 +21,13 @@ import { navBuilder } from './tools.mjs'
 /* Forms */
 import { updateFormOptions } from '../../tools/form/builder.mjs'
 import DriverForm, { ApplicationForm, currentExpediteVhlMMTData, descYears } from '../../tools/form/driver.mjs'
+
+const pdfLetter = {
+    width: 612,
+    height: 792,
+    marginX: 35,
+    marginY: 40,
+}
 
 
 
@@ -178,6 +186,138 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         }
 
         res.render(key.replace('.', '/'), hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/application/:formId/files/application', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+
+        const permissions = await user.permissions(res.session)
+        if (!DS && !permissions['f:drv/apl'].includes('2'))
+            return respond404(res)
+
+        const { formId } = req.params
+        const application = await Application.data(res.session, { formId })
+        if (!application || application.condition !== 'c' || application._teamId !== team._id)
+            return respond404(res)
+
+        const pdfDoc = await PDFDocument.create()
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
+        const { width, height, marginX, marginY } = pdfLetter
+        const padding = 3, lineOffset = 3, step = 10
+        const size = {
+            label: 11,
+            value: 12,
+        }
+        const lineHeight = 18
+        const length = (line, prop) => font.widthOfTextAtSize(line.fields[prop].label, size.label) + padding
+
+        const page2 = pdfDoc.addPage([width, height])
+
+        /* Line 1 */
+        const line1 = {
+            x: marginX,
+            y: height - marginY,
+            fields: {
+                'firstName': { label: 'First Name:', width: 108 },
+                'middleName': { label: 'Middle Name:', width: 108 },
+                'lastName': { label: 'Last Name:', width: 108 },
+            },
+        }
+        page2.drawText(line1.fields['firstName'].label, {
+            x: line1.x,
+            y: line1.y,
+            size: size.label,
+            font,
+        })
+        page2.drawLine({
+            start: {
+                x: line1.x + length(line1, 'firstName'),
+                y: line1.y - lineOffset,
+            },
+            end: {
+                x: line1.x + length(line1, 'firstName') + line1.fields['firstName'].width,
+                y: line1.y - lineOffset,
+            },
+        })
+        page2.drawText(application.firstName, {
+            x: line1.x + length(line1, 'firstName') + padding,
+            y: line1.y,
+            size: size.value,
+            font,
+        })
+            page2.drawText(line1.fields['middleName'].label, {
+                x: line1.x + length(line1, 'firstName') + line1.fields['firstName'].width + step,
+                y: line1.y,
+                size: size.label,
+                font,
+            })
+            page2.drawLine({
+                start: {
+                    x: line1.x
+                        + length(line1, 'firstName') + line1.fields['firstName'].width + step
+                        + length(line1, 'middleName'),
+                    y: line1.y - lineOffset,
+                },
+                end: {
+                    x: line1.x
+                        + length(line1, 'firstName') + line1.fields['firstName'].width + step
+                        + length(line1, 'middleName') + line1.fields['middleName'].width,
+                    y: line1.y - lineOffset,
+                },
+            })
+            page2.drawText(application.middleName || '', {
+                x: line1.x
+                    + length(line1, 'firstName') + line1.fields['firstName'].width + step
+                    + length(line1, 'middleName') + padding,
+                y: line1.y,
+                size: size.value,
+                font,
+            })
+                page2.drawText(line1.fields['lastName'].label, {
+                    x: line1.x
+                        + length(line1, 'firstName') + line1.fields['firstName'].width + step
+                        + length(line1, 'middleName') + line1.fields['middleName'].width + step,
+                    y: line1.y,
+                    size: size.label,
+                    font,
+                })
+                page2.drawLine({
+                    start: {
+                        x: line1.x
+                            + length(line1, 'firstName') + line1.fields['firstName'].width + step
+                            + length(line1, 'middleName') + line1.fields['middleName'].width + step
+                            + length(line1, 'lastName'),
+                        y: line1.y - lineOffset,
+                    },
+                    end: {
+                        x: line1.x
+                            + length(line1, 'firstName') + line1.fields['firstName'].width + step
+                            + length(line1, 'middleName') + line1.fields['middleName'].width + step
+                            + length(line1, 'lastName') + line1.fields['lastName'].width,
+                        y: line1.y - lineOffset,
+                    },
+                })
+                page2.drawText(application.lastName + (application.suffix ? `, ${application.suffix}` : ''), {
+                    x: line1.x
+                        + length(line1, 'firstName') + line1.fields['firstName'].width + step
+                        + length(line1, 'middleName') + line1.fields['middleName'].width + step
+                        + length(line1, 'lastName') + padding,
+                    y: line1.y,
+                    size: size.value,
+                    font,
+                })
+
+        const pdfBytes = await pdfDoc.save()
+
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.send(Buffer.from(pdfBytes))
     } catch (err) {
         throwErr.server(res, null, err)
     }
