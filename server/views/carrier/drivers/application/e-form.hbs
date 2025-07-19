@@ -161,8 +161,36 @@
                             </div>
                             <h5 class="ui blue text header">Decision</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
-                                <div class="four wide field"></div>
-                                <div class="four wide field"></div>
+                                <div class="four wide field">
+                                    {{{form.condition.select.label}}}
+                                    <div class="ui fluid selection dropdown" id="condition-dropdown">
+                                        {{{form.condition.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text">New Application</div>
+                                        <div class="menu">{{{dropdown.condition}}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.experience.select.label}}}
+                                    <div class="ui fluid selection dropdown" id="experience-dropdown">
+                                        {{{form.experience.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.experience}}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.apprPosition.select.label}}}
+                                    <div class="ui fluid selection dropdown" id="approved-position-dropdown">
+                                        {{{form.apprPosition.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.apprPosition}}}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">

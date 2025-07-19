@@ -1362,6 +1362,8 @@ class Application {
         'Miscellaneous',
     ]
 
+    static experienceList = { e: 'Experienced', i: 'Inexperienced', s: 'Student' }
+
     static legalStatusList = { '0': 'US Citizen', '1': 'Permanent Resident', '2': 'Work Authorization/Visa' }
 
     static violationList = {

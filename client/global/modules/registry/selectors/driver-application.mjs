@@ -157,6 +157,9 @@ const selector = {
         select: {
             user: 'user',
             carrier: 'carrier',
+            condition: 'condition',
+            experience: 'experience',
+            apprPosition: 'approved-position',
             suffix: 'suffix',
             gender: 'gender',
             marital: 'marital-status',

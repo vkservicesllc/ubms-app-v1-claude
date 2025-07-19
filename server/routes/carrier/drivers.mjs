@@ -277,10 +277,21 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         let options = {}, dropdown = {}, t = `\t`.repeat(11)
 
+        const driverPositions = team.list.drivers.positions
+        dropdown.apprPosition = ''
+        dropdown.position = ''
+        for (const pos in driverPositions) {
+            const option = `\n${t}<div class="item" data-value="${pos}">${driverPositions[pos]}</div>`
+            dropdown.apprPosition += option
+            dropdown.position += option
+        }
+
         /* WORKFLOW */
         {
             dropdown.user = ''
             dropdown.carrier = ''
+            dropdown.condition = ''
+            dropdown.experience = ''
 
             const { applied: teamUsers } = (await team.data(res.session, 'users')).users
             const allUsers = await User.list(res.session)
@@ -323,6 +334,22 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             })
             if (application._carrierId)
                 options.carrier = { hidden: { input: { value: application._carrierId } } }
+
+            const conditions = {
+                a: '<span class="ui dark green text"><i class="thumbs up icon"></i> Approved</span>',
+                r: '<span class="ui orange text"><i class="hourglass half icon"></i> Waiting List</span>',
+                b: '<span class="ui red text"><i class="thumbs down icon"></i> Disqualified</span>',
+            }
+            for (const c in conditions) {
+                const condition = conditions[c]
+                dropdown.condition += `\n${t}<div class="item" data-value="${c}">${condition}</div>`
+            }
+
+            const experiences = Application.experienceList
+            for (const e in experiences) {
+                const experience = experiences[e]
+                dropdown.experience += `\n${t}<div class="item" data-value="${e}">${experience}</div>`
+            }
         }
 
         /* PROFILE */
@@ -357,14 +384,10 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         /* POSITION */
         {
-            const driverPositions = team.list.drivers.positions
-            dropdown.position = ''
             dropdown.vehicleType = ''
 
             const typeData = Application.vhlTypeList[['truckLoad', 'expedite'][deptId]]
 
-            for (const pos in driverPositions)
-                dropdown.position += `\n${t}<div class="item" data-value="${pos}">${driverPositions[pos]}</div>`
             for (const type in typeData)
                 dropdown.vehicleType += `\n${t}\t<div class="item" data-value="${type}">${typeData[type]}</div>`
 

@@ -31,6 +31,19 @@ import { getStaticProps } from '../../../client/global/modules/tools/utils/class
 const required = true, disabled = true, readOnly = true
 
 
+const createPositionForm = (props = {}) => createForm({
+    selector: appSelector,
+    type: 'select/radio',
+    name: 'position',
+    emptyOpt,
+    required,
+    label: 'Position',
+    ...props,
+    validator: {
+        //? need to figure out...
+    },
+})
+
 export const createDlCommercialFrom = (props = {}) => createYesNoForm({
     target: 'dlCommercial',
     group: 'dlCategory',
@@ -203,16 +216,46 @@ class ApplicationForm {
         requiredLabel: false,
     })
 
-    static position = createForm({
+    // static position = createForm({
+    //     selector: appSelector,
+    //     target: 'position',
+    //     group: 'position',
+    //     type: 'select/radio',
+    //     name: 'position',
+    //     emptyOpt,
+    //     required,
+    //     label: 'Position',
+    // })
+
+    static position = createPositionForm({ target: 'position', group: 'position'})
+
+    static condition = createForm({ /* aka Status */
         selector: appSelector,
-        target: 'position',
-        group: 'position',
-        type: 'select/radio',
-        name: 'position',
+        target: 'condition',
+        type: 'select',
+        name: 'condition',
+        data: { a: 'Approved', r: 'Waiting List', b: 'Disqualified' },
         emptyOpt,
-        required,
-        label: 'Position',
+        label: 'Application Status',
     })
+
+    static experience = createForm({
+        selector: appSelector,
+        target: 'experience',
+        type: 'select',
+        name: 'experience',
+        data: Application.experienceList,
+        emptyOpt,
+        label: 'Recognized Experience',
+    })
+
+    static apprPosition = createPositionForm({
+        target: 'apprPosition',
+        required: false,
+        label: 'Approved Position',
+    })
+
+
 
     static appliedOn = createForm({
         selector: appSelector,
