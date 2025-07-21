@@ -186,6 +186,8 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
 
 router.get('/application/:formId/files/application', User.verify, Team.verify, async (req, res) => {
+    const { formId } = req.params
+
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -194,20 +196,20 @@ router.get('/application/:formId/files/application', User.verify, Team.verify, a
         if (!DS && !permissions['f:drv/apl'].includes('2'))
             return respond404(res)
 
-        const { formId } = req.params
         const application = await Application.data(res.session, { formId })
         if (!application || application.condition !== 'c' || application._teamId !== team._id)
             return respond404(res)
 
         const addresses = await application.data('addresses', res.session)
 
-        const pdfBytes = await createApplicationPdf(application, addresses)
+        const pdfBytes = await createApplicationPdf(application, addresses.data)
 
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
-        throwErr.server(res, null, err)
+        // throwErr.server(res, null, err)
+        res.redirect(`/drivers/application/${formId}/e-form`)
     }
 })
 
