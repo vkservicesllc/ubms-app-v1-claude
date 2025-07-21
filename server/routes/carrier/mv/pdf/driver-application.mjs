@@ -421,5 +421,107 @@ export default async (application, addresses, violations, accidents, employers) 
     })
 
 
+    const { legalStatus } = application
+    if (outsideBorder)
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: marginX, y: y - fieldHeight },
+            color: color.line,
+        })
+    page2.drawText('Immigration Status', {
+        x: marginX + padding, y: y - fieldHeight / 1.6,
+        font: font.section, size: size.section, color: color.section,
+    })
+    vLineX = (width - marginX * 2) / 5
+    page2.drawLine({
+        start: { x: vLineX + marginX, y },
+        end: { x: vLineX + marginX, y: y - fieldHeight },
+        color: color.line,
+    })
+    
+    if (outsideBorder)
+        page2.drawLine({
+            start: { x: width - marginX, y },
+            end: { x: width - marginX, y: y - fieldHeight },
+            color: color.line,
+        })
+
+    y -= fieldHeight
+    page2.drawLine({
+        start: { x: marginX, y },
+        end: { x: width - marginX, y },
+        color: color.line,
+    })
+
+
+    if (outsideBorder)
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: marginX, y: y - fieldHeight },
+            color: color.line,
+        })
+    page2.drawText("Driver's License", {
+        x: marginX + padding, y: y - fieldHeight / 1.6,
+        font: font.section, size: size.section, color: color.section,
+    })
+    vLineX = (width - marginX * 2) / 5
+    page2.drawLine({
+        start: { x: vLineX + marginX, y },
+        end: { x: vLineX + marginX, y: y - fieldHeight },
+        color: color.line,
+    })
+
+    
+    if (outsideBorder)
+        page2.drawLine({
+            start: { x: width - marginX, y },
+            end: { x: width - marginX, y: y - fieldHeight },
+            color: color.line,
+        })
+
+    y -= fieldHeight
+    page2.drawLine({
+        start: { x: marginX, y },
+        end: { x: width - marginX, y },
+        color: color.line,
+    })
+
+
+    if (outsideBorder)
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: marginX, y: y - fieldHeight },
+            color: color.line,
+        })
+    page2.drawText('Medical Card', {
+        x: marginX + padding, y: y - fieldHeight / 1.6,
+        font: font.section, size: size.section, color: color.section,
+    })
+    vLineX = (width - marginX * 2) / 5
+    page2.drawLine({
+        start: { x: vLineX + marginX, y },
+        end: { x: vLineX + marginX, y: y - fieldHeight },
+        color: color.line,
+    })
+
+    
+    if (outsideBorder)
+        page2.drawLine({
+            start: { x: width - marginX, y },
+            end: { x: width - marginX, y: y - fieldHeight },
+            color: color.line,
+        })
+
+    y -= fieldHeight
+    page2.drawLine({
+        start: { x: marginX, y },
+        end: { x: width - marginX, y },
+        color: color.line,
+    })
+console.log(legalStatus)
+console.log(application.dl)
+console.log(application.mec)
+
+
     return await pdfDoc.save()
 }
