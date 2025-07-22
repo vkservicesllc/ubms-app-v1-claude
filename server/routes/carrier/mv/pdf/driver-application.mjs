@@ -56,26 +56,31 @@ export default async (application, addresses, violations, accidents, employers) 
     }
 
 
-    /* PAGE 2*/
-    const page2 = pdfDoc.addPage([width, height])
+    /* PAGE 1 */
+    const page1 = pdfDoc.addPage([width, height])
+    page1.drawText('Page 1 of 5', {
+        x: marginX + padding, y: marginY - padding,
+        font: font.label, size: size.label / 1.2, color: color.label,
+    })
+
     vLineXOffsets = [3.22, 2.25, 1.46, 1.315, 1.177]
 
 
     /* Section 1 */
     {
-        page2.drawLine({
+        page1.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
             thickness: 2, color: color.line,
         })
-        y -= 12
-        page2.drawText('Section 1: General Information', {
+        y -= 14
+        page1.drawText('Section 1: Personal Information', {
             x: marginX + padding, y,
             font: font.section, size: size.section, color: color.section,
         })
 
         y -= gap
-        page2.drawLine({
+        page1.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
             color: color.line,
@@ -85,45 +90,45 @@ export default async (application, addresses, violations, accidents, employers) 
         {
             const { firstName, middleName, lastName, suffix } = application
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: marginX, y },
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText('First Name', {
+            page1.drawText('First Name', {
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(firstName, {
+            page1.drawText(firstName, {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / 3
-            page2.drawText('Middle Name', {
+            page1.drawText('Middle Name', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(middleName || '', {
+            page1.drawText(middleName || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += vLineX
-            page2.drawText('Last Name', {
+            page1.drawText('Last Name', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(lastName + (suffix ? `, ${suffix}` : ''), {
+            page1.drawText(lastName + (suffix ? `, ${suffix}` : ''), {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: width - marginX, y },
                     end: { x: width - marginX, y: y - fieldHeight },
                     color: color.line,
                 })
             y -= fieldHeight
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: marginX, y },
                 end: { x: width - marginX, y },
                 color: color.line,
@@ -134,68 +139,68 @@ export default async (application, addresses, violations, accidents, employers) 
         {
             const { dob, gender, ssn, marital, phone } = application
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: marginX, y },
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText('Date of Birth', {
+            page1.drawText('Date of Birth', {
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(moment(dob).format(dateFormat), {
+            page1.drawText(moment(dob).format(dateFormat), {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / 3 * 2 / 4
-            page2.drawText('Gender', {
+            page1.drawText('Gender', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(gender[1], {
+            page1.drawText(gender[1], {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += vLineX - 18
-            page2.drawText('SSN', {
+            page1.drawText('SSN', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(formatSsn(ssn), {
+            page1.drawText(formatSsn(ssn), {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += vLineX / 1.75
-            page2.drawText('Marital Status', {
+            page1.drawText('Marital Status', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(Person.maritalList[marital], {
+            page1.drawText(Person.maritalList[marital], {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += vLineX / 2.41
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: vLineX + marginX, y },
                 end: { x: vLineX + marginX, y: y - fieldHeight },
                 color: color.line,
             })
-            page2.drawText('Phone', {
+            page1.drawText('Phone', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(formatTel(phone), {
+            page1.drawText(formatTel(phone), {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: width - marginX, y },
                     end: { x: width - marginX, y: y - fieldHeight },
                     color: color.line,
                 })
             y -= fieldHeight
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: marginX, y },
                 end: { x: width - marginX, y },
                 color: color.line,
@@ -206,72 +211,72 @@ export default async (application, addresses, violations, accidents, employers) 
         {
             let { address1, address2, city, state, zip, since: addrSince } = application.address
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: marginX, y },
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText('Street Address', {
+            page1.drawText('Street Address', {
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(address1, {
+            page1.drawText(address1, {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[0]
-            page2.drawText('Apt/Unit #', {
+            page1.drawText('Apt/Unit #', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(address2 || '', {
+            page1.drawText(address2 || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[1]
-            page2.drawText('City', {
+            page1.drawText('City', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(city, {
+            page1.drawText(city, {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[2]
-            page2.drawText('State', {
+            page1.drawText('State', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(state[0], {
+            page1.drawText(state[0], {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[3]
-            page2.drawText('Zip', {
+            page1.drawText('Zip', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(zip, {
+            page1.drawText(zip, {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[4]
-            page2.drawText('Living since', {
+            page1.drawText('Living since', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(moment(addrSince).format(dateFormat), {
+            page1.drawText(moment(addrSince).format(dateFormat), {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: width - marginX, y },
                     end: { x: width - marginX, y: y - fieldHeight },
                     color: color.line,
                 })
             y -= fieldHeight
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: marginX, y },
                 end: { x: width - marginX, y },
                 color: color.line,
@@ -284,19 +289,19 @@ export default async (application, addresses, violations, accidents, employers) 
     /* Section 2 */
     {
         y -= fieldHeight / 2
-        page2.drawLine({
+        page1.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
             thickness: 2, color: color.line,
         })
-        y -= 12
-        page2.drawText('Section 2: Prior residence for the past three years', {
+        y -= 14
+        page1.drawText('Section 2: Prior residence for the past three years', {
             x: marginX + padding, y,
             font: font.section, size: size.section, color: color.section,
         })
 
         y -= gap
-        page2.drawLine({
+        page1.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
             color: color.line,
@@ -308,73 +313,73 @@ export default async (application, addresses, violations, accidents, employers) 
             if (address) ({ address1, address2, city, state, zip, since } = address)
 
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: marginX, y },
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText('Street Address', {
+            page1.drawText('Street Address', {
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(address1 || '', {
+            page1.drawText(address1 || '', {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[0]
-            page2.drawText('Apt/Unit #', {
+            page1.drawText('Apt/Unit #', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(address2 || '', {
+            page1.drawText(address2 || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[1]
-            page2.drawText('City', {
+            page1.drawText('City', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(city || '', {
+            page1.drawText(city || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[2]
-            page2.drawText('State', {
+            page1.drawText('State', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(state ? state : '', {
+            page1.drawText(state ? state : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[3]
-            page2.drawText('Zip', {
+            page1.drawText('Zip', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(zip || '', {
+            page1.drawText(zip || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / vLineXOffsets[4]
-            page2.drawText('Lived since', {
+            page1.drawText('Lived since', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(since ? moment(since).format(dateFormat) : '', {
+            page1.drawText(since ? moment(since).format(dateFormat) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: width - marginX, y },
                     end: { x: width - marginX, y: y - fieldHeight },
                     color: color.line,
                 })
 
             y -= fieldHeight
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: marginX, y },
                 end: { x: width - marginX, y },
                 color: color.line,
@@ -385,22 +390,22 @@ export default async (application, addresses, violations, accidents, employers) 
         y -= fieldHeight / 1.7
         text = 'Previously lived outside the U.S.'
         textWidth = font.label.widthOfTextAtSize(text, size.label)
-        drawCheckBox(page2, marginX + padding, y, !!country)
-        page2.drawText(text, {
+        drawCheckBox(page1, marginX + padding, y, !!country)
+        page1.drawText(text, {
             x: marginX + padding + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
         text = 'Country:'
-        page2.drawText(text, {
+        page1.drawText(text, {
             x: marginX + padding + 15 + textWidth + gap * 1.4, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
         textWidth += font.label.widthOfTextAtSize(text, size.label)
-        page2.drawText(country ? Geography.countryList[country] : '', {
+        page1.drawText(country ? Geography.countryList[country] : '', {
             x: marginX + padding + 15 + textWidth + gap * 1.4 + padding, y: y + 2,
             font: font.value, size: size.value, color: color.value,
         })
-        page2.drawLine({
+        page1.drawLine({
             start: { x: marginX + padding + 15 + textWidth + 15 + padding / 2, y: y - 1 },
             end: { x: marginX + padding + 15 + textWidth + 15 + padding / 2 + 150, y: y - 1 },
             color: color.line,
@@ -411,19 +416,19 @@ export default async (application, addresses, violations, accidents, employers) 
     /* Section 3 */
     {
         y -= fieldHeight / 2
-        page2.drawLine({
+        page1.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
             thickness: 2, color: color.line,
         })
-        y -= 12
-        page2.drawText('Section 3: Eligibility and Qualification', {
+        y -= 14
+        page1.drawText('Section 3: Eligibility and Qualifications', {
             x: marginX + padding, y,
             font: font.section, size: size.section, color: color.section,
         })
 
         y -= gap
-        page2.drawLine({
+        page1.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
             color: color.line,
@@ -434,17 +439,17 @@ export default async (application, addresses, violations, accidents, employers) 
             const { legalStatus } = application
             const statuses = Application.legalStatusList
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: marginX, y },
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText('Immigration Status', {
-                x: marginX + padding, y: y - fieldHeight / 1.6,
+            page1.drawText('Immigration Status', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
                 font: font.section, size: size.section, color: color.section,
             })
             vLineX = (width - marginX * 2) / 5
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: vLineX + marginX, y },
                 end: { x: vLineX + marginX, y: y - fieldHeight },
                 color: color.line,
@@ -452,46 +457,46 @@ export default async (application, addresses, violations, accidents, employers) 
 
             vLineX += gap
             text = statuses[0]
-            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 0)
-            page2.drawText(text, {
+            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 0)
+            page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
             })
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + gap
             text = statuses[1]
-            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 1)
-            page2.drawText(text, {
+            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 1)
+            page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
             })
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + gap
             text = statuses[2]
-            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 2)
-            page2.drawText(text, {
+            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 2)
+            page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
             })
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + gap
-            page2.drawText('Expiration Date', {
+            page1.drawText('Expiration Date', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(legalStatus[1] ? moment(legalStatus[1]).format(dateFormat) : '', {
+            page1.drawText(legalStatus[1] ? moment(legalStatus[1]).format(dateFormat) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: width - marginX, y },
                     end: { x: width - marginX, y: y - fieldHeight },
                     color: color.line,
                 })
             y -= fieldHeight
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: marginX, y },
                 end: { x: width - marginX, y },
                 color: color.line,
@@ -500,84 +505,102 @@ export default async (application, addresses, violations, accidents, employers) 
 
         /* Row 2 */
         {
-            const { commercial, state, number, class: dlClass, issuedOn, expiresOn } = application.dl
+            const { commercial, state, number, class: dlClass, issuedOn, expiresOn, endorsement, restriction } = application.dl
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: marginX, y },
-                    end: { x: marginX, y: y - fieldHeight },
+                    end: { x: marginX, y: y - fieldHeight * 2 },
                     color: color.line,
                 })
-            page2.drawText("Driver's License", {
-                x: marginX + padding, y: y - fieldHeight / 1.6,
+            page1.drawText("Driver's License", {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
                 font: font.section, size: size.section, color: color.section,
             })
             vLineX = (width - marginX * 2) / 5
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: vLineX + marginX, y },
-                end: { x: vLineX + marginX, y: y - fieldHeight },
+                end: { x: vLineX + marginX, y: y - fieldHeight * 2 },
                 color: color.line,
             })
             vLineX += gap
             text = 'Commercial'
-            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, commercial)
-            page2.drawText(text, {
+            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, commercial)
+            page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
             })
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + gap
-            page2.drawText('State', {
+            page1.drawText('State', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(state, {
+            page1.drawText(state, {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 40
-            page2.drawText('License #', {
+            page1.drawText('License #', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(number, {
+            page1.drawText(number, {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX += 97
-            page2.drawText('Class', {
+            vLineX += 99
+            page1.drawText('Class', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(dlClass || '', {
+            page1.drawText(dlClass || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 45
-            page2.drawText('Issued on', {
+            page1.drawText('Issued on', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(moment(issuedOn).format(dateFormat), {
+            page1.drawText(moment(issuedOn).format(dateFormat), {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 72
-            page2.drawText('Expires on', {
+            page1.drawText('Expires on', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(moment(expiresOn).format(dateFormat), {
+            page1.drawText(moment(expiresOn).format(dateFormat), {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: width - marginX, y },
-                    end: { x: width - marginX, y: y - fieldHeight },
+                    end: { x: width - marginX, y: y - fieldHeight * 2 },
                     color: color.line,
                 })
-            y -= fieldHeight
-            page2.drawLine({
+            vLineX = (width - marginX * 2) / 5
+            page1.drawText('Endorsements', {
+                x: marginX + vLineX + gap, y: y - offset.labelY - fieldHeight,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page1.drawText(endorsement || '', {
+                x: marginX + vLineX + gap, y: y - offset.valueY - fieldHeight,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += ((width - marginX * 2) - vLineX) / 2
+            page1.drawText('Restrictions', {
+                x: marginX + vLineX + gap, y: y - offset.labelY - fieldHeight,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page1.drawText(restriction || '', {
+                x: marginX + vLineX + gap, y: y - offset.valueY - fieldHeight,
+                font: font.value, size: size.value, color: color.value,
+            })
+            y -= fieldHeight * 2
+            page1.drawLine({
                 start: { x: marginX, y },
                 end: { x: width - marginX, y },
                 color: color.line,
@@ -588,148 +611,319 @@ export default async (application, addresses, violations, accidents, employers) 
         {
             const { expiresOn, issuedOn, nrcme } = application.mec || {}
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: marginX, y },
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText('Medical Card', {
-                x: marginX + padding, y: y - fieldHeight / 1.6,
+            page1.drawText('Medical Card', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
                 font: font.section, size: size.section, color: color.section,
             })
             vLineX = (width - marginX * 2) / 5
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: vLineX + marginX, y },
                 end: { x: vLineX + marginX, y: y - fieldHeight },
                 color: color.line,
             })
-            page2.drawText('NRCME #', {
+            page1.drawText('NRCME #', {
                 x: marginX + vLineX + gap, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(nrcme || '', {
+            page1.drawText(nrcme || '', {
                 x: marginX + vLineX + gap, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 85
-            page2.drawText('Exam Date', {
+            page1.drawText('Exam Date', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(issuedOn ? moment(issuedOn).format(dateFormat) : '', {
+            page1.drawText(issuedOn ? moment(issuedOn).format(dateFormat) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 80
-            page2.drawText('Expires on', {
+            page1.drawText('Expires on', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(expiresOn ? moment(expiresOn).format(dateFormat) : '', {
+            page1.drawText(expiresOn ? moment(expiresOn).format(dateFormat) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             if (outsideBorder)
-                page2.drawLine({
+                page1.drawLine({
                     start: { x: width - marginX, y },
                     end: { x: width - marginX, y: y - fieldHeight },
                     color: color.line,
                 })
 
             y -= fieldHeight
-            page2.drawLine({
+            page1.drawLine({
                 start: { x: marginX, y },
                 end: { x: width - marginX, y },
                 color: color.line,
             })
         }
 
-        const offsetX = 220
-        const { denied, deniedExpl, revoked, revokedExpl } = application.dl
-console.log(application.dl)
-console.log(application.mec)
+        /* Questions */
+        {
+            const offsetX = 115
+            const { denied, deniedExpl, revoked, revokedExpl } = application.dl
+            const { underMeds, medList } = application
+            let lineLength
+            y -= fieldHeight / 1.7
+            vLineX = padding
+            page1.drawText('Have you ever been denied a license, permit, or privilege to operate a motor vehicle?', {
+                x: marginX + vLineX, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            vLineX += width - marginX - offsetX
+            text = 'Yes'
+            drawCheckBox(page1, marginX + vLineX, y, denied)
+            page1.drawText(text, {
+                x: marginX + vLineX + 15, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += 15 + textWidth + padding
+            text = 'No'
+            drawCheckBox(page1, marginX + vLineX + 2, y, !denied)
+            page1.drawText(text, {
+                x: marginX + vLineX + 15 + 2, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            y -= fieldHeight / 2
+            vLineX = padding
+            text = 'If YES, provide details:'
+            page1.drawText(text, {
+                x: marginX + vLineX, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += textWidth
+            page1.drawText(deniedExpl || '', {
+                x: marginX + vLineX + gap + padding, y: y + 2,
+                font: font.value, size: size.value, color: color.value,
+            })
+            lineLength = width - marginX * 2 - vLineX - gap - padding
+            page1.drawLine({
+                start: { x: marginX + vLineX + gap, y: y - 1 },
+                end: { x: marginX + vLineX + gap + lineLength, y: y - 1 },
+                color: color.line,
+            })
+            y -= fieldHeight / 1.7
+            vLineX = padding
+            page1.drawText('Has your license, permit, or driving privilege ever been suspended or revoked?', {
+                x: marginX + vLineX, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            vLineX += width - marginX - offsetX
+            text = 'Yes'
+            drawCheckBox(page1, marginX + vLineX, y, revoked)
+            page1.drawText(text, {
+                x: marginX + vLineX + 15, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += 15 + textWidth + padding
+            text = 'No'
+            drawCheckBox(page1, marginX + vLineX + 2, y, !revoked)
+            page1.drawText(text, {
+                x: marginX + vLineX + 15 + 2, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            y -= fieldHeight / 2
+            vLineX = padding
+            text = 'If YES, provide details:'
+            page1.drawText(text, {
+                x: marginX + vLineX, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += textWidth
+            page1.drawText(revokedExpl || '', {
+                x: marginX + vLineX + gap + padding, y: y + 2,
+                font: font.value, size: size.value, color: color.value,
+            })
+            lineLength = width - marginX * 2 - vLineX - gap - padding
+            page1.drawLine({
+                start: { x: marginX + vLineX + gap, y: y - 1 },
+                end: { x: marginX + vLineX + gap + lineLength, y: y - 1 },
+                color: color.line,
+            })
+            y -= fieldHeight / 1.7
+            vLineX = padding
+            page1.drawText('Are you currently taking any medication that may impair your ability to safely operate a commercial motor vehicle?', {
+                x: marginX + vLineX, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            vLineX += width - marginX - offsetX
+            text = 'Yes'
+            drawCheckBox(page1, marginX + vLineX, y, underMeds)
+            page1.drawText(text, {
+                x: marginX + vLineX + 15, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += 15 + textWidth + padding
+            text = 'No'
+            drawCheckBox(page1, marginX + vLineX + 2, y, !underMeds)
+            page1.drawText(text, {
+                x: marginX + vLineX + 15 + 2, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            y -= fieldHeight / 2
+            vLineX = padding
+            text = 'If YES, list medications:'
+            page1.drawText(text, {
+                x: marginX + vLineX, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += textWidth
+            page1.drawText(medList || '', {
+                x: marginX + vLineX + gap + padding, y: y + 2,
+                font: font.value, size: size.value, color: color.value,
+            })
+            lineLength = width - marginX * 2 - vLineX - gap - padding
+            page1.drawLine({
+                start: { x: marginX + vLineX + gap, y: y - 1 },
+                end: { x: marginX + vLineX + gap + lineLength, y: y - 1 },
+                color: color.line,
+            })
+        }
+
+    }
+
+
+    /* Section 4 */
+    {
+        const offsetX = 115
+        const { dui, duiInDecade, criminal, criminalExpl, dotDat } = application
+        let lineLength
+        y -= fieldHeight / 2
+        page1.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page1.drawText('Section 4: Legal Compliance', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
         y -= fieldHeight / 1.7
         vLineX = padding
-        page2.drawText('Have you ever been denied a license, permit, or privilege to operate a motor vehicle?', {
+        page1.drawText('Have you ever been arrested in connection with impaired or intoxicated driving (DUI/DWI)?', {
             x: marginX + vLineX, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
         vLineX += width - marginX - offsetX
         text = 'Yes'
-        drawCheckBox(page2, marginX + vLineX, y, denied)
-        page2.drawText(text, {
+        drawCheckBox(page1, marginX + vLineX, y, dui)
+        page1.drawText(text, {
             x: marginX + vLineX + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += 15 + textWidth + padding
         text = 'No'
-        drawCheckBox(page2, marginX + vLineX + 2, y, !denied)
-        page2.drawText(text, {
+        drawCheckBox(page1, marginX + vLineX + 2, y, !dui)
+        page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
-
         y -= fieldHeight / 2
         vLineX = padding
-        text = 'If YES, provide details:'
-        page2.drawText(text, {
+        text = 'If YES, when did the DUI/DWI occur?'
+        page1.drawText(text, {
             x: marginX + vLineX, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
         textWidth = font.label.widthOfTextAtSize(text, size.label)
-        vLineX += textWidth
-        page2.drawText(deniedExpl || '', {
-            x: marginX + vLineX + gap + padding, y: y + 2,
-            font: font.value, size: size.value, color: color.value,
+        vLineX += textWidth + gap
+        drawCheckBox(page1, marginX + vLineX + 2, y, dui && duiInDecade)
+        text = 'Within the past 10 years'
+        page1.drawText(text, {
+            x: marginX + vLineX + 15 + 2, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
         })
-        page2.drawLine({
-            start: { x: marginX + vLineX + gap, y: y - 1 },
-            end: { x: marginX + vLineX + gap + 325, y: y - 1 },
-            color: color.line,
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += textWidth + gap + 15 + 2
+        drawCheckBox(page1, marginX + vLineX + 2, y, dui && !duiInDecade)
+        text = 'More than 10 years ago'
+        page1.drawText(text, {
+            x: marginX + vLineX + 15 + 2, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
         })
-
-        y -= fieldHeight / 1.85
+        y -= fieldHeight / 1.7
         vLineX = padding
-        page2.drawText('Has your license, permit, or driving privilege ever been suspended or revoked?', {
+        page1.drawText('Have you ever been charged with or found guilty of a misdemeanor or felony offense?', {
             x: marginX + vLineX, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
         vLineX += width - marginX - offsetX
         text = 'Yes'
-        drawCheckBox(page2, marginX + vLineX, y, revoked)
-        page2.drawText(text, {
+        drawCheckBox(page1, marginX + vLineX, y, criminal)
+        page1.drawText(text, {
             x: marginX + vLineX + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += 15 + textWidth + padding
         text = 'No'
-        drawCheckBox(page2, marginX + vLineX + 2, y, !revoked)
-        page2.drawText(text, {
+        drawCheckBox(page1, marginX + vLineX + 2, y, !criminal)
+        page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
-
         y -= fieldHeight / 2
         vLineX = padding
         text = 'If YES, provide details:'
-        page2.drawText(text, {
+        page1.drawText(text, {
             x: marginX + vLineX, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += textWidth
-        page2.drawText(revokedExpl || '', {
+        page1.drawText(criminalExpl || '', {
             x: marginX + vLineX + gap + padding, y: y + 2,
             font: font.value, size: size.value, color: color.value,
         })
-        page2.drawLine({
+        lineLength = width - marginX * 2 - vLineX - gap - padding
+        page1.drawLine({
             start: { x: marginX + vLineX + gap, y: y - 1 },
-            end: { x: marginX + vLineX + gap + 325, y: y - 1 },
+            end: { x: marginX + vLineX + gap + lineLength, y: y - 1 },
             color: color.line,
         })
-
+        y -= fieldHeight / 1.7
+        vLineX = padding
+        page1.drawText('Within the past 5 years, have you ever failed or refused to take a DOT-required drug or alcohol test', {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        y -= fieldHeight / 2.5
+        page1.drawText('for pre-employment, random testing, or post-accident purposes?', {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        vLineX += width - marginX - offsetX
+        text = 'Yes'
+        drawCheckBox(page1, marginX + vLineX, y, dotDat)
+        page1.drawText(text, {
+            x: marginX + vLineX + 15, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += 15 + textWidth + padding
+        text = 'No'
+        drawCheckBox(page1, marginX + vLineX + 2, y, !dotDat)
+        page1.drawText(text, {
+            x: marginX + vLineX + 15 + 2, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
     }
 
 

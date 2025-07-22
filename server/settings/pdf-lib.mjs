@@ -3,6 +3,6 @@ export default {
         width: 612,
         height: 792,
         marginX: 35,
-        marginY: 40,
+        marginY: 35,
     },
 }
