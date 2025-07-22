@@ -548,7 +548,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(dlClass, {
+            page2.drawText(dlClass || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -586,7 +586,7 @@ export default async (application, addresses, violations, accidents, employers) 
 
         /* Row 3 */
         {
-            const { expiresOn, issuedOn, nrcme } = application.mec
+            const { expiresOn, issuedOn, nrcme } = application.mec || {}
             if (outsideBorder)
                 page2.drawLine({
                     start: { x: marginX, y },
@@ -625,7 +625,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(moment(expiresOn).format(dateFormat), {
+            page2.drawText(expiresOn ? moment(expiresOn).format(dateFormat) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -647,6 +647,7 @@ export default async (application, addresses, violations, accidents, employers) 
         const offsetX = 220
         const { denied, deniedExpl, revoked, revokedExpl } = application.dl
 console.log(application.dl)
+console.log(application.mec)
         y -= fieldHeight / 1.7
         vLineX = padding
         page2.drawText('Have you ever been denied a license, permit, or privilege to operate a motor vehicle?', {
