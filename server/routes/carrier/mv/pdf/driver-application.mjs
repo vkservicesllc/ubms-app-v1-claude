@@ -1164,7 +1164,6 @@ export default async (application, addresses, violations, accidents, employers) 
             x: marginX + padding + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
-console.log(application.experience)
         y -= gap
         page2.drawLine({
             start: { x: marginX, y },
@@ -1176,7 +1175,7 @@ console.log(application.experience)
         {
             const { semi } = Application.vehicleList
             let { vehicles } = experience
-            if (!vehicles) vehicles = { semi: [] }
+            if (!vehicles?.semi) vehicles = { semi: [] }
             if (outsideBorder)
                 page2.drawLine({
                     start: { x: marginX, y },
@@ -1223,7 +1222,7 @@ console.log(application.experience)
         {
             const { straight } = Application.vehicleList
             let { vehicles } = experience
-            if (!vehicles) vehicles = { straight: [] }
+            if (!vehicles?.straight) vehicles = { straight: [] }
             if (outsideBorder)
                 page2.drawLine({
                     start: { x: marginX, y },
@@ -1270,7 +1269,7 @@ console.log(application.experience)
         {
             const misc = { van: 'Cargo Van', tandem: 'Tandem Semi Tractor/Trailer' }
             let { vehicles } = experience
-            if (!vehicles) vehicles = { misc: [] }
+            if (!vehicles?.misc) vehicles = { misc: [] }
             if (outsideBorder)
                 page2.drawLine({
                     start: { x: marginX, y },
@@ -1312,6 +1311,202 @@ console.log(application.experience)
                 color: color.line,
             })
         }
+
+        /* Row 4 */
+        {
+            const { firstDate, lastDate, mileage, hours } = experience
+            let totalHours = 0
+            if (hours) hours.forEach(hr => totalHours += hr)
+            if (totalHours) totalHours = totalHours + ''
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page2.drawText('OTR Experience', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
+                font: font.section, size: size.section, color: color.section,
+            })
+            vLineX = (width - marginX * 2) / 5
+            page2.drawLine({
+                start: { x: vLineX + marginX, y },
+                end: { x: vLineX + marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+
+            page2.drawText('First Driven on', {
+                x: marginX + vLineX + gap, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(firstDate ? moment(firstDate).format(dateFormat) : '', {
+                x: marginX + vLineX + gap, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 80
+            page2.drawText('Last Driven on', {
+                x: marginX + vLineX + gap, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(lastDate ? moment(lastDate).format(dateFormat) : '', {
+                x: marginX + vLineX + gap, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 80
+            page2.drawText('Total Mileage', {
+                x: marginX + vLineX + gap, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(mileage ? mileage.toLocaleString('en-US') : '', {
+                x: marginX + vLineX + gap, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 70
+            page2.drawText('Hours driven in the last 7 days', {
+                x: marginX + vLineX + gap, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(totalHours || '', {
+                x: marginX + vLineX + gap, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            y -= fieldHeight
+            page2.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
+
+    }
+
+
+    /* Section 8 */
+    {
+        let { experience } = application
+        if (!experience) experience = {}
+        const { schName, schPhone, schState, schEndDate, schDuration } = experience
+        y -= fieldHeight / 2
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page2.drawText('Section 8: Driving School', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
+
+        y -= gap
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
+
+        if (outsideBorder)
+            page2.drawLine({
+                start: { x: marginX, y },
+                end: { x: marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+        page2.drawText('School Name', {
+            x: marginX + padding, y: y - offset.labelY,
+            font: font.label, size: size.label, color: color.label,
+        })
+        page2.drawText(schName || '', {
+            x: marginX + padding, y: y - offset.valueY,
+            font: font.value, size: size.value, color: color.value,
+        })
+        vLineX = (width - marginX * 2) / 3.2
+        page2.drawText('Phone', {
+            x: marginX + vLineX + padding, y: y - offset.labelY,
+            font: font.label, size: size.label, color: color.label,
+        })
+        page2.drawText(schPhone ? formatTel(schPhone) : '', {
+            x: marginX + vLineX + padding, y: y - offset.valueY,
+            font: font.value, size: size.value, color: color.value,
+        })
+        vLineX += 110
+        page2.drawText('State', {
+            x: marginX + vLineX + padding, y: y - offset.labelY,
+            font: font.label, size: size.label, color: color.label,
+        })
+        page2.drawText(schState || '', {
+            x: marginX + vLineX + padding, y: y - offset.valueY,
+            font: font.value, size: size.value, color: color.value,
+        })
+        vLineX += 50
+        page2.drawText('Graduation Date', {
+            x: marginX + vLineX + padding, y: y - offset.labelY,
+            font: font.label, size: size.label, color: color.label,
+        })
+        page2.drawText(schEndDate ? moment(schEndDate).format(dateFormat) : '', {
+            x: marginX + vLineX + padding, y: y - offset.valueY,
+            font: font.value, size: size.value, color: color.value,
+        })
+        vLineX += 90
+        page2.drawText('Attendance Duration', {
+            x: marginX + vLineX + padding, y: y - offset.labelY,
+            font: font.label, size: size.label, color: color.label,
+        })
+        page2.drawText(schDuration ? Application.schoolDurationList[schDuration]: '', {
+            x: marginX + vLineX + padding, y: y - offset.valueY,
+            font: font.value, size: size.value, color: color.value,
+        })
+        if (outsideBorder)
+            page2.drawLine({
+                start: { x: width - marginX, y },
+                end: { x: width - marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+        y -= fieldHeight
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
+    }
+
+
+    /* PAGE 3 */
+    const page3 = pdfDoc.addPage([width, height])
+    text = `Page 3 of ${totalPages}`
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page3.drawText(text, {
+        x: width - marginX - textWidth, y: marginY,
+        font: font.label, size: size.label / 1.2, color: color.label,
+    })
+    y = height - marginY
+
+
+    /* Section 9 */
+    {
+        page3.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page3.drawText('Section 9: Previous Employments', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
+
+        y -= gap
+        page3.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
     }
 
 
