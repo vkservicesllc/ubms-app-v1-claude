@@ -6,14 +6,3 @@ export default {
         marginY: 40,
     },
 }
-
-export const pdfFonts = {
-    helvetica: 'Helvetica',
-    helveticaB: 'HelveticaBold',
-    helveticaO: 'HelveticaOblique',
-    helveticaBO: 'HelveticaBoldOblique',
-    timesRoman: 'TimesRoman',
-    timesRomanB: 'TimesRomanBold',
-    timesRomanI: 'TimesRomanItalic',
-    timesRomanBI: 'TimesRomanBoldItalic',
-}

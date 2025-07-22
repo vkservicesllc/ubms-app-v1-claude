@@ -208,8 +208,8 @@ router.get('/application/:formId/files/application', User.verify, Team.verify, a
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
-        // throwErr.server(res, null, err)
-        res.redirect(`/drivers/application/${formId}/e-form`)
+        throwErr.server(res, null, err)
+        // res.redirect(`/drivers/application/${formId}/e-form`)
     }
 })
 
