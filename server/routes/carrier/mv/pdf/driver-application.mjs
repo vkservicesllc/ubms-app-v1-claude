@@ -61,8 +61,10 @@ export default async (application, addresses, violations, accidents, employers) 
 
     /* PAGE 1 */
     const page1 = pdfDoc.addPage([width, height])
-    page1.drawText(`Page 1 of ${totalPages}`, {
-        x: marginX + padding, y: marginY,
+    text = `Page 1 of ${totalPages}`
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page1.drawText(text, {
+        x: width - marginX - textWidth, y: marginY,
         font: font.label, size: size.label / 1.2, color: color.label,
     })
 
@@ -933,8 +935,10 @@ export default async (application, addresses, violations, accidents, employers) 
 
     /* PAGE 2 */
     const page2 = pdfDoc.addPage([width, height])
-    page2.drawText(`Page 2 of ${totalPages}`, {
-        x: marginX + padding, y: marginY,
+    text = `Page 2 of ${totalPages}`
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page2.drawText(text, {
+        x: width - marginX - textWidth, y: marginY,
         font: font.label, size: size.label / 1.2, color: color.label,
     })
     y = height - marginY
@@ -967,8 +971,7 @@ export default async (application, addresses, violations, accidents, employers) 
             if (citation) ({ violation, other, citedOn, state } = citation)
 
             if (violation) {
-                if (violation === 'other') violation = other
-                else
+                if (violation !== 'other')
                     violationLoop:
                     for (const group in Application.violationList) {
                         const set = Application.violationList[group]
@@ -982,24 +985,38 @@ export default async (application, addresses, violations, accidents, employers) 
                             }
                     }
             }
-console.log(citation)
             if (outsideBorder)
                 page2.drawLine({
                     start: { x: marginX, y },
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-
-            //?
-            page2.drawText(`Violtation #${i + 1}`, {
+            page2.drawText(`Violation #${i + 1} (Description)`, {
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page2.drawText(violation || '', {
+            page2.drawText(other || violation || '', {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-                
+            vLineX = (width - marginX * 2) / 3
+            page2.drawText(`Citation Date`, {
+                x: marginX + vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(citedOn ? moment(citedOn).format(dateFormat) : '', {
+                x: marginX + vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 85
+            page2.drawText(`Citation State`, {
+                x: marginX + vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(state || '', {
+                x: marginX + vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
             if (outsideBorder)
                 page2.drawLine({
                     start: { x: width - marginX, y },
@@ -1007,6 +1024,287 @@ console.log(citation)
                     color: color.line,
                 })
 
+            y -= fieldHeight
+            page2.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
+    }
+
+
+    /* Section 6 */
+    {
+        accidents = sortArrayByObjectKey(accidents, 'citedOn', false)
+        y -= fieldHeight / 2
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page2.drawText('Section 6: Accidents for the past three years', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
+
+        y -= gap
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
+        for (let i = 0; i < 5; i++) {
+            const accident = accidents[i]
+            let collision, other, date, state, injuries, fatalities
+            if (accident) ({ collision, other, date, state, injuries, fatalities } = accident)
+
+            if (collision) {
+                if (collision !== 'other')
+                    collisionLoop:
+                    for (const group in Application.accidentList) {
+                        const set = Application.accidentList[group]
+
+                        if (typeof set === 'object')
+                            for (const prop in set) {
+                                if (collision !== prop) continue
+
+                                collision = set[prop]
+                                break collisionLoop
+                            }
+                    }
+                injuries = injuries ? 'Yes' : 'No'
+                fatalities = fatalities ? 'Yes' : 'No'
+            }
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page2.drawText(`Accident #${i + 1} (Description)`, {
+                x: marginX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(other || collision || '', {
+                x: marginX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX = (width - marginX * 2) / 3
+            page2.drawText(`Date`, {
+                x: marginX + vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(date ? moment(date).format(dateFormat) : '', {
+                x: marginX + vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 85
+            page2.drawText(`State`, {
+                x: marginX + vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(state || '', {
+                x: marginX + vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 75
+            page2.drawText(`Inuries`, {
+                x: marginX + vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(injuries || '', {
+                x: marginX + vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 75
+            page2.drawText(`Fatalities`, {
+                x: marginX + vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(fatalities || '', {
+                x: marginX + vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+
+            y -= fieldHeight
+            page2.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
+    }
+
+
+    /* Section 7 */
+    {
+        const { experience } = application
+        y -= fieldHeight / 2
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page2.drawText('Section 7: Driving Experience', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
+        y -= fieldHeight / 1.7
+        drawCheckBox(page2, marginX + padding, y, experience?.cmv === true)
+        page2.drawText('Previously operated a Commercial Motor Vehicle (CMV)', {
+            x: marginX + padding + 15, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+console.log(application.experience)
+        y -= gap
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
+
+        /* Row 1 */
+        {
+            const { semi } = Application.vehicleList
+            let { vehicles } = experience
+            if (!vehicles) vehicles = { semi: [] }
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page2.drawText('Semi Tractor/Trailer', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
+                font: font.section, size: size.section, color: color.section,
+            })
+            vLineX = (width - marginX * 2) / 5
+            page2.drawLine({
+                start: { x: vLineX + marginX, y },
+                end: { x: vLineX + marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+            for (const vhl in semi) {
+                vLineX += gap
+                text = semi[vhl]
+                drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, vehicles.semi.includes(vhl))
+                page2.drawText(text, {
+                    x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
+                    font: font.label, size: size.label, color: color.label,
+                })
+                textWidth = font.label.widthOfTextAtSize(text, size.label)
+                vLineX += 15 + textWidth
+            }
+            
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            y -= fieldHeight
+            page2.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
+
+        /* Row 2 */
+        {
+            const { straight } = Application.vehicleList
+            let { vehicles } = experience
+            if (!vehicles) vehicles = { straight: [] }
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page2.drawText('Straight Truck', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
+                font: font.section, size: size.section, color: color.section,
+            })
+            vLineX = (width - marginX * 2) / 5
+            page2.drawLine({
+                start: { x: vLineX + marginX, y },
+                end: { x: vLineX + marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+            for (const vhl in straight) {
+                vLineX += gap
+                text = straight[vhl] + ' Truck'
+                drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, vehicles.straight.includes(vhl))
+                page2.drawText(text, {
+                    x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
+                    font: font.label, size: size.label, color: color.label,
+                })
+                textWidth = font.label.widthOfTextAtSize(text, size.label)
+                vLineX += 15 + textWidth
+            }
+            
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            y -= fieldHeight
+            page2.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
+
+        /* Row 3 */
+        {
+            const misc = { van: 'Cargo Van', tandem: 'Tandem Semi Tractor/Trailer' }
+            let { vehicles } = experience
+            if (!vehicles) vehicles = { misc: [] }
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page2.drawText('Other', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
+                font: font.section, size: size.section, color: color.section,
+            })
+            vLineX = (width - marginX * 2) / 5
+            page2.drawLine({
+                start: { x: vLineX + marginX, y },
+                end: { x: vLineX + marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+            for (const vhl in misc) {
+                vLineX += gap
+                text = misc[vhl]
+                drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, vehicles.misc.includes(vhl))
+                page2.drawText(text, {
+                    x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
+                    font: font.label, size: size.label, color: color.label,
+                })
+                textWidth = font.label.widthOfTextAtSize(text, size.label)
+                vLineX += 15 + textWidth
+            }
+            
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
             y -= fieldHeight
             page2.drawLine({
                 start: { x: marginX, y },

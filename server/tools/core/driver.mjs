@@ -725,10 +725,9 @@ class Application {
                     delete data.mecAbsent
 
                     mainData.underMeds = data.underMeds
-                    mainData.medList = data.medList || null
+                    mainData.medList = data.medList
                     delete data.underMeds
                     delete data.medList
-
                     if (this.step < 3) {
                         mainData = processData(mainData)
                         mainData.step = 3
@@ -743,27 +742,26 @@ class Application {
                     } else {
                         if (mainData.medCard === false) {
                             if (this.mec) await mysql.execute(query.aplMECs.delete({ aplId: id }))
-                            else {
-                                mainData.medCard = true
+                        } else {
+                            mainData.medCard = true
 
-                                if (this.mec) {
-                                    data = processData(data, {
-                                        modifiedBy, branch, siteId,
-                                        currentData: this.mec,
-                                        currentUpdateLog: await this.log('updateLog', 'aplMECs'),
-                                    })
+                            if (this.mec) {
+                                data = processData(data, {
+                                    modifiedBy, branch, siteId,
+                                    currentData: this.mec,
+                                    currentUpdateLog: await this.log('updateLog', 'aplMECs'),
+                                })
 
-                                    if (dataLen(data)) {
-                                        const [ result ] = await mysql.execute(query.aplMECs.update(data, { aplId: id }))
-                                        if (result.affectedRows === 1) modified = true
-                                    }
-                                } else {
-                                    data = processData(data)
-                                    data.aplId = id
-
-                                    const [ result ] = await mysql.execute(query.aplMECs.insert(data))
+                                if (dataLen(data)) {
+                                    const [ result ] = await mysql.execute(query.aplMECs.update(data, { aplId: id }))
                                     if (result.affectedRows === 1) modified = true
                                 }
+                            } else {
+                                data = processData(data)
+                                data.aplId = id
+
+                                const [ result ] = await mysql.execute(query.aplMECs.insert(data))
+                                if (result.affectedRows === 1) modified = true
                             }
                         }
                     }

@@ -189,21 +189,23 @@ router.get('/application/:formId/files/application', User.verify, Team.verify, a
     const { formId } = req.params
 
     try {
+        const aplUrl = '/drivers/applications'
         const { user, team } = res.session
         const { DS } = user
 
         const permissions = await user.permissions(res.session)
         if (!DS && !permissions['f:drv/apl'].includes('2'))
-            return respond404(res)
+            return res.redirect(aplUrl)
 
         const application = await Application.data(res.session, { formId })
         if (!application || application.condition !== 'c' || application._teamId !== team._id)
-            return respond404(res)
+            return res.redirect(aplUrl)
 
         const addresses = (await application.data('addresses', res.session)).data
         const violations = (await application.data('citations', res.session)).data
+        const accidents = (await application.data('accidents', res.session)).data
 
-        const pdfBytes = await createApplicationPdf(application, addresses, violations)
+        const pdfBytes = await createApplicationPdf(application, addresses, violations, accidents)
 
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
