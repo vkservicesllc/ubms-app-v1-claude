@@ -5,6 +5,7 @@ import { ssn as formatSsn, tel as formatTel } from '../../../../../client/global
 import { Application } from '../../../../tools/core/driver.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
 import Geography from '../../../../../client/global/modules/tools/core/geography.mjs'
+import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools/utils/sorter.mjs'
 
 
 export default async (application, addresses, violations, accidents, employers) => {
@@ -55,11 +56,13 @@ export default async (application, addresses, violations, accidents, employers) 
         }
     }
 
+    const totalPages = 5
+
 
     /* PAGE 1 */
     const page1 = pdfDoc.addPage([width, height])
-    page1.drawText('Page 1 of 5', {
-        x: marginX + padding, y: marginY - padding,
+    page1.drawText(`Page 1 of ${totalPages}`, {
+        x: marginX + padding, y: marginY,
         font: font.label, size: size.label / 1.2, color: color.label,
     })
 
@@ -288,6 +291,7 @@ export default async (application, addresses, violations, accidents, employers) 
 
     /* Section 2 */
     {
+        addresses = sortArrayByObjectKey(addresses, 'since', false)
         y -= fieldHeight / 2
         page1.drawLine({
             start: { x: marginX, y },
@@ -924,6 +928,92 @@ export default async (application, addresses, violations, accidents, employers) 
             x: marginX + vLineX + 15 + 2, y: y + 1,
             font: font.label, size: size.label, color: color.label,
         })
+    }
+
+
+    /* PAGE 2 */
+    const page2 = pdfDoc.addPage([width, height])
+    page2.drawText(`Page 2 of ${totalPages}`, {
+        x: marginX + padding, y: marginY,
+        font: font.label, size: size.label / 1.2, color: color.label,
+    })
+    y = height - marginY
+
+
+    /* Section 5 */
+    {
+        violations = sortArrayByObjectKey(violations, 'citedOn', false)
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page2.drawText('Section 5: Citations for the past three years', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
+
+        y -= gap
+        page2.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
+
+        for (let i = 0; i < 5; i++) {
+            const citation = violations[i]
+            let violation, other, citedOn, state
+            if (citation) ({ violation, other, citedOn, state } = citation)
+
+            if (violation) {
+                if (violation === 'other') violation = other
+                else
+                    violationLoop:
+                    for (const group in Application.violationList) {
+                        const set = Application.violationList[group]
+
+                        if (typeof set === 'object')
+                            for (const prop in set) {
+                                if (violation !== prop) continue
+
+                                violation = set[prop]
+                                break violationLoop
+                            }
+                    }
+            }
+console.log(citation)
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+
+            //?
+            page2.drawText(`Violtation #${i + 1}`, {
+                x: marginX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            page2.drawText(violation || '', {
+                x: marginX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+                
+            if (outsideBorder)
+                page2.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+
+            y -= fieldHeight
+            page2.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
     }
 
 

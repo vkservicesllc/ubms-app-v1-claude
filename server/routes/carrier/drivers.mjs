@@ -200,9 +200,10 @@ router.get('/application/:formId/files/application', User.verify, Team.verify, a
         if (!application || application.condition !== 'c' || application._teamId !== team._id)
             return respond404(res)
 
-        const addresses = await application.data('addresses', res.session)
+        const addresses = (await application.data('addresses', res.session)).data
+        const violations = (await application.data('citations', res.session)).data
 
-        const pdfBytes = await createApplicationPdf(application, addresses.data)
+        const pdfBytes = await createApplicationPdf(application, addresses, violations)
 
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
