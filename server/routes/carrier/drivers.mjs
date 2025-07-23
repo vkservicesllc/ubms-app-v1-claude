@@ -204,8 +204,9 @@ router.get('/application/:formId/files/application', User.verify, Team.verify, a
         const addresses = (await application.data('addresses', res.session)).data
         const violations = (await application.data('citations', res.session)).data
         const accidents = (await application.data('accidents', res.session)).data
+        const employers = (await application.data('employers', res.session)).data
 
-        const pdfBytes = await createApplicationPdf(application, addresses, violations, accidents)
+        const pdfBytes = await createApplicationPdf(application, addresses, violations, accidents, employers)
 
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')

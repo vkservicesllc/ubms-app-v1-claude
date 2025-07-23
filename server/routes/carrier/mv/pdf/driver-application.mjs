@@ -1400,7 +1400,7 @@ export default async (application, addresses, violations, accidents, employers) 
             thickness: 2, color: color.line,
         })
         y -= 14
-        page2.drawText('Section 8: Driving School', {
+        page2.drawText('Section 8: CDL Training School', {
             x: marginX + padding, y,
             font: font.section, size: size.section, color: color.section,
         })
@@ -1477,36 +1477,236 @@ export default async (application, addresses, violations, accidents, employers) 
     }
 
 
-    /* PAGE 3 */
-    const page3 = pdfDoc.addPage([width, height])
-    text = `Page 3 of ${totalPages}`
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
-    page3.drawText(text, {
-        x: width - marginX - textWidth, y: marginY,
-        font: font.label, size: size.label / 1.2, color: color.label,
-    })
-    y = height - marginY
+    /* PAGE 3-4 */
 
+    const emplPages = { page3: null, page4: null }
 
     /* Section 9 */
     {
-        page3.drawLine({
-            start: { x: marginX, y },
-            end: { x: width - marginX, y },
-            thickness: 2, color: color.line,
-        })
-        y -= 14
-        page3.drawText('Section 9: Previous Employments', {
-            x: marginX + padding, y,
-            font: font.section, size: size.section, color: color.section,
-        })
+        employers = sortArrayByObjectKey(employers, 'startedOn', false)
 
-        y -= gap
-        page3.drawLine({
-            start: { x: marginX, y },
-            end: { x: width - marginX, y },
-            color: color.line,
-        })
+        for (let i = 0; i < 12; i++) {
+            const page = i < 6 ? 'page3' : 'page4'
+            const pageN = i < 6 ? 3 : 4
+            if (!i || i === 6) {
+                emplPages[page] = pdfDoc.addPage([width, height])
+                text = `Page ${pageN} of ${totalPages}`
+                textWidth = font.label.widthOfTextAtSize(text, size.label)
+                emplPages[page].drawText(text, {
+                    x: width - marginX - textWidth, y: marginY,
+                    font: font.label, size: size.label / 1.2, color: color.label,
+                })
+                y = height - marginY
+                emplPages[page].drawLine({
+                    start: { x: marginX, y },
+                    end: { x: width - marginX, y },
+                    thickness: 2, color: color.line,
+                })
+                y -= 14
+                text = 'Section 9: Previous employments for the past ten years'
+                emplPages[page].drawText(text, {
+                    x: marginX + padding, y,
+                    font: font.section, size: size.section, color: color.section,
+                })
+                if (i === 6) {
+                    textWidth = font.section.widthOfTextAtSize(text, size.section)
+                    emplPages[page].drawText('(continued)', {
+                        x: marginX + textWidth + gap, y,
+                        font: font.label, size: size.label / 1.2, color: color.label,
+                    })
+                }
+
+                y -= gap
+                emplPages[page].drawLine({
+                    start: { x: marginX, y },
+                    end: { x: width - marginX, y },
+                    color: color.line,
+                })
+            }
+            const prevEmployer = employers[i]
+            let employer, phone, address1, address2, city, state, zip,
+                startedOn, position, earnings, fmcsr, dotDat, leftOn, rfl
+            if (prevEmployer) (
+                {
+                    employer, phone, address1, address2, city, state, zip,
+                    startedOn, position, earnings, fmcsr, dotDat, leftOn, rfl,
+                } = prevEmployer
+            )
+            if (employer) {
+                fmcsr = fmcsr ? 'Yes' : 'No'
+                dotDat = dotDat ? 'Yes' : 'No'
+            }
+            if (!i || i % 2 === 0) vLineX = marginX
+            else vLineX = (width - marginX * 2) / 2 + marginX
+            if (outsideBorder)
+                emplPages[page].drawLine({
+                    start: { x: vLineX, y },
+                    end: { x: vLineX, y: y - fieldHeight * 7 + 5 },
+                    color: color.line,
+                })
+
+            y -= 1
+            emplPages[page].drawText(`Employer #${i + 1}`, {
+                x: vLineX + padding * 2, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(employer || '', {
+                x: vLineX + padding * 2, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 150
+            emplPages[page].drawText('Phone', {
+                x: vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(phone ? formatTel(phone) : '', {
+                x: vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX -= 150
+            y -= fieldHeight
+            y += 1
+            emplPages[page].drawText('Street Address', {
+                x: vLineX + padding * 2, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(address1 || '', {
+                x: vLineX + padding * 2, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 150
+            emplPages[page].drawText('Suite/Unit #', {
+                x: vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(address2 || '', {
+                x: vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX -= 150
+            y -= fieldHeight
+            y += 1
+            emplPages[page].drawText('City', {
+                x: vLineX + padding * 2, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(city || '', {
+                x: vLineX + padding * 2, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 150
+            emplPages[page].drawText('State', {
+                x: vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(state || '', {
+                x: vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 45
+            emplPages[page].drawText('Zip', {
+                x: vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(zip || '', {
+                x: vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX -= 195
+            y -= fieldHeight
+            y += 1
+            emplPages[page].drawText('Position', {
+                x: vLineX + padding * 2, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(position || '', {
+                x: vLineX + padding * 2, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 150
+            emplPages[page].drawText('Monthly Earnings/Salary', {
+                x: vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(earnings ? '$' + earnings.toLocaleString('en-US') : '', {
+                x: vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX -= 150
+            y -= fieldHeight
+            y += 1
+            emplPages[page].drawText('Employment Date', {
+                x: vLineX + padding * 2, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(startedOn ? moment(startedOn).format(dateFormat) : '', {
+                x: vLineX + padding * 2, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 150
+            emplPages[page].drawText('Termination Date', {
+                x: vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(leftOn ? moment(leftOn).format(dateFormat) : '', {
+                x: vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX -= 150
+            y -= fieldHeight
+            y += 1
+            emplPages[page].drawText('Reason for Leaving', {
+                x: vLineX + padding * 2, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(rfl || '', {
+                x: vLineX + padding * 2, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            y -= fieldHeight
+            y += 1
+            emplPages[page].drawText('Subject to:', {
+                x: vLineX + padding * 2, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            vLineX += 75
+            emplPages[page].drawText('FMCSR', {
+                x: vLineX + padding * 2, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(fmcsr || '', {
+                x: vLineX + padding * 2, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 65
+            emplPages[page].drawText('DOT Drug/Alcohol Testing', {
+                x: vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(dotDat || '', {
+                x: vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+
+            y += fieldHeight * 6
+            y -= 5
+            if (i % 2 !== 0) {
+                if (outsideBorder)
+                    emplPages[page].drawLine({
+                        start: { x: width - marginX, y },
+                        end: { x: width - marginX, y: y - fieldHeight * 7 + 5 },
+                        color: color.line,
+                    })
+
+                y -= fieldHeight * 7 - 5
+                emplPages[page].drawLine({
+                    start: { x: marginX, y },
+                    end: { x: width - marginX, y },
+                    color: color.line,
+                })
+            }
+
+        }
     }
 
 
