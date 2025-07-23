@@ -1961,7 +1961,15 @@ export default async (application, addresses, violations, accidents, employers) 
     }
 
     /* Section 11 */
+    //! If EXPEDITE should have other types, will need to combine
     {
+        const vhlTypes = Application.vhlTypeList.truckLoad
+        let mmt, type, make, model, year, length
+        if (application.vehicle) ({ mmt, type, make, model, year, length } = application.vehicle)
+        if (mmt && mmt !== 'other') [ type, make, model ] = mmt.split(':')
+        if (year) year = year + ''
+        if (length) length = `${length} ft`
+
         y -= fieldHeight / 2
         page5.drawLine({
             start: { x: marginX, y },
@@ -1974,11 +1982,111 @@ export default async (application, addresses, violations, accidents, employers) 
             font: font.section, size: size.section, color: color.section,
         })
 
-        y -= gap
+        y -= fieldHeight / 1.7
+        vLineX = padding
+        text = 'Vehicle Type:'
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += textWidth
+
+        for (const vt in vhlTypes) {
+            vLineX += gap
+            text = vhlTypes[vt]
+            drawCheckBox(page5, marginX + vLineX, y, type === vt)
+            page5.drawText(text, {
+                x: marginX + vLineX + 15, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += 15 + textWidth
+        }
+
+        y -= fieldHeight / 1.7
+        text = 'Make:'
+        page5.drawText(text, {
+            x: marginX + padding, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX = textWidth + padding
+        page5.drawText(make || '', {
+            x: marginX + vLineX + padding * 2, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX + padding, y: y - 1 },
+            end: { x: marginX + vLineX + padding + 90, y: y - 1 },
+            color: color.line,
+        })
+        vLineX += padding + 90 + gap
+        text = 'Model:'
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += textWidth
+        page5.drawText(model || '', {
+            x: marginX + vLineX + padding * 2, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX + padding, y: y - 1 },
+            end: { x: marginX + vLineX + padding + 120, y: y - 1 },
+            color: color.line,
+        })
+        vLineX += padding + 120 + gap
+        text = 'Year:'
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += textWidth
+        page5.drawText(year || '', {
+            x: marginX + vLineX + padding * 2, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX + padding, y: y - 1 },
+            end: { x: marginX + vLineX + padding + 50, y: y - 1 },
+            color: color.line,
+        })
+        vLineX += padding + 50 + gap
+        text = 'Length:'
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += textWidth
+        page5.drawText(length || '', {
+            x: marginX + vLineX + padding * 2, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX + padding, y: y - 1 },
+            end: { x: marginX + vLineX + padding + 80, y: y - 1 },
+            color: color.line,
+        })
+    }
+
+    /* Section 12 */
+    {
+        console.log(application.beneficiary)
+        y -= fieldHeight / 2
         page5.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
-            color: color.line,
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page5.drawText('Section 12: Occupational Accident Insurance (Beneficiary)', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
         })
     }
 
