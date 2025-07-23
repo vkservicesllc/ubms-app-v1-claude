@@ -984,7 +984,7 @@ class ApplicationForm {
         target: 'startPref',
         type: 'select',
         name: 'startPref',
-        data: { '0': 'Right away', '1': 'In 1 week', '2': 'In 2 weeks', '3': 'In 3 weeks', '4': 'In 4 weeks' },
+        data: Application.startPrefList,
         emptyOpt,
         required,
         label: 'Preference to start in:',

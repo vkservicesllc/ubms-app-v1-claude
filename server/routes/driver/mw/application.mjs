@@ -1025,13 +1025,7 @@ export const applicationSummary = async (req, res) => {
             application.preference.equipmentType.forEach(type => equipmentList.push(Application.vehicleList.semi[type]))
             hbs.application.preference.equipmentList = equipmentList.join(', ')
         }
-        hbs.application.preference.startPref = {
-            '0': 'Right away',
-            '1': 'In 1 week',
-            '2': 'In 2 weeks',
-            '3': 'In 3 weeks',
-            '4': 'In 4 weeks',
-        }[application.preference.startPref]
+        hbs.application.preference.startPref = Application.startPrefList[application.preference.startPref]
 
         if (application.activeBusiness) {
             hbs.application.business.state = Address.stateList[application.business.state]

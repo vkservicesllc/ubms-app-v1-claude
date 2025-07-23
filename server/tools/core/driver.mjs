@@ -1493,6 +1493,14 @@ class Application {
         },
     }
 
+    static startPrefList = {
+        '0': 'Right away',
+        '1': 'In 1 week',
+        '2': 'In 2 weeks',
+        '3': 'In 3 weeks',
+        '4': 'In 4 weeks',
+    }
+
 
     static #algorithm = 'SHA-256'
 

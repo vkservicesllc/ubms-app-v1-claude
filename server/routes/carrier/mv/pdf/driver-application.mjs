@@ -2,7 +2,7 @@ import moment from 'moment'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import pdfParams from '../../../../settings/pdf-lib.mjs'
 import { ssn as formatSsn, tel as formatTel } from '../../../../../client/global/modules/tools/utils/formatter.mjs'
-import { Application } from '../../../../tools/core/driver.mjs'
+import Driver, { Application } from '../../../../tools/core/driver.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
 import Geography from '../../../../../client/global/modules/tools/core/geography.mjs'
 import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools/utils/sorter.mjs'
@@ -1720,15 +1720,168 @@ export default async (application, addresses, violations, accidents, employers) 
             thickness: 2, color: color.line,
         })
         y -= 14
-        page5.drawText('Section 10: Driving Preference', {
+        page5.drawText('Section 10: Employment and Driving Preferences', {
             x: marginX + padding, y,
             font: font.section, size: size.section, color: color.section,
         })
-console.log(application.preference)
+
+        y -= gap
+        page5.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
+
+        /* Row 1 */
+        {
+            const { position } = application
+            const positions = Driver.positionList
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page5.drawText('Position', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
+                font: font.section, size: size.section, color: color.section,
+            })
+            vLineX = (width - marginX * 2) / 4
+            page5.drawLine({
+                start: { x: vLineX + marginX, y },
+                end: { x: vLineX + marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+
+            for (const p in positions) {
+                vLineX += gap
+                text = positions[p]
+                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, position[0] === p)
+                page5.drawText(text, {
+                    x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
+                    font: font.label, size: size.label, color: color.label,
+                })
+                textWidth = font.label.widthOfTextAtSize(text, size.label)
+                vLineX += 15 + textWidth
+            }
+
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            y -= fieldHeight
+            page5.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
+ 
+        /* Row 2 */
+        {
+            const haulRegions = Application.haulRegionList
+            let { haulRegion } = application.preference
+            if (!haulRegion) haulRegion = []
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page5.drawText('Haul Region', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
+                font: font.section, size: size.section, color: color.section,
+            })
+            vLineX = (width - marginX * 2) / 4
+            page5.drawLine({
+                start: { x: vLineX + marginX, y },
+                end: { x: vLineX + marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+
+            for (const region in haulRegions) {
+                vLineX += gap
+                text = haulRegions[region]
+                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, haulRegion.includes(region))
+                page5.drawText(text, {
+                    x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
+                    font: font.label, size: size.label, color: color.label,
+                })
+                textWidth = font.label.widthOfTextAtSize(text, size.label)
+                vLineX += 15 + textWidth
+            }
+
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            y -= fieldHeight
+            page5.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
+ 
+        /* Row 3 */
+        {
+            const semiList = Application.vehicleList.semi
+            const semiIdx = [0, 1, 2, 3]
+            let { equipmentType } = application.preference
+            if (!equipmentType) equipmentType = []
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page5.drawText('Equipment Type (Semi)', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
+                font: font.section, size: size.section, color: color.section,
+            })
+            vLineX = (width - marginX * 2) / 4
+            page5.drawLine({
+                start: { x: vLineX + marginX, y },
+                end: { x: vLineX + marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+
+            let i = 0
+            for (const type in semiList) {
+                if (!semiIdx.includes(i++)) continue
+
+                vLineX += gap
+                text = semiList[type]
+                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, equipmentType.includes(type))
+                page5.drawText(text, {
+                    x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
+                    font: font.label, size: size.label, color: color.label,
+                })
+                textWidth = font.label.widthOfTextAtSize(text, size.label)
+                vLineX += 15 + textWidth
+            }
+            
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            y -= fieldHeight
+            page5.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
 
         {
             const { operType, teamName, teamPhone } = application.preference
-            y -= fieldHeight / 1.7
+            y -= fieldHeight / 1.6
             drawCheckBox(page5, marginX + padding, y, operType === 's')
             text = 'Solo'
             page5.drawText(text, {
@@ -1779,95 +1932,54 @@ console.log(application.preference)
                 color: color.line,
             })
         }
+
+        {
+            const startPrefs = Application.startPrefList
+            const { startPref } = application.preference
+            y -= fieldHeight / 1.6
+            text = 'When would you prefer to start?'
+            page5.drawText(text, {
+                x: marginX + padding, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX = padding + textWidth + gap
+
+            for (const sp in startPrefs) {
+                vLineX += gap
+                text = startPrefs[sp]
+                drawCheckBox(page5, marginX + vLineX, y, startPref === sp)
+                page5.drawText(text, {
+                    x: marginX + vLineX + 15, y: y + 1,
+                    font: font.label, size: size.label, color: color.label,
+                })
+                textWidth = font.label.widthOfTextAtSize(text, size.label)
+                vLineX += 15 + textWidth
+            }
+        }
+
+    }
+
+    /* Section 11 */
+    {
+        y -= fieldHeight / 2
+        page5.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page5.drawText('Section 11: Personal Motor Vehicle', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
+
         y -= gap
         page5.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
             color: color.line,
         })
- 
-        /* Row 1 */
-        {
-            const haulRegions = Application.haulRegionList
-            let { haulRegion } = application.preference
-            if (!haulRegion) haulRegion = []
-            if (outsideBorder)
-                page5.drawLine({
-                    start: { x: marginX, y },
-                    end: { x: marginX, y: y - fieldHeight },
-                    color: color.line,
-                })
-            page5.drawText('Haul Region', {
-                x: marginX + padding, y: y - fieldHeight / 1.65,
-                font: font.section, size: size.section, color: color.section,
-            })
-            vLineX = (width - marginX * 2) / 4
-            page5.drawLine({
-                start: { x: vLineX + marginX, y },
-                end: { x: vLineX + marginX, y: y - fieldHeight },
-                color: color.line,
-            })
-
-            for (const region in haulRegions) {
-                vLineX += gap
-                text = haulRegions[region]
-                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, haulRegion.includes(region))
-                page5.drawText(text, {
-                    x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
-                    font: font.label, size: size.label, color: color.label,
-                })
-                textWidth = font.label.widthOfTextAtSize(text, size.label)
-                vLineX += 15 + textWidth
-            }
-
-            if (outsideBorder)
-                page5.drawLine({
-                    start: { x: width - marginX, y },
-                    end: { x: width - marginX, y: y - fieldHeight },
-                    color: color.line,
-                })
-            y -= fieldHeight
-            page5.drawLine({
-                start: { x: marginX, y },
-                end: { x: width - marginX, y },
-                color: color.line,
-            })
-        }
- 
-        /* Row 2 */
-        {
-            //
-            if (outsideBorder)
-                page5.drawLine({
-                    start: { x: marginX, y },
-                    end: { x: marginX, y: y - fieldHeight },
-                    color: color.line,
-                })
-            page5.drawText('Equipment Type (Semi)', {
-                x: marginX + padding, y: y - fieldHeight / 1.65,
-                font: font.section, size: size.section, color: color.section,
-            })
-            vLineX = (width - marginX * 2) / 4
-            page5.drawLine({
-                start: { x: vLineX + marginX, y },
-                end: { x: vLineX + marginX, y: y - fieldHeight },
-                color: color.line,
-            })
-            
-            if (outsideBorder)
-                page5.drawLine({
-                    start: { x: width - marginX, y },
-                    end: { x: width - marginX, y: y - fieldHeight },
-                    color: color.line,
-                })
-            y -= fieldHeight
-            page5.drawLine({
-                start: { x: marginX, y },
-                end: { x: width - marginX, y },
-                color: color.line,
-            })
-        }
-
     }
 
 
