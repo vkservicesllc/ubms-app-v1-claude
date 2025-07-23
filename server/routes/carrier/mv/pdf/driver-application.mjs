@@ -70,7 +70,6 @@ export default async (application, addresses, violations, accidents, employers) 
 
     vLineXOffsets = [3.22, 2.25, 1.46, 1.315, 1.177]
 
-
     /* Section 1 */
     {
         page1.drawLine({
@@ -290,7 +289,6 @@ export default async (application, addresses, violations, accidents, employers) 
 
     }
 
-
     /* Section 2 */
     {
         addresses = sortArrayByObjectKey(addresses, 'since', false)
@@ -408,7 +406,7 @@ export default async (application, addresses, violations, accidents, employers) 
         })
         textWidth += font.label.widthOfTextAtSize(text, size.label)
         page1.drawText(country ? Geography.countryList[country] : '', {
-            x: marginX + padding + 15 + textWidth + gap * 1.4 + padding, y: y + 2,
+            x: marginX + padding + 15 + textWidth + gap * 1.4 + padding * 2, y: y + 2,
             font: font.value, size: size.value, color: color.value,
         })
         page1.drawLine({
@@ -417,7 +415,6 @@ export default async (application, addresses, violations, accidents, employers) 
             color: color.line,
         })
     }
-
 
     /* Section 3 */
     {
@@ -803,7 +800,6 @@ export default async (application, addresses, violations, accidents, employers) 
 
     }
 
-
     /* Section 4 */
     {
         const offsetX = 115
@@ -943,7 +939,6 @@ export default async (application, addresses, violations, accidents, employers) 
     })
     y = height - marginY
 
-
     /* Section 5 */
     {
         violations = sortArrayByObjectKey(violations, 'citedOn', false)
@@ -1032,7 +1027,6 @@ export default async (application, addresses, violations, accidents, employers) 
             })
         }
     }
-
 
     /* Section 6 */
     {
@@ -1142,7 +1136,6 @@ export default async (application, addresses, violations, accidents, employers) 
             })
         }
     }
-
 
     /* Section 7 */
     {
@@ -1386,7 +1379,6 @@ export default async (application, addresses, violations, accidents, employers) 
         }
 
     }
-
 
     /* Section 8 */
     {
@@ -1707,6 +1699,175 @@ export default async (application, addresses, violations, accidents, employers) 
             }
 
         }
+    }
+
+
+    /* PAGE 5 */
+    const page5 = pdfDoc.addPage([width, height])
+    text = `Page 5 of ${totalPages}`
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page5.drawText(text, {
+        x: width - marginX - textWidth, y: marginY,
+        font: font.label, size: size.label / 1.2, color: color.label,
+    })
+    y = height - marginY
+
+    /* Section 10 */
+    {
+        page5.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page5.drawText('Section 10: Driving Preference', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
+console.log(application.preference)
+
+        {
+            const { operType, teamName, teamPhone } = application.preference
+            y -= fieldHeight / 1.7
+            drawCheckBox(page5, marginX + padding, y, operType === 's')
+            text = 'Solo'
+            page5.drawText(text, {
+                x: marginX + padding + 15, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX = padding + textWidth + 15 + gap * .8
+            drawCheckBox(page5, marginX + vLineX, y, operType === 't')
+            text = 'Team'
+            page5.drawText(text, {
+                x: marginX + vLineX + 15, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += padding + textWidth + 15 + gap * .8
+            text = "Partner's Full Name:"
+            page5.drawText(text, {
+                x: marginX + vLineX, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += padding + textWidth
+            page5.drawText(teamName || '', {
+                x: marginX + vLineX + padding, y: y + 2,
+                font: font.value, size: size.value, color: color.value,
+            })
+            page5.drawLine({
+                start: { x: marginX + vLineX, y: y - 1 },
+                end: { x: marginX + vLineX + 170, y: y - 1 },
+                color: color.line,
+            })
+            vLineX += padding + 170 + gap * .8
+            text = "Partner's Phone:"
+            page5.drawText(text, {
+                x: marginX + vLineX, y: y + 1,
+                font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            vLineX += padding + textWidth
+            page5.drawText(teamPhone ? formatTel(teamPhone) : '', {
+                x: marginX + vLineX + padding, y: y + 2,
+                font: font.value, size: size.value, color: color.value,
+            })
+            page5.drawLine({
+                start: { x: marginX + vLineX, y: y - 1 },
+                end: { x: marginX + vLineX + 95, y: y - 1 },
+                color: color.line,
+            })
+        }
+        y -= gap
+        page5.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
+ 
+        /* Row 1 */
+        {
+            const haulRegions = Application.haulRegionList
+            let { haulRegion } = application.preference
+            if (!haulRegion) haulRegion = []
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page5.drawText('Haul Region', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
+                font: font.section, size: size.section, color: color.section,
+            })
+            vLineX = (width - marginX * 2) / 4
+            page5.drawLine({
+                start: { x: vLineX + marginX, y },
+                end: { x: vLineX + marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+
+            for (const region in haulRegions) {
+                vLineX += gap
+                text = haulRegions[region]
+                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, haulRegion.includes(region))
+                page5.drawText(text, {
+                    x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
+                    font: font.label, size: size.label, color: color.label,
+                })
+                textWidth = font.label.widthOfTextAtSize(text, size.label)
+                vLineX += 15 + textWidth
+            }
+
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            y -= fieldHeight
+            page5.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
+ 
+        /* Row 2 */
+        {
+            //
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: marginX, y },
+                    end: { x: marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            page5.drawText('Equipment Type (Semi)', {
+                x: marginX + padding, y: y - fieldHeight / 1.65,
+                font: font.section, size: size.section, color: color.section,
+            })
+            vLineX = (width - marginX * 2) / 4
+            page5.drawLine({
+                start: { x: vLineX + marginX, y },
+                end: { x: vLineX + marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+            
+            if (outsideBorder)
+                page5.drawLine({
+                    start: { x: width - marginX, y },
+                    end: { x: width - marginX, y: y - fieldHeight },
+                    color: color.line,
+                })
+            y -= fieldHeight
+            page5.drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
+        }
+
     }
 
 
