@@ -1,3 +1,10 @@
+const fs = require('fs')
+const path = require('path')
+
+const fontPath = {
+    lavishlyYours: path.join(__dirname, '../fonts/hurricane/regular.ttf'),
+}
+
 export default {
     letter: {
         width: 612,
@@ -5,4 +12,8 @@ export default {
         marginX: 35,
         marginY: 35,
     },
+}
+
+export class CustomFonts {
+    static LavishlyYours = fs.readFileSync(fontPath.lavishlyYours)
 }

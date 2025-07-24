@@ -1,6 +1,7 @@
 import moment from 'moment'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import pdfParams from '../../../../settings/pdf-lib.mjs'
+import fontkit from '@pdf-lib/fontkit'
+import pdfParams, { CustomFonts } from '../../../../settings/pdf-lib.mjs'
 import { ssn as formatSsn, tel as formatTel, ein as formatEin } from '../../../../../client/global/modules/tools/utils/formatter.mjs'
 import Driver, { Application } from '../../../../tools/core/driver.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
@@ -20,10 +21,12 @@ export default async (application, addresses, violations, accidents, employers) 
     if (!employers) employers = []
 
     const pdfDoc = await PDFDocument.create()
+    pdfDoc.registerFontkit(fontkit)
 
     const applicant = new Person(application)
     const title = applicant.lastName ? `${applicant.fullName()} - Driver Application` : 'Driver Application Blank'
     pdfDoc.setTitle(title)
+    const signature = applicant.lastName ? applicant.fullName() : ''
 
     const { width, height, marginX, marginY } = pdfParams.letter
     let y = height - marginY, vLineX, vLineXOffsets, text, textWidth, lines
@@ -32,17 +35,20 @@ export default async (application, addresses, violations, accidents, employers) 
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         label: await pdfDoc.embedFont(StandardFonts.Helvetica),
         value: await pdfDoc.embedFont(StandardFonts.Helvetica),
+        signature: await pdfDoc.embedFont(CustomFonts.LavishlyYours),
     }
     const size = {
         section: 9.5,
         label: 8.9,
         value: 11.2,
+        signature: 20,
     }
     const color = {
         line: rgb(0.2, 0.2, 0.2),
         section: rgb(0.1, 0.1, 0.1),
         label: rgb(0.2, 0.2, 0.2),
         value: rgb(0, 0, 0),
+        signature: rgb(0, 0, 1),
     }
     const offset = {
         labelY: 12,
@@ -2117,7 +2123,7 @@ export default async (application, addresses, violations, accidents, employers) 
     /* Section 12 */
     {
         const { activeBusiness } = application
-        const { busName, state, ein } = application.business
+        const { busName, state, ein } = application.business || {}
         y -= fieldHeight / 2
         page5.drawLine({
             start: { x: marginX, y },
@@ -2397,34 +2403,32 @@ export default async (application, addresses, violations, accidents, employers) 
         })
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += padding + textWidth
-        page5.drawText('', {
+        page5.drawText(signature, {
+            x: marginX + vLineX + padding, y: y + 2,
+            font: font.signature, size: size.signature, color: color.signature,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX, y: y - 1 },
+            end: { x: marginX + vLineX + 250, y: y - 1 },
+            color: color.line,
+        })
+        vLineX += 250 + gap
+        text = 'Application Date'
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += padding + textWidth
+        page5.drawText(application.finishedAt ? moment(application.finishedAt).format(dateFormat) : '', {
             x: marginX + vLineX + padding, y: y + 2,
             font: font.value, size: size.value, color: color.value,
         })
         page5.drawLine({
             start: { x: marginX + vLineX, y: y - 1 },
-            end: { x: marginX + vLineX + 180, y: y - 1 },
+            end: { x: marginX + vLineX + 100, y: y - 1 },
             color: color.line,
         })
-
-        // vLineX = padding
-        // y -= fieldHeight / 1.2
-        // text = "Application Date:"
-        // page5.drawText(text, {
-        //     x: marginX + vLineX, y: y + 1,
-        //     font: font.label, size: size.label, color: color.label,
-        // })
-        // textWidth = font.label.widthOfTextAtSize(text, size.label)
-        // vLineX += padding + textWidth
-        // page5.drawText('', {
-        //     x: marginX + vLineX + padding, y: y + 2,
-        //     font: font.value, size: size.value, color: color.value,
-        // })
-        // page5.drawLine({
-        //     start: { x: marginX + vLineX, y: y - 1 },
-        //     end: { x: marginX + vLineX + 180, y: y - 1 },
-        //     color: color.line,
-        // })
 
 
     return await pdfDoc.save()
