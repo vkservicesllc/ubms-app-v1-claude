@@ -451,7 +451,7 @@ export default async (application, addresses, violations, accidents, employers) 
         })
         page1.drawLine({
             start: { x: marginX + padding + 15 + textWidth + 15 + padding / 2, y: y - 1 },
-            end: { x: marginX + padding + 15 + textWidth + 15 + padding / 2 + 150, y: y - 1 },
+            end: { x: marginX + padding + 15 + textWidth + 15 + padding / 2 + 185, y: y - 1 },
             color: color.line,
         })
     }
