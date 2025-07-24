@@ -672,7 +672,7 @@ class User extends Person {
 
 
             this.url = async (session, lastUrl) => {
-                if (lastUrl.slice(0, 5) === '/api/') return
+                if (lastUrl.slice(0, 5) === '/api/' || lastUrl.includes('/files/')) return
 
                 const { branch, siteId } = session
                 const userId = await this.id()

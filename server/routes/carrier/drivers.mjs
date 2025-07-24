@@ -30,7 +30,7 @@ const navItems = (permissions, DS, activeIdx) => {
     const params = {
         'd:drv/lds': [ '/drivers/pre-applications', 'Pre-Applications' ],
         'd:drv/apl': [ '/drivers/applications', 'Applications' ],
-        'd:drv/emp': [ '/drivers/pre-employments', 'Pre-Employments' ],
+        'd:drv/emp': [ '/drivers/previous-employments', 'Previous Employments' ],
         'd:drv/drv': [ '/drivers/hired', 'Hired Contractors' ],
         'd:drv/agr': [ '/drivers/pay-agreements', 'Pay Agreements' ],
         'd:drv/lvn': [ '/drivers/leaving', 'Leaving Process' ],
@@ -70,6 +70,26 @@ router.get('/', User.verify, Team.verify, async (req, res) => {
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS))
 
         res.render(key, hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/files/application', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+
+        const permissions = await user.permissions(res.session)
+        if (!DS && !permissions['f:drv/apl'].includes('2'))
+            return respond404(res)
+
+        const pdfBytes = await createApplicationPdf()
+
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.send(Buffer.from(pdfBytes))
     } catch (err) {
         throwErr.server(res, null, err)
     }
@@ -194,7 +214,7 @@ router.get('/application/:formId/files/application', User.verify, Team.verify, a
         const { DS } = user
 
         const permissions = await user.permissions(res.session)
-        if (!DS && !permissions['f:drv/apl'].includes('2'))
+        if (!DS && !permissions['f:drv/apl'].includes('2') && !permissions['f:drv/apl'].includes('3')&& ! permissions['f:drv/apl'].includes('4'))
             return res.redirect(aplUrl)
 
         const application = await Application.data(res.session, { formId })
@@ -535,7 +555,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 })
 
 
-router.get('/pre-employments', User.verify, Team.verify, async (req, res) => {
+router.get('/previous-employments', User.verify, Team.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -543,9 +563,9 @@ router.get('/pre-employments', User.verify, Team.verify, async (req, res) => {
         if (!inPEnvironment('d:drv/emp', permissions, DS))
             return res.redirect(res.session.defUrl)
 
-        const key = 'drivers.pre-employments'
+        const key = 'drivers.previous-employments'
         let { hbs } = res
-        hbs = await hbs.set(key, { titlePfx: 'Driver Pre-Employments' })
+        hbs = await hbs.set(key, { titlePfx: "Applicants' Previous Employments" })
 
         const { active } = hbs.nav
         hbs.nav.left.drivers = active

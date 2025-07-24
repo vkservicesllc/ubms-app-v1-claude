@@ -1,4 +1,5 @@
 function sortArrayByObjectKey(array, key, asc = true) {
+    if (!array || !array.length) return []
 
     return array.sort(function(a, b) {
         var x = a[key]

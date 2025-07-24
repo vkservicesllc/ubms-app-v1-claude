@@ -9,7 +9,21 @@ import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools
 
 
 export default async (application, addresses, violations, accidents, employers) => {
+    if (!application) application = {
+        legalStatus: [], position: [],
+        address: {}, dl: {}, mec: {}, experience: {}, preference: {},
+        business: {}, vehicle: {}, beneficiary: {}, emergency: {},
+    }
+    if (!addresses) addresses = []
+    if (!violations) violations = []
+    if (!accidents) accidents = []
+    if (!employers) employers = []
+
     const pdfDoc = await PDFDocument.create()
+
+    const applicant = new Person(application)
+    const title = applicant.lastName ? `${applicant.fullName()} - Driver Application` : 'Driver Application Blank'
+    pdfDoc.setTitle(title)
 
     const { width, height, marginX, marginY } = pdfParams.letter
     let y = height - marginY, vLineX, vLineXOffsets, text, textWidth, lines
@@ -42,7 +56,7 @@ export default async (application, addresses, violations, accidents, employers) 
             borderWidth: 1, borderColor: color.line,
         })
 
-        if (checked) {
+        if (checked === true || checked === 1) {
             page.drawLine({
                 start: { x: x + 2, y: y + 5 },
                 end: { x: x + 4, y: y + 1.5 },
@@ -123,7 +137,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(firstName, {
+            page1.drawText(firstName || '', {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -141,7 +155,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(lastName + (suffix ? `, ${suffix}` : ''), {
+            page1.drawText(lastName ? lastName + (suffix ? `, ${suffix}` : '') : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -172,7 +186,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(moment(dob).format(dateFormat), {
+            page1.drawText(dob ? moment(dob).format(dateFormat) : '', {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -181,7 +195,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(gender[1], {
+            page1.drawText(gender ? gender[1] : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -190,7 +204,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(formatSsn(ssn), {
+            page1.drawText(ssn ? formatSsn(ssn) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -199,7 +213,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(Person.maritalList[marital], {
+            page1.drawText(marital ? Person.maritalList[marital] : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -213,7 +227,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(formatTel(phone), {
+            page1.drawText(phone ? formatTel(phone) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -244,7 +258,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(address1, {
+            page1.drawText(address1 || '', {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -262,7 +276,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(city, {
+            page1.drawText(city || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -271,7 +285,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(state[0], {
+            page1.drawText(state ? state[0] : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -280,7 +294,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(zip, {
+            page1.drawText(zip || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -289,7 +303,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(moment(addrSince).format(dateFormat), {
+            page1.drawText(addrSince ? moment(addrSince).format(dateFormat) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -558,7 +572,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(state, {
+            page1.drawText(state || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -567,7 +581,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(number, {
+            page1.drawText(number || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -585,7 +599,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(moment(issuedOn).format(dateFormat), {
+            page1.drawText(issuedOn ? moment(issuedOn).format(dateFormat) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -594,7 +608,7 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(moment(expiresOn).format(dateFormat), {
+            page1.drawText(expiresOn ? moment(expiresOn).format(dateFormat) : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -704,7 +718,7 @@ export default async (application, addresses, violations, accidents, employers) 
             })
             vLineX += width - marginX - offsetX
             text = 'Yes'
-            drawCheckBox(page1, marginX + vLineX, y, denied)
+            drawCheckBox(page1, marginX + vLineX, y, denied === true)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -712,7 +726,7 @@ export default async (application, addresses, violations, accidents, employers) 
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + padding
             text = 'No'
-            drawCheckBox(page1, marginX + vLineX + 2, y, !denied)
+            drawCheckBox(page1, marginX + vLineX + 2, y, denied === false)
             page1.drawText(text, {
                 x: marginX + vLineX + 15 + 2, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -744,7 +758,7 @@ export default async (application, addresses, violations, accidents, employers) 
             })
             vLineX += width - marginX - offsetX
             text = 'Yes'
-            drawCheckBox(page1, marginX + vLineX, y, revoked)
+            drawCheckBox(page1, marginX + vLineX, y, revoked === true)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -752,7 +766,7 @@ export default async (application, addresses, violations, accidents, employers) 
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + padding
             text = 'No'
-            drawCheckBox(page1, marginX + vLineX + 2, y, !revoked)
+            drawCheckBox(page1, marginX + vLineX + 2, y, revoked === false)
             page1.drawText(text, {
                 x: marginX + vLineX + 15 + 2, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -784,7 +798,7 @@ export default async (application, addresses, violations, accidents, employers) 
             })
             vLineX += width - marginX - offsetX
             text = 'Yes'
-            drawCheckBox(page1, marginX + vLineX, y, underMeds)
+            drawCheckBox(page1, marginX + vLineX, y, underMeds === true)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -792,7 +806,7 @@ export default async (application, addresses, violations, accidents, employers) 
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + padding
             text = 'No'
-            drawCheckBox(page1, marginX + vLineX + 2, y, !underMeds)
+            drawCheckBox(page1, marginX + vLineX + 2, y, underMeds === false)
             page1.drawText(text, {
                 x: marginX + vLineX + 15 + 2, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -844,7 +858,7 @@ export default async (application, addresses, violations, accidents, employers) 
         })
         vLineX += width - marginX - offsetX
         text = 'Yes'
-        drawCheckBox(page1, marginX + vLineX, y, dui)
+        drawCheckBox(page1, marginX + vLineX, y, dui === true)
         page1.drawText(text, {
             x: marginX + vLineX + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -852,7 +866,7 @@ export default async (application, addresses, violations, accidents, employers) 
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += 15 + textWidth + padding
         text = 'No'
-        drawCheckBox(page1, marginX + vLineX + 2, y, !dui)
+        drawCheckBox(page1, marginX + vLineX + 2, y, dui === false)
         page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -888,7 +902,7 @@ export default async (application, addresses, violations, accidents, employers) 
         })
         vLineX += width - marginX - offsetX
         text = 'Yes'
-        drawCheckBox(page1, marginX + vLineX, y, criminal)
+        drawCheckBox(page1, marginX + vLineX, y, criminal === true)
         page1.drawText(text, {
             x: marginX + vLineX + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -896,7 +910,7 @@ export default async (application, addresses, violations, accidents, employers) 
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += 15 + textWidth + padding
         text = 'No'
-        drawCheckBox(page1, marginX + vLineX + 2, y, !criminal)
+        drawCheckBox(page1, marginX + vLineX + 2, y, criminal === false)
         page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -933,7 +947,7 @@ export default async (application, addresses, violations, accidents, employers) 
         })
         vLineX += width - marginX - offsetX
         text = 'Yes'
-        drawCheckBox(page1, marginX + vLineX, y, dotDat)
+        drawCheckBox(page1, marginX + vLineX, y, dotDat === true)
         page1.drawText(text, {
             x: marginX + vLineX + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -941,7 +955,7 @@ export default async (application, addresses, violations, accidents, employers) 
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += 15 + textWidth + padding
         text = 'No'
-        drawCheckBox(page1, marginX + vLineX + 2, y, !dotDat)
+        drawCheckBox(page1, marginX + vLineX + 2, y, dotDat === false)
         page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -1515,18 +1529,17 @@ export default async (application, addresses, violations, accidents, employers) 
                     thickness: 2, color: color.line,
                 })
                 y -= 14
-                text = 'Section 9: Previous employments for the past ten years'
+                text = 'Section 9: Previous Employments'
                 emplPages[page].drawText(text, {
                     x: marginX + padding, y,
                     font: font.section, size: size.section, color: color.section,
                 })
-                if (i === 6) {
-                    textWidth = font.section.widthOfTextAtSize(text, size.section)
-                    emplPages[page].drawText('(continued)', {
-                        x: marginX + textWidth + gap, y,
-                        font: font.label, size: size.label / 1.2, color: color.label,
-                    })
-                }
+                textWidth = font.section.widthOfTextAtSize(text, size.section)
+                text = '(All jobs from the past 3 years and commercial experience from the past 10 years)'
+                emplPages[page].drawText(text, {
+                    x: marginX + textWidth + gap, y,
+                    font: font.label, size: size.label, color: color.label,
+                })
 
                 y -= gap
                 emplPages[page].drawLine({
@@ -1544,10 +1557,6 @@ export default async (application, addresses, violations, accidents, employers) 
                     startedOn, position, earnings, fmcsr, dotDat, leftOn, rfl,
                 } = prevEmployer
             )
-            if (employer) {
-                fmcsr = fmcsr ? 'Yes' : 'No'
-                dotDat = dotDat ? 'Yes' : 'No'
-            }
             if (!i || i % 2 === 0) vLineX = marginX
             else vLineX = (width - marginX * 2) / 2 + marginX
             if (outsideBorder)
@@ -1675,30 +1684,41 @@ export default async (application, addresses, violations, accidents, employers) 
                 x: vLineX + padding * 2, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
+            vLineX 
             y -= fieldHeight
             y += 1
-            emplPages[page].drawText('Subject to:', {
-                x: vLineX + padding * 2, y: y - offset.labelY,
-                font: font.label, size: size.label, color: color.label,
+            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2, fmcsr)
+            emplPages[page].drawText("Subject to FMCSR's?", {
+                x: vLineX + padding * 2 + 15, y: y - offset.labelY,
+                font: font.label, size: size.label * .9, color: color.label,
             })
-            vLineX += 75
-            emplPages[page].drawText('FMCSR', {
-                x: vLineX + padding * 2, y: y - offset.labelY,
-                font: font.label, size: size.label, color: color.label,
+            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 13, dotDat)
+            emplPages[page].drawText('Subject to drug/alcohol testing requirements per 49 CFR Part 40', {
+                x: vLineX + padding * 2 + 15, y: y - offset.labelY - 13,
+                font: font.label, size: size.label * .9, color: color.label,
             })
-            emplPages[page].drawText(fmcsr || '', {
-                x: vLineX + padding * 2, y: y - offset.valueY,
-                font: font.value, size: size.value, color: color.value,
-            })
-            vLineX += 65
-            emplPages[page].drawText('DOT Drug/Alcohol Testing', {
-                x: vLineX + padding, y: y - offset.labelY,
-                font: font.label, size: size.label, color: color.label,
-            })
-            emplPages[page].drawText(dotDat || '', {
-                x: vLineX + padding, y: y - offset.valueY,
-                font: font.value, size: size.value, color: color.value,
-            })
+            // emplPages[page].drawText('Subject to:', {
+            //     x: vLineX + padding * 2, y: y - offset.labelY,
+            //     font: font.label, size: size.label, color: color.label,
+            // })
+            // vLineX += 75
+            // emplPages[page].drawText('FMCSR', {
+            //     x: vLineX + padding * 2, y: y - offset.labelY,
+            //     font: font.label, size: size.label, color: color.label,
+            // })
+            // emplPages[page].drawText(fmcsr || '', {
+            //     x: vLineX + padding * 2, y: y - offset.valueY,
+            //     font: font.value, size: size.value, color: color.value,
+            // })
+            // vLineX += 65
+            // emplPages[page].drawText('DOT Drug/Alcohol Testing', {
+            //     x: vLineX + padding, y: y - offset.labelY,
+            //     font: font.label, size: size.label, color: color.label,
+            // })
+            // emplPages[page].drawText(dotDat || '', {
+            //     x: vLineX + padding, y: y - offset.valueY,
+            //     font: font.value, size: size.value, color: color.value,
+            // })
 
             y += fieldHeight * 6
             y -= 5
@@ -2201,7 +2221,7 @@ export default async (application, addresses, violations, accidents, employers) 
             x: marginX + padding, y: y - offset.labelY,
             font: font.label, size: size.label, color: color.label,
         })
-        page5.drawText(person.fullName('FMLs'), {
+        page5.drawText(person.fullName('FMLs') || '', {
             x: marginX + padding, y: y - offset.valueY,
             font: font.value, size: size.value, color: color.value,
         })
@@ -2210,7 +2230,7 @@ export default async (application, addresses, violations, accidents, employers) 
             x: marginX + vLineX + padding, y: y - offset.labelY,
             font: font.label, size: size.label, color: color.label,
         })
-        page5.drawText(otherRel || relation, {
+        page5.drawText(otherRel || relation || '', {
             x: marginX + vLineX + padding, y: y - offset.valueY,
             font: font.value, size: size.value, color: color.value,
         })
@@ -2219,7 +2239,7 @@ export default async (application, addresses, violations, accidents, employers) 
             x: marginX + vLineX + padding, y: y - offset.labelY,
             font: font.label, size: size.label, color: color.label,
         })
-        page5.drawText(formatTel(phone), {
+        page5.drawText(phone ? formatTel(phone) : '', {
             x: marginX + vLineX + padding, y: y - offset.valueY,
             font: font.value, size: size.value, color: color.value,
         })
@@ -2269,7 +2289,7 @@ export default async (application, addresses, violations, accidents, employers) 
         })
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += padding + textWidth
-        page5.drawText(name, {
+        page5.drawText(name || '', {
             x: marginX + vLineX + padding, y: y + 2,
             font: font.value, size: size.value, color: color.value,
         })
@@ -2287,7 +2307,7 @@ export default async (application, addresses, violations, accidents, employers) 
         })
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += padding + textWidth
-        page5.drawText(formatTel(phone), {
+        page5.drawText(phone ? formatTel(phone) : '', {
             x: marginX + vLineX + padding, y: y + 2,
             font: font.value, size: size.value, color: color.value,
         })
@@ -2367,6 +2387,44 @@ export default async (application, addresses, violations, accidents, employers) 
         })
         y -= gap * 1.2
     })
+
+        vLineX = padding
+        y -= fieldHeight * 1.2
+        text = "Applicant's Signature:"
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += padding + textWidth
+        page5.drawText('', {
+            x: marginX + vLineX + padding, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX, y: y - 1 },
+            end: { x: marginX + vLineX + 180, y: y - 1 },
+            color: color.line,
+        })
+
+        // vLineX = padding
+        // y -= fieldHeight / 1.2
+        // text = "Application Date:"
+        // page5.drawText(text, {
+        //     x: marginX + vLineX, y: y + 1,
+        //     font: font.label, size: size.label, color: color.label,
+        // })
+        // textWidth = font.label.widthOfTextAtSize(text, size.label)
+        // vLineX += padding + textWidth
+        // page5.drawText('', {
+        //     x: marginX + vLineX + padding, y: y + 2,
+        //     font: font.value, size: size.value, color: color.value,
+        // })
+        // page5.drawLine({
+        //     start: { x: marginX + vLineX, y: y - 1 },
+        //     end: { x: marginX + vLineX + 180, y: y - 1 },
+        //     color: color.line,
+        // })
 
 
     return await pdfDoc.save()

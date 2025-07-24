@@ -32,9 +32,12 @@ const appliedOn = $(selector.id.hidden.appliedOn).val()
 const countEmplList = () => $emplList.children().length
 
 
-if ($(employedId.yes).is(':checked')) drawEmployerForms()
-
 let selected = false
+
+if ($(employedId.yes).is(':checked')) {
+    selected = true
+    drawEmployerForms()
+}
 
 inputEvent(employedId.yes, {
     onChange() {
