@@ -35,7 +35,7 @@ export default async (application, addresses, violations, accidents, employers) 
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         label: await pdfDoc.embedFont(StandardFonts.Helvetica),
         value: await pdfDoc.embedFont(StandardFonts.Helvetica),
-        signature: await pdfDoc.embedFont(CustomFonts.LavishlyYours),
+        signature: await pdfDoc.embedFont(CustomFonts.Hurricane),
     }
     const size = {
         section: 9.5,

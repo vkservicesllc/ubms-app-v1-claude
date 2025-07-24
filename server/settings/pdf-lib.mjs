@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 
 const fontPath = {
-    lavishlyYours: path.join(__dirname, '../fonts/hurricane/regular.ttf'),
+    hurricane: path.join(__dirname, '../fonts/hurricane/regular.ttf'),
 }
 
 export default {
@@ -15,5 +15,5 @@ export default {
 }
 
 export class CustomFonts {
-    static LavishlyYours = fs.readFileSync(fontPath.lavishlyYours)
+    static Hurricane = fs.readFileSync(fontPath.hurricane)
 }
