@@ -915,6 +915,7 @@ class ApplicationForm {
         group: 'emplRfl',
         type: 'textarea',
         name: 'rfl[]',
+        maxLength: 50,
         required,
         disabled,
         label: 'Reason for Leaving',
