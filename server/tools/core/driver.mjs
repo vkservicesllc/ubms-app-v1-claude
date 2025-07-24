@@ -1021,11 +1021,11 @@ class Application {
                 {
                     const {
                         activeLLC, busName, state, ein,
-                        llcAssistance, proposedName,
+                        llcAssistance, // proposedName,
                         mmt, type, make, model, year, length,
                     } = data
                     let mainData = { activeBusiness: activeLLC, businessAssist: llcAssistance }
-                    data = { busName, state, proposedName }
+                    data = { busName, state } // , proposedName }
 
                     if (this.step < 9) {
                         mainData = processData(mainData)
@@ -1043,7 +1043,7 @@ class Application {
                         })
                         data.ein = ein
 
-                        if (activeLLC === true) data.proposedName = null
+                        if (activeLLC === true) {} // data.proposedName = null
                         else {
                             data.busName = null
                             data.state = null
