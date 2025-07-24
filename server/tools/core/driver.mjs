@@ -441,27 +441,27 @@ class Application {
                 suffix: data.benefSuffix,
                 relation: relation,
                 otherRel: otherRel,
-                dob: data.benefDob,
-                sex: data.benefSex,
+                // dob: data.benefDob,
+                // sex: data.benefSex,
                 ssn: data.benefSsn ? stringifyBuffer(data.benefSsn) : null,
                 phone: data.benefPhone,
-                address1: data.benefAddress1,
-                address2: data.benefAddress2,
-                city: data.benefAddrCity,
-                state: data.benefAddrState,
-                zip: data.benefAddrZip,
+                // address1: data.benefAddress1,
+                // address2: data.benefAddress2,
+                // city: data.benefAddrCity,
+                // state: data.benefAddrState,
+                // zip: data.benefAddrZip,
             }
 
-            switch (this.beneficiary.sex) {
-                case 0:
-                case '0':
-                    this.beneficiary.gender = [ 'F', 'Female' ]
-                    break
-                case 1:
-                case '1':
-                    this.beneficiary.gender = [ 'M', 'Male' ]
-                    break
-            }
+            // switch (this.beneficiary.sex) {
+            //     case 0:
+            //     case '0':
+            //         this.beneficiary.gender = [ 'F', 'Female' ]
+            //         break
+            //     case 1:
+            //     case '1':
+            //         this.beneficiary.gender = [ 'M', 'Male' ]
+            //         break
+            // }
         }
 
         if (data.emergPhone)

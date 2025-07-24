@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import pdfParams from '../../../../settings/pdf-lib.mjs'
-import { ssn as formatSsn, tel as formatTel } from '../../../../../client/global/modules/tools/utils/formatter.mjs'
+import { ssn as formatSsn, tel as formatTel, ein as formatEin } from '../../../../../client/global/modules/tools/utils/formatter.mjs'
 import Driver, { Application } from '../../../../tools/core/driver.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
 import Geography from '../../../../../client/global/modules/tools/core/geography.mjs'
@@ -12,7 +12,7 @@ export default async (application, addresses, violations, accidents, employers) 
     const pdfDoc = await PDFDocument.create()
 
     const { width, height, marginX, marginY } = pdfParams.letter
-    let y = height - marginY, vLineX, vLineXOffsets, text, textWidth
+    let y = height - marginY, vLineX, vLineXOffsets, text, textWidth, lines
     const fieldHeight = 33, gap = 9, padding = 5.7, dateFormat = 'MM/DD/YYYY', outsideBorder = true
     const font = {
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
@@ -54,6 +54,26 @@ export default async (application, addresses, violations, accidents, employers) 
                 color: color.value,
             })
         }
+    }
+
+    const wrapText = (text, font, fontSize) => {
+        const maxWidth = width - marginX * 2 - padding * 2
+        const words = text.split(' ')
+        const lines = []
+        let line = ''
+
+        for (const word of words) {
+            const testLine = line ? `${line} ${word}` : word
+            const width = font.widthOfTextAtSize(testLine, fontSize)
+            if (width < maxWidth) line = testLine
+            else {
+                lines.push(line)
+                line = word
+            }
+        }
+        if (line) lines.push(line)
+
+        return lines
     }
 
     const totalPages = 5
@@ -2076,7 +2096,8 @@ export default async (application, addresses, violations, accidents, employers) 
 
     /* Section 12 */
     {
-        console.log(application.beneficiary)
+        const { activeBusiness } = application
+        const { busName, state, ein } = application.business
         y -= fieldHeight / 2
         page5.drawLine({
             start: { x: marginX, y },
@@ -2084,11 +2105,268 @@ export default async (application, addresses, violations, accidents, employers) 
             thickness: 2, color: color.line,
         })
         y -= 14
-        page5.drawText('Section 12: Occupational Accident Insurance (Beneficiary)', {
+        page5.drawText('Section 12: Limited Liability Company', {
             x: marginX + padding, y,
             font: font.section, size: size.section, color: color.section,
         })
+        y -= fieldHeight / 1.7
+        drawCheckBox(page5, marginX + padding, y, activeBusiness)
+        page5.drawText('Currently operating an active LLC', {
+            x: marginX + padding + 15, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        vLineX = padding
+        y -= fieldHeight / 1.7
+        text = "Business Name:"
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += padding + textWidth
+        page5.drawText(busName ? `${busName}, LLC` : '', {
+            x: marginX + vLineX + padding, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX, y: y - 1 },
+            end: { x: marginX + vLineX + 220, y: y - 1 },
+            color: color.line,
+        })
+        vLineX += padding + 220 + gap * .8
+        text = "State:"
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += padding + textWidth
+        page5.drawText(state || '', {
+            x: marginX + vLineX + padding, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX, y: y - 1 },
+            end: { x: marginX + vLineX + 50, y: y - 1 },
+            color: color.line,
+        })
+        vLineX += padding + 50 + gap * .8
+        text = "EIN:"
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += padding + textWidth
+        page5.drawText(ein ? formatEin(ein) : '', {
+            x: marginX + vLineX + padding, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX, y: y - 1 },
+            end: { x: marginX + vLineX + 90, y: y - 1 },
+            color: color.line,
+        })
     }
+
+    /* Section 13 */
+    {
+        const person = new Person(application.beneficiary)
+        const { relation, otherRel, ssn, phone } = application.beneficiary
+        y -= fieldHeight / 2
+        page5.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page5.drawText('Section 13: Occupational Accident Insurance (Beneficiary Information)', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
+
+        y -= gap
+        page5.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
+        if (outsideBorder)
+            page5.drawLine({
+                start: { x: marginX, y },
+                end: { x: marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+        page5.drawText('Full Name', {
+            x: marginX + padding, y: y - offset.labelY,
+            font: font.label, size: size.label, color: color.label,
+        })
+        page5.drawText(person.fullName('FMLs'), {
+            x: marginX + padding, y: y - offset.valueY,
+            font: font.value, size: size.value, color: color.value,
+        })
+        vLineX = (width - marginX * 2) / 2.4
+        page5.drawText('Relationship', {
+            x: marginX + vLineX + padding, y: y - offset.labelY,
+            font: font.label, size: size.label, color: color.label,
+        })
+        page5.drawText(otherRel || relation, {
+            x: marginX + vLineX + padding, y: y - offset.valueY,
+            font: font.value, size: size.value, color: color.value,
+        })
+        vLineX += 110
+        page5.drawText('Phone', {
+            x: marginX + vLineX + padding, y: y - offset.labelY,
+            font: font.label, size: size.label, color: color.label,
+        })
+        page5.drawText(formatTel(phone), {
+            x: marginX + vLineX + padding, y: y - offset.valueY,
+            font: font.value, size: size.value, color: color.value,
+        })
+        vLineX += 100
+        page5.drawText('SSN', {
+            x: marginX + vLineX + padding, y: y - offset.labelY,
+            font: font.label, size: size.label, color: color.label,
+        })
+        page5.drawText(ssn ? formatSsn(ssn) : '', {
+            x: marginX + vLineX + padding, y: y - offset.valueY,
+            font: font.value, size: size.value, color: color.value,
+        })
+        if (outsideBorder)
+            page5.drawLine({
+                start: { x: width - marginX, y },
+                end: { x: width - marginX, y: y - fieldHeight },
+                color: color.line,
+            })
+        y -= fieldHeight
+        page5.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            color: color.line,
+        })
+    }
+
+    /* Section 14 */
+    {
+        const { name, phone, relation } = application.emergency
+        y -= fieldHeight / 2
+        page5.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2, color: color.line,
+        })
+        y -= 14
+        page5.drawText('Section 14: Emergency Contact', {
+            x: marginX + padding, y,
+            font: font.section, size: size.section, color: color.section,
+        })
+        vLineX = padding
+        y -= fieldHeight / 1.7
+        text = "Name:"
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += padding + textWidth
+        page5.drawText(name, {
+            x: marginX + vLineX + padding, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX, y: y - 1 },
+            end: { x: marginX + vLineX + 150, y: y - 1 },
+            color: color.line,
+        })
+        
+        vLineX += padding + 150 + gap * .8
+        text = "Phone:"
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += padding + textWidth
+        page5.drawText(formatTel(phone), {
+            x: marginX + vLineX + padding, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX, y: y - 1 },
+            end: { x: marginX + vLineX + 100, y: y - 1 },
+            color: color.line,
+        })
+        vLineX += padding + 100 + gap * .8
+        text = "Relationship:"
+        page5.drawText(text, {
+            x: marginX + vLineX, y: y + 1,
+            font: font.label, size: size.label, color: color.label,
+        })
+        textWidth = font.label.widthOfTextAtSize(text, size.label)
+        vLineX += padding + textWidth
+        page5.drawText(relation || '', {
+            x: marginX + vLineX + padding, y: y + 2,
+            font: font.value, size: size.value, color: color.value,
+        })
+        page5.drawLine({
+            start: { x: marginX + vLineX, y: y - 1 },
+            end: { x: marginX + vLineX + 100, y: y - 1 },
+            color: color.line,
+        })
+    }
+
+    y -= fieldHeight
+    page5.drawText('Acknowledgment and Authorization', {
+        x: marginX + padding, y,
+        font: font.section, size: size.section, color: color.section,
+    })
+
+    y -= fieldHeight / 2
+    text = 'I certify that all information provided in this application is true and complete to the best of my knowledge.'
+    lines = wrapText(text, font.label, size.label)
+    lines.forEach(line => {
+        page5.drawText(line, {
+            x: marginX + padding, y,
+            font: font.label, size: size.label, color: color.label,
+        })
+        y -= gap * 1.2
+    })
+    y -= gap / 1.8
+    text = 'I authorize the employer to verify all statements made in this application, including but not limited to employment history, references, '
+    text += 'and personal records such as Motor Vehicle Reports (MVRs), Safety Performance History, and other records required under DOT or FMCSA regulations.'
+    lines = wrapText(text, font.label, size.label)
+    lines.forEach(line => {
+        page5.drawText(line, {
+            x: marginX + padding, y,
+            font: font.label, size: size.label, color: color.label,
+        })
+        y -= gap * 1.2
+    })
+    y -= gap / 1.8
+    text = 'I understand and acknowledge that, unless otherwise defined by applicable law, employment with this organization is "at-will", '
+    text += 'meaning I may resign at any time, and the company may terminate my employment at any time, with or without cause or notice. '
+    text += 'I further understand that no supervisor, recruiter, or manager has authority to alter this employment relationship '
+    text += 'except through a written agreement signed by an authorized company executive.'
+    lines = wrapText(text, font.label, size.label)
+    lines.forEach(line => {
+        page5.drawText(line, {
+            x: marginX + padding, y,
+            font: font.label, size: size.label, color: color.label,
+        })
+        y -= gap * 1.2
+    })
+    y -= gap / 1.8
+    text = 'If employed, I agree to comply with all company policies, safety protocols, and DOT/FMCSA regulations. '
+    text += 'I understand that any false, misleading, or incomplete information provided during the application or '
+    text += 'interview process may result in disqualification or immediate termination of employment.'
+    lines = wrapText(text, font.label, size.label)
+    lines.forEach(line => {
+        page5.drawText(line, {
+            x: marginX + padding, y,
+            font: font.label, size: size.label, color: color.label,
+        })
+        y -= gap * 1.2
+    })
 
 
     return await pdfDoc.save()
