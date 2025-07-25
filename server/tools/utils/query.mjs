@@ -505,6 +505,38 @@ class Query {
 
                 }
 
+                else if ('lt' in value) {
+                    value = value.lt
+                    if (empty(value)) continue
+
+                    value = Query.#value(value)
+                    operator = ' < '
+                }
+
+                else if ('lte' in value) {
+                    value = value.lte
+                    if (empty(value)) continue
+
+                    value = Query.#value(value)
+                    operator = ' <= '
+                }
+
+                else if ('gt' in value) {
+                    value = value.gt
+                    if (empty(value)) continue
+
+                    value = Query.#value(value)
+                    operator = ' > '
+                }
+
+                else if ('gte' in value) {
+                    value = value.gte
+                    if (empty(value)) continue
+
+                    value = Query.#value(value)
+                    operator = ' >= '
+                }
+
                 else if ('null' in value) {
                     value = value.null
                     if (empty(value)) continue

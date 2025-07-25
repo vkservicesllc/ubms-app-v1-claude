@@ -8,6 +8,7 @@ import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
+import Company from '../../tools/core/company.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
 import createApplicationPdf from './mv/pdf/driver-application.mjs'
 import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
@@ -221,12 +222,13 @@ router.get('/application/:formId/files/application', User.verify, Team.verify, a
         if (!application || application.condition !== 'c' || application._teamId !== team._id)
             return res.redirect(aplUrl)
 
+        const carrier = await application.carrierCreds(res.session)
         const addresses = (await application.data('addresses', res.session)).data
         const violations = (await application.data('citations', res.session)).data
         const accidents = (await application.data('accidents', res.session)).data
         const employers = (await application.data('employers', res.session)).data
 
-        const pdfBytes = await createApplicationPdf(application, addresses, violations, accidents, employers)
+        const pdfBytes = await createApplicationPdf(application, carrier, addresses, violations, accidents, employers)
 
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')

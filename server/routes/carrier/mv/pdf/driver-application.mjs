@@ -9,7 +9,7 @@ import Geography from '../../../../../client/global/modules/tools/core/geography
 import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools/utils/sorter.mjs'
 
 
-export default async (application, addresses, violations, accidents, employers) => {
+export default async (application, carrier, addresses, violations, accidents, employers) => {
     if (!application) application = {
         legalStatus: [], position: [],
         address: {}, dl: {}, mec: {}, experience: {}, preference: {},
@@ -97,6 +97,23 @@ export default async (application, addresses, violations, accidents, employers) 
     }
 
     const totalPages = 5
+
+
+    /* COVER PAGE */
+    if (carrier) {
+        const coverPage = pdfDoc.addPage([width, height])
+
+        coverPage.drawLine({
+            start: { x: marginX, y },
+            end: { x: width - marginX, y },
+            thickness: 2,
+        })
+        coverPage.drawLine({
+            start: { x: marginX, y },
+            end: { x: marginX, y: y - height + marginY * 2 },
+            thickness: 2,
+        })
+    }
 
 
     /* PAGE 1 */

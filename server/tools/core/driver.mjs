@@ -1264,6 +1264,19 @@ class Application {
 
         switch (target) {
 
+            case 'addresses':
+                src = 'aplAddresses'
+                fields = [
+                    'since',
+                    'address1',
+                    'address2',
+                    'city',
+                    'state',
+                    'zip',
+                    'livedAbroad',
+                ]
+                break
+
             case 'citations':
                 src = 'aplCitations'
                 fields = [
@@ -1306,24 +1319,21 @@ class Application {
                 ]
                 break
 
-            case 'addresses':
-                src = 'aplAddresses'
-                fields = [
-                    'since',
-                    'address1',
-                    'address2',
-                    'city',
-                    'state',
-                    'zip',
-                    'livedAbroad',
-                ]
-                break
-
         }
 
         if (!src || !fields.length) return { error: 'Internal Server Error: Invalid Params' }
 
         return { data: (await mysql.execute(query[src].select(fields, filter)))[0] }
+    }
+
+
+    carrierCreds = async session => {
+        if (!this._carrierId) return
+
+        const carrier = await Carrier.data(session, { _id: this._carrierId })
+        const company = await Company.data(session, { _id: carrier._companyId })
+
+        return await company.credentials(this.appliedOn)
     }
 
 
