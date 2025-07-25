@@ -77,16 +77,25 @@ router.get('/', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/files/application', User.verify, Team.verify, async (req, res) => {
+router.get('/files/application/:route?', User.verify, Team.verify, async (req, res) => {
     try {
-        const { user, team } = res.session
+        const { user } = res.session
         const { DS } = user
 
         const permissions = await user.permissions(res.session)
         if (!DS && !permissions['f:drv/apl'].includes('2'))
             return respond404(res)
 
-        const pdfBytes = await createApplicationPdf()
+        const { route } = req.params
+        const company = await Company.data(res.session, { route })
+        let carrier
+        if (company) {
+            const { name, address, phone, fax } = company
+            carrier = { name, address, phone, fax }
+            carrier.address = carrier.address.physical
+        }
+
+        const pdfBytes = await createApplicationPdf(carrier)
 
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
@@ -228,7 +237,7 @@ router.get('/application/:formId/files/application', User.verify, Team.verify, a
         const accidents = (await application.data('accidents', res.session)).data
         const employers = (await application.data('employers', res.session)).data
 
-        const pdfBytes = await createApplicationPdf(application, carrier, addresses, violations, accidents, employers)
+        const pdfBytes = await createApplicationPdf(carrier, application, addresses, violations, accidents, employers)
 
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')

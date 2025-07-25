@@ -7,9 +7,10 @@ import Driver, { Application } from '../../../../tools/core/driver.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
 import Geography from '../../../../../client/global/modules/tools/core/geography.mjs'
 import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools/utils/sorter.mjs'
+import { calculateYearAge } from '../../../../../client/global/modules/tools/utils/date.mjs'
 
 
-export default async (application, carrier, addresses, violations, accidents, employers) => {
+export default async (carrier, application, addresses, violations, accidents, employers) => {
     if (!application) application = {
         legalStatus: [], position: [],
         address: {}, dl: {}, mec: {}, experience: {}, preference: {},
@@ -59,22 +60,22 @@ export default async (application, carrier, addresses, violations, accidents, em
         valueY: 27,
     }
 
-    const drawCheckBox = (page, x, y, checked) => {
+    const drawCheckBox = (page, x, y, checked, size = 10) => {
         page.drawRectangle({
-            x, y, width: 10, height: 10,
+            x, y, width: size, height: size,
             color: rgb(1, 1, 1),
             borderWidth: 1, borderColor: color.line,
         })
 
         if (checked === true || checked === 1) {
             page.drawLine({
-                start: { x: x + 2, y: y + 5 },
-                end: { x: x + 4, y: y + 1.5 },
+                start: { x: x + 2, y: y + size / 2 },
+                end: { x: x + size * .4, y: y + 1.5 },
                 color: color.value,
             })
             page.drawLine({
-                start: { x: x + 4, y: y + 1.5 },
-                end: { x: x + 8, y: y + 8.5 },
+                start: { x: x + size * .4, y: y + 1.5 },
+                end: { x: x + size * .8, y: y + size * .85 },
                 color: color.value,
             })
         }
@@ -82,7 +83,6 @@ export default async (application, carrier, addresses, violations, accidents, em
 
     const wrapText = (text, font, fontSize, xGap = 0) => {
         const maxWidth = width - marginX * 2 - padding * 2 - xGap * 2
-console.log({ maxWidth, xGap })
         const words = text.split(' ')
         const lines = []
         let line = ''
@@ -109,6 +109,7 @@ console.log({ maxWidth, xGap })
                                                                     carrier.fax = '0123456789' //! TEMP
         const coverPage = pdfDoc.addPage([width, height])
         const coverPadding = padding / 1.5
+        let x
         const { name, address } = carrier
         const { address1, address2, city, state, zip } = address
         const addrLine1 = address1 + (address2 ? `, ${address2}` : '')
@@ -117,154 +118,292 @@ console.log({ maxWidth, xGap })
         phone = formatTel(phone)
         if (fax) fax = formatTel(fax)
 
-        coverPage.drawLine({
-            start: { x: marginX, y },
-            end: { x: width - marginX, y },
-            thickness: 2, color: color.line,
-        })
+        /* Outline */
+        {
             coverPage.drawLine({
-                start: { x: marginX + coverPadding, y: y - coverPadding },
-                end: { x: width - marginX - coverPadding, y: y - coverPadding },
-                color: color.line,
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                thickness: 2, color: color.line,
             })
-        coverPage.drawLine({
-            start: { x: marginX, y },
-            end: { x: marginX, y: y - height + marginY * 2 },
-            thickness: 2, color: color.line,
-        })
+                coverPage.drawLine({
+                    start: { x: marginX + coverPadding, y: y - coverPadding },
+                    end: { x: width - marginX - coverPadding, y: y - coverPadding },
+                    color: color.line,
+                })
             coverPage.drawLine({
-                start: { x: marginX + coverPadding, y: y - coverPadding },
-                end: { x: marginX + coverPadding, y: y - height + marginY * 2 + coverPadding },
-                color: color.line,
+                start: { x: marginX, y },
+                end: { x: marginX, y: y - height + marginY * 2 },
+                thickness: 2, color: color.line,
             })
-        coverPage.drawLine({
-            start: { x: marginX, y: y - height + marginY * 2 },
-            end: { x: width - marginX, y: y - height + marginY * 2 },
-            thickness: 2, color: color.line,
-        })
+                coverPage.drawLine({
+                    start: { x: marginX + coverPadding, y: y - coverPadding },
+                    end: { x: marginX + coverPadding, y: y - height + marginY * 2 + coverPadding },
+                    color: color.line,
+                })
             coverPage.drawLine({
-                start: { x: marginX + coverPadding, y: y - height + marginY * 2 + coverPadding },
-                end: { x: width - marginX - coverPadding, y: y - height + marginY * 2 + coverPadding },
-                color: color.line,
+                start: { x: marginX, y: y - height + marginY * 2 },
+                end: { x: width - marginX, y: y - height + marginY * 2 },
+                thickness: 2, color: color.line,
             })
-        coverPage.drawLine({
-            start: { x: width - marginX, y },
-            end: { x: width - marginX, y: y - height + marginY * 2 },
-            thickness: 2, color: color.line,
-        })
+                coverPage.drawLine({
+                    start: { x: marginX + coverPadding, y: y - height + marginY * 2 + coverPadding },
+                    end: { x: width - marginX - coverPadding, y: y - height + marginY * 2 + coverPadding },
+                    color: color.line,
+                })
             coverPage.drawLine({
-                start: { x: width - marginX - coverPadding, y: y - coverPadding },
-                end: { x: width - marginX - coverPadding, y: y - height + marginY * 2 + coverPadding },
-                color: color.line,
+                start: { x: width - marginX, y },
+                end: { x: width - marginX, y: y - height + marginY * 2 },
+                thickness: 2, color: color.line,
             })
+                coverPage.drawLine({
+                    start: { x: width - marginX - coverPadding, y: y - coverPadding },
+                    end: { x: width - marginX - coverPadding, y: y - height + marginY * 2 + coverPadding },
+                    color: color.line,
+                })
+        }
 
-
-        let x = width - marginX - coverPadding - gap * 2.5
-        y = height - marginY - coverPadding - gap - fieldHeight / 1.5
-        textWidth = font.carrierB.widthOfTextAtSize(name, size.carrier * 1.1)
-        coverPage.drawText(name, {
-            x: x - textWidth, y,
-            font: font.carrierB, size: size.carrier * 1.1, color: color.carrier,
-        })
-        y -= fieldHeight / 1.7 + 2
-        textWidth = font.carrier.widthOfTextAtSize(addrLine1, size.carrier)
-        coverPage.drawText(addrLine1, {
-            x: x - textWidth, y,
-            font: font.carrier, size: size.carrier, color: color.carrier,
-        })
-        y -= fieldHeight / 1.7
-        textWidth = font.carrier.widthOfTextAtSize(addrLine2, size.carrier)
-        coverPage.drawText(addrLine2, {
-            x: x - textWidth, y,
-            font: font.carrier, size: size.carrier, color: color.carrier,
-        })
-        y -= fieldHeight / 1.7
-        text = 'Phone:'
-        let labelWidth = font.label.widthOfTextAtSize(text, size.label * 1.4) + gap / 1.5
-        textWidth = font.carrier.widthOfTextAtSize(phone, size.carrier)
-        coverPage.drawText(text, {
-            x: x - labelWidth - textWidth, y,
-            font: font.label, size: size.label * 1.4, color: color.section,
-        })
-        coverPage.drawText(phone, {
-            x: x - textWidth, y,
-            font: font.carrier, size: size.carrier, color: color.carrier,
-        })
-        if (fax) {
+        /* Carrier */
+        {
+            x = width - marginX - coverPadding - gap * 2.5
+            y = height - marginY - coverPadding - gap - fieldHeight / 1.5
+            textWidth = font.carrierB.widthOfTextAtSize(name, size.carrier * 1.1)
+            coverPage.drawText(name, {
+                x: x - textWidth, y,
+                font: font.carrierB, size: size.carrier * 1.1, color: color.carrier,
+            })
+            y -= fieldHeight / 1.7 + 2
+            textWidth = font.carrier.widthOfTextAtSize(addrLine1, size.carrier)
+            coverPage.drawText(addrLine1, {
+                x: x - textWidth, y,
+                font: font.carrier, size: size.carrier, color: color.carrier,
+            })
             y -= fieldHeight / 1.7
-            text = 'Fax:'
-            labelWidth = font.label.widthOfTextAtSize(text, size.label * 1.4) + gap / 1.5
-            textWidth = font.carrier.widthOfTextAtSize(fax, size.carrier)
+            textWidth = font.carrier.widthOfTextAtSize(addrLine2, size.carrier)
+            coverPage.drawText(addrLine2, {
+                x: x - textWidth, y,
+                font: font.carrier, size: size.carrier, color: color.carrier,
+            })
+            y -= fieldHeight / 1.7
+            text = 'Phone:'
+            let labelWidth = font.label.widthOfTextAtSize(text, size.label * 1.4) + gap / 1.5
+            textWidth = font.carrier.widthOfTextAtSize(phone, size.carrier)
             coverPage.drawText(text, {
                 x: x - labelWidth - textWidth, y,
                 font: font.label, size: size.label * 1.4, color: color.section,
             })
-            coverPage.drawText(fax, {
+            coverPage.drawText(phone, {
                 x: x - textWidth, y,
                 font: font.carrier, size: size.carrier, color: color.carrier,
             })
+            if (fax) {
+                y -= fieldHeight / 1.7
+                text = 'Fax:'
+                labelWidth = font.label.widthOfTextAtSize(text, size.label * 1.4) + gap / 1.5
+                textWidth = font.carrier.widthOfTextAtSize(fax, size.carrier)
+                coverPage.drawText(text, {
+                    x: x - labelWidth - textWidth, y,
+                    font: font.label, size: size.label * 1.4, color: color.section,
+                })
+                coverPage.drawText(fax, {
+                    x: x - textWidth, y,
+                    font: font.carrier, size: size.carrier, color: color.carrier,
+                })
+            }
         }
 
-        y -= 65
-        x = 0
-        text = 'Professional Driver Application'
-        textWidth = font.section.widthOfTextAtSize(text, size.section * 1.7)
-        coverPage.drawText(text, {
-            x: width / 2 - textWidth / 2, y,
-            font: font.section, size: size.section * 1.7, color: color.section,
-        })
-        y -= 35
+        /* Intro */
+        {
+            y -= 60
+            x = 0
+            text = 'Professional Driver Application'
+            textWidth = font.section.widthOfTextAtSize(text, size.section * 1.7)
+            coverPage.drawText(text, {
+                x: width / 2 - textWidth / 2, y,
+                font: font.section, size: size.section * 1.7, color: color.section,
+            })
+            y -= 35
 
-        text = 'Thank you for your interest in joining our team. '
-        text += 'Please complete the following application accurately and in full. '
-        text += 'This information is essential for evaluating your qualifications and ensuring compliance with applicable regulations. '
-        text += 'All statements will be held in strict confidence.'
-        lines = wrapText(text, font.label, size.label * 1.55, gap)
-        lines.forEach((line, i) => {
-            coverPage.drawText(line, {
-                x: marginX + gap * 2 + (!i ? gap * 2 : 0), y,
+            text = 'Thank you for your interest in joining our team. '
+            text += 'Please complete the following application accurately and in full. '
+            text += 'This information is essential for evaluating your qualifications and ensuring compliance with applicable regulations. '
+            text += 'All statements will be held in strict confidence.'
+            lines = wrapText(text, font.label, size.label * 1.55, gap)
+            lines.forEach((line, i) => {
+                coverPage.drawText(line, {
+                    x: marginX + gap * 2 + (!i ? gap * 2 : 0), y,
+                    font: font.label, size: size.label * 1.55, color: color.section,
+                })
+                y -= gap * 2
+            })
+            y -= 2
+            text = 'We are committed to hiring safe, reliable, and responsible drivers who uphold '
+            text += 'the highest standards of professionalism and safety on the road.'
+            lines = wrapText(text, font.label, size.label * 1.55, gap * 3)
+            lines.forEach((line, i) => {
+                coverPage.drawText(line, {
+                    x: marginX + gap * 2 + (!i ? gap * 2 : 0), y,
+                    font: font.label, size: size.label * 1.55, color: color.section,
+                })
+                y -= gap * 2
+            })
+            y -= 10
+            coverPage.drawText('Before you begin the application, please ensure you:', {
+                x: marginX + gap * 2 + gap * 2, y,
                 font: font.label, size: size.label * 1.55, color: color.section,
             })
             y -= gap * 2
-        })
-        y -= 2
-        text = 'We are committed to hiring safe, reliable, and responsible drivers who uphold '
-        text += 'the highest standards of professionalism and safety on the road.'
-        lines = wrapText(text, font.label, size.label * 1.55, gap * 3)
-        lines.forEach((line, i) => {
-            coverPage.drawText(line, {
-                x: marginX + gap * 2 + (!i ? gap * 2 : 0), y,
+            coverPage.drawText("• are at least 18 years old", {
+                x: marginX + gap * 2 + gap * 3, y,
                 font: font.label, size: size.label * 1.55, color: color.section,
             })
             y -= gap * 2
-        })
+            coverPage.drawText("• have a valid driver's license", {
+                x: marginX + gap * 2 + gap * 3, y,
+                font: font.label, size: size.label * 1.55, color: color.section,
+            })
+            y -= gap * 2
+            coverPage.drawText("• have a clean driving record", {
+                x: marginX + gap * 2 + gap * 3, y,
+                font: font.label, size: size.label * 1.55, color: color.section,
+            })
+            y -= gap * 2
+            coverPage.drawText("• have required permits and credentials", {
+                x: marginX + gap * 2 + gap * 3, y,
+                font: font.label, size: size.label * 1.55, color: color.section,
+            })
+            y -= gap * 2
+            coverPage.drawText("• are able to meet DOT and company safety requirements", {
+                x: marginX + gap * 2 + gap * 3, y,
+                font: font.label, size: size.label * 1.55, color: color.section,
+            })
+        }
 
-        y -= 35
-        x = 0
-        text = "Applicant's Information"
-        textWidth = font.label.widthOfTextAtSize(text, size.label * 1.6)
-        coverPage.drawText(text, {
-            x: width / 2 - textWidth / 2, y,
-            font: font.label, size: size.label * 1.6, color: color.section,
-        })
-        y -= 50
+        /* Applicant */
+        {
+            y -= 45
+            x = 0
+            text = "Applicant's Information"
+            textWidth = font.section.widthOfTextAtSize(text, size.section * 1.5)
+            coverPage.drawText(text, {
+                x: width / 2 - textWidth / 2, y,
+                font: font.section, size: size.section * 1.5, color: color.section,
+            })
+            y -= 50
+            x = marginX + coverPadding + gap * 2
 
-        x = marginX + coverPadding + gap * 2
-        text = "Full Name:"
-        textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)
-        coverPage.drawText(text, {
-            x, y,
-            font: font.label, size: size.label * 1.4, color: color.section,
-        })
-        coverPage.drawText(applicant.fullName('FMLs'), {
-            x: x + textWidth + gap, y: y + 2,
-            font: font.value, size: size.value * 1.4, color: color.value,
-        })
-        coverPage.drawLine({
-            start: { x: x + textWidth + gap - 2, y: y - 1 },
-            end: { x: x + textWidth + gap - 2 + 350, y: y - 1 },
-            color: color.line,
-        })
+            const fullName = applicant?.lastName ? applicant.fullName('FMLs') : ''
+            text = "Full Name:"
+            textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)
+            coverPage.drawText(text, {
+                x, y,
+                font: font.label, size: size.label * 1.4, color: color.section,
+            })
+            coverPage.drawText(fullName, {
+                x: x + textWidth + gap + 2, y: y + 2,
+                font: font.value, size: size.value * 1.3, color: color.value,
+            })
+            let lineLength = width - x - textWidth - gap - marginX - coverPadding - gap * 2
+            coverPage.drawLine({
+                start: { x: x + textWidth + gap - 2, y: y - 1 },
+                end: { x: x + textWidth + gap - 2 + lineLength, y: y - 1 },
+                color: color.line,
+            })
+
+            y -= fieldHeight
+            let residence = ''
+            if (application.address) {
+                const { city, state } = application.address
+                if (state) residence = `${city}, ${state[0]}`
+            }
+            text = "Residence (City, State):"
+            textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)
+            coverPage.drawText(text, {
+                x, y,
+                font: font.label, size: size.label * 1.4, color: color.section,
+            })
+            coverPage.drawText(residence, {
+                x: x + textWidth + gap + 2, y: y + 2,
+                font: font.value, size: size.value * 1.3, color: color.value,
+            })
+            lineLength = width - x - textWidth - gap - marginX - coverPadding - gap * 2
+            coverPage.drawLine({
+                start: { x: x + textWidth + gap - 2, y: y - 1 },
+                end: { x: x + textWidth + gap - 2 + lineLength, y: y - 1 },
+                color: color.line,
+            })
+
+            y -= fieldHeight
+            const { email } = application
+            text = "Email:"
+            textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)
+            coverPage.drawText(text, {
+                x, y,
+                font: font.label, size: size.label * 1.4, color: color.section,
+            })
+            coverPage.drawText(email || '', {
+                x: x + textWidth + gap + 2, y: y + 2,
+                font: font.value, size: size.value * 1.3, color: color.value,
+            })
+            lineLength = width - x - textWidth - gap - marginX - coverPadding - gap * 2
+            coverPage.drawLine({
+                start: { x: x + textWidth + gap - 2, y: y - 1 },
+                end: { x: x + textWidth + gap - 2 + lineLength, y: y - 1 },
+                color: color.line,
+            })
+
+            y -= fieldHeight
+            const age = application?.dob
+                ? calculateYearAge(application.dob, moment(application.submittedAt).format('YYYY-MM-DD')) + ''
+                : ''
+            text = "Age:"
+            textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)
+            coverPage.drawText(text, {
+                x, y,
+                font: font.label, size: size.label * 1.4, color: color.section,
+            })
+            coverPage.drawText(age, {
+                x: x + textWidth + gap + 2, y: y + 2,
+                font: font.value, size: size.value * 1.3, color: color.value,
+            })
+            lineLength = 60
+            coverPage.drawLine({
+                start: { x: x + textWidth + gap - 2, y: y - 1 },
+                end: { x: x + textWidth + gap - 2 + lineLength, y: y - 1 },
+                color: color.line,
+            })
+            textWidth += lineLength + gap - 2
+            text = 'Desired Position:'
+            coverPage.drawText(text, {
+                x: x + textWidth + gap * 3, y,
+                font: font.label, size: size.label * 1.4, color: color.section,
+            })
+            textWidth += font.label.widthOfTextAtSize(text, size.label * 1.4) + gap * 3 + 5
+            const positions = Driver.positionList
+            const { position } = application
+            let i = 0
+            for (const p in positions) {console.log({ i, y, p })
+                drawCheckBox(coverPage, x + textWidth + gap, y - 3, position?.[0] === p, 15)
+                coverPage.drawText(positions[p], {
+                    x: x + textWidth + gap + 25, y,
+                    font: font.label, size: size.label * 1.4, color: color.section,
+                })
+                if (i === 1) {
+                    x += 127
+                    y += 25
+                } else y -= 25
+                i++
+            }
+
+            x = marginX + coverPadding + gap * 2
+            text = "Signature:"
+            textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)
+            coverPage.drawText(text, {
+                x, y: marginY + coverPadding + gap * 2,
+                font: font.label, size: size.label * 1.4, color: color.section,
+            })
+        }
+
+
     }
 
 
