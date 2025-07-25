@@ -32,18 +32,22 @@ export default async (application, carrier, addresses, violations, accidents, em
     let y = height - marginY, vLineX, vLineXOffsets, text, textWidth, lines
     const fieldHeight = 33, gap = 9, padding = 5.7, dateFormat = 'MM/DD/YYYY', outsideBorder = true
     const font = {
+        carrierB: await pdfDoc.embedFont(CustomFonts.SansationBold),
+        carrier: await pdfDoc.embedFont(CustomFonts.Sansation),
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         label: await pdfDoc.embedFont(StandardFonts.Helvetica),
         value: await pdfDoc.embedFont(StandardFonts.Helvetica),
         signature: await pdfDoc.embedFont(CustomFonts.Hurricane),
     }
     const size = {
+        carrier: 15,
         section: 9.5,
         label: 8.9,
         value: 11.2,
         signature: 20,
     }
     const color = {
+        carrier: rgb(0, 0, 0),
         line: rgb(0.2, 0.2, 0.2),
         section: rgb(0.1, 0.1, 0.1),
         label: rgb(0.2, 0.2, 0.2),
@@ -76,8 +80,9 @@ export default async (application, carrier, addresses, violations, accidents, em
         }
     }
 
-    const wrapText = (text, font, fontSize) => {
-        const maxWidth = width - marginX * 2 - padding * 2
+    const wrapText = (text, font, fontSize, xGap = 0) => {
+        const maxWidth = width - marginX * 2 - padding * 2 - xGap * 2
+console.log({ maxWidth, xGap })
         const words = text.split(' ')
         const lines = []
         let line = ''
@@ -101,17 +106,164 @@ export default async (application, carrier, addresses, violations, accidents, em
 
     /* COVER PAGE */
     if (carrier) {
+                                                                    carrier.fax = '0123456789' //! TEMP
         const coverPage = pdfDoc.addPage([width, height])
+        const coverPadding = padding / 1.5
+        const { name, address } = carrier
+        const { address1, address2, city, state, zip } = address
+        const addrLine1 = address1 + (address2 ? `, ${address2}` : '')
+        const addrLine2 = `${city}, ${state[0]} ${zip}`
+        let { phone, fax } = carrier
+        phone = formatTel(phone)
+        if (fax) fax = formatTel(fax)
 
         coverPage.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
-            thickness: 2,
+            thickness: 2, color: color.line,
         })
+            coverPage.drawLine({
+                start: { x: marginX + coverPadding, y: y - coverPadding },
+                end: { x: width - marginX - coverPadding, y: y - coverPadding },
+                color: color.line,
+            })
         coverPage.drawLine({
             start: { x: marginX, y },
             end: { x: marginX, y: y - height + marginY * 2 },
-            thickness: 2,
+            thickness: 2, color: color.line,
+        })
+            coverPage.drawLine({
+                start: { x: marginX + coverPadding, y: y - coverPadding },
+                end: { x: marginX + coverPadding, y: y - height + marginY * 2 + coverPadding },
+                color: color.line,
+            })
+        coverPage.drawLine({
+            start: { x: marginX, y: y - height + marginY * 2 },
+            end: { x: width - marginX, y: y - height + marginY * 2 },
+            thickness: 2, color: color.line,
+        })
+            coverPage.drawLine({
+                start: { x: marginX + coverPadding, y: y - height + marginY * 2 + coverPadding },
+                end: { x: width - marginX - coverPadding, y: y - height + marginY * 2 + coverPadding },
+                color: color.line,
+            })
+        coverPage.drawLine({
+            start: { x: width - marginX, y },
+            end: { x: width - marginX, y: y - height + marginY * 2 },
+            thickness: 2, color: color.line,
+        })
+            coverPage.drawLine({
+                start: { x: width - marginX - coverPadding, y: y - coverPadding },
+                end: { x: width - marginX - coverPadding, y: y - height + marginY * 2 + coverPadding },
+                color: color.line,
+            })
+
+
+        let x = width - marginX - coverPadding - gap * 2.5
+        y = height - marginY - coverPadding - gap - fieldHeight / 1.5
+        textWidth = font.carrierB.widthOfTextAtSize(name, size.carrier * 1.1)
+        coverPage.drawText(name, {
+            x: x - textWidth, y,
+            font: font.carrierB, size: size.carrier * 1.1, color: color.carrier,
+        })
+        y -= fieldHeight / 1.7 + 2
+        textWidth = font.carrier.widthOfTextAtSize(addrLine1, size.carrier)
+        coverPage.drawText(addrLine1, {
+            x: x - textWidth, y,
+            font: font.carrier, size: size.carrier, color: color.carrier,
+        })
+        y -= fieldHeight / 1.7
+        textWidth = font.carrier.widthOfTextAtSize(addrLine2, size.carrier)
+        coverPage.drawText(addrLine2, {
+            x: x - textWidth, y,
+            font: font.carrier, size: size.carrier, color: color.carrier,
+        })
+        y -= fieldHeight / 1.7
+        text = 'Phone:'
+        let labelWidth = font.label.widthOfTextAtSize(text, size.label * 1.4) + gap / 1.5
+        textWidth = font.carrier.widthOfTextAtSize(phone, size.carrier)
+        coverPage.drawText(text, {
+            x: x - labelWidth - textWidth, y,
+            font: font.label, size: size.label * 1.4, color: color.section,
+        })
+        coverPage.drawText(phone, {
+            x: x - textWidth, y,
+            font: font.carrier, size: size.carrier, color: color.carrier,
+        })
+        if (fax) {
+            y -= fieldHeight / 1.7
+            text = 'Fax:'
+            labelWidth = font.label.widthOfTextAtSize(text, size.label * 1.4) + gap / 1.5
+            textWidth = font.carrier.widthOfTextAtSize(fax, size.carrier)
+            coverPage.drawText(text, {
+                x: x - labelWidth - textWidth, y,
+                font: font.label, size: size.label * 1.4, color: color.section,
+            })
+            coverPage.drawText(fax, {
+                x: x - textWidth, y,
+                font: font.carrier, size: size.carrier, color: color.carrier,
+            })
+        }
+
+        y -= 65
+        x = 0
+        text = 'Professional Driver Application'
+        textWidth = font.section.widthOfTextAtSize(text, size.section * 1.7)
+        coverPage.drawText(text, {
+            x: width / 2 - textWidth / 2, y,
+            font: font.section, size: size.section * 1.7, color: color.section,
+        })
+        y -= 35
+
+        text = 'Thank you for your interest in joining our team. '
+        text += 'Please complete the following application accurately and in full. '
+        text += 'This information is essential for evaluating your qualifications and ensuring compliance with applicable regulations. '
+        text += 'All statements will be held in strict confidence.'
+        lines = wrapText(text, font.label, size.label * 1.55, gap)
+        lines.forEach((line, i) => {
+            coverPage.drawText(line, {
+                x: marginX + gap * 2 + (!i ? gap * 2 : 0), y,
+                font: font.label, size: size.label * 1.55, color: color.section,
+            })
+            y -= gap * 2
+        })
+        y -= 2
+        text = 'We are committed to hiring safe, reliable, and responsible drivers who uphold '
+        text += 'the highest standards of professionalism and safety on the road.'
+        lines = wrapText(text, font.label, size.label * 1.55, gap * 3)
+        lines.forEach((line, i) => {
+            coverPage.drawText(line, {
+                x: marginX + gap * 2 + (!i ? gap * 2 : 0), y,
+                font: font.label, size: size.label * 1.55, color: color.section,
+            })
+            y -= gap * 2
+        })
+
+        y -= 35
+        x = 0
+        text = "Applicant's Information"
+        textWidth = font.label.widthOfTextAtSize(text, size.label * 1.6)
+        coverPage.drawText(text, {
+            x: width / 2 - textWidth / 2, y,
+            font: font.label, size: size.label * 1.6, color: color.section,
+        })
+        y -= 50
+
+        x = marginX + coverPadding + gap * 2
+        text = "Full Name:"
+        textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)
+        coverPage.drawText(text, {
+            x, y,
+            font: font.label, size: size.label * 1.4, color: color.section,
+        })
+        coverPage.drawText(applicant.fullName('FMLs'), {
+            x: x + textWidth + gap, y: y + 2,
+            font: font.value, size: size.value * 1.4, color: color.value,
+        })
+        coverPage.drawLine({
+            start: { x: x + textWidth + gap - 2, y: y - 1 },
+            end: { x: x + textWidth + gap - 2 + 350, y: y - 1 },
+            color: color.line,
         })
     }
 
@@ -124,6 +276,7 @@ export default async (application, carrier, addresses, violations, accidents, em
         x: width - marginX - textWidth, y: marginY,
         font: font.label, size: size.label / 1.2, color: color.label,
     })
+    y = height - marginY
 
     vLineXOffsets = [3.22, 2.25, 1.46, 1.315, 1.177]
 
@@ -2411,41 +2564,41 @@ export default async (application, carrier, addresses, violations, accidents, em
         y -= gap * 1.2
     })
 
-        vLineX = padding
-        y -= fieldHeight * 1.2
-        text = "Applicant's Signature:"
-        page5.drawText(text, {
-            x: marginX + vLineX, y: y + 1,
-            font: font.label, size: size.label, color: color.label,
-        })
-        textWidth = font.label.widthOfTextAtSize(text, size.label)
-        vLineX += padding + textWidth
-        page5.drawText(signature, {
-            x: marginX + vLineX + padding, y: y + 2,
-            font: font.signature, size: size.signature, color: color.signature,
-        })
-        page5.drawLine({
-            start: { x: marginX + vLineX, y: y - 1 },
-            end: { x: marginX + vLineX + 250, y: y - 1 },
-            color: color.line,
-        })
-        vLineX += 250 + gap
-        text = 'Application Date'
-        page5.drawText(text, {
-            x: marginX + vLineX, y: y + 1,
-            font: font.label, size: size.label, color: color.label,
-        })
-        textWidth = font.label.widthOfTextAtSize(text, size.label)
-        vLineX += padding + textWidth
-        page5.drawText(application.finishedAt ? moment(application.finishedAt).format(dateFormat) : '', {
-            x: marginX + vLineX + padding, y: y + 2,
-            font: font.value, size: size.value, color: color.value,
-        })
-        page5.drawLine({
-            start: { x: marginX + vLineX, y: y - 1 },
-            end: { x: marginX + vLineX + 100, y: y - 1 },
-            color: color.line,
-        })
+    vLineX = padding
+    y -= fieldHeight * 1.2
+    text = "Applicant's Signature:"
+    page5.drawText(text, {
+        x: marginX + vLineX, y: y + 1,
+        font: font.label, size: size.label, color: color.label,
+    })
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    vLineX += padding + textWidth
+    page5.drawText(signature, {
+        x: marginX + vLineX + padding, y: y + 2,
+        font: font.signature, size: size.signature, color: color.signature,
+    })
+    page5.drawLine({
+        start: { x: marginX + vLineX, y: y - 1 },
+        end: { x: marginX + vLineX + 250, y: y - 1 },
+        color: color.line,
+    })
+    vLineX += 250 + gap
+    text = 'Application Date'
+    page5.drawText(text, {
+        x: marginX + vLineX, y: y + 1,
+        font: font.label, size: size.label, color: color.label,
+    })
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    vLineX += padding + textWidth
+    page5.drawText(application.finishedAt ? moment(application.finishedAt).format(dateFormat) : '', {
+        x: marginX + vLineX + padding, y: y + 2,
+        font: font.value, size: size.value, color: color.value,
+    })
+    page5.drawLine({
+        start: { x: marginX + vLineX, y: y - 1 },
+        end: { x: marginX + vLineX + 100, y: y - 1 },
+        color: color.line,
+    })
 
 
     return await pdfDoc.save()
