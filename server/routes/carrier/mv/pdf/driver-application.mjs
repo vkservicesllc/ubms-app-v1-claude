@@ -106,7 +106,6 @@ export default async (carrier, application, addresses, violations, accidents, em
 
     /* COVER PAGE */
     if (carrier) {
-                                                                    carrier.fax = '0123456789' //! TEMP
         const coverPage = pdfDoc.addPage([width, height])
         const coverPadding = padding / 1.5
         let x
@@ -164,8 +163,8 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Carrier */
         {
-            x = width - marginX - coverPadding - gap * 2.5
-            y = height - marginY - coverPadding - gap - fieldHeight / 1.5
+            x = width - marginX - coverPadding - gap * 2
+            y = height - marginY - coverPadding - gap * 3
             textWidth = font.carrierB.widthOfTextAtSize(name, size.carrier * 1.1)
             coverPage.drawText(name, {
                 x: x - textWidth, y,
@@ -213,7 +212,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Intro */
         {
-            y -= 60
+            y -= 50
             x = 0
             text = 'Professional Driver Application'
             textWidth = font.section.widthOfTextAtSize(text, size.section * 1.7)
@@ -280,7 +279,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Applicant */
         {
-            y -= 45
+            y -= 50
             x = 0
             text = "Applicant's Information"
             textWidth = font.section.widthOfTextAtSize(text, size.section * 1.5)
@@ -288,7 +287,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: width / 2 - textWidth / 2, y,
                 font: font.section, size: size.section * 1.5, color: color.section,
             })
-            y -= 50
+            y -= 40
             x = marginX + coverPadding + gap * 2
 
             const fullName = applicant?.lastName ? applicant.fullName('FMLs') : ''
@@ -381,7 +380,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             const positions = Driver.positionList
             const { position } = application
             let i = 0
-            for (const p in positions) {console.log({ i, y, p })
+            for (const p in positions) {
                 drawCheckBox(coverPage, x + textWidth + gap, y - 3, position?.[0] === p, 15)
                 coverPage.drawText(positions[p], {
                     x: x + textWidth + gap + 25, y,
@@ -395,11 +394,39 @@ export default async (carrier, application, addresses, violations, accidents, em
             }
 
             x = marginX + coverPadding + gap * 2
+            y = marginY + coverPadding + gap * 3
             text = "Signature:"
             textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)
             coverPage.drawText(text, {
-                x, y: marginY + coverPadding + gap * 2,
+                x, y,
                 font: font.label, size: size.label * 1.4, color: color.section,
+            })
+            coverPage.drawText(signature, {
+                x: x + textWidth + gap + 2, y: y + 2,
+                font: font.signature, size: size.signature * 1.1, color: color.signature,
+            })
+            lineLength = 240
+            coverPage.drawLine({
+                start: { x: x + textWidth + gap - 2, y: y - 1 },
+                end: { x: x + textWidth + gap - 2 + lineLength, y: y - 1 },
+                color: color.line,
+            })
+            x += textWidth + lineLength + gap * 2 + padding
+            text = "Date:"
+            textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)
+            coverPage.drawText(text, {
+                x, y,
+                font: font.label, size: size.label * 1.4, color: color.section,
+            })
+            coverPage.drawText(application.finishedAt ? moment(application.finishedAt).format(dateFormat) : '', {
+                x: x + textWidth + gap + 2, y: y + 2,
+                font: font.value, size: size.value * 1.3, color: color.value,
+            })
+            lineLength = width - x - textWidth - gap - marginX - coverPadding - gap * 2
+            coverPage.drawLine({
+                start: { x: x + textWidth + gap - 2, y: y - 1 },
+                end: { x: x + textWidth + gap - 2 + lineLength, y: y - 1 },
+                color: color.line,
             })
         }
 
