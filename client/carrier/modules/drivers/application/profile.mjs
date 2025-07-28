@@ -94,7 +94,7 @@ import application, { identity, count, unmatchedIdx, dropdownEvent, errorMessage
     }
 
     if ($('#identity-name-mismatch').length) {
-        $('.item[data-tab="profile"]').append('<i class="ui dark orange text id badge outline icon"></i>')
+        $('.item[data-tab="profile"]').append('<i class="ui dark orange id badge outline icon"></i>')
         $('#identity-name-mismatch .nag').nag()
     }
 })()

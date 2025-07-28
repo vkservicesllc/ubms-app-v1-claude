@@ -10,7 +10,7 @@ export default application
 export { identity, count, unmatchedIdx }
 
 
-export const errorIcon = '<i class="ui red text exclamation triangle icon"></i>'
+export const errorIcon = '<i class="ui red exclamation triangle icon"></i>'
 
 
 export const dropdownEvent = $dropdown => {

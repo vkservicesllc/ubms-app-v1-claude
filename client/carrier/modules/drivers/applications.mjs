@@ -74,6 +74,9 @@ const table = $('#driver-apl-table').DataTable({
 
                 let data = `<span title="${$(condition[0]).text()}"><i class="${condition[1]} icon"></i></span>`
 
+                if (row.dob !== row.originalDob || row.sex !== row.originalSex)
+                    data += `<span title="Identity Error: False DOB or Gender"><i class="ui red exclamation triangle icon"></i></span>`
+
                 if (row.marital === 'm') {
                     let { sex, benefRelation, benefOtherRel } = row
 
@@ -83,12 +86,10 @@ const table = $('#driver-apl-table').DataTable({
                     switch (true) {
                         case sex === 0 && (benefRelation === 'wife' || benefOtherRel === 'wife'):
                         case sex === 1 && (benefRelation === 'husband' || benefOtherRel === 'husband'):
-                            data += `<span title="Logical Error: Incorrect Gender"><i class="ui red text exclamation triangle icon"></i></span>`
+                            data += `<span title="Logical Error: Incorrect Gender"><i class="ui red exclamation triangle icon"></i></span>`
                             break
                     }
                 }
-                if (row.dob !== row.originalDob || row.sex !== row.originalSex)
-                    data += `<span title="Identity Error: False DOB or Gender"><i class="ui red text exclamation triangle icon"></i></span>`
 
                 if (
                     row.firstName !== row.originalFirstName ||
@@ -96,7 +97,10 @@ const table = $('#driver-apl-table').DataTable({
                     row.lastName !== row.originalLastName ||
                     row.suffix !== row.originalSuffix
                 )
-                    data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange text id badge outline icon"></i></span>`
+                    data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange id badge outline icon"></i></span>`
+
+                if (!row.medCard)
+                    data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`
 
                 return data
             },

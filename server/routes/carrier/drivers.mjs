@@ -215,7 +215,13 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/application/:formId/files/application', User.verify, Team.verify, async (req, res) => {
+router.get('/application/:formId/files/application', async (req, res, next) => {
+    const user = await User.verify(req, res)
+    if (!user) return res.send('Your session has expired, so you can no longer view this file.<br/>Please log in using another tab and refresh this page to regain access.')
+
+    res.session.user = user
+    next()
+}, Team.verify, async (req, res) => {
     const { formId } = req.params
 
     try {
@@ -500,6 +506,11 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
             for (const state in Address.stateList)
                 dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+        }
+
+        /* MEDICAL CARD */
+        {
+            //
         }
 
         /* BENEFICIARY */

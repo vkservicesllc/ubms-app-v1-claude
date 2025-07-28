@@ -2050,6 +2050,7 @@ class Application {
                     'apl.phone',
                     'apl.state',
                     'apl.marital',
+                    'apl.medCard',
                     'psn.dob AS originalDob',
                     'psn.sex AS originalSex',
                     'nms.firstName AS originalFirstName',
