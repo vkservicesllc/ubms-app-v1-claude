@@ -277,7 +277,7 @@
                                                             <i class="grey file icon"></i>
                                                             <div class="content">
                                                                 <div class="header">
-                                                                    <a><span class="ui grey text">Social Security Card</span></a>
+                                                                    <a><span class="ui grey text">Medical Card</span></a>
                                                                     {{!-- <span class="file-actions">
                                                                         <a class="ui dark blue text"><i class="upload icon"></i></a>
                                                                     </span> --}}
@@ -550,7 +550,40 @@
 
                     <div class="ui active tab" data-tab="medical-card">
                         <form class="ui loading form" id="mec-form" action="{{actionUrl.mec}}" method="POST" autocomplete="off">
-                            <h5 class="ui blue text first header">Medical Card</h5>
+                            <h5 class="ui blue text first header">Medical Certificate</h5>
+                            <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="six wide field">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" id="no-mec" />
+                                        <label for="no-mec">Unavailable at the time of submission</label>
+                                    </div>
+                                </div>
+                                <div class="one wide field"></div>
+                            </div>
+                            <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="four wide field">
+                                    {{{form.mecExp.text.label}}}
+                                    <div class="ui calendar" id="mec-expires-calendar">
+                                        <div class="ui fluid input left icon">
+                                            {{{form.mecExp.text.input}}}
+                                            <i class="calendar icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.mecIss.text.label}}}
+                                    <div class="ui calendar" id="mec-issued-calendar">
+                                        <div class="ui fluid input left icon">
+                                            {{{form.mecIss.text.input}}}
+                                            <i class="calendar icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.mecNumber.text.label}}}
+                                    {{{form.mecNumber.text.input}}}
+                                </div>
+                            </div>
                             <div class="ui divider"></div>
                             <div class="actions">
                                 <button type="submit" class="ui right floated circular blue button">Save</button>
