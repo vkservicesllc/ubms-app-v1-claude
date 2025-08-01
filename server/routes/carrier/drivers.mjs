@@ -331,10 +331,10 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         let complete = true
         const checkMark = {
-            unchecked: 'red text times',
-            halfChecked: 'orange text check',
-            checked: 'green text check',
-            doubleChecked: 'green text double check',
+            unchecked: 'red times',
+            halfChecked: 'orange check',
+            checked: 'green check',
+            doubleChecked: 'green double check',
         }
 
         const checkList = {
@@ -512,7 +512,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         /* MEDICAL CARD */
         {
-            //
+            if (!application.medCard) checkList.application = checkMark.halfChecked
         }
 
         /* BENEFICIARY */

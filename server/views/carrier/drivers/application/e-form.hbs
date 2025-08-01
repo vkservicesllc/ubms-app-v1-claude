@@ -74,7 +74,7 @@
         <div class="ui grid" style="width: 1080px;">
             <div class="three wide left attached column">
                 <div class="ui vertical fluid tabular menu" id="section-menu">
-                    <a class="item" data-tab="workflow">Workflow</a>
+                    <a class="item active" data-tab="workflow">Workflow</a>
                     {{#if (eq fileTab true)}}
                     <a class="item" data-tab="files">Files</a>
                     {{/if}}
@@ -83,7 +83,7 @@
                     <a class="item" data-tab="position">{{idx (idx steps 0) 3}}</a>
                     <a class="item disabled" data-tab="residence">{{idx (idx steps 0) 1}}</a>
                     <a class="item disabled" data-tab="driver-license">{{idx steps 1}}</a>
-                    <a class="item active" data-tab="medical-card">{{idx steps 2}}</a>
+                    <a class="item" data-tab="medical-card">{{idx steps 2}}</a>
                     <a class="item disabled" data-tab="legal-compliance">{{idx steps 3}}</a>
                     <a class="item disabled" data-tab="safety">{{idx steps 4}}</a>
                     <a class="item disabled" data-tab="experience">{{idx steps 5}}</a>
@@ -98,7 +98,7 @@
                 <div class="ui seamless right attached segment" id="sections" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
-                    <div class="ui tab" data-tab="workflow">
+                    <div class="ui active tab" data-tab="workflow">
                         <form class="ui loading form" id="assign-form" action="{{actionUrl.assignment}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Checklist</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -554,7 +554,7 @@
                         DRIVER'S LICENSE FORM
                     </div>
 
-                    <div class="ui active tab" data-tab="medical-card">
+                    <div class="ui tab" data-tab="medical-card">
                         <form class="ui loading form" id="mec-form" action="{{actionUrl.mec}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Medical Certificate</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -566,7 +566,7 @@
                                 </div>
                                 <div class="one wide field"></div>
                             </div>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" id="mec-fields" style="margin-top: 5px;">
                                 <div class="four wide field">
                                     {{{form.mecExp.text.label}}}
                                     <div class="ui calendar" id="mec-expires-calendar">
