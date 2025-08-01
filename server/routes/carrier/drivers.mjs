@@ -11,7 +11,7 @@ import Carrier from '../../tools/core/carrier.mjs'
 import Company from '../../tools/core/company.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
 import createApplicationPdf from './mv/pdf/driver-application.mjs'
-import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
+import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 import { sortObjectByKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 import Query from '../../tools/utils/query.mjs'
 import { respond404 } from '../../tools/utils/response.mjs'
@@ -83,7 +83,7 @@ router.get('/files/application/:route?', User.verify, Team.verify, async (req, r
         const { DS } = user
 
         const permissions = await user.permissions(res.session)
-        if (!DS && !permissions['f:drv/apl'].includes('2'))
+        if (!withPrivileges('f:drv/apl', 'view', permissions, DS))
             return respond404(res)
 
         const { route } = req.params
@@ -149,10 +149,9 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-        hbs.permissions = {
-            create: DS || permissions['d:drv/apl'].includes('2'),
-            delete: DS || permissions['d:drv/apl'].includes('5'),
-        }
+        const privs = ['create', 'delete']
+        hbs.permissions = {}
+        privs.forEach(priv => hbs.permissions[priv] = withPrivileges('d:drv/apl', priv, permissions, DS))
 
         if (hbs.permissions.create) {
             hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=${req.session.team}`
@@ -230,7 +229,7 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
         const { DS } = user
 
         const permissions = await user.permissions(res.session)
-        if (!DS && !permissions['f:drv/apl'].includes('2') && !permissions['f:drv/apl'].includes('3')&& ! permissions['f:drv/apl'].includes('4'))
+        if (!withPrivileges('f:drv/apl', 'view', permissions, DS))
             return res.redirect(aplUrl)
 
         const application = await Application.data(res.session, { formId })
@@ -261,7 +260,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         const { user, team } = res.session
         const { DS } = user
         const permissions = await user.permissions(res.session)
-        if (!DS && !permissions['d:drv/apl'].includes('3'))
+        if (!withPrivileges('d:drv/apl', 'modify', permissions, DS))
             return res.redirect(aplUrl)
 
         const { formId } = req.params
@@ -433,7 +432,10 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         /* FILES */
         {
-
+            hbs.fileTab = inPGroup('f:drv', permissions, DS)
+            hbs.filePerms = {
+                application: withPrivileges('f:drv/apl', 'view', permissions, DS),
+            }
         }
 
         /* PROFILE */

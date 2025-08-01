@@ -75,7 +75,9 @@
             <div class="three wide left attached column">
                 <div class="ui vertical fluid tabular menu" id="section-menu">
                     <a class="item" data-tab="workflow">Workflow</a>
+                    {{#if (eq fileTab true)}}
                     <a class="item" data-tab="files">Files</a>
+                    {{/if}}
                     <a class="item" data-tab="profile">{{idx (idx steps 0) 0}}</a>
                     <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
                     <a class="item" data-tab="position">{{idx (idx steps 0) 3}}</a>
@@ -210,6 +212,7 @@
                         {{/if}}
                     </div>
 
+                    {{#if (eq fileTab true)}}
                     <div class="ui tab" data-tab="files">
                         <div class="ui list">
                             <div class="item">
@@ -217,6 +220,7 @@
                                 <div class="content">
                                     <div class="header">DQ Files</div>
                                     <div class="list">
+                                        {{#if (eq filePerms.application true)}}
                                         <div class="item">
                                             <i class="pdf file outline icon"></i>
                                             <div class="content">
@@ -227,6 +231,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {{/if}}
                                         <div class="item">
                                             <i class="dark orange folder icon"></i>
                                             <div class="content">
@@ -306,6 +311,7 @@
                             </div>
                         </div>
                     </div>
+                    {{/if}}
 
                     <div class="ui tab" data-tab="profile">
                         <form class="ui loading form" id="profile-form" action="{{actionUrl.profile}}" method="POST" autocomplete="off">

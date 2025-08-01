@@ -43,7 +43,7 @@ export default {
             'apl': {
                 name: 'Applications',
                 format: '.pdf (automatic)',
-                privileges: [ 0, 2 ],
+                privileges: [ 0 ],
             },
             'leg': {
                 name: [ 'US Legal ID', 'US Passport / Green Card' ],

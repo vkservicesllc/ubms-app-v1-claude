@@ -12,7 +12,7 @@ export default {}
 
 
 
-export const inPGroup = (searchGrp, permissions, DS) => {
+export const inPGroup = (searchGrp, permissions = {}, DS = false) => {
     if (DS) return true
 
     let found = false
@@ -27,7 +27,7 @@ export const inPGroup = (searchGrp, permissions, DS) => {
 }
 
 
-export const inPEnvironment = (searchEnv, permissions, DS) => {
+export const inPEnvironment = (searchEnv, permissions = {}, DS = false) => {
     if (DS) return true
 
     let found = false
@@ -36,6 +36,32 @@ export const inPEnvironment = (searchEnv, permissions, DS) => {
 
         found = true
         break
+    }
+
+    return found
+}
+
+
+export const withPrivileges = (searchEnv, searchPrivs, permissions = {}, DS = false) => {
+    if (DS) return true
+
+    if (!Array.isArray(searchPrivs)) searchPrivs = [ searchPrivs ]
+    const prop = { d: 'data', f: 'file' }[searchEnv.split(':')[0]]
+    let found = false
+
+    mainLoop:
+    for (const env in permissions) {
+        if (env !== searchEnv) continue
+
+        const privs = permissions[env]
+        for (let p of privs) {
+            p = +p
+
+            if (searchPrivs.includes(privileges[prop][p])) {
+                found = true
+                break mainLoop
+            }
+        }
     }
 
     return found
