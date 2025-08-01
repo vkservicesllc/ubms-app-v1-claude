@@ -1480,18 +1480,30 @@ export default async (carrier, application, addresses, violations, accidents, em
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 75
-            page2.drawText(`Inuries`, {
+            text = 'Injuries'
+            page2.drawText(text, {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            page2.drawText('(Y/N)', {
+                x: marginX + vLineX + padding + textWidth + 2, y: y - offset.labelY,
+                font: font.label, size: size.label * .65, color: color.label,
             })
             page2.drawText(injuries || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 75
-            page2.drawText(`Fatalities`, {
+            text = 'Fatalities'
+            page2.drawText(text, {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            page2.drawText('(Y/N)', {
+                x: marginX + vLineX + padding + textWidth + 2, y: y - offset.labelY,
+                font: font.label, size: size.label * .65, color: color.label,
             })
             page2.drawText(fatalities || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
