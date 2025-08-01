@@ -7,7 +7,7 @@ import Team from '../../tools/core/team.mjs'
 import Company from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
-import { inPEnvironment } from '../../tools/core/user/permissions.mjs'
+import { inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
@@ -47,7 +47,7 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
         const { user } = res.session
         const { DS } = user
         const permissions = await user.permissions(res.session)
-        if (!DS && !inPEnvironment('d:drv/apl', permissions, DS) && !permissions['d:drv/apl'].includes('2'))
+        if (!withPrivileges('d:drv/apl', 'create', permissions, DS))
             return throwErr.auth(res)
 
         const { company: route } = req.body
@@ -97,7 +97,7 @@ router.post('/driver/application/delete', User.verify, Team.verify, async (req, 
         const { user } = res.session
         const { DS } = user
         const permissions = await user.permissions(res.session)
-        if (!DS && !inPEnvironment('d:drv/apl', permissions, DS) && !permissions['d:drv/apl'].includes('5'))
+        if (!withPrivileges('d:drv/apl', 'delete', permissions, DS))
             return throwErr.auth(res)
 
         const { _id } = req.body
@@ -117,6 +117,14 @@ router.post('/driver/application/:formId/edit/:step',
     dynamicApplicantValidator.applications,
     async (req, res) => {
         try {
+            const { user } = res.session
+            const { DS } = user
+            const permissions = await user.permissions(res.session)
+            // if (!withPrivileges('d:drv/apl', ['modify', 'update'], permissions, DS))
+            //! NOT sure about update permission
+            if (!withPrivileges('d:drv/apl', 'modify', permissions, DS))
+                return throwErr.auth(res)
+
             const { formId, step } = req.params
             const application = await Application.data(res.session, { formId })
             if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')

@@ -17,7 +17,11 @@
             <i class="close icon"></i>
             <div class="header">New Application</div>
             <div class="content">
-                <p><a id="apl-url" href="{{applicationUrl}}" target="_blank">{{applicationUrl}}</a> <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup></p>
+                <p>
+                    <a href="/drivers/files/application" id="pdf-link" target="_blank"><i class="pdf file icon"></i></a>
+                    <a id="apl-url" href="{{applicationUrl}}" target="_blank">{{applicationUrl}}</a>
+                    <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup>
+                </p>
                 <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/driver/application/new" method="POST" autocomplete="off" style="margin-top: 5px;">
                     <input type="hidden" id="recruiter-id" value="{{userSimpleId}}" />
                     <div class="five wide column">
@@ -26,7 +30,10 @@
                                 <i class="truck moving icon"></i>
                                 <div class="content">
                                     <div class="header">Company</div>
-                                    <p>If you know which company is hiring the applicant, please select it below</p>
+                                    <p>
+                                        If you know which company is hiring the applicant, please select it below.<br/>
+                                        A cover sheet will be added to the PDF blank.
+                                    </p>
                                 </div>
                             </div>
                             <div class="field">

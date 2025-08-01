@@ -14,7 +14,9 @@ const cityId = TS.addrCity
 const modalId = '#new-apl-modal'
 const $modal = $(modalId)
 const $aplUrl = $('#apl-url')
-const aplUrl = $aplUrl.text()
+const aplUrl = $aplUrl.attr('href')
+const $pdfLink = $('#pdf-link')
+const pdfUrl = $pdfLink.attr('href')
 const $message = {
     email: $('#email-help'),
 }
@@ -73,7 +75,7 @@ const calSettings = {
 
 $selfAssign.click(function() {
     const checked = $(this).prop('checked')
-    let [ base, query ] = $aplUrl.text().split('?')
+    let [ base, query ] = $aplUrl.attr('href').split('?')
     query = query.split('&')
 
     if (!checked) query = query.filter(item => !item.startsWith('rec='))
@@ -204,12 +206,13 @@ table.on('draw', function() {
                     $dropdown.company.dropdown().on('change', function() {
                         const route = $(this).dropdown('get value')
                         let [ base ] = aplUrl.split('?')
-                        let query = $aplUrl.text().split('?')[1]
+                        let query = $aplUrl.attr('href').split('?')[1]
 
                         if (route) base += `/${route}`
 
                         const url = base + '?' + query
                         $aplUrl.text(url).attr('href', url)
+                        $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''))
                     })
 
                     $modal.modal({
@@ -217,6 +220,7 @@ table.on('draw', function() {
                         closable: false,
                         onHidden() {
                             $aplUrl.text(aplUrl).attr('href', aplUrl)
+                            $pdfLink.attr('href', pdfUrl)
                             $dropdown.company.dropdown('clear')
                             $email.val(null)
                             $message.email.html(message.email)
@@ -235,7 +239,7 @@ table.on('draw', function() {
 $('#copy-apl-url').click(function(evt) {
     evt.preventDefault()
 
-    navigator.clipboard.writeText($aplUrl.text())
+    navigator.clipboard.writeText($aplUrl.attr('href'))
         .then(() => {
             $modal.toast({
                 message: 'URL successfully copied!',
@@ -247,7 +251,7 @@ $('#copy-apl-url').click(function(evt) {
 
             $('.ui.toast-container').css({
                 top: '75px',
-                left: `${$aplUrl.outerWidth() + 50}px`,
+                left: `${$aplUrl.outerWidth() + 65}px`,
             })
         })
 })
