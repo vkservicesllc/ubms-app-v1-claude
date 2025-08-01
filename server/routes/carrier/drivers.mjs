@@ -83,7 +83,7 @@ router.get('/files/application/:route?', User.verify, Team.verify, async (req, r
         const { DS } = user
 
         const permissions = await user.permissions(res.session)
-        if (!withPrivileges('f:drv/apl', 'view', permissions, DS))
+        if (!withPrivileges('d:drv/apl', 'create', permissions, DS))
             return respond404(res)
 
         const { route } = req.params
