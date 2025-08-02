@@ -212,7 +212,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Intro */
         {
-            y -= 50
+            y -= 55
             x = 0
             text = 'Professional Driver Application'
             textWidth = font.section.widthOfTextAtSize(text, size.section * 1.7)
@@ -1362,16 +1362,22 @@ export default async (carrier, application, addresses, violations, accidents, em
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText(`Violation #${i + 1} (Description)`, {
+            text = `Violation #${i + 1}`
+            page2.drawText(text, {
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            page2.drawText('(Description)', {
+                x: marginX + padding + textWidth + 2, y: y - offset.labelY,
+                font: font.label, size: size.label * .75, color: color.label,
             })
             page2.drawText(other || violation || '', {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / 3
-            page2.drawText(`Citation Date`, {
+            page2.drawText('Citation Date', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
@@ -1380,7 +1386,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 85
-            page2.drawText(`Citation State`, {
+            page2.drawText('Citation State', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
@@ -1453,16 +1459,22 @@ export default async (carrier, application, addresses, violations, accidents, em
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText(`Accident #${i + 1} (Description)`, {
+            text = `Accident #${i + 1}`
+            page2.drawText(text, {
                 x: marginX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
+            })
+            textWidth = font.label.widthOfTextAtSize(text, size.label)
+            page2.drawText('(Description)', {
+                x: marginX + padding + textWidth + 2, y: y - offset.labelY,
+                font: font.label, size: size.label * .75, color: color.label,
             })
             page2.drawText(other || collision || '', {
                 x: marginX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX = (width - marginX * 2) / 3
-            page2.drawText(`Date`, {
+            page2.drawText('Date', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
@@ -1471,7 +1483,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 85
-            page2.drawText(`State`, {
+            page2.drawText('State', {
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
@@ -1488,7 +1500,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             page2.drawText('(Y/N)', {
                 x: marginX + vLineX + padding + textWidth + 2, y: y - offset.labelY,
-                font: font.label, size: size.label * .65, color: color.label,
+                font: font.label, size: size.label * .7, color: color.label,
             })
             page2.drawText(injuries || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
@@ -1503,7 +1515,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             page2.drawText('(Y/N)', {
                 x: marginX + vLineX + padding + textWidth + 2, y: y - offset.labelY,
-                font: font.label, size: size.label * .65, color: color.label,
+                font: font.label, size: size.label * .7, color: color.label,
             })
             page2.drawText(fatalities || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
