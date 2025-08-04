@@ -510,6 +510,11 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                 dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
         }
 
+        /* DRIVER's CARD */
+        {
+            dropdown.dlState = ''
+        }
+
         /* MEDICAL CARD */
         {
             if (!application.medCard) checkList.application = checkMark.halfChecked
@@ -548,6 +553,10 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                 for (const relation in relationData[group])
                     dropdown.relationship += `\n${t}<div class="item" data-value="${relation}">${relation}</div>`
             }
+        }
+
+        for (const state in Address.stateList) {
+            dropdown.dlState += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
         }
 
         if (complete) {

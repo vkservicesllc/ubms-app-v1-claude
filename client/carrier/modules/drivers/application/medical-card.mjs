@@ -76,4 +76,6 @@ import application from './hub.mjs'
         $(this).val(value)
         $medList.prop('disabled', disabled).parent()[action]()
     })
+
+    inputEvent(TS.medList, { strip: true, capitalize: 'first' })
 })()

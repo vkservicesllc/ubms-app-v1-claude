@@ -78,18 +78,18 @@
                     {{#if (eq fileTab true)}}
                     <a class="item" data-tab="files">Files</a>
                     {{/if}}
-                    <a class="active item" data-tab="profile">{{idx (idx steps 0) 0}}</a>
+                    <a class="item" data-tab="profile">{{idx (idx steps 0) 0}}</a>
                     <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
                     <a class="item" data-tab="position">{{idx (idx steps 0) 3}}</a>
-                    <a class="item disabled" data-tab="residence">{{idx (idx steps 0) 1}}</a>
-                    <a class="item disabled" data-tab="driver-license">{{idx steps 1}}</a>
+                    <a class="disabled item" data-tab="residence">{{idx (idx steps 0) 1}}</a>
+                    <a class="active item" data-tab="driver-license">{{idx steps 1}}</a>
                     <a class="item" data-tab="medical-card">{{idx steps 2}}</a>
-                    <a class="item disabled" data-tab="legal-compliance">{{idx steps 3}}</a>
-                    <a class="item disabled" data-tab="safety">{{idx steps 4}}</a>
-                    <a class="item disabled" data-tab="experience">{{idx steps 5}}</a>
-                    <a class="item disabled" data-tab="pre-employment">{{idx steps 6}}</a>
-                    <a class="item disabled" data-tab="preference">{{idx steps 7}}</a>
-                    <a class="item disabled" data-tab="business">{{idx steps 8}}</a>
+                    <a class="disabled item" data-tab="legal-compliance">{{idx steps 3}}</a>
+                    <a class="disabled item" data-tab="safety">{{idx steps 4}}</a>
+                    <a class="disabled item" data-tab="experience">{{idx steps 5}}</a>
+                    <a class="disabled item" data-tab="pre-employment">{{idx steps 6}}</a>
+                    <a class="disabled item" data-tab="preference">{{idx steps 7}}</a>
+                    <a class="disabled item" data-tab="business">{{idx steps 8}}</a>
                     <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
                     <a class="item" data-tab="misc">{{idx steps 10}}</a>
                 </div>
@@ -213,7 +213,7 @@
                     </div>
 
                     {{#if (eq fileTab true)}}
-                    <div class="ui active tab" data-tab="files">
+                    <div class="ui tab" data-tab="files">
                         <div class="ui list">
                             <div class="item">
                                 <i class="dark orange folder icon"></i>
@@ -550,8 +550,38 @@
                         ADDRESS FORMS
                     </div>
 
-                    <div class="ui tab" data-tab="driver-license">
-                        DRIVER'S LICENSE FORM
+                    <div class="ui active tab" data-tab="driver-license">
+                        <form class="ui loading form" id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
+                            <h5 class="ui blue text first header">Driver's License</h5>
+                            <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="three wide field">
+                                    <div class="ui checkbox">
+                                        {{{form.dlCommercial2.checkbox.input}}}
+                                        {{{form.dlCommercial2.checkbox.label}}}
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.dlState.select.label}}}
+                                    <div class="ui fluid selection required dropdown" id="dl-state-dropdown">
+                                        {{{form.dlState.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.dlState}}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.dlNumber.text.label}}}
+                                    {{{form.dlNumber.text.input}}}
+                                </div>
+                                <div class="two wide field">
+                                    {{{form.dlClass.text.label}}}
+                                    {{{form.dlClass.text.input}}}
+                                </div>
+                            </div>
+                            {{!-- <div class="ui compact grid" style="margin-top: 5px;">
+                            </div> --}}
+                        </form>
                     </div>
 
                     <div class="ui tab" data-tab="medical-card">
@@ -744,6 +774,7 @@
         {{#if (eq deptId 1)}}
         <script type="module" src="/modules/drivers/application/position.expedite.mjs"></script>
         {{/if}}
+        <script type="module" src="/modules/drivers/application/driver-license.mjs"></script>
         <script type="module" src="/modules/drivers/application/medical-card.mjs"></script>
         <script type="module" src="/modules/drivers/application/beneficiary.mjs"></script>
         <script type="module" src="/modules/drivers/application/misc.mjs"></script>

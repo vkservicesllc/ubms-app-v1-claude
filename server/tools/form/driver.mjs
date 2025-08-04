@@ -391,6 +391,14 @@ class ApplicationForm {
 
     static dlCommercial = createDlCommercialFrom({ selector: appSelector })
 
+    static dlCommercial2 = createForm({
+        selector: appSelector,
+        target: 'dlCommercial',
+        type: 'checkbox',
+        name: 'commercial',
+        label: 'Commercial',
+    })
+
     static dlState = createDlStateForm({ selector: appSelector })
     static dlNumber = createDlNumberForm({ selector: appSelector })
     static dlClass = createDlClassForm({ selector: appSelector })
