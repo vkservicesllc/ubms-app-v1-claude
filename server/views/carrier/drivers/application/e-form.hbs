@@ -579,8 +579,38 @@
                                     {{{form.dlClass.text.input}}}
                                 </div>
                             </div>
-                            {{!-- <div class="ui compact grid" style="margin-top: 5px;">
-                            </div> --}}
+                            <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="four wide field">
+                                    {{{form.dlIss.text.label}}}
+                                    <div class="ui calendar" id="dl-issued-calendar">
+                                        <div class="ui fluid input left icon">
+                                            {{{form.dlIss.text.input}}}
+                                            <i class="calendar icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.dlExp.text.label}}}
+                                    <div class="ui calendar" id="dl-expires-calendar">
+                                        <div class="ui fluid input left icon">
+                                            {{{form.dlExp.text.input}}}
+                                            <i class="calendar icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.dlEndrs.text.label}}}
+                                    {{{form.dlEndrs.text.input}}}
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.dlRestr.text.label}}}
+                                    {{{form.dlRestr.text.input}}}
+                                </div>
+                            </div>
+                            <div class="ui divider"></div>
+                            <div class="actions">
+                                <button type="submit" class="ui right floated circular blue button">Save</button>
+                            </div>
                         </form>
                     </div>
 

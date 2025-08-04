@@ -513,6 +513,8 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         /* DRIVER's CARD */
         {
             dropdown.dlState = ''
+            options.dlEndrs = { text: { input: { rows: 2 } } }
+            options.dlRestr = { text: { input: { rows: 2 } } }
         }
 
         /* MEDICAL CARD */
