@@ -219,7 +219,7 @@ const selector = {
             },
             underMeds: {
                 yes: 'meds-taken',
-                no: 'dmeds-not-taken',
+                no: 'meds-not-taken',
             },
             dui: {
                 yes: 'had-dui',
@@ -296,6 +296,7 @@ const selector = {
         },
         checkbox: {
             noMec: 'no-med-card',
+            underMeds: 'meds-taken',
             noExp: 'no-experience',
             straightExp: {
                 box: 'box-truck-experience',

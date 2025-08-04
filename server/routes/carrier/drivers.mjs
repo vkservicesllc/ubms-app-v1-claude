@@ -513,6 +513,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         /* MEDICAL CARD */
         {
             if (!application.medCard) checkList.application = checkMark.halfChecked
+            options.noMec = { checkbox: { label: { content: 'Unavailable at the time of submission' } } }
         }
 
         /* BENEFICIARY */

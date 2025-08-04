@@ -3,20 +3,21 @@ import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application from './hub.mjs'
 
-
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { medCard } = application
+    const { medCard, underMeds, medList } = application
     const { expiresOn, issuedOn, nrcme } = application.mec || {}
-    const TS = selector.id.text
+    const TS = selector.id.text, TC = selector.id.checkbox
 
-    const $noMec = $('#no-mec')
+    const $noMec = $(TC.noMec)
     const $fields = $('#mec-fields')
     const $calendar = {
         expiresOn: $('#mec-expires-calendar'),
         issuedOn: $('#mec-issued-calendar'),
     }
+    const $underMeds = $(TC.underMeds)
+    const $medList = $(TS.medList)
 
     $calendar.expiresOn
         .calendar({
@@ -51,10 +52,28 @@ import application from './hub.mjs'
         $noMec.parent().parent().parent().hide()
     }
 
+    if (underMeds) {
+        $underMeds.prop('checked', true).val('Y')
+        $medList.val(medList).prop('disabled', false).parent().show()
+    } else $underMeds.val('N')
+
     $noMec.on('change', function() {
         if (!$(this).prop('checked')) {
             $(this).parent().parent().parent().hide()
             $fields.show().find('input').prop('disabled', false)
         }
+    })
+
+    $underMeds.on('change', function() {
+        let value = 'N', disabled = true, action = 'hide'
+
+        if ($(this).prop('checked')) {
+            value = 'Y'
+            disabled = false
+            action = 'show'
+        }
+
+        $(this).val(value)
+        $medList.prop('disabled', disabled).parent()[action]()
     })
 })()

@@ -216,17 +216,6 @@ class ApplicationForm {
         requiredLabel: false,
     })
 
-    // static position = createForm({
-    //     selector: appSelector,
-    //     target: 'position',
-    //     group: 'position',
-    //     type: 'select/radio',
-    //     name: 'position',
-    //     emptyOpt,
-    //     required,
-    //     label: 'Position',
-    // })
-
     static position = createPositionForm({ target: 'position', group: 'position'})
 
     static condition = createForm({ /* aka Status */
@@ -452,10 +441,27 @@ class ApplicationForm {
         label: 'Impairing medications taken',
     })
 
+    static underMeds2 = createForm({
+        selector: appSelector,
+        target: 'underMeds',
+        type: 'checkbox',
+        name: 'underMeds',
+        label: 'Impairing medications taken',
+    })
+
     static medList = createForm({
         selector: appSelector,
         target: 'medList',
         type: 'textarea',
+        name: 'medList',
+        required,
+        disabled,
+        label: 'Medication List',
+    })
+
+    static medList2 = createForm({
+        selector: appSelector,
+        target: 'medList',
         name: 'medList',
         required,
         disabled,
