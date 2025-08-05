@@ -343,6 +343,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             ssc: checkMark.unchecked,
             dl: checkMark.unchecked,
             mec: checkMark.unchecked,
+            prevEmployers: checkMark.unchecked,
         }
 
         let options = {}, dropdown = {}, t = `\t`.repeat(11)

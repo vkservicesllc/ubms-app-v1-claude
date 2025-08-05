@@ -74,7 +74,7 @@
         <div class="ui grid" style="width: 1080px;">
             <div class="three wide left attached column">
                 <div class="ui vertical fluid tabular menu" id="section-menu">
-                    <a class="item" data-tab="workflow">Workflow</a>
+                    <a class="active item" data-tab="workflow">Workflow</a>
                     {{#if (eq fileTab true)}}
                     <a class="item" data-tab="files">Files</a>
                     {{/if}}
@@ -82,7 +82,7 @@
                     <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
                     <a class="item" data-tab="position">{{idx (idx steps 0) 3}}</a>
                     <a class="disabled item" data-tab="residence">{{idx (idx steps 0) 1}}</a>
-                    <a class="active item" data-tab="driver-license">{{idx steps 1}}</a>
+                    <a class="item" data-tab="driver-license">{{idx steps 1}}</a>
                     <a class="item" data-tab="medical-card">{{idx steps 2}}</a>
                     <a class="disabled item" data-tab="legal-compliance">{{idx steps 3}}</a>
                     <a class="disabled item" data-tab="safety">{{idx steps 4}}</a>
@@ -98,7 +98,7 @@
                 <div class="ui seamless right attached segment" id="sections" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
-                    <div class="ui tab" data-tab="workflow">
+                    <div class="ui active tab" data-tab="workflow">
                         <form class="ui loading form" id="assign-form" action="{{actionUrl.assignment}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Checklist</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -138,6 +138,12 @@
                                 </div>
                                 <div class="four wide field">
                                     <div class="ui list">
+                                        <div class="item">
+                                            <i class="ui {{checkList.prevEmployers}} icon"></i>
+                                            <div class="content">
+                                                Previous Employments
+                                            </div>
+                                        </div>
                                         <div class="item">
                                             <span class="ui red text">... more items to be added</span>
                                         </div>
@@ -550,7 +556,7 @@
                         ADDRESS FORMS
                     </div>
 
-                    <div class="ui active tab" data-tab="driver-license">
+                    <div class="ui tab" data-tab="driver-license">
                         <form class="ui loading form" id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Driver's License</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
