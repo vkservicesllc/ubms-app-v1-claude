@@ -9,6 +9,12 @@ const { application, identity, count, unmatchedIdx } = data
 export default application
 export { identity, count, unmatchedIdx }
 
+//! TEMP
+application.dl.commercial = true
+// application.dl.class = 'C'
+// application.dl.endorsement = 'HazMat'
+// application.dl.restriction = 'Corrective lenses'
+
 
 export const errorIcon = '<i class="ui red exclamation triangle icon"></i>'
 

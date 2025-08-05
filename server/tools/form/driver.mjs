@@ -396,7 +396,7 @@ class ApplicationForm {
         target: 'dlCommercial',
         type: 'checkbox',
         name: 'commercial',
-        label: 'Commercial',
+        label: 'Commercial <small>(CDL)</small>',
     })
 
     static dlState = createDlStateForm({ selector: appSelector })
