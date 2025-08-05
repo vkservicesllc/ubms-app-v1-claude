@@ -413,12 +413,26 @@ class ApplicationForm {
         group: 'driverLicense',
         name: 'denied',
     })
+    static dlDenied2 = createForm({
+        selector: appSelector,
+        target: 'dlDenied',
+        type: 'checkbox',
+        name: 'denied',
+        label: 'The license has been denied in the past',
+    })
 
     static dlRevoked = createYesNoForm({
         selector: appSelector,
         target: 'dlRevoked',
         group: 'driverLicense',
         name: 'revoked',
+    })
+    static dlRevoked2 = createForm({
+        selector: appSelector,
+        target: 'dlRevoked',
+        type: 'checkbox',
+        name: 'revoked',
+        label: 'The license has been revoked/suspended in the past',
     })
 
     static dlDeniedExpl = createDlProblemExplForm('dlDeniedExpl', 'deniedExpl')

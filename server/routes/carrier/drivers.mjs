@@ -515,6 +515,8 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             dropdown.dlState = ''
             options.dlEndrs = { text: { input: { rows: 2 } } }
             options.dlRestr = { text: { input: { rows: 2 } } }
+            options.dlDeniedExpl = { text: { input: { rows: 2 }, label: { content: 'Details' } } }
+            options.dlRevokedExpl = { text: { input: { rows: 2 }, label: { content: 'Details' } } }
         }
 
         /* MEDICAL CARD */

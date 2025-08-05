@@ -296,6 +296,8 @@ const selector = {
         },
         checkbox: {
             dlCommercial: 'driver-license-commercial',
+            dlDenied: 'driver-license-denied',
+            dlRevoked: 'driver-license-revoked',
             noMec: 'no-med-card',
             underMeds: 'meds-taken',
             noExp: 'no-experience',
