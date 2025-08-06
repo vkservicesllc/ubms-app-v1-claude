@@ -1,10 +1,11 @@
 const filterDropdown = (id, placeholder, props = {}) => {
-    let { fluid, multiple, clearable, element } = props
+    let { fluid, multiple, clearable, element, short } = props
     if (typeof fluid !== 'boolean') fluid = true
     if (typeof multiple !== 'boolean') multiple = false
     if (typeof clearable !== 'boolean') clearable = false
     if (![ 'select', 'div' ].includes(element)) element = 'select'
 
+    const length = short === true ? 'short' : 'long'
     let attr = '', classes = ''
 
     if (fluid) classes += ' fluid'
@@ -17,7 +18,7 @@ const filterDropdown = (id, placeholder, props = {}) => {
 
     if (classes) classes += ' '
 
-    let dropdown = '<div class="ui labeled input"><div class="ui label"><i class="filter icon"></i></div>'
+    let dropdown = `<div class="ui labeled ${length} input"><div class="ui label"><i class="filter icon"></i></div>`
     dropdown += `<${element} class="ui${classes}dropdown custom-dt-dropdown"`
 
     if (element === 'select') dropdown += ` id="${id}"${attr}><option value="">${placeholder}</option>`

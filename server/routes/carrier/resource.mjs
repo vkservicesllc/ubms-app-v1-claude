@@ -82,7 +82,7 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
 
         //! There is no Department Switch, therefore identifying department by Team Settings
         req.body.deptId = team.settings.deptId[0]
-return res.send (req.body)
+
         const { error } = await Application.create(res.session, req.body)
         if (error) return throwErr.server(res, error, err)
 

@@ -297,7 +297,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         const recUrl = `/resource/driver/application/${formId}/edit`
         hbs.actionUrl = {
-            assignment: `${recUrl}/assignment`,
+            workflow: `${recUrl}/workflow`,
             profile: `${recUrl}/profile`,
             status: `${recUrl}/legal-status`,
             position: `${recUrl}/position`,
@@ -423,12 +423,16 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                 const condition = conditions[c]
                 dropdown.condition += `\n${t}<div class="item" data-value="${c}">${condition}</div>`
             }
+            if (!['p', 'c'].includes(application.condition))
+                options.condition = { hidden: { input: { value: application.condition } }}
 
             const experiences = Application.experienceList
             for (const e in experiences) {
                 const experience = experiences[e]
                 dropdown.experience += `\n${t}<div class="item" data-value="${e}">${experience}</div>`
             }
+            if (application?.decision?.experience)
+                options.experience = { hidden: { input: { value: application.decision.experience } }}
         }
 
         /* FILES */

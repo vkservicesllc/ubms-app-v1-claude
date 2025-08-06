@@ -5,6 +5,8 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
+    const { experience, position } = application.decision || {}
+
     const $dropdown = {
         user: $('#user-dropdown'),
         carrier: $('#carrier-dropdown'),

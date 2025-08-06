@@ -192,8 +192,11 @@ const table = $('#driver-apl-table').DataTable({
             title: 'Position',
             searchable: false,
             orderable: false,
-            render(data) {
-                return positions[data]
+            render(data, type, row) {
+                data = positions[data]
+                if (row.dlCommercial) data += ' <sup><small><i class="green star outline icon"></i></small></sup>'
+
+                return data
             },
         },
 
@@ -308,8 +311,8 @@ const table = $('#driver-apl-table').DataTable({
 
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
         const dropdown = {
-            condition: filterDropdown('condition-filter', 'Status', { multiple: true, clearable: true, element: 'div' }),
-            position: filterDropdown('position-filter', 'Position', { multiple: true, clearable: true, element: 'div' }),
+            condition: filterDropdown('condition-filter', 'Status', { multiple: true, clearable: true, element: 'div', short: true }),
+            position: filterDropdown('position-filter', 'Position', { multiple: true, clearable: true, element: 'div', short: true }),
             company: filterDropdown('company-filter', 'Company', { multiple: true, clearable: true, element: 'div' }),
             user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
         }
@@ -369,6 +372,7 @@ const table = $('#driver-apl-table').DataTable({
                 toolbar.append(dropdown.position)
                 toolbar.append(dropdown.company)
                 toolbar.append(dropdown.user)
+                toolbar.append('<button class="ui button" id="other-filters"><i class="filter icon"></i></button>')
 
                 $('.dt-length').after(toolbar)
 

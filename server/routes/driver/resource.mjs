@@ -13,6 +13,10 @@ import Driver, { Application } from '../../tools/core/driver.mjs'
 import validationCheck from '../../tools/form/validator.mjs'
 import DriverForm, { ApplicationForm } from '../../tools/form/driver.mjs'
 
+const validateApplicationWorkflow = []
+const applicantWorkflowFields = ['user', 'carrier', 'condition', 'experience', 'apprPosition']
+applicantWorkflowFields.forEach(prop => validateApplicationWorkflow.push(ApplicationForm[prop].validate()))
+
 const validateApplicant = [], validateApplicantProfile = [], validateApplicantAddress = []
 const applicantProfileFields = [
     'firstName', 'middleName', 'lastName', 'suffix',
@@ -121,8 +125,8 @@ const dynamicValidator = {
         let validators
 
         switch (step) {
-            case 'assignment':
-                validators = []
+            case 'workflow':
+                validators = validateApplicationWorkflow
                 break
             case 'profile':
                 validators = validateApplicantProfile

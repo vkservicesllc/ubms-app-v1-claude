@@ -49,6 +49,7 @@ const query = {
     aplBeneficiaries: new Query(db.carrier, 'application_beneficiaries'),
     aplEmergencies: new Query(db.carrier, 'application_emergencies'),
     aplChecklists: new Query(db.carrier, 'application_checklists'),
+    aplDecisions: new Query(db.carrier, 'application_decisions'),
 }
 
 
@@ -272,6 +273,12 @@ class Application {
 
         this.legalStatus = [ data.status, data.statusExpiresOn ]
         this.step = data.step
+
+        if (data.decExperience || data.decPosition)
+            this.decision = {
+                experience: data.decExperience,
+                position: data.decPosition,
+            }
 
         const person = new Person({ firstName, middleName, lastName, suffix })
         this.firstName = firstName
@@ -513,30 +520,54 @@ class Application {
 
         switch (step) {
 
-            case 'assignment':
+            case 'workflow':
                 {
-                    const { _userId, _carrierId } = data
+                    let mainData = {}
+                    const { _userId, _carrierId, condition } = data
                     delete data._userId
                     delete data._carrierId
+                    delete data.condition
 
                     if (_userId) {
                         const user = await User.data(session, { _id: _userId })
-                        data.userId = await user.id()
+                        mainData.userId = await user.id()
                     }
 
                     if (_carrierId) {
                         const carrier = await Carrier.data(session, { _id: _carrierId })
-                        data.carrierId = await carrier.id()
+                        mainData.carrierId = await carrier.id()
                     }
 
-                    data = processData(data, {
+                    if (condition) mainData.condition = condition
+
+                    mainData = processData(mainData, {
                         modifiedBy, branch, siteId,
                         currentData: this, currentUpdateLog: await this.log('updateLog'),
                     })
 
-                    if (dataLen(data)) {
-                        const [ result ] = await mysql.execute(query.applications.update(data, { id }))
+                    if (dataLen(mainData)) {
+                        const [ result ] = await mysql.execute(query.applications.update(mainData, { id }))
                         if (result.affectedRows === 1) modified = true
+                    }
+
+                    if (dataLen(data)) {
+                        if (this.decision) {
+                            data = processData(data, {
+                                modifiedBy, branch, siteId,
+                                currentData: this, currentUpdateLog: await this.log('updateLog', 'aplDecisions'),
+                            })
+
+                            if (dataLen(data)) {
+                                const [ result ] = await mysql.execute(query.aplDecisions.update(data, { aplId: id }))
+                                if (result.affectedRows === 1) modified = true
+                            }
+                        } else {
+                            data = processData(data)
+                            data.aplId = id
+
+                            const [ result ] = await mysql.execute(query.aplDecisions.insert(data))
+                            if (result.affectedRows === 1) modified = true
+                        }
                     }
                 }
                 break
@@ -1871,6 +1902,14 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
+                table: 'application_decisions',
+                fields: [
+                    [ 'experience', 'decExperience' ],
+                    [ 'position', 'decPosition' ],
+                ],
+                join: [ 'aplId', 'id' ],
+            },
+            {
                 table: 'carriers',
                 join: [ 'id', 'carrierId' ],
             },
@@ -2057,6 +2096,7 @@ class Application {
                     'nms.middleName AS originalMiddleName',
                     'nms.lastName AS originalLastName',
                     'nms.suffix AS originalSuffix',
+                    'dl.commercial AS dlCommercial',
                     'dl.state AS dlState',
                     'benef.relation AS benefRelation',
                     'benef.otherRel AS benefOtherRel',

@@ -38,10 +38,10 @@ const createPositionForm = (props = {}) => createForm({
     emptyOpt,
     required,
     label: 'Position',
+    // validator: {
+    //     //? need to figure out...
+    // },
     ...props,
-    validator: {
-        //? need to figure out...
-    },
 })
 
 export const createDlCommercialFrom = (props = {}) => createYesNoForm({
@@ -194,6 +194,9 @@ class ApplicationForm {
         type: 'select',
         name: '_userId',
         label: 'User',
+        validator: {
+            sanitizer: value => value || null,
+        },
     })
 
     static carrier = createForm({
@@ -202,6 +205,9 @@ class ApplicationForm {
         type: 'select',
         name: '_carrierId',
         label: 'Carrier',
+        validator: {
+            sanitizer: value => value || null,
+        },
     })
 
     static pin = createForm({
@@ -226,6 +232,9 @@ class ApplicationForm {
         data: { a: 'Approved', r: 'Waiting List', b: 'Disqualified' },
         emptyOpt,
         label: 'Application Status',
+        validator: {
+            sanitizer: value => value || null,
+        },
     })
 
     static experience = createForm({
@@ -236,12 +245,18 @@ class ApplicationForm {
         data: Application.experienceList,
         emptyOpt,
         label: 'Recognized Experience',
+        validator: {
+            sanitizer: value => value || null,
+        },
     })
 
     static apprPosition = createPositionForm({
         target: 'apprPosition',
         required: false,
         label: 'Approved Position',
+        validator: {
+            sanitizer: value => value || null,
+        },
     })
 
 
