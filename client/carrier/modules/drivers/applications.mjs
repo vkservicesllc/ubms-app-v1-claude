@@ -2,6 +2,7 @@ import Person from '/modules/tools/core/person.mjs'
 import escapeHTML from '/modules/tools/utils/html.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+import styleSearch, { tag as searchTag } from '/modules/tools/search.mjs'
 import filterDropdown from '/modules/tools/filter-dropdown.mjs'
 
 
@@ -16,22 +17,6 @@ const conditions = {
 }
 const positions = $.ajax('/api/source/driver?filter=positions', { method: 'POST', async: false }).responseJSON
 const defaultContent = '<i style="color: pink; font-size: .9em;">Unassigned</i>'
-
-const styleSearch = () => {
-    $('.dt-search').find('label').remove()
-
-    const $search = $('.dt-search input[type="search"]')
-    const $preserved = $search.detach()
-    const $structure = $('<div class="ui labeled input"><div class="ui label"><i class="search icon"></i></div></div>')
-
-    $preserved
-        .addClass("ui input")
-        .removeClass("dt-search")
-        .appendTo($structure)
-
-    $('.dt-search').replaceWith($structure)
-}
-const searchTag = '<sup><i class="small grey text search icon"></i></sup>'
 
 const table = $('#driver-apl-table').DataTable({
 
@@ -56,11 +41,6 @@ const table = $('#driver-apl-table').DataTable({
 
             return data
         },
-    },
-
-    fixedHeader: {
-        header: true,
-        headerOffset: $('#top-nav').height(),
     },
 
     columns: [
@@ -306,6 +286,11 @@ const table = $('#driver-apl-table').DataTable({
 
     dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
 
+    fixedHeader: {
+        header: true,
+        headerOffset: $('#top-nav').height(),
+    },
+
     initComplete(settings, data) {
         styleSearch()
 
@@ -394,8 +379,6 @@ const table = $('#driver-apl-table').DataTable({
                 $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
             },
         })
-
-
     },
 
     language: {

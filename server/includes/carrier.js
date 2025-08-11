@@ -76,7 +76,7 @@ module.exports = {
     },
 
     'drivers': {
-        external: [ ...online.external ],
+        external: [ ...online.external, 'chart' ],
         internal: {
             css: [ ...online.internal.css ],
             js: [ ...online.internal.js ],
@@ -113,6 +113,15 @@ module.exports = {
 
     'drivers.previous-employments': {
         external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers.applicants': {
+        external: [ ...online.external, 'datatables.fomantic-ui', 'moment' ],
         internal: {
             css: [ ...online.internal.css ],
             js: [ ...online.internal.js ],

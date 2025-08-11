@@ -214,6 +214,30 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 })
 
 
+router.get('/applicants', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!inPEnvironment('d:drv/apl', permissions, DS))
+            return res.redirect(res.session.defUrl)
+
+        const key = 'drivers.applicants'
+        let { hbs } = res
+        hbs = await hbs.set(key, { titlePfx: 'Driver Position Applicants' })
+
+        const { active } = hbs.nav
+        hbs.nav.left.drivers = active
+
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, null))
+
+        res.render(key.replace('.', '/'), hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
 router.get('/application/:formId/files/application', async (req, res, next) => {
     const user = await User.verify(req, res)
     if (!user) return res.send('Your session has expired, so you can no longer view this file.<br/>Please log in using another tab and refresh this page to regain access.')

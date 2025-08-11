@@ -1,6 +1,19 @@
 {{> carrier/nav.alpha}}
 
-        <h4>Drivers</h4>
-        <p>Driver stats by companies... Work in progress...</p>
+        <div class="ui container" style="margin: 1em;">
+            <div class="ui card" style="width: 256px;">
+                <div class="content">
+                    <div class="header"><a href="/drivers/applications">Applications</a></div>
+                </div>
+                <div class="content">
+                    <canvas id="application-doughnut-chart" style="max-height: 192px;"></canvas>
+                </div>
+                <div class="content">
+                    <i class="address book outline icon"></i>
+                    <a href="/drivers/applicants">Manage Applicants</a>
+                </div>
+            </div>
+        </div>
+        <script type="module" src="/modules/drivers/charts/applications.mjs"></script>
 
 {{> carrier/nav.omega}}

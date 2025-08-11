@@ -50,6 +50,11 @@ module.exports = {
         },
 
 
+        'chart': {
+            js: '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js" integrity="sha256-Lye89HGy1p3XhJT24hcvsoRw64Q4IOL5a7hdOflhjTA=" crossorigin="anonymous"></script>',
+        },
+
+
         'datatables': {
             css: [
                 '<link rel="stylesheet" href="https://cdn.datatables.net/2.1.3/css/dataTables.dataTables.min.css" />',
