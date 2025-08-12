@@ -159,7 +159,7 @@ class Query {
         })
         if (matches.length)
             query += `WHERE ${matches.join(`\nAND `)}\n`
-        if (grouper) query += `GROUP BY ${grouper}\n`
+        if (grouper) query += `GROUP BY ${Query.#_field(grouper)}\n`
         // ...unfinished / add sort filter
         if (limit) query += `LIMIT ${limit}\n`
 
@@ -179,7 +179,7 @@ class Query {
         query += `\nFROM ${table}\n`
 
         if (match) query += `WHERE ${Query.#match(match)}\n`
-        if (group) query += `GROUP BY ${group}\n`
+        if (group) query += `GROUP BY ${Query.#_field(group)}\n`
         if (sort) query += `ORDER BY ${Query.#sort(sort)}\n`
         if (limit) query += `LIMIT ${limit}\n`
 

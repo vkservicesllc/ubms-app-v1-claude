@@ -257,16 +257,22 @@ class Driver extends Individual {
             const teamId = await team.id()
             const { draw, start, length } = req.body
 
+            const excludedConditions = ['p']
+            if (false) excludedConditions.push('c') //! FILTER
+
             const baseQuery = knex(`${db.carrier}.drivers AS drv`)
                 .select(
                     knex.raw(Query.hashField(Driver.hashId(), 'drv')),
                     knex.raw(Query.hashField(Individual.hashId('personId'), 'drv')),
+                    'psn.dob',
+                    'psn.sex',
                     knex.raw('MAX(??) AS ??', ['nms.firstName', 'firstName']),
                     knex.raw('MAX(??) AS ??', ['nms.middleName', 'middleName']),
                     knex.raw('MAX(??) AS ??', ['nms.lastName', 'lastName']),
                     knex.raw('MAX(??) AS ??', ['nms.suffix', 'suffix']),
                     knex.raw('MAX(??) AS ??', ['phn.number', 'phone'])
                 )
+                .leftJoin(`${db.person}.individuals AS psn`, 'psn.id', 'drv.personId')
                 .leftJoin(
                     knex.raw('? AS nms', [ subQuery(db.person, 'names', 'since', 'personId') ]),
                     'nms.personId',
@@ -279,7 +285,7 @@ class Driver extends Individual {
                 )
                 .leftJoin(`${db.carrier}.applications AS apl`, 'apl.driverId', 'drv.id')
                 .where('apl.teamId', teamId)
-                // .whereNotIn('apl.condition', ['p', 'c'])
+                .whereNotIn('apl.condition', excludedConditions)
                 .groupBy('drv.id')
 
             const totalCountQuery = knex().count('* AS count').from(baseQuery.as('base'))
@@ -2085,6 +2091,27 @@ class Application {
         users.forEach(user => user.self = user._id === session.user._id)
 
         return users
+    }
+
+
+    static charts = async (session, filter = {}) => {
+        if (!session.user) return
+
+        const { teamId } = filter
+        const data = { applications: {} }
+        let result
+
+        [ result ] = await mysql.execute(query.applications.select(['condition', { count: ['condition', 'count'] }], {
+            match: { teamId },
+            group: 'condition',
+        }))
+        data.applications.statuses = {}
+        result.forEach(row => {
+            const { condition, count } = row
+            data.applications.statuses[condition] = count
+        })
+
+        return data
     }
 
 

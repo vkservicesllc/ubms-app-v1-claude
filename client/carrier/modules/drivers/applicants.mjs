@@ -27,6 +27,25 @@ const table = $('#driver-aplicants-table').DataTable({
         },
 
         {
+            data: 'sex',
+            title: 'Gender',
+            searchable: false,
+            render(data) {
+                if (data === null) return
+                return data ? 'Male' : 'Female'
+            },
+        },
+
+        {
+            data: 'dob',
+            title: 'Date of Birth',
+            searchable: false,
+            render(data) {
+                return moment(data).format('ll')
+            },
+        },
+
+        {
             data: 'phone',
             title: `Phone ${searchTag}`,
         },

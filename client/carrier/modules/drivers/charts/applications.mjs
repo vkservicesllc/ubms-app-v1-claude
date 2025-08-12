@@ -1,26 +1,20 @@
-$(() => {
-    const data = [5, 2, 7, 0, 3, 0]
-    const chartData = {
-        applications: {
-            labels: ['Pending', 'In review', 'Approved', 'Waiting List', 'Disqualified', 'Hired'],
-            datasets: [
-                {
+const buildChart = (ctx, chart, data, labels, colors, type = 'doughnut') => {
+    if (chart) {
+        chart.data.labels = labels
+        chart.data.datasets[0].data = data
+        chart.data.datasets[0].backgroundColor = colors
+        chart.update()
+    } else
+        chart = new Chart(ctx, {
+            type,
+            data: {
+                labels,
+                datasets: [{
                     data,
-                    backgroundColor: ['grey', 'blue', 'green', 'orange', 'red', 'black'],
+                    backgroundColor: colors,
                     borderWidth: 1,
-                },
-            ],
-        },
-    }
-
-    const ctx = {
-        applications: $('#application-doughnut-chart')[0].getContext('2d'),
-    }
-
-    const chart = {
-        applications: new Chart(ctx.applications, {
-            type: 'doughnut',
-            data: chartData.applications,
+                }],
+            },
             options: {
                 responsive: true,
                 plugins: {
@@ -34,7 +28,7 @@ $(() => {
                                 return chart.data.labels.map((label, i) => ({
                                     text: `${label} (${dataset.data[i]})`,
                                     fillStyle: dataset.backgroundColor[i],
-                                    hidden: isNaN(dataset.data[i]) || dataset.data === null,
+                                    hidden: isNaN(dataset.data[i]) || dataset.data[i] === null,
                                     index: i,
                                 }))
                             },
@@ -42,6 +36,52 @@ $(() => {
                     },
                 },
             },
-        }),
+        })
+
+    return chart
+}
+
+
+$(() => {
+    const canvasId = {
+        applications: {
+            statuses: '#application-statuses-doughnut-chart',
+        },
     }
+    const options = {
+        applications: {
+            statuses: {
+                canvasId: '#application-statuses-doughnut-chart',
+                labels: { p: 'Pending', c: 'In Review', a: 'Approved', r: 'Waiting List', b: 'Disqualified', h: 'Hired'},
+                colors: { p: 'grey', c: 'blue', a: 'green', r: 'orange', b: 'red', h: 'black'},
+                ctx: $(canvasId.applications.statuses).length ? $(canvasId.applications.statuses)[0].getContext('2d') : null,
+                chart: null,
+            },
+        },
+    }
+
+    const fetchDraw = () => {
+        $.post('/api/drivers/charts', null, response => {
+            const { applications } = response
+
+            if (options.applications.statuses.ctx) { /* Application Statuses */
+                const { statuses } = applications
+                const data = [], labels = [], colors = []
+
+                for (const prop in options.applications.statuses.labels) {
+                    data.push(statuses[prop] || 0)
+                    labels.push(options.applications.statuses.labels[prop])
+                    colors.push(options.applications.statuses.colors[prop])
+                }
+                options.applications.statuses.chart = buildChart(
+                    options.applications.statuses.ctx,
+                    options.applications.statuses.chart,
+                    data, labels, colors
+                )
+            }
+        })
+    }
+
+    fetchDraw()
+    setInterval(fetchDraw, 30000)
 })
