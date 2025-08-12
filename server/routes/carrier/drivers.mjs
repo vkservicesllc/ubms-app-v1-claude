@@ -70,6 +70,10 @@ router.get('/', User.verify, Team.verify, async (req, res) => {
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS))
 
+        hbs.permissions = {
+            applications: inPEnvironment('d:drv/apl', permissions, DS),
+        }
+
         res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)

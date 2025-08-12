@@ -40,28 +40,6 @@ router.post('/team/companies', User.verify, Team.verify, async (req, res) => {
 
 
 
-router.post('/drivers', User.verify, Team.verify, async (req, res) => {
-    try {
-        //! TEMP
-        res.send({
-            draw: 1,
-            recordsTotal: 1,
-            recordsFiltered: 1,
-            data: [
-                {
-                    firstName: 'John',
-                    middleName: 'Aaron',
-                    lastName: 'Smith',
-                    suffix: 'Jr',
-                },
-            ],
-        })
-    } catch (err) {
-        throwErr.server(res, null, err)
-    }
-})
-
-
 router.post('/drivers/application/:_id', User.verify, Team.verify, async (req, res) => {
     try {
         const { _id } = req.params
@@ -106,6 +84,7 @@ router.post('/drivers/applications/filters', User.verify, Team.verify, async (re
 
 
 router.post('/drivers/applications/:archived?', User.verify, Team.verify, Application.dtList)
+router.post('/drivers/:blacklisted?', User.verify, Team.verify, Driver.dtList)
 
 
 

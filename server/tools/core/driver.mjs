@@ -234,6 +234,86 @@ class Driver extends Individual {
     }
 
 
+    static dtList = async (req, res) => {
+        try {
+            const sessionsUser = res.session.user
+            const { DS } = sessionsUser
+            const permissions = await sessionsUser.permissions(res.session) || {}
+
+            if (!DS && !('d:drv/apl' in permissions))
+                return throwErr.api.auth(res, null, err, false)
+
+            const { blacklisted } = req.params
+            const team = await Team.data(res.session, { _id: req.session.team })
+            const teamId = await team.id()
+            const { draw, start, length } = req.body
+
+            const applyJoins = query => {
+                const subQuery = (db, table, maxField, groupId) => knex
+                    .select('*')
+                    .from(`${db}.${table}`)
+                    .whereIn(maxField, function() {
+                        this.select(knex.raw(`MAX(${maxField})`))
+                            .from(`${db}.${table}`)
+                            .groupBy(groupId)
+                    })
+
+                const nameSubQuery = subQuery(db.person, 'names', 'since', 'personId')
+
+                query
+                    .leftJoin(
+                        knex.raw('? AS nms', [ nameSubQuery ]),
+                        'nms.personId',
+                        'drv.personId'
+                    )
+                    .leftJoin(`${db.carrier}.applications AS apl`, 'apl.driverId', 'drv.id')
+            }
+
+            const baseQuery = knex(`${db.carrier}.drivers AS drv`)
+                .select(
+                    knex.raw(Query.hashField(Driver.hashId(), 'drv')),
+                    knex.raw(Query.hashField(Individual.hashId('personId'), 'drv')),
+                    knex.raw('MAX(??) AS ??', ['nms.firstName', 'firstName']),
+                    knex.raw('MAX(??) AS ??', ['nms.middleName', 'middleName']),
+                    knex.raw('MAX(??) AS ??', ['nms.lastName', 'lastName']),
+                    knex.raw('MAX(??) AS ??', ['nms.suffix', 'suffix'])
+                )
+
+            const countQuery = knex(`${db.carrier}.drivers AS drv`).count('* AS count')
+            const totalCountQuery = countQuery.clone()
+
+            applyJoins(baseQuery)
+            applyJoins(countQuery)
+            applyJoins(totalCountQuery)
+
+            baseQuery.where('apl.teamId', teamId).groupBy('drv.id')
+            countQuery.where('apl.teamId', teamId).groupBy('drv.id')
+            totalCountQuery.where('apl.teamId', teamId).groupBy('drv.id')
+            //! need to group by
+
+            baseQuery
+                .limit(length).offset(start)
+
+            console.log(baseQuery.toString())
+
+            const [ data, [ { count: recordsFiltered } ], [ { count: recordsTotal } ] ] = await Promise.all([
+                baseQuery,
+                countQuery,
+                totalCountQuery,
+            ])
+
+            res.json({
+                draw,
+                recordsTotal,
+                recordsFiltered,
+                data,
+            })
+        } catch (err) {
+            throwErr.api.server(res, null, err, false)
+        }
+    }
+
+
 }
 
 
@@ -2047,10 +2127,10 @@ class Application {
                 const companySubQuery = subQuery(db.business, 'company_names', 'since', 'companyId')
 
                 query
-                    .leftJoin(`${db.carrier}.drivers as drv`, 'drv.id', 'apl.driverId')
-                    .leftJoin(`${db.person}.individuals as psn`, 'psn.id', 'drv.personId')
+                    .leftJoin(`${db.carrier}.drivers AS drv`, 'drv.id', 'apl.driverId')
+                    .leftJoin(`${db.person}.individuals AS psn`, 'psn.id', 'drv.personId')
                     .leftJoin(
-                        knex.raw('? as nms', [ nameSubQuery ]),
+                        knex.raw('? AS nms', [ nameSubQuery ]),
                         'nms.personId',
                         'psn.id'
                     )
@@ -2059,7 +2139,7 @@ class Application {
                     .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
                     .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
                     .leftJoin(
-                        knex.raw('? as cnm', [ companySubQuery ]),
+                        knex.raw('? AS cnm', [ companySubQuery ]),
                         'cnm.companyId',
                         'cmp.id'
                     )
@@ -2111,7 +2191,7 @@ class Application {
                     'usr.deletedAt AS userDeletedAt',
                 )
 
-            const countQuery = knex(`${db.carrier}.applications as apl`).count('* as count')
+            const countQuery = knex(`${db.carrier}.applications AS apl`).count('* AS count')
             const totalCountQuery = countQuery.clone()
 
             applyJoins(baseQuery)

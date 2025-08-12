@@ -1,5 +1,6 @@
 {{> carrier/nav.alpha}}
 
+        {{#if (eq permissions.applications true)}}
         <div class="ui container" style="margin: 1em;">
             <div class="ui card" style="width: 256px;">
                 <div class="content">
@@ -15,5 +16,6 @@
             </div>
         </div>
         <script type="module" src="/modules/drivers/charts/applications.mjs"></script>
+        {{/if}}
 
 {{> carrier/nav.omega}}
