@@ -52,6 +52,15 @@ const query = {
     aplDecisions: new Query(db.carrier, 'application_decisions'),
 }
 
+const subQuery = (db, table, maxField, groupId) => knex
+    .select('*')
+    .from(`${db}.${table}`)
+    .whereIn(maxField, function() {
+        this.select(knex.raw(`MAX(${maxField})`))
+            .from(`${db}.${table}`)
+            .groupBy(groupId)
+    })
+
 
 
 class Driver extends Individual {
@@ -248,27 +257,6 @@ class Driver extends Individual {
             const teamId = await team.id()
             const { draw, start, length } = req.body
 
-            const applyJoins = query => {
-                const subQuery = (db, table, maxField, groupId) => knex
-                    .select('*')
-                    .from(`${db}.${table}`)
-                    .whereIn(maxField, function() {
-                        this.select(knex.raw(`MAX(${maxField})`))
-                            .from(`${db}.${table}`)
-                            .groupBy(groupId)
-                    })
-
-                const nameSubQuery = subQuery(db.person, 'names', 'since', 'personId')
-
-                query
-                    .leftJoin(
-                        knex.raw('? AS nms', [ nameSubQuery ]),
-                        'nms.personId',
-                        'drv.personId'
-                    )
-                    .leftJoin(`${db.carrier}.applications AS apl`, 'apl.driverId', 'drv.id')
-            }
-
             const baseQuery = knex(`${db.carrier}.drivers AS drv`)
                 .select(
                     knex.raw(Query.hashField(Driver.hashId(), 'drv')),
@@ -276,27 +264,34 @@ class Driver extends Individual {
                     knex.raw('MAX(??) AS ??', ['nms.firstName', 'firstName']),
                     knex.raw('MAX(??) AS ??', ['nms.middleName', 'middleName']),
                     knex.raw('MAX(??) AS ??', ['nms.lastName', 'lastName']),
-                    knex.raw('MAX(??) AS ??', ['nms.suffix', 'suffix'])
+                    knex.raw('MAX(??) AS ??', ['nms.suffix', 'suffix']),
+                    knex.raw('MAX(??) AS ??', ['phn.number', 'phone'])
                 )
+                .leftJoin(
+                    knex.raw('? AS nms', [ subQuery(db.person, 'names', 'since', 'personId') ]),
+                    'nms.personId',
+                    'drv.personId'
+                )
+                .leftJoin(
+                    knex.raw('? AS phn', [ subQuery(db.person, 'phones', 'since', 'personId') ]),
+                    'phn.personId',
+                    'drv.personId'
+                )
+                .leftJoin(`${db.carrier}.applications AS apl`, 'apl.driverId', 'drv.id')
+                .where('apl.teamId', teamId)
+                // .whereNotIn('apl.condition', ['p', 'c'])
+                .groupBy('drv.id')
 
-            const countQuery = knex(`${db.carrier}.drivers AS drv`).count('* AS count')
-            const totalCountQuery = countQuery.clone()
+            const totalCountQuery = knex().count('* AS count').from(baseQuery.as('base'))
 
-            applyJoins(baseQuery)
-            applyJoins(countQuery)
-            applyJoins(totalCountQuery)
+            baseQuery.limit(length).offset(start)
+            const countQuery = knex().count('* AS count').from(baseQuery.as('base'))
 
-            baseQuery.where('apl.teamId', teamId).groupBy('drv.id')
-            countQuery.where('apl.teamId', teamId).groupBy('drv.id')
-            totalCountQuery.where('apl.teamId', teamId).groupBy('drv.id')
-            //! need to group by
-
-            baseQuery
-                .limit(length).offset(start)
-
-            console.log(baseQuery.toString())
-
-            const [ data, [ { count: recordsFiltered } ], [ { count: recordsTotal } ] ] = await Promise.all([
+            const [
+                data,
+                [{ count: recordsFiltered }],
+                [{ count: recordsTotal }],
+            ] = await Promise.all([
                 baseQuery,
                 countQuery,
                 totalCountQuery,
@@ -2114,14 +2109,6 @@ class Application {
             /* STEP 1: Set up Select, Join and Count Default States */
 
             const applyJoins = query => {
-                const subQuery = (db, table, maxField, groupId) => knex
-                    .select('*')
-                    .from(`${db}.${table}`)
-                    .whereIn(maxField, function() {
-                        this.select(knex.raw(`MAX(${maxField})`))
-                            .from(`${db}.${table}`)
-                            .groupBy(groupId)
-                    })
 
                 const nameSubQuery = subQuery(db.person, 'names', 'since', 'personId')
                 const companySubQuery = subQuery(db.business, 'company_names', 'since', 'companyId')
@@ -2332,7 +2319,11 @@ class Application {
 
 
             /* Obtain Data and Counts */
-            const [ data, [ { count: recordsFiltered } ], [ { count: recordsTotal } ] ] = await Promise.all([
+            const [
+                data,
+                [{ count: recordsFiltered }],
+                [{ count: recordsTotal }],
+            ] = await Promise.all([
                 baseQuery,
                 countQuery,
                 totalCountQuery,

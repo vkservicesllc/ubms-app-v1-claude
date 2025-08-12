@@ -26,6 +26,11 @@ const table = $('#driver-aplicants-table').DataTable({
             }
         },
 
+        {
+            data: 'phone',
+            title: `Phone ${searchTag}`,
+        },
+
     ],
 
     dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
