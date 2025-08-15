@@ -76,7 +76,7 @@ module.exports = {
     },
 
     'company': {
-        external: [ ...online.external, 'bulma.steps', 'bulma.checkradio', 'jquery.masked-input', 'moment' ],
+        external: [ ...online.external, 'bulma.steps', 'bulma.checkradio', 'jquery.masked-input', 'moment', 'cropper' ],
         internal: {
             css: [ ...online.internal.css, 'form' ],
             js: [ ...online.internal.js ],
