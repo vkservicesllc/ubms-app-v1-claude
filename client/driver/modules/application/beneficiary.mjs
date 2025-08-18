@@ -15,11 +15,11 @@ const lastNameId = TS.benefLastName
 const suffixId = SS.benefSuffix
 const genderId = SS.benefGender
 const phoneId = TS.benefPhone
-const addr1Id = TS.benefAddress1
-const addr2Id = TS.benefAddress2
-const zipId = TS.benefAddrZip
-const cityId = TS.benefAddrCity
-const stateId = SS.benefAddrState
+// const addr1Id = TS.benefAddress1
+// const addr2Id = TS.benefAddress2
+// const zipId = TS.benefAddrZip
+// const cityId = TS.benefAddrCity
+// const stateId = SS.benefAddrState
 const ssnId = TS.benefSsn
 
 const $card = $('#apl-card')
