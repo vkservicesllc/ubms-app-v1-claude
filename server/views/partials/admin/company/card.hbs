@@ -236,12 +236,11 @@
                 </figure>
                 {{/if}}
                 {{#if (eq data.logo 0)}}
-                <button class="button is-ghost is-large">
+                <button class="button is-ghost is-large" id="add-company-logo">
                     <i class="fa fa-plus"></i>
                 </button>
                 {{/if}}
             </div>
-            <script type="module" src="/modules/company/logo.mjs"></script>
         </section>
         {{#if (eq data.confirmed 1)}}
 
@@ -300,6 +299,31 @@
     {{/if}}
 </div>
 
+<div class="modal" id="company-logo-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Company Logo</p>
+            <button class="delete" id="close-company-logo-modal"></button>
+        </header>
+        <section class="modal-card-body">
+            <div class="box has-text-centered" id="company-log-droparea" style="border: 2px dashed #ccc; padding: 2rem; cursor: pointer;">
+                <p>Drag & drop an image here or click to select</p>
+                <input type="file" id="fileInput" accept="image/*" hidden />
+            </div>
+            <div id="company-logo-cropper" style="display: none; margin-top: 1rem;">
+                <img id="company-logo" style="max-width:100%;" />
+            </div>
+        </section>
+        <footer class="modal-card-foot">
+            <form id="company-logo-form" action="" method="POST" enctype=""multipart/form-data>
+                <input type="hidden" id="company-logo-input" name="logo" />
+                <button type="submit" class="button is-success">Upload</button>
+            </form>
+        </footer>
+    </div>
+</div>
+
 <div class="modal" id="company-highlight-modal">
     <div class="modal-background"></div>
     {{!-- <div class="modal-content p-6" style="width: 480px;">
@@ -315,3 +339,4 @@
 </div>
 
 <script type="module" src="/modules/company/card.mjs"></script>
+<script type="module" src="/modules/company/logo.mjs"></script>
