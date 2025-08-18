@@ -953,8 +953,8 @@ export const applicationSummary = async (req, res) => {
                 hbs.application.mec.expiresOn = moment(application.mec.expiresOn).format('ll')
             hbs.application.mec.issuedOn = application.mec.issuedOn ? moment(application.mec.issuedOn).format('ll') : na('N/A')
             if (!application.mec.nrcme) hbs.application.mec.nrcme = na('N/A')
-            if (!application.medList) hbs.application.medList = na()
         }
+        if (!application.medList) hbs.application.medList = na()
         // hbs.application.medCard = application.medCard ? 'Yes' : 'No'
 
         hbs.application.dui = !application.dui
