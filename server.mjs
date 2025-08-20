@@ -127,6 +127,7 @@ export default branch => {
     server.use('/api', apiRoute)
     server.use('/api/public', publicApiRoute)
 
+    server.get('/*.map', (req, res) => res.sendStatus(204))
     server.post(loginUrl, validateLocalAuth, validationCheck, UserSrc.login)
     server.post(sessionUrl, validateSession, validationCheck, UserSrc.session)
     server.get(logoutUrl, UserSrc.logout)

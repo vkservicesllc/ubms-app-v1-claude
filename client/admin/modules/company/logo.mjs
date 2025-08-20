@@ -3,7 +3,7 @@ const $modal = $('#company-logo-modal')
 const $area = $('#company-log-droparea')
 const $container = $('#company-logo-cropper')
 const $logo = $('#company-logo')
-const $input = $('#company-logo-input')
+const $input = $('#company-logo-file-input')
 
 $('#add-company-logo').on('click', () => $modal.addClass('is-active'))
 
@@ -12,10 +12,11 @@ $('#close-company-logo-modal').on('click', () => {
     if (cropper) cropper.destroy()
     $logo.attr('src', '')
     $container.hide()
+    $area.show()
 })
 
 $area
-    .on('click', $input.click())
+    .on('click', function() { $input[0].click() })
     .on('dragover', function(evt) {
         evt.preventDefault()
         $(this).css('border-color', '#3273dc')
@@ -40,16 +41,15 @@ function handleFile(file) {
     const reader = new FileReader()
 
     reader.onload = function (evt) {
-        $image.attr('src', evt.target.result)
+        $logo.attr('src', evt.target.result)
         $container.show()
 
         if (cropper) cropper.destroy()
         cropper = new Cropper($logo[0], {
-            aspectRatio: 1,
             viewMode: 1,
-            autoCropArea: 1
         })
     }
 
     reader.readAsDataURL(file)
+    $area.hide()
 }

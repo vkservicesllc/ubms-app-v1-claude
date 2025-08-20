@@ -303,16 +303,16 @@
     <div class="modal-background"></div>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title">Company Logo</p>
+            <p class="modal-card-title"><strong>{{data.name}}</strong> <small>Logo</small></p>
             <button class="delete" id="close-company-logo-modal"></button>
         </header>
         <section class="modal-card-body">
             <div class="box has-text-centered" id="company-log-droparea" style="border: 2px dashed #ccc; padding: 2rem; cursor: pointer;">
                 <p>Drag & drop an image here or click to select</p>
-                <input type="file" id="fileInput" accept="image/*" hidden />
+                <input type="file" id="company-logo-file-input" accept="image/*" hidden />
             </div>
-            <div id="company-logo-cropper" style="display: none; margin-top: 1rem;">
-                <img id="company-logo" style="max-width:100%;" />
+            <div id="company-logo-cropper" style="display: none; margin-top: 1rem; max-height: 240px;">
+                <img id="company-logo" style="max-width: 100%;" />
             </div>
         </section>
         <footer class="modal-card-foot">
