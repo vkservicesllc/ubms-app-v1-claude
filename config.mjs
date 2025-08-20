@@ -69,6 +69,7 @@ import adminOnlineRoute from './server/routes/admin/online.mjs'
 import adminDevToolsRoute from './server/routes/admin/dev-tools.mjs'
 import adminApiRoute from './server/routes/admin/api.mjs'
 import adminResourceRoute from './server/routes/admin/resource.mjs'
+import adminUploadRoute from './server/routes/admin/upload.mjs'
 
 import userRoute from './server/routes/user.mjs'
 import userApiRoute from './server/routes/user/api.mjs'
@@ -112,6 +113,7 @@ const apps = {
             { url: '/dev-tools', router: adminDevToolsRoute },
             { url: '/api', router: adminApiRoute },
             { url: '/resource', router: adminResourceRoute },
+            { url: '/upload', router: adminUploadRoute },
         ],
         session: {
             userApp: 'adm',
