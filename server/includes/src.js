@@ -21,6 +21,7 @@ module.exports = {
                 '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.4/css/bulma.min.css" integrity="sha512-yh2RE0wZCVZeysGiqTwDTO/dKelCbS9bP2L94UvOFtl/FKXcNAje3Y2oBg/ZMZ3LS1sicYk4dYVGtDex75fvvA==" crossorigin="anonymous" referrerpolicy="no-referrer" />',
                 // '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.1/css/bulma.min.css" integrity="sha512-dF4b2QV/0kq+qlwefqCyb+edbWZ63ihXhE4A2Pju3u4QyaeFzMChqincJsKYwghbclpLE92jPb9yaz/LQ8aNlg==" crossorigin="anonymous" referrerpolicy="no-referrer" />',
                 // '<link rel="stylesheet" href="/styles/bulma.css" />',
+                '<link rel="stylesheet" href="/styles/bulma.css" />',
                 '<link rel="stylesheet" href="/styles/bulma.loader.css" />',
             ],
         },

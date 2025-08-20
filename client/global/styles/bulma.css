@@ -1,3 +1,9 @@
 html {
     overflow-y: auto !important;
 }
+
+.has-text-success-dark { color: hsl(141, 71%, 35%) !important; }
+.has-text-success-light { color: hsl(141, 71%, 85%) !important; }
+
+.has-text-danger-dark { color: hsl(348, 100%, 35%) !important; }
+.has-text-danger-light { color: hsl(348, 100%, 95%) !important; }

@@ -23,9 +23,15 @@ router.post('/business/company/logo/:_id', User.verify, superAdminUserOnly, asyn
         dir: id,
         filename: moment().format('YYYY-MM-DD'),
     }
-}, upload.company.logo.single('file'), (req, res) => {
-    console.log(req.file.path)
-    //! if success, set logo to true in db
+    req.data = { company }
+
+    next()
+}, upload.company.logo.single('companyLogo'), async (req, res) => {
+    // Runs when upload is successfull
+    if (!req.data.company.logo)
+        await req.data.company.modify(res.session, 'companies', { logo: true })
+
+    res.send({ status: 'success' })
 })
 
 

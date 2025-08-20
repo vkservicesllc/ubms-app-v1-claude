@@ -164,6 +164,17 @@ $.when(statusReq).done(statusRes => {
             },
 
             {
+                data: 'logo',
+                title: 'Logo',
+                orderable: false,
+                render(data) {
+                    return data
+                        ? '<span class="has-text-success-dark"><i class="fa fa-check"></i></span>'
+                        : '<span class="has-text-danger-dark"><i class="fa fa-close"></i></span>'
+                }
+            },
+
+            {
                 data: null,
                 title: adminStatus != 'A' ? '<div class="dt-action"><a class="has-text-link-70" href="/business/company/new" title="Add"><i class="fas fa-plus"></i></a></div>' : '',
                 orderable: false,
