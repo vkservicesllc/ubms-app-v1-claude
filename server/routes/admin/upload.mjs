@@ -16,12 +16,17 @@ const upload = {
 
 router.post('/business/company/logo/:_id', User.verify, superAdminUserOnly, async (req, res, next) => {
     const { _id } = req.params
+    const { since } = req.query
+
     const company = await Company.data(res.session, { _id })
     const id = await company.id()
+    let filename = company.since
+
+    if (company.logo && since) filename = since
 
     req.upload = {
         dir: id,
-        filename: moment().format('YYYY-MM-DD'),
+        filename,
     }
     req.data = { company }
 

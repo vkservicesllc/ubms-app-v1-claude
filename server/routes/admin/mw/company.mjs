@@ -1,3 +1,7 @@
+require('dotenv').config({ path: '../../../.env' })
+const { DIR__PATH: dir } = process.env
+
+
 import moment from 'moment'
 
 /* Tools */
@@ -7,6 +11,7 @@ import Address from '../../../../client/global/modules/tools/core/address.us.mjs
 import escapeHTML from '../../../../client/global/modules/tools/utils/html.mjs'
 import { ein as formatEin, duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/utils/formatter.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
+import { getFiles } from '../../../tools/utils/fs.mjs'
 import { button as formButton } from '../../../../client/global/modules/tools/utils/html/components.mjs'
 
 /* Forms */
@@ -16,6 +21,7 @@ import CarrierForm from '../../../tools/form/carrier.mjs'
 
 /* Assets */
 import { labelClass, labelClassRequired } from '../assets.mjs'
+import { addrBook } from '../../../../config.mjs'
 
 const throwErr = require('../../../tools/utils/error').data
 
@@ -752,6 +758,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
             return respond404(res)
 
         const css = {}
+        let logoList = ''
 
         switch (catId) {
 
@@ -778,11 +785,27 @@ export const companyByCategoryAndRoute = async (req, res) => {
         const { active } = hbs.nav
         hbs.nav.companies = active
 
+        if (company.logo) {
+            const id = await company.id()
+            const files = await getFiles(`${dir}/uploads/business/company/logo/${id}`)
+
+            files.forEach(filename => {
+                const t = `\t\t\t\t`
+                logoList += `\n${t}<figure class="image" style="border: 1px dashed gainsboro;">`
+                logoList += `\n${t}\t<img src="${addrBook.admin}/image/business/company/logo/${_companyId}/${filename}" alt="Logo" />`
+                logoList += `\n${t}</figure>`
+            })
+        }
+
         hbs._id = _companyId
         hbs.cardTitle = cardTitle
         hbs.data = company
         hbs.display = display(company, ein)
         hbs.css = css
+        hbs.logoList = logoList
+        hbs.defaultValue = {
+            today: moment().format('MM/DD/YYYY'),
+        } 
         hbs.form = {
             id: {
                 hidden: {

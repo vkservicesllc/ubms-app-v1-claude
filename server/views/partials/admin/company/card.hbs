@@ -230,17 +230,30 @@
 
         <section class="company-card-content" id="logo-card-content" style="display: none;">
             <div class="is-flex is-justify-content-center is-align-items-center">
-                {{#if (eq data.logo 1)}}
-                <figure class="image">
-                    <img src="" alt="">
-                </figure>
-                {{/if}}
-                {{#if (eq data.logo 0)}}
                 <button class="button is-ghost is-large" id="add-company-logo">
                     <i class="fa fa-plus"></i>
                 </button>
-                {{/if}}
             </div>
+            {{#if (eq data.logo 1)}}
+            <style>
+                figure.image {
+                    max-width: 240px;
+                    max-height: 120px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                }
+                figure.image img {
+                    max-width: 100%;
+                    max-height: 100%;
+                    width: auto;
+                    height: auto;
+                }
+            </style>
+            <div class="is-flex is-gap-1" id="company-logo-list" style="background: white; padding: 15px; border-radius: 5px;">{{{logoList}}}
+            </div>
+            {{/if}}
         </section>
         {{#if (eq data.confirmed 1)}}
 
@@ -307,6 +320,19 @@
             <button class="delete" id="close-company-logo-modal"></button>
         </header>
         <section class="modal-card-body">
+            {{#if (eq data.logo 1)}}
+            <div class="columns">
+                <div class="column is-5">
+                    <label class="label input-required" for="company-logo-since">Effective Date</label>
+                    <div class="control has-icons-left">
+                        <input type="text" class="input" id="company-logo-since" value="{{defaultValue.today}}" required />
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-calendar-days"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
             <div class="box has-text-centered" id="company-log-droparea" style="border: 2px dashed #ccc; padding: 2rem; cursor: pointer;">
                 <p>Drag & drop an image here or click to select</p>
                 <input type="file" id="company-logo-file-input" accept="image/*" hidden />
@@ -318,7 +344,7 @@
         <footer class="modal-card-foot">
             <form id="company-logo-form" action="" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="company-logo-id" value="{{data._companyId}}" />
-                <button type="submit" class="button is-success">Upload</button>
+                <button type="submit" class="button is-success">Crop & Upload</button>
             </form>
         </footer>
     </div>
