@@ -1,9 +1,15 @@
+require('dotenv').config({ path: '../../../../../.env' })
+let { DIR__PATH: dir } = process.env
+dir += '/uploads/business/company/logo/'
+
+import fs from 'fs'
 import moment from 'moment'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import pdfParams, { CustomFonts } from '../../../../settings/pdf-lib.mjs'
 import { ssn as formatSsn, tel as formatTel, ein as formatEin } from '../../../../../client/global/modules/tools/utils/formatter.mjs'
 import Driver, { Application } from '../../../../tools/core/driver.mjs'
+import { getFiles } from '../../../../tools/utils/fs.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
 import Geography from '../../../../../client/global/modules/tools/core/geography.mjs'
 import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools/utils/sorter.mjs'
@@ -163,8 +169,40 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Carrier */
         {
-            x = width - marginX - coverPadding - gap * 2
             y = height - marginY - coverPadding - gap * 3
+// console.log(carrier)
+            dir += carrier.companyId
+            const files = await getFiles(dir)
+            let filename
+// console.log(files)
+            if (files.length) {
+                if (applicant.lastName) {} else {
+                    filename = files[0]
+                }
+// console.log(`${dir}/${filename}`)
+                const imgBytes = fs.readFileSync(`${dir}/${filename}`)
+                const img = await pdfDoc.embedPng(imgBytes)
+                const imgWidth = img.width
+                const imgHeight = img.height
+                const maxWidth = 180
+                const maxHeight = 120
+                const widthRatio = maxWidth / imgWidth
+                const heightRatio = maxHeight / imgHeight
+                const scale = Math.min(widthRatio, heightRatio, 1)
+                const drawWidth = imgWidth * scale
+                const drawHeight = imgHeight * scale
+
+                x = marginX + coverPadding + gap * 2
+                coverPage.drawImage(img, {
+                    x, y: y - marginY - coverPadding - gap * 2,
+                    width: drawWidth,
+                    height: drawHeight,
+                })
+console.log({
+    [filename]: { imgWidth, imgHeight },
+})
+            }
+            x = width - marginX - coverPadding - gap * 2
             textWidth = font.carrierB.widthOfTextAtSize(name, size.carrier * 1.1)
             coverPage.drawText(name, {
                 x: x - textWidth, y,

@@ -97,6 +97,7 @@ router.get('/files/application/:route?', User.verify, Team.verify, async (req, r
             const { name, address, phone, fax } = company
             carrier = { name, address, phone, fax }
             carrier.address = carrier.address.physical
+            carrier.companyId = await company.id()
         }
 
         const pdfBytes = await createApplicationPdf(carrier)
