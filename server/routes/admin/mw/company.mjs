@@ -789,9 +789,13 @@ export const companyByCategoryAndRoute = async (req, res) => {
             const id = await company.id()
             const files = await getFiles(`${dir}/uploads/business/company/logo/${id}`, false)
 
-            files.forEach(filename => {
+            files.forEach((filename, i) => {
                 const t = `\t\t\t\t`
-                logoList += `\n${t}<figure class="image" style="border: 1px dashed gainsboro;">`
+                const label = files.length - 1 === i ? 'Initial' : 'Effective '
+                const caption = moment(filename.split('.')[0]).format('ll')
+
+                logoList += `\n${t}<figure class="image">`
+                logoList += `\n${t}\t<figcaption><small>${label}:</small> ${caption} &nbsp;&nbsp;<button><i class="has-text-danger-dark fa fa-close"></i></button></figcaption>`
                 logoList += `\n${t}\t<img src="${addrBook.admin}/image/business/company/logo/${_companyId}/${filename}" alt="Logo" />`
                 logoList += `\n${t}</figure>`
             })

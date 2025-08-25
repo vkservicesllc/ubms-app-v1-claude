@@ -238,20 +238,28 @@
             <style>
                 figure.image {
                     max-width: 240px;
-                    max-height: 120px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     overflow: hidden;
+                    flex-direction: column; /* allows caption under the image */
+                    padding: 5px;
                 }
                 figure.image img {
+                    border: 1px dashed gainsboro;
                     max-width: 100%;
                     max-height: 100%;
                     width: auto;
                     height: auto;
                 }
+                figure.image figcaption {
+                    margin-bottom: 5px;
+                    font-size: 0.85rem;
+                    color: #555;
+                    word-break: break-word;
+                }
             </style>
-            <div class="is-flex is-gap-1" id="company-logo-list" style="background: white; padding: 15px; border-radius: 5px;">{{{logoList}}}
+            <div class="is-flex is-gap-1 is-align-items-flex-start" id="company-logo-list" style="background: white; padding: 15px; border-radius: 5px; flex-wrap: wrap;">{{{logoList}}}
             </div>
             {{/if}}
         </section>
