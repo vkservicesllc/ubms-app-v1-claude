@@ -795,7 +795,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
                 const caption = moment(filename.split('.')[0]).format('ll')
 
                 logoList += `\n${t}<figure class="image">`
-                logoList += `\n${t}\t<figcaption><small>${label}:</small> ${caption} &nbsp;&nbsp;<button><i class="has-text-danger-dark fa fa-close"></i></button></figcaption>`
+                logoList += `\n${t}\t<figcaption><small>${label}:</small> ${caption} &nbsp;&nbsp;<button class="delete-company-logo" data-filename="${filename}"><i class="has-text-danger-dark fa fa-close"></i></button></figcaption>`
                 logoList += `\n${t}\t<img src="${addrBook.admin}/image/business/company/logo/${_companyId}/${filename}" alt="Logo" />`
                 logoList += `\n${t}</figure>`
             })

@@ -56,6 +56,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     const color = {
         carrier: rgb(0, 0, 0),
         line: rgb(0.2, 0.2, 0.2),
+        frame: rgb(0.9, 0.9, 0.9),
         section: rgb(0.1, 0.1, 0.1),
         label: rgb(0.2, 0.2, 0.2),
         value: rgb(0, 0, 0),
@@ -169,8 +170,6 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Carrier */
         {
-            y = height - marginY - coverPadding - gap * 3
-
             const path = dir + carrier.companyId
             const files = await getFiles(path, false)
             let filename
@@ -197,21 +196,27 @@ export default async (carrier, application, addresses, violations, accidents, em
                 const imgWidth = img.width
                 const imgHeight = img.height
                 const maxWidth = 180
-                const maxHeight = 120
+                const maxHeight = 90
                 const widthRatio = maxWidth / imgWidth
                 const heightRatio = maxHeight / imgHeight
                 const scale = Math.min(widthRatio, heightRatio, 1)
                 const drawWidth = imgWidth * scale
                 const drawHeight = imgHeight * scale
-
-                x = marginX + coverPadding + gap * 2
+                x = marginX + coverPadding + gap * 1.5
+                y = height - marginY - coverPadding - gap * 1.5 - drawHeight
                 coverPage.drawImage(img, {
-                    x, y: y - marginY - coverPadding - gap * 2, //! Doubts about `y`; need to rethink the logic
+                    x, y,
                     width: drawWidth,
                     height: drawHeight,
                 })
+                // coverPage.drawLine({
+                //     start: { x, y: y + drawHeight },
+                //     end: { x, y },
+                //     color: color.frame,
+                // })
             }
 
+            y = height - marginY - coverPadding - gap * 3
             x = width - marginX - coverPadding - gap * 2
             textWidth = font.carrierB.widthOfTextAtSize(name, size.carrier * 1.1)
             coverPage.drawText(name, {

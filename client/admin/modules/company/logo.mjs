@@ -95,3 +95,11 @@ function handleFile(file) {
     reader.readAsDataURL(file)
     $area.hide()
 }
+
+
+$('.delete-company-logo').click(function() {
+    if (confirm('Confirm deletion: Are you sure you want to delete the current logo?')) {
+        const filename = $(this).data('filename')
+console.log(filename)
+    }
+})
