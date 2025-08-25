@@ -1,9 +1,11 @@
 import fs from 'fs/promises'
 
 
-export const getFiles = async path => {
+export const getFiles = async (path, asc = true) => {
     try {
         const files = await fs.readdir(path)
+        files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+        if (!asc) files.reverse()
 
         return files
     } catch(err) {

@@ -787,7 +787,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
 
         if (company.logo) {
             const id = await company.id()
-            const files = await getFiles(`${dir}/uploads/business/company/logo/${id}`)
+            const files = await getFiles(`${dir}/uploads/business/company/logo/${id}`, false)
 
             files.forEach(filename => {
                 const t = `\t\t\t\t`

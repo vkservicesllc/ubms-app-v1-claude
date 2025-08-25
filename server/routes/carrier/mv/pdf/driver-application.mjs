@@ -172,16 +172,23 @@ export default async (carrier, application, addresses, violations, accidents, em
             y = height - marginY - coverPadding - gap * 3
 
             const path = dir + carrier.companyId
-            const files = await getFiles(path)
+            const files = await getFiles(path, false)
             let filename
 
-// console.log({ carrier, applicant, files, dir, path })
             /* Cover Sheet Carrier Logo */
             if (files.length) {
                 if (applicant.lastName) {
-                    //? get application date
-                    //? get the filename according to the date
-                    filename = files[0] //! TEMP
+                    const finishedOn = application.finishedAt.split(' ')[0]
+                    let x = 0
+
+                    for (let i = 0; i < files.length; i++) {
+                        const date = files[i].split(' ')[0]
+                        if (finishedOn < date) continue
+                        x = i
+                        break
+                    }
+
+                    filename = files[x]
                 } else {
                     filename = files[0]
                 }
@@ -199,7 +206,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
                 x = marginX + coverPadding + gap * 2
                 coverPage.drawImage(img, {
-                    x, y: y - marginY - coverPadding - gap * 2,
+                    x, y: y - marginY - coverPadding - gap * 2, //! Doubts about `y`; need to rethink the logic
                     width: drawWidth,
                     height: drawHeight,
                 })
