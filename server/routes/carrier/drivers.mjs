@@ -265,7 +265,18 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
         if (!application || application.condition !== 'c' || application._teamId !== team._id)
             return res.redirect(aplUrl)
 
-        const carrier = await application.carrierCreds(res.session)
+        let carrier
+        if (application._carrierId) {
+            const { _carrierId: _id } = application
+            carrier = await Carrier.data(res.session, { _id })
+
+            const companyId = await carrier.companyId()
+            const { name, address, phone, fax } = carrier
+            carrier = { name, address, phone, fax }
+            carrier.address = carrier.address.physical
+            carrier.companyId = companyId
+        }
+
         const addresses = (await application.data('addresses', res.session)).data
         const violations = (await application.data('citations', res.session)).data
         const accidents = (await application.data('accidents', res.session)).data

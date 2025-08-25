@@ -139,52 +139,52 @@ class Company {
             }
 
 
-            this.credentials = async (asOfDate = moment().format('YYYY-MM-DD')) => {
-                const companyId = await this.id()
+            // this.credentials = async (asOfDate = moment().format('YYYY-MM-DD')) => {
+            //     const companyId = await this.id()
 
-                const nameData = (await mysql.execute(query.names.select([ 'busName', 'coType' ], {
-                    match: { companyId, since: { lte: asOfDate } },
-                    sort: { desc: 'since' },
-                    limit: 1,
-                })))[0][0]
+            //     const nameData = (await mysql.execute(query.names.select([ 'busName', 'coType' ], {
+            //         match: { companyId, since: { lte: asOfDate } },
+            //         sort: { desc: 'since' },
+            //         limit: 1,
+            //     })))[0][0]
 
-                const { busName, coType } = nameData
-                const creds = { busName, coType }
-                creds.name = `${busName}, ${coType}`
+            //     const { busName, coType } = nameData
+            //     const creds = { busName, coType }
+            //     creds.name = `${busName}, ${coType}`
 
-                const addrData = (await mysql.execute(query.addresses.select([
-                    'address1', 'address2',
-                    'city', 'state', 'zip',
-                ], {
-                    match: { companyId, since: { lte: asOfDate } },
-                    sort: { desc: 'since' },
-                    limit: 1,
-                })))[0][0]
-                creds.address = new Address(addrData)
+            //     const addrData = (await mysql.execute(query.addresses.select([
+            //         'address1', 'address2',
+            //         'city', 'state', 'zip',
+            //     ], {
+            //         match: { companyId, since: { lte: asOfDate } },
+            //         sort: { desc: 'since' },
+            //         limit: 1,
+            //     })))[0][0]
+            //     creds.address = new Address(addrData)
 
-                const phoneData = (await mysql.execute(query.phones.select('number', {
-                    match: { companyId, since: { lte: asOfDate } },
-                    sort: { desc: 'since' },
-                    limit: 1,
-                })))[0][0]
-                creds.phone = phoneData.number
+            //     const phoneData = (await mysql.execute(query.phones.select('number', {
+            //         match: { companyId, since: { lte: asOfDate } },
+            //         sort: { desc: 'since' },
+            //         limit: 1,
+            //     })))[0][0]
+            //     creds.phone = phoneData.number
 
-                const faxData = (await mysql.execute(query.faxes.select('number', {
-                    match: { companyId, since: { lte: asOfDate } },
-                    sort: { desc: 'since' },
-                    limit: 1,
-                })))[0][0]
-                creds.fax = faxData?.number
+            //     const faxData = (await mysql.execute(query.faxes.select('number', {
+            //         match: { companyId, since: { lte: asOfDate } },
+            //         sort: { desc: 'since' },
+            //         limit: 1,
+            //     })))[0][0]
+            //     creds.fax = faxData?.number
 
-                const emailData = (await mysql.execute(query.emails.select('email', {
-                    match: { companyId, since: { lte: asOfDate } },
-                    sort: { desc: 'since' },
-                    limit: 1,
-                })))[0][0]
-                creds.email = emailData?.email
+            //     const emailData = (await mysql.execute(query.emails.select('email', {
+            //         match: { companyId, since: { lte: asOfDate } },
+            //         sort: { desc: 'since' },
+            //         limit: 1,
+            //     })))[0][0]
+            //     creds.email = emailData?.email
 
-                return creds
-            }
+            //     return creds
+            // }
 
 
             this.flush = async target => {

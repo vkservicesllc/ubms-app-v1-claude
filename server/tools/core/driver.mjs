@@ -1439,14 +1439,14 @@ class Application {
     }
 
 
-    carrierCreds = async session => {
-        if (!this._carrierId) return
+    // carrierCreds = async session => {
+    //     if (!this._carrierId) return
 
-        const carrier = await Carrier.data(session, { _id: this._carrierId })
-        const company = await Company.data(session, { _id: carrier._companyId })
+    //     const carrier = await Carrier.data(session, { _id: this._carrierId })
+    //     const company = await Company.data(session, { _id: carrier._companyId })
 
-        return await company.credentials(this.appliedOn)
-    }
+    //     return await company.credentials(this.appliedOn)
+    // }
 
 
     identity = async session => {

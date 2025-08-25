@@ -170,17 +170,22 @@ export default async (carrier, application, addresses, violations, accidents, em
         /* Carrier */
         {
             y = height - marginY - coverPadding - gap * 3
-// console.log(carrier)
-            dir += carrier.companyId
-            const files = await getFiles(dir)
+
+            const path = dir + carrier.companyId
+            const files = await getFiles(path)
             let filename
-// console.log(files)
+
+// console.log({ carrier, applicant, files, dir, path })
+            /* Cover Sheet Carrier Logo */
             if (files.length) {
-                if (applicant.lastName) {} else {
+                if (applicant.lastName) {
+                    //? get application date
+                    //? get the filename according to the date
+                    filename = files[0] //! TEMP
+                } else {
                     filename = files[0]
                 }
-// console.log(`${dir}/${filename}`)
-                const imgBytes = fs.readFileSync(`${dir}/${filename}`)
+                const imgBytes = fs.readFileSync(`${path}/${filename}`)
                 const img = await pdfDoc.embedPng(imgBytes)
                 const imgWidth = img.width
                 const imgHeight = img.height
@@ -198,10 +203,8 @@ export default async (carrier, application, addresses, violations, accidents, em
                     width: drawWidth,
                     height: drawHeight,
                 })
-console.log({
-    [filename]: { imgWidth, imgHeight },
-})
             }
+
             x = width - marginX - coverPadding - gap * 2
             textWidth = font.carrierB.widthOfTextAtSize(name, size.carrier * 1.1)
             coverPage.drawText(name, {
