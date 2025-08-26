@@ -91,6 +91,7 @@ export const applicationStart = async (req, res, next) => {
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
         options.position.select.label.content = 'Desired Position'
         options.position.select.input.data = team.list.drivers.positions
+
         options.phone.text.label.content = 'U.S. Phone'
         options.addrState.select.input.options = { valOpt: true }
         options.marital = { radio: { label: { class: formInstr.labelClassRequired } } }
@@ -107,6 +108,23 @@ export const applicationStart = async (req, res, next) => {
             options.status.radio[prop].input.class = 'form-check-input status-radio'
             options.status.radio[prop].label.class = 'form-check-label'
         }
+
+        const t = `\t\t\t\t\t\t\t`
+        const positionDesc = {
+            CD: 'You drive a truck that belongs to the company. The company covers the vehicle, maintenance, and insurance.',
+            OO: 'You drive your own truck under the company’s authority. You are responsible for your truck’s expenses and upkeep.',
+            OD: 'You drive a truck that belongs to an Owner-Operator (not the company). The truck owner is responsible for the vehicle.',
+            LP: 'You lease a truck from the company with the option to own it after payments are completed.',
+        }
+        hbs.positionDesc = '' // `\n${t}<dl>`
+        for (const position in team.list.drivers.positions) {
+            const title = team.list.drivers.positions[position]
+            const desc = positionDesc[position]
+
+            hbs.positionDesc += `\n${t}<dt class="text-success">${title}</dt>`
+            hbs.positionDesc += `\n${t}<dd class="text-secondary"><small>${desc}</small></dd>`
+        }
+        // hbs.positionDesc += `\n${t}</dl>`
 
         hbs.form = new ApplicationForm(options)
 
