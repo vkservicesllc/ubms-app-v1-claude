@@ -305,7 +305,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         const { formId } = req.params
         const application = await Application.data(res.session, { formId })
-        if (!application || application.condition !== 'c' || application._teamId !== team._id)
+        if (!application || application.condition === 'h' || application._teamId !== team._id)
             return res.redirect(aplUrl)
 
         const identity = await application.identity(res.session)
@@ -472,7 +472,9 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                 dropdown.experience += `\n${t}<div class="item" data-value="${e}">${experience}</div>`
             }
             if (application?.decision?.experience)
-                options.experience = { hidden: { input: { value: application.decision.experience } }}
+                options.experience = { hidden: { input: { value: application.decision.experience } } }
+            if (application?.decision?.position)
+                options.apprPosition = { hidden: { input: { value: application.decision.position } } }
         }
 
         /* FILES */

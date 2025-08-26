@@ -11,7 +11,7 @@ const conditions = {
     p: [ '<span class="ui grey text">In progress...</span>', 'spinner' ],
     c: [ '<span class="ui blue text">Completed</span>', 'blue text clock' ],
     a: [ '<span class="ui dark green text">Approved</span>', 'dark green text thumbs up' ],
-    r: [ '<span class="ui red text">Waiting List</span>', 'red text hourglass half' ],
+    r: [ '<span class="ui orange text">Waiting List</span>', 'orange text hourglass half' ],
     b: [ '<span class="ui red text">Disqualified</span>', 'red text thumbs down' ],
     h: [ 'Hired', 'truck moving' ],
 }
@@ -276,6 +276,9 @@ const table = $('#driver-apl-table').DataTable({
                 $(row).css('color', 'green')
                 break
             case 'r':
+                $(row).css('color', '#F28C28')
+                break
+            case 'b':
                 $(row).css('color', '#DC143C')
                 break
             case 'h':

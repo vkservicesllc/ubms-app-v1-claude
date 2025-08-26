@@ -589,7 +589,8 @@ class Application {
         let modified = false,
             error = sessionError(session, { branches: [ 'carrier', 'driver' ] })
 
-        if (!error && !['p', 'c'].includes(this.condition)) error = 'Permission Error: Application Locked'
+        // if (!error && !['p', 'c'].includes(this.condition)) error = 'Permission Error: Application Locked'
+        if (!error && this.condition === 'h') error = 'Permission Error: Application Locked'
         if (error) return { modified, error }
 
         const id = await this.id()
