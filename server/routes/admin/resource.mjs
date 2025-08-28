@@ -87,7 +87,7 @@ const ownerFields = ['firstName', 'middleName', 'lastName', 'suffix']
 const ownerNameFields = [ ...ownerFields, 'nameSince' ]
 ownerFields.push('gender', 'dob', 'ssn')
 ownerFields.map(prop => validateOwner.push(OwnerForm[prop].validate()))
-ownerNameFields.map(prop => validateOwner.push(OwnerForm[prop].validate()))
+ownerNameFields.map(prop => validateOwnerName.push(OwnerForm[prop].validate()))
 
 router.post('/company-owner', User.verify, superAdminUserOnly, validateOwner, validationCheck, CompanyMW.upsertOwner)
 router.post('/company-owner/update', User.verify, superAdminUserOnly, validateOwnerName, validationCheck, CompanyMW.updateOwner)
