@@ -30,6 +30,7 @@ import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { numeric } from '../../../client/global/modules/tools/utils/number.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+import { table } from '../utils/knex'
 
 const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
@@ -45,6 +46,7 @@ const query = {
     passReset: new Query(db.online, 'user_passreset'),
     userRoles: new Query(db.online, 'users_roles'),
     userTeams: new Query(db.business, 'teams_users'),
+    userCompanies: new Query(db.business, 'companies_users'),
 }
 
 
@@ -349,21 +351,156 @@ class User extends Person {
             }
 
 
-            this.teamIds = async session => {
-                if (!session?.user) return
+            // this.teamIds = async session => {
+            //     if (!session?.user) return
 
-                const { branch } = session
-                const catId = Company.catId(branch)
+            //     const { branch } = session
+            //     const catId = Company.catId(branch)
+
+            //     const batch = [
+            //         {
+            //             table: 'teams_users',
+            //         },
+            //         {
+            //             table: 'teams',
+            //             fields: 'id',
+            //             join: [ 'id', 'teamId' ],
+            //             match: { catId },
+            //         },
+            //     ]
+            //     if (!this.DS) batch[0].match = { userId: await this.id() }
+
+            //     const [ result ] = await mysql.execute(Query.select(db.business, batch))
+
+            //     return result.map(row => row.id)
+            // }
+
+
+            // this.teams = async (session, action, teamIds) => {
+            //     const userId = await this.id()
+
+            //     if (action && teamIds) {
+            //         //? Need to find the best solution for logging changes
+            //         let modified = false,
+            //             error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+            //         if (error) return { modified, error }
+
+            //         if (!Array.isArray(teamIds)) teamIds = [ teamIds ]
+            //         error = []
+
+            //         let i = 0, modCt = 0, createdBy
+            //         if (action === '-') action = 'delete'
+            //         else if (action === '+') {
+            //             action = 'insert'
+            //             createdBy = await session.user.id()
+            //         }
+
+            //         for (let teamId of teamIds) {
+            //             if (!numeric(teamId))
+            //                 teamId = await (await Team.data(session, { _id: teamId })).id()
+
+            //             try {
+            //                 const data = { userId, teamId }
+            //                 if (action === 'insert') data.createdBy = createdBy
+
+            //                 const [ result ] = await mysql.execute(query.userTeams[action](data))
+            //                 if (result.affectedRows === 1) modCt++
+            //             } catch (err) {
+            //                 error.push('DB Error: idx ' + i)
+            //             }
+
+            //             i++
+            //         }
+
+            //         if (modCt === teamIds.length) {
+            //             modified = true
+            //             error = undefined
+            //         } else error = error.join(' / ')
+
+            //         return { modified, error }
+            //     } else {
+            //         if (!session?.user) return
+
+            //         const sessionUser = session.user
+            //         const self = sessionUser._id === this._id
+            //         if (!self && !sessionUser.DSA) return
+
+            //         const data = { all: [], available: [], applied: [] }
+            //         const batch = [
+            //             {
+            //                 table: 'teams_users',
+            //                 match: { userId },
+            //             },
+            //             {
+            //                 table: 'teams',
+            //                 fields: [ Team.hashId(), 'name' ],
+            //                 join: [ 'id', 'teamId' ],
+            //                 match: { confirmed: true },
+            //             },
+            //         ]
+
+            //         if (self) { /* Filter when SESSION USER in Special Branch */
+            //             delete data.all
+            //             delete data.available
+
+            //             const { branch } = session
+            //             const catId = Company.catId(branch)
+            //             const teams = await Team.list(session, { catId })
+
+            //             if (sessionUser.DS) {
+            //                 teams.map(team => {
+            //                     const { _id, name } = team
+            //                     data.applied.push({ _id, name })
+            //                 })
+            //             } else {
+            //                 batch[1].match = { catId }
+
+            //                 data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+            //             }
+            //         } else {
+            //             batch[1].fields.push('catId')
+
+            //             const teams = await Team.list(session)
+            //             data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+
+            //             if (sessionUser.status[0] === 'A') {
+            //                 batch[0].match.userId = await sessionUser.id()
+
+            //                 const teamIds = []
+            //                 data.all = (await mysql.execute(Query.select(db.business, batch)))[0]
+            //                 data.all.map(team => teamIds.push(team._id))
+            //                 data.applied = data.applied.filter(team => teamIds.includes(team._id))
+            //             } else {
+            //                 teams.map(team => {
+            //                     const { _id, name, catId } = team
+            //                     data.all.push({ _id, name, catId })
+            //                 })
+            //             }
+
+            //             data.available = data.all.filter(team => !data.applied.some(appliedTeam => appliedTeam._id === team._id))
+
+            //             data.all = sortArrayByObjectKey(data.all, 'name')
+            //             data.available = sortArrayByObjectKey(data.available, 'name')
+            //         }
+
+            //         data.applied = sortArrayByObjectKey(data.applied, 'name')
+
+            //         return data
+            //     }
+            // }
+
+
+            this.companyIds = async session => {
+                if (!session?.user) return
 
                 const batch = [
                     {
-                        table: 'teams_users',
+                        table: 'companies_users',
                     },
                     {
-                        table: 'teams',
+                        table: 'companies',
                         fields: 'id',
-                        join: [ 'id', 'teamId' ],
-                        match: { catId },
+                        join: [ 'id', 'companyId' ],
                     },
                 ]
                 if (!this.DS) batch[0].match = { userId: await this.id() }
@@ -374,16 +511,16 @@ class User extends Person {
             }
 
 
-            this.teams = async (session, action, teamIds) => {
+            this.companies = async (sessions, action, companyIds) => {
                 const userId = await this.id()
 
-                if (action && teamIds) {
+                if (action && companyIds) {
                     //? Need to find the best solution for logging changes
                     let modified = false,
                         error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
                     if (error) return { modified, error }
 
-                    if (!Array.isArray(teamIds)) teamIds = [ teamIds ]
+                    if (!Array.isArray(companyIds)) companyIds = [ companyIds ]
                     error = []
 
                     let i = 0, modCt = 0, createdBy
@@ -393,15 +530,15 @@ class User extends Person {
                         createdBy = await session.user.id()
                     }
 
-                    for (let teamId of teamIds) {
-                        if (!numeric(teamId))
-                            teamId = await (await Team.data(session, { _id: teamId })).id()
+                    for (let companyId of companyIds) {
+                        if (!numeric(companyId))
+                            companyId = await (await Company.data(session, { _id: companyId })).id()
 
                         try {
-                            const data = { userId, teamId }
+                            const data = { userId, companyId }
                             if (action === 'insert') data.createdBy = createdBy
 
-                            const [ result ] = await mysql.execute(query.userTeams[action](data))
+                            const [ result ] = await mysql.execute(query.userCompanies[action](data))
                             if (result.affectedRows === 1) modCt++
                         } catch (err) {
                             error.push('DB Error: idx ' + i)
@@ -410,7 +547,7 @@ class User extends Person {
                         i++
                     }
 
-                    if (modCt === teamIds.length) {
+                    if (modCt === companyIds.length) {
                         modified = true
                         error = undefined
                     } else error = error.join(' / ')
@@ -426,13 +563,21 @@ class User extends Person {
                     const data = { all: [], available: [], applied: [] }
                     const batch = [
                         {
-                            table: 'teams_users',
+                            table: 'companies_users',
                             match: { userId },
                         },
                         {
-                            table: 'teams',
-                            fields: [ Team.hashId(), 'name' ],
-                            join: [ 'id', 'teamId' ],
+                            table: 'companies',
+                            fields: [ Company.hashId(), 'catId' ],
+                            join: [ 'id', 'companyId' ],
+                        },
+                        {
+                            table: 'company_names',
+                            fields: [ { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] } ],
+                            join: [ 'companyId', 'id', {
+                                table: 'companies',
+                                max: 'since',
+                            } ]
                         },
                     ]
 
@@ -442,11 +587,11 @@ class User extends Person {
 
                         const { branch } = session
                         const catId = Company.catId(branch)
-                        const teams = await Team.list(session, { catId })
+                        const companies = await Company.list(session, { catId })
 
                         if (sessionUser.DS) {
-                            teams.map(team => {
-                                const { _id, name } = team
+                            companies.map(company => {
+                                const { _id, name } = company
                                 data.applied.push({ _id, name })
                             })
                         } else {
@@ -457,24 +602,24 @@ class User extends Person {
                     } else {
                         batch[1].fields.push('catId')
 
-                        const teams = await Team.list(session)
+                        const companies = await Company.list(session)
                         data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
 
                         if (sessionUser.status[0] === 'A') {
                             batch[0].match.userId = await sessionUser.id()
 
-                            const teamIds = []
+                            const companyIds = []
                             data.all = (await mysql.execute(Query.select(db.business, batch)))[0]
-                            data.all.map(team => teamIds.push(team._id))
-                            data.applied = data.applied.filter(team => teamIds.includes(team._id))
+                            data.all.map(company => companyIds.push(company._id))
+                            data.applied = data.applied.filter(company => companyIds.includes(company._id))
                         } else {
-                            teams.map(team => {
-                                const { _id, name, catId } = team
+                            companies.map(company => {
+                                const { _id, name, catId } = company
                                 data.all.push({ _id, name, catId })
                             })
                         }
 
-                        data.available = data.all.filter(team => !data.applied.some(appliedTeam => appliedTeam._id === team._id))
+                        data.available = data.all.filter(company => !data.applied.some(appliedCompany => appliedCompany._id === company._id))
 
                         data.all = sortArrayByObjectKey(data.all, 'name')
                         data.available = sortArrayByObjectKey(data.available, 'name')
