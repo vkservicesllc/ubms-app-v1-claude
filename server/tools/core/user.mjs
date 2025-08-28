@@ -351,143 +351,143 @@ class User extends Person {
             }
 
 
-            // this.teamIds = async session => {
-            //     if (!session?.user) return
+            this.teamIds = async session => {
+                if (!session?.user) return
 
-            //     const { branch } = session
-            //     const catId = Company.catId(branch)
+                const { branch } = session
+                const catId = Company.catId(branch)
 
-            //     const batch = [
-            //         {
-            //             table: 'teams_users',
-            //         },
-            //         {
-            //             table: 'teams',
-            //             fields: 'id',
-            //             join: [ 'id', 'teamId' ],
-            //             match: { catId },
-            //         },
-            //     ]
-            //     if (!this.DS) batch[0].match = { userId: await this.id() }
+                const batch = [
+                    {
+                        table: 'teams_users',
+                    },
+                    {
+                        table: 'teams',
+                        fields: 'id',
+                        join: [ 'id', 'teamId' ],
+                        match: { catId },
+                    },
+                ]
+                if (!this.DS) batch[0].match = { userId: await this.id() }
 
-            //     const [ result ] = await mysql.execute(Query.select(db.business, batch))
+                const [ result ] = await mysql.execute(Query.select(db.business, batch))
 
-            //     return result.map(row => row.id)
-            // }
+                return result.map(row => row.id)
+            }
 
 
-            // this.teams = async (session, action, teamIds) => {
-            //     const userId = await this.id()
+            this.teams = async (session, action, teamIds) => {
+                const userId = await this.id()
 
-            //     if (action && teamIds) {
-            //         //? Need to find the best solution for logging changes
-            //         let modified = false,
-            //             error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
-            //         if (error) return { modified, error }
+                if (action && teamIds) {
+                    //? Need to find the best solution for logging changes
+                    let modified = false,
+                        error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+                    if (error) return { modified, error }
 
-            //         if (!Array.isArray(teamIds)) teamIds = [ teamIds ]
-            //         error = []
+                    if (!Array.isArray(teamIds)) teamIds = [ teamIds ]
+                    error = []
 
-            //         let i = 0, modCt = 0, createdBy
-            //         if (action === '-') action = 'delete'
-            //         else if (action === '+') {
-            //             action = 'insert'
-            //             createdBy = await session.user.id()
-            //         }
+                    let i = 0, modCt = 0, createdBy
+                    if (action === '-') action = 'delete'
+                    else if (action === '+') {
+                        action = 'insert'
+                        createdBy = await session.user.id()
+                    }
 
-            //         for (let teamId of teamIds) {
-            //             if (!numeric(teamId))
-            //                 teamId = await (await Team.data(session, { _id: teamId })).id()
+                    for (let teamId of teamIds) {
+                        if (!numeric(teamId))
+                            teamId = await (await Team.data(session, { _id: teamId })).id()
 
-            //             try {
-            //                 const data = { userId, teamId }
-            //                 if (action === 'insert') data.createdBy = createdBy
+                        try {
+                            const data = { userId, teamId }
+                            if (action === 'insert') data.createdBy = createdBy
 
-            //                 const [ result ] = await mysql.execute(query.userTeams[action](data))
-            //                 if (result.affectedRows === 1) modCt++
-            //             } catch (err) {
-            //                 error.push('DB Error: idx ' + i)
-            //             }
+                            const [ result ] = await mysql.execute(query.userTeams[action](data))
+                            if (result.affectedRows === 1) modCt++
+                        } catch (err) {
+                            error.push('DB Error: idx ' + i)
+                        }
 
-            //             i++
-            //         }
+                        i++
+                    }
 
-            //         if (modCt === teamIds.length) {
-            //             modified = true
-            //             error = undefined
-            //         } else error = error.join(' / ')
+                    if (modCt === teamIds.length) {
+                        modified = true
+                        error = undefined
+                    } else error = error.join(' / ')
 
-            //         return { modified, error }
-            //     } else {
-            //         if (!session?.user) return
+                    return { modified, error }
+                } else {
+                    if (!session?.user) return
 
-            //         const sessionUser = session.user
-            //         const self = sessionUser._id === this._id
-            //         if (!self && !sessionUser.DSA) return
+                    const sessionUser = session.user
+                    const self = sessionUser._id === this._id
+                    if (!self && !sessionUser.DSA) return
 
-            //         const data = { all: [], available: [], applied: [] }
-            //         const batch = [
-            //             {
-            //                 table: 'teams_users',
-            //                 match: { userId },
-            //             },
-            //             {
-            //                 table: 'teams',
-            //                 fields: [ Team.hashId(), 'name' ],
-            //                 join: [ 'id', 'teamId' ],
-            //                 match: { confirmed: true },
-            //             },
-            //         ]
+                    const data = { all: [], available: [], applied: [] }
+                    const batch = [
+                        {
+                            table: 'teams_users',
+                            match: { userId },
+                        },
+                        {
+                            table: 'teams',
+                            fields: [ Team.hashId(), 'name' ],
+                            join: [ 'id', 'teamId' ],
+                            match: { confirmed: true },
+                        },
+                    ]
 
-            //         if (self) { /* Filter when SESSION USER in Special Branch */
-            //             delete data.all
-            //             delete data.available
+                    if (self) { /* Filter when SESSION USER in Special Branch */
+                        delete data.all
+                        delete data.available
 
-            //             const { branch } = session
-            //             const catId = Company.catId(branch)
-            //             const teams = await Team.list(session, { catId })
+                        const { branch } = session
+                        const catId = Company.catId(branch)
+                        const teams = await Team.list(session, { catId })
 
-            //             if (sessionUser.DS) {
-            //                 teams.map(team => {
-            //                     const { _id, name } = team
-            //                     data.applied.push({ _id, name })
-            //                 })
-            //             } else {
-            //                 batch[1].match = { catId }
+                        if (sessionUser.DS) {
+                            teams.map(team => {
+                                const { _id, name } = team
+                                data.applied.push({ _id, name })
+                            })
+                        } else {
+                            batch[1].match = { catId }
 
-            //                 data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
-            //             }
-            //         } else {
-            //             batch[1].fields.push('catId')
+                            data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                        }
+                    } else {
+                        batch[1].fields.push('catId')
 
-            //             const teams = await Team.list(session)
-            //             data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                        const teams = await Team.list(session)
+                        data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
 
-            //             if (sessionUser.status[0] === 'A') {
-            //                 batch[0].match.userId = await sessionUser.id()
+                        if (sessionUser.status[0] === 'A') {
+                            batch[0].match.userId = await sessionUser.id()
 
-            //                 const teamIds = []
-            //                 data.all = (await mysql.execute(Query.select(db.business, batch)))[0]
-            //                 data.all.map(team => teamIds.push(team._id))
-            //                 data.applied = data.applied.filter(team => teamIds.includes(team._id))
-            //             } else {
-            //                 teams.map(team => {
-            //                     const { _id, name, catId } = team
-            //                     data.all.push({ _id, name, catId })
-            //                 })
-            //             }
+                            const teamIds = []
+                            data.all = (await mysql.execute(Query.select(db.business, batch)))[0]
+                            data.all.map(team => teamIds.push(team._id))
+                            data.applied = data.applied.filter(team => teamIds.includes(team._id))
+                        } else {
+                            teams.map(team => {
+                                const { _id, name, catId } = team
+                                data.all.push({ _id, name, catId })
+                            })
+                        }
 
-            //             data.available = data.all.filter(team => !data.applied.some(appliedTeam => appliedTeam._id === team._id))
+                        data.available = data.all.filter(team => !data.applied.some(appliedTeam => appliedTeam._id === team._id))
 
-            //             data.all = sortArrayByObjectKey(data.all, 'name')
-            //             data.available = sortArrayByObjectKey(data.available, 'name')
-            //         }
+                        data.all = sortArrayByObjectKey(data.all, 'name')
+                        data.available = sortArrayByObjectKey(data.available, 'name')
+                    }
 
-            //         data.applied = sortArrayByObjectKey(data.applied, 'name')
+                    data.applied = sortArrayByObjectKey(data.applied, 'name')
 
-            //         return data
-            //     }
-            // }
+                    return data
+                }
+            }
 
 
             this.companyIds = async session => {

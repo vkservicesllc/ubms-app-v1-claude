@@ -20,6 +20,7 @@ select:disabled {
 
 .label.input-required::after {
     content: ' *';
+    color: rgb(210, 80, 80);
 }
 
 @media (max-width: 768px) {

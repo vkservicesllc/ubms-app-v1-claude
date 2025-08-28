@@ -185,9 +185,10 @@ export const registerEvent = onSubmit => {
         }
     })
 
-    setTimeout(() => {
-        $(`${selector.class.text.signUp}, [type=submit]`).removeAttr('disabled')
-    }, 750)
+    //! (DO NOT UNCOMMENT) This will force "Sign up" to be enabled before terms and conditions
+    // setTimeout(() => {
+    //     $(`${selector.class.text.signUp}, [type=submit]`).removeAttr('disabled')
+    // }, 750)
 }
 
 
