@@ -351,6 +351,8 @@ class User extends Person {
             }
 
 
+            //! WORK IN PROGRESS
+
             this.teamIds = async session => {
                 if (!session?.user) return
 
@@ -630,6 +632,8 @@ class User extends Person {
                     return data
                 }
             }
+
+            //! ----
 
 
             this.modify = async (session, data) => {

@@ -230,6 +230,8 @@ class Company {
             }
 
 
+            //!WORK IN PROGRESS
+
             this.teams = async (session, action, teamIds) => {
                 const companyId = await this.id()
 
@@ -311,6 +313,8 @@ class Company {
                     return data
                 }
             }
+
+            //! ----
 
 
             this.modify = async (session, target, data) => {

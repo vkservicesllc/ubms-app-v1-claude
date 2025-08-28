@@ -101,6 +101,8 @@ class Team {
             }
 
 
+            //! WORK IN PROGRESS
+
             this.ids = async (session, type) => {
                 if (!session.user) return
 
@@ -351,6 +353,8 @@ class Team {
 
                 return { modified, error }
             }
+
+            //! ----
 
 
             this.modify = async (session, data) => {
