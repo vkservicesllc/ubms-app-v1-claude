@@ -18,44 +18,14 @@
                         min-width: 320px;
                         max-width: 480px;
                     }
-                </style>
-                <div class="columns mt-1 ml-1">
-                    <div class="column is-one-fifth user-ava">
-                        <figure class="image is-128x128">
-                            <img class="is-rounded" src="{{data.avaSrc}}" alt="User Avatar" />
-                        </figure>
-                    </div>
-                    <div class="column is-one-fifth user-column">
-                        <div class="is-flex is-justify-content-space-between">
-                            <small>Condition:</small>
-                            <strong class="has-text-right">{{{display.condition}}}</strong>
-                        </div>
-                        <div class="is-flex is-justify-content-space-between">
-                            <small>Status:</small>
-                            <strong class="has-text-right">{{display.status}}</strong>
-                        </div>
-                        <div class="is-flex is-justify-content-space-between">
-                            <small>Location:</small>
-                            <strong class="has-text-right">{{display.location}}</strong>
-                        </div>
-                        <div class="is-flex is-justify-content-space-between mt-3 pt-1 bt">
-                            <small>Employee:</small>
-                            <span class="has-text-danger-70 has-text-right">Unassigned</span>
-                        </div>
-                    </div>
-                </div>
-                {{#if (
-                    and
-                        (eq data.DS false)
-                        (eq self false)
-                )}}
-
-                <style>
                     .box-column {
                         min-width: 540px;
                     }
-                    .select.is-multiple select {
-                        min-height: 280px;
+                    .select.is-multiple.is-long select {
+                        min-height: 617px;
+                    }
+                    .select.is-multiple.is-short select {
+                        min-height: 170px;
                     }
                     .select.is-multiple select optgroup {
                         margin: 5px;
@@ -63,17 +33,52 @@
                     .select.is-multiple select option {
                         padding: 0 9px;
                     }
+                    .user-label {
+                        font-size: .9em;
+                        font-weight: bold;
+                        color: rgb(75, 75, 75);
+                    }
                 </style>
-                <div class="columns mt-4">
-                    {{{input.id}}}
-                    <div class="column is-two-fifths box-column">
+                <div class="columns">
+                    <div class="column">
+                        <div class="columns mt-2 ml-1">
+                            <div class="column is-one-third user-ava">
+                                <figure class="image is-128x128">
+                                    <img class="is-rounded" src="{{data.avaSrc}}" alt="User Avatar" />
+                                </figure>
+                            </div>
+                            <div class="column user-column">
+                                <div class="is-flex is-justify-content-space-between">
+                                    <label class="user-label">Condition:</label>
+                                    <p>{{{display.condition}}}</p>
+                                </div>
+                                <div class="is-flex is-justify-content-space-between">
+                                    <label class="user-label">Status:</label>
+                                    <p>{{display.status}}</p>
+                                </div>
+                                <div class="is-flex is-justify-content-space-between">
+                                    <label class="user-label">Location:</label>
+                                    <p>{{display.location}}</p>
+                                </div>
+                                <div class="is-flex is-justify-content-space-between">
+                                    <label class="user-label">Gender:</label>
+                                    <p>{{display.gender}}</p>
+                                </div>
+                                <div class="is-flex is-justify-content-space-between mt-3 pt-1 bt">
+                                    <label class="user-label">Employee:</label>
+                                    {{!-- Temporary --}}
+                                    <p class="has-text-danger-70 has-text-right">Unassigned</p>
+                                </div>
+                            </div>
+                        </div>
+                        {{{input.id}}}
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
                                     <form id="user-role-add-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Roles</label>
-                                        <div class="select is-multiple is-fullwidth">
+                                        <div class="select is-multiple is-short is-fullwidth">
                                             <select id="available-roles" name="roles" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
@@ -92,7 +97,7 @@
                                     <form id="user-role-delete-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
                                         <input type="hidden" name="action" value="-" />
                                         <label class="label">User's Roles</label>
-                                        <div class="select is-multiple is-fullwidth">
+                                        <div class="select is-multiple is-short is-fullwidth">
                                             <select id="user-roles" name="roles" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
@@ -101,15 +106,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="column is-two-fifths box-column">
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
                                     <form id="user-team-add-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Teams</label>
-                                        <div class="select is-multiple is-fullwidth">
+                                        <div class="select is-multiple is-short is-fullwidth">
                                             <select id="available-teams" name="teams" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
@@ -128,7 +131,7 @@
                                     <form id="user-team-delete-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
                                         <input type="hidden" name="action" value="-" />
                                         <label class="label">User's Teams</label>
-                                        <div class="select is-multiple is-fullwidth">
+                                        <div class="select is-multiple is-short is-fullwidth">
                                             <select id="user-teams" name="teams" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
@@ -137,6 +140,57 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="column">
+                        <div class="box">
+                            <div class="columns is-vcentered">
+                                <div class="column is-two-fifths is-width-fixed">
+                                    <form id="user-company-add-form" action="/resource/user/{{{data._id}}}/companies" method="POST">
+                                        <input type="hidden" name="action" value="+" />
+                                        <label class="label">Available Companies</label>
+                                        <div class="select is-multiple is-long is-fullwidth">
+                                            <select id="available-companies" name="companies" multiple>
+                                                <optgroup><option value=""></option></optgroup>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="column is-one-fifth">
+                                    <button type="submit" class="button is-fullwidth is-success" form="user-companies-add-form">
+                                        <i class="fa fa-arrow-right"></i>
+                                    </button>
+                                    <button type="submit" class="button is-fullwidth is-danger mt-2" form="user-companies-delete-form">
+                                        <i class="fa fa-arrow-left"></i>
+                                    </button>
+                                </div>
+                                <div class="column is-two-fifths is-width-fixed">
+                                    <form id="user-companies-delete-form" action="/resource/user/{{{data._id}}}/companies" method="POST">
+                                        <input type="hidden" name="action" value="-" />
+                                        <label class="label">User's Companies</label>
+                                        <div class="select is-multiple is-long is-fullwidth">
+                                            <select id="user-companies" name="companies" multiple>
+                                                <optgroup><option value=""></option></optgroup>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {{#if (
+                    and
+                        (eq data.DS false)
+                        (eq self false)
+                )}}
+
+                <div class="columns mt-4">
+                    <div class="column is-two-fifths box-column">
+                        
+                    </div>
+                    <div class="column is-two-fifths box-column">
+                        
                     </div>
                 </div>
                 {{/if}}

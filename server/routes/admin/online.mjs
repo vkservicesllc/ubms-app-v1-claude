@@ -86,7 +86,8 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
             const { identifier } = req.params
             let user = await User.data(res.session, { username: identifier })
             if (!user) user = await User.data(res.session, { _id: identifier })
-            const { name, email, username, condition, status, location } = user
+            const { name, email, username, condition, status, location, sex, gender } = user
+
             const sessionUser = res.session.user
 
             if (sessionUser.status[0] == 'A' && user.DS) return respond404(res)
@@ -94,8 +95,9 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
             const display = {
                 name: `<span class="has-text-weight-bold">${name}</span>`,
                 condition: username ? condition[1] : 'Not Registered',
-                status: status[1],
+                status: (status[0] === 'U' ? 'Basic ' : '') + status[1],
                 location: location[1],
+                gender: sex === null ? '<span class="has-text-danger-70">Not specified</span>' : gender[1],
             }
             display.name += ` <small><i>(${email})</i></small>`
             if (!username || ['I', 'L'].includes(condition[0]))
