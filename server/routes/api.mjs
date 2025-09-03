@@ -45,7 +45,7 @@ router.post('/login/validation', async (req, res) => {
 
     const user = await User.data(res.session, { username })
     if (user) {
-        const { applied: teams } = await user.teams({ user, ...res.session })
+        const { applied: teams } = await user.relationship({ user, ...res.session }, 'teams')
         validated = teams.length > 0
     }
 

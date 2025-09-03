@@ -90,7 +90,7 @@ router.use((req, res, next) => {
                     hbs.team[prop] = team[prop]
 
                 const settings = await user.settings(res.session)
-                const { applied: teams } = await user.teams(res.session)
+                const { applied: teams } = await user.relationship(res.session, 'teams')
                 if (teams.length === 1) hbs.teamNav = false
 
                 if (settings?.carrier?.teamSelect == '1') {
@@ -165,7 +165,7 @@ router.get('/', async (req, res, next) => {
             return res.redirect(url)
         }
 
-        const { applied: teams } = await user.teams(res.session)
+        const { applied: teams } = await user.relationship(res.session, 'teams')
         if (teams.length === 1) {
             req.session.team = teams[0]._id
             return res.redirect('/')

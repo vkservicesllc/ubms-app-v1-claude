@@ -1252,7 +1252,7 @@ class User extends Person {
                 return await reject('Verification failed: Incorrect status in current location')
 
             if (session.branch !== 'admin' && session.branch !== 'user') {
-                const { applied: teams } = await user.teams({ ...session, user })
+                const { applied: teams } = await user.relationship({ ...session, user }, 'teams')
                 if (!teams.length) return await reject('Verification failed: No teams assigned')
             }
 
