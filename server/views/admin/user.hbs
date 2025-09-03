@@ -22,10 +22,10 @@
                         min-width: 540px;
                     }
                     .select.is-multiple.is-long select {
-                        min-height: 617px;
+                        min-height: 590px;
                     }
                     .select.is-multiple.is-short select {
-                        min-height: 170px;
+                        min-height: 156px;
                     }
                     .select.is-multiple select optgroup {
                         margin: 5px;
@@ -47,17 +47,17 @@
                                     <img class="is-rounded" src="{{data.avaSrc}}" alt="User Avatar" />
                                 </figure>
                             </div>
-                            <div class="column user-column">
+                            <div class="column is-two-thirds user-column">
                                 <div class="is-flex is-justify-content-space-between">
-                                    <label class="user-label">Condition:</label>
+                                    <small class="has-text-secondary has-text-weight-bold">Condition:</small>
                                     <p>{{{display.condition}}}</p>
                                 </div>
                                 <div class="is-flex is-justify-content-space-between">
-                                    <label class="user-label">Status:</label>
+                                    <small class="has-text-secondary has-text-weight-bold">Status:</small>
                                     <p>{{display.status}}</p>
                                 </div>
                                 <div class="is-flex is-justify-content-space-between">
-                                    <label class="user-label">Location:</label>
+                                    <small class="has-text-secondary has-text-weight-bold">Location:</small>
                                     <p>{{display.location}}</p>
                                 </div>
                                 <div class="is-flex is-justify-content-space-between">
@@ -145,7 +145,7 @@
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-company-add-form" action="/resource/user/{{{data._id}}}/companies" method="POST">
+                                    <form id="user-companies-add-form" action="/resource/user/{{{data._id}}}/companies" method="POST">
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Companies</label>
                                         <div class="select is-multiple is-long is-fullwidth">
@@ -184,15 +184,6 @@
                         (eq data.DS false)
                         (eq self false)
                 )}}
-
-                <div class="columns mt-4">
-                    <div class="column is-two-fifths box-column">
-                        
-                    </div>
-                    <div class="column is-two-fifths box-column">
-                        
-                    </div>
-                </div>
                 {{/if}}
                 {{#if (eq data.DS true)}}
 

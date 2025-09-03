@@ -195,7 +195,26 @@ export default class {
             const { action, teams: _teamIds } = req.body
             const user = await User.data(res.session, { _id })
 
-            const { error } = await user.teams(res.session, action, _teamIds)
+            const { error } = await user.relationship(res.session, 'teams', action, _teamIds)
+            if (error) return throwErr.server(res, null, error)
+
+            const { username } = user
+            const identifier = username || _id
+
+            res.redirect(`/online/user/${identifier}`)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
+    static updateCompanies = async (req, res) => {
+        try {
+            const { _id } = req.params
+            const { action, companies: _companyIds } = req.body
+            const user = await User.data(res.session, { _id })
+
+            const { error } = await user.relationship(res.session, 'companies', action, _companyIds)
             if (error) return throwErr.server(res, null, error)
 
             const { username } = user

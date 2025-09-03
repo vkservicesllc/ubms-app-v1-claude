@@ -106,7 +106,8 @@ router.post('/user/:_id/:target', User.verify, async (req, res) => {
         const { _id, target } = req.params
         const user = await User.data(res.session, { _id })
 
-        res.send({ data: await user.relationship(res.session, target) })
+        const data = await user.relationship(res.session, target)
+        res.send({ data })
     } catch (err) {
         throwErr.server(res, null, err, false)
     }

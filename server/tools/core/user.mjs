@@ -353,96 +353,162 @@ class User extends Person {
 
             //! WORK IN PROGRESS
 
-            this.relationship = async (session, target) => {
+            this.relationship = async (session, target, action, ids) => {
                 if (!session?.user) return
 
                 const sessionUser = session.user
-                const self = sessionUser._id === this._id
-                if (!self && !sessionUser.DSA) return
-
                 const userId = await this.id()
-                const data = {
-                    all: [], available: [], applied: [],
-                }
-                let Src, batch
+                let Src
 
                 switch (target) {
-
-                    case 'companies':
-                        Src = Company
-                        batch = [
-                            {
-                                table: 'companies_users',
-                                match: { userId },
-                            },
-                            {
-                                table: 'companies',
-                                fields: [ Company.hashId(), 'catId' ],
-                                join: [ 'id', 'companyId' ],
-                                match: { confirmed: true },
-                            },
-                            {
-                                table: 'company_names',
-                                fields: [ { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] } ],
-                                join: [ 'companyId', 'id', {
-                                    table: 'companies',
-                                    max: 'since',
-                                } ]
-                            },
-                        ]
-                        break
-
                     case 'teams':
                         Src = Team
-                        batch = [
-                            {
-                                table: 'teams_users',
-                                match: { userId },
-                            },
-                            {
-                                table: 'teams',
-                                fields: [ Team.hashId(), 'name', 'catId' ],
-                                join: [ 'id', 'teamId' ],
-                            },
-                        ]
                         break
-
+                    case 'companies':
+                        Src = Company
+                        break
                 }
 
-                if (self) { /* Filter when SESSION USER in Special Branch */
-                    const catId = Company.catId(session.branch)
-                    const relationData = await Src.list(session, { catId })
+                if (action && ids) {
+                    let modified = false,
+                        error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+                    if (error) return { modified, error }
 
-                    if (sessionUser.DS) {
-                        relationData.map(row => {
-                            const { _id, name } = row
-                            data.applied.push({ _id, name })
-                        })
-                    } else {
-                        batch[1].match = { catId }
+                    if (!Array.isArray(ids)) ids = [ ids ]
+                    error = []
 
-                        data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                    let i = 0, modCt = 0, createdBy, idProp, qProp
+                    if (action === '-') action = 'delete'
+                    else if (action === '+') {
+                        action = 'insert'
+                        createdBy = await sessionUser.id()
                     }
+
+                    switch (target) {
+                        case 'teams':
+                            idProp = 'teamId'
+                            qProp = 'userTeams'
+                            break
+                        case 'companies':
+                            idProp = 'companyId'
+                            qProp = 'userCompanies'
+                            break
+                    }
+
+                    for (let id of ids) {
+                        if (!numeric(id)) id = await (await Src.data(session, { _id: id })).id()
+
+                        try {
+                            const data = { userId, [idProp]: id }
+                            if (action === 'insert') data.createdBy = createdBy
+
+                            const [ result ] = await mysql.execute(query[qProp][action](data))
+                            if (result.affectedRows === 1) modCt++
+                        } catch (err) {
+                            error.push('DB Error: idx ' + i)
+                        }
+
+                        i++
+                    }
+
+                    if (modCt === ids.length) {
+                        modified = true
+                        error = undefined
+                    } else error = error.join(' / ')
+
+                    return { modified, error }
                 } else {
-                    if (sessionUser.status[0] === 'A') {
-                        batch[0].match.userId = await sessionUser.id()
+                    const self = sessionUser._id === this._id
+                    if (!self && !sessionUser.DSA) return
 
-                        const relIds = []
-                        data.all = (await mysql.execute(Query.select(db.business, batch)))[0]
-                        data.all.map(row => relIds.push(row._id))
-                        data.applied = data.applied.filter(row => relIds.includes(row._id))
-                    } else {
-                        const relationData = await Src.list(session)
-                        data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
-
-                        relationData.map(row => {
-                            const { _id, name, catId } = row
-                            data.all.push({ _id, name, catId })
-                        })
+                    const data = {
+                        all: [], available: [], applied: [],
                     }
-                }
+                    let batch
 
-                return data
+                    switch (target) {
+
+                        case 'teams':
+                            batch = [
+                                {
+                                    table: 'teams_users',
+                                    match: { userId },
+                                },
+                                {
+                                    table: 'teams',
+                                    fields: [ Team.hashId(), 'name', 'catId' ],
+                                    join: [ 'id', 'teamId' ],
+                                },
+                            ]
+                            break
+
+                        case 'companies':
+                            batch = [
+                                {
+                                    table: 'companies_users',
+                                    match: { userId },
+                                },
+                                {
+                                    table: 'companies',
+                                    fields: [ Company.hashId(), 'catId' ],
+                                    join: [ 'id', 'companyId' ],
+                                    match: { confirmed: true },
+                                },
+                                {
+                                    table: 'company_names',
+                                    fields: [ { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] } ],
+                                    join: [ 'companyId', 'id', {
+                                        table: 'companies',
+                                        max: 'since',
+                                    } ]
+                                },
+                            ]
+                            break
+
+                    }
+
+                    if (self) { /* Filter when SESSION USER in Special Branch */
+                        const catId = Company.catId(session.branch)
+
+                        if (sessionUser.DS) {
+                            const relationData = await Src.list(session, { catId })
+
+                            relationData.map(row => {
+                                const { _id, name } = row
+                                data.applied.push({ _id, name })
+                            })
+                        } else {
+                            batch[1].match = { catId }
+
+                            data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                        }
+                    } else {
+                        if (sessionUser.status[0] === 'A') {
+                            batch[0].match.userId = await sessionUser.id()
+
+                            const relIds = []
+                            data.all = (await mysql.execute(Query.select(db.business, batch)))[0]
+                            data.all.map(row => relIds.push(row._id))
+                            data.applied = data.applied.filter(row => relIds.includes(row._id))
+                        } else {
+                            const relationData = await Src.list(session)
+                            data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+
+                            relationData.map(row => {
+                                const { _id, name, catId } = row
+                                data.all.push({ _id, name, catId })
+                            })
+                        }
+
+                        data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
+
+                        data.all = sortArrayByObjectKey(data.all, 'name')
+                        data.applied = sortArrayByObjectKey(data.applied, 'name')
+                        data.available = sortArrayByObjectKey(data.available, 'name')
+                    }
+
+                    return data
+                }
             }
 
 
