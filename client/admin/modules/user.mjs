@@ -80,6 +80,24 @@ if (_id) {
         $teams.applied.html(options.applied || optgroup)
 
         if ($unscoped.prop('checked')) $scoped.prop('disabled', true)
+
+        $unscoped.on('change', function() {
+            const unscoped = $(this).prop('checked')
+
+            $.ajax(`/api/user/${_id}/toggle-unscoped`, {
+                method: 'POST',
+                data: { unscoped },
+                success(response) {
+                    const { error } = response
+                    if (error) {
+                        $unscoped.prop('checked', !unscoped)
+                        return alert('Could not toggle "unscoped" state')
+                    }
+
+                    $scoped.prop('disabled', unscoped)
+                },
+            })
+        })
     }
 
     {

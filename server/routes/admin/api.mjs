@@ -2,7 +2,7 @@ const router = require('express').Router()
 const throwErr = require('../../tools/utils/error').api
 
 /* Tools */
-import User, { Role, superAdminUserOnly, developerOnly } from '../../tools/core/user.mjs'
+import User, { Role, superAdminUserOnly, developerOnly, adminBranchOnly } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Company, { Owner } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
@@ -95,6 +95,22 @@ router.post('/user/:_id/roles', User.verify, async (req, res) => {
         const user = await User.data(res.session, { _id })
 
         res.send({ data: await user.roles(res.session) })
+    } catch (err) {
+        throwErr.server(res, null, err, false)
+    }
+})
+
+
+router.post('/user/:_id/toggle-unscoped', User.verify, adminBranchOnly, async (req, res) => {
+    try {
+        const { _id } = req.params
+        let { unscoped } = req.body
+        unscoped = unscoped === 'true'
+
+        const user = await User.data(res.session, { _id })
+
+        const { error } = await user.modify(res.session, { unscoped })
+        res.send({ error })
     } catch (err) {
         throwErr.server(res, null, err, false)
     }
