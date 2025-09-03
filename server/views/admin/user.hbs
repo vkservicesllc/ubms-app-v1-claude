@@ -75,7 +75,7 @@
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-role-add-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
+                                    <form id="user-roles-add-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Roles</label>
                                         <div class="select is-multiple is-short is-fullwidth">
@@ -86,15 +86,15 @@
                                     </form>
                                 </div>
                                 <div class="column is-one-fifth">
-                                    <button type="submit" class="button is-fullwidth is-success" form="user-role-add-form">
+                                    <button type="submit" class="button is-fullwidth is-success" form="user-roles-add-form">
                                         <i class="fa fa-arrow-right"></i>
                                     </button>
-                                    <button type="submit" class="button is-fullwidth is-danger mt-2" form="user-role-delete-form">
+                                    <button type="submit" class="button is-fullwidth is-danger mt-2" form="user-roles-delete-form">
                                         <i class="fa fa-arrow-left"></i>
                                     </button>
                                 </div>
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-role-delete-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
+                                    <form id="user-roles-delete-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
                                         <input type="hidden" name="action" value="-" />
                                         <label class="label">User's Roles</label>
                                         <div class="select is-multiple is-short is-fullwidth">
@@ -109,7 +109,7 @@
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-team-add-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
+                                    <form id="user-teams-add-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Teams</label>
                                         <div class="select is-multiple is-short is-fullwidth">
@@ -120,15 +120,15 @@
                                     </form>
                                 </div>
                                 <div class="column is-one-fifth">
-                                    <button type="submit" class="button is-fullwidth is-success" form="user-team-add-form">
+                                    <button type="submit" class="button is-fullwidth is-success" form="user-teams-add-form">
                                         <i class="fa fa-arrow-right"></i>
                                     </button>
-                                    <button type="submit" class="button is-fullwidth is-danger mt-2" form="user-team-delete-form">
+                                    <button type="submit" class="button is-fullwidth is-danger mt-2" form="user-teams-delete-form">
                                         <i class="fa fa-arrow-left"></i>
                                     </button>
                                 </div>
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-team-delete-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
+                                    <form id="user-teams-delete-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
                                         <input type="hidden" name="action" value="-" />
                                         <label class="label">User's Teams</label>
                                         <div class="select is-multiple is-short is-fullwidth">

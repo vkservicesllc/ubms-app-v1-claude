@@ -49,7 +49,8 @@
                 {{/if}}
                 <li class="company-card-tabs" data-section="logo"><a>Logo</a></li>
                 {{#if (eq data.confirmed 1)}}
-                <li class="company-card-tabs" data-section="teams"><a>Teams</a></li>
+                {{!-- <li class="company-card-tabs" data-section="teams"><a>Teams</a></li> --}}
+                <li class="company-card-tabs" data-section="users"><a>Users</a></li>
                 {{/if}}
             </ul>
         </div>
@@ -265,18 +266,54 @@
         </section>
         {{#if (eq data.confirmed 1)}}
 
-        <section class="company-card-content" id="teams-card-content" style="display: none;">
+        <style>
+            .column.is-width-fixed {
+                min-width: 472px;
+            }
+            .select.is-multiple select {
+                min-height: {{css.multiSelect.minHeight}};
+            }
+        </style>
+        {{{form.id.hidden.input}}}
+
+        <section class="company-card-content" id="users-card-content" style="display: none;">
             <div class="columns">
                 <div class="column is-half">
-                    <style>
-                        .column.is-width-fixed {
-                            min-width: 200px;
-                        }
-                        .select.is-multiple select {
-                            min-height: {{css.multiSelect.minHeight}};
-                        }
-                    </style>
-                    {{{form.id.hidden.input}}}
+                    <div class="columns is-vcentered">
+                        <div class="column is-two-fifths is-width-fixed">
+                            <form id="company-users-add-form" action="/resource/company/{{{_id}}}/users" method="POST">
+                                <input type="hidden" name="action" value="+" />
+                                <label class="label">Available Users</label>
+                                <div class="select is-multiple is-fullwidth">
+                                    <select id="available-users" name="users" multiple size="8"><option value=""></option></select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="column is-one-fifth">
+                            <button type="submit" class="button is-fullwidth is-success" form="company-users-add-form">
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
+                            <button type="submit" class="button is-fullwidth is-danger mt-2" form="company-users-delete-form">
+                                <i class="fa fa-arrow-left"></i>
+                            </button>
+                        </div>
+                        <div class="column is-two-fifths is-width-fixed">
+                            <form id="company-users-delete-form" action="/resource/company/{{{_id}}}/users" method="POST">
+                                <input type="hidden" name="action" value="-" />
+                                <label class="label">Current Users</label>
+                                <div class="select is-multiple is-fullwidth">
+                                    <select id="current-users" name="users" multiple size="8"><option value=""></option></select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{!-- <section class="company-card-content" id="teams-card-content" style="display: none;">
+            <div class="columns">
+                <div class="column is-half">
                     <div class="columns is-vcentered">
                         <div class="column is-two-fifths is-width-fixed">
                             <form id="company-team-add-form" action="/resource/company/{{{_id}}}/teams" method="POST">
@@ -307,7 +344,7 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> --}}
         {{/if}}
 
     </div>
