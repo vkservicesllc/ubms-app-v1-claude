@@ -321,6 +321,17 @@ class Company {
                         //                 match: { catId },
                         //             },
                         //         ]
+
+                        //         data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                        //         data.applied.forEach(row => appliedIds.push(row._id))
+
+                        //         list.map((row, i) => {
+                        //             const { _id, name } = row
+
+                        //             data.all.push({ _id, name, applied: false })
+                        //             if (appliedIds.includes(_id)) data.all[i].applied = true
+                        //             else data.available.push({ _id, name })
+                        //         })
                         //     }
                         //     break
 
@@ -341,35 +352,27 @@ class Company {
                                     },
                                 ]
                             }
+
+                            data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                            data.applied.forEach((row, i) => {
+                                appliedIds.push(row._id)
+
+                                const user = new Person(row)
+                                data.applied[i].name = user.fullName('AL')
+                            })
+
+                            list.map((row, i) => {
+                                const { _id, username } = row
+                                const user = new Person(row)
+                                const name = user.fullName('AL')
+
+                                data.all.push({ _id, name, username, applied: false })
+                                if (appliedIds.includes(_id)) data.all[i].applied = true
+                                else data.available.push({ _id, name, username })
+                            })
                             break
 
                     }
-
-                    data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
-                    data.applied.forEach((row, i) => {
-                        appliedIds.push(row._id)
-
-                        //* If database has no `name` field
-                        if (target === 'users') {
-                            const user = new Person(row)
-                            data.applied[i].name = user.fullName('AL')
-                        }
-                    })
-
-                    list.map((row, i) => {
-                        const { _id } = row
-                        let { name } = row
-
-                        //* If database has no `name` field
-                        if (target === 'users') {
-                            const user = new Person(row)
-                            name = user.fullName('AL')
-                        }
-
-                        data.all.push({ _id, name, applied: false })
-                        if (appliedIds.includes(_id)) data.all[i].applied = true
-                        else data.available.push({ _id, name })
-                    })
 
                     data.all = sortArrayByObjectKey(data.all, 'name')
                     data.applied = sortArrayByObjectKey(data.applied, 'name')

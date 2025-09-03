@@ -42,8 +42,8 @@ if ($content.users.length) {
             const options = { available: '', applied: '' }
             const option = '<option value=""></option>'
 
-            users.available.forEach(user => options.available += `<option value="${user._id}">${user.name}</option>`)
-            users.applied.forEach(user => options.applied += `<option value="${user._id}">${user.name}</option>`)
+            users.available.forEach(user => options.available += `<option value="${user._id}">${user.name} (${user.username})</option>`)
+            users.applied.forEach(user => options.applied += `<option value="${user._id}">${user.name} (${user.username})</option>`)
 
             $users.available.html(options.available || option)
             $users.applied.html(options.applied || option)
