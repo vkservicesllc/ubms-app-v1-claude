@@ -108,17 +108,21 @@
                                         <input type="hidden" name="action" value="+" />
                                         <label class="label">Available Teams</label>
                                         <div class="select is-multiple is-short is-fullwidth">
-                                            <select id="available-teams" name="teams" multiple>
+                                            <select class="scoped" id="available-teams" name="teams" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
                                         </div>
                                     </form>
                                 </div>
                                 <div class="column is-one-fifth">
-                                    <button type="submit" class="button is-fullwidth is-success" form="user-teams-add-form">
+                                    <div class="mb-2" style="text-align: center;">
+                                        <input type="checkbox" class="switch is-rounded is-small is-info" id="unscoped" name="unscoped"{{ checked.unscoped }} />
+                                        <label class="label pb-1" for="unscoped" style="font-size: .95em; font-weight: normal;">Unscoped</label>
+                                    </div>
+                                    <button type="submit" class="button is-fullwidth is-success scoped" form="user-teams-add-form">
                                         <i class="fa fa-arrow-right"></i>
                                     </button>
-                                    <button type="submit" class="button is-fullwidth is-danger mt-2" form="user-teams-delete-form">
+                                    <button type="submit" class="button is-fullwidth is-danger mt-2 scoped" form="user-teams-delete-form">
                                         <i class="fa fa-arrow-left"></i>
                                     </button>
                                 </div>
@@ -127,7 +131,7 @@
                                         <input type="hidden" name="action" value="-" />
                                         <label class="label">User's Teams</label>
                                         <div class="select is-multiple is-short is-fullwidth">
-                                            <select id="user-teams" name="teams" multiple>
+                                            <select class="scoped" id="user-teams" name="teams" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
                                         </div>

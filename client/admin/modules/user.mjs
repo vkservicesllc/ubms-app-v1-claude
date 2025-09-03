@@ -53,6 +53,8 @@ if (_id) {
             available: $('#available-teams'),
             applied: $('#user-teams'),
         }
+        const $scoped = $('.scoped')
+        const $unscoped = $('#unscoped')
 
         const options = { ...defOpts }, optgroups = {}
 
@@ -76,6 +78,8 @@ if (_id) {
 
         $teams.available.html(options.available || optgroup)
         $teams.applied.html(options.applied || optgroup)
+
+        if ($unscoped.prop('checked')) $scoped.prop('disabled', true)
     }
 
     {

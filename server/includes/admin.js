@@ -121,7 +121,7 @@ module.exports = {
     },
 
     'user': {
-        external: [ ...online.external ],
+        external: [ ...online.external, 'bulma.switch' ],
         internal: {
             css: [ ...online.internal.css, 'theme' ],
             js: [ ...online.internal.js ],

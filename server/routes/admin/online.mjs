@@ -86,7 +86,7 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
             const { identifier } = req.params
             let user = await User.data(res.session, { username: identifier })
             if (!user) user = await User.data(res.session, { _id: identifier })
-            const { name, email, username, condition, status, location, sex, gender } = user
+            const { name, email, username, condition, status, location, unscoped, sex, gender } = user
 
             const sessionUser = res.session.user
 
@@ -106,10 +106,14 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
             const input = {
                 id: UserForm.id.hidden.input({ value: user._id }),
             }
+            const checked = {
+                unscoped: unscoped ? ' checked' : '',
+            }
 
             hbs.display = display
             hbs.data = user
             hbs.input = input
+            hbs.checked = checked
             hbs.self = user._id == sessionUser._id
         } catch (err) {
             return respond404(res)
