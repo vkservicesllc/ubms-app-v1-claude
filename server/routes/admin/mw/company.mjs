@@ -277,20 +277,36 @@ export default class {
     }
 
 
-    static updateTeams = async (req, res) => {
+    static updateUsers = async (req, res) => {
         try {
             const { _id } = req.params
-            const { action, teams: _teamIds } = req.body
+            const { action, users: _userIds } = req.body
             const company = await Company.data(res.session, { _id })
 
-            const { error } = await company.teams(res.session, action, _teamIds)
+            const { error } = await company.relationship(res.session, 'users', action, _userIds)
             if (error) return throwErr.server(res, null, error)
 
-            res.redirect(`/business/${Company.categoryList[company.catId].path[1]}/${company.route}?teams`)
+            res.redirect(`/business/${Company.categoryList[company.catId].path[1]}/${company.route}?users`)
         } catch (err) {
             throwErr.server(res, null, err)
         }
     }
+
+
+    // static updateTeams = async (req, res) => {
+    //     try {
+    //         const { _id } = req.params
+    //         const { action, teams: _teamIds } = req.body
+    //         const company = await Company.data(res.session, { _id })
+
+    //         const { error } = await company.relationship(res.session, 'teams', action, _teamIds)
+    //         if (error) return throwErr.server(res, null, error)
+
+    //         res.redirect(`/business/${Company.categoryList[company.catId].path[1]}/${company.route}?teams`)
+    //     } catch (err) {
+    //         throwErr.server(res, null, err)
+    //     }
+    // }
 
 
     static upsertOwner = async (req, res) => {

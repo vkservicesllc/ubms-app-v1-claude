@@ -2,6 +2,9 @@ import selector from '/modules/registry/selectors/company.mjs'
 
 const $tabs = $('.company-card-tabs')
 const $sections = $('.company-card-content')
+const $content = {
+    users: $('#users-card-content'),
+}
 
 $tabs.click(function() {
     const timeout = 250
@@ -18,36 +21,36 @@ $tabs.click(function() {
 })
 
 
-if ($('#teams-card-content').length) {
+if ($content.users.length) {
     const urlParams = new URLSearchParams(window.location.search)
-    if (urlParams.has('teams')) {
+    if (urlParams.has('users')) {
         $tabs.removeClass('is-active')
         $sections.hide()
         history.replaceState(null, '', window.location.href.split('?')[0])
     }
 
     const _id = $(selector.id.hidden.id).val()
-    const $teams = {
-        available: $('#available-teams'),
-        applied: $('#company-teams'),
+    const $users = {
+        available: $('#available-users'),
+        applied: $('#current-users'),
     }
 
-    $.ajax(`/api/company/${_id}/teams`, {
+    $.ajax(`/api/company/${_id}/users`, {
         method: 'POST',
         success(response) {
-            const { data: teams } = response
+            const { data: users } = response
             const options = { available: '', applied: '' }
             const option = '<option value=""></option>'
 
-            teams.available.forEach(team => options.available += `<option value="${team._id}">${team.name}</option>`)
-            teams.applied.forEach(team => options.applied += `<option value="${team._id}">${team.name}</option>`)
+            users.available.forEach(user => options.available += `<option value="${user._id}">${user.name}</option>`)
+            users.applied.forEach(user => options.applied += `<option value="${user._id}">${user.name}</option>`)
 
-            $teams.available.html(options.available || option)
-            $teams.applied.html(options.applied || option)
+            $users.available.html(options.available || option)
+            $users.applied.html(options.applied || option)
 
-            if (urlParams.has('teams')) {
-                $('[data-section=teams]').addClass('is-active')
-                $('#teams-card-content').show()
+            if (urlParams.has('users')) {
+                $('[data-section=users]').addClass('is-active')
+                $content.users.show()
             }
         },
     })

@@ -77,7 +77,8 @@ router.post('/company/:_id/address/:type/update', User.verify, superAdminUserOnl
 router.post('/company/:_id/contacts', User.verify, superAdminUserOnly, validateCompanyContacts, validationCheck, CompanyMW.upsertContacts)
 router.post('/company/:_id/contacts/:type/update', User.verify, superAdminUserOnly, CompanyMW.updateContact) //! unfinished
 
-router.post('/company/:_id/teams', User.verify, superAdminUserOnly, CompanyMW.updateTeams)
+// router.post('/company/:_id/teams', User.verify, superAdminUserOnly, CompanyMW.updateTeams)
+router.post('/company/:_id/users', User.verify, superAdminUserOnly, CompanyMW.updateUsers)
 
 
 

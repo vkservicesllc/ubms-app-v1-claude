@@ -326,7 +326,7 @@ class Company {
 
                         case 'users':
                             {
-                                list = await Src.list(session)
+                                list = await Src.list(session, { status: ['U', 'A'] })
                                 batch = [
                                     {
                                         table: 'companies_users',
@@ -337,7 +337,7 @@ class Company {
                                         table: 'users',
                                         fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'username' ],
                                         join: [ 'id', 'userId' ],
-                                        match: { username: { null: false } },
+                                        match: { username: { null: false }, status: ['U', 'A'] },
                                     },
                                 ]
                             }
@@ -346,12 +346,21 @@ class Company {
                     }
 
                     data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
-                    data.applied.forEach(row => appliedIds.push(row._id))
+                    data.applied.forEach((row, i) => {
+                        appliedIds.push(row._id)
+
+                        //* If database has no `name` field
+                        if (target === 'users') {
+                            const user = new Person(row)
+                            data.applied[i].name = user.fullName('AL')
+                        }
+                    })
 
                     list.map((row, i) => {
                         const { _id } = row
                         let { name } = row
 
+                        //* If database has no `name` field
                         if (target === 'users') {
                             const user = new Person(row)
                             name = user.fullName('AL')
