@@ -1199,6 +1199,7 @@ class User extends Person {
             res.cookie('connect.token', _token, {
                 httpOnly: true,
             })
+
             res.redirect(url)
         } catch (err) {
             const msg = 'Authentication failed: Server could not process the request'
@@ -1253,7 +1254,7 @@ class User extends Person {
             if (user.DS && user.location[0] !== 'US')
                 return await reject('Verification failed: Incorrect status in current location')
 
-            if (session.branch !== 'admin' && session.branch !== 'user') {
+            if (session.branch !== 'admin' && session.branch !== 'user' && !user.unscoped) {
                 const { applied: teams } = await user.relationship({ ...session, user }, 'teams')
                 if (!teams.length) return await reject('Verification failed: No teams assigned')
             }

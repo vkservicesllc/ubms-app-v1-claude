@@ -594,6 +594,7 @@ class Team {
         const { errKey } = recognizeApi(req)
 
         if (!user) return throwErr[errKey].auth(res, null, err)
+        if (user.unscoped) return next()
 
         try {
             const { team: _id } = req.session

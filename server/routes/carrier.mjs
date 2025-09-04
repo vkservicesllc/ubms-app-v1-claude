@@ -13,8 +13,7 @@ import UserForm from '../tools/form/user.mjs'
 
 
 router.use((req, res, next) => {
-
-    if (req.session.user && req.session.team) {
+    if (req.session.user) {
         const active = 'active '
         const inactive = ''
 
@@ -76,7 +75,10 @@ router.use((req, res, next) => {
                 rtx: inPGroup('d:rtx', permissions, DS),
             }
 
-            if (team) {
+            if (user.unscoped) {
+                hbs.teamDropdown = '<span class="item" id="team-item"></span>'
+                hbs.teamSelect = true
+            } else if (team) {
                 hbs.team = {}
                 hbs.teamSelect = false
                 hbs.teamDropdown = ''
@@ -156,7 +158,7 @@ router.get('/', async (req, res, next) => {
         const { user } = res.session
         const { team } = req.session
 
-        if (team) {
+        if (team || user.unscoped) {
             const settings = await user.settings(res.session)
             let url = user.lastUrl
 
