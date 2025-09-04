@@ -76,7 +76,7 @@ router.use((req, res, next) => {
             }
 
             if (user.unscoped) {
-                hbs.teamDropdown = '<span class="item" id="team-item"></span>'
+                hbs.teamDropdown = '<span class="item" id="team-item"><i class="universal access icon"></i> <small style="font-size: .55em;">Universal<br/>Access</small></span>'
                 hbs.teamSelect = true
             } else if (team) {
                 hbs.team = {}
