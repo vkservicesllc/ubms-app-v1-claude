@@ -291,7 +291,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'status',
         type: 'select/radio',
-        name: 'status',
+        name: 'legalStatus',
         data: Application.legalStatusList,
         keys: [ 'citizen', 'resident', 'authorized' ],
         required,
@@ -306,7 +306,7 @@ class ApplicationForm {
     static statusExp = createDateForm({
         selector: appSelector,
         target: 'statusExp',
-        name: 'statusExpiresOn',
+        name: 'legalExpiration',
         required,
         disabled,
         label: 'Status Expires on',

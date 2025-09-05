@@ -352,7 +352,7 @@ class Application {
             pspUplId: data.pspUplId,
         }
 
-        this.legalStatus = [ data.status, data.statusExpiresOn ]
+        this.legalStatus = [ data.legalStatus, data.legalExpiration ]
         this.step = data.step
 
         if (data.decExperience || data.decPosition)
@@ -1827,8 +1827,8 @@ class Application {
                     'createdBy',
                     'createdAt',
                     'finishedAt',
-                    'status',
-                    'statusExpiresOn',
+                    'legalStatus',
+                    'legalExpiration',
                     'position',
                     'firstName',
                     'middleName',
