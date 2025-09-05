@@ -11,15 +11,15 @@ import { capitalizeFirst } from '/modules/tools/utils/string.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import selector from '/modules/registry/selectors/team.mjs'
 
-const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
-const driverPositions = $.ajax('/api/source/driver?filter=positions', { async: false, method: 'POST' }).responseJSON
+// const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+// const driverPositions = $.ajax('/api/source/driver?filter=positions', { async: false, method: 'POST' }).responseJSON
 
 const interval = 30000
 
 const { id } = selector
 const HS = id.hidden
 const nameId = id.text.name
-const catId = id.select.category
+// const catId = id.select.category
 const descId = id.text.desc
 const busNameId = id.text.busName
 const coTypeId = id.select.coType
@@ -32,15 +32,15 @@ const zipId = id.text.addrZip
 const cityId = id.text.addrCity
 const stateId = id.select.addrState
 
-const crrDeptClass = selector.class.radio.crrDept
+// const crrDeptClass = selector.class.radio.crrDept
 
 
-const ids = {
-    catIdIcon: 'team-category-select-icon',
-}
-const defaults = {
-    catIdIcon: $(`#${ids.catIdIcon}`).html(),
-}
+// const ids = {
+//     catIdIcon: 'team-category-select-icon',
+// }
+// const defaults = {
+//     catIdIcon: $(`#${ids.catIdIcon}`).html(),
+// }
 const $modal = {
     all: $('.modal'),
     upsert: $('#team-upsert-modal'),
@@ -54,10 +54,10 @@ const $title = {
     profile: $('#team-profile-title'),
     settings: $('#team-settings-title'),
 }
-const $radio = {
-    allDepts: $(`${crrDeptClass}`),
-    crrDept: $(crrDeptClass),
-}
+// const $radio = {
+//     allDepts: $(`${crrDeptClass}`),
+//     crrDept: $(crrDeptClass),
+// }
 const $tip = {
     name: $('#team-name-tip'),
     email: $('#team-email-tip'),
@@ -135,7 +135,7 @@ teamNameEvent({
     },
 })
 
-catIdEvent(catId, ids.catIdIcon)
+// catIdEvent(catId, ids.catIdIcon)
 
 teamDescEvent({
     onInput(desc) {
@@ -185,7 +185,7 @@ cityEvent(cityId)
 
 
 const closeUpsert = () => {
-    const $catId = $(catId)
+    // const $catId = $(catId)
 
     $modal.all.removeClass('is-active')
     $(selector.class.global).val(null)
@@ -193,11 +193,11 @@ const closeUpsert = () => {
     $button.delete.hide()
     $button.upsert.html(null).removeClass('is-link is-success').prop('disabled', false)
     $title.upsert.html(null)
-    $catId.attr('disabled', false)
-    $radio.allDepts.prop('checked', false).prop('disabled', true)
-    if (!$catId.find('option[value=""]').length)
-        $catId.prepend('<option value="">--</option>').val(null)
-    $(`#${ids.catIdIcon}`).html(defaults.catIdIcon)
+    // $catId.attr('disabled', false)
+    // $radio.allDepts.prop('checked', false).prop('disabled', true)
+    // if (!$catId.find('option[value=""]').length)
+    //     $catId.prepend('<option value="">--</option>').val(null)
+    // $(`#${ids.catIdIcon}`).html(defaults.catIdIcon)
     countDescChars()
     $settings.html(null)
 }
@@ -213,12 +213,14 @@ const displayTeams = () => {
             let i = 0, html = ''
 
             for (const [ idx, row ] of data.entries()) {
-                const { _id, name, description, catId, depts, count, settings } = row
+                const { _id, name, description,
+                    // catId, depts,
+                    count, settings } = row
                 const { companies, users } = count
                 const companyStyle = `is-${companies ? 'primary' : 'danger'}`
                 const userStyle = `is-${users ? 'primary' : 'danger'}`
 
-                let companyCat = categories[catId].item[0]
+                // let companyCat = categories[catId].item[0]
 
                 if (i === 0) html += '<div class="columns">'
 
@@ -229,25 +231,25 @@ const displayTeams = () => {
                 html += `<p class="title mb-3"><a class="team-edit" data-team-id="${_id}" style="font-size: .85em;">${escapeHTML(name)}</a></p>`
                 if (description) html += `<p class="subtitle has-text-primary-30 mb-2" style="font-size: .95em;">${escapeHTML(description)}</p>`
 
-                switch (catId) {
+                // switch (catId) {
 
-                    case 'crr':
-                        html += '<div class="field is-grouped is-grouped-multiline">'
+                //     case 'crr':
+                //         html += '<div class="field is-grouped is-grouped-multiline">'
 
-                        html += `<div><span class="tag is-info">${depts.join(', ')}</span></div>`
-                        if (settings?.drivers?.cdl) html += '<div><span class="tag is-warning">CDL enforced</span></div>'
+                //         html += `<div><span class="tag is-info">${depts.join(', ')}</span></div>`
+                //         if (settings?.drivers?.cdl) html += '<div><span class="tag is-warning">CDL enforced</span></div>'
 
-                        html += '</div>'
-                        break
+                //         html += '</div>'
+                //         break
 
-                }
+                // }
 
                 html += '<div class="field is-grouped is-grouped-multiline">'
 
-                html += '<div class="control"><div class="tags has-addons">'
-                html += `<span class="tag">${companyCat}</span>`
-                html += `<a class="tag team-relationship ${companyStyle}" data-relationship="companies" data-team-id="${_id}">${companies}</a>`
-                html += '</div></div>'
+                // html += '<div class="control"><div class="tags has-addons">'
+                // html += `<span class="tag">${companyCat}</span>`
+                // html += `<a class="tag team-relationship ${companyStyle}" data-relationship="companies" data-team-id="${_id}">${companies}</a>`
+                // html += '</div></div>'
 
                 html += '<div class="control"><div class="tags has-addons">'
                 html += `<span class="tag">Users</span>`
@@ -255,7 +257,7 @@ const displayTeams = () => {
                 html += '</div></div>'
 
                 html += `<div><a class="has-text-grey team-profile" data-team-id="${_id}"><i class="fas fa-briefcase"></i></a></div>`
-                html += `<div><a class="has-text-grey team-settings" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
+                // html += `<div><a class="has-text-grey team-settings" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
 
                 html += '</div>'
 
@@ -279,31 +281,33 @@ const displayTeams = () => {
                     url: `/api/team/${_id}`,
                     method: 'POST',
                     success(response) {
-                        const { _id, catId: category, name, settings } = response.data
+                        const { _id,
+                            // catId: category,
+                        name, settings } = response.data
 
                         if (target == 'edit') {
                             const { description, count } = response.data
                             const { companies, users } = count
-                            const $catId = $(catId)
+                            // const $catId = $(catId)
 
                             $id.main.val(_id)
                             $(`${HS.name}, ${nameId}`).val(name)
-                            $catId.val(category).find('option[value=""]').remove()
-                            if (companies) $catId.attr('disabled', true)
-                            $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)
+                            // $catId.val(category).find('option[value=""]').remove()
+                            // if (companies) $catId.attr('disabled', true)
+                            // $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)
                             $(descId).val(description)
 
-                            if (category === 'crr') {
-                                const crrDeptId = settings.deptId[0] //! Only works for radios with only possible department
-                                $(`${crrDeptClass}[value=${crrDeptId}]`).prop('checked', true)
-                                $radio.crrDept.prop('disabled', false)
-                            }
+                            // if (category === 'crr') {
+                            //     const crrDeptId = settings.deptId[0] //! Only works for radios with only possible department
+                            //     $(`${crrDeptClass}[value=${crrDeptId}]`).prop('checked', true)
+                            //     $radio.crrDept.prop('disabled', false)
+                            // }
 
                             $title.upsert.html(`<small>Modify Team</small> <strong>${escapeHTML(name)}</strong>`)
                             setTip.passed('name')
                             $button.upsert.html('Update').addClass('is-success')
                             if (!companies && !users) $button.delete.show()
-                            else $radio.allDepts.prop('disabled', true)
+                            // else $radio.allDepts.prop('disabled', true)
                             countDescChars(description)
                             $modal.upsert.addClass('is-active')
                         } else if (target == 'profile') {
@@ -332,31 +336,31 @@ const displayTeams = () => {
                             $modal.profile.addClass('is-active')
                         } else if (target == 'settings') {
                             $(HS.settingsId).val(_id)
-                            const { settings } = response.data
+                            // const { settings } = response.data
 
-                            const applied = {
-                                driverCDL: settings?.drivers?.cdl || false,
-                                driverPositions: settings?.drivers?.positions || Object.keys(driverPositions).map(position => position),
-                            }
-                            let list = ''
+                            // const applied = {
+                            //     driverCDL: settings?.drivers?.cdl || false,
+                            //     driverPositions: settings?.drivers?.positions || Object.keys(driverPositions).map(position => position),
+                            // }
+                            // let list = ''
 
-                            if (category == 'crr') {
-                                list += '<div class="columns">'
-                                list += '<div class="column"><div class="field><label class="checkbox">'
-                                list += `<input type="checkbox" name="${category}[drivers][cdl]"${applied.driverCDL ? ' checked' : ''} /> &nbsp;CDL Enforced`
-                                list += '</label></div></div>'
-                                list += '<div class="column"><label class="label">Driver Positions</label>'
-                                for (const value in driverPositions) {
-                                    const checked = applied.driverPositions.includes(value) ? ' checked' : ''
-                                    list += '<div class="field"><label class="checkbox">'
-                                    list += `<input type="checkbox" name="${category}[drivers][positions]" value="${value}"${checked} /> &nbsp;${driverPositions[value]}`
-                                    list += '</label></div>'
-                                }
-                                list += '</div>'
-                                list += '</div>'
-                            }
+                            // if (category == 'crr') {
+                            //     list += '<div class="columns">'
+                            //     list += '<div class="column"><div class="field><label class="checkbox">'
+                            //     list += `<input type="checkbox" name="${category}[drivers][cdl]"${applied.driverCDL ? ' checked' : ''} /> &nbsp;CDL Enforced`
+                            //     list += '</label></div></div>'
+                            //     list += '<div class="column"><label class="label">Driver Positions</label>'
+                            //     for (const value in driverPositions) {
+                            //         const checked = applied.driverPositions.includes(value) ? ' checked' : ''
+                            //         list += '<div class="field"><label class="checkbox">'
+                            //         list += `<input type="checkbox" name="${category}[drivers][positions]" value="${value}"${checked} /> &nbsp;${driverPositions[value]}`
+                            //         list += '</label></div>'
+                            //     }
+                            //     list += '</div>'
+                            //     list += '</div>'
+                            // }
 
-                            $settings.html(list)
+                            // $settings.html(list)
                             $title.settings.html(`<strong>${escapeHTML(name)}</strong> <small>Settings</small>`)
                             $modal.settings.addClass('is-active')
                         }
@@ -430,10 +434,10 @@ $button.add.click(() => {
     $modal.upsert.addClass('is-active')
 
     //! TEMP: enable carrier departments only (visible by default for now)
-    $radio.crrDept.prop('disabled', false)
+    // $radio.crrDept.prop('disabled', false)
 
     //! TEMP: set default value to catId
-    $(catId).val('crr')
+    // $(catId).val('crr')
 })
 
 //! TEST VERSION: Deleting via API

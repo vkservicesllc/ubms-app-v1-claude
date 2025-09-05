@@ -114,7 +114,9 @@ router.post('/carrier/:_id/:target/update', User.verify, superAdminUserOnly) //!
 /* Team Resource */
 
 const validateTeam = []
-const teamFields = ['teamName', 'category', 'desc']
+const teamFields = ['teamName',
+    //'category',
+'desc']
 teamFields.map(prop => validateTeam.push(TeamForm[prop].validate()))
 
 const validateTeamProfile = []

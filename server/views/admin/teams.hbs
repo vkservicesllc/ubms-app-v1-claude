@@ -23,7 +23,7 @@
                                             </div>
                                             <p class="help" id="team-name-tip"></p>
                                         </div>
-                                        <div class="field" style="display: none;">
+                                        {{!-- <div class="field" style="display: none;">
                                             {{{form.category.select.label}}}
                                             <div class="control has-icons-left">
                                                 <div class="select is-fullwidth">
@@ -33,9 +33,8 @@
                                                     <i class="fas fa-file-circle-question"></i>
                                                 </span>
                                             </div>
-                                        </div>
-                                        <div class="field">
-                                            {{!-- Temporarily visible and required until we have more categories --}}
+                                        </div> --}}
+                                        {{!-- <div class="field">
                                             {{{form.crrDept.radio.label}}}
                                             <div class="control">
                                                 <label class="radio">
@@ -49,7 +48,7 @@
                                                     {{{form.crrDept.radio.one.label}}}
                                                 </label>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                     <div class="column">
                                         <div class="field">
@@ -207,7 +206,7 @@
                     </div>
                 </div>
 
-                <div class="modal" id="team-settings-modal">
+                {{!-- <div class="modal" id="team-settings-modal">
                     <div class="modal-background"></div>
                     <div class="modal-card">
                         <header class="modal-card-head">
@@ -224,6 +223,6 @@
                             <button type="submit" form="team-settings-form" class="button is-success">Save</button>
                         </footer>
                     </div>
-                </div>
+                </div> --}}
 
 {{> admin/nav.omega}}

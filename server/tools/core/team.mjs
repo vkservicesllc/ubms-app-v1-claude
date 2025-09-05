@@ -20,8 +20,8 @@ const throwErr = require('../utils/error')
 const query = {
     teams: new Query(db.business, 'teams'),
     profiles: new Query(db.business, 'team_profiles'),
-    companies: new Query(db.business, 'teams_companies'),
-    users: new Query(db.business, 'teams_users'),
+    // companies: new Query(db.business, 'map_companies_teams'),
+    users: new Query(db.business, 'map_teams_users'),
 }
 
 
@@ -29,7 +29,6 @@ const query = {
 class Team {
     constructor(data = {}, light = false) {
         this._id = data._id
-        this.catId = data.catId
         this.name = data.name
         this.description = data.description
         if (data.busName && data.coType)
@@ -49,15 +48,15 @@ class Team {
                 })
             }
         this.count = {
-            companies: data.companyCount,
+            // companies: data.companyCount,
             users: data.userCount,
         }
-        this.settings = data.settings?.[this.catId] || null
+        // this.settings = data.settings?.[this.catId] || null
 
-        if (this.catId === 'crr') {
-            this.deptId = this.settings.deptId
-            this.depts = Team.deptList.crr.filter((value, i) => this.deptId.includes(i))
-        }
+        // if (this.catId === 'crr') {
+        //     this.deptId = this.settings.deptId
+        //     this.depts = Team.deptList.crr.filter((value, i) => this.deptId.includes(i))
+        // }
 
         if (!light) {
 
@@ -111,23 +110,21 @@ class Team {
 
                 switch (type) {
 
-                    case 'companies':
-                        const { catId } = this
-
-                        batch = [
-                            {
-                                table: 'teams_companies',
-                                match: { teamId },
-                            },
-                            {
-                                table: 'companies',
-                                fields: 'id',
-                                join: [ 'id', 'companyId' ],
-                                match: { catId },
-                            },
-                        ]
-
-                        break
+                    // case 'companies':
+                    //     const { catId } = this
+                    //     batch = [
+                    //         {
+                    //             table: query.companies,
+                    //             match: { teamId },
+                    //         },
+                    //         {
+                    //             table: 'companies',
+                    //             fields: 'id',
+                    //             join: [ 'id', 'companyId' ],
+                    //             match: { catId },
+                    //         },
+                    //     ]
+                    //     break
 
                 }
 
@@ -142,66 +139,66 @@ class Team {
                 if (!session?.user) return
 
                 const teamId = await this.id()
-                const { catId } = this
+                // const { catId } = this
                 const data = {
                     [type]: { all: [], available: [], applied: [] },
                 }
                 const appliedIds = []
                 let batch
-                const companyBatch = [
-                    {
-                        table: 'teams_companies',
-                        match: { teamId },
-                    },
-                    {
-                        table: 'companies',
-                        fields: Company.hashId(),
-                        join: [ 'id', 'companyId' ],
-                        match: { catId },
-                    },
-                    {
-                        table: 'company_names',
-                        fields: [
-                            { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
-                            { route: [ [ 'busName', 'coType' ] ] },
-                        ],
-                        join: [ 'companyId', 'id', 1 ],
-                    },
-                ]
+                // const companyBatch = [
+                //     {
+                //         table: query.companies.table,
+                //         match: { teamId },
+                //     },
+                //     {
+                //         table: 'companies',
+                //         fields: Company.hashId(),
+                //         join: [ 'id', 'companyId' ],
+                //         match: { catId },
+                //     },
+                //     {
+                //         table: 'company_names',
+                //         fields: [
+                //             { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
+                //             { route: [ [ 'busName', 'coType' ] ] },
+                //         ],
+                //         join: [ 'companyId', 'id', 1 ],
+                //     },
+                // ]
 
                 switch (type) {
 
-                    case 'companies':
-                        const companies = await Company.list(session, { catId, confirmed: true })
+                    // case 'companies':
+                    //     const companies = await Company.list(session, { catId, confirmed: true })
 
-                        batch = companyBatch
+                    //     batch = companyBatch
 
-                        data[type].applied = (await mysql.execute(Query.select(db.business, batch)))[0]
-                        data[type].applied.forEach(company => appliedIds.push(company._id))
+                    //     data[type].applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                    //     data[type].applied.forEach(company => appliedIds.push(company._id))
 
-                        companies.map((company, i) => {
-                            const { _id, name } = company
+                    //     companies.map((company, i) => {
+                    //         const { _id, name } = company
 
-                            data[type].all.push({ _id, name, applied: false })
-                            if (appliedIds.includes(_id)) data[type].all[i].applied = true
-                            else data[type].available.push({ _id, name })
-                        })
-                        break
+                    //         data[type].all.push({ _id, name, applied: false })
+                    //         if (appliedIds.includes(_id)) data[type].all[i].applied = true
+                    //         else data[type].available.push({ _id, name })
+                    //     })
+                    //     break
 
-                    case 'carriers':
-                        if (catId !== 'crr') return
+                    // case 'carriers':
+                    //     if (catId !== 'crr') return
 
-                        batch = companyBatch
-                        batch[1].fields = [ [ Company.hashId(), 'companyId' ] ]
-                        batch.push({
-                            db: db.carrier,
-                            table: 'carriers',
-                            fields: [ [ Carrier.hashId(), 'id' ] ],
-                            join: [ 'companyId', 'id', 1 ],
-                        })
+                    //     batch = companyBatch
+                    //     batch[1].fields = [ [ Company.hashId(), 'companyId' ] ]
+                    //     batch.push({
+                    //         db: db.carrier,
+                    //         table: 'carriers',
+                    //         fields: [ [ Carrier.hashId(), 'id' ] ],
+                    //         join: [ 'companyId', 'id', 1 ],
+                    //     })
 
-                        return (await mysql.execute(Query.select(db.business, batch)))[0]
-                        break
+                    //     return (await mysql.execute(Query.select(db.business, batch)))[0]
+                    //     break
 
                     case 'users':
                         const status = [ 'U', 'A' ]
@@ -209,7 +206,7 @@ class Team {
 
                         batch = [
                             {
-                                table: 'teams_users',
+                                table: query.users.table,
                                 match: { teamId },
                             },
                             {
@@ -304,14 +301,14 @@ class Team {
                     match: { id },
                 })))[0][0].settings || {}
 
-                switch (this.catId) {
-                    case 'crr':
-                        data[this.catId].drivers.cdl = !!data[this.catId].drivers.cdl
-                        break
-                }
+                // switch (this.catId) {
+                //     case 'crr':
+                //         data[this.catId].drivers.cdl = !!data[this.catId].drivers.cdl
+                //         break
+                // }
 
-                settings[this.catId] = { ...settings[this.catId], ...data[this.catId] }
-                settings = JSON.stringify(settings)
+                // settings[this.catId] = { ...settings[this.catId], ...data[this.catId] }
+                // settings = JSON.stringify(settings)
                 //! This method does not track and log the change
 
                 try {
@@ -330,7 +327,7 @@ class Team {
 
                 const types = {
                     users: { idProp: 'userId', Src: User },
-                    companies: { idProp: 'companyId', Src: Company },
+                    // companies: { idProp: 'companyId', Src: Company },
                 }
                 const { idProp, Src } = types[target]
                 const teamId = await this.id()
@@ -361,10 +358,10 @@ class Team {
                 let modified = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { modified, error }
 
-                let deptId = data.deptId
-                delete data.deptId
-                if (this.count.companies) delete data.catId
-                if (this.count.companies || this.count.users) deptId = null
+                // let deptId = data.deptId
+                // delete data.deptId
+                // if (this.count.companies) delete data.catId
+                // if (this.count.companies || this.count.users) deptId = null
 
                 const id = await this.id()
                 data = processData(data, {
@@ -373,27 +370,27 @@ class Team {
                     currentUpdateLog: await this.log('updateLog'),
                 })
 
-                if (deptId) {
-                    deptId = deptId.map(id => +id)
-                    const same = (function (arr1, arr2) {
-                        if (!arr1 || arr1.length !== arr2.length) return false
+                // if (deptId) {
+                //     deptId = deptId.map(id => +id)
+                //     const same = (function (arr1, arr2) {
+                //         if (!arr1 || arr1.length !== arr2.length) return false
 
-                        const sorted1 = [...arr1].sort()
-                        const sorted2 = [...arr2].sort()
+                //         const sorted1 = [...arr1].sort()
+                //         const sorted2 = [...arr2].sort()
 
-                        return sorted1.every((value, idx) => value === sorted2[idx])
-                    })[this.settings?.deptId, deptId]
+                //         return sorted1.every((value, idx) => value === sorted2[idx])
+                //     })[this.settings?.deptId, deptId]
 
-                    if (!same) {
-                        let { settings } = this
-                        if (!settings) settings = {}
-                        settings.deptId = deptId
-                        data.settings = JSON.stringify({
-                            [this.catId]: settings,
-                        })
-                    }
-                    //! This method does not track and log the change
-                }
+                //     if (!same) {
+                //         let { settings } = this
+                //         if (!settings) settings = {}
+                //         settings.deptId = deptId
+                //         data.settings = JSON.stringify({
+                //             [this.catId]: settings,
+                //         })
+                //     }
+                //     //! This method does not track and log the change
+                // }
 
                 try {
                     const [ result ] = await mysql.execute(query.teams.update(data, { id }))
@@ -454,19 +451,21 @@ class Team {
 
         data = processData(data)
 
-        for (const prop of [ 'name', 'catId' ])
+        for (const prop of [ 'name',
+            // 'catId'
+        ])
             if (!data[prop]) return { created, error: 'Invalid Data' }
 
-        if (data.deptId) {
-            data.settings = {
-                [data.catId]: {
-                    deptId: data.deptId.map(id => +id),
-                },
-            }
+        // if (data.deptId) {
+        //     data.settings = {
+        //         [data.catId]: {
+        //             deptId: data.deptId.map(id => +id),
+        //         },
+        //     }
 
-            data.settings = JSON.stringify(data.settings)
-            delete data.deptId
-        }
+        //     data.settings = JSON.stringify(data.settings)
+        //     delete data.deptId
+        // }
 
         data.createdBy = await session.user.id()
 
@@ -493,15 +492,17 @@ class Team {
         if (!filter) filter = {}
 
         const { _id, id, name } = params
-        const { catId, deptId } = filter
-        const match = { id, name, catId, deptId }
+        // const { catId, deptId } = filter
+        const match = { id, name,
+            // catId, deptId
+        }
         if (!id) match.id = Team.matchIdHash(_id)
 
         const join = ['teamId', 'id']
         const batch = [
             {
                 table: 'teams',
-                fields: [ Team.hashId(), 'catId','name', 'description', 'settings' ],
+                fields: [ Team.hashId(), 'name', 'description', 'settings' ],
                 match,
                 group: 'id',
             },
@@ -515,13 +516,13 @@ class Team {
                 ],
                 join,
             },
+            // {
+            //     table: query.companies.table,
+            //     fields: [ { countDist: ['companyId', 'companyCount'] } ],
+            //     join,
+            // },
             {
-                table: 'teams_companies',
-                fields: [ { countDist: ['companyId', 'companyCount'] } ],
-                join,
-            },
-            {
-                table: 'teams_users',
+                table: query.users.table,
                 fields: [ { countDist: ['userId', 'userCount', {
                     case: {
                         db: db.online,
@@ -534,7 +535,7 @@ class Team {
             {
                 db: db.online,
                 table: 'users',
-                join: ['id', 'userId', { table: 'teams_users' }],
+                join: ['id', 'userId', { table: query.users.table }],
             },
         ]
 

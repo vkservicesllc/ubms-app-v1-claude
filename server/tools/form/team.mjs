@@ -32,20 +32,20 @@ class TeamForm {
     static id = createIdForm({ selector })
     static profileId = createIdForm({ selector, target: 'profileId' })
     static settingsId = createIdForm({ selector, target: 'settingsId' })
-    static category = createCategoryForm(selector)
+    // static category = createCategoryForm(selector)
 
-    static crrDept = createForm({
-        selector,
-        target: 'crrDept',
-        group: 'crrDept',
-        type: 'select/radio',
-        name: 'deptId[]',
-        data: crrDeptData,
-        keys: ['zero', 'one'],
-        required,
-        disabled,
-        label: 'Department',
-    })
+    // static crrDept = createForm({
+    //     selector,
+    //     target: 'crrDept',
+    //     group: 'crrDept',
+    //     type: 'select/radio',
+    //     name: 'deptId[]',
+    //     data: crrDeptData,
+    //     keys: ['zero', 'one'],
+    //     required,
+    //     disabled,
+    //     label: 'Department',
+    // })
 
     //* "name" can not be used as an own property
     static teamName = createForm({
