@@ -10,10 +10,10 @@ import db from '../../settings/mysql.mjs'
 
 /* Tools */
 import moment from 'moment'
-import Individual from './individual.mjs'
+import Individual, { query as personQuery } from './individual.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Team from './team.mjs'
-import User from './user.mjs'
+import User, { query as userQuery } from './user.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import { sessionError } from './user.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
@@ -30,7 +30,7 @@ const mysql = require('../utils/mysql')
 
 const { sqlMode } = Query
 const query = {
-    companies: new Query(db.business, 'companies'),
+    main: new Query(db.business, 'companies'),
     names: new Query(db.business, 'company_names'),
     owners: new Query(db.business, 'company_owners'),  // * 2
     ownerships: new Query(db.business, 'company_ownerships'),
@@ -40,7 +40,7 @@ const query = {
     faxes: new Query(db.business, 'company_faxes'),
     emails: new Query(db.business, 'company_emails'),
     //? teams: new Query(db.business, 'teams_companies'),
-    users: new Query(db.business, 'companies_users'),
+    //! users: new Query(db.business, 'companies_users'),
 }
 const targets = Object.keys(query)
 
@@ -108,7 +108,7 @@ class Company {
 
         if (!light) {
 
-            this.id = async () => (await mysql.execute(query.companies.select('id', {
+            this.id = async () => (await mysql.execute(query.main.select('id', {
                 match: { id: Company.matchIdHash(this._id) },
             })))[0][0].id
 
@@ -116,7 +116,7 @@ class Company {
             this.ein = async (session, format = false, _id) => {
                 if (!session?.user) return
 
-                let { ein } = (await mysql.execute(query.companies.select({ aes: [ 'ein', secret.ein ] }, {
+                let { ein } = (await mysql.execute(query.main.select({ aes: [ 'ein', secret.ein ] }, {
                     match: { id: Company.matchIdHash(_id || this._id) },
                 })))[0][0]
                 ein = stringifyBuffer(ein)
@@ -340,12 +340,12 @@ class Company {
                                 list = await Src.list(session, { status: ['U', 'A'] })
                                 batch = [
                                     {
-                                        table: 'companies_users',
+                                        table: userQuery.jx.companies.table,
                                         match: { companyId },
                                     },
                                     {
                                         db: db.online,
-                                        table: 'users',
+                                        table: userQuery.main.table,
                                         fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'username' ],
                                         join: [ 'id', 'userId' ],
                                         match: { username: { null: false }, status: ['U', 'A'] },
@@ -639,7 +639,7 @@ class Company {
                     })
 
                     try {
-                        const [ result ] = await mysql.execute(query.companies.update(data, { id: await this.id() }))
+                        const [ result ] = await mysql.execute(query.main.update(data, { id: await this.id() }))
 
                         if (result.affectedRows === 1) {
                             confirmed = true
@@ -732,7 +732,7 @@ class Company {
             name: { since, busName, coType, alias, createdBy },
         }
 
-        const [ result ] = await mysql.execute(query.companies.insert(data.company))
+        const [ result ] = await mysql.execute(query.main.insert(data.company))
         const id = result.insertId
 
         if (id) {
@@ -757,14 +757,14 @@ class Company {
         const join = [ 'companyId', 'id', { max: 'since' } ]
         const batch = [
             {
-                table: 'companies',
+                table: query.main.table,
                 fields: [
                     Company.hashId(), 'catId', { aes: [ 'ein', secret.ein ] }, 'duns', 'website',
                     'since', 'until', 'global', 'active', 'confirmed', 'logo', 'style',
                 ],
             },
             {
-                table: 'company_names',
+                table: query.names.table,
                 fields: [
                     'busName', 'coType', 'alias',
                     { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
@@ -773,23 +773,23 @@ class Company {
                 join,
             },
             {
-                table: 'company_ownerships',
+                table: query.ownerships.table,
                 join,
             },
             {
-                table: 'company_owners',
+                table: query.owners.table,
                 fields: [ [ Owner.hashId(), 'ownerId' ], [ Individual.hashId(), 'personId' ] ],
                 join: [ 'id', 'ownerId', 'company_ownerships' ],
             },
             {
                 db: db.person,
-                table: 'individuals',
+                table: personQuery.main.table,
                 fields: [ 'dob', 'sex', { aes: [ 'ssn', secret.ssn ] } ],
                 join: [ 'id', 'personId', 'company_owners' ],
             },
             {
                 db: db.person,
-                table: 'names',
+                table: personQuery.names.table,
                 fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
                 join: [ 'personId', 'id', {
                     table: 'individuals',
@@ -797,12 +797,12 @@ class Company {
                 } ],
             },
             {
-                table: 'company_addresses',
+                table: query.addresses.table,
                 fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
                 join,
             },
             {
-                table: 'company_mail',
+                table: query.mail.table,
                 fields: [
                     [ 'address1', 'mailAddress1' ],
                     [ 'address2', 'mailAddress2' ],
@@ -813,32 +813,32 @@ class Company {
                 join,
             },
             {
-                table: 'company_phones',
+                table: query.phones.table,
                 fields: [ [ 'number', 'phone' ] ],
                 join,
             },
             {
-                table: 'company_faxes',
+                table: query.faxes.table,
                 fields: [ [ 'number', 'fax' ] ],
                 join,
             },
             {
-                table: 'company_emails',
+                table: query.emails.table,
                 fields: 'email',
                 join,
             },
         ]
 
-        if (user !== true && !DS) {
-            let teamId = await user.teamIds(session)
-            if (!teamId.length) teamId = 0
+        // if (user !== true && !DS) {
+        //     let teamId = await user.teamIds(session)
+        //     if (!teamId.length) teamId = 0
 
-            batch.push({
-                table: 'teams_companies',
-                join: [ 'companyId', 'id' ],
-                match: { teamId },
-            })
-        }
+        //     batch.push({
+        //         table: 'teams_companies',
+        //         join: [ 'companyId', 'id' ],
+        //         match: { teamId },
+        //     })
+        // }
 
         let { params, filter } = options
         if (!params) params = {}
@@ -1109,19 +1109,19 @@ class Owner extends Individual {
 
         const batch = [
             {
-                table: 'company_owners',
+                table: query.owners.table,
                 fields: [ Owner.hashId(), Individual.hashId('personId') ],
                 group: 'id',
             },
             {
                 db: db.person,
-                table: 'individuals',
+                table: personQuery.main.table,
                 fields: [ 'dob', 'sex', { aes: [ 'ssn', secret.ssn ] } ],
                 join: [ 'id', 'personId' ],
             },
             {
                 db: db.person,
-                table: 'names',
+                table: personQuery.names.table,
                 fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
                 join: [ 'personId', 'id', {
                     table: 'individuals',
@@ -1130,7 +1130,7 @@ class Owner extends Individual {
             },
             {
                 db: db.person,
-                table: 'phones',
+                table: personQuery.phones.table,
                 fields: [ [ 'number', 'cell' ] ],
                 join: [ 'personId', 'id', {
                     table: 'individuals',
@@ -1138,11 +1138,11 @@ class Owner extends Individual {
                 } ],
             },
             {
-                table: 'company_ownerships',
+                table: query.ownerships.table,
                 join: [ 'ownerId', 'id' ],
             },
             {
-                table: 'companies',
+                table: query.main.table,
                 fields: [ { count: [ 'catId', 'companyCount' ] } ],
                 join: [ 'id', 'companyId', 4 ],
             },
@@ -1254,4 +1254,4 @@ delete Owner.genderList
 
 
 export default Company
-export { Owner }
+export { Owner, query }

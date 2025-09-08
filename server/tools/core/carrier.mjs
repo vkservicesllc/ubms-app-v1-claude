@@ -5,7 +5,7 @@ import db from '../../settings/mysql.mjs'
 import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Tools */
-import Company from './company.mjs'
+import Company, { query as companyQuery } from './company.mjs'
 import { sessionError } from './user.mjs'
 import Query, { hash, matchHash }  from '../utils/query.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
@@ -15,7 +15,7 @@ const mysql = require('../utils/mysql')
 
 
 const query = {
-    carriers: new Query(db.carrier, 'carriers'),
+    main: new Query(db.carrier, 'carriers'),
     ifta: new Query(db.carrier, 'carrier_ifta'),
     stateTax: new Query(db.carrier, 'carrier_state_permits'),
 }
@@ -54,7 +54,7 @@ class Carrier extends Company {
 
         if (!light) {
 
-            this.id = async () => (await mysql.execute(query.carriers.select('id', {
+            this.id = async () => (await mysql.execute(query.main.select('id', {
                 match: { id: Carrier.matchIdHash(this._id) },
             })))[0][0].id
 
@@ -138,7 +138,7 @@ class Carrier extends Company {
                 data.carrier.companyId = await this.companyId()
                 data.carrier.createdBy = await session.user.id()
 
-                const [ result ] = await mysql.execute(query.carriers.insert(data.carrier))
+                const [ result ] = await mysql.execute(query.main.insert(data.carrier))
                 const id = result.insertId
 
                 if (id) {
@@ -212,7 +212,7 @@ class Carrier extends Company {
 
                 if (Object.keys(data.carrier).length) {
                     try {
-                        const [ result ] = await mysql.execute(query.carriers.update(data.carrier, { id }))
+                        const [ result ] = await mysql.execute(query.main.update(data.carrier, { id }))
                         if (result.affectedRows === 1) modified = true
                     } catch (err) {
                         error = 'DB Error: Stage 1'
@@ -270,7 +270,7 @@ class Carrier extends Company {
         stateTaxIds.map(state => stateTaxFields.push([ state, `${state}Permit` ]))
         batch.push({
             db: db.carrier,
-            table: 'carriers',
+            table: query.main.table,
             fields: [
                 [ Carrier.hashId(), 'carrierId' ],
                 'mc', 'usdot', 'scac', 'irp',  //! 'stateTax',
@@ -279,12 +279,12 @@ class Carrier extends Company {
             join: [ 'companyId', 'id' ],
         }, {
             db: db.carrier,
-            table: 'carrier_ifta',
+            table: query.ifta.table,
             fields: [ [ 'number', 'ifta' ], [ 'jurisdiction', 'iftaJur' ] ],
             join,
         }, {
             db: db.carrier,
-            table: 'carrier_state_permits',
+            table: query.stateTax.table,
             fields: stateTaxFields,
             join,
         })
@@ -369,6 +369,7 @@ delete Carrier.batch
 
 
 export default Carrier
+export { query }
 
 export const permits = {
     ca: {

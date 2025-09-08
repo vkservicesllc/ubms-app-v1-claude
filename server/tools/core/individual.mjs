@@ -19,13 +19,15 @@ const mysql = require('../utils/mysql')
 
 
 const query = {
-    individuals: new Query(db.person, 'individuals'),
+    main: new Query(db.person, 'individuals'),
     names: new Query(db.person, 'names'),
     legalPresence: new Query(db.person, 'legal_presence'),
     maritals: new Query(db.person, 'maritals'),
     //?...
     phones: new Query(db.person, 'phones'),
     addresses: new Query(db.person, 'addresses'),
+    emails: new Query(db.person, 'emails'),
+    identifications: new Query(db.person, 'identifications'),
     //! ...add more
 }
 const targets = Object.keys(query)
@@ -66,7 +68,7 @@ class Individual extends Person {
 
         if (!light) {
 
-            this.id = async () => (await mysql.execute(query.individuals.select('id', {
+            this.id = async () => (await mysql.execute(query.main.select('id', {
                 match: { id: Individual.matchIdHash(this._id) },
             })))[0][0].id
 
@@ -74,7 +76,7 @@ class Individual extends Person {
             this.ssn = async (session, format = false) => {
                 if (!session?.user) return
 
-                let { ssn } = (await mysql.execute(query.individuals.select({ aes: [ 'ssn', secret ] }, {
+                let { ssn } = (await mysql.execute(query.main.select({ aes: [ 'ssn', secret ] }, {
                     match: { id: Individual.matchIdHash(this._id) },
                 })))[0][0]
                 if (ssn) {
@@ -230,7 +232,7 @@ class Individual extends Person {
 
                         if (update.individuals.dob) update.names.since = update.individuals.dob
 
-                        const [ result1 ] = await mysql.execute(query.individuals.update(update.individuals, { id }))
+                        const [ result1 ] = await mysql.execute(query.main.update(update.individuals, { id }))
                         const [ result2 ] = await mysql.execute(query.names.update(update.names, { personId: id, max: 'since' }))
                         if (result1.affectedRows === 1 || result2.affectedRows === 1) modified = true
                 }
@@ -285,7 +287,7 @@ class Individual extends Person {
                         names: await this.history(session, 'names', true),
                     }
 
-                    const [ result ] = await mysql.execute(query.individuals.delete({ id }))
+                    const [ result ] = await mysql.execute(query.main.delete({ id }))
                     if (result.affectedRows > 0) deleted = true
 
                     if (deleted) {
@@ -372,7 +374,7 @@ class Individual extends Person {
                 createdIn = JSON.stringify(createdIn)
             }
 
-            const [ result ] = await mysql.execute(query.individuals.insert({
+            const [ result ] = await mysql.execute(query.main.insert({
                 dob, sex, ssn: { aes: [ ssn, secret ] },
                 createdBy, createdIn,
             }))
@@ -433,36 +435,36 @@ class Individual extends Person {
         const join = [ 'personId', 'id', { max: 'since' } ]
         const batch = [
             {
-                table: 'individuals',
+                table: query.main.table,
                 fields: [ Individual.hashId(), 'dob', 'sex' ],
             },
             {
-                table: 'names',
+                table: query.names.table,
                 fields: [ 'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix' ],
                 join,
             },
             {
-                table: 'legal_presence',
+                table: query.legalPresence.table,
                 fields: [ 'status', [ 'expiresOn', 'statusExpiredOn' ] ],
                 join,
             },
             {
-                table: 'phones',
+                table: query.phones.table,
                 fields: [ [ 'number', 'phone' ] ],
                 join,
             },
             {
-                table: 'addresses',
+                table: query.addresses.table,
                 fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
                 join,
             },
             {
-                table: 'emails',
+                table: query.emails.table,
                 fields: 'email',
                 join,
             },
             {
-                table: 'identifications',
+                table: query.identifications.table,
                 fields: [
                     'driver',
                     'commercial',
@@ -477,7 +479,7 @@ class Individual extends Person {
                 join: [ 'personId', 'id', { max: 'issuedOn' } ],
             },
             {
-                table: 'maritals',
+                table: query.maritals.table,
                 fields: [ [ 'status', 'marital' ] ],
                 join,
             },
@@ -535,7 +537,7 @@ class Individual extends Person {
 
         let found = false, personId
 
-        const data = (await mysql.execute(query.individuals.select('id', {
+        const data = (await mysql.execute(query.main.select('id', {
             match: { ssn: { aes: [ ssn, secret ] } },
         })))[0]
         found = data.length === 1
@@ -553,3 +555,4 @@ delete Individual.formSelect
 
 
 export default Individual
+export { query }

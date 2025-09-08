@@ -57,21 +57,25 @@ if (_id) {
         const options = { ...defOpts }, optgroups = {}
 
         for (const prop of keys) {
-            optgroups[prop] = teams[prop].reduce((cat, { _id, name, catId}) => {
-                if (!cat[catId]) cat[catId] = []
-                cat[catId].push({ _id, name })
-    
-                return cat
-            }, {})
-
-            for (const catId in optgroups[prop]) {
-                options[prop] += `<optgroup label="${response.categories[catId].item[1]}">`
-                for (const team of optgroups[prop][catId]) {
-                    const { _id, name } = team
-                    options[prop] += `<option value="${_id}">${name}</option>`
-                }
-                options[prop] += '</optgroup>'
+            for (const team of teams[prop]) {
+                const { _id, name } = team
+                options[prop] += `<option value="${_id}">${name}</option>`
             }
+            // optgroups[prop] = teams[prop].reduce((cat, { _id, name, catId}) => {
+            //     if (!cat[catId]) cat[catId] = []
+            //     cat[catId].push({ _id, name })
+    
+            //     return cat
+            // }, {})
+
+            // for (const catId in optgroups[prop]) {
+            //     options[prop] += `<optgroup label="${response.categories[catId].item[1]}">`
+            //     for (const team of optgroups[prop][catId]) {
+            //         const { _id, name } = team
+            //         options[prop] += `<option value="${_id}">${name}</option>`
+            //     }
+            //     options[prop] += '</optgroup>'
+            // }
         }
 
         $teams.available.html(options.available || optgroup)

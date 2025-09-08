@@ -2,7 +2,7 @@
 import db from '../../settings/mysql.mjs'
 
 /* Tools */
-import User from './user.mjs'
+import User, { query as userQuery } from './user.mjs'
 import Company from './company.mjs'
 import Carrier from './carrier.mjs'
 import Driver from './driver.mjs'
@@ -18,10 +18,10 @@ const throwErr = require('../utils/error')
 
 
 const query = {
-    teams: new Query(db.business, 'teams'),
+    main: new Query(db.business, 'teams'),
     profiles: new Query(db.business, 'team_profiles'),
     // companies: new Query(db.business, 'map_companies_teams'),
-    users: new Query(db.business, 'map_teams_users'),
+    // users: new Query(db.business, 'map_teams_users'),
 }
 
 
@@ -79,7 +79,7 @@ class Team {
             }
 
 
-            this.id = async () => (await mysql.execute(query.teams.select('id', {
+            this.id = async () => (await mysql.execute(query.main.select('id', {
                 match: { id: Team.matchIdHash(this._id) },
             })))[0][0].id
 
@@ -206,12 +206,12 @@ class Team {
 
                         batch = [
                             {
-                                table: query.users.table,
+                                table: userQuery.jx.teams.table,
                                 match: { teamId },
                             },
                             {
                                 db: db.online,
-                                table: 'users',
+                                table: userQuery.main.table,
                                 fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'email' ],
                                 join: [ 'id', 'userId' ],
                                 match: { status },
@@ -297,7 +297,7 @@ class Team {
                 if (error) return { error }
 
                 const id = await this.id()
-                let settings = (await mysql.execute(query.teams.select('settings', {
+                let settings = (await mysql.execute(query.main.select('settings', {
                     match: { id },
                 })))[0][0].settings || {}
 
@@ -312,7 +312,7 @@ class Team {
                 //! This method does not track and log the change
 
                 try {
-                    const [ result ] = await mysql.execute(query.teams.update({ settings }, { id }))
+                    const [ result ] = await mysql.execute(query.main.update({ settings }, { id }))
                 } catch (err) {
                     error = 'DB Error'
                 }
@@ -393,7 +393,7 @@ class Team {
                 // }
 
                 try {
-                    const [ result ] = await mysql.execute(query.teams.update(data, { id }))
+                    const [ result ] = await mysql.execute(query.main.update(data, { id }))
                     if (result.affectedRows === 1) modified = true
                 } catch (err) {
                     error = 'DB Error'
@@ -411,7 +411,7 @@ class Team {
                 const log = await this.log()
 
                 try {
-                    const [ result ] = await mysql.execute(query.teams.delete({ id }))
+                    const [ result ] = await mysql.execute(query.main.delete({ id }))
                     if (result.affectedRows > 0) deleted = true
                 } catch(err) {
                     console.error(err)
@@ -471,7 +471,7 @@ class Team {
 
         let id
         try {
-            const [ result ] = await mysql.execute(query.teams.insert(data))
+            const [ result ] = await mysql.execute(query.main.insert(data))
             id = result.insertId
 
             if (id) created = true
@@ -501,13 +501,13 @@ class Team {
         const join = ['teamId', 'id']
         const batch = [
             {
-                table: 'teams',
+                table: query.main.table,
                 fields: [ Team.hashId(), 'name', 'description', 'settings' ],
                 match,
                 group: 'id',
             },
             {
-                table: 'team_profiles',
+                table: query.profiles.table,
                 fields: [
                     'busName', 'coType',
                     { concat: [ [ 'busName', '^, ', 'coType' ], 'company' ] },
@@ -522,11 +522,11 @@ class Team {
             //     join,
             // },
             {
-                table: query.users.table,
+                table: userQuery.jx.teams.table,
                 fields: [ { countDist: ['userId', 'userCount', {
                     case: {
                         db: db.online,
-                        table: 'users',
+                        table: userQuery.main.table,
                         match: { deletedBy: null },
                     },
                 }] } ],
@@ -534,8 +534,8 @@ class Team {
             },
             {
                 db: db.online,
-                table: 'users',
-                join: ['id', 'userId', { table: query.users.table }],
+                table: userQuery.main.table,
+                join: ['id', 'userId', { table: userQuery.jx.teams.table }],
             },
         ]
 
@@ -580,7 +580,7 @@ class Team {
             match.id = { not: id }
         }
 
-        const data = (await mysql.execute(query.teams.select('id', { match })))[0]
+        const data = (await mysql.execute(query.main.select('id', { match })))[0]
 
         return { found: data.length === 1 }
     }
@@ -605,7 +605,7 @@ class Team {
 
             const userId = await user.id()
             const teamId = await team.id()
-            const found = (await mysql.execute(query.users.select('teamId', {
+            const found = (await mysql.execute(userQuery.jx.teams.select('teamId', {
                 match: { userId, teamId },
             })))[0].length === 1
 
@@ -628,3 +628,4 @@ class Team {
 
 
 export default Team
+export { query }

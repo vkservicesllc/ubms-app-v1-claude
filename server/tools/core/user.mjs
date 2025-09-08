@@ -18,8 +18,8 @@ import config, { addrBook } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
 /* Tools */
-import Team from './team.mjs'
-import Company from './company.mjs'
+import Team, { query as teamQuery } from './team.mjs'
+import Company, { query as companyQuery } from './company.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import recognizeApi from '../utils/api.mjs'
@@ -38,15 +38,17 @@ const throwErr = require('../utils/error')
 
 
 const query = {
-    users: new Query(db.online, 'users'),
+    main: new Query(db.online, 'users'),
+    registration: new Query(db.online, 'user_registration'),
+    passReset: new Query(db.online, 'user_passreset'),
     roles: new Query(db.online, 'user_roles'),
     tokens: new Query(db.online, 'tokens'),
     sessions: new Query(db.online, 'sessions'),
-    registration: new Query(db.online, 'user_registration'),
-    passReset: new Query(db.online, 'user_passreset'),
-    userRoles: new Query(db.online, 'users_roles'),
-    userTeams: new Query(db.business, 'teams_users'),
-    userCompanies: new Query(db.business, 'companies_users'),
+    jx: {
+        roles: new Query(db.online, 'user_role_map'),
+        companies: new Query(db.business, 'user_company_map'),
+        teams: new Query(db.business, 'user_team_map'),
+    },
 }
 
 
@@ -103,7 +105,7 @@ class User extends Person {
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
                 if (deleted) fields.push('deletedBy', 'deletedAt')
 
-                let log = (await mysql.execute(query.users.select(fields, {
+                let log = (await mysql.execute(query.main.select(fields, {
                     match: { id: User.matchIdHash(this._id) },
                 })))[0][0]
 
@@ -125,7 +127,7 @@ class User extends Person {
 
 
             this.flush = async () => {
-                return await mysql.execute(query.users.update({ updateLog: null }, {
+                return await mysql.execute(query.main.update({ updateLog: null }, {
                     id: User.matchIdHash(this._id),
                 }))
             }
@@ -222,11 +224,11 @@ class User extends Person {
                 const userId = await this.id()
                 const batch = [
                     {
-                        table: 'users_roles',
+                        table: query.jx.roles.table,
                         match: { userId },
                     },
                     {
-                        table: 'user_roles',
+                        table: query.roles.table,
                         fields: 'permissions',
                         join: [ 'id', 'roleId' ],
                         match: { catId, location: [ null, this.location[0] ] },
@@ -272,7 +274,7 @@ class User extends Person {
                             const data = { userId, roleId }
                             if (action === 'insert') data.createdBy = createdBy
 
-                            const [ result ] = await mysql.execute(query.userRoles[action](data))
+                            const [ result ] = await mysql.execute(query.jx.roles[action](data))
                             if (result.affectedRows === 1) modCt++
                         } catch (err) {
                             error.push('DB Error: idx ' + i)
@@ -298,11 +300,11 @@ class User extends Person {
 
                     const batch = [
                         {
-                            table: 'users_roles',
+                            table: query.jx.roles.table,
                             match: { userId },
                         },
                         {
-                            table: 'user_roles',
+                            table: query.roles.table,
                             fields: [ Role.hashId(), 'name', 'location' ],
                             join: [ 'id', 'roleId' ],
                         },
@@ -378,7 +380,7 @@ class User extends Person {
                     if (!Array.isArray(ids)) ids = [ ids ]
                     error = []
 
-                    let i = 0, modCt = 0, createdBy, idProp, qProp
+                    let i = 0, modCt = 0, createdBy, idProp, qjxProp
                     if (action === '-') action = 'delete'
                     else if (action === '+') {
                         action = 'insert'
@@ -388,11 +390,11 @@ class User extends Person {
                     switch (target) {
                         case 'teams':
                             idProp = 'teamId'
-                            qProp = 'userTeams'
+                            qjxProp = 'teams'
                             break
                         case 'companies':
                             idProp = 'companyId'
-                            qProp = 'userCompanies'
+                            qjxProp = 'companies'
                             break
                     }
 
@@ -403,7 +405,7 @@ class User extends Person {
                             const data = { userId, [idProp]: id }
                             if (action === 'insert') data.createdBy = createdBy
 
-                            const [ result ] = await mysql.execute(query[qProp][action](data))
+                            const [ result ] = await mysql.execute(query.jx[qjxProp][action](data))
                             if (result.affectedRows === 1) modCt++
                         } catch (err) {
                             error.push('DB Error: idx ' + i)
@@ -432,12 +434,12 @@ class User extends Person {
                         case 'teams':
                             batch = [
                                 {
-                                    table: 'teams_users',
+                                    table: query.jx.teams.table,
                                     match: { userId },
                                 },
                                 {
-                                    table: 'teams',
-                                    fields: [ Team.hashId(), 'name', 'catId' ],
+                                    table: teamQuery.main.table,
+                                    fields: [ Team.hashId(), 'name' ],
                                     join: [ 'id', 'teamId' ],
                                 },
                             ]
@@ -446,20 +448,20 @@ class User extends Person {
                         case 'companies':
                             batch = [
                                 {
-                                    table: 'companies_users',
+                                    table: query.jx.companies.table,
                                     match: { userId },
                                 },
                                 {
-                                    table: 'companies',
+                                    table: companyQuery.main.table,
                                     fields: [ Company.hashId(), 'catId' ],
                                     join: [ 'id', 'companyId' ],
                                     match: { confirmed: true },
                                 },
                                 {
-                                    table: 'company_names',
+                                    table: companyQuery.names.table,
                                     fields: [ { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] } ],
                                     join: [ 'companyId', 'id', {
-                                        table: 'companies',
+                                        table: companyQuery.main.table,
                                         max: 'since',
                                     } ]
                                 },
@@ -479,7 +481,7 @@ class User extends Person {
                                 data.applied.push({ _id, name })
                             })
                         } else {
-                            batch[1].match = { catId }
+                            batch[1].match = { catId } //! May cause an issue when team
 
                             data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
                         }
@@ -493,11 +495,15 @@ class User extends Person {
                             data.applied = data.applied.filter(row => relIds.includes(row._id))
                         } else {
                             const relationData = await Src.list(session)
+
                             data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
 
                             relationData.map(row => {
                                 const { _id, name, catId } = row
-                                data.all.push({ _id, name, catId })
+                                const record = { _id, name }
+                                if (target === 'companies') record.catId = catId
+
+                                data.all.push(record)
                             })
                         }
 
@@ -588,7 +594,7 @@ class User extends Person {
                     update.phone = null
 
                 try {
-                    const [ result ] = await mysql.execute(query.users.update(update, { id }))
+                    const [ result ] = await mysql.execute(query.main.update(update, { id }))
                     if (result.affectedRows === 1) {
                         modified = true
                         modifiedUser = await User.data(session, { id })
@@ -632,7 +638,7 @@ class User extends Person {
                 update.deletedBy = sessionUserId
                 update.deletedAt = Query.timeStamp
 
-                const [ result ] = await mysql.execute(query.users.update(update, { id: User.matchIdHash(this._id) }))
+                const [ result ] = await mysql.execute(query.main.update(update, { id: User.matchIdHash(this._id) }))
                 if (result.affectedRows === 1) {
                     deleted = true
                     const match = { userId: User.matchIdHash(this._id) }
@@ -745,7 +751,7 @@ class User extends Person {
                 if (this._id !== session?.user?._id) return
 
                 const match = { id: User.matchIdHash(this._id) }
-                const [ result ] = await mysql.execute(query.users.select('settings', { match }))
+                const [ result ] = await mysql.execute(query.main.select('settings', { match }))
                 let { settings }= result[0]
 
                 if (!data) return settings
@@ -756,7 +762,7 @@ class User extends Person {
                     settings[branch] = data
                     settings = JSON.stringify(settings)
 
-                    await mysql.execute(query.users.update({ settings }, match))
+                    await mysql.execute(query.main.update({ settings }, match))
                 }
             }
 
@@ -767,7 +773,7 @@ class User extends Person {
     id = async () => {
         if (!this._id) return
 
-        return (await mysql.execute(query.users.select('id', {
+        return (await mysql.execute(query.main.select('id', {
             match: { id: User.matchIdHash(this._id) },
         })))[0][0].id
     }
@@ -816,7 +822,7 @@ class User extends Person {
 
         data.createdBy = await session.user.id()
 
-        const [ result ] = await mysql.execute(query.users.insert(data))
+        const [ result ] = await mysql.execute(query.main.insert(data))
         const id = result.insertId
 
         if (id) {
@@ -829,7 +835,7 @@ class User extends Person {
 
             if (result.affectedRows === 0) {
                 try {
-                    // await mysql.execute(query.users.delete({ id }))
+                    // await mysql.execute(query.main.delete({ id }))
                     error = 'DB Error: Unregistered User Deleted'
                 } catch (err) {
                     console.error(err)
@@ -898,7 +904,7 @@ class User extends Person {
 
         const batch = [
             {
-                table: 'users',
+                table: query.main.table,
                 fields: [
                     User.hashId(),
                     [ User.hashSimpleId(), 'simpleId' ],
@@ -917,7 +923,7 @@ class User extends Person {
                 ],
             },
             {
-                table: 'sessions',
+                table: query.sessions.table,
                 fields: [ 'siteId', 'branch', 'lastLogin' ], //* DEFAULT
                 join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ], //? In this case it doesn't confuse lastUrl
             },
@@ -998,7 +1004,7 @@ class User extends Person {
             match.id = { not: id }
         }
 
-        const data = (await mysql.execute(query.users.select('id', { match })))[0]
+        const data = (await mysql.execute(query.main.select('id', { match })))[0]
 
         return { found: data.length === 1 }
     }
@@ -1096,7 +1102,7 @@ class User extends Person {
                             update = processData(update, options)
                         }
 
-                        await mysql.execute(query.users.update(update, { id: User.matchIdHash(_id) }))
+                        await mysql.execute(query.main.update(update, { id: User.matchIdHash(_id) }))
                     }
                 } else return throwErr.data.auth(res, 'Authentication failed: User not verified')
             }
@@ -1132,7 +1138,7 @@ class User extends Person {
 
                 if (!token || (!verified && expired)) await user.token()
 
-                await mysql.execute(query.users.update({ fails: 0 }, { id: User.matchIdHash(_id) }))
+                await mysql.execute(query.main.update({ fails: 0 }, { id: User.matchIdHash(_id) }))
 
                 res.redirect(User.#authUrl(session, _id, 'pending'))
             }
@@ -1295,9 +1301,9 @@ class User extends Person {
 
 
     static initialize = async (req, res) => {
-        const [ rows ] = await mysql.execute(query.users.select('id', { id: 1 }))
+        const [ rows ] = await mysql.execute(query.main.select('id', { id: 1 }))
 
-        if (!rows.length) await mysql.execute(query.users.insert({
+        if (!rows.length) await mysql.execute(query.main.insert({
             username: initUser,
             _passKey: await Bun.password.hash(initPass),
             firstName: initFname,
@@ -1316,7 +1322,7 @@ class User extends Person {
         try {
             const { _id, username, password } = req.body
 
-            const [ result ] = await mysql.execute(query.users.update({
+            const [ result ] = await mysql.execute(query.main.update({
                 username,
                 _passKey: await Bun.password.hash(password),
             }, { id: User.matchIdHash(_id) }))
@@ -1511,7 +1517,7 @@ class Role {
 
         const batch = [
             {
-                table: 'user_roles',
+                table: query.roles.table,
                 fields: [ Role.hashId(), 'catId', 'location', 'name', 'permissions' ],
                 match,
             },
@@ -1568,12 +1574,12 @@ class Role {
 
         const [ permissions ] = await mysql.execute(Query.select(db.online, [
             {
-                table: 'users_roles',
+                table: query.jx.roles.table,
                 fields: User.hashId('userId'),
                 match: { userId },
             },
             {
-                table: 'user_roles',
+                table: query.roles.table,
                 fields: 'permissions',
                 join: [ 'id', 'roleId' ],
             },
@@ -1587,7 +1593,7 @@ class Role {
 
 
 export default User
-export { Role }
+export { Role, query }
 
 
 export const adminBranchOnly = (req, res, next) => {

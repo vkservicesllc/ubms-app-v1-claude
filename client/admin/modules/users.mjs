@@ -257,6 +257,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
                     data = data[1]
                     if (adminLocation == 'US') data += ` <small class="has-text-grey">(${row.location[1]})</small>`
+                    if (row.unscoped) data += ` <sup><i class="far fa-star has-text-success" style="font-size: .75em;"></i></sup>`
 
                     return data
                 },

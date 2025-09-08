@@ -13,11 +13,11 @@ import moment from 'moment'
 import { utcTimeStamp } from '../utils/date.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
-import Individual from './individual.mjs'
-import Team from './team.mjs'
-import User, { sessionError } from './user.mjs'
-import Company from './company.mjs'
-import Carrier from './carrier.mjs'
+import Individual, { query as personQuery } from './individual.mjs'
+import Team, { query as teamQuery } from './team.mjs'
+import User, { sessionError, query as userQuery } from './user.mjs'
+import Company, { query as companyQuery } from './company.mjs'
+import Carrier, { query as carrierQuery } from './carrier.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import transporter, { senderParams } from '../utils/nodemailer.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
@@ -197,7 +197,7 @@ class Driver extends Individual {
             ? []
             : [
                 {
-                    table: 'drivers',
+                    table: query.drivers.table,
                     fields: [
                         Driver.hashId(),
                         Individual.hashId('personId'),
@@ -207,13 +207,13 @@ class Driver extends Individual {
                 },
                 {
                     db: db.person,
-                    table: 'individuals',
+                    table: personQuery.main.table,
                     fields: [ 'dob', 'sex', { aes: [ 'ssn', ssnSecret ] } ],
                     join: [ 'id', 'personId' ],
                 },
                 {
                     db: db.person,
-                    table: 'names',
+                    table: personQuery.names.table,
                     fields: [
                         'firstName',
                         'middleName',
@@ -221,16 +221,16 @@ class Driver extends Individual {
                         'suffix',
                     ],
                     join: [ 'personId', 'id', {
-                        table: 'individuals',
+                        table: personQuery.main.table,
                         max: 'since',
                     } ],
                 },
                 {
                     db: db.person,
-                    table: 'phones',
+                    table: personQuery.phones.table,
                     fields: [ [ 'number', 'phone' ] ],
                     join: [ 'personId', 'id', {
-                        table: 'individuals',
+                        table: personQuery.main.table,
                         max: 'since',
                     } ],
                 },
@@ -1812,7 +1812,7 @@ class Application {
 
         const batch = [
             {
-                table: 'applications',
+                table: query.applications.table,
                 fields: [
                     Application.hashId(),
                     Driver.hashId('driverId'),
@@ -1867,7 +1867,7 @@ class Application {
                 match,
             },
             {
-                table: 'application_checklists',
+                table: query.aplChecklists.table,
                 fields: [
                     'dlScn', 'dlScnId', 'dlVrfId',
                     'mecScn', 'mecScnId', 'mecVrfId',
@@ -1877,12 +1877,12 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'drivers',
+                table: query.drivers.table,
                 fields: Individual.hashId('personId'),
                 join: [ 'id', 'driverId' ],
             },
             {
-                table: 'application_DLs',
+                table: query.aplDLs.table,
                 fields: [
                     [ 'commercial', 'dlCommercial' ],
                     [ 'number', 'dlNumber' ],
@@ -1900,7 +1900,7 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'application_MECs',
+                table: query.aplMECs.table,
                 fields: [
                     'nrcme',
                     [ 'issuedOn', 'mecIssuedOn' ],
@@ -1909,7 +1909,7 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'application_experiences',
+                table: query.aplExperiences.table,
                 fields: [
                     [ 'cmv', 'cmvExp' ],
                     [ 'vehicles', 'expVehicles' ],
@@ -1927,7 +1927,7 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'application_preferences',
+                table: query.aplPreferences.table,
                 fields: [
                     'operType',
                     [ 'teamName', 'partnerName' ],
@@ -1939,7 +1939,7 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'application_businesses',
+                table: query.aplBusinesses.table,
                 fields: [
                     [ 'busName', 'ownBusName' ],
                     [ 'state', 'busState' ],
@@ -1949,7 +1949,7 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'application_vehicles',
+                table: query.aplVehicles.table,
                 fields: [
                     [ 'mmt', 'vhlMmt' ],
                     [ 'make', 'vhlMake' ],
@@ -1961,7 +1961,7 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'application_beneficiaries',
+                table: query.aplBeneficiaries.table,
                 fields: [
                     [ 'firstName', 'benefFirstName' ],
                     [ 'middleName', 'benefMiddleName' ],
@@ -1975,7 +1975,7 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'application_emergencies',
+                table: query.aplEmergencies.table,
                 fields: [
                     [ 'phone', 'emergPhone' ],
                     [ 'name', 'emergName' ],
@@ -1984,7 +1984,7 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'application_decisions',
+                table: query.aplDecisions.table,
                 fields: [
                     [ 'experience', 'decExperience' ],
                     [ 'position', 'decPosition' ],
@@ -1992,23 +1992,23 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: 'carriers',
+                table: carrierQuery.main.table,
                 join: [ 'id', 'carrierId' ],
             },
             {
                 db: db.business,
-                table: 'companies',
+                table: companyQuery.main.table,
                 join: [ 'id', 'companyId', 'carriers' ],
             },
             {
                 db: db.business,
-                table: 'company_names',
+                table: companyQuery.names.table,
                 fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
-                join: [ 'companyId', 'id', { max: 'since', table: 'companies' } ],
+                join: [ 'companyId', 'id', { max: 'since', table: companyQuery.main.table } ],
             },
             {
                 db: db.online,
-                table: 'users',
+                table: userQuery.main.table,
                 fields: [
                     [ 'firstName', 'userFirstName' ],
                     [ 'lastName', 'userLastName' ],
@@ -2021,7 +2021,7 @@ class Application {
             },
             {
                 db: db.business,
-                table: 'teams',
+                table: teamQuery.main.table,
                 fields: [ [ 'name', 'teamName' ] ],
                 join: [ 'id', 'teamId' ],
             },
@@ -2041,24 +2041,24 @@ class Application {
 
         const batch = [
             {
-                table: 'applications',
+                table: query.applications.table,
                 fields: Carrier.hashId('carrierId'),
             },
             {
-                table: 'carriers',
+                table: carrierQuery.main.table,
                 fields: Company.hashId('companyId'),
                 join: [ 'id', 'carrierId' ],
             },
             {
                 db: db.business,
-                table: 'companies',
+                table: companyQuery.main.table,
                 fields: [ 'active', 'until' ],
                 join: [ 'id', 'companyId', 1 ],
                 match: { confirmed: true },
             },
             {
                 db: db.business,
-                table: 'company_names',
+                table: companyQuery.names.table,
                 fields: [ 'busName', 'coType', { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] }, 'alias' ],
                 join: [ 'companyId', 'id', 2 ],
             },
@@ -2077,12 +2077,12 @@ class Application {
 
         const batch = [
             {
-                table: 'applications',
+                table: query.applications.table,
                 match: { userId: { null: false } },
             },
             {
                 db: db.online,
-                table: 'users',
+                table: userQuery.main.table,
                 fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'condition', 'location', 'deletedAt' ],
                 join: [ 'id', 'userId' ],
             },
