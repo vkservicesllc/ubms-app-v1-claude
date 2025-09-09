@@ -371,8 +371,9 @@ class User extends Person {
                                 match: { userId },
                             },
                             {
+                                db: db.carrier,
                                 table: carrierQuery.main.table,
-                                field: 'id',
+                                fields: 'id',
                                 join: [ 'companyId', 'companyId' ],
                             },
                         ]
@@ -513,14 +514,15 @@ class User extends Person {
                         const catId = Company.catId(session.branch)
 
                         if (sessionUser.DS) {
-                            const relationData = await Src.list(session, { catId }) //! May cause an issue when team
+                            const params = target !== 'teams' ? { catId } : {}
+                            const relationData = await Src.list(session, params)
 
                             relationData.map(row => {
                                 const { _id, name } = row
                                 data.applied.push({ _id, name })
                             })
                         } else {
-                            batch[1].match = { catId } //! May cause an issue when team
+                            if (target !== 'teams') batch[1].match = { catId }
 
                             data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
                         }

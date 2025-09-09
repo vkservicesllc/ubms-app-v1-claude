@@ -88,8 +88,11 @@ router.post('/drivers/applications/:archived?', User.verify, Team.verify, Applic
 
 router.post('/drivers/charts', User.verify, Team.verify, async (req, res) => {
     try {
-        const team = await Team.data(res.session, { _id: req.session.team })
-        const teamId = await team.id()
+        let team, teamId
+        if (req.session.team) {
+            team = await Team.data(res.session, { _id: req.session.team })
+            teamId = await team.id()
+        }
 
         res.send(await Application.charts(res.session, { teamId }))
     } catch (err) {

@@ -2100,11 +2100,11 @@ class Application {
 
         const { teamId } = filter
         const data = { applications: {} }
-        let result
+        let result, match
+        if (teamId) match = { teamId }
 
         [ result ] = await mysql.execute(query.applications.select(['condition', { count: ['condition', 'count'] }], {
-            match: { teamId },
-            group: 'condition',
+            match, group: 'condition',
         }))
         data.applications.statuses = {}
         result.forEach(row => {
@@ -2116,22 +2116,27 @@ class Application {
     }
 
 
-    static dtList = async (req, res) => { /* DataTables Server Side use only */
+    static dtList = async (req, res) => {
         try {
-            const sessionsUser = res.session.user
-            const { DS } = sessionsUser
-            const permissions = await sessionsUser.permissions(res.session) || {}
+            const sessionUser = res.session.user
+            const { DS } = sessionUser
+            const permissions = await sessionUser.permissions(res.session) || {}
 
             if (!DS && !('d:drv/apl' in permissions))
                 return throwErr.api.auth(res, null, err, false)
 
-            const { archived } = req.params
-            const settings = await sessionsUser.settings(res.session)
-            const team = await Team.data(res.session, { _id: req.session.team })
-            const teamId = await team.id()
             const { draw, start, length, columns, search, filter } = req.body  //!REDUNDANT: , order
-            const { teamCompanies } = settings?.carrier || {}
-            const companyIds = await team.ids(res.session, 'companies')
+            const { archived } = req.params
+            const settings = await sessionUser.settings(res.session)
+
+            const companyIds = await sessionUser.relIds(res.session, 'carriers')
+            let team, teamId
+
+            if (req.session.team) {
+                team = await Team.data(res.session, { _id: req.session.team })
+                teamId = await team.id()
+            }
+            const { teamCompanies } = settings?.carrier || {} //? May want to consider another name for the variable
 
 
             /* STEP 1: Set up Select, Join and Count Default States */
@@ -2168,7 +2173,7 @@ class Application {
                     knex.raw(Query.hashField(Team.hashId('teamId'))),
                     knex.raw(Query.hashField(User.hashId('userId'))),
                     knex.raw(Query.hashField(Carrier.hashId('carrierId'))),
-                    'apl.deptId',
+                    // 'apl.deptId',
                     'apl.formId',
                     'apl.condition',
                     'apl.createdAt', //! will return ISO 8601 UTC timestamp (YYYY-MM-DDTHH:mm:ss.sssZ)
@@ -2212,9 +2217,11 @@ class Application {
             applyJoins(baseQuery)
             applyJoins(countQuery)
 
-            baseQuery.where({ teamId })
-            countQuery.where({ teamId })
-            totalCountQuery.where({ teamId })
+            if (teamId) {
+                baseQuery.where({ teamId })
+                countQuery.where({ teamId })
+                totalCountQuery.where({ teamId })
+            }
 
             const archiveWhere = archived === 'archived'
                 ? 'whereNotNull'
