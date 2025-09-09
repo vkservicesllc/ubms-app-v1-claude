@@ -20,6 +20,7 @@ import db from '../../settings/mysql.mjs'
 /* Tools */
 import Team, { query as teamQuery } from './team.mjs'
 import Company, { query as companyQuery } from './company.mjs'
+import Carrier, { query as carrierQuery } from './carrier.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import recognizeApi from '../utils/api.mjs'
@@ -356,6 +357,34 @@ class User extends Person {
 
             //! WORK IN PROGRESS
 
+            this.relIds = async (session, target) => {
+                if (!session?.user) return
+
+                const userId = await this.id()
+                let batch = [], data = []
+
+                switch (target) {
+                    case 'carriers':
+                        batch = [
+                            {
+                                table: query.jx.companies.table,
+                                match: { userId },
+                            },
+                            {
+                                table: carrierQuery.main.table,
+                                field: 'id',
+                                join: [ 'companyId', 'companyId' ],
+                            },
+                        ]
+                        break
+                }
+
+                const [ result ] = await mysql.execute(Query.select(db.business, batch))
+                if (result.length) result.forEach(record => data.push(record.id))
+
+                return data
+            }
+
             this.relationship = async (session, target, action, ids) => {
                 if (!session?.user) return
 
@@ -446,6 +475,7 @@ class User extends Person {
                             break
 
                         case 'companies':
+                        case 'carriers':
                             batch = [
                                 {
                                     table: query.jx.companies.table,
@@ -466,6 +496,15 @@ class User extends Person {
                                     } ]
                                 },
                             ]
+
+                            if (target === 'carriers') {
+                                batch[1].catId = 'crr'
+                                batch.push({
+                                    table: carrierQuery.main.table,
+                                    fields: Carrier.hashId('carrierId'),
+                                    join: [ 'companyId', 'id', 1 ],
+                                })
+                            }
                             break
 
                     }
@@ -474,7 +513,7 @@ class User extends Person {
                         const catId = Company.catId(session.branch)
 
                         if (sessionUser.DS) {
-                            const relationData = await Src.list(session, { catId })
+                            const relationData = await Src.list(session, { catId }) //! May cause an issue when team
 
                             relationData.map(row => {
                                 const { _id, name } = row
