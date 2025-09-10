@@ -7,10 +7,6 @@ import config, { apps, userApps, addrBook } from './config.mjs'
 
 /* Tools */
 import Site from './server/tools/core/site.mjs'
-import User from './server/tools/core/user.mjs'
-import { DriverUser } from './server/tools/core/driver.mjs'
-import { StudentUser } from './server/tools/core/student.mjs'
-import hbsConditions from './server/tools/utils/hbs.mjs'
 import { respond404 } from './server/tools/utils/response.mjs'
 
 /* Forms & Validators */
@@ -34,8 +30,19 @@ hbs.registerHelper('author', config.author)
 hbs.registerHelper('siteName', config.site.name)
 hbs.registerHelper('loginUrl', loginUrl)
 hbs.registerHelper('logoutUrl', logoutUrl)
-hbs.registerHelper(hbsConditions)
 hbs.registerHelper('idx', (arr, idx) => arr[idx])
+hbs.registerHelper({
+    eq: (v1, v2) => v1 === v2,
+    ne: (v1, v2) => v1 !== v2,
+    lt: (v1, v2) => v1 < v2,
+    gt: (v1, v2) => v1 > v2,
+    lte: (v1, v2) => v1 <= v2,
+    gte: (v1, v2) => v1 >= v2,
+    hv: (v1) => !!v1,
+    nhv: (v1) => !v1,
+    and() { return Array.prototype.every.call(arguments, Boolean) },
+    or() { return Array.prototype.slice.call(arguments, 0, -1).some(Boolean) },
+})
 
 
 
@@ -45,23 +52,19 @@ export default branch => {
 
     const server = express()
     const { type, name, port, route, routes } = app
-    const { maxAge } = app.session
-    let UserSrc = User
-
-    if (branch == 'driver') UserSrc = DriverUser
-    if (branch == 'student') UserSrc = StudentUser
+    const { maxAge, src: UserSrc, userApp, teams, companies } = app.session
 
     server.set('trust proxy', '127.0.0.1')
     server.set('view engine', 'hbs')
     server.set('views', `./server/views/${branch}`)
-    server.engine('hbs', hbs.__express, {
-        layoutsDir: false,
-    })
+    server.engine('hbs', hbs.__express, { layoutsDir: false })
 
     server.use(express.static(`./client/${branch}`))
     server.use(express.static('./client/global/'))
 
     server.use(express.urlencoded({ extended: true }))
+    server.use(express.json())
+
     server.use(cookieParser(config.cookie.secret, { httpOnly: true }))
     server.use(session({
         secret: `${secret}-${branch}`,
@@ -112,7 +115,7 @@ export default branch => {
             : req.socket?.remoteAddress || '::1'
 
         res.site = { ...site, type }
-        res.session = { branch, siteId: site.id, type, maxAge, defUrl, excUrl, logoutUrl }
+        res.session = { branch, siteId: site.id, type, userApp, teams, companies, maxAge, defUrl, excUrl, logoutUrl }
         res.hbs = {
             appName: name,
             title: name,
@@ -128,6 +131,7 @@ export default branch => {
     server.use('/api/public', publicApiRoute)
 
     server.get('/*.map', (req, res) => res.sendStatus(204))
+    //? server.get(/.*\.map$/, (req, res) => res.sendStatus(204))
     server.post(loginUrl, validateLocalAuth, validationCheck, UserSrc.login)
     server.post(sessionUrl, validateSession, validationCheck, UserSrc.session)
     server.get(logoutUrl, UserSrc.logout)

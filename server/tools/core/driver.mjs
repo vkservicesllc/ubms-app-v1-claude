@@ -2129,7 +2129,7 @@ class Application {
             const { archived } = req.params
             const settings = await sessionUser.settings(res.session)
 
-            const companyIds = await sessionUser.relIds(res.session, 'carriers')
+            const { companyIds } = res.session
             let team, teamId
 
             if (req.session.team) {

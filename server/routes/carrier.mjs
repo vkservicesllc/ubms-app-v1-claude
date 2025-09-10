@@ -92,7 +92,7 @@ router.use((req, res, next) => {
                     hbs.team[prop] = team[prop]
 
                 const settings = await user.settings(res.session)
-                const { applied: teams } = await user.relationship(res.session, 'teams')
+                const { teams } = res.session
                 if (teams.length === 1) hbs.teamNav = false
 
                 if (settings?.carrier?.teamSelect == '1') {

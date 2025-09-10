@@ -57,8 +57,11 @@ const config = {
     },
 }
 
-const addrBook = {}
-const userApps = {}
+const addrBook = {}, userApps = {}
+
+import User from './server/tools/core/user.mjs'
+import { DriverUser } from './server/tools/core/driver.mjs'
+import { StudentUser } from './server/tools/core/student.mjs'
 
 
 import defaultRoute from './server/routes/default.mjs'
@@ -100,6 +103,7 @@ const apps = {
         session: {
             userApp: 'def',
             maxAge: 10,  /* in minutes */
+            src: User,
         },
     },
 
@@ -120,6 +124,7 @@ const apps = {
         session: {
             userApp: 'adm',
             maxAge: 5,  /* in minutes */
+            src: User,
         },
     },
 
@@ -134,6 +139,7 @@ const apps = {
         session: {
             userApp: 'usr',
             maxAge: 5,  /* in minutes */
+            src: User,
         },
     },
 
@@ -152,6 +158,9 @@ const apps = {
         session: {
             userApp: 'crr',
             maxAge: 10,  /* in minutes */
+            src: User,
+            teams: true,
+            companies: true,
             defUrl: '/dashboard',
             excUrl: '/',
         },
@@ -169,6 +178,7 @@ const apps = {
         ],
         session: {
             maxAge: 10,  /* in minutes */
+            src: DriverUser,
         },
     },
 
@@ -181,6 +191,8 @@ const apps = {
         session: {
             userApp: 'scl',
             maxAge: 10,  /* in minutes */
+            src: User,
+            companies: true,
         },
     },
 
@@ -192,6 +204,7 @@ const apps = {
         route: studentRoute,
         session: {
             maxAge: 10,  /* in minutes */
+            src: StudentUser,
         },
     },
 

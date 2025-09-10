@@ -364,6 +364,21 @@ class User extends Person {
                 let batch = [], data = []
 
                 switch (target) {
+
+                    case 'teams':
+                        batch = [
+                            {
+                                table: query.jx.teams.table,
+                                match: { userId },
+                            },
+                            {
+                                table: teamQuery.main.table,
+                                fields: 'id',
+                                join: [ 'id', 'teamId' ],
+                            },
+                        ]
+                        break
+
                     case 'carriers':
                         batch = [
                             {
@@ -378,6 +393,7 @@ class User extends Person {
                             },
                         ]
                         break
+
                 }
 
                 const [ result ] = await mysql.execute(Query.select(db.business, batch))
@@ -501,8 +517,9 @@ class User extends Person {
                             if (target === 'carriers') {
                                 batch[1].catId = 'crr'
                                 batch.push({
+                                    db: db.carrier,
                                     table: carrierQuery.main.table,
-                                    fields: Carrier.hashId('carrierId'),
+                                    fields: [ [ Carrier.hashId(), 'carrierId' ] ],
                                     join: [ 'companyId', 'id', 1 ],
                                 })
                             }
@@ -1262,7 +1279,7 @@ class User extends Person {
         try {
             const { originalUrl, query } = req
             const { session } = res
-            const { excUrl } = session
+            const { excUrl, teams, companies, userApp } = session
             const { user: _id, clientIp } = req.session
             const reject = async apiErrMsg => {
                 if (api) throwErr.api.auth(res, apiErrMsg)
@@ -1319,6 +1336,17 @@ class User extends Person {
             if (!next) return user
 
             res.session.user = user
+            if (teams && !user.unscoped) {
+                res.session.teams = (await user.relationship(session, 'teams')).applied
+                res.session.teamIds = await user.relIds(session, 'teams')
+            }
+            if (companies) {
+                const target = Company.categoryList[userApp].path[0]
+
+                res.session.companies = (await user.relationship(session, target)).applied
+                res.session.companyIds = await user.relIds(session, target)
+            }
+
             next()
         } catch (err) {
             const msg = 'Authentication check failed: Server could not process the request'
