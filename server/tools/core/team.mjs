@@ -85,10 +85,10 @@ class Team {
 
 
             this.log = async (field, target) => {
-                if (!['teams', 'profiles'].includes(target)) target = 'teams'
+                if (!['teams', 'profiles'].includes(target)) target = 'main'
 
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
-                const idProp = target === 'teams' ? 'id' : 'teamId'
+                const idProp = target === 'main' ? 'id' : 'teamId'
 
                 let log = (await mysql.execute(query[target].select(fields, {
                     match: { [idProp]: Team.matchIdHash(this._id) },

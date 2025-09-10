@@ -5,6 +5,7 @@ const throwErr = require('../../tools/utils/error').api
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
+import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 
 
@@ -27,11 +28,36 @@ router.post('/session/team/:_id/switch', User.verify, async (req, res) => {
 
 
 
-router.post('/team/companies', User.verify, Team.verify, async (req, res) => {
-    try {
-        const { applied: companies } = (await res.session.team.data(res.session, 'companies')).companies
+// router.post('/team/companies', User.verify, Team.verify, async (req, res) => {
+//     try {
+//         const { applied: companies } = (await res.session.team.data(res.session, 'companies')).companies
 
-        res.send(companies)
+//         res.send(companies)
+//     } catch (err) {
+//         throwErr.server(res, null, err)
+//     }
+// })
+
+router.post('/carriers', User.verify, Team.verify, (req, res) => {
+    try {
+        res.send(res.session.companies)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+router.post('/teams', User.verify, Team.verify, async (req, res) => {
+    try {
+        const teams = await Team.list(res.session)
+        let data = []
+
+        teams.forEach(team => {
+            const { _id, name } = team
+            data.push({ _id, name })
+        })
+        data = sortArrayByObjectKey(data, 'name')
+
+        res.send(data)
     } catch (err) {
         throwErr.server(res, null, err)
     }

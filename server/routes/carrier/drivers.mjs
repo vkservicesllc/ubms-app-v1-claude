@@ -158,9 +158,14 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
         hbs.permissions = {}
         privs.forEach(priv => hbs.permissions[priv] = withPrivileges('d:drv/apl', priv, permissions, DS))
 
+        hbs.unscoped = user.unscoped
+
         if (hbs.permissions.create) {
+            let cdl = 1
+
             hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=`
             hbs.applicationUrl += team ? `${req.session.team}` : 'global'
+            hbs.applicationUrl += `&cdl=${cdl}`
             hbs.userSimpleId = user._simpleId
             //! if the team has more than 1 departments, add the first (default) department id (integer) to the query += `&dept${deptId}`
             //! in this case an additional dropdown to be added for deparment selection with the default department selected

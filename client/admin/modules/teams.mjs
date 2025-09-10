@@ -225,11 +225,11 @@ const displayTeams = () => {
                 if (i === 0) html += '<div class="columns">'
 
                 html += '<div class="column is-one-quarter" style="min-width: 420px;">'
-                html += '<div class="card">'
+                html += '<div class="card" style="min-height: 150px;">'
                 html += '<div class="card-content">'
 
-                html += `<p class="title mb-3"><a class="team-edit" data-team-id="${_id}" style="font-size: .85em;">${escapeHTML(name)}</a></p>`
-                if (description) html += `<p class="subtitle has-text-primary-30 mb-2" style="font-size: .95em;">${escapeHTML(description)}</p>`
+                html += `<p class="title mb-2"><a class="team-edit" data-team-id="${_id}" style="font-size: .85em;">${escapeHTML(name)}</a></p>`
+                if (description) html += `<p class="subtitle has-text-primary-30 mb-3" style="font-size: .95em;">${escapeHTML(description)}</p>`
 
                 // switch (catId) {
 
@@ -258,6 +258,7 @@ const displayTeams = () => {
 
                 html += `<div><a class="has-text-grey team-profile" data-team-id="${_id}"><i class="fas fa-briefcase"></i></a></div>`
                 // html += `<div><a class="has-text-grey team-settings" data-team-id="${_id}">${categories[catId].icon || defaults.catIdIcon}</a></div>`
+                html += `<div><a class="has-text-grey team-settings" data-team-id="${_id}"><i class="fas fa-gear"></i></a></div>`
 
                 html += '</div>'
 
@@ -336,13 +337,24 @@ const displayTeams = () => {
                             $modal.profile.addClass('is-active')
                         } else if (target == 'settings') {
                             $(HS.settingsId).val(_id)
-                            // const { settings } = response.data
 
                             // const applied = {
                             //     driverCDL: settings?.drivers?.cdl || false,
                             //     driverPositions: settings?.drivers?.positions || Object.keys(driverPositions).map(position => position),
                             // }
-                            // let list = ''
+                            const applied = {
+                                carrier: {
+                                    application: {
+                                        cdl: settings?.carrier?.application?.cdl || true,
+                                    },
+                                },
+                            }
+                            let list = ''
+
+                            list += '<nav class="breadcrumb is-centered"><ul><li><a>Carrier</a></li><li><a>Driver Applications</a></li></ul></nav>'
+                            list += '<div class="field"><label class="checkbox">'
+                            list += `<input type="checkbox" name="carrier[application][cdl]"${applied.carrier.application.cdl ? ' checked' : ''} />`
+                            list += ' Prioritize CDL Positions</label></div>'
 
                             // if (category == 'crr') {
                             //     list += '<div class="columns">'
@@ -360,7 +372,7 @@ const displayTeams = () => {
                             //     list += '</div>'
                             // }
 
-                            // $settings.html(list)
+                            $settings.html(list)
                             $title.settings.html(`<strong>${escapeHTML(name)}</strong> <small>Settings</small>`)
                             $modal.settings.addClass('is-active')
                         }

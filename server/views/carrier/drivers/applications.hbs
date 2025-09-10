@@ -27,6 +27,9 @@
                     <input type="hidden" id="recruiter-id" value="{{userSimpleId}}" />
                     <div class="five wide column">
                         <div class="ui form">
+                            <h5 class="ui horizontal divider grey header">
+                                <i class="horizontal sliders icon"></i>Properties
+                            </h5>
                             <div class="ui icon message">
                                 <i class="truck moving icon"></i>
                                 <div class="content">
@@ -38,7 +41,7 @@
                                 </div>
                             </div>
                             <div class="field">
-                                <div class="ui labeled input">
+                                <div class="ui input">
                                     <div class="ui fluid clearable selection dropdown" id="new-apl-company-dropdown">
                                         <input type="hidden" name="company" />
                                         <i class="dropdown icon"></i>
@@ -47,6 +50,42 @@
                                     </div>
                                 </div>
                             </div>
+                            {{#if (eq unscoped true)}}
+                            <div class="field">
+                                <div class="ui input">
+                                    <div class="ui fluid clearable selection dropdown" id="new-apl-team-dropdown">
+                                        <input type="hidden" name="team" />
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text">Hiring Team</div>
+                                        <div class="menu"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/if}}
+                            <div class="inline fields">
+                                <label>Position Role:</label>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" class="position-role" id="position-role-cdl-yes" name="position-role" value="1" />
+                                        <label for="position-role-cdl-yes">CDL</label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio" class="position-role" id="position-role-cdl-no" name="position-role" value="0" />
+                                        <label for="position-role-cdl-no">Non-CDL</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field" id="self-assign-field">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" name="selfAssign" id="self-assign" checked />
+                                    <label for="self-assign">Self-assign to Application</label>
+                                </div>
+                            </div>
+                            <h5 class="ui horizontal divider grey header">
+                                <i class="envelope icon"></i>Invitation
+                            </h5>
                             <div class="field">
                                 <div class="ui left labeled input">
                                     {{{form.email.text.input}}}
@@ -57,12 +96,6 @@
                                 <p class="help" id="email-help">
                                     <span class="ui grey text">Please enter valid email address</span>
                                 </p>
-                            </div>
-                            <div class="field" id="self-assign-field">
-                                <div class="ui checkbox">
-                                    <input type="checkbox" name="selfAssign" id="self-assign" checked />
-                                    <label for="self-assign">Self-assign to Application</label>
-                                </div>
                             </div>
                         </div>
                     </div>

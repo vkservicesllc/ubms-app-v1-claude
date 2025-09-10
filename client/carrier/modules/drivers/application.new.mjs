@@ -30,9 +30,11 @@ const $email = $(emailId)
 const $expiration = $(TS.statusExp)
 const $registerApl = $('#register-new-apl')
 const $selfAssign = $('#self-assign')
+const $posRole = $('.position-role')
 
 const $dropdown = {
     company: $('#new-apl-company-dropdown'),
+    team: $('#new-apl-team-dropdown'),
     suffix: $('#suffix-dropdown'),
     gender: $('#gender-dropdown'),
     marital: $('#marital-dropdown'),
@@ -72,6 +74,17 @@ const calSettings = {
         },
     },
 }
+
+$posRole.on('change', function() {
+    const cdl = $(this).val()
+    let [ base, query ] = $aplUrl.attr('href').split('?')
+    query = query.split('&')
+
+    query[1] = `cdl=${cdl}`
+
+    const url = base + '?' + query.join('&')
+    $aplUrl.text(url).attr('href', url)
+})
 
 $selfAssign.click(function() {
     const checked = $(this).prop('checked')
@@ -191,14 +204,16 @@ table.on('draw', function() {
             .html('<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>')
 
         $('#create-apl').on('click', function() {
-            $.ajax('/api/team/companies', {
+            const cdl = aplUrl.split('?')[1].split('&')[1].split('=')[1]
+            $(`.position-role[value="${cdl}"]`).prop('checked', true)
+
+            $.ajax('/api/carriers', {
                 method: 'POST',
                 success(companies) {
                     let items = ''
 
                     companies.forEach(company => {
                         const { _id, route, name } = company
-
                         items += `<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
                     })
                     $dropdown.company.find('.menu').html(items)
@@ -227,8 +242,35 @@ table.on('draw', function() {
                             $registerApl.prop('checked', false)
                             $selfAssign.prop('checked', true)
                             disableApplicant()
+                            $posRole.prop('checked', false)
+                            if ($dropdown.team.length) $dropdown.team.dropdown('clear')
                         },
                     }).modal('show')
+
+                    if ($dropdown.team.length)
+                        $.ajax('/api/teams', {
+                            method: 'POST',
+                            success(teams) {
+                                let items = ''
+
+                                teams.forEach(team => {
+                                    const { _id, name } = team
+                                    items += `<div class="item" data-id="${_id}" data-value="${_id}">${name}</div>`
+                                })
+                                $dropdown.team.find('.menu').html(items)
+
+                                $dropdown.team.dropdown().on('change', function() {
+                                    const _id = $(this).dropdown('get value') || 'global'
+                                    let [ base, query ] = aplUrl.split('?')
+                                    query = query.split('&')
+
+                                    query[0] = `env=${_id}`
+
+                                    const url = `${base}?${query.join('&')}`
+                                    $aplUrl.text(url).attr('href', url)
+                                })
+                            },
+                        })
                 }
             })
         })
