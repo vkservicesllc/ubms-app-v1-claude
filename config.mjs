@@ -52,7 +52,7 @@ const config = {
     },
     notification: {
         email: {
-            authToken: !(!domain),
+            authToken: !!domain,
         },
     },
 }
