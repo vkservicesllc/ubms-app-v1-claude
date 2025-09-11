@@ -74,11 +74,12 @@ class User extends Person {
             name: this.fullName('AL'),
             email: data.email,
             phone: data.phone,
-            count: {
-                roles: data.roleCount,
-                teams: data.teamCount,
-            },
+            // count: {
+            //     roles: data.roleCount,
+            //     teams: data.teamCount,
+            // },
         }
+        if (DS) properties.unscoped = true
 
         if (fails !== undefined) this.fails = fails
         if (lastUrl !== undefined) this.lastUrl = lastUrl
