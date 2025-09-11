@@ -35,14 +35,17 @@ const checkProps = {
 export const applicationStart = async (req, res, next) => {
     try {
         const session = { ...res.session, user: true }
-        const { env, dept: deptId, rec: userId } = req.query
-        if (!env) return next()
+        const { env, cdl,
+            // dept: deptId,
+            rec: userId,
+        } = req.query
+        if (!env || !cdl) return next()
 
-        const team = await Team.data(session, { _id: env })
-        if (!team) return respond404(res)
+        const team = env === 'global' ? null : await Team.data(session, { _id: env })
+        // if (!team) return respond404(res)
 
-        const { settings } = team
-        if (settings.deptId.length > 1 && !deptId) return respond404(res)
+        // const { settings } = team
+        // if (settings.deptId.length > 1 && !deptId) return respond404(res)
 
         if (userId) {
             const user = await User.data(session, { _simpleId: userId })
@@ -69,7 +72,7 @@ export const applicationStart = async (req, res, next) => {
                 address: carrier.address.physical.html({ inline: false }),
                 phone: formatTel(carrier.phone),
             }
-        } else if (team.profile) 
+        } else if (team?.profile) 
             hbs.company = {
                 name: team.profile.company,
                 address: team.profile.address.html({ inline: false }),
@@ -79,7 +82,9 @@ export const applicationStart = async (req, res, next) => {
         hbs.text = {
             requiredDL: "driver's license",
         }
-        if (settings?.drivers?.cdl) hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
+        if (cdl === '1') hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
+
+        const positionList = Driver.positionList
 
         let options = {}
         const fields = [
@@ -90,7 +95,7 @@ export const applicationStart = async (req, res, next) => {
         ]
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
         options.position.select.label.content = 'Desired Position'
-        options.position.select.input.data = team.list.drivers.positions
+        options.position.select.input.data = positionList
 
         options.phone.text.label.content = 'U.S. Phone'
         options.addrState.select.input.options = { valOpt: true }
@@ -117,8 +122,9 @@ export const applicationStart = async (req, res, next) => {
             LP: 'You lease a truck from the company with the option to own it after payments are completed.',
         }
         hbs.positionDesc = '' // `\n${t}<dl>`
-        for (const position in team.list.drivers.positions) {
-            const title = team.list.drivers.positions[position]
+
+        for (const position in positionList) {
+            const title = positionList[position]
             const desc = positionDesc[position]
 
             hbs.positionDesc += `\n${t}<dt class="text-success">${title}</dt>`
@@ -128,13 +134,14 @@ export const applicationStart = async (req, res, next) => {
 
         hbs.form = new ApplicationForm(options)
 
-        hbs.formUrl = `/resource/application/${team._id}`
+        hbs.formUrl = '/resource/application'
+        if (team) hbs.formUrl += `/${team._id}`
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
-        if (deptId) hbs.formUrl += `?dept=${deptId}`
-        if (userId) {
-            const x = deptId ? '&' : '?'
-            hbs.formUrl += `${x}rec=${userId}`
-        }
+        // if (deptId) hbs.formUrl += `?dept=${deptId}`
+        // if (userId) {
+        //     const x = deptId ? '&' : '?'
+        //     hbs.formUrl += `${x}rec=${userId}`
+        // }
 
         res.render('application/registration', hbs)
     } catch (err) {

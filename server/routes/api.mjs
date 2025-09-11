@@ -39,20 +39,6 @@ export const sessionDetails = (req, res) => {
 router.post('/login', User.login)
 
 
-router.post('/login/validation', async (req, res) => {
-    let validated = false
-    const { username } = req.body
-
-    const user = await User.data(res.session, { username })
-    if (user) {
-        const { applied: teams } = await user.relationship({ user, ...res.session }, 'teams')
-        validated = user.unscoped || teams.length > 0
-    }
-
-    res.send({ validated })
-})
-
-
 router.get('/session/keep-alive', User.verify, (req, res) => {
     if (req.session) req.session.touch()
     return res.sendStatus(204)

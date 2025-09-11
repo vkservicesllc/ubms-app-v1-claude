@@ -79,7 +79,7 @@ class User extends Person {
             //     teams: data.teamCount,
             // },
         }
-        if (DS) properties.unscoped = true
+        if (properties.DS) properties.unscoped = true
 
         if (fails !== undefined) this.fails = fails
         if (lastUrl !== undefined) this.lastUrl = lastUrl
@@ -507,7 +507,10 @@ class User extends Person {
                                 },
                                 {
                                     table: companyQuery.names.table,
-                                    fields: [ { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] } ],
+                                    fields: [
+                                        { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
+                                        { route: [ [ 'busName', 'coType' ] ] },
+                                    ],
                                     join: [ 'companyId', 'id', {
                                         table: companyQuery.main.table,
                                         max: 'since',
@@ -558,9 +561,10 @@ class User extends Person {
                             data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
 
                             relationData.map(row => {
-                                const { _id, name, catId } = row
-                                const record = { _id, name }
+                                const { _id, name, catId, route } = row
+                                const record = { _id, name, route }
                                 if (target === 'companies') record.catId = catId
+                                if (target !== 'teams') record.route = route
 
                                 data.all.push(record)
                             })

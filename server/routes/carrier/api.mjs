@@ -27,6 +27,22 @@ router.post('/session/team/:_id/switch', User.verify, async (req, res) => {
 })
 
 
+router.post('/login/validation', async (req, res) => {
+    let validated = false
+    const { username } = req.body
+
+    const user = await User.data(res.session, { username })
+    if (user) {
+        const { applied: teams } = await user.relationship({ user, ...res.session }, 'teams')
+        //? const { applied: carriers } = await user.relationship({ user, ...res.session }, 'carriers')
+
+        validated = (user.unscoped || teams.length > 0) //? && carriers.length > 0
+    }
+
+    res.send({ validated })
+})
+
+
 
 // router.post('/team/companies', User.verify, Team.verify, async (req, res) => {
 //     try {

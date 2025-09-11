@@ -209,7 +209,7 @@ table.on('draw', function() {
 
             $.ajax('/api/carriers', {
                 method: 'POST',
-                success(companies) {
+                success(companies) {console.log(companies)
                     let items = ''
 
                     companies.forEach(company => {

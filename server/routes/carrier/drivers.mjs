@@ -173,7 +173,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
             if (true)
                 hbs.applicationUrl += `&rec=${user._simpleId}`
 
-            const driverPositions = team ? team.list.drivers.positions : []
+            const driverPositions = Driver.positionList
             let suffixItems = '', genderItems = '', maritalItems = '', positionItems = '', addrStateItems = ''
             const t = `\t`.repeat(11)
 
