@@ -240,12 +240,20 @@ router.post('/application/:action/form/:formId', async (req, res) => {
 router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationCheck, async (req, res) => {
     try {
         const { _teamId, _carrierId } = req.params
-        const { dept: deptId, rec: userId } = req.query
+        const {
+            // dept: deptId,
+            rec: userId,
+        } = req.query
         const session = { ...res.session, user: true }
 
-        const team = await Team.data(session, { _id: _teamId })
-        if (!team) return throwErr.server(res, 'Server Internal Error: Unidentified Environment')
-        res.session.team = team
+        let team
+
+        if (_teamId !== 'global') {
+            team = await Team.data(session, { _id: _teamId })
+            if (!team) return throwErr.server(res, 'Server Internal Error: Unidentified Environment')
+
+            res.session.team = team
+        }
 
         if (_carrierId) {
             const carrier = await Carrier.data(session, { _id: _carrierId })
@@ -254,8 +262,8 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
             req.body.carrierId = await carrier.id()
         }
 
-        if (deptId) req.body.deptId = deptId
-        else req.body.deptId = team.settings.deptId[0]
+        // if (deptId) req.body.deptId = deptId
+        // else req.body.deptId = team.settings.deptId[0]
 
         if (userId) {
             const user = await User.data(session, { _simpleId: userId })

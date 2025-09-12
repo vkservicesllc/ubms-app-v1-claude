@@ -1689,7 +1689,7 @@ class Application {
 
 
     static create = async (session, data) => {
-        if (!session.team) return
+        // if (!session.team) return
 
         let created = false
 
@@ -1721,7 +1721,7 @@ class Application {
 
         data.driverId = await driver.id()
         data.ssn = { aes: [ ssn, ssnSecret ] }
-        data.teamId = await team.id()
+        if (team) data.teamId = await team.id()
         if (user) {
             data.createdBy = await user.id()
             if (selfAssign) data.userId = data.createdBy
