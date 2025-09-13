@@ -329,7 +329,8 @@ class Application {
         this._teamId = data._teamId
         this._userId = data._userId
         this._carrierId = data._carrierId
-        this.deptId = data.deptId
+        // this.deptId = data.deptId
+        this.cdlRole = data.cdlRole
         this.formId = data.formId
         this.position = [ data.position, Driver.positionList[data.position] ]
         this.condition = data.condition
@@ -487,7 +488,8 @@ class Application {
                 operType: data.operType,
             }
 
-            if (this.deptId === 0) {
+            // if (this.deptId === 0)
+            if (this.cdlRole) {
                 this.preference.teamName = data.partnerName
                 this.preference.teamPhone = data.partnerPhone
                 this.preference.haulRegion = data.haulRegion
@@ -1097,7 +1099,8 @@ class Application {
                         data.teamPhone = null
                     }
 
-                    if (this.deptId === 0) {
+                    // if (this.deptId === 0)
+                    if (this.cdlRole) {
                         data.haulRegion = haulRegion
                         data.equipment = equipment
                     }
@@ -1819,7 +1822,8 @@ class Application {
                     Team.hashId('teamId'),
                     User.hashId('userId'),
                     Carrier.hashId('carrierId'),
-                    'deptId',
+                    // 'deptId',
+                    'cdlRole',
                     'formId',
                     'condition',
                     'step',

@@ -138,10 +138,8 @@ export const applicationStart = async (req, res, next) => {
         hbs.formUrl += team ? `/${team._id}` : '/global'
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
         // if (deptId) hbs.formUrl += `?dept=${deptId}`
-        // if (userId) {
-        //     const x = deptId ? '&' : '?'
-        //     hbs.formUrl += `${x}rec=${userId}`
-        // }
+        hbs.formUrl += `?cdl=${cdl}`
+        if (userId) hbs.formUrl += `&rec=${userId}`
 
         res.render('application/registration', hbs)
     } catch (err) {
