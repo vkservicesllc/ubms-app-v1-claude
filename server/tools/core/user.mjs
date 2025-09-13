@@ -571,11 +571,11 @@ class User extends Person {
                         }
 
                         data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
-
-                        data.all = sortArrayByObjectKey(data.all, 'name')
-                        data.applied = sortArrayByObjectKey(data.applied, 'name')
-                        data.available = sortArrayByObjectKey(data.available, 'name')
                     }
+
+                    data.all = sortArrayByObjectKey(data.all, 'name')
+                    data.applied = sortArrayByObjectKey(data.applied, 'name')
+                    data.available = sortArrayByObjectKey(data.available, 'name')
 
                     return data
                 }

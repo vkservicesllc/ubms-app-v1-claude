@@ -172,7 +172,7 @@ router.get('/', async (req, res, next) => {
             req.session.team = teams[0]._id
             return res.redirect('/')
         }
-
+console.log(teams)
         const key = 'team'
         let { hbs } = res
         hbs = await hbs.set(key)
