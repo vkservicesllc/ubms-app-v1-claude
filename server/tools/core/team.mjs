@@ -51,6 +51,7 @@ class Team {
             // companies: data.companyCount,
             users: data.userCount,
         }
+        this.settings = data.settings
         // this.settings = data.settings?.[this.catId] || null
 
         // if (this.catId === 'crr') {
@@ -301,6 +302,11 @@ class Team {
                     match: { id },
                 })))[0][0].settings || {}
 
+                if (!settings.carrier) settings.carrier = {}
+                if (!settings.carrier.application) settings.carrier.application = {}
+
+                settings.carrier.application.cdl = Number(data?.carrier?.application?.cdl === 'on')
+
                 // switch (this.catId) {
                 //     case 'crr':
                 //         data[this.catId].drivers.cdl = !!data[this.catId].drivers.cdl
@@ -308,7 +314,7 @@ class Team {
                 // }
 
                 // settings[this.catId] = { ...settings[this.catId], ...data[this.catId] }
-                // settings = JSON.stringify(settings)
+                settings = JSON.stringify(settings)
                 //! This method does not track and log the change
 
                 try {

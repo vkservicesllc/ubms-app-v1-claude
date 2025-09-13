@@ -23,7 +23,7 @@
                         </div>
                     </div>
                 </div>
-                {{#if (eq deptId 0)}}
+                {{#if (eq cdlRole 1)}}
                 <div class="row g-3 my-1" id="partner"{{{partnerDisplay}}}>
                     <div class="col-md-7">
                         {{{form.teamName.text.label}}}
@@ -98,10 +98,10 @@
                 </div>
             </form>
             <script type="module" src="/modules/application/preference.mjs"></script>
-            {{#if (eq deptId 0)}}
+            {{#if (eq cdlRole 1)}}
             <script type="module" src="/modules/application/preference.truck-load.mjs"></script>
             {{/if}}
-            {{#if (eq deptId 1)}}
+            {{#if (eq cdlRole 0)}}
             <script type="module" src="/modules/application/preference.expedite.mjs"></script>
             {{/if}}
         </div>

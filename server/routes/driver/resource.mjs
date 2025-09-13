@@ -242,7 +242,7 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
         const { _teamId, _carrierId } = req.params
         const {
             // dept: deptId,
-            cdl,
+            cdl: cdlRole,
             rec: userId,
         } = req.query
         const session = { ...res.session, user: true }
@@ -265,7 +265,7 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
 
         // if (deptId) req.body.deptId = deptId
         // else req.body.deptId = team.settings.deptId[0]
-        req.body.cdlRole = +cdl
+        req.body.cdlRole = +cdlRole
 
         if (userId) {
             const user = await User.data(session, { _simpleId: userId })

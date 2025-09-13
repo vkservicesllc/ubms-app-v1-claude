@@ -199,7 +199,10 @@ export const applicationProgress = async (req, res) => {
     try {
         const session = { ...res.session, user: true }
         const { application } = session
-        const { formId, deptId } = application
+        const { formId,
+            // deptId,
+            cdlRole,
+        } = application
 
         const { application: _id } = req.session
         if (!_id || _id !== application._id || application.condition !== 'p') {
@@ -544,7 +547,7 @@ export const applicationProgress = async (req, res) => {
         if (step >= 5) { /* DRIVING EXPERIENCE */
             hbs.button.four = buttonProps.save
             hbs.accordion.four = accordionProps.finished
-            hbs.vhlExpColWidth = application.deptId === 0 && application.dl.commercial ? 4 : 6
+            hbs.vhlExpColWidth = cdlRole && application.dl.commercial ? 4 : 6
             hbs.expDetailsDisplay = ''
             hbs.cmvExpDisplay = ''
             hbs.schoolDisplay = ' style="display: none;"'
@@ -769,8 +772,8 @@ export const applicationProgress = async (req, res) => {
                 }
                 let vhlTypeData = {}
 
-                if (application.deptId === 0) vhlTypeData = Application.vhlTypeList.truckLoad
-                if (application.deptId === 1) {
+                if (cdlRole) vhlTypeData = Application.vhlTypeList.truckLoad
+                else {
                     vhlTypeData = Application.vhlTypeList.expedite
                     values.currentVhlMMT = application?.vehicle?.mmt
                     values.currentVhlMake = application?.vehicle?.make
@@ -787,12 +790,7 @@ export const applicationProgress = async (req, res) => {
                         values.currentVhlModel = model
                     }
                     if (values.currentVhlYear) values.currentVhlYear = ':' + values.currentVhlYear
-                }
 
-                options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
-                options.currentVhlType.select.input.data = vhlTypeData
-
-                if (application.deptId === 1) {
                     if (values.currentVhlMMT !== 'other') {
                         options.currentVhlType.select.input.disabled = true
                         options.currentVhlMake.text.input.disabled = true
@@ -804,6 +802,22 @@ export const applicationProgress = async (req, res) => {
 
                     options.currentVhlLen.select.input.data = Application.vhlLengthList.straightBox
                 }
+
+                options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
+                options.currentVhlType.select.input.data = vhlTypeData
+
+                // if (application.deptId === 1) {
+                //     if (values.currentVhlMMT !== 'other') {
+                //         options.currentVhlType.select.input.disabled = true
+                //         options.currentVhlMake.text.input.disabled = true
+                //         options.currentVhlModel.text.input.disabled = true
+                //     }
+
+                //     if (values.currentVhlType !== 'straightBox')
+                //         options.currentVhlLen.select.input.disabled = true
+
+                //     options.currentVhlLen.select.input.data = Application.vhlLengthList.straightBox
+                // }
             }
 
             if (application.activeBusiness === null) hbs.scrollPoint.business = scrollAttr
@@ -889,7 +903,8 @@ export const applicationProgress = async (req, res) => {
         hbs.step = step
         hbs.steps = steps
         hbs.formId = formId
-        hbs.deptId = deptId
+        // hbs.deptId = deptId
+        hbs.cdlRole = cdlRole
         hbs.applicantName = application.fullName
         hbs.applicantPosition = application.position[1]
         hbs.position = application.position[0]

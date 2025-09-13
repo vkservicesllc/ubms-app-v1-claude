@@ -329,7 +329,6 @@ class Application {
         this._teamId = data._teamId
         this._userId = data._userId
         this._carrierId = data._carrierId
-        // this.deptId = data.deptId
         this.cdlRole = data.cdlRole
         this.formId = data.formId
         this.position = [ data.position, Driver.positionList[data.position] ]
@@ -488,7 +487,6 @@ class Application {
                 operType: data.operType,
             }
 
-            // if (this.deptId === 0)
             if (this.cdlRole) {
                 this.preference.teamName = data.partnerName
                 this.preference.teamPhone = data.partnerPhone
@@ -1099,7 +1097,6 @@ class Application {
                         data.teamPhone = null
                     }
 
-                    // if (this.deptId === 0)
                     if (this.cdlRole) {
                         data.haulRegion = haulRegion
                         data.equipment = equipment
@@ -1822,7 +1819,6 @@ class Application {
                     Team.hashId('teamId'),
                     User.hashId('userId'),
                     Carrier.hashId('carrierId'),
-                    // 'deptId',
                     'cdlRole',
                     'formId',
                     'condition',
@@ -2177,7 +2173,6 @@ class Application {
                     knex.raw(Query.hashField(Team.hashId('teamId'))),
                     knex.raw(Query.hashField(User.hashId('userId'))),
                     knex.raw(Query.hashField(Carrier.hashId('carrierId'))),
-                    // 'apl.deptId',
                     'apl.formId',
                     'apl.condition',
                     'apl.createdAt', //! will return ISO 8601 UTC timestamp (YYYY-MM-DDTHH:mm:ss.sssZ)

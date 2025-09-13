@@ -342,10 +342,11 @@ const displayTeams = () => {
                             //     driverCDL: settings?.drivers?.cdl || false,
                             //     driverPositions: settings?.drivers?.positions || Object.keys(driverPositions).map(position => position),
                             // }
+
                             const applied = {
                                 carrier: {
                                     application: {
-                                        cdl: settings?.carrier?.application?.cdl || true,
+                                        cdl: settings?.carrier?.application?.cdl !== 0,
                                     },
                                 },
                             }

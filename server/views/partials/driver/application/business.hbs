@@ -84,7 +84,7 @@
                 {{#if (eq position 'OO')}}
                 <div class="border-top mt-4 pt-3">
                     <label class="form-label text-secondary">Motor Vehicle Owned</label>
-                    {{#if (eq deptId 0)}}
+                    {{#if (eq cdlRole 1)}}
                     <div class="row g-3 my-1">
                         <div class="col-md-6">
                             {{{form.currentVhlType.select.label}}}
@@ -92,7 +92,7 @@
                         </div>
                     </div>
                     {{/if}}
-                    {{#if (eq deptId 1)}}
+                    {{#if (eq cdlRole 0)}}
                     <div class="row g-3 my-1">
                         <div class="col-md-7">
                             {{{form.currentVhlMMT.select.label}}}
@@ -136,10 +136,10 @@
             </form>
             <script type="module" src="/modules/application/business.mjs"></script>
             {{#if (eq position 'OO')}}
-            {{#if (eq deptId 0)}}
+            {{#if (eq cdlRole 1)}}
             <script type="module" src="/modules/application/vehicle.truck-load.mjs"></script>
             {{/if}}
-            {{#if (eq deptId 1)}}
+            {{#if (eq cdlRole 0)}}
             <script type="module" src="/modules/application/vehicle.expedite.mjs"></script>
             {{/if}}
             {{/if}}
