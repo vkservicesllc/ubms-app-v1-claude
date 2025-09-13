@@ -94,8 +94,8 @@ router.get('/files/application/:route?', User.verify, Team.verify, async (req, r
         const company = await Company.data(res.session, { route })
         let carrier
         if (company) {
-            const { name, address, phone, fax } = company
-            carrier = { name, address, phone, fax }
+            const { name, address, phone, fax, logo } = company
+            carrier = { name, address, phone, fax, logo }
             carrier.address = carrier.address.physical
             carrier.companyId = await company.id()
         }
@@ -277,8 +277,8 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
             carrier = await Carrier.data(res.session, { _id })
 
             const companyId = await carrier.companyId()
-            const { name, address, phone, fax } = carrier
-            carrier = { name, address, phone, fax }
+            const { name, address, phone, fax, logo } = carrier
+            carrier = { name, address, phone, fax, logo }
             carrier.address = carrier.address.physical
             carrier.companyId = companyId
         }
