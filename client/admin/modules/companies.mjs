@@ -164,7 +164,7 @@ $.when(statusReq).done(statusRes => {
             },
 
             {
-                data: 'logo',
+                data: 'lastLogo',
                 title: 'Logo',
                 orderable: false,
                 render(data) {

@@ -235,7 +235,7 @@
                     <i class="fa fa-plus"></i>
                 </button>
             </div>
-            {{#if (eq data.logo 1)}}
+            {{#if (hv data.lastLogo)}}
             <style>
                 figure.image {
                     max-width: 240px;
@@ -365,7 +365,7 @@
             <button class="delete" id="close-company-logo-modal"></button>
         </header>
         <section class="modal-card-body">
-            {{#if (eq data.logo 1)}}
+            {{#if (hv data.lastLogo)}}
             <div class="columns">
                 <div class="column is-5">
                     <label class="label input-required" for="company-logo-since">Effective Date</label>

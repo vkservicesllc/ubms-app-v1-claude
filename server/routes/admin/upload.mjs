@@ -22,19 +22,18 @@ router.post('/business/company/logo/:_id', User.verify, superAdminUserOnly, asyn
     const id = await company.id()
     let filename = company.since
 
-    if (company.logo && since) filename = since
+    if (since) filename = since
 
     req.upload = {
         dir: id,
         filename,
     }
-    req.data = { company }
+    req.data = { company, filename }
 
     next()
 }, upload.company.logo.single('companyLogo'), async (req, res) => {
     // Runs when upload is successfull
-    if (!req.data.company.logo)
-        await req.data.company.modify(res.session, 'companies', { logo: true })
+    await req.data.company.modify(res.session, 'main', { lastLogo: req.data.filename })
 
     res.send({ status: 'success' })
 })

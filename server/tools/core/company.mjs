@@ -64,7 +64,7 @@ class Company {
         this.alias = data.alias
         this.since = data.since
         this.until = data.until
-        this.logo = data.logo
+        this.lastLogo = data.lastLogo
         this.style = data.style || {}
         if (!this.style.background) this.style.background = null
         if (!this.style.text) this.style.text = null
@@ -760,7 +760,7 @@ class Company {
                 table: query.main.table,
                 fields: [
                     Company.hashId(), 'catId', { aes: [ 'ein', secret.ein ] }, 'duns', 'website',
-                    'since', 'until', 'global', 'active', 'confirmed', 'logo', 'style',
+                    'since', 'until', 'global', 'active', 'confirmed', 'lastLogo', 'style',
                 ],
             },
             {
@@ -845,10 +845,10 @@ class Company {
         if (!filter) filter = {}
 
         const { _id, id, ein, duns, route } = params
-        const { catId, global, logo, _ownerId } = filter
+        const { catId, global, lastLogo, _ownerId } = filter
 
         const match = {
-            companies: { id, duns, catId, global, logo },
+            companies: { id, duns, catId, global, lastLogo },
             names: {},
             ownerships: { ownerId: Owner.matchIdHash(_ownerId) },
         }

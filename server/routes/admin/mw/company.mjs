@@ -801,7 +801,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         const { active } = hbs.nav
         hbs.nav.companies = active
 
-        if (company.logo) {
+        if (company.lastLogo) {
             const id = await company.id()
             const files = await getFiles(`${dir}/uploads/business/company/logo/${id}`, false)
 

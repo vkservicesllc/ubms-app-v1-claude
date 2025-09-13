@@ -175,7 +175,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             let filename
 
             /* Cover Sheet Carrier Logo */
-            if (carrier.logo && files.length) {
+            if (carrier.lastLogo && files.length) {
                 if (applicant.lastName) {
                     const finishedOn = application.finishedAt.split(' ')[0]
                     let x = 0
