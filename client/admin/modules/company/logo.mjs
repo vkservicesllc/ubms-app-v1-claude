@@ -9,6 +9,7 @@ const $logo = $('#company-logo')
 const $input = $('#company-logo-file-input')
 const $since = $('#company-logo-since')
 const $form = $('#company-logo-form')
+const defSince = $('#company-logo-default-since').val()
 
 $('#add-company-logo').on('click', () => $modal.addClass('is-active'))
 
@@ -43,7 +44,7 @@ $input.on('change', function(evt) {
 
 if ($since.length)
     inputEvent('#company-logo-since', {
-        datepicker: { maxDate: 0 },
+        datepicker: { maxDate: 0, minDate: defSince, dateFormat: 'yy-mm-dd' },
     })
 
 

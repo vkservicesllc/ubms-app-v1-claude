@@ -368,6 +368,7 @@
             {{#if (hv data.lastLogo)}}
             <div class="columns">
                 <div class="column is-5">
+                    <input type="hidden" id="company-logo-default-since" value="{{data.since}}" >
                     <label class="label input-required" for="company-logo-since">Effective Date</label>
                     <div class="control has-icons-left">
                         <input type="text" class="input" id="company-logo-since" value="{{defaultValue.today}}" required />
