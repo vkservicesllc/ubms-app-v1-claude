@@ -2131,7 +2131,7 @@ class Application {
 
             const { companyIds } = res.session
             let team, teamId
-
+console.log(req.session.team)
             if (req.session.team) {
                 team = await Team.data(res.session, { _id: req.session.team })
                 teamId = await team.id()
