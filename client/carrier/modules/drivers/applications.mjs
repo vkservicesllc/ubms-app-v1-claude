@@ -31,7 +31,9 @@ const table = $('#driver-apl-table').DataTable({
             }
         },
         dataSrc(response) {
-            const { data, actions, aplAddress } = response
+            const { data, actions, aplAddress, unscoped } = response
+
+            table?.column(12).visible(unscoped)
 
             data.forEach(row => {
                 row.actions = actions
@@ -226,6 +228,14 @@ const table = $('#driver-apl-table').DataTable({
                 
                 return escapeHTML(new Person({ firstName, lastName, alias }).fullName('Al'))
             },
+        },
+
+        {
+            data: 'teamName',
+            title: 'Team',
+            searchable: false,
+            orderable: false,
+            defaultContent,
         },
 
         {

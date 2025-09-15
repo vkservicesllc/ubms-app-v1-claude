@@ -2119,7 +2119,7 @@ class Application {
     static dtList = async (req, res) => {
         try {
             const sessionUser = res.session.user
-            const { DS } = sessionUser
+            const { DS, unscoped } = sessionUser
             const permissions = await sessionUser.permissions(res.session) || {}
 
             if (!DS && !('d:drv/apl' in permissions))
@@ -2131,7 +2131,7 @@ class Application {
 
             const { companyIds } = res.session
             let team, teamId
-console.log(req.session.team)
+
             if (req.session.team) {
                 team = await Team.data(res.session, { _id: req.session.team })
                 teamId = await team.id()
@@ -2164,6 +2164,7 @@ console.log(req.session.team)
                         'cmp.id'
                     )
                     .leftJoin(knex.raw(`${db.online}.users AS usr ON apl.userId = usr.id`))
+                    .leftJoin(knex.raw(`${db.business}.teams AS env ON apl.teamId = env.id`))
             }
 
             const baseQuery = knex(`${db.carrier}.applications AS apl`)
@@ -2208,6 +2209,7 @@ console.log(req.session.team)
                     'usr.condition AS userCondition',
                     'usr.location AS userLocation',
                     'usr.deletedAt AS userDeletedAt',
+                    'env.name AS teamName',
                 )
 
             const countQuery = knex(`${db.carrier}.applications AS apl`).count('* AS count')
@@ -2380,6 +2382,7 @@ console.log(req.session.team)
                     },
                 },
                 aplAddress: `${res.hbs.addrBook.driver}/application/`,
+                unscoped,
             })
         } catch (err) {
             throwErr.api.server(res, null, err, false)

@@ -5,6 +5,8 @@ $.extend(true, $.fn.dataTable.defaults, {
         method: 'POST',
     },
 
+    autoWidth: false,
+
     columnDefs: [
 
         {

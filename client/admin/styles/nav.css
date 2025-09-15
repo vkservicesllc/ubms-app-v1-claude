@@ -31,6 +31,10 @@
     margin: 0;
 }
 
+.page-content table {
+    width: 100%;
+}
+
 #user-toggler {
     display: none;
 }
