@@ -47,8 +47,8 @@
                 {{#if (eq data.catId 'crr')}}
                 <li class="company-card-tabs" data-section="carrier"><a>Carrier Info</a></li>
                 {{/if}}
-                <li class="company-card-tabs" data-section="logo"><a>Logo</a></li>
                 {{#if (eq data.confirmed 1)}}
+                <li class="company-card-tabs" data-section="logo"><a>Logo</a></li>
                 {{!-- <li class="company-card-tabs" data-section="teams"><a>Teams</a></li> --}}
                 <li class="company-card-tabs" data-section="users"><a>Users</a></li>
                 {{/if}}
@@ -228,6 +228,7 @@
             </div>
         </section>
         {{/if}}
+        {{#if (eq data.confirmed 1)}}
 
         <section class="company-card-content" id="logo-card-content" style="display: none;">
             <div class="is-flex is-justify-content-center is-align-items-center">
@@ -264,7 +265,6 @@
             </div>
             {{/if}}
         </section>
-        {{#if (eq data.confirmed 1)}}
 
         <style>
             .column.is-width-fixed {

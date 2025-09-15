@@ -37,7 +37,7 @@ if ($content.users.length) {
 
     $.ajax(`/api/company/${_id}/users`, {
         method: 'POST',
-        success(response) {
+        success(response) {console.log(response)
             const { data: users } = response
             const options = { available: '', applied: '' }
             const option = '<option value=""></option>'

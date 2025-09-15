@@ -348,7 +348,7 @@ class Company {
                                         table: userQuery.main.table,
                                         fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'username' ],
                                         join: [ 'id', 'userId' ],
-                                        match: { username: { null: false }, status: ['U', 'A'] },
+                                        match: { status: ['U', 'A'] },
                                     },
                                 ]
                             }

@@ -662,7 +662,7 @@ class User extends Person {
                         modified = true
                         modifiedUser = await User.data(session, { id })
 
-                        if (!this.username && this.email !== data.email) {
+                        if (!this.username && data.email && this.email !== data.email) {
                             const [ rows ] = await mysql.execute(query.registration.select('formId', { match: { userId: id } }))
 
                             if (rows.length) {
