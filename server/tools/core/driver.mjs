@@ -1338,7 +1338,7 @@ class Application {
         if (error) return { deleted, error }
 
         const id = await this.id()
-        const teamId = await (await Team.data(session, { _id: this._teamId })).id()
+        const teamId = this._teamId ? await (await Team.data(session, { _id: this._teamId })).id() : null
         const carrierId = this._carrierId
             ? await (await Carrier.data(session, { _id: this._carrierId } )).id()
             : null
@@ -1769,7 +1769,7 @@ class Application {
                 const carrier = await Carrier.data(session, { id: carrierId })
 
                 if (carrier) companyName = carrier.name
-            } else if (team.profile)
+            } else if (team?.profile)
                 companyName = team.profile.company
 
             if (companyName) from = `"${companyName}" <${senderParams.email}>`

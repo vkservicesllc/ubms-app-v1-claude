@@ -199,9 +199,12 @@ export const applicationProgress = async (req, res) => {
     try {
         const session = { ...res.session, user: true }
         const { application } = session
+
         const { formId,
             // deptId,
             cdlRole,
+            _teamId,
+            step,
         } = application
 
         const { application: _id } = req.session
@@ -214,19 +217,20 @@ export const applicationProgress = async (req, res) => {
         const driver = await Driver.data(session, { _id: application._driverId })
         if (!driver) return throwErr.server(res, 'Internal Server Error: Unidentified Driver')
 
-        const team = await Team.data(session, { _id: application._teamId })
-        if (!team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
+        const team = _teamId ? await Team.data(session, { _id: _teamId }) : null
+        if (_teamId && !team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
 
-        const depts = team.depts.join(', ')
+        // const depts = team ? team.depts.join(', ') : ''
         let agency = team?.profile?.company
-        if (agency) agency = `<span title="${depts}">${agency}</span>`
+        // if (agency) agency = `<span title="${depts}">${agency}</span>`
         let carrier = application?.carrier?.name
-        if (carrier) carrier = `<span title="${depts}">${carrier}</span>`
+        // if (carrier) carrier = `<span title="${depts}">${carrier}</span>`
 
-        const { step } = application
+
         if (step === 12) return res.redirect(`/application/${formId}/agreement`)
 
-        const { settings } = team
+        // const settings = team?.settings || null
+        // const { settings } = team
         const steps = [ ...Application.stepList ]
         const key = 'application'
         let { hbs } = res
@@ -356,8 +360,6 @@ export const applicationProgress = async (req, res) => {
             }
         }
 
-        const commercial = settings?.drivers?.cdl === true
-
         if (step >= 1) { /* DRIVER LICENSE */
             hbs.button.zero = buttonProps.save
             hbs.accordion.zero = accordionProps.finished
@@ -394,7 +396,7 @@ export const applicationProgress = async (req, res) => {
             }
 
             //! Rework this logic
-            if ((commercial && application?.dl?.commercial === undefined) || !application.medCard) {
+            if ((cdlRole && application?.dl?.commercial === undefined) || !application.medCard) {
                 options.dlCommercial.radio.yes.input.disabled = true
                 options.dlCommercial.radio.no.input.disabled = true
                 options.dlCommercial.radio[application.medCard ? 'yes' : 'no'].input.checked = true
