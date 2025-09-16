@@ -501,7 +501,7 @@ class User extends Person {
                                 },
                                 {
                                     table: companyQuery.main.table,
-                                    fields: [ Company.hashId(), 'catId' ],
+                                    fields: [ Company.hashId(), 'catId', 'active', 'until' ],
                                     join: [ 'id', 'companyId' ],
                                     match: { confirmed: true },
                                 },
@@ -540,7 +540,13 @@ class User extends Person {
 
                             relationData.map(row => {
                                 const { _id, name } = row
-                                data.applied.push({ _id, name })
+                                const record = { _id, name }
+
+                                if (target !== 'teams') {
+                                    record.active = row.active
+                                    record.until = row.until
+                                }
+                                data.applied.push(record)
                             })
                         } else {
                             if (target !== 'teams') batch[1].match = { catId }

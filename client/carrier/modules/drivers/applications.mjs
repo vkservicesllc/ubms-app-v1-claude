@@ -341,8 +341,8 @@ const table = $('#driver-apl-table').DataTable({
                         let { name } = company
                         let color = 'green'
 
-                        if (until) name += 'red'
-                        else if (!active) name += 'blue'
+                        if (until) color = 'red'
+                        else if (!active) color = 'blue'
 
                         dropdown.company.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
                     })
