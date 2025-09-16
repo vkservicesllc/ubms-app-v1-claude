@@ -2033,43 +2033,43 @@ class Application {
     }
 
 
-    static companies = async (session, filter = {}) => {
-        if (!session?.user || !session?.team) return
+    // static companies = async (session, filter = {}) => {
+    //     if (!session?.user || !session?.team) return
 
-        const { excluded } = filter
-        const companyId = await session.team.ids(session, 'companies')
+    //     const { excluded } = filter
+    //     const companyId = await session.team.ids(session, 'companies')
 
-        const batch = [
-            {
-                table: query.applications.table,
-                fields: Carrier.hashId('carrierId'),
-            },
-            {
-                table: carrierQuery.main.table,
-                fields: Company.hashId('companyId'),
-                join: [ 'id', 'carrierId' ],
-            },
-            {
-                db: db.business,
-                table: companyQuery.main.table,
-                fields: [ 'active', 'until' ],
-                join: [ 'id', 'companyId', 1 ],
-                match: { confirmed: true },
-            },
-            {
-                db: db.business,
-                table: companyQuery.names.table,
-                fields: [ 'busName', 'coType', { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] }, 'alias' ],
-                join: [ 'companyId', 'id', 2 ],
-            },
-        ]
-        if (excluded !== true && companyId.length) batch[1].match = { companyId }
+    //     const batch = [
+    //         {
+    //             table: query.applications.table,
+    //             fields: Carrier.hashId('carrierId'),
+    //         },
+    //         {
+    //             table: carrierQuery.main.table,
+    //             fields: Company.hashId('companyId'),
+    //             join: [ 'id', 'carrierId' ],
+    //         },
+    //         {
+    //             db: db.business,
+    //             table: companyQuery.main.table,
+    //             fields: [ 'active', 'until' ],
+    //             join: [ 'id', 'companyId', 1 ],
+    //             match: { confirmed: true },
+    //         },
+    //         {
+    //             db: db.business,
+    //             table: companyQuery.names.table,
+    //             fields: [ 'busName', 'coType', { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] }, 'alias' ],
+    //             join: [ 'companyId', 'id', 2 ],
+    //         },
+    //     ]
+    //     if (excluded !== true && companyId.length) batch[1].match = { companyId }
 
-        let companies = (await mysql.execute(Query.select(db.carrier, batch)))[0]
-        companies = sortArrayByObjectKey(companies, 'name')
+    //     let companies = (await mysql.execute(Query.select(db.carrier, batch)))[0]
+    //     companies = sortArrayByObjectKey(companies, 'name')
 
-        return companies
-    }
+    //     return companies
+    // }
 
 
     static users = async (session, filter = {}) => {

@@ -337,14 +337,17 @@ const table = $('#driver-apl-table').DataTable({
 
                 if (companies) {
                     companies.forEach(company => {
-                        const { _carrierId, active, until, name, alias } = company
+                        const { _carrierId, active, until, alias } = company
+                        let { name } = company
                         let color = 'green'
+
                         if (until) name += 'red'
                         else if (!active) name += 'blue'
 
                         dropdown.company.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
                     })
                 }
+
                 if (users) {
                     users.forEach(user => {
                         const { firstName, lastName, alias } = user

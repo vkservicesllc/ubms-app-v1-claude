@@ -103,37 +103,37 @@ class Team {
 
             //! WORK IN PROGRESS
 
-            this.ids = async (session, type) => {
-                if (!session.user) return
+            // this.ids = async (session, type) => {
+            //     if (!session.user) return
 
-                const teamId = await this.id()
-                let data = [], batch = []
+            //     const teamId = await this.id()
+            //     let data = [], batch = []
 
-                switch (type) {
+            //     switch (type) {
 
-                    // case 'companies':
-                    //     const { catId } = this
-                    //     batch = [
-                    //         {
-                    //             table: query.companies,
-                    //             match: { teamId },
-                    //         },
-                    //         {
-                    //             table: 'companies',
-                    //             fields: 'id',
-                    //             join: [ 'id', 'companyId' ],
-                    //             match: { catId },
-                    //         },
-                    //     ]
-                    //     break
+            //         // case 'companies':
+            //         //     const { catId } = this
+            //         //     batch = [
+            //         //         {
+            //         //             table: query.companies,
+            //         //             match: { teamId },
+            //         //         },
+            //         //         {
+            //         //             table: 'companies',
+            //         //             fields: 'id',
+            //         //             join: [ 'id', 'companyId' ],
+            //         //             match: { catId },
+            //         //         },
+            //         //     ]
+            //         //     break
 
-                }
+            //     }
 
-                data = (await mysql.execute(Query.select(db.business, batch)))[0]
-                data = data.map(row => row.id)
+            //     data = (await mysql.execute(Query.select(db.business, batch)))[0]
+            //     data = data.map(row => row.id)
 
-                return data
-            }
+            //     return data
+            // }
 
 
             this.data = async (session, type) => {
