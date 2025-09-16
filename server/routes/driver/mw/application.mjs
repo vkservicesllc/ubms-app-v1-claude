@@ -395,19 +395,37 @@ export const applicationProgress = async (req, res) => {
                 options.dlRevoked.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
 
-            //! Rework this logic
-            if ((cdlRole && application?.dl?.commercial === undefined) || !application.medCard) {
-                options.dlCommercial.radio.yes.input.disabled = true
-                options.dlCommercial.radio.no.input.disabled = true
-                options.dlCommercial.radio[application.medCard ? 'yes' : 'no'].input.checked = true
-            } else if (application?.experience?.cmv || application?.experience?.cdlSchool) {
+            if (cdlRole) {
                 options.dlCommercial.radio.yes.input.disabled = true
                 options.dlCommercial.radio.no.input.disabled = true
                 options.dlCommercial.radio.yes.input.checked = true
             } else {
-                options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === true
-                options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === false
+                if (application.medCard === false) {
+                    options.dlCommercial.radio.yes.input.disabled = true
+                    options.dlCommercial.radio.no.input.disabled = true
+                    options.dlCommercial.radio[application.medCard ? 'yes' : 'no'].input.checked = true
+                } else if (application?.experience?.cmv || application?.experience?.cdlSchool) {
+                    options.dlCommercial.radio.yes.input.disabled = true
+                    options.dlCommercial.radio.no.input.disabled = true
+                    options.dlCommercial.radio.yes.input.checked = true
+                } else {
+                    options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === true
+                    options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === false
+                }
             }
+            //! Rework this logic
+            // if ((cdlRole && application?.dl?.commercial === undefined) || !application.medCard) {
+            //     options.dlCommercial.radio.yes.input.disabled = true
+            //     options.dlCommercial.radio.no.input.disabled = true
+            //     options.dlCommercial.radio[application.medCard ? 'yes' : 'no'].input.checked = true
+            // } else if (application?.experience?.cmv || application?.experience?.cdlSchool) {
+            //     options.dlCommercial.radio.yes.input.disabled = true
+            //     options.dlCommercial.radio.no.input.disabled = true
+            //     options.dlCommercial.radio.yes.input.checked = true
+            // } else {
+            //     options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === true
+            //     options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === false
+            // }
 
             if (options.dlCommercial.radio.yes.input.checked) options.dlEndrs.text.input.disabled = false
             options.dlDenied.radio.yes.input.checked = application?.dl?.denied === true
