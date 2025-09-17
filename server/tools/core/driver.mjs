@@ -1133,11 +1133,12 @@ class Application {
             case 'business':
                 {
                     const {
-                        activeLLC, busName, state, ein,
-                        llcAssistance, // proposedName,
+                        activeLLC, inactiveLLC, busName, state, ein,
+                        // llcAssistance, proposedName,
                         mmt, type, make, model, year, length,
                     } = data
-                    let mainData = { activeBusiness: activeLLC, businessAssist: llcAssistance }
+                    let mainData = { activeBusiness: activeLLC } //, businessAssist: llcAssistance }
+                    if (activeLLC === undefined) mainData.activeBusiness = inactiveLLC !== 'on'
                     data = { busName, state } // , proposedName }
 
                     if (this.step < 9) {

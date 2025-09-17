@@ -331,6 +331,7 @@ const selector = {
                 flat: 'flatbed-equipment-type-preference',
                 step: 'stepdeck-equipment-type-preference',
             },
+            inactiveLLC: 'inactive-llc',
         },
     },
 }

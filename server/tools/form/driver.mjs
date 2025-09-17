@@ -1054,6 +1054,14 @@ class ApplicationForm {
         },
     })
 
+    static inactiveLLC = createForm({
+        selector: appSelector,
+        target: 'inactiveLLC',
+        type: 'checkbox',
+        name: 'inactiveLLC',
+        label: 'No currently active LLC',
+    })
+
     static llcName = createBusNameForm(appSelector, {
         target: 'llcName',
         group: 'llcDetails',
