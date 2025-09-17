@@ -12,15 +12,15 @@ import {
 } from './reusable.mjs'
 import { createCategoryForm, createBusNameForm, createCoTypeForm } from './company.mjs'
 
-import Team from '../core/team.mjs'
+// import Team from '../core/team.mjs'
 import selector from '../../../client/global/modules/registry/selectors/team.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 
 const required = true, disabled = true
 
-const crrDeptData = {}
-Team.deptList.crr.forEach((name, prop) => crrDeptData[prop] = name)
+// const crrDeptData = {}
+// Team.deptList.crr.forEach((name, prop) => crrDeptData[prop] = name)
 
 
 class TeamForm {

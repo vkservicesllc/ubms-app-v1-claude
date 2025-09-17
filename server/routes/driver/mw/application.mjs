@@ -35,17 +35,10 @@ const checkProps = {
 export const applicationStart = async (req, res, next) => {
     try {
         const session = { ...res.session, user: true }
-        const { env, cdl,
-            // dept: deptId,
-            rec: userId,
-        } = req.query
+        const { env, cdl, rec: userId } = req.query
         if (!env || !cdl) return next()
 
         const team = env === 'global' ? null : await Team.data(session, { _id: env })
-        // if (!team) return respond404(res)
-
-        // const { settings } = team
-        // if (settings.deptId.length > 1 && !deptId) return respond404(res)
 
         if (userId) {
             const user = await User.data(session, { _simpleId: userId })
@@ -137,7 +130,6 @@ export const applicationStart = async (req, res, next) => {
         hbs.formUrl = '/resource/application'
         hbs.formUrl += team ? `/${team._id}` : '/global'
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
-        // if (deptId) hbs.formUrl += `?dept=${deptId}`
         hbs.formUrl += `?cdl=${cdl}`
         if (userId) hbs.formUrl += `&rec=${userId}`
 
@@ -200,12 +192,7 @@ export const applicationProgress = async (req, res) => {
         const session = { ...res.session, user: true }
         const { application } = session
 
-        const { formId,
-            // deptId,
-            cdlRole,
-            _teamId,
-            step,
-        } = application
+        const { formId, cdlRole, _teamId, step } = application
 
         const { application: _id } = req.session
         if (!_id || _id !== application._id || application.condition !== 'p') {
@@ -790,11 +777,9 @@ export const applicationProgress = async (req, res) => {
                 const values = {
                     currentVhlType: application?.vehicle?.type,
                 }
-                let vhlTypeData = {}
+                const vhlTypeData = Application.vhlTypeList[cdlRole]
 
-                if (cdlRole) vhlTypeData = Application.vhlTypeList.truckLoad
-                else {
-                    vhlTypeData = Application.vhlTypeList.expedite
+                if (!cdlRole) {
                     values.currentVhlMMT = application?.vehicle?.mmt
                     values.currentVhlMake = application?.vehicle?.make
                     values.currentVhlModel = application?.vehicle?.model
@@ -825,19 +810,6 @@ export const applicationProgress = async (req, res) => {
 
                 options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
                 options.currentVhlType.select.input.data = vhlTypeData
-
-                // if (application.deptId === 1) {
-                //     if (values.currentVhlMMT !== 'other') {
-                //         options.currentVhlType.select.input.disabled = true
-                //         options.currentVhlMake.text.input.disabled = true
-                //         options.currentVhlModel.text.input.disabled = true
-                //     }
-
-                //     if (values.currentVhlType !== 'straightBox')
-                //         options.currentVhlLen.select.input.disabled = true
-
-                //     options.currentVhlLen.select.input.data = Application.vhlLengthList.straightBox
-                // }
             }
 
             if (application.activeBusiness === null) hbs.scrollPoint.business = scrollAttr
@@ -923,7 +895,6 @@ export const applicationProgress = async (req, res) => {
         hbs.step = step
         hbs.steps = steps
         hbs.formId = formId
-        // hbs.deptId = deptId
         hbs.cdlRole = cdlRole
         hbs.applicantName = application.fullName
         hbs.applicantPosition = application.position[1]

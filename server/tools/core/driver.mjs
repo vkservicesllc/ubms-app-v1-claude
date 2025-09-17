@@ -1591,18 +1591,19 @@ class Application {
         otrInt: 'Long Haul (International)',
     }
 
-    static vhlTypeList = {
-        truckLoad: {
+    static vhlTypeList = [
+        {
+            van: 'Cargo Van',
+            straightBox: 'Box Truck',
+        },
+        {
             semiTR: 'Semi Tractor',
             hotshot: 'Hotshot',
             straightBox: 'Box Truck',
             van: 'Cargo Van',
         },
-        expedite: {
-            van: 'Cargo Van',
-            straightBox: 'Box Truck',
-        },
-    }
+    ]
+
 
     static vhlLengthList = {
         straightBox: {

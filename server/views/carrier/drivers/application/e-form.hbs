@@ -13,6 +13,13 @@
         .list .item {
             margin-bottom: 5px;
         }
+        .ui.vertical.tabular.menu .active.item {
+            border-right: none !important;  /* remove right border */
+            margin-right: -1px !important;  /* prevent content shift */
+        }
+            .ui.vertical.tabular.menu + .ui.attached.segment {
+            border-left: none !important;
+        }
     </style>
 
     <div style="margin-left: 20px;">
@@ -25,14 +32,14 @@
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Position:</span></h5>
-                    <strong>{{position}}</strong>
+                <h5 class="ui header"><span class="ui grey text">Desired Position:</span></h5>
+                    {{position}}
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Department:</span></h5>
-                    {{department}}
+                <h5 class="ui header"><span class="ui grey text">Position Role:</span></h5>
+                    {{positionRole}}
                 </div>
             </div>
             {{#if (hv carrier)}}
@@ -475,7 +482,7 @@
                             </div>
                             <div id="vehicle-section" style="display: none;">
                                 <h5 class="ui blue text header">Motor Vehicle</h5>
-                                {{#if (eq deptId 0)}}
+                                {{#if (eq cdlRole 1)}}
                                 <div class="ui compact grid" style="margin-top: 5px;">
                                     <div class="four wide field">
                                         {{{form.currentVhlType.select.label}}}
@@ -490,7 +497,7 @@
                                     <div class="one wide field"></div>
                                 </div>
                                 {{/if}}
-                                {{#if (eq deptId 1)}}
+                                {{#if (eq cdlRole 0)}}
                                 <div class="ui compact grid" style="margin-top: 5px;">
                                     <div class="five wide field">
                                         {{{form.currentVhlMMT.select.label}}}
@@ -833,11 +840,11 @@
         </script>
         <script type="module" src="/modules/drivers/application/profile.mjs"></script>
         <script type="module" src="/modules/drivers/application/legal-status.mjs"></script>
-        {{#if (eq deptId 0)}}
-        <script type="module" src="/modules/drivers/application/position.truck-load.mjs"></script>
+        {{#if (eq cdlRole 1)}}
+        <script type="module" src="/modules/drivers/application/position.cdl-role.mjs"></script>
         {{/if}}
-        {{#if (eq deptId 1)}}
-        <script type="module" src="/modules/drivers/application/position.expedite.mjs"></script>
+        {{#if (eq cdlRole 0)}}
+        <script type="module" src="/modules/drivers/application/position.non-cdl-role.mjs"></script>
         {{/if}}
         <script type="module" src="/modules/drivers/application/driver-license.mjs"></script>
         <script type="module" src="/modules/drivers/application/medical-card.mjs"></script>

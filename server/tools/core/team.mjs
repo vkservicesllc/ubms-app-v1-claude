@@ -445,9 +445,9 @@ class Team {
     static matchIdHash = value => matchHash(value, Team.#algorithm)
 
 
-    static deptList = {
-        crr: ['Truck Load', 'Expedite'],
-    }
+    // static deptList = {
+    //     crr: ['Truck Load', 'Expedite'],
+    // }
 
 
     static create = async (session, data) => {

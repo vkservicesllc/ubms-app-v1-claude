@@ -167,8 +167,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
             hbs.applicationUrl += team ? `${req.session.team}` : 'global'
             hbs.applicationUrl += `&cdl=${cdl}`
             hbs.userSimpleId = user._simpleId
-            //! if the team has more than 1 departments, add the first (default) department id (integer) to the query += `&dept${deptId}`
-            //! in this case an additional dropdown to be added for deparment selection with the default department selected
+
             //? if (!DS)
             if (true)
                 hbs.applicationUrl += `&rec=${user._simpleId}`
@@ -325,7 +324,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-        const { _carrierId, _userId, deptId } = application
+        const { _carrierId, _userId, cdlRole } = application
 
         if (_carrierId) {
             hbs.carrier = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch carrier</span>'
@@ -362,9 +361,9 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         hbs._id = application._id
         hbs.formId = formId
-        hbs.deptId = deptId
+        hbs.cdlRole = cdlRole
         hbs.position = application.position[1]
-        hbs.department = Team.deptList.crr[deptId]
+        hbs.positionRole = cdlRole ? 'CDL Only' : 'Non-CDL'
         hbs.applicant = `<strong style="font-size: 1.2em;">${new Person(application).fullName('FMLs')}</strong>`
         hbs.applicant += ` <small>(${calculateYearAge(application.dob, application.finishedAt.split(' ')[0])} yo`
         hbs.applicant += ` / ***-**-${application.ssn.slice(-4)})</small>`
@@ -452,9 +451,10 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             if (application._userId)
                 options.user = { hidden: { input: { value: application._userId } } }
 
-            const carriers = await team.data(res.session, 'carriers')
+            const carriers = (await user.relationship(res.session, 'carriers')).applied //! await team.data(res.session, 'carriers')
+
             carriers.forEach(carrier => { //! This list will not include the current carrier if it was removed from the team
-                const { _id, name } = carrier
+                const { _carrierId: _id, name } = carrier
                 dropdown.carrier += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
             })
             if (application._carrierId)
@@ -525,12 +525,12 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         {
             dropdown.vehicleType = ''
 
-            const typeData = Application.vhlTypeList[['truckLoad', 'expedite'][deptId]]
+            const typeData = Application.vhlTypeList[cdlRole]
 
             for (const type in typeData)
                 dropdown.vehicleType += `\n${t}\t<div class="item" data-value="${type}">${typeData[type]}</div>`
 
-            if (deptId === 1) {
+            if (!cdlRole) {
                 const mmtData = currentExpediteVhlMMTData()
                 const yearData = descYears()
                 const lenData = Application.vhlLengthList.straightBox
@@ -565,6 +565,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         /* DRIVER's CARD */
         {
+            if (cdlRole) options.dlCommercial2 = { checkbox: { input: { disabled: true } } }
             dropdown.dlState = ''
             options.dlEndrs = { text: { input: { rows: 2 } } }
             options.dlRestr = { text: { input: { rows: 2 } } }
@@ -575,7 +576,9 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         /* MEDICAL CARD */
         {
             if (!application.medCard) checkList.application = checkMark.halfChecked
-            options.noMec = { checkbox: { label: { content: 'Unavailable at the time of submission' } } }
+            options.noMec = { checkbox: { label: {
+                content: '<span class="ui dark orange text"><i class="exclamation triangle icon"></i> Unavailable at the time of submission</span>',
+            } } }
         }
 
         /* BENEFICIARY */

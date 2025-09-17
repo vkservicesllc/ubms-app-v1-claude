@@ -548,6 +548,8 @@ class User extends Person {
                                     record.active = row.active
                                     record.until = row.until
                                 }
+                                if (target === 'carrier') record._carrierId = row._carrierId
+ 
                                 data.applied.push(record)
                             })
                         } else {
@@ -573,6 +575,7 @@ class User extends Person {
                                 const record = { _id, name, route }
                                 if (target === 'companies') record.catId = catId
                                 if (target !== 'teams') record.route = route
+                                if (target === 'carriers') record._carrierId = row._carrierId
 
                                 data.all.push(record)
                             })
