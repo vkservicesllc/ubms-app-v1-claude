@@ -581,6 +581,14 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             } } }
         }
 
+        /* BUSINESS */
+        {
+            if (!application.activeBusiness) checkList.application = checkMark.halfChecked
+            options.inactiveLLC = { checkbox: { label: {
+                content: '<span class="ui dark orange text"><i class="exclamation triangle icon"></i> No currently active LLC</span>',
+            } } }
+        }
+
         /* BENEFICIARY */
         {
             dropdown.relationship = ''

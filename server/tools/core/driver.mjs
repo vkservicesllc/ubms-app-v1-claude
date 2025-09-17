@@ -2192,6 +2192,7 @@ class Application {
                     'apl.state',
                     'apl.marital',
                     'apl.medCard',
+                    'apl.activeBusiness',
                     'psn.dob AS originalDob',
                     'psn.sex AS originalSex',
                     'nms.firstName AS originalFirstName',

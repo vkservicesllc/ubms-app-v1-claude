@@ -13,13 +13,13 @@
         .list .item {
             margin-bottom: 5px;
         }
-        .ui.vertical.tabular.menu .active.item {
-            border-right: none !important;  /* remove right border */
-            margin-right: -1px !important;  /* prevent content shift */
-        }
-            .ui.vertical.tabular.menu + .ui.attached.segment {
-            border-left: none !important;
-        }
+
+        /* Lock border behavior for active vertical tabs */
+.ui.vertical.tabular.menu .item.active {
+  border-right: none !important;
+  margin-right: -1px !important; /* fixes any small gap */
+  box-shadow: none !important;   /* prevent any shadow making it look like a border */
+}
     </style>
 
     <div style="margin-left: 20px;">
@@ -79,7 +79,7 @@
         </div>
 
         <div class="ui grid" style="width: 1080px;">
-            <div class="three wide left attached column">
+            <div class="three wide column" style="margin-right: 0; padding-right: 0;">
                 <div class="ui vertical fluid tabular menu" id="section-menu">
                     <a class="item" data-tab="workflow">Workflow</a>
                     {{#if (eq fileTab true)}}
@@ -101,7 +101,7 @@
                     <a class="item" data-tab="misc">{{idx steps 10}}</a>
                 </div>
             </div>
-            <div class="thirteen wide stretched right attached column">
+            <div class="thirteen wide stretched column" style="margin-left: 0; padding-left: 0;">
                 <div class="ui seamless right attached segment" id="sections" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
@@ -847,7 +847,7 @@
                 history.replaceState({}, '', href)
             }
 
-            $menu.tab()
+            $menu.tab({ transition: 'none' })
         </script>
         <script type="module" src="/modules/drivers/application/profile.mjs"></script>
         <script type="module" src="/modules/drivers/application/legal-status.mjs"></script>

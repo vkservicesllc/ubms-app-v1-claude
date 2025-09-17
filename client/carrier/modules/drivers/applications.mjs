@@ -84,6 +84,9 @@ const table = $('#driver-apl-table').DataTable({
                 if (!row.medCard)
                     data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`
 
+                if (!row.activeBusiness)
+                    data += `<span title="Warning: No Active LLC"><i class="ui orange briefcase icon"></i></span>`
+
                 return data
             },
         },

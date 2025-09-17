@@ -11,7 +11,7 @@ import application from './hub.mjs'
 
     // $inactiveLLC.prop('checked', !activeBusiness)
     if (!activeBusiness) {
-        $('.item[data-tab="business"]').append('<i class="ui dark orange exclamation triangle icon"></i>')
+        $('.item[data-tab="business"]').append('<i class="ui dark orange briefcase icon"></i>')
         // ... more to add
         $inactiveLLC.prop('checked', true)
     } else {
