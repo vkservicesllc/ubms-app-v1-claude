@@ -187,6 +187,7 @@ const table = $('#driver-apl-table').DataTable({
             title: 'Applied on',
             searchable: false,
             orderable: false,
+            type: 'string',
             render(data, type) {
                 return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
@@ -198,6 +199,7 @@ const table = $('#driver-apl-table').DataTable({
             searchable: false,
             orderable: false,
             defaultContent: '<i style="color: pink; font-size: .9em;">...pending</i>',
+            type: 'string',
             render(data, type) {
                 return type == 'display' && data ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },

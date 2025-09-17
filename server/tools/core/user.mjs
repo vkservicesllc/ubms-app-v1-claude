@@ -510,11 +510,12 @@ class User extends Person {
                                     fields: [
                                         { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
                                         { route: [ [ 'busName', 'coType' ] ] },
+                                        'alias',
                                     ],
                                     join: [ 'companyId', 'id', {
                                         table: companyQuery.main.table,
                                         max: 'since',
-                                    } ]
+                                    } ],
                                 },
                             ]
 
@@ -543,6 +544,7 @@ class User extends Person {
                                 const record = { _id, name }
 
                                 if (target !== 'teams') {
+                                    record.alias = row.alias
                                     record.active = row.active
                                     record.until = row.until
                                 }
