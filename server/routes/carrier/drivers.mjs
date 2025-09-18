@@ -587,6 +587,8 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             options.inactiveLLC = { checkbox: { label: {
                 content: '<span class="ui dark orange text"><i class="exclamation triangle icon"></i> No currently active LLC</span>',
             } } }
+            options.llcState = { hidden: { input: { disabled: true } } }
+            dropdown.llcState = ''
         }
 
         /* BENEFICIARY */
@@ -623,9 +625,10 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             }
         }
 
-        for (const state in Address.stateList) {
-            dropdown.dlState += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
-        }
+        for (const prop of ['dlState', 'llcState'])
+            for (const state in Address.stateList) {
+                dropdown[prop] += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
+            }
 
         if (complete) {
             const { unchecked, halfChecked } = checkMark

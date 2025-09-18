@@ -2548,12 +2548,12 @@ export default async (carrier, application, addresses, violations, accidents, em
             x: marginX + padding, y,
             font: font.section, size: size.section, color: color.section,
         })
-        y -= fieldHeight / 1.7
-        drawCheckBox(page5, marginX + padding, y, activeBusiness)
-        page5.drawText('Currently operating an active LLC', {
-            x: marginX + padding + 15, y: y + 1,
-            font: font.label, size: size.label, color: color.label,
-        })
+        // y -= fieldHeight / 1.7
+        // drawCheckBox(page5, marginX + padding, y, activeBusiness)
+        // page5.drawText('Currently operating an active LLC', {
+        //     x: marginX + padding + 15, y: y + 1,
+        //     font: font.label, size: size.label, color: color.label,
+        // })
         vLineX = padding
         y -= fieldHeight / 1.7
         text = "Business Name:"

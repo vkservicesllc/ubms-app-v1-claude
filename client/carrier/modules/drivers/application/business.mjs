@@ -1,21 +1,38 @@
+import { busNameEvent, einEvent } from '/modules/events/company.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import application from './hub.mjs'
+import application, { dropdownEvent } from './hub.mjs'
 
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { activeBusiness } = application
-    const TC = selector.id.checkbox
+    const { activeBusiness, business } = application
+    const TS = selector.id.text, TC = selector.id.checkbox
 
     const $inactiveLLC = $(TC.inactiveLLC)
+    const $fields = $('#llc-fields')
 
-    // $inactiveLLC.prop('checked', !activeBusiness)
+    const $dropdown = {
+        state: [ $('#llc-state-dropdown'), business?.state ],
+    }
+
     if (!activeBusiness) {
         $('.item[data-tab="business"]').append('<i class="ui dark orange briefcase icon"></i>')
-        // ... more to add
+        $fields.hide().find('input').prop('disabled', true)
         $inactiveLLC.prop('checked', true)
     } else {
-        // ... more to add
+        $fields.find('input').prop('disabled', false)
         $inactiveLLC.parent().parent().parent().hide()
     }
+
+    dropdownEvent($dropdown)
+
+    $inactiveLLC.on('change', function() {
+        if (!$(this).prop('checked')) {
+            $(this).parent().parent().parent().hide()
+            $fields.show().find('input').prop('disabled', false)
+        }
+    })
+
+    busNameEvent(TS.llcName, true, { value: business?.busName })
+    einEvent(TS.llcEin, { value: business?.ein })
 })()

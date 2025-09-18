@@ -81,7 +81,7 @@
         <div class="ui grid" style="width: 1080px;">
             <div class="three wide column" style="margin-right: 0; padding-right: 0;">
                 <div class="ui vertical fluid tabular menu" id="section-menu">
-                    <a class="item" data-tab="workflow">Workflow</a>
+                    <a class="active item" data-tab="workflow">Workflow</a>
                     {{#if (eq fileTab true)}}
                     <a class="item" data-tab="files">Files</a>
                     {{/if}}
@@ -96,7 +96,7 @@
                     <a class="disabled item" data-tab="experience">{{idx steps 5}}</a>
                     <a class="disabled item" data-tab="pre-employment">{{idx steps 6}}</a>
                     <a class="disabled item" data-tab="preference">{{idx steps 7}}</a>
-                    <a class="active item" data-tab="business">{{idx steps 8}}</a>
+                    <a class="item" data-tab="business">{{idx steps 8}}</a>
                     <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
                     <a class="item" data-tab="misc">{{idx steps 10}}</a>
                 </div>
@@ -105,7 +105,7 @@
                 <div class="ui seamless right attached segment" id="sections" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
-                    <div class="ui tab" data-tab="workflow">
+                    <div class="ui active tab" data-tab="workflow">
                         <form class="ui loading form" id="assign-form" action="{{actionUrl.workflow}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Checklist</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -732,7 +732,7 @@
                         PREFERENCE FORM
                     </div>
 
-                    <div class="ui active tab" data-tab="business">
+                    <div class="ui tab" data-tab="business">
                         <form class="ui loading form" id="business-form" action="{{actionUrl.business}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Limited Liability Company</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -743,6 +743,33 @@
                                     </div>
                                 </div>
                                 <div class="one wide field"></div>
+                            </div>
+                            <div class="ui compact grid" id="llc-fields" style="margin-top: 5px;">
+                                <div class="six wide field">
+                                    {{{form.llcName.text.label}}}
+                                    <div class="ui right labeled input">
+                                        {{{form.llcName.text.input}}}
+                                        <div class="ui basic label">LLC</div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.llcState.select.label}}}
+                                    <div class="ui fluid selection required dropdown" id="llc-state-dropdown">
+                                        {{{form.llcState.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.llcState}}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.llcEin.text.label}}}
+                                    {{{form.llcEin.text.input}}}
+                                </div>
+                            </div>
+                            <div class="ui divider"></div>
+                            <div class="actions">
+                                <button type="submit" class="ui right floated circular blue button">Save</button>
                             </div>
                         </form>
                     </div>
@@ -832,6 +859,20 @@
                 </div>
             </div>
         </div>
+        <script type="module" src="/modules/drivers/application/profile.mjs"></script>
+        <script type="module" src="/modules/drivers/application/legal-status.mjs"></script>
+        {{#if (eq cdlRole 1)}}
+        <script type="module" src="/modules/drivers/application/position.cdl-role.mjs"></script>
+        {{/if}}
+        {{#if (eq cdlRole 0)}}
+        <script type="module" src="/modules/drivers/application/position.non-cdl-role.mjs"></script>
+        {{/if}}
+        <script type="module" src="/modules/drivers/application/driver-license.mjs"></script>
+        <script type="module" src="/modules/drivers/application/medical-card.mjs"></script>
+        <script type="module" src="/modules/drivers/application/business.mjs"></script>
+        <script type="module" src="/modules/drivers/application/beneficiary.mjs"></script>
+        <script type="module" src="/modules/drivers/application/misc.mjs"></script>
+        <script type="module" src="/modules/drivers/application/workflow.mjs"></script>
         <script>
             const $menu = $('#section-menu.ui.menu .item'), $tabs = $('#sections .ui.tab')
             let href = location.href, query
@@ -849,20 +890,6 @@
 
             $menu.tab({ transition: 'none' })
         </script>
-        <script type="module" src="/modules/drivers/application/profile.mjs"></script>
-        <script type="module" src="/modules/drivers/application/legal-status.mjs"></script>
-        {{#if (eq cdlRole 1)}}
-        <script type="module" src="/modules/drivers/application/position.cdl-role.mjs"></script>
-        {{/if}}
-        {{#if (eq cdlRole 0)}}
-        <script type="module" src="/modules/drivers/application/position.non-cdl-role.mjs"></script>
-        {{/if}}
-        <script type="module" src="/modules/drivers/application/driver-license.mjs"></script>
-        <script type="module" src="/modules/drivers/application/medical-card.mjs"></script>
-        <script type="module" src="/modules/drivers/application/business.mjs"></script>
-        <script type="module" src="/modules/drivers/application/beneficiary.mjs"></script>
-        <script type="module" src="/modules/drivers/application/misc.mjs"></script>
-        <script type="module" src="/modules/drivers/application/workflow.mjs"></script>
 
     </div>
 
