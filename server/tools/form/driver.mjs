@@ -1060,6 +1060,9 @@ class ApplicationForm {
         type: 'checkbox',
         name: 'inactiveLLC',
         label: 'No currently active LLC',
+        validator: {
+            sanitizer: value => value === 'on',
+        },
     })
 
     static llcName = createBusNameForm(appSelector, {

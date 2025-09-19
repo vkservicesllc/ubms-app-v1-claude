@@ -1137,8 +1137,10 @@ class Application {
                         // llcAssistance, proposedName,
                         mmt, type, make, model, year, length,
                     } = data
+console.log(data)
+console.log({ activeLLC, inactiveLLC })
                     let mainData = { activeBusiness: activeLLC } //, businessAssist: llcAssistance }
-                    if (activeLLC === undefined) mainData.activeBusiness = inactiveLLC !== 'on'
+                    // mainData.activeBusiness = inactiveLLC !== 'on'
                     data = { busName, state } // , proposedName }
 
                     if (this.step < 9) {
