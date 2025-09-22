@@ -61,6 +61,7 @@ const selector = {
             emplFmcsr: 'employment-subject-to-fmcsr',
             emplDotDat: 'employment-subject-to-dot-drug-alcohol-test',
             operType: 'operating-type-preference',
+            startPref: 'start-preference',
             activeLLC: 'active-llc',
             llcAssistance: 'llc-assistance',
             prevLivedAbroad: 'prev-lived-abroad',
@@ -276,6 +277,13 @@ const selector = {
             operType: {
                 solo: 'operating-type-solo-preference',
                 team: 'operating-type-team-preference',
+            },
+            startPref: {
+                zero: 'start-preference-zero',
+                one: 'start-preference-one',
+                two: 'start-preference-two',
+                three: 'start-preference-three',
+                four: 'start-preference-four',
             },
             activeLLC: {
                 yes: 'active-llc',

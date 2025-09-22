@@ -81,7 +81,7 @@
         <div class="ui grid" style="width: 1080px;">
             <div class="three wide column" style="margin-right: 0; padding-right: 0;">
                 <div class="ui vertical fluid tabular menu" id="section-menu">
-                    <a class="item" data-tab="workflow">Workflow</a>
+                    <a class="active item" data-tab="workflow">Workflow</a>
                     {{#if (eq fileTab true)}}
                     <a class="item" data-tab="files">Files</a>
                     {{/if}}
@@ -94,8 +94,8 @@
                     <a class="disabled item" data-tab="legal-compliance">{{idx steps 3}}</a>
                     <a class="disabled item" data-tab="safety">{{idx steps 4}}</a>
                     <a class="disabled item" data-tab="experience">{{idx steps 5}}</a>
-                    <a class="disabled item" data-tab="pre-employment">{{idx steps 6}}</a>
-                    <a class="active item" data-tab="preference">{{idx steps 7}}</a>
+                    <a class="disabled item" data-tab="prev-employment">{{idx steps 6}}</a>
+                    <a class="item" data-tab="preference">{{idx steps 7}}</a>
                     <a class="item" data-tab="business">{{idx steps 8}}</a>
                     <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
                     <a class="item" data-tab="misc">{{idx steps 10}}</a>
@@ -105,7 +105,7 @@
                 <div class="ui seamless right attached segment" id="sections" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
-                    <div class="ui tab" data-tab="workflow">
+                    <div class="ui active tab" data-tab="workflow">
                         <form class="ui loading form" id="assign-form" action="{{actionUrl.workflow}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Checklist</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -724,14 +724,14 @@
                         EXPERIENCE FORM
                     </div>
 
-                    <div class="ui tab" data-tab="pre-employment">
+                    <div class="ui tab" data-tab="prev-employment">
                         PRE-EMPLOYMENT FORMS
                     </div>
 
-                    <div class="ui active tab" data-tab="preference">
+                    <div class="ui tab" data-tab="preference">
                         <form class="ui loading form" id="preference-form" action="{{actionUrl.preference}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Operation Type</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid">
                                 <div class="four wide field">
                                     <div class="inline fields">
                                         <div class="field">
@@ -749,11 +749,11 @@
                                     </div>
                                 </div>
                                 {{#if (eq cdlRole 1)}}
-                                <div class="six wide field">
+                                <div class="six wide field cdl-role-partner" style="display: none;">
                                     {{{form.teamName.text.label}}}
                                     {{{form.teamName.text.input}}}
                                 </div>
-                                <div class="four wide field">
+                                <div class="four wide field cdl-role-partner" style="display: none;">
                                     {{{form.teamPhone.text.label}}}
                                     {{{form.teamPhone.text.input}}}
                                 </div>
@@ -762,45 +762,97 @@
                             </div>
                             {{#if (eq cdlRole 1)}}
                             <h5 class="ui blue text header">Hauling Regions</h5>
-                            <div class="inline fields" style="margin-bottom: 20px;">
-                                <div class="ui checkbox" style="margin-right: 15px;">
-                                    {{{form.haulRegion.checkbox.loc.input}}}
-                                    {{{form.haulRegion.checkbox.loc.label}}}
+                            <div class="inline fields" style="margin-bottom: 25px;">
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        {{{form.haulRegion.checkbox.loc.input}}}
+                                        {{{form.haulRegion.checkbox.loc.label}}}
+                                    </div>
                                 </div>
-                                <div class="ui checkbox" style="margin-right: 15px;">
-                                    {{{form.haulRegion.checkbox.reg.input}}}
-                                    {{{form.haulRegion.checkbox.reg.label}}}
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        {{{form.haulRegion.checkbox.reg.input}}}
+                                        {{{form.haulRegion.checkbox.reg.label}}}
+                                    </div>
                                 </div>
-                                <div class="ui checkbox" style="margin-right: 15px;">
-                                    {{{form.haulRegion.checkbox.otr.input}}}
-                                    {{{form.haulRegion.checkbox.otr.label}}}
-                                </div>
-                                <div class="ui checkbox" style="margin-right: 15px;">
-                                    {{{form.haulRegion.checkbox.otrInt.input}}}
-                                    {{{form.haulRegion.checkbox.otrInt.label}}}
-                                </div>
+                                <di class="field">
+                                    <div class="ui checkbox">
+                                        {{{form.haulRegion.checkbox.otr.input}}}
+                                        {{{form.haulRegion.checkbox.otr.label}}}
+                                    </div>
+                                </di>
+                                <di class="field">
+                                    <div class="ui checkbox">
+                                        {{{form.haulRegion.checkbox.otrInt.input}}}
+                                        {{{form.haulRegion.checkbox.otrInt.label}}}
+                                    </div>
+                                </di>
                             </div>
                             <h5 class="ui blue text header">Equipment types</h5>
-                            <div class="inline fields" style="margin-bottom: 20px;">
-                                <div class="ui checkbox" style="margin-right: 15px;">
-                                    {{{form.equipmentType.checkbox.van.input}}}
-                                    {{{form.equipmentType.checkbox.van.label}}}
+                            <div class="inline fields" style="margin-bottom: 25px;">
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        {{{form.equipmentType.checkbox.van.input}}}
+                                        {{{form.equipmentType.checkbox.van.label}}}
+                                    </div>
                                 </div>
-                                <div class="ui checkbox" style="margin-right: 15px;">
-                                    {{{form.equipmentType.checkbox.reefer.input}}}
-                                    {{{form.equipmentType.checkbox.reefer.label}}}
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        {{{form.equipmentType.checkbox.reefer.input}}}
+                                        {{{form.equipmentType.checkbox.reefer.label}}}
+                                    </div>
                                 </div>
-                                <div class="ui checkbox" style="margin-right: 15px;">
-                                    {{{form.equipmentType.checkbox.flat.input}}}
-                                    {{{form.equipmentType.checkbox.flat.label}}}
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        {{{form.equipmentType.checkbox.flat.input}}}
+                                        {{{form.equipmentType.checkbox.flat.label}}}
+                                    </div>
                                 </div>
-                                <div class="ui checkbox" style="margin-right: 15px;">
-                                    {{{form.equipmentType.checkbox.step.input}}}
-                                    {{{form.equipmentType.checkbox.step.label}}}
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        {{{form.equipmentType.checkbox.step.input}}}
+                                        {{{form.equipmentType.checkbox.step.label}}}
+                                    </div>
                                 </div>
                             </div>
                             {{/if}}
-                            <h5 class="ui blue text header">Desired Start Timeframe</h5>
+                            <h5 class="ui blue text header">Desired Start Time</h5>
+                            <div class="inline fields" style="margin-bottom: 25px;">
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        {{{form.startPref.radio.zero.input}}}
+                                        {{{form.startPref.radio.zero.label}}}
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        {{{form.startPref.radio.one.input}}}
+                                        {{{form.startPref.radio.one.label}}}
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        {{{form.startPref.radio.two.input}}}
+                                        {{{form.startPref.radio.two.label}}}
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        {{{form.startPref.radio.three.input}}}
+                                        {{{form.startPref.radio.three.label}}}
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        {{{form.startPref.radio.four.input}}}
+                                        {{{form.startPref.radio.four.label}}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui divider"></div>
+                            <div class="actions">
+                                <button type="submit" class="ui right floated circular blue button">Save</button>
+                            </div>
                         </form>
                     </div>
 
@@ -941,6 +993,10 @@
         {{/if}}
         <script type="module" src="/modules/drivers/application/driver-license.mjs"></script>
         <script type="module" src="/modules/drivers/application/medical-card.mjs"></script>
+        <script type="module" src="/modules/drivers/application/preference.mjs"></script>
+        {{#if (eq cdlRole 1)}}
+        <script type="module" src="/modules/drivers/application/preference.cdl-role.mjs"></script>
+        {{/if}}
         <script type="module" src="/modules/drivers/application/business.mjs"></script>
         <script type="module" src="/modules/drivers/application/beneficiary.mjs"></script>
         <script type="module" src="/modules/drivers/application/misc.mjs"></script>

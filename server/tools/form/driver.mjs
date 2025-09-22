@@ -1026,9 +1026,11 @@ class ApplicationForm {
     static startPref = createForm({
         selector: appSelector,
         target: 'startPref',
-        type: 'select',
+        group: 'startPref',
+        type: 'select/radio',
         name: 'startPref',
         data: Application.startPrefList,
+        keys: ['zero', 'one', 'two', 'three', 'four'],
         emptyOpt,
         required,
         label: 'Preference to start in:',
