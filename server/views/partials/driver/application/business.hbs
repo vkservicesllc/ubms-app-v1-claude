@@ -137,10 +137,10 @@
             <script type="module" src="/modules/application/business.mjs"></script>
             {{#if (eq position 'OO')}}
             {{#if (eq cdlRole 1)}}
-            <script type="module" src="/modules/application/vehicle.truck-load.mjs"></script>
+            <script type="module" src="/modules/application/vehicle.cdl-role.mjs"></script>
             {{/if}}
             {{#if (eq cdlRole 0)}}
-            <script type="module" src="/modules/application/vehicle.expedite.mjs"></script>
+            <script type="module" src="/modules/application/vehicle.non-cdl-role.mjs"></script>
             {{/if}}
             {{/if}}
         </div>
