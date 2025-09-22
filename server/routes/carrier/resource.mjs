@@ -112,12 +112,7 @@ router.post('/driver/application/delete', User.verify, Team.verify, async (req, 
     }
 })
 
-router.post('/driver/application/:formId/edit/:step',
-    User.verify, Team.verify,
-    (req, res, next) => {
-        console.log(req.body)
-        next()
-    },
+router.post('/driver/application/:formId/edit/:step', User.verify, Team.verify,
     dynamicApplicantValidator.applications,
     async (req, res) => {
         try {

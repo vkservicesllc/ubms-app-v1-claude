@@ -255,7 +255,7 @@ export const applicationProgress = async (req, res) => {
             legal: `${recUrl}/legal-compliance`,
             safety: `${recUrl}/safety`,
             experience: `${recUrl}/experience`,
-            preEmployment: `${recUrl}/pre-employment`,
+            prevEmployment: `${recUrl}/prev-employment`,
             preference: `${recUrl}/preference`,
             business: `${recUrl}/business`,
             beneficiary: `${recUrl}/beneficiary`,

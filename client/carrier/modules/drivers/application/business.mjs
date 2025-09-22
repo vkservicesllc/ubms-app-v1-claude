@@ -7,7 +7,7 @@ import application, { dropdownEvent } from './hub.mjs'
 
     const { activeBusiness, business } = application
     const TS = selector.id.text, TC = selector.id.checkbox
-console.log({ activeBusiness, business })
+
     const $inactiveLLC = $(TC.inactiveLLC)
     const $fields = $('#llc-fields')
 

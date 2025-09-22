@@ -1029,7 +1029,7 @@ class Application {
                 }
                 break
 
-            case 'pre-employment':
+            case 'prev-employment':
                 {
                     const {
                         prevEmployed,
@@ -1139,6 +1139,7 @@ class Application {
                         mmt, type, make, model, year, length,
                     } = data
                     if (inactiveLLC) activeLLC = false
+                    else if (activeLLC === undefined) activeLLC = true
 
                     let mainData = { activeBusiness: activeLLC } //, businessAssist: llcAssistance }
                     data = { busName, state } // , proposedName }
