@@ -1132,15 +1132,15 @@ class Application {
 
             case 'business':
                 {
+                    let { activeLLC } = data
                     const {
-                        activeLLC, inactiveLLC, busName, state, ein,
+                        inactiveLLC, busName, state, ein,
                         // llcAssistance, proposedName,
                         mmt, type, make, model, year, length,
                     } = data
-console.log(data)
-console.log({ activeLLC, inactiveLLC })
+                    if (inactiveLLC) activeLLC = false
+
                     let mainData = { activeBusiness: activeLLC } //, businessAssist: llcAssistance }
-                    // mainData.activeBusiness = inactiveLLC !== 'on'
                     data = { busName, state } // , proposedName }
 
                     if (this.step < 9) {
