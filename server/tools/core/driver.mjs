@@ -1173,8 +1173,14 @@ class Application {
                         if ('ein' in data) data.ein = { aes: [ data.ein, einSecret ] }
 
                         if (dataLen(data)) {
-                            const [ result ] = await mysql.execute(query.aplBusinesses.update(data, { aplId: id }))
-                            if (result.affectedRows === 1) modified = true
+                            if (!mainData.activeBusiness) {
+                                const [ result ] = await mysql.execute(query.aplBusinesses.update(data, { aplId: id }))
+                                if (result.affectedRows === 1) modified = true
+                            } else {
+                                data.aplId = id
+                                const [ result ] = await mysql.execute(query.aplBusinesses.insert(data))
+                                if (result.affectedRows === 1) modified = true
+                            }
                         }
                     }
 

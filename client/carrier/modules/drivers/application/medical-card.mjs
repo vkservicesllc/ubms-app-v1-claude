@@ -47,10 +47,8 @@ import application from './hub.mjs'
         $('.item[data-tab="medical-card"]').append('<i class="ui dark orange first aid icon"></i>')
         $fields.hide().find('input').prop('disabled', true)
         $noMec.prop('checked', true)
-    } else {
+    } else
         $fields.find('input').prop('disabled', false)
-        $noMec.parent().parent().parent().hide()
-    }
 
     if (underMeds) {
         $underMeds.prop('checked', true).val('Y')

@@ -19,10 +19,8 @@ import application, { dropdownEvent } from './hub.mjs'
         $('.item[data-tab="business"]').append('<i class="ui dark orange briefcase icon"></i>')
         $fields.hide().find('input').prop('disabled', true)
         $inactiveLLC.prop('checked', true)
-    } else {
+    } else
         $fields.find('input').prop('disabled', false)
-        $inactiveLLC.parent().parent().parent().hide()
-    }
 
     dropdownEvent($dropdown)
 

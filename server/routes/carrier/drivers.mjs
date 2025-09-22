@@ -374,6 +374,15 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.steps[0][3] = 'Position' + (application.position[0] === 'OO' ? ' / Vehicle' : '')
         hbs.steps[6] = 'Pre-Employments'
 
+        const visibileRow = 'margin-top: 5px;'
+        const hiddenRow = 'margin-top: 5px; display: none;'
+        hbs.style = {
+            noMecRow: hiddenRow,
+            mecDetailsRow: visibileRow,
+            inactiveLlcRow: hiddenRow,
+            llcDetailsRow: visibileRow,
+        }
+
         let complete = true
         const checkMark = {
             unchecked: 'red times',
@@ -575,7 +584,11 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         /* MEDICAL CARD */
         {
-            if (!application.medCard) checkList.application = checkMark.halfChecked
+            if (!application.medCard) {
+                checkList.application = checkMark.halfChecked
+                hbs.style.noMecRow = visibileRow
+                hbs.style.mecDetailsRow = hiddenRow
+            }
             options.noMec = { checkbox: { label: {
                 content: '<span class="ui dark orange text"><i class="exclamation triangle icon"></i> Unavailable at the time of submission</span>',
             } } }
@@ -583,7 +596,11 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 
         /* BUSINESS */
         {
-            if (!application.activeBusiness) checkList.application = checkMark.halfChecked
+            if (!application.activeBusiness) {
+                checkList.application = checkMark.halfChecked
+                hbs.style.inactiveLlcRow = visibileRow
+                hbs.style.llcDetailsRow = hiddenRow
+            }
             options.inactiveLLC = { checkbox: { label: {
                 content: '<span class="ui dark orange text"><i class="exclamation triangle icon"></i> No currently active LLC</span>',
             } } }

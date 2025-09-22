@@ -658,7 +658,7 @@
                     <div class="ui tab" data-tab="medical-card">
                         <form class="ui loading form" id="mec-form" action="{{actionUrl.mec}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Medical Certificate</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="{{style.noMecRow}}">
                                 <div class="six wide field">
                                     <div class="ui checkbox">
                                         {{{form.noMec.checkbox.input}}}
@@ -667,7 +667,7 @@
                                 </div>
                                 <div class="one wide field"></div>
                             </div>
-                            <div class="ui compact grid" id="mec-fields" style="margin-top: 5px;">
+                            <div class="ui compact grid" id="mec-fields" style="{{style.mecDetailsRow}}">
                                 <div class="four wide field">
                                     {{{form.mecExp.text.label}}}
                                     <div class="ui calendar" id="mec-expires-calendar">
@@ -735,7 +735,7 @@
                     <div class="ui tab" data-tab="business">
                         <form class="ui loading form" id="business-form" action="{{actionUrl.business}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Limited Liability Company</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="{{style.inactiveLlcRow}}">
                                 <div class="six wide field">
                                     <div class="ui checkbox">
                                         {{{form.inactiveLLC.checkbox.input}}}
@@ -744,7 +744,7 @@
                                 </div>
                                 <div class="one wide field"></div>
                             </div>
-                            <div class="ui compact grid" id="llc-fields" style="margin-top: 5px;">
+                            <div class="ui compact grid" id="llc-fields" style="{{style.llcDetailsRow}}">
                                 <div class="six wide field">
                                     {{{form.llcName.text.label}}}
                                     <div class="ui right labeled input">
