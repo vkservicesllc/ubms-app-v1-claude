@@ -10,6 +10,10 @@
             .help { margin-top: 5px; padding-left: 2px; }
             .toast-box { max-width: 250px !important; }
             .ui.toast {  width: 250px !important; }
+            .apl-side-th {
+                width: 100px;
+                font-weight: bold;
+            }
             th { padding-top: 5px !important; padding-bottom: 5px !important; }
         </style>
         <table class="ui compact table" id="driver-apl-table" style="width: 100%;"></table>
@@ -276,6 +280,44 @@
             <script type="module" src="/modules/drivers/application.new.mjs"></script>
         </div>
         {{/if}}
+        {{#if (eq permissions.modify true)}}
+        <div class="ui tiny modal" id="apl-id-card-modal">
+            <div class="ui header" id="apl-id-card-header">Applicant's Login Info</div>
+            <div class="content">
+                <table class="ui very basic compact table">
+                    <tbody>
+                        <tr>
+                            <td class="apl-side-th"><span class="ui grey text">Applicant:</span></td>
+                            <td>
+                                <strong class="apl-data" id="apl-id-card:fullName" style="font-size: 1.1em;"></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="apl-side-th"><span class="ui grey text">Form ID:</span></td>
+                            <td class="apl-data" id="apl-id-card:formId"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="ui very basic compact table">
+                    <tbody>
+                        <tr>
+                            <td class="apl-side-th"><span class="ui grey text">Phone:</span></td>
+                            <td class="apl-data" id="apl-id-card:phone"></td>
+                        </tr>
+                        <tr>
+                            <td class="apl-side-th"><span class="ui grey text">Date of Birth:</span></td>
+                            <td class="apl-data" id="apl-id-card:dob"></td>
+                        </tr>
+                        <tr>
+                            <td class="apl-side-th"><span class="ui grey text">PIN:</span></td>
+                            <td class="apl-data" id="apl-id-card:pin"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <script type="module" src="/modules/drivers/application.id-card.mjs"></script>
+        </div>
+        {{/if}}
         {{#if (eq permissions.delete true)}}
         <div class="ui tiny modal" id="delete-apl-modal">
             <div class="ui dark red text header" id="delete-apl-header">Delete Application</div>
@@ -285,71 +327,65 @@
                 </form>
                 <h5 class="ui dark red text header" style="margin: 0 0 5px;">Notice</h5>
                 <p class="ui dark red text">The application has not yet been processed and<br/>may be subject to deletion if it becomes redundant</p>
-                <style>
-                    .delete-apl-side-th {
-                        width: 100px;
-                        font-weight: bold;
-                    }
-                </style>
                 <table class="ui very basic compact table">
                     <tbody>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Form ID:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:formId"></td>
+                            <td class="apl-side-th"><span class="ui grey text">Form ID:</span></td>
+                            <td class="apl-data" id="delete-apl:formId"></td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Applied on:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:appliedOn"></td>
+                            <td class="apl-side-th"><span class="ui grey text">Applied on:</span></td>
+                            <td class="apl-data" id="delete-apl:appliedOn"></td>
                         </tr>
                     </tbody>
                 </table>
                 <table class="ui very basic compact table">
                     <tbody>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Full Name:</span></td>
+                            <td class="apl-side-th"><span class="ui grey text">Full Name:</span></td>
                             <td>
-                                <strong class="delete-apl-data" id="delete-apl:fullName" style="font-size: 1.1em;"></strong>
+                                <strong class="apl-data" id="delete-apl:fullName" style="font-size: 1.1em;"></strong>
                             </td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Gender:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:gender"></td>
+                            <td class="apl-side-th"><span class="ui grey text">Gender:</span></td>
+                            <td class="apl-data" id="delete-apl:gender"></td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">DOB:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:dob"></td>
+                            <td class="apl-side-th"><span class="ui grey text">DOB:</span></td>
+                            <td class="apl-data" id="delete-apl:dob"></td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">SSN:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:ssn"></td>
+                            <td class="apl-side-th"><span class="ui grey text">SSN:</span></td>
+                            <td class="apl-data" id="delete-apl:ssn"></td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Phone:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:phone"></td>
+                            <td class="apl-side-th"><span class="ui grey text">Phone:</span></td>
+                            <td class="apl-data" id="delete-apl:phone"></td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Email:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:email"></td>
+                            <td class="apl-side-th"><span class="ui grey text">Email:</span></td>
+                            <td class="apl-data" id="delete-apl:email"></td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Residence:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:residence"></td>
+                            <td class="apl-side-th"><span class="ui grey text">Residence:</span></td>
+                            <td class="apl-data" id="delete-apl:residence"></td>
                         </tr>
                     </tbody>
                 </table>
                 <table class="ui very basic compact table">
                     <tbody>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Company:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:company"></td>
+                            <td class="apl-side-th"><span class="ui grey text">Company:</span></td>
+                            <td class="apl-data" id="delete-apl:company"></td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Position:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:position"></td>
+                            <td class="apl-side-th"><span class="ui grey text">Position:</span></td>
+                            <td class="apl-data" id="delete-apl:position"></td>
                         </tr>
                         <tr>
-                            <td class="delete-apl-side-th"><span class="ui grey text">Assigned to:</span></td>
-                            <td class="delete-apl-data" id="delete-apl:user"></td>
+                            <td class="apl-side-th"><span class="ui grey text">Assigned to:</span></td>
+                            <td class="apl-data" id="delete-apl:user"></td>
                         </tr>
                     </tbody>
                 </table>

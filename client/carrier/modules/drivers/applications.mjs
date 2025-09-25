@@ -264,11 +264,13 @@ const table = $('#driver-apl-table').DataTable({
                     if (access) panel += `<a class="apl-files"><i class="black text folder outline icon"></i></a>`
                     if (comment) panel += `<a class="comment-apl"><i class="purple text comment outline icon"></i></a>`
                 } else {
-                    if (modify)
-                        panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank"><i class="blue text external alternate icon"></i></a>`
+                    if (modify) {
+                        panel += `<a class="apl-id-card" data-id="${_id}" href=""><i class="dark green text id card outline icon"></i></a>`
+                        panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank"><i class="blue external alternate icon"></i></a>`
+                    }
                 }
                 if (remove && ['p', 'c'].includes(condition))
-                    panel += `<a class="delete-apl" data-id="${_id}" href=""><i class="red text trash alternate outline icon"></i></a>`
+                    panel += `<a class="delete-apl" data-id="${_id}" href=""><i class="red trash alternate outline icon"></i></a>`
 
                 return panel
             },

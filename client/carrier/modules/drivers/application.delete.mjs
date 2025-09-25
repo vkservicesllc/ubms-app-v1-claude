@@ -2,8 +2,7 @@ import table from './applications.mjs'
 import escapeHTML from '/modules/tools/utils/html.mjs'
 import { tel as formatTel, ssn as formatSsn } from '/modules/tools/utils/formatter.mjs'
 
-const modalId = '#delete-apl-modal'
-const $modal = $(modalId)
+const $modal = $('#delete-apl-modal')
 const $id = $('#delete-apl-id')
 const $confirm = $('#delete-apl-confirm')
 const $submit = $('#delete-apl-submit')
@@ -13,7 +12,7 @@ $confirm.prop('checked', false)
 
 $modal.modal({
     onHidden() {
-        $('.delete-apl-data').html(null)
+        $('.apl-data').html(null)
         $id.val(null)
         $confirm.prop('checked', false)
         $submit.addClass('disabled')

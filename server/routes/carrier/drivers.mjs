@@ -154,7 +154,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-        const privs = ['create', 'delete']
+        const privs = ['create', 'modify', 'delete']
         hbs.permissions = {}
         privs.forEach(priv => hbs.permissions[priv] = withPrivileges('d:drv/apl', priv, permissions, DS))
 
