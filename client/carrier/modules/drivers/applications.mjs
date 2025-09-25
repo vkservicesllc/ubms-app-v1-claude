@@ -81,10 +81,10 @@ const table = $('#driver-apl-table').DataTable({
                 )
                     data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange id badge outline icon"></i></span>`
 
-                if (!row.medCard)
+                if (row.step > 2 && !row.medCard)
                     data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`
 
-                if (!row.activeBusiness)
+                if (row.step > 8 && !row.activeBusiness)
                     data += `<span title="Warning: No Active LLC"><i class="ui orange briefcase icon"></i></span>`
 
                 return data

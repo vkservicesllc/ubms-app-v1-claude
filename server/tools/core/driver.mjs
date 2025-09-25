@@ -2190,6 +2190,7 @@ class Application {
                     'apl.createdAt', //! will return ISO 8601 UTC timestamp (YYYY-MM-DDTHH:mm:ss.sssZ)
                     'apl.finishedAt',
                     'apl.position',
+                    'apl.step',
                     'apl.firstName',
                     'apl.middleName',
                     'apl.lastName',
