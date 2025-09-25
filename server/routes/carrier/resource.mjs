@@ -60,10 +60,11 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
 
         if (req.body.lastName) next()
         else {
-            const { email, carrierId, selfAssign } = req.body
-            //! No department yet
+            const { email, _teamId, cdlRole, carrierId, selfAssign } = req.body
+            let { team } = res.session
+            if (!team && _teamId) team = await Team.data(res.session, { _id: _teamId })
 
-            await Application.invite(res.session, email, carrierId, selfAssign === 'on')
+            await Application.invite({ ...res.session, team }, email, cdlRole, carrierId, selfAssign === 'on')
 
             res.redirect(url.drivers.applications)
         }
@@ -76,12 +77,13 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
         if (status == 2 && !statusExpiresOn)
             return throwErr.server(res, 'DB Error: Invalid data provided', err)
 
-        const { team } = res.session
+        // const { team } = res.session
 
+        req.body.cdlRole = +req.body.cdlRole
         req.body.selfAssign = !!req.body.selfAssign
 
         //! There is no Department Switch, therefore identifying department by Team Settings
-        req.body.deptId = team.settings.deptId[0]
+        // req.body.deptId = team.settings.deptId[0]
 
         const { error } = await Application.create(res.session, req.body)
         if (error) return throwErr.server(res, error, err)

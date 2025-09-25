@@ -1643,8 +1643,8 @@ class Application {
     static matchIdHash = value => matchHash(value, Application.#algorithm)
 
 
-    static invite = async (session, email, carrierId, selfAssign = false) => {
-        if (!session.team || !session.user) return
+    static invite = async (session, email, cdlRole, carrierId, selfAssign = false) => {
+        if (!session.user) return
 
         const { team, user } = session
         let { from } = senderParams
@@ -1658,13 +1658,14 @@ class Application {
                 phone = carrier.phone
                 url += `/${carrier.route}`
             }
-        } else if (team.profile) {
+        } else if (team?.profile) {
             companyName = team.profile.company
             phone = team.profile.phone
         }
 
         if (companyName) from = `"${companyName}" <${senderParams.email}>`
-        url += `?env=${team._id}`
+        url += `?env=${team ? team._id : 'global'}`
+        url += `&cdl=${cdlRole}`
         if (selfAssign) url += `&rec=${user._simpleId}`
         //! No department yet
 
@@ -1704,7 +1705,8 @@ class Application {
 
         let created = false
 
-        const { branch, siteId, user, team } = session
+        const { branch, siteId, user } = session
+        let { team } = session
         if (!user) session = { ...session, user: true }
         const createdIn = { branch }
         if (siteId) data.siteId = siteId
@@ -1732,6 +1734,10 @@ class Application {
 
         data.driverId = await driver.id()
         data.ssn = { aes: [ ssn, ssnSecret ] }
+
+        if (!team && data._teamId) team = await Team.data(session, { _id: data._teamId })
+        delete data._teamId
+
         if (team) data.teamId = await team.id()
         if (user) {
             data.createdBy = await user.id()
