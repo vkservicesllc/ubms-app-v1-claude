@@ -31,12 +31,13 @@ const table = $('#driver-apl-table').DataTable({
             }
         },
         dataSrc(response) {
-            const { data, actions, aplAddress, unscoped } = response
+            const { data, actions, aplAddress, unscoped, stepLen } = response
 
             table?.column(12).visible(unscoped)
 
             data.forEach(row => {
                 row.actions = actions
+                row.stepLen = stepLen
                 if (row.condition == 'p')
                     row.aplAddress = aplAddress + row.formId
             })
@@ -52,9 +53,10 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             data(row) {
                 let { condition } = row
+                const progress = condition === 'p' ? ` ${Math.round(row.step / row.stepLen * 100)}%` : ''
                 condition = conditions[condition]
 
-                let data = `<span title="${$(condition[0]).text()}"><i class="${condition[1]} icon"></i></span>`
+                let data = `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`
 
                 if (row.dob !== row.originalDob || row.sex !== row.originalSex)
                     data += `<span title="Identity Error: False DOB or Gender"><i class="ui red exclamation triangle icon"></i></span>`
@@ -86,6 +88,15 @@ const table = $('#driver-apl-table').DataTable({
 
                 if (row.step > 8 && !row.activeBusiness)
                     data += `<span title="Warning: No Active LLC"><i class="ui orange briefcase icon"></i></span>`
+
+                if (row.step > 3) {
+                    if (row.criminal)
+                        data += `<span title="Red Flag: Misdemeanor/Felony in the Past"><i class="ui red skull crossbones icon"></i></span>`
+                    if (row.dui)
+                        data += `<span title="Red Flag: DUI/DWI in the Past"><i class="ui red wine bottle icon"></i></span>`
+                    if (row.dotDat)
+                        data += `<span title="Red Flag: Refused/Failed Drug/Alcohol Test in the Past"><i class="ui red prescription bottle icon"></i></span>`
+                }
 
                 return data
             },

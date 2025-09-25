@@ -2202,6 +2202,9 @@ class Application {
                     'apl.state',
                     'apl.marital',
                     'apl.medCard',
+                    'apl.dui',
+                    'apl.criminal',
+                    'apl.dotDat',
                     'apl.activeBusiness',
                     'psn.dob AS originalDob',
                     'psn.sex AS originalSex',
@@ -2396,6 +2399,7 @@ class Application {
                 },
                 aplAddress: `${res.hbs.addrBook.driver}/application/`,
                 unscoped,
+                stepLen: Application.stepList.length,
             })
         } catch (err) {
             throwErr.api.server(res, null, err, false)
