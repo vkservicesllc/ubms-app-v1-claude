@@ -52,8 +52,9 @@ const table = $('#driver-apl-table').DataTable({
             searchable: false,
             orderable: false,
             data(row) {
+                const { step, stepLen } = row
                 let { condition } = row
-                const progress = condition === 'p' ? ` ${Math.round(row.step / row.stepLen * 100)}%` : ''
+                const progress = condition === 'p' ? ` ${step < stepLen ? Math.round(step / stepLen * 100) : 100}%` : ''
                 condition = conditions[condition]
 
                 let data = `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`
@@ -83,13 +84,13 @@ const table = $('#driver-apl-table').DataTable({
                 )
                     data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange id badge outline icon"></i></span>`
 
-                if (row.step > 2 && !row.medCard)
+                if (step > 2 && !row.medCard)
                     data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`
 
-                if (row.step > 8 && !row.activeBusiness)
+                if (step > 8 && !row.activeBusiness)
                     data += `<span title="Warning: No Active LLC"><i class="ui orange briefcase icon"></i></span>`
 
-                if (row.step > 3) {
+                if (step > 3) {
                     if (row.criminal)
                         data += `<span title="Red Flag: Misdemeanor/Felony in the Past"><i class="ui red skull crossbones icon"></i></span>`
                     if (row.dui)

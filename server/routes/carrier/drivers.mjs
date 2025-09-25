@@ -303,15 +303,16 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
     try {
         const aplUrl = '/drivers/applications'
         const { user, team } = res.session
-        const { DS } = user
+        const { DS, unscoped } = user
         const permissions = await user.permissions(res.session)
         if (!withPrivileges('d:drv/apl', 'modify', permissions, DS))
             return res.redirect(aplUrl)
 
         const { formId } = req.params
         const application = await Application.data(res.session, { formId })
-        if (!application || application.condition === 'h' || application._teamId !== team._id)
-            return res.redirect(aplUrl)
+
+        if (!application || application.condition === 'h') return res.redirect(aplUrl)
+        if (team && application._teamId !== team._id) return res.redirect(aplUrl)
 
         const identity = await application.identity(res.session)
 
@@ -410,7 +411,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         ]
         hbs.legalStatusDocDesc = legalDocs[application.legalStatus[0]]
 
-        const driverPositions = team.list.drivers.positions
+        const driverPositions = team?.list?.drivers?.positions || Application.positionList
         dropdown.apprPosition = ''
         dropdown.position = ''
         for (const pos in driverPositions) {
@@ -426,11 +427,12 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             dropdown.condition = ''
             dropdown.experience = ''
 
-            const { applied: teamUsers } = (await team.data(res.session, 'users')).users
+            const teamUsers = team ? (await team.data(res.session, 'users')).users.applied : []
             const allUsers = await User.list(res.session)
             const users = []
             const userId = []
             const _ids = []
+
             for (let user of teamUsers) {
                 user = await User.data(res.session, { _id: user._id })
                 _ids.push(user._id)
@@ -674,6 +676,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         )
         hbs.checkList = checkList
         hbs.complete = complete
+        hbs.unscoped = unscoped
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
