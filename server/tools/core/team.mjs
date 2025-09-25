@@ -350,7 +350,7 @@ class Team {
                         break
                 }
 
-                const [ result ] = await mysql.execute(query[target][action](data))
+                const [ result ] = await mysql.execute(userQuery.jx.teams[action](data))
                 if (result.affectedRows > 0) modified = true
                 else error = `DB Error: Failed to ${action} data`
 
