@@ -281,7 +281,8 @@ class Company {
                             const data = { companyId, [idProp]: id }
                             if (action === 'insert') data.createdBy = createdBy
 
-                            const [ result ] = await mysql.execute(query[qProp][action](data))
+                            // const [ result ] = await mysql.execute(query[qProp][action](data))
+                            const [ result ] = await mysql.execute(userQuery.jx.companies[action](data))
                             if (result.affectedRows === 1) modCt++
                         } catch (err) {
                             error.push('DB Error: idx ' + i)
@@ -908,7 +909,7 @@ class Company {
         ) return { error: 'Invalid Parameters' }
 
         let target = 'names', idProp = 'companyId'
-        if (ein || duns) target = 'companies', idProp = 'id'
+        if (ein || duns) target = 'main', idProp = 'id'
 
         const match = { alias, busName, coType }
         if (ein) match.ein = { aes: [ strip(ein), secret.ein ] }
