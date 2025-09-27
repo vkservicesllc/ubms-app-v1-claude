@@ -253,8 +253,9 @@ class Driver extends Individual {
                 return throwErr.api.auth(res, null, err, false)
 
             const { blacklisted } = req.params
-            const team = await Team.data(res.session, { _id: req.session.team })
-            const teamId = await team.id()
+            let team, teamId = null
+            if (req.session.team) team = await Team.data(res.session, { _id: req.session.team })
+            if (team) teamId = await team.id()
             const { draw, start, length } = req.body
 
             const excludedConditions = ['p']
@@ -288,10 +289,10 @@ class Driver extends Individual {
                 .whereNotIn('apl.condition', excludedConditions)
                 .groupBy('drv.id')
 
-            const totalCountQuery = knex().count('* AS count').from(baseQuery.as('base'))
+            const totalCountQuery = knex.queryBuilder().count('* AS count').from(baseQuery.as('base'))
 
             baseQuery.limit(length).offset(start)
-            const countQuery = knex().count('* AS count').from(baseQuery.as('base'))
+            const countQuery = knex.queryBuilder().count('* AS count').from(baseQuery.as('base'))
 
             const [
                 data,
@@ -2117,13 +2118,14 @@ class Application {
 
         const { teamId } = filter
         const data = { applications: {} }
-        let result, match
+        let match
         if (teamId) match = { teamId }
 
-        [ result ] = await mysql.execute(query.applications.select(['condition', { count: ['condition', 'count'] }], {
+        const [ result ] = await mysql.execute(query.applications.select(['condition', { count: ['condition', 'count'] }], {
             match, group: 'condition',
         }))
         data.applications.statuses = {}
+
         result.forEach(row => {
             const { condition, count } = row
             data.applications.statuses[condition] = count
