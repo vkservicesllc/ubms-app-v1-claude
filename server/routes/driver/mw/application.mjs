@@ -795,7 +795,12 @@ export const applicationProgress = async (req, res) => {
                         values.currentVhlModel = model
                     }
                     if (values.currentVhlYear) values.currentVhlYear = ':' + values.currentVhlYear
+                }
 
+                options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
+                options.currentVhlType.select.input.data = vhlTypeData
+
+                if (!cdlRole) {
                     if (values.currentVhlMMT !== 'other') {
                         options.currentVhlType.select.input.disabled = true
                         options.currentVhlMake.text.input.disabled = true
@@ -807,9 +812,6 @@ export const applicationProgress = async (req, res) => {
 
                     options.currentVhlLen.select.input.data = Application.vhlLengthList.straightBox
                 }
-
-                options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
-                options.currentVhlType.select.input.data = vhlTypeData
             }
 
             if (application.activeBusiness === null) hbs.scrollPoint.business = scrollAttr
