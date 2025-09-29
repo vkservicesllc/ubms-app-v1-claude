@@ -34,7 +34,7 @@ const knex = require('../utils/knex')
 const throwErr = require('../utils/error')
 
 const query = {
-    drivers: new Query(db.carrier, 'drivers'),
+    main: new Query(db.carrier, 'drivers'),
     applications: new Query(db.carrier, 'applications'),
     aplAddresses: new Query(db.carrier, 'application_addresses'),
     aplDLs: new Query(db.carrier, 'application_DLs'),
@@ -74,7 +74,7 @@ class Driver extends Individual {
 
         reSuper(this, { _id, _personId, blackListed }, properties)
 
-        this.id = async () => (await mysql.execute(query.drivers.select('id', {
+        this.id = async () => (await mysql.execute(query.main.select('id', {
             match: { id: Driver.matchIdHash(this._id) },
         })))[0][0].id
 
@@ -177,7 +177,7 @@ class Driver extends Individual {
         const createdIn = { branch }
         driverData.createdIn = JSON.stringify(createdIn)
 
-        const [ result ] = await mysql.execute(query.drivers.insert(driverData))
+        const [ result ] = await mysql.execute(query.main.insert(driverData))
         if (result.affectedRows === 1) created = true
         id = result.insertId
 
@@ -197,7 +197,7 @@ class Driver extends Individual {
             ? []
             : [
                 {
-                    table: query.drivers.table,
+                    table: query.main.table,
                     fields: [
                         Driver.hashId(),
                         Individual.hashId('personId'),
@@ -1895,7 +1895,7 @@ class Application {
                 join: [ 'aplId', 'id' ],
             },
             {
-                table: query.drivers.table,
+                table: query.main.table,
                 fields: Individual.hashId('personId'),
                 join: [ 'id', 'driverId' ],
             },
