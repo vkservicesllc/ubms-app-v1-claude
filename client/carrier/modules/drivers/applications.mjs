@@ -191,7 +191,7 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             render(data, type, row) {
                 data = positions[data]
-                if (row.dlCommercial) data += ' <sup><small><i class="green star outline icon"></i></small></sup>'
+                if (row.dlCommercial) data += ` <sup title="Commercial Driver's License"><small><i class="green star outline icon"></i></small></sup>`
 
                 return data
             },
