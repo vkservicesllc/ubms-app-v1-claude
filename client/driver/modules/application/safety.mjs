@@ -3,6 +3,7 @@ import { dateMask } from '/modules/events/imask.mjs'
 import formId, { check, onInput, onChange, onSubmit } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 
 const accidents = $.ajax('/api/local-source/application?filter=accidents', { method: 'POST', async: false }).responseJSON
 
@@ -135,7 +136,7 @@ function drawAccidentForms() {
     $.ajax(`/api/application/${formId()}/accidents`, {
         method: 'POST',
         success(response) {
-            const { data, error } = response
+            let { data, error } = response
             if (error) return alert(error)
 
             if (!data.length)
@@ -147,7 +148,10 @@ function drawAccidentForms() {
                     injuries: null,
                     fatalities: null,
                 })
-            else data.forEach(row => row.date = moment(row.date).format('MM/DD/YYYY'))
+            else {
+                data = sortArrayByObjectKey(data, 'date', false)
+                data.forEach(row => row.date = moment(row.date).format('MM/DD/YYYY'))
+            }
 
             const count = data.length
             for (let i = 0; i < count; i++) $accList.append(cloneAccForm(i, data))

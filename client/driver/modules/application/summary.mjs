@@ -48,7 +48,7 @@ $.ajax(`/api/application/${formId}/addresses`, {
 $.ajax(`/api/application/${formId}/citations`, {
     method: 'POST',
     success(response) {
-        const { data, error } = response
+        let { data, error } = response
         if (error) return alert(error)
 
         const length = data.length
@@ -56,6 +56,8 @@ $.ajax(`/api/application/${formId}/citations`, {
 
         const violations = $.ajax('/api/local-source/application?filter=violations', { method: 'POST', async: false }).responseJSON
         let html = ''
+
+        data = sortArrayByObjectKey(data, 'citedOn', false)
 
         data.forEach((row, i) => {
             let label = 'Violation'
@@ -93,7 +95,7 @@ $.ajax(`/api/application/${formId}/citations`, {
 $.ajax(`/api/application/${formId}/accidents`, {
     method: 'POST',
     success(response) {
-        const { data, error } = response
+        let { data, error } = response
         if (error) return alert(error)
 
         const length = data.length
@@ -101,6 +103,8 @@ $.ajax(`/api/application/${formId}/accidents`, {
 
         const accidents = $.ajax('/api/local-source/application?filter=accidents', { method: 'POST', async: false }).responseJSON
         let html = ''
+
+        data = sortArrayByObjectKey(data, 'date', false)
 
         data.forEach((row, i) => {
             let label = 'Accident'

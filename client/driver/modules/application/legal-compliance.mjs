@@ -3,6 +3,7 @@ import { dateMask } from '/modules/events/imask.mjs'
 import formId, { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 
 const violations = $.ajax('/api/local-source/application?filter=violations', { method: 'POST', async: false }).responseJSON
 
@@ -141,7 +142,7 @@ function drawCitationForms() {
     $.ajax(`/api/application/${formId()}/citations`, {
         method: 'POST',
         success(response) {
-            const { data, error } = response
+            let { data, error } = response
             if (error) return alert(error)
 
             if (!data.length)
@@ -151,7 +152,10 @@ function drawCitationForms() {
                     citedOn: null,
                     state: null,
                 })
-            else data.forEach(row => row.citedOn = moment(row.citedOn).format('MM/DD/YYYY'))
+            else {
+                data = sortArrayByObjectKey(data, 'citedOn', false)
+                data.forEach(row => row.citedOn = moment(row.citedOn).format('MM/DD/YYYY'))
+            }
 
             const count = data.length
             for (let i = 0; i < count; i++) $citList.append(cloneCitForm(i, data))
