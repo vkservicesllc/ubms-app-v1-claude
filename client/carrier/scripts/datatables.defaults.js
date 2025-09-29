@@ -1,8 +1,12 @@
 $.extend(true, $.fn.dataTable.defaults, {
 
     ajax: {
-        // error() { location.reload() },
         method: 'POST',
+        error(xhr, error, thrown) {
+            if (xhr.status === 401) return location.reload()
+
+            alert(`Error: ${error}; Thrown: ${thrown}`)
+        },
     },
 
     autoWidth: false,
