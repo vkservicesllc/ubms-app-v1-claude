@@ -42,6 +42,7 @@ const query = {
     aplCitations: new Query(db.carrier, 'application_citations'),
     aplAccidents: new Query(db.carrier, 'application_accidents'),
     aplExperiences: new Query(db.carrier, 'application_experiences'),
+    aplCdlSchools: new Query(db.carrier, 'application_cdlschools'),
     aplEmployers: new Query(db.carrier, 'application_preemployments'),
     aplPreferences: new Query(db.carrier, 'application_preferences'),
     aplBusinesses: new Query(db.carrier, 'application_businesses'),
@@ -473,13 +474,17 @@ class Application {
                 lastDate: data.expLastDate,
                 mileage: data.expMileage,
                 hours: data.expHours,
-                cdlSchool: bool(data.cdlSchool),
-                schName: data.schName,
-                schPhone: data.schPhone,
-                schState: data.schState,
-                schEndDate: data.schEndDate,
-                schDuration: data.schDuration,
+                // cdlSchool: bool(data.cdlSchool),
                 // currentVhl: bool(data.currentVhl),
+            }
+        this.cdlSchool = bool(data.cdlSchool)
+        if (this.cdlSchool)
+            this.cdlSchool = {
+                name: data.schName,
+                phone: data.schPhone,
+                state: data.schState,
+                endDate: data.schEndDate,
+                duration: data.schDuration,
             }
 
         this.prevEmployed = bool(data.prevEmployed)
@@ -985,9 +990,10 @@ class Application {
                 break
 
             case 'experience':
-                {
+                {// return console.log(data)
                     const experience = data.noExp !== true
-                    delete data.experience
+                    const { cdlSchool } = data
+                    delete data.noExp
                     let mainData = { experience }
 
                     if (this.step < 6) {
@@ -1007,7 +1013,7 @@ class Application {
 
                     await mysql.execute(query.aplExperiences.delete({ aplId: id }))
 
-                    if (experience) {
+                    if (experience || cdlSchool) {
                         if (data?.vehicles?.misc) {
                             const { misc } = data.vehicles
                             data.vehicles.misc = []
@@ -1880,6 +1886,7 @@ class Application {
                     'citations',
                     'accidents',
                     'experience',
+                    'cdlSchool',
                     'prevEmployed',
                     'activeBusiness',
                     // 'businessAssist',
@@ -1937,12 +1944,23 @@ class Application {
                     [ 'lastDate', 'expLastDate' ],
                     [ 'mileage', 'expMileage' ],
                     [ 'hours', 'expHours' ],
-                    'cdlSchool',
-                    'schName',
-                    'schPhone',
-                    'schState',
-                    'schEndDate',
-                    'schDuration',
+                    // 'cdlSchool',
+                    // 'schName',
+                    // 'schPhone',
+                    // 'schState',
+                    // 'schEndDate',
+                    // 'schDuration',
+                ],
+                join: [ 'aplId', 'id' ],
+            },
+            {
+                table: query.aplCdlSchools.table,
+                fields: [
+                    [ 'name', 'schName' ],
+                    [ 'phone', 'schPhone' ],
+                    [ 'state', 'schState' ],
+                    [ 'endDate', 'schEndDate' ],
+                    [ 'duration', 'schDuration' ],
                 ],
                 join: [ 'aplId', 'id' ],
             },

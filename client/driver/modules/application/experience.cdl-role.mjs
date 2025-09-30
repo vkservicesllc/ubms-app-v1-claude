@@ -53,17 +53,17 @@ inputEvent(noExpId, {
         if (!checked) {
             const selectors = ['input', 'select']
             const $noCmvExp = $(cmvExpId.no)
-            const $noCdlSchool = $(cdlSchoolId.no)
+            // const $noCdlSchool = $(cdlSchoolId.no)
 
             if ($noCmvExp.prop('checked')) {
                 selectors[0] += `:not(${selector.class.checkbox.semiExp})`
                 selectors[0] += `:not(${selector.id.checkbox.tandemExp})`
             }
 
-            if ($noCdlSchool.prop('checked')) {
-                selectors[0] += `:not(${cdlSchoolCls})`
-                selectors[1] += `:not(${cdlSchoolCls})`
-            }
+            // if ($noCdlSchool.prop('checked')) {
+            //     selectors[0] += `:not(${cdlSchoolCls})`
+            //     selectors[1] += `:not(${cdlSchoolCls})`
+            // }
 
             $expDetails.find(selectors.join(', ')).prop('disabled', false)
         } else
