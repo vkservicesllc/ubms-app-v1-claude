@@ -47,8 +47,8 @@ const query = {
     sessions: new Query(db.online, 'sessions'),
     jx: {
         roles: new Query(db.online, 'user_role_map'),
+        teams: new Query(db.online, 'user_team_map'),
         companies: new Query(db.business, 'user_company_map'),
-        teams: new Query(db.business, 'user_team_map'),
     },
 }
 
@@ -362,11 +362,12 @@ class User extends Person {
                 if (!session?.user) return
 
                 const userId = await this.id()
-                let batch = [], data = []
+                let batch = [], data = [], targetDb
 
                 switch (target) {
 
                     case 'teams':
+                        targetDb = db.online
                         batch = [
                             {
                                 table: query.jx.teams.table,
@@ -381,6 +382,7 @@ class User extends Person {
                         break
 
                     case 'carriers':
+                        targetDb = db.business
                         batch = [
                             {
                                 table: query.jx.companies.table,
@@ -397,7 +399,7 @@ class User extends Person {
 
                 }
 
-                const [ result ] = await mysql.execute(Query.select(db.business, batch))
+                const [ result ] = await mysql.execute(Query.select(targetDb, batch))
                 if (result.length) result.forEach(record => data.push(record.id))
 
                 return data
@@ -474,7 +476,7 @@ class User extends Person {
                     const data = {
                         all: [], available: [], applied: [],
                     }
-                    let batch
+                    let batch, targetDb
 
                     switch (target) {
 
@@ -490,6 +492,7 @@ class User extends Person {
                                     join: [ 'id', 'teamId' ],
                                 },
                             ]
+                            targetDb = db.online
                             break
 
                         case 'companies':
@@ -518,6 +521,7 @@ class User extends Person {
                                     } ],
                                 },
                             ]
+                            targetDb = db.business
 
                             if (target === 'carriers') {
                                 batch[1].catId = 'crr'
@@ -555,20 +559,20 @@ class User extends Person {
                         } else {
                             if (target !== 'teams') batch[1].match = { catId }
 
-                            data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                            data.applied = (await mysql.execute(Query.select(targetDb, batch)))[0]
                         }
                     } else {
                         if (sessionUser.status[0] === 'A') {
                             batch[0].match.userId = await sessionUser.id()
 
                             const relIds = []
-                            data.all = (await mysql.execute(Query.select(db.business, batch)))[0]
+                            data.all = (await mysql.execute(Query.select(targetDb, batch)))[0]
                             data.all.map(row => relIds.push(row._id))
                             data.applied = data.applied.filter(row => relIds.includes(row._id))
                         } else {
                             const relationData = await Src.list(session)
 
-                            data.applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                            data.applied = (await mysql.execute(Query.select(targetDb, batch)))[0]
 
                             relationData.map(row => {
                                 const { _id, name, catId, route } = row

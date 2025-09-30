@@ -18,10 +18,8 @@ const throwErr = require('../utils/error')
 
 
 const query = {
-    main: new Query(db.business, 'teams'),
-    profiles: new Query(db.business, 'team_profiles'),
-    // companies: new Query(db.business, 'map_companies_teams'),
-    // users: new Query(db.business, 'map_teams_users'),
+    main: new Query(db.online, 'teams'),
+    profiles: new Query(db.online, 'team_profiles'),
 }
 
 
@@ -211,7 +209,6 @@ class Team {
                                 match: { teamId },
                             },
                             {
-                                db: db.online,
                                 table: userQuery.main.table,
                                 fields: [ User.hashId(), 'firstName', 'lastName', 'alias', 'email' ],
                                 join: [ 'id', 'userId' ],
@@ -219,7 +216,7 @@ class Team {
                             },
                         ]
 
-                        data[type].applied = (await mysql.execute(Query.select(db.business, batch)))[0]
+                        data[type].applied = (await mysql.execute(Query.select(db.online, batch)))[0]
                         data[type].applied.forEach(user => {
                             user = new User(user)
                             user = {
@@ -555,7 +552,7 @@ class Team {
         const batch = await Team.#batch(session, { params })
         if (!batch.length) return
 
-        const data = (await mysql.execute(Query.select(db.business, batch)))[0][0]
+        const data = (await mysql.execute(Query.select(db.online, batch)))[0][0]
 
         return !data ? data : new Team(data)
     }
@@ -565,7 +562,7 @@ class Team {
         const batch = await Team.#batch(session, { filter })
         if (!batch.length) return []
 
-        const list = (await mysql.execute(Query.select(db.business, batch)))[0]
+        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
         list.forEach((data, i, arr) => arr[i] = new Team(data, true))
 
         return list
