@@ -14,12 +14,12 @@
             margin-bottom: 5px;
         }
 
-        /* Lock border behavior for active vertical tabs */
-.ui.vertical.tabular.menu .item.active {
-  border-right: none !important;
-  margin-right: -1px !important; /* fixes any small gap */
-  box-shadow: none !important;   /* prevent any shadow making it look like a border */
-}
+        /* Lock border behavior for active vertical tabs ??? */
+        .ui.vertical.tabular.menu .item.active {
+            border-right: none !important;
+            margin-right: -1px !important; /* fixes any small gap */
+            box-shadow: none !important;   /* prevent any shadow making it look like a border */
+        }
     </style>
 
     <div style="margin-left: 20px;">
@@ -729,10 +729,148 @@
                         <form class="ui loading form" id="experience-form" action="{{actionUrl.experience}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Driving Experience</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
-                                <div class="four wide field">
+                                <div class="five wide field">
                                     <div class="ui checkbox">
                                         {{{form.noExp.checkbox.input}}}
                                         {{{form.noExp.checkbox.label}}}
+                                    </div>
+                                </div>
+                                {{#if (
+                                    and
+                                        (eq cdlRole 1)
+                                        (eq cdl true)
+                                )}}
+                                <div class="six wide field experience-details" id="cmv-experience">
+                                    <div class="inline fields">
+                                        <label>CMV Experience</label>
+                                        <div class="field">
+                                            <div class="ui radio checkbox">
+                                                {{{form.cmvExp.radio.yes.input}}}
+                                                {{{form.cmvExp.radio.yes.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui radio checkbox">
+                                                {{{form.cmvExp.radio.no.input}}}
+                                                {{{form.cmvExp.radio.no.label}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{else}}
+                                <div class="one wide field"></div>
+                                {{/if}}
+                            </div>
+                            <div class="ui compact grid experience-details" style="margin-top: 5px;">
+                                <div class="four wide field">
+                                    <div class="grouped fields">
+                                        {{{form.straightExp.checkbox.label}}}
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.straightExp.checkbox.box.input}}}
+                                                {{{form.straightExp.checkbox.box.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.straightExp.checkbox.cube.input}}}
+                                                {{{form.straightExp.checkbox.cube.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.straightExp.checkbox.dump.input}}}
+                                                {{{form.straightExp.checkbox.dump.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.straightExp.checkbox.rollback.input}}}
+                                                {{{form.straightExp.checkbox.rollback.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.straightExp.checkbox.pickup.input}}}
+                                                {{{form.straightExp.checkbox.pickup.label}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{#if (
+                                    and
+                                        (eq cdlRole 1)
+                                        (eq cdl true)
+                                )}}
+                                <div class="four wide field cmv-experience">
+                                    <div class="grouped fields">
+                                        {{{form.semiExp.checkbox.label}}}
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.semiExp.checkbox.van.input}}}
+                                                {{{form.semiExp.checkbox.van.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.semiExp.checkbox.reefer.input}}}
+                                                {{{form.semiExp.checkbox.reefer.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.semiExp.checkbox.flat.input}}}
+                                                {{{form.semiExp.checkbox.flat.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.semiExp.checkbox.step.input}}}
+                                                {{{form.semiExp.checkbox.step.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.semiExp.checkbox.tanker.input}}}
+                                                {{{form.semiExp.checkbox.tanker.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.semiExp.checkbox.lowboy.input}}}
+                                                {{{form.semiExp.checkbox.lowboy.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.semiExp.checkbox.carhaul.input}}}
+                                                {{{form.semiExp.checkbox.carhaul.label}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{/if}}
+                                <div class="four wide field">
+                                    <div class="grouped fields">
+                                        <label>Misc</label>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                {{{form.vanExp.checkbox.input}}}
+                                                {{{form.vanExp.checkbox.label}}}
+                                            </div>
+                                        </div>
+                                        {{#if (
+                                            and
+                                                (eq cdlRole 1)
+                                                (eq cdl true)
+                                        )}}
+                                        <div class="field cmv-experience">
+                                            <div class="ui checkbox">
+                                                {{{form.tandemExp.checkbox.input}}}
+                                                {{{form.tandemExp.checkbox.label}}}
+                                            </div>
+                                        </div>
+                                        {{/if}}
                                     </div>
                                 </div>
                             </div>
@@ -1008,6 +1146,10 @@
         {{/if}}
         <script type="module" src="/modules/drivers/application/driver-license.mjs"></script>
         <script type="module" src="/modules/drivers/application/medical-card.mjs"></script>
+        <script type="module" src="/modules/drivers/application/experience.mjs"></script>
+        {{#if (eq cdlRole 1)}}
+        <script type="module" src="/modules/drivers/application/experience.cdl-role.mjs"></script>
+        {{/if}}
         <script type="module" src="/modules/drivers/application/preference.mjs"></script>
         {{#if (eq cdlRole 1)}}
         <script type="module" src="/modules/drivers/application/preference.cdl-role.mjs"></script>

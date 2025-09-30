@@ -285,7 +285,7 @@ class Driver extends Individual {
                     'drv.personId'
                 )
                 .leftJoin(`${db.carrier}.applications AS apl`, 'apl.driverId', 'drv.id')
-                .where('apl.teamId', teamId)
+                // .where('apl.teamId', teamId)
                 .whereNotIn('apl.condition', excludedConditions)
                 .groupBy('drv.id')
 
@@ -293,6 +293,8 @@ class Driver extends Individual {
 
             baseQuery.limit(length).offset(start)
             const countQuery = knex.queryBuilder().count('* AS count').from(baseQuery.as('base'))
+
+            if (teamId) baseQuery.where('apl.teamId', teamId)
 
             const [
                 data,
