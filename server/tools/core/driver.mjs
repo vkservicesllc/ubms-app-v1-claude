@@ -2040,7 +2040,7 @@ class Application {
                 join: [ 'id', 'userId' ],
             },
             {
-                db: db.business,
+                db: db.online,
                 table: teamQuery.main.table,
                 fields: [ [ 'name', 'teamName' ] ],
                 join: [ 'id', 'teamId' ],
@@ -2185,7 +2185,7 @@ class Application {
                         'cmp.id'
                     )
                     .leftJoin(knex.raw(`${db.online}.users AS usr ON apl.userId = usr.id`))
-                    .leftJoin(knex.raw(`${db.business}.teams AS env ON apl.teamId = env.id`))
+                    .leftJoin(knex.raw(`${db.online}.teams AS env ON apl.teamId = env.id`))
             }
 
             const baseQuery = knex(`${db.carrier}.applications AS apl`)
