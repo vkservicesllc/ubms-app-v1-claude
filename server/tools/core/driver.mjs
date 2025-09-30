@@ -990,7 +990,7 @@ class Application {
                 break
 
             case 'experience':
-                { //return console.log(data)
+                {
                     const experience = data.noExp !== true
                     const { cdlSchool, name, phone, state, endDate, duration } = data
                     delete data.noExp
@@ -1173,7 +1173,7 @@ class Application {
                         mainData.step = 9
 
                         data.aplId = id
-                        if (ein) data.ein = { aes: [ data.ein, einSecret ] }
+                        if (ein) data.ein = { aes: [ ein, einSecret ] }
 
                         const [ result ] = await mysql.execute(query.aplBusinesses.insert(data))
                         if (result.affectedRows === 1) modified = true
