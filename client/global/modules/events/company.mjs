@@ -2,7 +2,7 @@
 import { inputEvent, selectEvent } from './form.mjs'
 import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/utils/string.mjs'
-import strip from '../tools/utils/formatter.mjs'
+import strip, { ein as formatEin } from '../tools/utils/formatter.mjs'
 
 const categories = $.ajax('/api/public/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 
@@ -126,7 +126,7 @@ export const einEvent = (id, options = {}) => {
         onKeydown,
         onKeyup,
         onCompleted,
-        value,
+        value: formatEin(strip(value)),
     })
 }
 
