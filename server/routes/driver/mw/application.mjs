@@ -563,22 +563,19 @@ export const applicationProgress = async (req, res) => {
             let disabled = false
 
             options.noExp = { checkbox: { input: { ...checkProps.input }, label: { ...checkProps.label } } }
+            options.cmvExp = { radio: {} }
+            options.cdlSchool = { radio: {} }
+
             if (application.experience === false) {
                 options.noExp.checkbox.input.checked = true
                 hbs.expDetailsDisplay = ' style="display: none;"'
                 disabled = true
             }
 
-            options.cmvExp = { radio: {} }
-            options.cdlSchool = { radio: {} }
             for (const prop of ['yes', 'no']) {
                 options.cmvExp.radio[prop] = { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } }
-                options.cdlSchool.radio[prop] = { input: { ...checkProps.input, disabled }, label: { ...checkProps.label } }
+                options.cdlSchool.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
-            options.cmvExp.radio.yes.input.checked = application?.experience?.cmv === true
-            options.cmvExp.radio.no.input.checked = application?.experience?.cmv === false
-            options.cdlSchool.radio.yes.input.checked = application?.experience?.cdlSchool === true
-            options.cdlSchool.radio.no.input.checked = application?.experience?.cdlSchool === false
 
             options.straightExp = { checkbox: { label: { class: labelClassRequired } } }
             options.semiExp = { checkbox: { label: { class: labelClassRequired } } }
@@ -606,6 +603,12 @@ export const applicationProgress = async (req, res) => {
                 label: { ...checkProps.label },
             }}
 
+            options.cmvExp.radio.yes.input.checked = application?.experience?.cmv === true
+            options.cmvExp.radio.no.input.checked = application?.experience?.cmv === false
+
+            options.cdlSchool.radio.yes.input.checked = !!application.cdlSchool
+            options.cdlSchool.radio.no.input.checked = application.cdlSchool === false
+
             const values = {
                 expStartDate: application?.experience?.firstDate
                     ? moment(application.experience.firstDate).format('MM/DD/YYYY')
@@ -614,15 +617,15 @@ export const applicationProgress = async (req, res) => {
                     ? moment(application.experience.lastDate).format('MM/DD/YYYY')
                     : null,
                 expMileage: application?.experience?.mileage?.toLocaleString(),
-                schName: application?.experience?.schName,
-                schPhone: application?.experience?.schPhone
-                    ? formatTel(application.experience.schPhone)
+                schName: application?.cdlSchool?.name,
+                schPhone: application?.cdlSchool?.phone
+                    ? formatTel(application.cdlSchool.phone)
                     : null,
-                schState: application?.experience?.schState,
-                schEndDate: application?.experience?.schEndDate
-                    ? moment(application.experience.schEndDate).format('MM/DD/YYYY')
+                schState: application?.cdlSchool?.state,
+                schEndDate: application?.cdlSchool?.endDate
+                    ? moment(application.cdlSchool.endDate).format('MM/DD/YYYY')
                     : null,
-                schDuration: application?.experience?.schDuration,
+                schDuration: application?.cdlSchool?.duration,
             }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, disabled, tabs: 8 })
@@ -650,7 +653,7 @@ export const applicationProgress = async (req, res) => {
                 }
             }
 
-            if (application?.experience?.cdlSchool === true) hbs.schoolDisplay = ''
+            if (!!application.cdlSchool) hbs.schoolDisplay = ''
             if (application?.experience?.cmv === false) hbs.cmvExpDisplay = ' style="display: none;"'
 
             if (application.experience === null) hbs.scrollPoint.experience = scrollAttr
@@ -1034,15 +1037,14 @@ export const applicationSummary = async (req, res) => {
                 application.experience.hours.forEach(hours => total += hours)
                 hbs.application.experience.hourList = application.experience.hours.join(' + ') + ' = ' + total
             }
-
-            if (application.experience.cdlSchool === true) {
-                hbs.application.experience.schPhone = formatTel(application.experience.schPhone)
-                hbs.application.experience.schState = Address.stateList[application.experience.schState]
-                hbs.application.experience.schDuration = Application.schoolDurationList[application.experience.schDuration]
-                hbs.application.experience.schEndDate = moment(application.experience.schEndDate).format('ll')
-            } else hbs.application.experience.schName = 'Never attended'
-
         }
+
+        if (application.cdlSchool !== false) {
+            hbs.application.cdlSchool.phone = formatTel(application.cdlSchool.phone)
+            hbs.application.cdlSchool.state = Address.stateList[application.cdlSchool.state]
+            hbs.application.cdlSchool.duration = Application.schoolDurationList[application.cdlSchool.duration]
+            hbs.application.cdlSchool.endDate = moment(application.cdlSchool.endDate).format('ll')
+        } else hbs.application.cdlSchool = { name: 'Never attended' }
 
         hbs.application.preference.operType = { s: 'Solo', t: 'Team' }[application.preference.operType]
         if (application.preference.teamPhone) hbs.application.preference.teamPhone = formatTel(application.preference.teamPhone)

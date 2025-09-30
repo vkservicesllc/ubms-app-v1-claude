@@ -366,32 +366,30 @@
                                     {{/if}}
                                     {{/if}}
                                 </tbody>
-                                {{#if (ne application.experience.cdlSchool null)}}
                                 <tbody class="table-group-divider">
                                     <tr>
                                         <th class="text-secondary">CDL School:</th>
-                                        <td>{{application.experience.schName}}</td>
+                                        <td>{{application.cdlSchool.name}}</td>
                                     </tr>
-                                    {{#if (eq application.experience.cdlSchool true)}}
+                                    {{#if (hv application.cdlSchool.phone)}}
                                     <tr>
                                         <th class="text-secondary">Phone:</th>
-                                        <td>{{application.experience.schPhone}}</td>
+                                        <td>{{application.cdlSchool.phone}}</td>
                                     </tr>
                                     <tr>
                                         <th class="text-secondary">State:</th>
-                                        <td>{{application.experience.schState}}</td>
+                                        <td>{{application.cdlSchool.state}}</td>
                                     </tr>
                                     <tr>
                                         <th class="text-secondary">Duration:</th>
-                                        <td>{{application.experience.schDuration}}</td>
+                                        <td>{{application.cdlSchool.duration}}</td>
                                     </tr>
                                     <tr>
                                         <th class="text-secondary">Graduated on:</th>
-                                        <td>{{application.experience.schEndDate}}</td>
+                                        <td>{{application.cdlSchool.endDate}}</td>
                                     </tr>
                                     {{/if}}
                                 </tbody>
-                                {{/if}}
                             </table>
                         </div>
                     </div>

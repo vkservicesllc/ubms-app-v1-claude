@@ -990,11 +990,18 @@ class Application {
                 break
 
             case 'experience':
-                {// return console.log(data)
+                { //return console.log(data)
                     const experience = data.noExp !== true
-                    const { cdlSchool } = data
+                    const { cdlSchool, name, phone, state, endDate, duration } = data
                     delete data.noExp
-                    let mainData = { experience }
+                    delete data.cdlSchool
+                    delete data.name
+                    delete data.phone
+                    delete data.state
+                    delete data.endDate
+                    delete data.duration
+
+                    let mainData = { experience, cdlSchool }
 
                     if (this.step < 6) {
                         mainData = processData(mainData)
@@ -1012,8 +1019,9 @@ class Application {
                     }
 
                     await mysql.execute(query.aplExperiences.delete({ aplId: id }))
+                    await mysql.execute(query.aplCdlSchools.delete({ aplId: id }))
 
-                    if (experience || cdlSchool) {
+                    if (experience) {
                         if (data?.vehicles?.misc) {
                             const { misc } = data.vehicles
                             data.vehicles.misc = []
@@ -1033,6 +1041,13 @@ class Application {
                         data.aplId = id
 
                         const [ result ] = await mysql.execute(query.aplExperiences.insert(data))
+                        if (result.affectedRows === 1) modified = true
+                    }
+
+                    if (cdlSchool) {
+                        const data = { aplId: id, name, phone, state, endDate, duration }
+
+                        const [ result ] = await mysql.execute(query.aplCdlSchools.insert(data))
                         if (result.affectedRows === 1) modified = true
                     }
                 }
