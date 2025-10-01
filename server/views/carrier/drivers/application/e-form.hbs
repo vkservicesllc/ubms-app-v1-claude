@@ -1,6 +1,9 @@
 {{> carrier/nav.alpha}}
 
     <style>
+        .ui.loading.form > * {
+            visibility: hidden;
+        }
         .ui.header:not(.first) {
             margin-top: 10px !important;
         }
@@ -189,10 +192,12 @@
                             <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="four wide field">
                                     {{{form.condition.select.label}}}
-                                    <div class="ui fluid selection dropdown" id="condition-dropdown">
+                                    <div class="ui fluid clearable selection dropdown" id="condition-dropdown">
                                         {{{form.condition.hidden.input}}}
                                         <i class="dropdown icon"></i>
-                                        <div class="default text">New Application</div>
+                                        <div class="default text" style="white-space: nowrap;">
+                                            <i class="clock icon" style="margin-right: 5px;"></i>New Application
+                                        </div>
                                         <div class="menu">{{{dropdown.condition}}}
                                         </div>
                                     </div>
