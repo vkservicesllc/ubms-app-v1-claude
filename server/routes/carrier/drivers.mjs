@@ -606,6 +606,17 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                 const option = Application.schoolDurationList[key]
                 dropdown.schDuration += `\n${t}<div class="item" data-value="${key}">${option}</div>`
             }
+
+            const appliedOn = moment(application.appliedOn)
+            let j = 8
+            for (let i = 0; i < 7; i++) {
+                const content = `${appliedOn.clone().subtract(--j, 'days').format('dddd/MMM D, YYYY')}`.replace('/', '<br/>')
+                options[`expHours${i + 1}`] = {
+                    text: {
+                        label: { content },
+                    },
+                }
+            }
         }
 
         /* PREFERENCE */
