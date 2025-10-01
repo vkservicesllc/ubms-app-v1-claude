@@ -726,6 +726,11 @@
                     </div>
 
                     <div class="ui active tab" data-tab="experience">
+                        <style>
+                            .vhl-experience-label {
+                                width: 130px;
+                            }
+                        </style>
                         <form class="ui loading form" id="experience-form" action="{{actionUrl.experience}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Driving Experience</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -742,7 +747,7 @@
                                 )}}
                                 <div class="six wide field experience-details" id="cmv-experience">
                                     <div class="inline fields">
-                                        <label>CMV Experience</label>
+                                        {{{form.cmvExp.radio.label}}}
                                         <div class="field">
                                             <div class="ui radio checkbox">
                                                 {{{form.cmvExp.radio.yes.input}}}
@@ -762,9 +767,11 @@
                                 {{/if}}
                             </div>
                             <div class="ui compact grid experience-details" style="margin-top: 5px;">
-                                <div class="four wide field">
-                                    <div class="grouped fields">
-                                        {{{form.straightExp.checkbox.label}}}
+                                {{!-- <div class="four wide field"> --}}
+                                    <div class="inline fields">
+                                        <div class="field vhl-experience-label">
+                                            {{{form.straightExp.checkbox.label}}}
+                                        </div>
                                         <div class="field">
                                             <div class="ui checkbox">
                                                 {{{form.straightExp.checkbox.box.input}}}
@@ -796,15 +803,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                {{!-- </div> --}}
                                 {{#if (
                                     and
                                         (eq cdlRole 1)
                                         (eq cdl true)
                                 )}}
-                                <div class="four wide field cmv-experience">
-                                    <div class="grouped fields">
-                                        {{{form.semiExp.checkbox.label}}}
+                                {{!-- <div class="four wide field cmv-experience"> --}}
+                                    <div class="inline fields">
+                                        <div class="field vhl-experience-label">
+                                            {{{form.semiExp.checkbox.label}}}
+                                        </div>
                                         <div class="field">
                                             <div class="ui checkbox">
                                                 {{{form.semiExp.checkbox.van.input}}}
@@ -848,11 +857,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                {{!-- </div> --}}
                                 {{/if}}
-                                <div class="four wide field">
-                                    <div class="grouped fields">
-                                        <label>Misc</label>
+                                {{!-- <div class="four wide field"> --}}
+                                    <div class="inline fields">
+                                        <div class="field vhl-experience-label">
+                                            <label>Misc</label>
+                                        </div>
                                         <div class="field">
                                             <div class="ui checkbox">
                                                 {{{form.vanExp.checkbox.input}}}
@@ -872,7 +883,69 @@
                                         </div>
                                         {{/if}}
                                     </div>
+                                {{!-- </div> --}}
+                            </div>
+                            {{#if (
+                                and
+                                    (eq cdlRole 1)
+                                    (eq cdl true)
+                            )}}
+                            <h5 class="ui blue text header">CDL School</h5>
+                            <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="five wide field">
+                                    <div class="ui checkbox">
+                                        {{{form.cdlSchool2.checkbox.input}}}
+                                        {{{form.cdlSchool2.checkbox.label}}}
+                                    </div>
                                 </div>
+                                <div class="one wide field"></div>
+                            </div>
+                            <div class="ui compact grid cdl-school" style="margin-top: 5px;">
+                                <div class="five wide field">
+                                    {{{form.schName.text.label}}}
+                                    {{{form.schName.text.input}}}
+                                </div>
+                                <div class="one wide field"></div>
+                            </div>
+                            <div class="ui compact grid cdl-school" style="margin-top: 5px;">
+                                <div class="four wide field">
+                                    {{{form.schPhone.text.label}}}
+                                    {{{form.schPhone.text.input}}}
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.schState.select.label}}}
+                                    <div class="ui fluid selection required dropdown" id="school-state-dropdown">
+                                        {{{form.schState.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.schState}}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.schEndDate.text.label}}}
+                                    <div class="ui calendar" id="school-end-date-calendar">
+                                        <div class="ui fluid input left icon">
+                                            {{{form.schEndDate.text.input}}}
+                                            <i class="calendar icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.schDuration.select.label}}}
+                                    <div class="ui fluid selection required dropdown" id="school-duration-dropdown">
+                                        {{{form.schDuration.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.schDuration}}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/if}}
+                            <div class="ui divider"></div>
+                            <div class="actions">
+                                <button type="submit" class="ui right floated circular blue button">Save</button>
                             </div>
                         </form>
                     </div>

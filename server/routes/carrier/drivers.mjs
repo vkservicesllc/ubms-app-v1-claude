@@ -267,7 +267,8 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
             return res.redirect(aplUrl)
 
         const application = await Application.data(res.session, { formId })
-        if (!application || application.condition !== 'c' || application._teamId !== team._id)
+
+        if (!application || application.condition !== 'c' || (team && application._teamId !== team._id))
             return res.redirect(aplUrl)
 
         let carrier
@@ -597,6 +598,16 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             } } }
         }
 
+        /* EXPERIENCE */
+        {
+            dropdown.schState = ''
+            dropdown.schDuration = ''
+            for (const key in Application.schoolDurationList) {
+                const option = Application.schoolDurationList[key]
+                dropdown.schDuration += `\n${t}<div class="item" data-value="${key}">${option}</div>`
+            }
+        }
+
         /* PREFERENCE */
         {
             // Desired Start Timeframe
@@ -650,7 +661,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             }
         }
 
-        for (const prop of ['dlState', 'llcState'])
+        for (const prop of ['dlState', 'schState', 'llcState'])
             for (const state in Address.stateList) {
                 dropdown[prop] += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
             }

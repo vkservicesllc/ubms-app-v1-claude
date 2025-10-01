@@ -327,6 +327,7 @@ const selector = {
             },
             tandemExp: 'tandem-experience',
             vanExp: 'cargo-van-experience',
+            cdlSchool: 'attended-cdl-school',
             haulRegion: {
                 loc: 'local-hauling-region-preference',
                 reg: 'regional-hauling-region-preference',

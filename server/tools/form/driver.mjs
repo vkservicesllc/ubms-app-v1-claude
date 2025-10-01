@@ -767,8 +767,16 @@ class ApplicationForm {
         target: 'cdlSchool',
         name: 'cdlSchool',
         required,
-        label: 'Attended CDL School',
+        label: 'Completed CDL school',
     }, true)
+
+    static cdlSchool2 = createForm({
+        selector: appSelector,
+        target: 'cdlSchool',
+        type: 'checkbox',
+        name: 'cdlSchool',
+        label: 'Completed CDL training program',
+    })
 
     static schName = createForm({
         selector: appSelector,
@@ -778,7 +786,7 @@ class ApplicationForm {
         maxLength: 25,
         required,
         disabled,
-        label: 'Name',
+        label: 'School Name',
     })
 
     static schPhone = createPhoneForm({
