@@ -3,6 +3,7 @@ const path = require('path')
 
 const fontPath = {
     hurricane: path.join(__dirname, '../fonts/hurricane/regular.ttf'),
+    mrsSaintDelafield: path.join(__dirname, '../fonts/mrs-saint-delafield/regular.ttf'),
     sansation: path.join(__dirname, '../fonts/sansation/regular.ttf'),
     sansationBold: path.join(__dirname, '../fonts/sansation/bold.ttf'),
 }
@@ -18,6 +19,7 @@ export default {
 
 export class CustomFonts {
     static Hurricane = fs.readFileSync(fontPath.hurricane)
+    static MrsSaintDelafield = fs.readFileSync(fontPath.mrsSaintDelafield)
     static Sansation = fs.readFileSync(fontPath.sansation)
     static SansationBold = fs.readFileSync(fontPath.sansationBold)
 }

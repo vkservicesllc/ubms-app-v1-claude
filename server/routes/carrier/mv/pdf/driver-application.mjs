@@ -44,7 +44,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         label: await pdfDoc.embedFont(StandardFonts.Helvetica),
         value: await pdfDoc.embedFont(StandardFonts.Helvetica),
-        signature: await pdfDoc.embedFont(CustomFonts.Hurricane),
+        signature: await pdfDoc.embedFont(CustomFonts.MrsSaintDelafield),
     }
     const size = {
         carrier: 15,
