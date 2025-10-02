@@ -84,7 +84,7 @@
         <div class="ui grid" style="width: 1080px;">
             <div class="three wide column" style="margin-right: 0; padding-right: 0;">
                 <div class="ui vertical fluid tabular menu" id="section-menu">
-                    <a class="item" data-tab="workflow">Workflow</a>
+                    <a class="active item" data-tab="workflow">Workflow</a>
                     {{#if (eq fileTab true)}}
                     <a class="item" data-tab="files">Files</a>
                     {{/if}}
@@ -96,7 +96,7 @@
                     <a class="item" data-tab="medical-card">{{idx steps 2}}</a>
                     <a class="disabled item" data-tab="legal-compliance">{{idx steps 3}}</a>
                     <a class="disabled item" data-tab="safety">{{idx steps 4}}</a>
-                    <a class="active item" data-tab="experience">{{idx steps 5}}</a>
+                    <a class="item" data-tab="experience">{{idx steps 5}}</a>
                     <a class="disabled item" data-tab="prev-employment">{{idx steps 6}}</a>
                     <a class="item" data-tab="preference">{{idx steps 7}}</a>
                     <a class="item" data-tab="business">{{idx steps 8}}</a>
@@ -108,7 +108,7 @@
                 <div class="ui seamless right attached segment" id="sections" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
-                    <div class="ui tab" data-tab="workflow">
+                    <div class="ui active tab" data-tab="workflow">
                         <form class="ui loading form" id="assign-form" action="{{actionUrl.workflow}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Checklist</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
@@ -162,7 +162,7 @@
                             </div>
                             <h5 class="ui blue text first header">Assignment</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
-                                <div class="six wide field">
+                                <div class="six wide disabled field">
                                     {{{form.user.select.label}}}
                                     <div class="ui fluid selection dropdown" id="user-dropdown">
                                         {{{form.user.hidden.input}}}
@@ -183,8 +183,14 @@
                                     </div>
                                 </div>
                                 {{#if (eq unscoped true)}}
-                                <div class="four wide field">
-                                    Team Selector
+                                <div class="four wide disabled field">
+                                    <label>Team Selector</label>
+                                    <div class="ui fluid selection dropdown" id="team-dropdown">
+                                        <input type="hidden" />
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu"></div>
+                                    </div>
                                 </div>
                                 {{/if}}
                             </div>
@@ -730,7 +736,7 @@
                         SAFETY FORMS
                     </div>
 
-                    <div class="ui active tab" data-tab="experience">
+                    <div class="ui tab" data-tab="experience">
                         <style>
                             .vhl-experience-label {
                                 width: 130px;
