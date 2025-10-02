@@ -299,7 +299,7 @@ export const createYesNoForm = (props = {}, optional = false, type = 'radio') =>
     ...props,
     keys: ['yes', 'no'],
     validator: {
-        sanitizer: value => value ? value === 'Y' || value === '1' : undefined,
+        sanitizer: value => value === 'Y' || value === '1' || value === 'on',
         optional,
     },
 })

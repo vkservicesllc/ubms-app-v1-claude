@@ -992,7 +992,9 @@ class Application {
             case 'experience':
                 {
                     const experience = data.noExp !== true
-                    const { cdlSchool, name, phone, state, endDate, duration } = data
+                    let { cdlSchool } = data
+                    const { name, phone, state, endDate, duration } = data
+                    if (cdlSchool === undefined) cdlSchool = false
                     delete data.noExp
                     delete data.cdlSchool
                     delete data.name
