@@ -9,7 +9,7 @@ import application, { dropdownEvent } from './hub.mjs'
 
     const { dl } = application
     const TS = selector.id.text, TC = selector.id.checkbox
-
+console.log(dl)
     const $commercial = $(TC.dlCommercial)
     const $endorsement = $(TS.dlEndrs)
     const $denied = $(TC.dlDenied), $revoked = $(TC.dlRevoked)

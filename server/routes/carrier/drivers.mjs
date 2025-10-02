@@ -413,9 +413,10 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         ]
         hbs.legalStatusDocDesc = legalDocs[application.legalStatus[0]]
 
-        const driverPositions = team?.list?.drivers?.positions || Application.positionList
+        const driverPositions = Driver.positionList
         dropdown.apprPosition = ''
         dropdown.position = ''
+
         for (const pos in driverPositions) {
             const option = `\n${t}<div class="item" data-value="${pos}">${driverPositions[pos]}</div>`
             dropdown.apprPosition += option
@@ -576,7 +577,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
                 dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
         }
 
-        /* DRIVER's CARD */
+        /* DRIVER's LICENSE */
         {
             if (cdlRole) options.dlCommercial2 = { checkbox: { input: { disabled: true } } }
             dropdown.dlState = ''
