@@ -10,8 +10,21 @@ import application, { dropdownEvent } from './hub.mjs'
 
     const { experience, cdlSchool } = application
     const TS = selector.id.text, RS = selector.id.radio, CS = selector.id.checkbox
+    const expHoursCls = selector.class.text.expHours
     const $cmvExp = $('#cmv-experience'), $cmvExpVhl = $('.cmv-experience')
     const $cdlSchool = $('.cdl-school')
+    const $totalHr = $('#total-weekly-experience-hours')
+
+    const calculateHours = () => {
+        let total = 0
+
+        $(expHoursCls).each(function() {
+            const hours = +$(this).val() || 0
+            total += hours
+        })
+
+        $totalHr.val(total)
+    }
 
     const $dropdown = {
         schState: [ $('#school-state-dropdown'), cdlSchool?.state ],
@@ -46,6 +59,48 @@ import application, { dropdownEvent } from './hub.mjs'
         },
     })
 
+    inputEvent(TS.expMileage, {
+        onFocus(miles, $miles) {
+            if (miles) $miles.val(Number(miles.replace(/,/g, '')))
+        },
+        onInput(miles, $mileage) {
+            miles = miles.replace(/\D/g, '')
+    
+            $mileage.val(miles)
+        },
+        onBlur(miles, $mileage) {
+            miles = (+miles).toLocaleString()
+    
+            $mileage.val(miles)
+        },
+        value: experience?.mileage ?(+experience.mileage).toLocaleString() : null,
+    })
+
+    let totalHr = 0
+    if (experience?.hours)
+        experience.hours.forEach((hr, i) => {
+            $(`[name="hours[${i}]"]`).val(hr)
+            totalHr += hr
+        })
+    $totalHr.val(totalHr)
+
+    inputEvent(expHoursCls, {
+        onInput(hours, $hours) {
+            hours = +hours
+            if (hours < 0) hours = 0
+    
+            $hours.val(hours)
+            calculateHours()
+        },
+        onBlur(hours, $hours) {
+            if (!hours) hours = '0'
+            if (hours > 12) hours = 12
+    
+            $hours.val(hours)
+            calculateHours()
+        },
+    })
+
     $(CS.cdlSchool).on('change', function() {
         let action = 'show', disabled = false
         if (!$(this).prop('checked')) {
@@ -69,6 +124,7 @@ import application, { dropdownEvent } from './hub.mjs'
         maxDate: moment().toDate(),
     })
     if (cdlSchool?.endDate)
-        $calendar.schEndDate.calendar('set date', new Date(moment(cdlSchool.endDate).toDate()))
+        $calendar.schEndDate
+            .calendar('set date', new Date(moment(cdlSchool.endDate).toDate()))
 
 })()
