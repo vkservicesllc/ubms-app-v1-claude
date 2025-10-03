@@ -94,8 +94,8 @@
                     <a class="disabled item" data-tab="residence">{{idx (idx steps 0) 1}}</a>
                     <a class="item" data-tab="driver-license">{{idx steps 1}}</a>
                     <a class="item" data-tab="medical-card">{{idx steps 2}}</a>
-                    <a class="disabled item" data-tab="legal-compliance">{{idx steps 3}}</a>
-                    <a class="disabled item" data-tab="safety">{{idx steps 4}}</a>
+                    <a class="item" data-tab="legal-compliance">{{idx steps 3}}</a>
+                    <a class="item" data-tab="safety">{{idx steps 4}}</a>
                     <a class="item" data-tab="experience">{{idx steps 5}}</a>
                     <a class="disabled item" data-tab="prev-employment">{{idx steps 6}}</a>
                     <a class="item" data-tab="preference">{{idx steps 7}}</a>
@@ -729,11 +729,62 @@
                     </div>
 
                     <div class="ui tab" data-tab="legal-compliance">
-                        LEGAL COMPLIANCE FORMS
+                        <form class="ui loading form" id="legal-form" action="{{actionUrl.legal}}" method="POST" autocomplete="off">
+                            <h5 class="ui blue text first header">Legal Compliance</h5>
+                            <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="inline fields" id="dui-details">
+                                    <div class="field">
+                                        <div class="ui checkbox">
+                                            {{{form.dui2.checkbox.input}}}
+                                            {{{form.dui2.checkbox.label}}}
+                                        </div>
+                                    </div>
+                                    <div class="field" style="display: none;">
+                                        <div class="ui radio checkbox">
+                                            {{{form.duiInDecade.radio.yes.input}}}
+                                            {{{form.duiInDecade.radio.yes.label}}}
+                                        </div>
+                                    </div>
+                                    <div class="field" style="display: none;">
+                                        <div class="ui radio checkbox">
+                                            {{{form.duiInDecade.radio.no.input}}}
+                                            {{{form.duiInDecade.radio.no.label}}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="seven wide field">
+                                    <div class="ui checkbox">
+                                        {{{form.criminal2.checkbox.input}}}
+                                        {{{form.criminal2.checkbox.label}}}
+                                    </div>
+                                </div>
+                                <div class="nine wide field" style="display: none;">
+                                    {{{form.criminalExpl.text.label}}}
+                                    {{{form.criminalExpl.text.input}}}
+                                </div>
+                                <div class="one wide field"></div>
+                            </div>
+                            <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="eight wide field">
+                                    <div class="ui checkbox">
+                                        {{{form.dotDat2.checkbox.input}}}
+                                        {{{form.dotDat2.checkbox.label}}}
+                                    </div>
+                                </div>
+                                <div class="one wide field"></div>
+                            </div>
+                            <h5 class="ui blue text header">Citations</h5>
+                            <span class="ui red text">Coming soon...</span>
+                        </form>
                     </div>
 
                     <div class="ui tab" data-tab="safety">
-                        SAFETY FORMS
+                        <form class="ui loading form" id="safety-form" action="{{actionUrl.safety}}" method="POST" autocomplete="off">
+                            <h5 class="ui blue text first header">Accidents</h5>
+                            <span class="ui red text">Coming soon...</span>
+                        </form>
                     </div>
 
                     <div class="ui tab" data-tab="experience">

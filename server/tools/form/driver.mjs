@@ -513,6 +513,12 @@ class ApplicationForm {
         target: 'dui',
         name: 'dui',
     })
+    static dui2 = createForm({
+        selector: appSelector,
+        type: 'checkbox',
+        name: 'dui',
+        label: 'Previously charged with DUI/DWI',
+    })
 
     static duiInDecade = createYesNoForm({
         selector: appSelector,
@@ -528,6 +534,12 @@ class ApplicationForm {
         selector: appSelector,
         target: 'criminal',
         name: 'criminal',
+    })
+    static criminal2 = createForm({
+        selector: appSelector,
+        type: 'checkbox',
+        name: 'criminal',
+        label: 'Previously charged with misdemeanor/felony',
     })
 
     static criminalExpl = createForm({
@@ -545,6 +557,12 @@ class ApplicationForm {
         selector: appSelector,
         target: 'dotDat',
         name: 'dotDat',
+    })
+    static dotDat2 = createForm({
+        selector: appSelector,
+        type: 'checkbox',
+        name: 'dotDat',
+        label: 'Previously refused/failed to take DOT drug/alcohol test',
     })
 
     static citations = createYesNoForm({

@@ -599,6 +599,11 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             } } }
         }
 
+        /* LEGAL COMPLIANCE */
+        {
+            options.criminalExpl = { text: { input: { rows: 2 }, label: { content: 'Details' } } }
+        }
+
         /* EXPERIENCE */
         {
             dropdown.schState = ''

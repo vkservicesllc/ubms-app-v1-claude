@@ -235,8 +235,8 @@ const selector = {
                 no: 'had-no-criminal',
             },
             dotDat: {
-                yes: 'dot-drug-alcohol-test-compliant',
-                no: 'dot-drug-alcohol-test-non-compliant',
+                yes: 'dot-drug-alcohol-test-non-compliant',
+                no: 'dot-drug-alcohol-test-compliant',
             },
             citations: {
                 yes: 'had-citations',
@@ -308,6 +308,9 @@ const selector = {
             dlRevoked: 'driver-license-revoked',
             noMec: 'no-med-card',
             underMeds: 'meds-taken',
+            dui: 'had-dui',
+            criminal: 'had-criminal',
+            dotDat: 'dot-drug-alcohol-test-non-compliant',
             noExp: 'no-experience',
             straightExp: {
                 box: 'box-truck-experience',

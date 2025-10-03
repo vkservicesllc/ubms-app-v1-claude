@@ -1508,7 +1508,7 @@ class Application {
     static stepList = [
         [ 'Profile', 'Residence', 'Legal Status', 'Position' ],
         "Driver's License",
-        'Medical Card',
+        'Medical Certificate',
         'Legal Compliance',
         'Safety',
         'Driving Experience',
