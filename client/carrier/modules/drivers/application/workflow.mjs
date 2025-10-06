@@ -10,6 +10,7 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
     const $dropdown = {
         user: $('#user-dropdown'),
         carrier: $('#carrier-dropdown'),
+        team: $('#team-dropdown'),
         condition: $('#condition-dropdown'),
         experience: $('#experience-dropdown'),
         apprPosition: $('#approved-position-dropdown'),

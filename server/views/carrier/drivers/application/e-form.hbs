@@ -183,13 +183,14 @@
                                     </div>
                                 </div>
                                 {{#if (eq unscoped true)}}
-                                <div class="four wide disabled field">
-                                    <label>Team Selector</label>
+                                <div class="four wide field">
+                                    {{{form.team.select.label}}}
                                     <div class="ui fluid selection dropdown" id="team-dropdown">
-                                        <input type="hidden" />
+                                        {{{form.team.hidden.input}}}
                                         <i class="dropdown icon"></i>
                                         <div class="default text"></div>
-                                        <div class="menu"></div>
+                                        <div class="menu">{{{dropdown.team}}}
+                                        </div>
                                     </div>
                                 </div>
                                 {{/if}}

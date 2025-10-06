@@ -210,6 +210,17 @@ class ApplicationForm {
         },
     })
 
+    static team = createForm({
+        selector: appSelector,
+        target: 'team',
+        type: 'select',
+        name: '_teamId',
+        label: 'Team',
+        validator: {
+            sanitizer: value => value || null,
+        },
+    })
+
     static pin = createForm({
         selector: appSelector,
         target: 'pin',

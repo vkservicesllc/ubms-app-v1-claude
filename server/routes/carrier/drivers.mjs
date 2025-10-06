@@ -427,6 +427,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         {
             dropdown.user = ''
             dropdown.carrier = ''
+            dropdown.team = ''
             dropdown.condition = ''
             dropdown.experience = ''
 
@@ -473,6 +474,17 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             })
             if (application._carrierId)
                 options.carrier = { hidden: { input: { value: application._carrierId } } }
+
+            if (unscoped) {
+                const teams = await Team.list(res.session)
+                for (const team of teams) {
+                    const { _id, name } = team
+                    dropdown.team += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+                }
+                if (application._teamId)
+                    options.team = { hidden: { input: { value: application._teamId } } }
+            }
+
 
             const conditions = {
                 a: '<span class="ui dark green text"><i class="thumbs up icon"></i> Approved</span>',

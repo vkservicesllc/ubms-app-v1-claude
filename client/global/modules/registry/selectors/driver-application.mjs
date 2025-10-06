@@ -158,6 +158,7 @@ const selector = {
         select: {
             user: 'user',
             carrier: 'carrier',
+            team: 'team',
             condition: 'condition',
             experience: 'experience',
             apprPosition: 'approved-position',
