@@ -8,11 +8,11 @@ import application, { dropdownEvent } from './hub.mjs'
     if (!application || !Object.keys(application).length) return
 
     const { dl } = application
-    const TS = selector.id.text, TC = selector.id.checkbox
+    const TS = selector.id.text, CS = selector.id.checkbox
 
-    const $commercial = $(TC.dlCommercial)
+    const $commercial = $(CS.dlCommercial)
     const $endorsement = $(TS.dlEndrs)
-    const $denied = $(TC.dlDenied), $revoked = $(TC.dlRevoked)
+    const $denied = $(CS.dlDenied), $revoked = $(CS.dlRevoked)
     const $deniedExpl = $(TS.dlDeniedExpl), $revokedExpl = $(TS.dlRevokedExpl)
 
     const $dropdown = {

@@ -739,13 +739,13 @@
                                             {{{form.dui2.checkbox.label}}}
                                         </div>
                                     </div>
-                                    <div class="field" style="display: none;">
+                                    <div class="field dui-in-decade" style="display: none;">
                                         <div class="ui radio checkbox">
                                             {{{form.duiInDecade.radio.yes.input}}}
                                             {{{form.duiInDecade.radio.yes.label}}}
                                         </div>
                                     </div>
-                                    <div class="field" style="display: none;">
+                                    <div class="field dui-in-decade" style="display: none;">
                                         <div class="ui radio checkbox">
                                             {{{form.duiInDecade.radio.no.input}}}
                                             {{{form.duiInDecade.radio.no.label}}}
@@ -760,7 +760,7 @@
                                         {{{form.criminal2.checkbox.label}}}
                                     </div>
                                 </div>
-                                <div class="nine wide field" style="display: none;">
+                                <div class="nine wide field" id="criminal-details" style="display: none;">
                                     {{{form.criminalExpl.text.label}}}
                                     {{{form.criminalExpl.text.input}}}
                                 </div>
@@ -1338,6 +1338,7 @@
         {{/if}}
         <script type="module" src="/modules/drivers/application/driver-license.mjs"></script>
         <script type="module" src="/modules/drivers/application/medical-card.mjs"></script>
+        <script type="module" src="/modules/drivers/application/legal-compliance.mjs"></script>
         <script type="module" src="/modules/drivers/application/experience.mjs"></script>
         {{#if (eq cdlRole 1)}}
         <script type="module" src="/modules/drivers/application/experience.cdl-role.mjs"></script>

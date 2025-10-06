@@ -515,6 +515,7 @@ class ApplicationForm {
     })
     static dui2 = createForm({
         selector: appSelector,
+        target: 'dui',
         type: 'checkbox',
         name: 'dui',
         label: 'Previously charged with DUI/DWI',
@@ -537,6 +538,7 @@ class ApplicationForm {
     })
     static criminal2 = createForm({
         selector: appSelector,
+        target: 'criminal',
         type: 'checkbox',
         name: 'criminal',
         label: 'Previously charged with misdemeanor/felony',
@@ -560,6 +562,7 @@ class ApplicationForm {
     })
     static dotDat2 = createForm({
         selector: appSelector,
+        target: 'dotDat',
         type: 'checkbox',
         name: 'dotDat',
         label: 'Previously refused/failed to take DOT drug/alcohol test',
