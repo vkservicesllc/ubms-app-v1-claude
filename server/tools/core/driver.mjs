@@ -2132,7 +2132,7 @@ class Application {
         switch (target) {
 
             case 'prev-employers':
-                match = { finishedAt: { null: false }, teamId }
+                match = { condition: 'c', teamId }
                 batch = [
                     {
                         table: query.aplEmployers.table,
