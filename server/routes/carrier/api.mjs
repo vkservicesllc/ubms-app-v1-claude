@@ -126,6 +126,15 @@ router.post('/drivers/applications/filters', User.verify, Team.verify, async (re
 })
 
 
+router.post('/drivers/applications/prev-employers', User.verify, Team.verify, async (req, res) => {
+    try {
+        res.send({ data: await Application.relatedData(res.session, 'prev-employers') })
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
 router.post('/drivers/applications/:archived?', User.verify, Team.verify, Application.dtList)
 
 

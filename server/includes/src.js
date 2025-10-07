@@ -116,6 +116,14 @@ module.exports = {
             ],
         },
 
+        'datatables.fomantic-ui.row-group': {
+            css: '<link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.5.0/css/rowGroup.semanticui.css" />',
+            js: [
+                '<script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.js"></script>',
+                '<script src="https://cdn.datatables.net/rowgroup/1.5.0/js/rowGroup.semanticui.js"></script>',
+            ],
+        },
+
         'datatables.date-time': {
             js: '<script src="https://cdn.datatables.net/datetime/1.5.3/js/dataTables.dateTime.min.js"></script>',
         },

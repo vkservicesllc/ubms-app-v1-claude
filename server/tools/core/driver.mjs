@@ -2120,6 +2120,44 @@ class Application {
     //     return companies
     // }
 
+    static relatedData = async (session, target) => {
+        if (!session.user) return
+
+        const { team } = session
+        let teamId
+        if (team) teamId = await team.id(session)
+
+        let match, batch
+
+        switch (target) {
+
+            case 'prev-employers':
+                match = { finishedAt: { null: false }, teamId }
+                batch = [
+                    {
+                        table: query.aplEmployers.table,
+                        fields: [
+                            'employer', 'phone', 'address1', 'address2', 'city', 'state', 'zip',
+                            'startedOn', 'fmcsr', 'dotDat', 'leftOn',
+                        ],
+                    },
+                    {
+                        table: query.applications.table,
+                        fields: [
+                            'formId', 'firstName', 'middleName', 'lastName', 'suffix', 'finishedAt',
+                        ],
+                        match,
+                        //? sort: { finishedAt: { desc: true } },
+                        join: [ 'id', 'aplId' ],
+                    },
+                ]
+                break
+
+        }
+//! console.log(Query.select(db.carrier, batch))
+        return (await mysql.execute(Query.select(db.carrier, batch)))[0]
+    }
+
 
     static users = async (session, filter = {}) => {
         if (!session?.user || !session?.team) return

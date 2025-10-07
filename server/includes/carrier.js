@@ -112,7 +112,7 @@ module.exports = {
     },
 
     'drivers.previous-employments': {
-        external: [ ...online.external ],
+        external: [ ...online.external, 'jquery.masked-input', 'datatables.fomantic-ui', 'datatables.fomantic-ui.row-group', 'moment' ],
         internal: {
             css: [ ...online.internal.css ],
             js: [ ...online.internal.js ],

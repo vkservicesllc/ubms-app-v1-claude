@@ -20,8 +20,8 @@ export default {
                 privileges: [ 0, 1, 2, 3, 4 ],
             },
             'emp': {
-                name: 'Pre-Employments',
-                privileges: [ 0, 2, 3, 4, 5 ], //?
+                name: 'Previous Employments',
+                privileges: [ 0, 3 ],
             },
             'agr': {
                 name: 'Pay Agreements',
