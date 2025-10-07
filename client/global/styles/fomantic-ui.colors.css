@@ -25,7 +25,8 @@
 .text.dark.grey { color: #5A5A5A !important; }
 
 .field:not(.disabled) .required.dropdown:has(.default.text),
-.fields:not(.disabled) .required.dropdown:has(.default.text) {
+.fields:not(.disabled) .required.dropdown:has(.default.text),
+.field:not(.disabled) textarea:required:placeholder-shown {
     background-color: #fff6f6 !important; /* light pink */
     border-color: #e0b4b4 !important;
 }
