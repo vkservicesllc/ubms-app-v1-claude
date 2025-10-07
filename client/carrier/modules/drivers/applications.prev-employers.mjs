@@ -13,7 +13,9 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             const { data } = response
 
             data.forEach(row => {
-                row.group = new Person(row).fullName() + ` <small>(${row.formId})</small>`
+                row.group = `<small style="font-family: monospace;">${row.formId}:</small> `
+                    + new Person(row).fullName()
+                    + ` <small>(${moment(row.finishedAt).format('ll')})</small>`
             })
 
             return data
@@ -24,6 +26,13 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
         {
             data: 'group',
             visible: false,
+        },
+        {
+            data: null,
+            orderable: false,
+            render() {
+                return ''
+            },
         },
         {
             data: 'employer',
@@ -55,6 +64,8 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             },
         },
     ],
+
+    columnDefs: [],
 
     language: {
         emptyTable: '<span class="ui red text">No applicants have previous employers at this time</span>',
