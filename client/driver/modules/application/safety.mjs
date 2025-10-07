@@ -94,6 +94,7 @@ onSubmit($form, $help, $submit, $card)
 function cloneAccForm(i = 0, data = null) {
     const tsi = `${Date.now()}-${i}`
     const $clone = $accForm.clone().attr('id', `accident-form-${tsi}`)
+    const otherTypeCls = TS.accOtherType.replace('.', '')
 
     $clone.find('input, select').each(function() {
         const $field = $(this)
@@ -108,8 +109,7 @@ function cloneAccForm(i = 0, data = null) {
 
         const name = $field.attr('name').replace('[]', '')
         $field.attr('name', name + `[${i}]`)
-        if ($field.hasClass(TS.accOtherType.replace('.', '')))
-            $field.prop('required', false)
+        if ($field.hasClass(otherTypeCls)) $field.prop('required', false)
 
         if (data) {
             const type = $field.attr('type')
@@ -122,6 +122,7 @@ function cloneAccForm(i = 0, data = null) {
                         $field.prop('checked', true)
                 } else {
                     $field.val(value).addClass('is-valid')
+                    if ($field.hasClass(otherTypeCls)) $field.prop('required', true)
 
                     if ($field.is('select')) $field.find('option[value=""]').remove()
                     if ($field.parent().is(':hidden')) $field.parent().show()

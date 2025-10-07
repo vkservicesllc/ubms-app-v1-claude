@@ -103,6 +103,7 @@ onSubmit($form, $help, $submit, $card)
 function cloneCitForm(i = 0, data = null) {
     const tsi = `${Date.now()}-${i}`
     const $clone = $citForm.clone().attr('id', `citation-form-${tsi}`)
+    const otherReasonCls = TS.citOtherReason.replace('.', '')
 
     $clone.find('input, select').each(function() {
         const $field = $(this)
@@ -116,15 +117,14 @@ function cloneCitForm(i = 0, data = null) {
         }
 
         const name = $field.attr('name').replace('[]', '')
-        if ($field.hasClass(TS.citOtherReason.replace('.', '')))
-            $field.prop('required', false)
-        // $field.prop('disabled', false)
+        if ($field.hasClass(otherReasonCls)) $field.prop('required', false)
 
         if (data) {
             const value = data[i][name]
 
             if (value) {
                 $field.val(value).addClass('is-valid')
+                if ($field.hasClass(otherReasonCls)) $field.prop('required', true)
 
                 if ($field.is('select'))
                     $field.find('option[value=""]').remove()
