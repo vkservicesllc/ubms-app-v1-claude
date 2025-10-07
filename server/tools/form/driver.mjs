@@ -594,8 +594,8 @@ class ApplicationForm {
         name: 'violation[]',
         data: Application.violationList,
         emptyOpt,
-        required: true,
-        disabled,
+        required,
+        // disabled,
         label: 'Violation',
     })
 
@@ -605,8 +605,8 @@ class ApplicationForm {
         group: 'citOtherReason',
         name: 'other[]',
         maxLength: 25,
-        // required,
-        disabled,
+        required,
+        // disabled,
         label: 'Provide the reason',
     })
 
@@ -616,7 +616,7 @@ class ApplicationForm {
         group: 'citDate',
         name: 'citedOn[]',
         required,
-        disabled,
+        // disabled,
         label: 'Cited on',
     })
 
@@ -626,7 +626,7 @@ class ApplicationForm {
         group: 'citState',
         name: 'state[]',
         required,
-        disabled,
+        // disabled,
         label: 'State',
     })
 
@@ -649,7 +649,7 @@ class ApplicationForm {
         data: Application.accidentList,
         emptyOpt,
         required: true,
-        disabled,
+        // disabled,
         label: 'Collision Type',
     })
 
@@ -659,8 +659,8 @@ class ApplicationForm {
         group: 'accOtherType',
         name: 'other[]',
         maxLength: 25,
-        // required,
-        disabled,
+        required,
+        // disabled,
         label: 'Other Type',
     })
 
@@ -670,7 +670,7 @@ class ApplicationForm {
         group: 'accDate',
         name: 'date[]',
         required,
-        disabled,
+        // disabled,
         label: 'Date',
     })
 
@@ -680,7 +680,7 @@ class ApplicationForm {
         group: 'accState',
         name: 'state[]',
         required,
-        disabled,
+        // disabled,
         label: 'State',
     })
 
@@ -689,7 +689,7 @@ class ApplicationForm {
         target: 'accInjuries',
         name: 'injuries[]',
         required,
-        disabled,
+        // disabled,
         label: 'Injuries',
     })
 
@@ -698,7 +698,7 @@ class ApplicationForm {
         target: 'accFatalities',
         name: 'fatalities[]',
         required,
-        disabled,
+        // disabled,
         label: 'Fatalities',
     })
 

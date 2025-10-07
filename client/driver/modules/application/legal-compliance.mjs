@@ -116,8 +116,9 @@ function cloneCitForm(i = 0, data = null) {
         }
 
         const name = $field.attr('name').replace('[]', '')
-
-        $field.prop('disabled', false)
+        if ($field.hasClass(TS.citOtherReason.replace('.', '')))
+            $field.prop('required', false)
+        // $field.prop('disabled', false)
 
         if (data) {
             const value = data[i][name]

@@ -107,7 +107,9 @@ function cloneAccForm(i = 0, data = null) {
         }
 
         const name = $field.attr('name').replace('[]', '')
-        $field.prop('disabled', false).attr('name', name + `[${i}]`)
+        $field.attr('name', name + `[${i}]`)
+        if ($field.hasClass(TS.accOtherType.replace('.', '')))
+            $field.prop('required', false)
 
         if (data) {
             const type = $field.attr('type')
