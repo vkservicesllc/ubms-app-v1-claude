@@ -2244,6 +2244,8 @@ class Application {
                     'apl.dui',
                     'apl.criminal',
                     'apl.dotDat',
+                    'apl.citations',
+                    'apl.accidents',
                     'apl.activeBusiness',
                     'psn.dob AS originalDob',
                     'psn.sex AS originalSex',

@@ -87,9 +87,6 @@ const table = $('#driver-apl-table').DataTable({
                 if (step > 2 && !row.medCard)
                     data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`
 
-                if (step > 8 && !row.activeBusiness)
-                    data += `<span title="Warning: No Active LLC"><i class="ui orange briefcase icon"></i></span>`
-
                 if (step > 3) {
                     if (row.criminal)
                         data += `<span title="Red Flag: Misdemeanor/Felony in the Past"><i class="ui red skull crossbones icon"></i></span>`
@@ -97,7 +94,17 @@ const table = $('#driver-apl-table').DataTable({
                         data += `<span title="Red Flag: DUI/DWI in the Past"><i class="ui red wine bottle icon"></i></span>`
                     if (row.dotDat)
                         data += `<span title="Red Flag: Refused/Failed Drug/Alcohol Test in the Past"><i class="ui red prescription bottle icon"></i></span>`
+                    if (row.citations)
+                        data += `<span title="Warning: Had Citations"><i class="ui orange exclamation circle icon"></i></span>`
                 }
+
+                if (step > 4) {
+                    if (row.accidents)
+                        data += `<span title="Warning: Had Accidents"><i class="ui orange car crash icon"></i></span>`
+                }
+
+                if (step > 8 && !row.activeBusiness)
+                    data += `<span title="Warning: No Active LLC"><i class="ui orange briefcase icon"></i></span>`
 
                 return data
             },
