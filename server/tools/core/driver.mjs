@@ -43,7 +43,7 @@ const query = {
     aplAccidents: new Query(db.carrier, 'application_accidents'),
     aplExperiences: new Query(db.carrier, 'application_experiences'),
     aplCdlSchools: new Query(db.carrier, 'application_cdlschools'),
-    aplEmployers: new Query(db.carrier, 'application_preemployments'),
+    aplEmployers: new Query(db.carrier, 'application_employments'),
     aplPreferences: new Query(db.carrier, 'application_preferences'),
     aplBusinesses: new Query(db.carrier, 'application_businesses'),
     aplVehicles: new Query(db.carrier, 'application_vehicles'),
