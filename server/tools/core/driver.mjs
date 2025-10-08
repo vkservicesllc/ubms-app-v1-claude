@@ -2120,45 +2120,6 @@ class Application {
     //     return companies
     // }
 
-    static relatedData = async (session, target) => {
-        if (!session.user) return
-
-        const { team } = session
-        let teamId
-        if (team) teamId = await team.id(session)
-
-        let match, batch
-
-        switch (target) {
-
-            case 'prev-employers':
-                match = { condition: 'c', teamId }
-                batch = [
-                    {
-                        table: query.aplEmployers.table,
-                        fields: [
-                            hash('id', 'MD5'), 'status',
-                            'employer', 'phone', 'address1', 'address2', 'city', 'state', 'zip',
-                            'startedOn', 'fmcsr', 'dotDat', 'leftOn',
-                        ],
-                    },
-                    {
-                        table: query.applications.table,
-                        fields: [
-                            'formId', 'firstName', 'middleName', 'lastName', 'suffix', 'finishedAt',
-                        ],
-                        match,
-                        //? sort: { finishedAt: { desc: true } },
-                        join: [ 'id', 'aplId' ],
-                    },
-                ]
-                break
-
-        }
-//! console.log(Query.select(db.carrier, batch))
-        return (await mysql.execute(Query.select(db.carrier, batch)))[0]
-    }
-
 
     static users = async (session, filter = {}) => {
         if (!session?.user || !session?.team) return
@@ -2491,6 +2452,109 @@ class Application {
 
 
 
+class Employment {
+    constructor(data = {}, light = false) {
+        this._id = data._id
+        this._aplId = data._aplId
+        this.status = data.status
+        this.applicant = new Person(data)
+        this.formId = data.formId
+        this.employer = data.employer
+        this.phone = data.phone
+        this.address = new Address(data)
+        this.startedOn = data.startedOn
+        this.position = data.position
+        this.earnings = data.earnings
+        this.fmcsr = data.fmcsr
+        this.dotDat = data.dotDat
+        this.rfl = data.rfl
+        this.leftOn = data.leftOn
+
+        if (!light) {
+
+            this.id = async () => (await mysql.execute(query.aplEmployers.select('id', {
+                match: { id: Employment.matchIdHash(this._id) },
+            })))[0][0].id
+
+        }
+    }
+
+
+    static #algorithm = 'MD5'
+
+    static hashId = (field = 'id') => hash(field, Employment.#algorithm)
+
+    static matchIdHash = value => matchHash(value, Employment.#algorithm)
+
+
+    static #batch = async (session, options = {}) => {
+        if (!session?.user) return []
+
+        let { params, filter } = options
+        if (!params) params = {}
+        if (!filter) filter = {}
+
+        const { _id, id } = params
+        const { _aplId, aplId, status, fmcsr, dotDat, teamId, _teamId, condition } = filter
+        const match = { id, aplId, status, fmcsr, dotDat }
+        const aplMatch = { teamId, condition }
+        if (!id) match.id = Employment.matchIdHash(_id)
+        if (!aplId) match.aplId = Application.matchIdHash(_aplId)
+        if (!teamId) aplMatch.teamId = Team.matchIdHash(_teamId)
+
+        const batch = [
+            {
+                table: query.aplEmployers.table,
+                fields: [
+                    Employment.hashId(), Application.hashId('aplId'), 'status',
+                    'employer', 'phone', 'address1', 'address2', 'city', 'state', 'zip',
+                    'startedOn', 'position', 'earnings', 'fmcsr', 'dotDat', 'rfl', 'leftOn',
+                ],
+                match,
+            },
+            {
+                table: query.applications.table,
+                fields: [
+                    Team.hashId('teamId'), 'formId',
+                    'firstName', 'middleName', 'lastName', 'suffix',
+                    'createdAt', 'finishedAt',
+                ],
+                match: aplMatch,
+                join: [ 'id', 'aplId' ],
+            },
+        ]
+
+        return batch
+    }
+
+
+    static data = async (session, params = {}) => {
+        if (!params._id && !params.id) return
+
+        const batch = await Employment.#batch(session, { params })
+        if (!batch.length) return
+
+        const data = (await mysql.execute(Query.select(db.carrier, batch)))[0][0]
+
+        return !data ? data : new Employment(data)
+    }
+
+
+    static list = async (session, filter = {}) => {
+        const batch = await Employment.#batch(session, { filter })
+        if (!batch.length) return []
+
+        const list = (await mysql.execute(Query.select(db.carrier, batch)))[0]
+        list.forEach((data, i, arr) => arr[i] = new Employment(data, true))
+
+        return list
+    }
+
+
+}
+
+
+
 class DriverUser {
     constructor() {}
 
@@ -2505,4 +2569,4 @@ class DriverUser {
 
 
 export default Driver
-export { Application, DriverUser }
+export { Application, Employment, DriverUser }

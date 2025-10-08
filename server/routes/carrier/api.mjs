@@ -4,7 +4,7 @@ const throwErr = require('../../tools/utils/error').api
 /* Tools */
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
-import Driver, { Application } from '../../tools/core/driver.mjs'
+import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 
@@ -128,7 +128,8 @@ router.post('/drivers/applications/filters', User.verify, Team.verify, async (re
 
 router.post('/drivers/applications/prev-employers', User.verify, Team.verify, async (req, res) => {
     try {
-        res.send({ data: await Application.relatedData(res.session, 'prev-employers') })
+        const _teamId = res.session?.team?._id
+        res.send({ data: await Employment.list(res.session, { condition: 'c', _teamId }) })
     } catch (err) {
         throwErr.server(res, null, err)
     }

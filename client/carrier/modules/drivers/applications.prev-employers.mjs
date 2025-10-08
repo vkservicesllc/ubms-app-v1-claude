@@ -14,7 +14,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
 
             data.forEach(row => {
                 row.group = `<small style="font-family: monospace;">${row.formId}:</small> `
-                    + new Person(row).fullName()
+                    + new Person(row.applicant).fullName()
                     + ` <small>(${moment(row.finishedAt).format('ll')})</small>`
             })
 
@@ -58,6 +58,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             data: 'employer',
             title: 'Employer',
             orderable: false,
+            searchable: false,
             createdCell(td) {
                 $(td).css('font-weight', 'bold')
             },
@@ -67,6 +68,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             data: 'phone',
             title: 'Phone',
             orderable: false,
+            searchable: false,
             render(data) {
                 return formatTel(data)
             },
@@ -76,8 +78,9 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             data: null,
             title: 'Address',
             orderable: false,
+            searchable: false,
             render(data, type, row) {
-                return new Address(row).html()
+                return new Address(row.address).html()
             },
         },
 
@@ -85,12 +88,20 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             data: 'startedOn',
             title: 'Employment Period',
             orderable: false,
+            searchable: false,
             render(data, type, row) {
                 let until = 'Present'
                 if (row.leftOn) until = moment(row.leftOn).format('ll')
 
                 return moment(data).format('ll') + ' – ' + until
             },
+        },
+
+        {
+            data: 'position',
+            title: 'Position',
+            orderable: false,
+            searchable: false,
         },
 
     ],
@@ -103,9 +114,16 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
         $(tr).css('background-color', bgc)
     },
 
+    fixedHeader: {
+        header: true,
+        headerOffset: $('#top-nav').height(),
+    },
+
     language: {
         emptyTable: '<span class="ui red text">No applicants have previous employers at this time</span>',
     },
+
+    lengthMenu,
 
     rowGroup: {
         dataSrc(row) {
