@@ -1,11 +1,12 @@
 const fs = require('fs')
 const path = require('path')
 
+const dir = '../assets/fonts'
 const fontPath = {
-    hurricane: path.join(__dirname, '../assests/fonts/hurricane/regular.ttf'),
-    mrsSaintDelafield: path.join(__dirname, '../assests/fonts/mrs-saint-delafield/regular.ttf'),
-    sansation: path.join(__dirname, '../assests/fonts/sansation/regular.ttf'),
-    sansationBold: path.join(__dirname, '../assests/fonts/sansation/bold.ttf'),
+    hurricane: path.join(__dirname, `${dir}/hurricane/regular.ttf`),
+    mrsSaintDelafield: path.join(__dirname, `${dir}/mrs-saint-delafield/regular.ttf`),
+    sansation: path.join(__dirname, `${dir}/sansation/regular.ttf`),
+    sansationBold: path.join(__dirname, `${dir}/sansation/bold.ttf`),
 }
 
 export default {
