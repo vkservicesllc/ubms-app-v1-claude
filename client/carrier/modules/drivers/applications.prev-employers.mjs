@@ -38,6 +38,9 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             data: 'employer',
             title: 'Employer',
             orderable: false,
+            createdCell(td) {
+                $(td).css('font-weight', 'bold')
+            },
         },
         {
             data: 'phone',
@@ -64,8 +67,6 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             },
         },
     ],
-
-    columnDefs: [],
 
     language: {
         emptyTable: '<span class="ui red text">No applicants have previous employers at this time</span>',
