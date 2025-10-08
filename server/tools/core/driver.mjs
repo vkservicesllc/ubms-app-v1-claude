@@ -2137,6 +2137,7 @@ class Application {
                     {
                         table: query.aplEmployers.table,
                         fields: [
+                            hash('id', 'MD5'), 'status',
                             'employer', 'phone', 'address1', 'address2', 'city', 'state', 'zip',
                             'startedOn', 'fmcsr', 'dotDat', 'leftOn',
                         ],

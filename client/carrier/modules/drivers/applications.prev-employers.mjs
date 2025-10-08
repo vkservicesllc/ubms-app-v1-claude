@@ -23,17 +23,37 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
     },
 
     columns: [
+
         {
             data: 'group',
+            searchable: false,
+            orderable: false,
             visible: false,
         },
+
         {
-            data: null,
+            data: 'status',
+            searchable: false,
             orderable: false,
-            render() {
-                return ''
+            width: '30px',
+            render(data) {
+                let icon
+
+                switch (data) {
+                    case 'c':
+                        icon = 'dark green check circle outline'
+                        break
+                    case 'r':
+                        icon = 'red ban'
+                        break
+                    default:
+                        icon = 'dark orange clock outline'
+                }
+
+                return `<i class="ui ${icon} icon"></i>`
             },
         },
+
         {
             data: 'employer',
             title: 'Employer',
@@ -42,6 +62,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
                 $(td).css('font-weight', 'bold')
             },
         },
+
         {
             data: 'phone',
             title: 'Phone',
@@ -50,6 +71,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
                 return formatTel(data)
             },
         },
+
         {
             data: null,
             title: 'Address',
@@ -58,15 +80,28 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
                 return new Address(row).html()
             },
         },
+
         {
             data: 'startedOn',
-            title: 'Employment Date',
+            title: 'Employment Period',
             orderable: false,
-            render(data) {
-                return moment(data).format('ll')
+            render(data, type, row) {
+                let until = 'Present'
+                if (row.leftOn) until = moment(row.leftOn).format('ll')
+
+                return moment(data).format('ll') + ' – ' + until
             },
         },
+
     ],
+
+    createdRow(tr, row) {
+        let bgc = 'lightyellow'
+        if (row.status === 'c') bgc = 'palegreen'
+        if (row.status === 'r') bgc = 'lightpink'
+
+        $(tr).css('background-color', bgc)
+    },
 
     language: {
         emptyTable: '<span class="ui red text">No applicants have previous employers at this time</span>',
