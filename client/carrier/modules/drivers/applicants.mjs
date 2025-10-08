@@ -9,7 +9,7 @@ const table = $('#driver-aplicants-table').DataTable({
 
     ajax: {
         url: '/api/drivers',
-        dataSrc(response) {console.log(response)
+        dataSrc(response) {
             const { data } = response
 
             return data

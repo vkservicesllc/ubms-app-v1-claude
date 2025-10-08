@@ -9,7 +9,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
 
     ajax: {
         url: '/api/drivers/applications/prev-employers',
-        dataSrc(response) { console.log(response)
+        dataSrc(response) {
             const { data } = response
 
             data.forEach(row => {
@@ -114,9 +114,26 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
         $(tr).css('background-color', bgc)
     },
 
+    dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
+
     fixedHeader: {
         header: true,
         headerOffset: $('#top-nav').height(),
+    },
+    
+    initComplete() {
+        // styleSearch()
+
+        // const toolbar = $('<div class="custom-dt-toolbar"></div>')
+        // $('.dt-length').after(toolbar)
+
+        // $('#dt-search-0')
+        //     .on('input', function() {
+        //         $(this).val($(this).val().replace(/\W/gi, ''))
+        //     })
+
+        // $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
+        $('.dt-length').css('visibility', 'visible')
     },
 
     language: {
@@ -132,6 +149,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
     },
 
 })
+
 
 setInterval(() => {
     dtFnFilterData(table)

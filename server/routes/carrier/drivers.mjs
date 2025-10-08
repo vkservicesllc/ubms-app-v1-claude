@@ -342,6 +342,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             if (user) hbs.recruiter = user.name
         }
 
+        const url = `/driver/application/${formId}/e-form`
         const recUrl = `/resource/driver/application/${formId}/edit`
         hbs.actionUrl = {
             workflow: `${recUrl}/workflow`,
@@ -359,6 +360,15 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             business: `${recUrl}/business`,
             beneficiary: `${recUrl}/beneficiary`,
             misc: `${recUrl}/misc`,
+        }
+        hbs.linkUrl = {
+            citations: `${url}/citations`,
+            accidents: `${url}/accidents`,
+        }
+        hbs.length = {}
+        hbs.linkColor = {
+            citations: 'blue',
+            accidents: 'blue',
         }
 
         hbs._id = application._id
@@ -614,6 +624,14 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         /* LEGAL COMPLIANCE */
         {
             options.criminalExpl = { text: { input: { rows: 2, placeholder: ' ' }, label: { content: 'Details' } } }
+            hbs.length.citations = (await application.data('citations', res.session)).data.length
+            if (hbs.length.citations) hbs.linkColor.citations = 'red'
+        }
+
+        /* SAFETY */
+        {
+            hbs.length.accidents = (await application.data('accidents', res.session)).data.length
+            if (hbs.length.accidents) hbs.linkColor.accidents = 'red'
         }
 
         /* EXPERIENCE */
