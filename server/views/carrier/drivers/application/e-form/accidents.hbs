@@ -1,0 +1,69 @@
+{{> carrier/nav.alpha}}
+
+    <div style="margin-left: 20px;">
+        <div class="ui relaxed horizontal list" style="margin-bottom: 15px; min-width: 1440px;">
+            <div class="item">
+                <div class="content">
+                <h5 class="ui header"><span class="ui grey text">Applicant:</span></h5>
+                    {{{applicant}}}
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                <h5 class="ui header"><span class="ui grey text">Desired Position:</span></h5>
+                    {{position}}
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                <h5 class="ui header"><span class="ui grey text">Position Role:</span></h5>
+                    {{positionRole}}
+                </div>
+            </div>
+            {{#if (hv carrier)}}
+            <div class="item">
+                <div class="content">
+                <h5 class="ui header"><span class="ui grey text">Carrier:</span></h5>
+                    {{{carrier}}}
+                </div>
+            </div>
+            {{/if}}
+            {{#if (hv recruiter)}}
+            <div class="item">
+                <div class="content">
+                <h5 class="ui header"><span class="ui grey text">Recruiter:</span></h5>
+                    {{{recruiter}}}
+                </div>
+            </div>
+            {{/if}}
+            <div class="item" style="border-left: 1px solid rgba(34,36,38,0.15); padding-left: 1.8rem;">
+                <div class="content">
+                <h5 class="ui header"><span class="ui grey text">Form:</span></h5>
+                    <strong>{{formId}}</strong>
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                <h5 class="ui header"><span class="ui grey text">Created at:</span></h5>
+                    {{{appliedAt}}} ET
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                <h5 class="ui header"><span class="ui grey text">Submitted at:</span></h5>
+                    {{{finishedAt}}} ET
+                </div>
+            </div>
+        </div>
+        <div class="ui breadcrumb">
+            {{{backLink}}}
+            <i class="right chevron icon divider"></i>
+            <div class="active section">Accidents</div>
+        </p>
+
+        <div class="ui grid" style="width: 1680px; margin-top: 20px; padding-left: 15px;">
+            <span class="ui red text">FUTURE CONTENT...</span>
+        </div>
+    </div>
+
+{{> carrier/nav.omega}}

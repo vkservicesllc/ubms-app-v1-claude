@@ -111,6 +111,24 @@ module.exports = {
         },
     },
 
+    'drivers.application.e-form.citations': {
+        external: [ ...online.external, 'jquery.masked-input', 'moment' ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers.application.e-form.accidents': {
+        external: [ ...online.external, 'jquery.masked-input', 'moment' ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
     'drivers.previous-employments': {
         external: [ ...online.external, 'jquery.masked-input', 'datatables.fomantic-ui', 'datatables.fomantic-ui.row-group', 'moment' ],
         internal: {

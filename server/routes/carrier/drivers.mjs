@@ -342,7 +342,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             if (user) hbs.recruiter = user.name
         }
 
-        const url = `/driver/application/${formId}/e-form`
+        const url = `/drivers/application/${formId}/e-form`
         const recUrl = `/resource/driver/application/${formId}/edit`
         hbs.actionUrl = {
             workflow: `${recUrl}/workflow`,
@@ -736,6 +736,57 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         hbs.checkList = checkList
         hbs.complete = complete
         hbs.unscoped = unscoped
+
+        res.render(key.replaceAll('.', '/'), hbs)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+router.get('/application/:formId/e-form/:target', User.verify, Team.verify, async (req, res) => {
+    try {
+        const aplUrl = '/drivers/applications'
+        const { user, team } = res.session
+        const { DS, unscoped } = user
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('d:drv/apl', 'modify', permissions, DS))
+            return res.redirect(aplUrl)
+
+        const { formId, target } = req.params
+        const application = await Application.data(res.session, { formId })
+
+        if (!application || application.condition === 'h') return res.redirect(aplUrl)
+        if (team && application._teamId !== team._id) return res.redirect(aplUrl)
+
+        const key = `drivers.application.e-form.${target}`
+        let { hbs } = res
+        hbs = await hbs.set(key, { titlePfx: 'Driver Form ' + formId })
+
+        const { active } = hbs.nav
+        hbs.nav.left.drivers = active
+
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
+
+        hbs.formId = formId
+        hbs.position = application.position[1]
+        hbs.positionRole = application.cdlRole ? 'CDL Only' : 'Non-CDL'
+        hbs.cdl = application.dl.commercial
+        hbs.applicant = `<strong style="font-size: 1.2em;">${new Person(application).fullName('FMLs')}</strong>`
+        hbs.applicant += ` <small>(${calculateYearAge(application.dob, application.finishedAt.split(' ')[0])} yo`
+        hbs.applicant += ` / ***-**-${application.ssn.slice(-4)})</small>`
+        hbs.appliedAt = moment(application.appliedAt).format('lll')
+        hbs.finishedAt = moment(application.finishedAt).format('lll')
+
+        const backLinkQuery = {
+            citations: 'legal-compliance',
+            accidents: 'safety',
+        }[target]
+        const backLinkName = {
+            citations: 'Legal Compliance',
+            accidents: 'Safety',
+        }[target]
+        hbs.backLink = `<a href="/drivers/application/${formId}/e-form?${backLinkQuery}">${backLinkName}</a>`
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
