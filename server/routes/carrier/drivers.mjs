@@ -789,9 +789,23 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
         }[target]
         hbs.backLink = `<a href="/drivers/application/${formId}/e-form?${backLinkQuery}">${backLinkName}</a>`
 
-        let options = {}, dropdown = {}, t = `\t`.repeat(11)
+        let options = {}
+        const dropdown = { state: '' }, t = `\t`.repeat(9)
+
+        for (const state in Address.stateList)
+            dropdown.state += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
+
+        switch (target) {
+
+            case 'citations':
+                dropdown.position = ''
+
+                break
+
+        }
 
         hbs.form = new ApplicationForm(options)
+        hbs.dropdown = dropdown
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {

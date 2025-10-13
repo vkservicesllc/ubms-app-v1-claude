@@ -61,10 +61,14 @@
             <div class="active section">Citations</div>
         </p>
 
-        <div style="width: 960px; margin-top: 20px;">
+        <div style="width: 1080px; margin-top: 20px;">
             <input type="hidden" id="id" value="{{_id}}" />
-
-            <table class="ui fixed compact table">
+<style>
+    td {
+        overflow: visible !important;
+    }
+</style>
+            <table class="ui compact fixed table">
                 <thead>
                     <tr>
                         <th>Violation</th>
@@ -99,11 +103,11 @@
                             </div>
                         </td>
                         <td>
-                            <div class="ui fluid selection required dropdown">
+                            <div class="ui fluid selection required dropdown cit-state">
                                 {{{form._citState.hidden.input}}}
                                 <i class="dropdown icon"></i>
                                 <div class="default text"></div>
-                                <div class="menu">{{{dropdown.violation}}}
+                                <div class="menu">{{{dropdown.state}}}
                                 </div>
                             </div>
                         </td>
@@ -136,11 +140,11 @@
                             </div>
                         </td>
                         <td>
-                            <div class="ui fluid selection required dropdown">
+                            <div class="ui fluid selection required dropdown cit-state">
                                 {{{form._citState.hidden.input}}}
                                 <i class="dropdown icon"></i>
                                 <div class="default text"></div>
-                                <div class="menu">{{{dropdown.violation}}}
+                                <div class="menu">{{{dropdown.state}}}
                                 </div>
                             </div>
                         </td>
