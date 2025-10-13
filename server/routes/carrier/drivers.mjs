@@ -768,6 +768,7 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
+        hbs._id = application._id
         hbs.formId = formId
         hbs.position = application.position[1]
         hbs.positionRole = application.cdlRole ? 'CDL Only' : 'Non-CDL'

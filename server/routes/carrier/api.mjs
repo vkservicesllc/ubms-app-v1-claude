@@ -4,7 +4,7 @@ const throwErr = require('../../tools/utils/error').api
 /* Tools */
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
-import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
+import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 
@@ -82,24 +82,42 @@ router.post('/teams', User.verify, Team.verify, async (req, res) => {
 
 
 
-router.post('/drivers/application/:_id', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/application/:_id/:target?', User.verify, Team.verify, async (req, res) => {
     try {
-        const { _id } = req.params
+        const { _id, target } = req.params
 
         const application = await Application.data(res.session, { _id })
         if (!application) return res.send({ error: 'Internal Server Error: Applicant not found' })
 
-        const driver = await Driver.data(res.session, { _id: application._driverId })
-        if (!driver) return res.send({ error: 'Internal Server Error: Driver not found' })
+        if (!target) {
+            const driver = await Driver.data(res.session, { _id: application._driverId })
+            if (!driver) return res.send({ error: 'Internal Server Error: Driver not found' })
 
-        const { formId } = application
-        const { applications, count } = await driver.applications(res.session)
-        const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
+            const { formId } = application
+            const { applications, count } = await driver.applications(res.session)
+            const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
 
-        const identity = await application.identity(res.session)
-        const log = await application.log()
+            const identity = await application.identity(res.session)
+            const log = await application.log()
 
-        res.send({ data: { application, identity, count, unmatchedIdx, log } })
+            res.send({ data: { application, identity, count, unmatchedIdx, log } })
+        } else {
+            let Src
+
+            switch (target) {
+                case 'citations':
+                    Src = Citation
+                    break
+                case 'accidents':
+                    Src = Accident
+                    break
+                case 'employments':
+                    Src = Employment
+                    break
+            }
+
+            res.send({ data: await Src.list(res.session, { _aplId: application._id }) })
+        }
     } catch (err) {
         throwErr.server(res, null, err)
     }

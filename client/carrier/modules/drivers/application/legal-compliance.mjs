@@ -1,15 +1,12 @@
-import { inputEvent } from '/modules/events/form.mjs'
-import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application, { dropdownEvent } from './hub.mjs'
 
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { dui, duiInDecade, criminal, criminalExpl, dotDat, citations } = application
+    const { dui, duiInDecade, criminal, criminalExpl, dotDat } = application
     const TS = selector.id.text, CS = selector.id.checkbox, RS = selector.id.radio
     const $duiInDecade = $('.dui-in-decade'), $criminalExpl = $('#criminal-details')
-console.log({ citations })
 
     if (dui) {
         $(CS.dui).prop('checked', true)

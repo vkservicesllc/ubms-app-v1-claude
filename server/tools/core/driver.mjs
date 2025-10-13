@@ -2452,6 +2452,194 @@ class Application {
 
 
 
+class Citation {
+    constructor(data = {}, light = false) {
+        this._id = data._id
+        this._aplId = data._aplId
+        this.violation = data.violation
+        this.other = data.other
+        this.citedOn = data.citedOn
+        this.state = data.state
+
+        if (!light) {
+
+            this.id = async () => (await mysql.execute(query.aplCitations.select('id', {
+                match: { id: Citation.matchIdHash(this._id) },
+            })))[0][0].id
+
+        }
+    }
+
+
+    static #algorithm = 'MD5'
+
+    static hashId = (field = 'id') => hash(field, Citation.#algorithm)
+
+    static matchIdHash = value => matchHash(value, Citation.#algorithm)
+
+
+    static #batch = async (session, options = {}) => {
+        if (!session?.user) return []
+
+        let { params, filter } = options
+        if (!params) params = {}
+        if (!filter) filter = {}
+
+        const { _id, id } = params
+        const { _aplId, aplId, violation, state, teamId, _teamId, condition } = filter
+        const match = { id, aplId, violation, state }
+        const aplMatch = { teamId, condition }
+        if (!id) match.id = Accident.matchIdHash(_id)
+        if (!aplId) match.aplId = Application.matchIdHash(_aplId)
+        if (!teamId) aplMatch.teamId = Team.matchIdHash(_teamId)
+
+        const batch = [
+            {
+                table: query.aplCitations.table,
+                fields: [
+                    Citation.hashId(), Application.hashId('aplId'),
+                   'violation', 'other', 'citedOn', 'state',
+                ],
+                match,
+            },
+            {
+                table: query.applications.table,
+                fields: [
+                    Team.hashId('teamId'), 'formId',
+                    'firstName', 'middleName', 'lastName', 'suffix',
+                    'createdAt', 'finishedAt',
+                ],
+                match: aplMatch,
+                join: [ 'id', 'aplId' ],
+            },
+        ]
+
+        return batch
+    }
+
+
+    static data = async (session, params = {}) => {
+        if (!params._id && !params.id) return
+
+        const batch = await Citation.#batch(session, { params })
+        if (!batch.length) return
+
+        const data = (await mysql.execute(Query.select(db.carrier, batch)))[0][0]
+
+        return !data ? data : new Citation(data)
+    }
+
+
+    static list = async (session, filter = {}) => {
+        const batch = await Citation.#batch(session, { filter })
+        if (!batch.length) return []
+
+        const list = (await mysql.execute(Query.select(db.carrier, batch)))[0]
+        list.forEach((data, i, arr) => arr[i] = new Citation(data, true))
+
+        return list
+    }
+
+
+}
+
+
+
+class Accident {
+    constructor(data = {}, light = false) {
+        this._id = data._id
+        this._aplId = data._aplId
+        this.collision = data.collision
+        this.other = data.other
+        this.date = data.date
+        this.state = data.state
+        this.injuries = data.injuries
+        this.fatalities = data.fatalities
+
+        if (!light) {
+
+            this.id = async () => (await mysql.execute(query.aplAccidents.select('id', {
+                match: { id: Accident.matchIdHash(this._id) },
+            })))[0][0].id
+
+        }
+    }
+
+
+    static #algorithm = 'MD5'
+
+    static hashId = (field = 'id') => hash(field, Accident.#algorithm)
+
+    static matchIdHash = value => matchHash(value, Accident.#algorithm)
+
+
+    static #batch = async (session, options = {}) => {
+        if (!session?.user) return []
+
+        let { params, filter } = options
+        if (!params) params = {}
+        if (!filter) filter = {}
+
+        const { _id, id } = params
+        const { _aplId, aplId, violation, state, teamId, _teamId, condition } = filter
+        const match = { id, aplId, violation, state }
+        const aplMatch = { teamId, condition }
+        if (!id) match.id = Accident.matchIdHash(_id)
+        if (!aplId) match.aplId = Application.matchIdHash(_aplId)
+        if (!teamId) aplMatch.teamId = Team.matchIdHash(_teamId)
+
+        const batch = [
+            {
+                table: query.aplAccidents.table,
+                fields: [
+                    Citation.hashId(), Application.hashId('aplId'),
+                   'collision', 'other', 'date', 'state', 'injuries', 'fatalities',
+                ],
+                match,
+            },
+            {
+                table: query.applications.table,
+                fields: [
+                    Team.hashId('teamId'), 'formId',
+                    'firstName', 'middleName', 'lastName', 'suffix',
+                    'createdAt', 'finishedAt',
+                ],
+                match: aplMatch,
+                join: [ 'id', 'aplId' ],
+            },
+        ]
+
+        return batch
+    }
+
+
+    static data = async (session, params = {}) => {
+        if (!params._id && !params.id) return
+
+        const batch = await Accident.#batch(session, { params })
+        if (!batch.length) return
+
+        const data = (await mysql.execute(Query.select(db.carrier, batch)))[0][0]
+
+        return !data ? data : new Accident(data)
+    }
+
+
+    static list = async (session, filter = {}) => {
+        const batch = await Accident.#batch(session, { filter })
+        if (!batch.length) return []
+
+        const list = (await mysql.execute(Query.select(db.carrier, batch)))[0]
+        list.forEach((data, i, arr) => arr[i] = new Accident(data, true))
+
+        return list
+    }
+
+
+}
+
+
+
 class Employment {
     constructor(data = {}, light = false) {
         this._id = data._id
@@ -2569,4 +2757,4 @@ class DriverUser {
 
 
 export default Driver
-export { Application, Employment, DriverUser }
+export { Application, Citation, Accident, Employment, DriverUser }
