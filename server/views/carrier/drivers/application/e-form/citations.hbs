@@ -58,13 +58,140 @@
         <div class="ui breadcrumb">
             {{{backLink}}}
             <i class="right chevron icon divider"></i>
-            <div class="active section">Violations</div>
+            <div class="active section">Citations</div>
         </p>
 
-        <div class="ui grid" style="width: 1680px; margin-top: 20px; padding-left: 15px;">
+        <div style="width: 960px; margin-top: 20px;">
             <input type="hidden" id="id" value="{{_id}}" />
-            <button class="ui blue right labeled icon button" id="add"><i class="right plus icon"></i> Add</button>
+
+            <table class="ui fixed compact table">
+                <thead>
+                    <tr>
+                        <th>Violation</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>State</th>
+                        <th class="right aligned">
+                            <button class="ui tiny blue icon button" id="add">
+                                <i class="plus icon"></i>
+                            </button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="ui fluid selection required dropdown">
+                                {{{form._citReason.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.violation}}}
+                                </div>
+                            </div>
+                        </td>
+                        <td></td>
+                        <td>
+                            <div class="ui calendar">
+                                <div class="ui fluid input left icon">
+                                    {{{form._citDate.text.input}}}
+                                    <i class="calendar icon"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ui fluid selection required dropdown">
+                                {{{form._citState.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.violation}}}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="right aligned">
+                            <button class="ui tiny blue icon button">
+                                <i class="save icon"></i>
+                            </button>
+                            <button class="ui tiny red icon button">
+                                <i class="ban icon"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="ui fluid selection required dropdown">
+                                {{{form._citReason.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.violation}}}
+                                </div>
+                            </div>
+                        </td>
+                        <td></td>
+                        <td>
+                            <div class="ui calendar">
+                                <div class="ui fluid input left icon">
+                                    {{{form._citDate.text.input}}}
+                                    <i class="calendar icon"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="ui fluid selection required dropdown">
+                                {{{form._citState.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.violation}}}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="right aligned">
+                            <button class="ui tiny green icon button">
+                                <i class="save icon"></i>
+                            </button>
+                            <button class="ui tiny red icon button">
+                                <i class="trash icon"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+
+        {{!-- <div class="ui large active modal" id="new-cit-modal">
+            <i class="close icon"></i>
+            <div class="header">New Citation</div>
+            <div class="content">
+                <form class="ui form" id="new-cit-form" action="" method="POST">
+                    <div class="ui compact grid">
+                        <div class="seven wide field">
+                            {{{form._citReason.select.label}}}
+                            <div class="ui fluid selection required dropdown" id="cit-violation-dropdown">
+                                {{{form._citReason.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.violation}}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="one wide field"></div>
+                    </div>
+                    <div class="ui compact grid">
+                        <div class="seven wide field">
+                            {{{form._citDate.text.label}}}
+                            <div class="ui calendar" id="cit-date-calendar">
+                                <div class="ui fluid input left icon">
+                                    {{{form._citDate.text.input}}}
+                                    <i class="calendar icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="actions">
+                <button type="submit" form="new-cit-form" class="ui primary button" id="new-cit-submit">Create</button>
+            </div>
+        </div> --}}
     </div>
     <script type="module" src="/modules/drivers/application/citations.mjs"></script>
 

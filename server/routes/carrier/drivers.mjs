@@ -789,6 +789,10 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
         }[target]
         hbs.backLink = `<a href="/drivers/application/${formId}/e-form?${backLinkQuery}">${backLinkName}</a>`
 
+        let options = {}, dropdown = {}, t = `\t`.repeat(11)
+
+        hbs.form = new ApplicationForm(options)
+
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
         throwErr.server(res, null, err)
