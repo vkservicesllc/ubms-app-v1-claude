@@ -1,7 +1,7 @@
 {{> carrier/nav.alpha}}
 
     <div style="margin-left: 20px;">
-        <div class="ui relaxed horizontal list" style="margin-bottom: 15px; min-width: 1440px;">
+        <div class="ui relaxed horizontal list" style="display: block; margin-bottom: 15px; min-width: 1440px;">
             <div class="item">
                 <div class="content">
                 <h5 class="ui header"><span class="ui grey text">Applicant:</span></h5>
@@ -10,20 +10,20 @@
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Desired Position:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Desired Position:</span></h5>
                     {{position}}
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Position Role:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Position Role:</span></h5>
                     {{positionRole}}
                 </div>
             </div>
             {{#if (hv carrier)}}
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Carrier:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Carrier:</span></h5>
                     {{{carrier}}}
                 </div>
             </div>
@@ -31,26 +31,26 @@
             {{#if (hv recruiter)}}
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Recruiter:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Recruiter:</span></h5>
                     {{{recruiter}}}
                 </div>
             </div>
             {{/if}}
             <div class="item" style="border-left: 1px solid rgba(34,36,38,0.15); padding-left: 1.8rem;">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Form:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Form:</span></h5>
                     <strong>{{formId}}</strong>
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Created at:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Created at:</span></h5>
                     {{{appliedAt}}} ET
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Submitted at:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Submitted at:</span></h5>
                     {{{finishedAt}}} ET
                 </div>
             </div>
@@ -59,12 +59,14 @@
             {{{backLink}}}
             <i class="right chevron icon divider"></i>
             <div class="active section">Citations</div>
-        </p>
+        </div>
+    </div>
 
+    <div style="margin-left: 20px;">
         <div style="width: 1260px; margin-top: 20px;">
             <input type="hidden" id="id" value="{{_id}}" />
             <style>td { overflow: visible !important; }</style>
-            <table class="ui compact table">
+            <table class="ui compact grey table">
                 <thead>
                     <tr>
                         <th style="width: 280px;">Violation</th>
@@ -130,38 +132,48 @@
                 </tbody>
                 <tbody id="form-template" style="display: none;">
                     <tr>
-                        <td>
-                            <div class="ui fluid selection required dropdown cit-violation">
-                                {{{form._citReason.hidden.input}}}
-                                <i class="dropdown icon"></i>
-                                <div class="default text"></div>
-                                <div class="menu">{{{dropdown.violation}}}
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui fluid selection required dropdown cit-violation">
+                                    {{{form._citReason.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.violation}}}
+                                    </div>
                                 </div>
                             </div>
                         </td>
-                        <td></td>
-                        <td>
-                            <div class="ui calendar">
-                                <div class="ui fluid input left icon">
-                                    {{{form._citDate.text.input}}}
-                                    <i class="calendar icon"></i>
+                        <td class="ui form">
+                            <div class="field other-field">
+                                {{{form._citOtherReason.text.input}}}
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui calendar cit-date">
+                                    <div class="ui fluid input left icon">
+                                        {{{form._citDate.text.input}}}
+                                        <i class="calendar icon"></i>
+                                    </div>
                                 </div>
                             </div>
                         </td>
-                        <td>
-                            <div class="ui fluid selection required dropdown cit-state">
-                                {{{form._citState.hidden.input}}}
-                                <i class="dropdown icon"></i>
-                                <div class="default text"></div>
-                                <div class="menu">{{{dropdown.state}}}
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui fluid selection required dropdown cit-state">
+                                    {{{form._citState.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.state}}}
+                                    </div>
                                 </div>
                             </div>
                         </td>
                         <td class="right aligned">
-                            <button class="ui tiny green icon button" title="Save">
+                            <button class="ui tiny green icon save button" title="Save">
                                 <i class="save icon"></i>
                             </button>
-                            <button class="ui tiny red icon button" title="Delete">
+                            <button class="ui tiny red icon delete button" title="Delete">
                                 <i class="trash icon"></i>
                             </button>
                         </td>
@@ -169,42 +181,6 @@
                 </tbody>
             </table>
         </div>
-
-        {{!-- <div class="ui large active modal" id="new-cit-modal">
-            <i class="close icon"></i>
-            <div class="header">New Citation</div>
-            <div class="content">
-                <form class="ui form" id="new-cit-form" action="" method="POST">
-                    <div class="ui compact grid">
-                        <div class="seven wide field">
-                            {{{form._citReason.select.label}}}
-                            <div class="ui fluid selection required dropdown" id="cit-violation-dropdown">
-                                {{{form._citReason.hidden.input}}}
-                                <i class="dropdown icon"></i>
-                                <div class="default text"></div>
-                                <div class="menu">{{{dropdown.violation}}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="one wide field"></div>
-                    </div>
-                    <div class="ui compact grid">
-                        <div class="seven wide field">
-                            {{{form._citDate.text.label}}}
-                            <div class="ui calendar" id="cit-date-calendar">
-                                <div class="ui fluid input left icon">
-                                    {{{form._citDate.text.input}}}
-                                    <i class="calendar icon"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="actions">
-                <button type="submit" form="new-cit-form" class="ui primary button" id="new-cit-submit">Create</button>
-            </div>
-        </div> --}}
     </div>
     <script type="module" src="/modules/drivers/application/citations.mjs"></script>
 

@@ -806,7 +806,7 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
                     for (const item in items)
                         dropdown.violation += `\n${t}<div class="item" data-value="${item}">${items[item]}</div>`
                 }
-                options._citOtherReason = { text: { input: { disabled: true } } }
+                options._citOtherReason = { text: { input: { id: null, disabled: true } } }
                 break
 
         }

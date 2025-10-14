@@ -2,16 +2,26 @@ import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application, { dropdownEvent } from './hub.mjs'
 
+const $form ={
+    add: $('#new-form'),
+    template: $('#form-template'),
+}
+{
+    const templates = $form.template.find('input')
+    templates.each(function(i, template) {
+        const $t = $(template)
+        const id = $t.attr('id')
+        $t.attr('id', `${id}-x`)
+    })
+}
+
+
 (() => {
     if (!application || !Object.keys(application).length) return
 
     const { _id, finishedAt } = application
 
     const $add = $('#add'), $cancel = $('#cancel')
-    const $form ={
-        add: $('#new-form'),
-        template: $('#form-template'),
-    }
 
     const $dropdown = {
         violation: $('.cit-violation'),
@@ -27,11 +37,21 @@ import application, { dropdownEvent } from './hub.mjs'
             const { data } = response
 console.table(data)
 
-            data.forEach(record => {
+            data.forEach((record, i) => {
+                const $tr = $('<tr></tr>')
                 const { _id, violation, other, citedOn, state } = record
                 const template = $form.template.find('tr').children()
 
-                //? template[2].text(citedOn)
+                // const $violation = $(template[0]).find('input')
+
+                // const id = {
+                //     violation: $violation.attr('id'),
+                // }
+console.log('$violation', $violation)
+                // $violation.attr('id', id.violation.replace('-x', `-${i}`))
+
+                // $tr.append($violation)
+                // $form.add.after($tr)
             })
 
             $dropdown.violation.dropdown({
@@ -56,7 +76,7 @@ console.table(data)
             })
             $cancel.click(function() {
                 $form.add.find('input').val(null)
-                $form.add.find('.other-field').prop('disabled', true)
+                $form.add.find('.other-field').find('input').prop('disabled', true)
                 $form.add.find('.dropdown').dropdown('clear')
                 $form.add.hide()
                 $add.show()
