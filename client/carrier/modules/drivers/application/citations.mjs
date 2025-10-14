@@ -8,7 +8,11 @@ import application, { dropdownEvent } from './hub.mjs'
     const { _id, finishedAt } = application
 
     const $add = $('#add'), $cancel = $('#cancel')
-    const $newForm = $('#new-form')
+    const $form ={
+        add: $('#new-form'),
+        template: $('#form-template'),
+    }
+
     const $dropdown = {
         violation: $('.cit-violation'),
         state: $('.cit-state'),
@@ -24,7 +28,10 @@ import application, { dropdownEvent } from './hub.mjs'
 console.table(data)
 
             data.forEach(record => {
-                //? use template and populate with data
+                const { _id, violation, other, citedOn, state } = record
+                const template = $form.template.find('tr').children()
+
+                //? template[2].text(citedOn)
             })
 
             $dropdown.violation.dropdown({
@@ -44,14 +51,14 @@ console.table(data)
             })
 
             $add.click(function() {
-                $newForm.show()
+                $form.add.show()
                 $(this).hide()
             })
             $cancel.click(function() {
-                $newForm.find('input').val(null)
-                $newForm.find('.other-field').prop('disabled', true)
-                $newForm.find('.dropdown').dropdown('clear')
-                $newForm.hide()
+                $form.add.find('input').val(null)
+                $form.add.find('.other-field').prop('disabled', true)
+                $form.add.find('.dropdown').dropdown('clear')
+                $form.add.hide()
                 $add.show()
             })
         },
