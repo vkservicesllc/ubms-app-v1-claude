@@ -1,3 +1,7 @@
+import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { capitalizeEach } from '/modules/tools/utils/string.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application, { dropdownEvent } from './hub.mjs'
@@ -9,9 +13,7 @@ const $form ={
 {
     const templates = $form.template.find('input')
     templates.each(function(i, template) {
-        const $t = $(template)
-        const id = $t.attr('id')
-        $t.attr('id', `${id}-x`)
+        $(template).attr('id', null)
     })
 }
 
@@ -20,39 +22,47 @@ const $form ={
     if (!application || !Object.keys(application).length) return
 
     const { _id, finishedAt } = application
+    const TS = selector.class.text
+    const $table = $('table')
 
     const $add = $('#add'), $cancel = $('#cancel')
-
-    const $dropdown = {
-        violation: $('.cit-violation'),
-        state: $('.cit-state'),
-    }
-    const $calendar = {
-        date: $('.cit-date'),
-    }
 
     $.ajax(`/api/drivers/application/${_id}/citations`, {
         method: 'POST',
         success(response) {
             const { data } = response
-console.table(data)
 
             data.forEach((record, i) => {
                 const $tr = $('<tr></tr>')
                 const { _id, violation, other, citedOn, state } = record
-                const template = $form.template.find('tr').children()
+                const $cells = $form.template.clone().find('tr').children()
 
-                // const $violation = $(template[0]).find('input')
+                const $violation = $($cells[0]).find('input')
+                const $other = $($cells[1]).find('input')
+                const $date = $($cells[2]).find('input')
+                const $state = $($cells[3]).find('input')
+                const $save = $($cells[4]).find('.save.button')
+                const $delete = $($cells[4]).find('.delete.button')
 
-                // const id = {
-                //     violation: $violation.attr('id'),
-                // }
-console.log('$violation', $violation)
-                // $violation.attr('id', id.violation.replace('-x', `-${i}`))
+                $violation.val(violation)
+                if (violation === 'other') $other.val(other).prop('disabled', false)
+                $date.val(citedOn)
+                $state.val(state)
+                $save.attr('data-id', _id)
+                $delete.attr('data-id', _id)
 
-                // $tr.append($violation)
-                // $form.add.after($tr)
+                $tr.append($cells)
+                $form.add.after($tr)
+
             })
+
+            const $dropdown = {
+                violation: $('.cit-violation'),
+                state: $('.cit-state'),
+            }
+            const $calendar = {
+                date: $('.cit-date'),
+            }
 
             $dropdown.violation.dropdown({
                 onChange(value, text, $choice) {
@@ -60,7 +70,7 @@ console.log('$violation', $violation)
                     const disabled = value !== 'other'
 
                     $other.prop('disabled', disabled)
-                    if (disabled) $other.val(null)
+                    // if (disabled) $other.val(null)
                 },
             })
             $dropdown.state.dropdown()
@@ -81,6 +91,19 @@ console.log('$violation', $violation)
                 $form.add.hide()
                 $add.show()
             })
+
+            inputEvent(TS.citOtherReason, {
+                strip: true,
+                word: true,
+                onInput(citation, $citation) {
+                    $citation.val(capitalizeEach(citation))
+                    onInput(citation, $citation)
+                },
+            })
+
+            //! NEED TO ADD BUTTON EVENTS
+
+            $table.fadeIn()
         },
     })
 })()
