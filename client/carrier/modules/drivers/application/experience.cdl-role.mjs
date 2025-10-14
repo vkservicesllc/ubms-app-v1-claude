@@ -8,7 +8,7 @@ import application, { dropdownEvent } from './hub.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { experience, cdlSchool } = application
+    const { experience, cdlSchool, finishedAt } = application
     const TS = selector.id.text, RS = selector.id.radio, CS = selector.id.checkbox
     const expHoursCls = selector.class.text.expHours
     const $cmvExp = $('#cmv-experience'), $cmvExpVhl = $('.cmv-experience')
@@ -121,7 +121,7 @@ import application, { dropdownEvent } from './hub.mjs'
 
     $calendar.schEndDate.calendar({
         ...calSettings,
-        maxDate: moment().toDate(),
+        maxDate: moment(finishedAt).toDate(),
     })
     if (cdlSchool?.endDate)
         $calendar.schEndDate

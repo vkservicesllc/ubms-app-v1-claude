@@ -798,8 +798,15 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
         switch (target) {
 
             case 'citations':
-                dropdown.position = ''
+                dropdown.violation = ''
+                for (const category in Application.violationList) {
+                    const items = Application.violationList[category]
+                    dropdown.violation += `\n${t}<div class="header"><span class="ui teal text">${category}</span></div>`
 
+                    for (const item in items)
+                        dropdown.violation += `\n${t}<div class="item" data-value="${item}">${items[item]}</div>`
+                }
+                options._citOtherReason = { text: { input: { disabled: true } } }
                 break
 
         }

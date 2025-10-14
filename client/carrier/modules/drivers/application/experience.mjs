@@ -5,7 +5,7 @@ import application from './hub.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { experience } = application
+    const { experience, finishedAt } = application
     const CS = selector.id.checkbox
     const $details = $('.experience-details')
 
@@ -31,7 +31,7 @@ import application from './hub.mjs'
 
     $calendar.startDate.calendar({
             ...calSettings,
-            maxDate: moment().toDate(),
+            maxDate: moment(finishedAt).toDate(),
         })
     if (experience?.firstDate)
         $calendar.startDate
@@ -39,7 +39,7 @@ import application from './hub.mjs'
 
     $calendar.endDate.calendar({
             ...calSettings,
-            maxDate: moment().toDate(),
+            maxDate: moment(finishedAt).toDate(),
         })
     if (experience?.firstDate)
         $calendar.endDate

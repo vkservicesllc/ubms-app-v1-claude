@@ -61,68 +61,77 @@
             <div class="active section">Citations</div>
         </p>
 
-        <div style="width: 1080px; margin-top: 20px;">
+        <div style="width: 1260px; margin-top: 20px;">
             <input type="hidden" id="id" value="{{_id}}" />
-<style>
-    td {
-        overflow: visible !important;
-    }
-</style>
-            <table class="ui compact fixed table">
+            <style>td { overflow: visible !important; }</style>
+            <table class="ui compact table">
                 <thead>
                     <tr>
-                        <th>Violation</th>
-                        <th>Description</th>
-                        <th>Date</th>
-                        <th>State</th>
+                        <th style="width: 280px;">Violation</th>
+                        <th style="width: 280px;">Description</th>
+                        <th style="width: 200px;">Date</th>
+                        <th style="width: 240px;">State</th>
                         <th class="right aligned">
-                            <button class="ui tiny blue icon button" id="add">
+                            <button class="ui tiny blue icon button" id="add" title="Add">
                                 <i class="plus icon"></i>
                             </button>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            <div class="ui fluid selection required dropdown">
-                                {{{form._citReason.hidden.input}}}
-                                <i class="dropdown icon"></i>
-                                <div class="default text"></div>
-                                <div class="menu">{{{dropdown.violation}}}
+                    <tr id="new-form" style="display: none;">
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui fluid selection required dropdown cit-violation">
+                                    {{{form._citReason.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.violation}}}
+                                    </div>
                                 </div>
                             </div>
                         </td>
-                        <td></td>
-                        <td>
-                            <div class="ui calendar">
-                                <div class="ui fluid input left icon">
-                                    {{{form._citDate.text.input}}}
-                                    <i class="calendar icon"></i>
+                        <td class="ui form">
+                            <div class="field other-field">
+                                {{{form._citOtherReason.text.input}}}
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui calendar cit-date">
+                                    <div class="ui fluid input left icon">
+                                        {{{form._citDate.text.input}}}
+                                        <i class="calendar icon"></i>
+                                    </div>
                                 </div>
                             </div>
                         </td>
-                        <td>
-                            <div class="ui fluid selection required dropdown cit-state">
-                                {{{form._citState.hidden.input}}}
-                                <i class="dropdown icon"></i>
-                                <div class="default text"></div>
-                                <div class="menu">{{{dropdown.state}}}
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui fluid selection required dropdown cit-state">
+                                    {{{form._citState.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.state}}}
+                                    </div>
                                 </div>
                             </div>
                         </td>
                         <td class="right aligned">
-                            <button class="ui tiny blue icon button">
+                            <span class="ui red text" style="margin-right: 15px;">NEW</span>
+                            <button class="ui tiny blue icon button" title="Create">
                                 <i class="save icon"></i>
                             </button>
-                            <button class="ui tiny red icon button">
+                            <button class="ui tiny icon button" id="cancel" title="Cancel">
                                 <i class="ban icon"></i>
                             </button>
                         </td>
                     </tr>
+                </tbody>
+                <tbody id="form-template" style="display: none;">
                     <tr>
                         <td>
-                            <div class="ui fluid selection required dropdown">
+                            <div class="ui fluid selection required dropdown cit-violation">
                                 {{{form._citReason.hidden.input}}}
                                 <i class="dropdown icon"></i>
                                 <div class="default text"></div>
@@ -149,10 +158,10 @@
                             </div>
                         </td>
                         <td class="right aligned">
-                            <button class="ui tiny green icon button">
+                            <button class="ui tiny green icon button" title="Save">
                                 <i class="save icon"></i>
                             </button>
-                            <button class="ui tiny red icon button">
+                            <button class="ui tiny red icon button" title="Delete">
                                 <i class="trash icon"></i>
                             </button>
                         </td>

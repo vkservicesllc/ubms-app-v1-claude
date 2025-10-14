@@ -8,7 +8,7 @@ import application, { identity, count, unmatchedIdx, dropdownEvent, errorMessage
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email } = application
+    const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email, finishedAt } = application
     const TS = selector.id.text, SS = selector.id.select
 
     const $label = {
@@ -32,7 +32,7 @@ import application, { identity, count, unmatchedIdx, dropdownEvent, errorMessage
     $calendar.dob
         .calendar({
             ...calSettings,
-            maxDate: moment().subtract(18, 'years').toDate(),
+            maxDate: moment(finishedAt).subtract(18, 'years').toDate(),
         })
         .calendar('set date', new Date(moment(dob).toDate()))
 

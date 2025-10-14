@@ -6,7 +6,7 @@ import application from './hub.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { medCard, underMeds, medList } = application
+    const { medCard, underMeds, medList, finishedAt } = application
     const { expiresOn, issuedOn, nrcme } = application.mec || {}
     const TS = selector.id.text, TC = selector.id.checkbox
 
@@ -22,7 +22,7 @@ import application from './hub.mjs'
     $calendar.expiresOn
         .calendar({
             ...calSettings,
-            minDate: moment().add(1, 'days').toDate(),
+            minDate: moment(finishedAt).add(1, 'days').toDate(),
         })
     if (expiresOn)
         $calendar.expiresOn.calendar('set date', new Date(moment(expiresOn).toDate()))
@@ -30,7 +30,7 @@ import application from './hub.mjs'
     $calendar.issuedOn
         .calendar({
             ...calSettings,
-            maxDate: moment().toDate(),
+            maxDate: moment(finishedAt).toDate(),
         })
     if (issuedOn)
         $calendar.issuedOn.calendar('set date', new Date(moment(issuedOn).toDate()))

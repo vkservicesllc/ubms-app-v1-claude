@@ -7,7 +7,7 @@ import application, { dropdownEvent } from './hub.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { dl } = application
+    const { dl, finishedAt } = application
     const TS = selector.id.text, CS = selector.id.checkbox
 
     const $commercial = $(CS.dlCommercial)
@@ -47,14 +47,14 @@ import application, { dropdownEvent } from './hub.mjs'
     $calendar.issuedOn
         .calendar({
             ...calSettings,
-            maxDate: moment().toDate(),
+            maxDate: moment(finishedAt).toDate(),
         })
         .calendar('set date', new Date(moment(dl.issuedOn).toDate()))
 
     $calendar.expiresOn
         .calendar({
             ...calSettings,
-            minDate: moment().add(1, 'days').toDate(),
+            minDate: moment(finishedAt).add(1, 'days').toDate(),
         })
         .calendar('set date', new Date(moment(dl.expiresOn).toDate()))
 
