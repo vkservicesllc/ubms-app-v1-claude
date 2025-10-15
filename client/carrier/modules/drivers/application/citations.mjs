@@ -146,20 +146,27 @@ const $form ={
                     },
                 })
 
-                $('.save').on('click', function() {
+                $('#create, .save').on('click', function() {
                     const _id = $(this).data('id')
                     if (!_id) return
 
                     const $fields = $(this).parent().parent().find('input')
+                    const citedOn = $($fields[2]).val()
                     const data = {
                         violation: $($fields[0]).val(),
                         other: $($fields[1]).val(),
-                        citedOn: moment($($fields[2]).val()).format('YYYY-MM-DD'),
+                        citedOn: citedOn ? moment(citedOn, "MMM D, YYYY").format('YYYY-MM-DD') : null,
                         state: $($fields[3]).val(),
                     }
                     if (data.violation !== 'other') data.other = null
 console.log(_id, data)
 
+                    if (
+                        !data.violation || (data.violation === 'other' && !data.other) ||
+                        !data.citedOn || !data.state
+                    ) return alert('Fill out all required fields')
+
+                    //? send to api
                     //! to be continued
                 })
             }
