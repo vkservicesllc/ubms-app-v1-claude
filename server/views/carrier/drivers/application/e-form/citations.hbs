@@ -182,6 +182,20 @@
             </table>
         </div>
     </div>
+    <div class="ui tiny modal" id="delete-modal">
+        <div class="ui dark red text header" id="delete-header">Delete Citation</div>
+        <div class="content">
+            <form id="delete-form" action="" method="POST">
+                <input type="hidden" id="delete-id" name="_id" />
+            </form>
+            <p><span class="ui dark red text">Please confirm the deletion of the following citation!</span></p>
+            <div id="delete-info"></div>
+        </div>
+        <div class="actions">
+            <div class="ui cancel button">Cancel</div>
+            <button type="submit" form="delete-form" class="ui red button" id="delete-submit">Delete</button>
+        </div>
+    </div>
     <script type="module" src="/modules/drivers/application/citations.mjs"></script>
 
 {{> carrier/nav.omega}}

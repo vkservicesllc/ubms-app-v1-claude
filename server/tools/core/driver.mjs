@@ -2456,6 +2456,12 @@ class Citation {
     constructor(data = {}, light = false) {
         this._id = data._id
         this._aplId = data._aplId
+        this._teamId = data._teamId
+        this.formId = data.formId
+        this.firstName = data.firstName
+        this.middleName = data.middleName
+        this.lastName = data.lastName
+        this.suffix = data.suffix
         this.violation = data.violation
         this.other = data.other
         this.citedOn = data.citedOn

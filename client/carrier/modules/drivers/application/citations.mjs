@@ -1,7 +1,7 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import Address from '/modules/tools/core/address.us.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
-
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application, { dropdownEvent } from './hub.mjs'
@@ -24,13 +24,17 @@ const $form ={
     const { _id, finishedAt } = application
     const TS = selector.class.text
     const $table = $('table')
+    const $modal = {
+        delete: $('#delete-modal'),
+    }
 
     const $add = $('#add'), $cancel = $('#cancel')
 
     $.ajax(`/api/drivers/application/${_id}/citations`, {
         method: 'POST',
         success(response) {
-            const { data } = response
+            let { data } = response
+            data = sortArrayByObjectKey(data, 'citedOn')
 
             data.forEach((record, i) => {
                 const $tr = $('<tr></tr>')
@@ -101,9 +105,59 @@ const $form ={
                 },
             })
 
-            //! NEED TO ADD BUTTON EVENTS
-
             $table.fadeIn()
+
+            //! NEED TO ADD BUTTON EVENTS
+            if (data.length) {
+                const violations = $.ajax('/api/drivers/applications/source/violations', { method: 'POST', async: false }).responseJSON
+
+                $('.delete').on('click', function() {
+                    const _id = $(this).data('id')
+
+                    const citation = $.ajax(`/api/drivers/applications/citation/${_id}`, { method: 'POST', async: false }).responseJSON
+                    if (!citation) return alert('Oops! Something went wrong!')
+
+                    const { other, state } = citation
+                    let { violation, citedOn } = citation
+
+                    if (violation === 'other') violation = other
+                    else
+                        loop: for (const group in violations) {
+                            for (const value in violations[group]) {
+                                if (violation !== value) continue
+                                violation = `${violations[group][value]} <small>(${group})</small>`
+                                break loop
+                            }
+                        }
+
+                    $('#delete-info').html(`${violation}<br/>on ${moment(citedOn).format('ll')} in ${Address.stateList[state]}`)
+                    $('#delete-id').val(_id)
+                    $modal.delete.modal('show')
+                })
+                $modal.delete.modal({
+                    onHidden() {
+                        $('#delete-id').val(null)
+                        $('#delete-info').html(null)
+                    },
+                })
+
+                $('.save').on('click', function() {
+                    const _id = $(this).data('id')
+                    if (!_id) return
+
+                    const $fields = $(this).parent().parent().find('input')
+                    const data = {
+                        violation: $($fields[0]).val(),
+                        other: $($fields[1]).val(),
+                        citedOn: moment($($fields[2]).val()).format('YYYY-MM-DD'),
+                        state: $($fields[3]).val(),
+                    }
+                    if (data.violation !== 'other') data.other = null
+console.log(_id, data)
+
+                    //! to be continued
+                })
+            }
         },
     })
 })()
