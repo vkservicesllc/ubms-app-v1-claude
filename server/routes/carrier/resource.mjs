@@ -6,7 +6,7 @@ import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Company from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
-import Driver, { Application } from '../../tools/core/driver.mjs'
+import Driver, { Application, Citation } from '../../tools/core/driver.mjs'
 import { inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 
 /* Validators */
@@ -139,6 +139,35 @@ router.post('/driver/application/:formId/edit/:step', User.verify, Team.verify,
         }
     }
 )
+
+router.post('/driver/application/:formId/delete/:target', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { user } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('d:drv/apl', 'modify', permissions, DS))
+            return throwErr.auth(res)
+
+        const { target } = req.params
+        const { _id } = req.body
+        let formId, dir
+
+        switch (target) {
+            case 'citation':
+                const citation = await Citation.data(res.session, { _id })
+                const { error } = await citation.delete(res.session)
+                if (error) return throwErr.data(error)
+
+                formId = citation.formId
+                dir = 'citations'
+                break
+        }
+
+        res.redirect(`/drivers/application/${formId}/e-form/${dir}`)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
 
 
 

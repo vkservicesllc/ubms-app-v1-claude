@@ -1,4 +1,5 @@
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import Person from '/modules/tools/core/person.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
@@ -117,20 +118,24 @@ const $form ={
                     const citation = $.ajax(`/api/drivers/applications/citation/${_id}`, { method: 'POST', async: false }).responseJSON
                     if (!citation) return alert('Oops! Something went wrong!')
 
-                    const { other, state } = citation
+                    const { other, state, formId } = citation
                     let { violation, citedOn } = citation
+                    const recipient = new Person(citation)
 
-                    if (violation === 'other') violation = other
+                    if (violation === 'other') violation = `<b>${other}</b>`
                     else
                         loop: for (const group in violations) {
                             for (const value in violations[group]) {
                                 if (violation !== value) continue
-                                violation = `${violations[group][value]} <small>(${group})</small>`
+                                violation = `<b>${violations[group][value]}</b> <small>(${group})</small>`
                                 break loop
                             }
                         }
+                    
+                    let html = `<b>${recipient.fullName()}</b> <small>(${formId})</small><br/>`
+                    html += `${violation} on ${moment(citedOn).format('ll')} in ${Address.stateList[state]}`
 
-                    $('#delete-info').html(`${violation}<br/>on ${moment(citedOn).format('ll')} in ${Address.stateList[state]}`)
+                    $('#delete-info').html(html)
                     $('#delete-id').val(_id)
                     $modal.delete.modal('show')
                 })

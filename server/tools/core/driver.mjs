@@ -2458,6 +2458,7 @@ class Citation {
         this._aplId = data._aplId
         this._teamId = data._teamId
         this.formId = data.formId
+        this.aplCondition = data.condition
         this.firstName = data.firstName
         this.middleName = data.middleName
         this.lastName = data.lastName
@@ -2472,6 +2473,35 @@ class Citation {
             this.id = async () => (await mysql.execute(query.aplCitations.select('id', {
                 match: { id: Citation.matchIdHash(this._id) },
             })))[0][0].id
+
+            this.delete = async session => {
+                let deleted = false,
+                    error = sessionError(session, { branches: [ 'carrier' ] })
+                const id = await this.id()
+
+                //! Deleting without a log
+                try {
+                    const [ result ] = await mysql.execute(query.aplCitations.delete({ id }))
+                    if (result.affectedRows > 0) deleted = true
+                } catch(err) {
+                    console.error(err)
+                    error = 'DB Error'
+                }
+
+                if (deleted) {
+                    const { _aplId } = this
+                    const citations = await Citation.list(session, { _aplId })
+
+                    if (!citations.length) {
+                        const application = await Application.data(session, { _id: _aplId })
+                        const { error: modError } = await application.modify(session, 'legal-compliance', { citations: false })
+                        if (modError) error = modError
+                    }
+                }
+
+                if (error) return { deleted, error }
+                return { deleted }
+            }
 
         }
     }
@@ -2511,7 +2541,7 @@ class Citation {
             {
                 table: query.applications.table,
                 fields: [
-                    Team.hashId('teamId'), 'formId',
+                    Team.hashId('teamId'), 'formId', 'condition',
                     'firstName', 'middleName', 'lastName', 'suffix',
                     'createdAt', 'finishedAt',
                 ],
