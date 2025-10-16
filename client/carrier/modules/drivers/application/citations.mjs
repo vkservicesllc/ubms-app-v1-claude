@@ -78,7 +78,11 @@ const $form ={
                     // if (disabled) $other.val(null)
                 },
             })
-            $dropdown.state.dropdown()
+            $dropdown.state.dropdown({
+                onChange(value, text, $choice) {
+                    //? $choice.parent().parent().parent().parent().parent().find('.unsaved-changes').text('Unsaved Changes')
+                },
+            })
             $calendar.date.calendar({
                 ...calSettings,
                 minDate: moment(finishedAt).subtract(3, 'years').toDate(),
@@ -108,7 +112,6 @@ const $form ={
 
             $table.fadeIn()
 
-            //! NEED TO ADD BUTTON EVENTS
             if (data.length) {
                 const violations = $.ajax('/api/drivers/applications/source/violations', { method: 'POST', async: false }).responseJSON
 
@@ -140,6 +143,8 @@ const $form ={
                     $modal.delete.modal('show')
                 })
                 $modal.delete.modal({
+                    autofocus: false,
+                    closable: false,
                     onHidden() {
                         $('#delete-id').val(null)
                         $('#delete-info').html(null)
@@ -153,13 +158,14 @@ const $form ={
                     const $fields = $(this).parent().parent().find('input')
                     const citedOn = $($fields[2]).val()
                     const data = {
+                        _id, _aplId: $('#id').val(),
                         violation: $($fields[0]).val(),
                         other: $($fields[1]).val(),
                         citedOn: citedOn ? moment(citedOn, "MMM D, YYYY").format('YYYY-MM-DD') : null,
                         state: $($fields[3]).val(),
                     }
                     if (data.violation !== 'other') data.other = null
-console.log(_id, data)
+console.log(data)
 
                     if (
                         !data.violation || (data.violation === 'other' && !data.other) ||
