@@ -1,7 +1,7 @@
 {{> carrier/nav.alpha}}
 
     <div style="margin-left: 20px;">
-        <div class="ui relaxed horizontal list" style="margin-bottom: 15px; min-width: 1440px;">
+        <div class="ui relaxed horizontal list" style="display: block; margin-bottom: 15px; min-width: 1440px;">
             <div class="item">
                 <div class="content">
                 <h5 class="ui header"><span class="ui grey text">Applicant:</span></h5>
@@ -10,20 +10,20 @@
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Desired Position:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Desired Position:</span></h5>
                     {{position}}
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Position Role:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Position Role:</span></h5>
                     {{positionRole}}
                 </div>
             </div>
             {{#if (hv carrier)}}
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Carrier:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Carrier:</span></h5>
                     {{{carrier}}}
                 </div>
             </div>
@@ -31,26 +31,26 @@
             {{#if (hv recruiter)}}
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Recruiter:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Recruiter:</span></h5>
                     {{{recruiter}}}
                 </div>
             </div>
             {{/if}}
             <div class="item" style="border-left: 1px solid rgba(34,36,38,0.15); padding-left: 1.8rem;">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Form:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Form:</span></h5>
                     <strong>{{formId}}</strong>
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Created at:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Created at:</span></h5>
                     {{{appliedAt}}} ET
                 </div>
             </div>
             <div class="item">
                 <div class="content">
-                <h5 class="ui header"><span class="ui grey text">Submitted at:</span></h5>
+                    <h5 class="ui header"><span class="ui grey text">Submitted at:</span></h5>
                     {{{finishedAt}}} ET
                 </div>
             </div>
@@ -59,11 +59,142 @@
             {{{backLink}}}
             <i class="right chevron icon divider"></i>
             <div class="active section">Accidents</div>
-        </p>
+        </div>
+    </div>
 
-        <div class="ui grid" style="width: 1680px; margin-top: 20px; padding-left: 15px;">
+    <div style="margin-left: 20px;">
+        <div style="width: 1260px; margin-top: 20px;">
             <input type="hidden" id="id" value="{{_id}}" />
-            <button class="ui blue right labeled icon button" id="add"><i class="right plus icon"></i> Add</button>
+            <style>td { overflow: visible !important; }</style>
+            <table class="ui compact grey table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th style="width: 280px;">Collision Type</th>
+                        <th style="width: 280px;">Description</th>
+                        <th style="width: 200px;">Date</th>
+                        <th style="width: 240px;">State</th>
+                        <th class="right aligned">
+                            <button class="ui tiny blue icon button" id="add" title="Add">
+                                <i class="plus icon"></i>
+                            </button>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="new-form" style="display: none;">
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui fluid selection required dropdown acc-type">
+                                    {{{form._accType.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.accident}}}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field other-field">
+                                {{{form._accOtherType.text.input}}}
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui calendar acc-date">
+                                    <div class="ui fluid input left icon">
+                                        {{{form._accDate.text.input}}}
+                                        <i class="calendar icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui fluid selection required dropdown acc-state">
+                                    {{{form._accState.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.state}}}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="right aligned">
+                            <span class="ui red text" style="margin-right: 10px;">NEW</span>
+                            <button class="ui tiny blue icon button" id="create" data-id="new" title="Create">
+                                <i class="save icon"></i>
+                            </button>
+                            <button class="ui tiny icon button" id="cancel" title="Cancel">
+                                <i class="ban icon"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody id="form-template" style="display: none;">
+                    <tr>
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui fluid selection required dropdown acc-type">
+                                    {{{form._accType.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.accident}}}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field other-field">
+                                {{{form._accOtherType.text.input}}}
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui calendar acc-date">
+                                    <div class="ui fluid input left icon">
+                                        {{{form._accDate.text.input}}}
+                                        <i class="calendar icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui fluid selection required dropdown acc-state">
+                                    {{{form._accState.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.state}}}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="right aligned">
+                            <span class="ui text unsaved-changes" style="margin-right: 10px;"></span>
+                            <button class="ui tiny green icon save button" title="Save" disabled>
+                                <i class="save icon"></i>
+                            </button>
+                            <button class="ui tiny red icon delete button" title="Delete">
+                                <i class="trash icon"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="ui tiny modal" id="delete-modal">
+        <div class="ui dark red text header" id="delete-header">Delete Accident</div>
+        <div class="content">
+            <form id="delete-form" action="/resource/driver/application/{{formId}}/delete/accident" method="POST">
+                <input type="hidden" id="delete-id" name="_id" />
+            </form>
+            <p><span class="ui dark red text">Please confirm the deletion of the following accident:</span></p>
+            <div id="delete-info"></div>
+        </div>
+        <div class="actions">
+            <div class="ui cancel button">Cancel</div>
+            <button type="submit" form="delete-form" class="ui red button" id="delete-submit">Delete</button>
         </div>
     </div>
     <script type="module" src="/modules/drivers/application/accidents.mjs"></script>
