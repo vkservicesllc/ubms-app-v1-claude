@@ -2474,6 +2474,47 @@ class Citation {
                 match: { id: Citation.matchIdHash(this._id) },
             })))[0][0].id
 
+            this.log = async field => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+
+                let log = (await mysql.execute(query.aplCitations.select(fields, {
+                    match: { id: Citation.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (log && fields.includes(field)) log = log[field]
+
+                return log
+            }
+
+
+            this.modify = async (session, data) => {
+                let modified = false,
+                    error = sessionError(session, { branches: [ 'carrier' ] })
+
+                if (error) return { error }
+
+                const id = await this.id()
+
+                const { branch, siteId } = session
+                const modifiedBy = session.user && session.user !== true
+                    ? await session.user.id()
+                    : null
+
+                delete data._id
+                delete data._aplId
+
+                data = processData(data, {
+                    modifiedBy, branch, siteId,
+                    currentData: this, currentUpdateLog: await this.log('updateLog'),
+                })
+
+                const [ result ] = await mysql.execute(query.aplCitations.update(data, { id }))
+                if (result.affectedRows === 1) modified = true
+
+                return { modified }
+            }
+
+
             this.delete = async session => {
                 let deleted = false,
                     error = sessionError(session, { branches: [ 'carrier' ] })
@@ -2512,6 +2553,33 @@ class Citation {
     static hashId = (field = 'id') => hash(field, Citation.#algorithm)
 
     static matchIdHash = value => matchHash(value, Citation.#algorithm)
+
+
+    static create = async (session, data) => {
+        if (!session.user || session.user === true) return
+
+        let created = false
+        const { user } = session
+
+        if (data._aplId) {
+            const application = await Application.data(session, { _id: data._aplId })
+            data.aplId = await application.id()
+
+            delete data._aplId
+        }
+        delete data._id
+
+        data = processData(data)
+        data.createdBy = await user.id()
+
+        const [ result ] = await mysql.execute(query.aplCitations.insert(data))
+        const id = result.insertId
+
+        if (id) created = true
+        else return { error: 'DB Error: Failed to add citation' }
+
+        return { created, data: await Citation.data(session, { id }) }
+    }
 
 
     static #batch = async (session, options = {}) => {

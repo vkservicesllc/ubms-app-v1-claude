@@ -16,6 +16,8 @@ const $form ={
     templates.each(function(i, template) {
         $(template).attr('id', null)
     })
+
+    $form.add.find('input').val(null)
 }
 
 
@@ -106,11 +108,15 @@ const $form ={
                 word: true,
                 onInput(citation, $citation) {
                     $citation.val(capitalizeEach(citation))
-                    onInput(citation, $citation)
                 },
             })
 
             $table.fadeIn()
+
+            $('input').on('change', function() {
+                const $tr = $(this).closest('tr')
+                $tr.find('.unsaved-changes').html('<i class="exclamation triangle icon"></i>')
+            })
 
             if (data.length) {
                 const violations = $.ajax('/api/drivers/applications/source/violations', { method: 'POST', async: false }).responseJSON
@@ -159,21 +165,28 @@ const $form ={
                     const citedOn = $($fields[2]).val()
                     const data = {
                         _id, _aplId: $('#id').val(),
-                        violation: $($fields[0]).val(),
+                        violation: $($fields[0]).val() || null,
                         other: $($fields[1]).val(),
                         citedOn: citedOn ? moment(citedOn, "MMM D, YYYY").format('YYYY-MM-DD') : null,
-                        state: $($fields[3]).val(),
+                        state: $($fields[3]).val() || null,
                     }
                     if (data.violation !== 'other') data.other = null
-console.log(data)
 
                     if (
                         !data.violation || (data.violation === 'other' && !data.other) ||
                         !data.citedOn || !data.state
                     ) return alert('Fill out all required fields')
 
-                    //? send to api
-                    //! to be continued
+                    $.ajax('/api/resource/drivers/applications/citation', {
+                        method: 'POST',
+                        data,
+                        success(response) {
+                            const { error } = response
+                            if (error) return alert(error)
+
+                            location.reload()
+                        },
+                    })
                 })
             }
         },

@@ -204,4 +204,33 @@ router.post('/drivers/:blacklisted?', User.verify, Team.verify, Driver.dtList)
 
 
 
+router.post('/resource/drivers/applications/:source', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { source } = req.params
+        const { _id } = req.body
+        let Src, error
+
+        switch (source) {
+            case 'citation':
+                Src = Citation
+                break
+            case 'accident':
+                Src = Accident
+                break
+        }
+
+        if (_id === 'new') error = (await Src.create(res.session, req.body)).error
+        else {
+            const instance = await Src.data(res.session, { _id })
+            error = (await instance.modify(res.session, req.body)).error
+        }
+
+        res.send({ error })
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
+
 export default router
