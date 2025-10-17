@@ -77,7 +77,6 @@ const $form ={
                     const disabled = value !== 'other'
 
                     $other.prop('disabled', disabled)
-                    // if (disabled) $other.val(null)
                 },
             })
             $dropdown.state.dropdown({
@@ -115,7 +114,7 @@ const $form ={
 
             $('input').on('change', function() {
                 const $tr = $(this).closest('tr')
-                $tr.find('.unsaved-changes').html('<i class="exclamation triangle icon"></i>')
+                $tr.find('.unsaved-changes').html('<i class="red exclamation triangle icon"></i>').next().prop('disabled', false)
             })
 
             if (data.length) {
@@ -158,10 +157,12 @@ const $form ={
                 })
 
                 $('#create, .save').on('click', function() {
-                    const _id = $(this).data('id')
+                    const $button = $(this)
+                    $button.addClass('loading')
+                    const _id = $button.data('id')
                     if (!_id) return
 
-                    const $fields = $(this).parent().parent().find('input')
+                    const $fields = $button.parent().parent().find('input')
                     const citedOn = $($fields[2]).val()
                     const data = {
                         _id, _aplId: $('#id').val(),
@@ -175,7 +176,12 @@ const $form ={
                     if (
                         !data.violation || (data.violation === 'other' && !data.other) ||
                         !data.citedOn || !data.state
-                    ) return alert('Fill out all required fields')
+                    ) {
+                        alert('Fill out all required fields')
+                        $button.removeClass('loading')
+                            .find('.icon').removeClass('loading')
+                        return
+                    }
 
                     $.ajax('/api/resource/drivers/applications/citation', {
                         method: 'POST',
@@ -184,7 +190,13 @@ const $form ={
                             const { error } = response
                             if (error) return alert(error)
 
-                            location.reload()
+                            if (_id === 'new') location.reload()
+                            else {
+                                $button.prev().html('<i class="green checkmark icon"></i>')
+                                $button.removeClass('loading').prop('disabled', true)
+                                    .find('.icon').removeClass('loading')
+                                setTimeout(() => $button.prev().html(null), 5000)
+                            }
                         },
                     })
                 })
