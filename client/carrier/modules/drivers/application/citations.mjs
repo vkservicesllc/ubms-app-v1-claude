@@ -1,11 +1,11 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
+import { inputEvent } from '/modules/events/form.mjs'
 import Person from '/modules/tools/core/person.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import application, { dropdownEvent } from './hub.mjs'
+import application from './hub.mjs'
 
 const $form ={
     add: $('#new-form'),
@@ -110,12 +110,12 @@ const $form ={
                 },
             })
 
-            $table.fadeIn()
-
             $('input').on('change', function() {
                 const $tr = $(this).closest('tr')
                 $tr.find('.unsaved-changes').html('<i class="red exclamation triangle icon"></i>').next().prop('disabled', false)
             })
+
+            $table.fadeIn()
 
             if (data.length) {
                 const violations = $.ajax('/api/drivers/applications/source/violations', { method: 'POST', async: false }).responseJSON

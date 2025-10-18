@@ -809,6 +809,18 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
                 options._citOtherReason = { text: { input: { id: null, disabled: true } } }
                 break
 
+            case 'accidents':
+                dropdown.accident = ''
+                for (const category in Application.accidentList) {
+                    const items = Application.accidentList[category]
+                    dropdown.accident += `\n${t}<div class="header"><span class="ui teal text">${category}</span></div>`
+
+                    for (const item in items)
+                        dropdown.accident += `\n${t}<div class="item" data-value="${item}">${items[item]}</div>`
+                }
+                options._accOtherType = { text: { input: { id: null, disabled: true } } }
+                break
+
         }
 
         hbs.form = new ApplicationForm(options)

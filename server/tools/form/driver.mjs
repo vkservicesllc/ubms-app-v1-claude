@@ -692,10 +692,28 @@ class ApplicationForm {
         // disabled,
         label: 'Injuries',
     })
+    static _accInjuries2 = createForm({
+        selector: appSelector,
+        target: 'accInjuries',
+        type: 'checkbox',
+        name: 'injuries[]',
+        required,
+        // disabled,
+        label: 'Injuries',
+    })
 
     static _accFatalities = createYesNoForm({
         selector: appSelector,
         target: 'accFatalities',
+        name: 'fatalities[]',
+        required,
+        // disabled,
+        label: 'Fatalities',
+    })
+    static _accFatalities2 = createForm({
+        selector: appSelector,
+        target: 'accFatalities',
+        type: 'checkbox',
         name: 'fatalities[]',
         required,
         // disabled,

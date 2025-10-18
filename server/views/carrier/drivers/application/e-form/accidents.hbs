@@ -63,7 +63,7 @@
     </div>
 
     <div style="margin-left: 20px;">
-        <div style="width: 1260px; margin-top: 20px;">
+        <div style="width: 1440px; margin-top: 20px;">
             <input type="hidden" id="id" value="{{_id}}" />
             <style>td { overflow: visible !important; }</style>
             <table class="ui compact grey table" style="display: none;">
@@ -73,6 +73,8 @@
                         <th style="width: 280px;">Description</th>
                         <th style="width: 200px;">Date</th>
                         <th style="width: 240px;">State</th>
+                        <th class="center aligned" style="width: 140px;">Injuries</th>
+                        <th class="center aligned" style="width: 80px;">Fatalities</th>
                         <th class="right aligned">
                             <button class="ui tiny blue icon button" id="add" title="Add">
                                 <i class="plus icon"></i>
@@ -117,6 +119,16 @@
                                     <div class="menu">{{{dropdown.state}}}
                                     </div>
                                 </div>
+                            </div>
+                        </td>
+                        <td class="ui center aligned form">
+                            <div class="ui checkbox">
+                                {{{form._accInjuries2.checkbox.input}}}<label></label>
+                            </div>
+                        </td>
+                        <td class="ui center aligned form">
+                            <div class="ui checkbox">
+                                {{{form._accFatalities2.checkbox.input}}}<label></label>
                             </div>
                         </td>
                         <td class="right aligned">
@@ -167,6 +179,16 @@
                                     <div class="menu">{{{dropdown.state}}}
                                     </div>
                                 </div>
+                            </div>
+                        </td>
+                        <td class="ui center aligned form">
+                            <div class="ui checkbox">
+                                {{{form._accInjuries2.checkbox.input}}}<label></label>
+                            </div>
+                        </td>
+                        <td class="ui center aligned form">
+                            <div class="ui checkbox">
+                                {{{form._accFatalities2.checkbox.input}}}<label></label>
                             </div>
                         </td>
                         <td class="right aligned">

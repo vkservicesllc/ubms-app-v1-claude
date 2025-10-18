@@ -6,7 +6,7 @@ import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Company from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
-import Driver, { Application, Citation } from '../../tools/core/driver.mjs'
+import Driver, { Application, Citation, Accident } from '../../tools/core/driver.mjs'
 import { inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 
 /* Validators */
@@ -150,16 +150,24 @@ router.post('/driver/application/:formId/delete/:target', User.verify, Team.veri
 
         const { target } = req.params
         const { _id } = req.body
-        let formId, dir
+        let formId, dir, error
 
         switch (target) {
             case 'citation':
                 const citation = await Citation.data(res.session, { _id })
-                const { error } = await citation.delete(res.session)
+                error = (await citation.delete(res.session)).error
                 if (error) return throwErr.data(error)
 
                 formId = citation.formId
                 dir = 'citations'
+                break
+            case 'accident':
+                const accident = await Accident.data(res.session, { _id })
+                error = (await accident.delete(res.session)).error
+                if (error) return throwErr.data(error)
+
+                formId = accident.formId
+                dir = 'accidents'
                 break
         }
 

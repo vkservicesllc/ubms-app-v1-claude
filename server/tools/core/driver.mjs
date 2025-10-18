@@ -2653,18 +2653,96 @@ class Accident {
     constructor(data = {}, light = false) {
         this._id = data._id
         this._aplId = data._aplId
+        this._teamId = data._teamId
+        this.formId = data.formId
+        this.aplCondition = data.condition
+        this.firstName = data.firstName
+        this.middleName = data.middleName
+        this.lastName = data.lastName
+        this.suffix = data.suffix
         this.collision = data.collision
         this.other = data.other
         this.date = data.date
         this.state = data.state
-        this.injuries = data.injuries
-        this.fatalities = data.fatalities
+        this.injuries = bool(data.injuries)
+        this.fatalities = bool(data.fatalities)
 
         if (!light) {
 
             this.id = async () => (await mysql.execute(query.aplAccidents.select('id', {
                 match: { id: Accident.matchIdHash(this._id) },
             })))[0][0].id
+
+            this.log = async field => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+
+                let log = (await mysql.execute(query.aplAccidents.select(fields, {
+                    match: { id: Accident.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (log && fields.includes(field)) log = log[field]
+
+                return log
+            }
+
+
+            this.modify = async (session, data) => {
+                let modified = false,
+                    error = sessionError(session, { branches: [ 'carrier' ] })
+
+                if (error) return { error }
+
+                const id = await this.id()
+
+                const { branch, siteId } = session
+                const modifiedBy = session.user && session.user !== true
+                    ? await session.user.id()
+                    : null
+
+                delete data._id
+                delete data._aplId
+
+                //? Injuries/Fatalities boolean
+                data = processData(data, {
+                    modifiedBy, branch, siteId,
+                    currentData: this, currentUpdateLog: await this.log('updateLog'),
+                })
+
+                const [ result ] = await mysql.execute(query.aplAccidents.update(data, { id }))
+                if (result.affectedRows === 1) modified = true
+
+                return { modified }
+            }
+
+
+            this.delete = async session => {
+                let deleted = false,
+                    error = sessionError(session, { branches: [ 'carrier' ] })
+                const id = await this.id()
+
+                //! Deleting without a log
+                try {
+                    const [ result ] = await mysql.execute(query.aplAccidents.delete({ id }))
+                    if (result.affectedRows > 0) deleted = true
+                } catch(err) {
+                    console.error(err)
+                    error = 'DB Error'
+                }
+
+                if (deleted) {
+                    const { _aplId } = this
+                    const accidents = await Accident.list(session, { _aplId })
+
+                    if (!accidents.length) {
+                        const application = await Application.data(session, { _id: _aplId })
+                        const { error: modError } = await application.modify(session, 'safety', { accidents: false })
+                        if (modError) error = modError
+                    }
+                }
+
+                if (error) return { deleted, error }
+                return { deleted }
+            }
 
         }
     }
@@ -2675,6 +2753,33 @@ class Accident {
     static hashId = (field = 'id') => hash(field, Accident.#algorithm)
 
     static matchIdHash = value => matchHash(value, Accident.#algorithm)
+
+
+    static create = async (session, data) => {
+        if (!session.user || session.user === true) return
+
+        let created = false
+        const { user } = session
+
+        if (data._aplId) {
+            const application = await Application.data(session, { _id: data._aplId })
+            data.aplId = await application.id()
+
+            delete data._aplId
+        }
+        delete data._id
+
+        data = processData(data)
+        data.createdBy = await user.id()
+
+        const [ result ] = await mysql.execute(query.aplAccidents.insert(data))
+        const id = result.insertId
+
+        if (id) created = true
+        else return { error: 'DB Error: Failed to add accident' }
+
+        return { created, data: await Accident.data(session, { id }) }
+    }
 
 
     static #batch = async (session, options = {}) => {

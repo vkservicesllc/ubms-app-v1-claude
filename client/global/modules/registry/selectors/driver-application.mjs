@@ -312,6 +312,8 @@ const selector = {
             dui: 'had-dui',
             criminal: 'had-criminal',
             dotDat: 'dot-drug-alcohol-test-non-compliant',
+            accInjuries: 'had-accident-injuries',
+            accFatalities: 'had-accident-fatalities',
             noExp: 'no-experience',
             straightExp: {
                 box: 'box-truck-experience',

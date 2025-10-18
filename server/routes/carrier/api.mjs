@@ -162,6 +162,9 @@ router.post('/drivers/applications/source/:source', User.verify, Team.verify, (r
             case 'violations':
                 data = Application.violationList
                 break
+            case 'accidents':
+                data = Application.accidentList
+                break
         }
 
         res.send(data)
@@ -170,12 +173,22 @@ router.post('/drivers/applications/source/:source', User.verify, Team.verify, (r
     }
 })
 
-router.post('/drivers/applications/citation/:_id', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/applications/:source/:_id', User.verify, Team.verify, async (req, res) => {
     try {
+        const { source } = req.params
         const { _id } = req.params
-        const data = await Citation.data(res.session, { _id })
+        let Src
 
-        res.send(data)
+        switch (source) {
+            case 'citation':
+                Src = Citation
+                break
+            case 'accident':
+                Src = Accident
+                break
+        }
+
+        res.send(await Src.data(res.session, { _id }))
     } catch (err) {
         throwErr.server(res, null, err)
     }
