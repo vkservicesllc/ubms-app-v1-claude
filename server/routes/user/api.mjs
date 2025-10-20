@@ -89,5 +89,23 @@ router.post('/user/decline/:_id', async (req, res) => {
 })
 
 
+router.post('/token/resend', async (req, res) => {
+    const { clientIp } = req.session
+    const { _id } = req.body
+    const user = await User.data({ ...res.session, user: true }, { _id })
+    user.clientIp = clientIp
+
+    const token = await user.token()
+
+    const response = {
+        status: token ? 'succes' : 'error',
+    }
+    if (token && !config.notification.email.authToken)
+        response.token = token
+
+    res.send(response)
+})
+
+
 
 export default router

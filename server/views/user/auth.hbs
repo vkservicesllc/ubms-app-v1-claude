@@ -25,7 +25,7 @@
                 {{#if (eq status 'expired')}}
                     <p>The provided token is expired.</p>
                     <p>
-                        Please check your email for another verification token.<br />
+                        Please check your email for another verification token.<br/>
                         The new token will expire in {{tokenAge}}.
                     </p>
                 {{/if}}
@@ -41,10 +41,16 @@
                     </div>
                 </div>
             </form>
-            <div class="ui bottom attached message">
-                <i class="icon attention"></i>
-                Once verified, this IP address will be remembered,
-                and you will not be asked for a token from this address in the future.
+            <div class="ui bottom attached message" style="padding-top: 5px;">
+                <p style="margin: 0 0 4px;">
+                    <span class="ui teal text">Did not receive the token?</span>
+                    <button class="ui teal tertiary button" id="resend">Resend</button>
+                </p>
+                <span id="notification">
+                    <i class="icon attention"></i>
+                    Once verified, this IP address will be remembered,
+                    and you will not be asked for a token from this address in the future.
+                </span>
             </div>
         </div>
 

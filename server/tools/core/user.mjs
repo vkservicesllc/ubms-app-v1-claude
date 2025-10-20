@@ -734,7 +734,7 @@ class User extends Person {
                 let { clientIp, token } = params
                 const userId = await this.id()
                 const { tokenAge } = config.session
-                
+
                 if (clientIp) {  // Retrieve Token
                     if (clientIp !== this.clientIp) this.clientIp = clientIp
 
