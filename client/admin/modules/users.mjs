@@ -27,7 +27,7 @@ const $condition = $(conditionClass)
 const $lockedCondition = $(selector.id.radio.condition.locked)
 
 const $title = {
-    all: $('.modal-card-title'),
+    all: $('.modal-card-title:not(#user-security-modal-title)'),
     user: $('#user-modal-title'),
     deleteUser: $('#user-delete-modal-title'),
     userCondition: $('#user-condition-modal-title'),
@@ -327,6 +327,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     if (['D', 'S'].includes(adminStatus) || (adminStatus == 'A' && !row.DS)) {
                         if (row.status[0] != 'D') {
                             cell += `<a class="has-text-danger delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
+                            cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
                             if (!row.decliner)
                                 cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
                         }
@@ -490,7 +491,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             })
         })
 
-        $('.edit-user, .delete-user').click(function() {
+        $('.edit-user, .delete-user').click(function() { //? .reset-user-security
             const src = $(this).hasClass('edit-user') ? 'edit' : 'delete'
             const _id = $(this).data('id')
 
