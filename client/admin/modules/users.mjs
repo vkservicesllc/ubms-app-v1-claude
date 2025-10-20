@@ -369,7 +369,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 $title.all.html(null)
                 message.removeInvite()
                 $(`input:not(${genderClass}):not(${conditionClass}):not([type=search]), select:not('.dt-input')`).val(null)
-                $status.prop('disabled', false).val('U')
+                $status.prop('disabled', false).val(null)
                 $status.find('[value=S]').prop('disabled', false)
                 $gender.prop('checked', false)
                 $condition.prop('checked', false)
@@ -380,11 +380,13 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 $trigger.userLog.hide()
                 $field.status.show()
                 $location.prop('disabled', false).val(adminLocation != 'US' ? adminLocation : null)
+                $location.find('option').prop('disabled', false)
                 $phone.prop('readonly', false)
                 for (const key in $help)
                     $help[key].hide().removeClass('is-danger is-success').html(null)
 
                 $('#user-update-log-modal-list').html(null)
+                $('#user-security-modal-body').html(null)
             }
 
             $('.modal-cancel, .modal-close, .delete:not(.close-role-section)').click(closeModals)
@@ -491,7 +493,23 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             })
         })
 
-        $('.edit-user, .delete-user').click(function() { //? .reset-user-security
+        $('.reset-user-security').click(function() {
+            const _id = $(this).data('id')
+
+            $.ajax(`/api/user/${_id}`, {
+                method: 'POST',
+                success(data) {
+                    const { name, email } = data
+                    $('#user-security-modal-body').html(`
+                        This action will send a password reset link to
+                        <b>${name}</b> at <i>${email}</i>
+                    `)
+                    $('#user-security-modal').addClass('is-active')
+                },
+            })
+        })
+
+        $('.edit-user, .delete-user').click(function() {
             const src = $(this).hasClass('edit-user') ? 'edit' : 'delete'
             const _id = $(this).data('id')
 
@@ -501,19 +519,20 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     const { _id, name } = data
                     $id.val(_id)
 
-                    if (src == 'delete') {
+                    if (src === 'delete') {
                         $title.deleteUser.html(`<small class="has-text-danger is-size-6">Delete User</small> <strong>${escapeHTML(name)}</strong>`)
 
                         return $('#user-delete-modal').addClass('is-active')
                     }
 
                     const { username, email, phone, firstName, lastName, alias, sex, count } = data
+
                     let { status, location } = data
                     status = status[0]
                     location = location[0]
 
                     const $sex = [
-                        $(selector.id.radio.gender.male),
+                        $(selector.id.radio.gender.female),
                         $(selector.id.radio.gender.male),
                     ]
                     let disabled = false
@@ -521,13 +540,15 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${escapeHTML(name)}</strong>`)
                     $hiddenUsername.val(username)
                     // $emailHidden.val(email)
-                    if (status == 'D') {
+                    if (status === 'D') {
                         disabled = true
                         $status.prop('disabled', disabled)
                         $field.status.hide()
                     } else {
                         $status.val(status)
                         if (count.roles) disabled = true
+                        if (status === 'S')
+                            $location.find('option:not([value=US])').prop('disabled', true)
                     }
                     $location.val(location).prop('disabled', disabled)
                     $email.val(email)
@@ -539,7 +560,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     $submit.user.addClass('is-success').text('Update')
                     $trigger.userLog.show()
 
-                    if (location != 'US') {
+                    if (location !== 'US') {
                         $status.find('[value=S]').prop('disabled', true)
                         $phone.prop('readonly', true)
                     }
