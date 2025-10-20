@@ -809,6 +809,15 @@ class User extends Person {
             }
 
 
+            this.reset = async session => {
+                let reset = false
+                const error = sessionError(session, { branches: [ 'user' ] })
+                if (error) return { reset, error }
+
+                return { reset }
+            }
+
+
             this.url = async (session, lastUrl) => {
                 if (lastUrl.slice(0, 5) === '/api/' || lastUrl.includes('/files/') || lastUrl.includes('/image/') || lastUrl.endsWith('.map')) return
 

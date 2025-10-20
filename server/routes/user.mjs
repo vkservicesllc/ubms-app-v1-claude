@@ -234,6 +234,7 @@ router.get('/security', User.verify, (req, res) => {
             hbs.label[prop] = UserForm[prop].text.label()
             hbs.input[prop] = UserForm[prop].text.input({ disabled: false })
         }
+        hbs.label.password = hbs.label.password.replace('>Password<', '>Current Password<')
 
         res.render(key, hbs)
     } catch (err) {
