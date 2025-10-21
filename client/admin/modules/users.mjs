@@ -502,7 +502,11 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     const { name, email } = data
                     $('#user-security-modal-body').html(`
                         This action will send a password reset link to
-                        <b>${name}</b> at <i>${email}</i>
+                        <b>${name}</b> at <i>${email}</i><br/><br/>
+                        <span class="has-text-danger-55">
+                            <i class="fas fa-triangle-exclamation"></i>
+                            The current password will no longer be valid!
+                        </span>
                     `)
                     $('#user-security-modal').addClass('is-active')
                 },
