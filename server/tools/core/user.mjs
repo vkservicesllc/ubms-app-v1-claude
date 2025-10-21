@@ -31,7 +31,6 @@ import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { numeric } from '../../../client/global/modules/tools/utils/number.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
-import { table } from '../utils/knex'
 
 const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
@@ -70,6 +69,7 @@ class User extends Person {
             unscoped: !!data.unscoped,
             DS: data.status === 'S' || data.status === 'D',
             DSA: data.status !== 'U',
+            passReset: data.passReset,
             decliner: data.decliner,
             name: this.fullName('AL'),
             email: data.email,
@@ -811,12 +811,46 @@ class User extends Person {
 
             this.reset = async session => {
                 let reset = false
-                const error = sessionError(session, { branches: [ 'admin' ] })
+                let error = sessionError(session, { branches: [ 'admin' ] })
                 if (error) return { reset, error }
-console.log(this)
-                //
 
-                return { reset }
+                const resetId = await User.#resetId()
+                const userId = await this.id()
+                const createdBy = await session.user.id()
+
+                await mysql.execute(query.passReset.delete({ userId }))
+                const [ result ] = await mysql.execute(query.passReset.insert({ resetId, userId, createdBy }))
+
+                if (result.affectedRows > 0) {
+                    const [ result ] = await mysql.execute(query.main.update({ _passKey: null, passReset: true }, { id: userId }))
+                    if (result.affectedRows > 0) reset = true
+                    else error = 'DB Error: State 2'
+                } else error = 'DB Error: State 1'
+
+                if (reset) {
+                    const { name, email } = this
+
+                    const url = `${addrBook.user}/pass-reset/${_id}?form=${resetId}`
+                    const options = {
+                        from: sender,
+                        to: email,
+                        subject: 'Password Reset',
+                        html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                            Dear ${name},<br/>
+                            Your request to reset the password has been received.
+                            A secure link has been generated for you to create a new password. Please click the link below to proceed:<br/><br/>
+                            <a href="${url}" target="_blank">Reset Password</a><br/><br/>
+                            Best ragards,<br/>
+                            ${appName} Administration
+                        </div>`,
+                    }
+
+                    transporter.sendMail(options, error => {
+                        if (error) console.error(error)
+                    })
+                }
+
+                return { reset, error }
             }
 
 
@@ -987,6 +1021,23 @@ console.log(this)
     }
 
 
+    static #resetId = async () => {
+        let resetId, found = true
+
+        do {
+            resetId = generateRandomString(inputLength.user.token.max)
+
+            const [ rows ] = await mysql.execute(query.passReset.select('resetId', {
+                match: { resetId }
+            }))
+
+            if (!rows.length) found = false
+        } while (found)
+
+        return resetId
+    }
+
+
     static #batch = (session, options = {}) => {
         if (!session) return []
         const { branch, siteId } = session
@@ -1007,6 +1058,7 @@ console.log(this)
                     'status',
                     'condition',
                     'location',
+                    'passReset',
                     'unscoped',
                     'decliner',
                 ],

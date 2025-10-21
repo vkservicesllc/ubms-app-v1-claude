@@ -388,5 +388,21 @@ router.post('/register', [
 ], validationCheck, User.register)
 
 
+router.get('/pass-reset/:_id', async (req, res) => {
+    try {
+        const { _id } = req.params
+        const { form: resetId } = req.query
+
+        const user = await User.data(res.session, { _id })
+        if (!user || !resetId) return respond404(res)
+
+        //!
+        res.send('...in progress')
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
+
 
 export default router

@@ -216,7 +216,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     data = data[0]
                     if (row.status[0] == 'D' || (adminStatus == 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
                     if (row.decliner) return '<i class="fas fa-user-lock has-text-grey"></i>'
-                    if (!row.username) return '<i class="fas fa-user-clock has-text-grey"></i>'
+                    if (!row.username || row.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
 
                     const condition = { fa: 'user-check', style: 'success' }
 
@@ -277,6 +277,9 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 defaultContent: '<small class="has-text-danger">...pending</small>',
                 render(data, type, row) {
                     if (row.decliner) return '<small class="has-text-danger">N/A</small>'
+
+                    if (row.passReset)
+                        return data + ' <sup><i class="fas fa-clock-rotate-left has-text-grey"></i></sup>'
 
                     return escapeHTML(data)
                 },
@@ -347,7 +350,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         createdRow(tr, data) {
             const [ condition ] = data.condition
 
-            if (condition != 'A') $(tr).addClass('is-warning')
+            if (condition != 'A' || data.passReset) $(tr).addClass('is-warning')
         },
 
         lengthMenu,
