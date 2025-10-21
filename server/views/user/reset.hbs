@@ -1,0 +1,36 @@
+{{> head}}
+
+    <div class="ui container">
+        <div class="ui attached success icon message" id="form-header">
+            <i class="id user shield icon"></i>
+            <div class="content">
+                <div class="header">{{siteName}} Password Reset Tool</div>
+                <span class="ui green text">A strong and complex password is required</span>
+            </div>
+        </div>
+        <form class="ui form attached fluid segment" id="pass-reset-form" action="/pass-reset" method="POST" autocomplete="off">
+            {{{input.hiddenId}}}
+            <div class="two fields">
+                <div class="field">
+                    {{{label.createPassword}}}
+                    <div class="ui corder labeled input">
+                        {{{input.createPassword}}}
+                        <div class="ui corner label">
+                            <i class="ui eye slash icon" id="eye-icon"></i>
+                        </div>
+                    </div>
+                    <p class="help" id="password-help" style="display: none;"><span class="ui text"></span></p>
+                </div>
+                <div class="field">
+                    {{{label.confirmPassword}}}
+                    {{{input.confirmPassword}}}
+                    <p class="help" id="conf-password-help" style="display: none;"><span class="ui text"></span></p>
+                </div>
+            </div>
+        </form>
+        <div class="ui bottom attached center aligned message">
+            <span class="ui small text">{{{copyright}}}</span>
+        </div>
+    </div>
+
+{{> foot}}

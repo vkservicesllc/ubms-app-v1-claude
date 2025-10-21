@@ -11,8 +11,7 @@ import length from '../../client/global/modules/registry/length.mjs'
 
 /* Tools */
 import Site from '../tools/core/site.mjs'
-import User from '../tools/core/user.mjs'
-import Query from '../tools/utils/query.mjs'
+import User, { query } from '../tools/core/user.mjs'
 import { respond404 } from '../tools/utils/response.mjs'
 import { calculateHourAge } from '../../client/global/modules/tools/utils/date.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
@@ -20,12 +19,6 @@ import { capitalizeEach } from '../../client/global/modules/tools/utils/string.m
 /* Forms && Validators */
 import UserForm from '../tools/form/user.mjs'
 import validationCheck from '../tools/form/validator.mjs'
-
-
-const query = {
-    users: new Query(db.online, 'users'),
-    registration: new Query(db.online, 'user_registration'),
-}
 
 
 
@@ -396,8 +389,30 @@ router.get('/pass-reset/:_id', async (req, res) => {
         const user = await User.data(res.session, { _id })
         if (!user || !resetId) return respond404(res)
 
-        //!
-        res.send('...in progress')
+        const [ result ] = await mysql.execute(query.passReset.select('userId', {
+            userId: await user.id(), resetId,
+        }))
+        if (!result.length) return respond404(res)
+
+        const key = 'reset'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        hbs.label = {}
+        hbs.input = {
+            hiddenId: UserForm.id.hidden.input({ value: _id }),
+        }
+
+        for (const prop of ['newUsername', 'createPassword', 'confirmPassword']) {
+            hbs.label[prop] = UserForm[prop].text.label()
+            hbs.input[prop] = UserForm[prop].text.input({ disabled: false })
+        }
+
+        hbs.length = {
+            password: length.user.password,
+        }
+
+        res.render(key, hbs)
     } catch (err) {
         throwErr.server(res, null, err)
     }

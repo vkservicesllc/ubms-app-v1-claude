@@ -48,6 +48,15 @@ module.exports = {
         },
     },
 
+    'reset': {
+        external: [ ...offline.external ],
+        internal: {
+            css: [ ...offline.internal.css, 'fomantic-ui.form', 'register' ],
+            js: [ ...offline.internal.js ],
+            mjs: [ ...offline.internal.mjs ],
+        },
+    },
+
     'auth': {
         external: [ ...offline.external ],
         internal: {
