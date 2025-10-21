@@ -114,6 +114,23 @@ export default class {
     }
 
 
+    static reset = async (req, res) => {
+        try {
+            const { _id } = req.body
+    
+            const user = await User.data(res.session, { _id })
+            if (!user) return throwErr.server(res, errMsg.user)
+    
+            const { error } = await user.reset(res.session)
+            if (error) return throwErr.server(res, error)
+    
+            res.redirect(url)
+        } catch (err) {
+            throwErr.server(res, null, err)
+        }
+    }
+
+
     static upsertRole = async (req, res) => {
         try {
             const { category } = req.params

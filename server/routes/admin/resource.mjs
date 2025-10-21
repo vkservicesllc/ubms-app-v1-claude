@@ -28,6 +28,7 @@ userFields.map(prop => validateUser.push(UserForm[prop].validate()))
 router.post('/user', User.verify, UserMW.resetValidation, validateUser, validationCheck, UserMW.upsert)
 router.post('/user/modify/condition', User.verify, [ UserForm.condition.validate() ], validationCheck, UserMW.modifyCondition)
 router.post('/user/delete', User.verify, UserMW.delete)
+router.post('/user/reset', User.verify, UserMW.reset)
 
 router.post('/user/:_id/roles', User.verify, UserMW.updateRoles)
 router.post('/user/:_id/teams', User.verify, UserMW.updateTeams)

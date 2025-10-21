@@ -811,8 +811,10 @@ class User extends Person {
 
             this.reset = async session => {
                 let reset = false
-                const error = sessionError(session, { branches: [ 'user' ] })
+                const error = sessionError(session, { branches: [ 'admin' ] })
                 if (error) return { reset, error }
+console.log(this)
+                //
 
                 return { reset }
             }

@@ -243,7 +243,10 @@
                             </header>
                             <section class="modal-card-body" id="user-security-modal-body"></section>
                             <footer class="modal-card-foot">
-                                <button class="button is-secondary">Reset Password</button>
+                                <form action="/resource/user/reset" method="POST">
+                                    {{{form.resetId.hidden.input}}}
+                                    <button type="submit" class="button is-secondary">Reset Password</button>
+                                </form>
                             </footer>
                         </div>
                     </div>

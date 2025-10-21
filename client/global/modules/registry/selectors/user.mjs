@@ -34,6 +34,7 @@ const selector = {
             username: 'username',
             modifyId: 'modify-id',
             deleteId: 'delete-id',
+            resetId: 'reset-id',
         },
         text: {
             username: 'username',

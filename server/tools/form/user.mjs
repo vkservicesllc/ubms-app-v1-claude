@@ -144,6 +144,7 @@ class UserForm {
     static id = createIdForm({ selector })
     static modifyId = createIdForm({ selector, target: 'modifyId' })
     static deleteId = createIdForm({ selector, target: 'deleteId' })
+    static resetId = createIdForm({ selector, target: 'resetId' })
 
     static hiddenUsername = createForm({
         selector,
