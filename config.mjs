@@ -2,11 +2,11 @@ require('dotenv').config()
 const { env } = process
 
 
-const author = 'VK Services, LLC'
 const domain = env.SERVER__DOMAIN || null
 const name = env.SITE__APP_NAME
 const alias = env.SITE__APP_ALIAS || env.SITE__APP_NAME
 const description = env.SITE__APP_DESC || null
+const author = env.SITE__APP_AUTHOR
 
 
 const config = {
