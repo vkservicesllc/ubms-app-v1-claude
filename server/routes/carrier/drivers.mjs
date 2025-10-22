@@ -594,9 +594,6 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         /* RESIDENCE */
         {
             dropdown.addrState = ''
-
-            for (const state in Address.stateList)
-                dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
         }
 
         /* DRIVER's LICENSE */
@@ -708,7 +705,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             }
         }
 
-        for (const prop of ['dlState', 'schState', 'llcState'])
+        for (const prop of ['addrState', 'dlState', 'schState', 'llcState'])
             for (const state in Address.stateList) {
                 dropdown[prop] += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
             }
