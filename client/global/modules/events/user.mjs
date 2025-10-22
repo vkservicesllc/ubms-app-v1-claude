@@ -138,6 +138,13 @@ export const loginEvent = (callback = {}) => {
                         if (onAjax) onAjax(response, { username, $form, $username, $password })
                         else $form.unbind().submit()
                     },
+                    error(err) {
+                        const { error } = err.responseJSON
+                        if (error) {
+                            alert(error)
+                            location.reload()
+                        }
+                    },
                 })
             }, 500)
     })
