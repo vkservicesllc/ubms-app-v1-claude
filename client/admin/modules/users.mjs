@@ -330,9 +330,10 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     if (['D', 'S'].includes(adminStatus) || (adminStatus == 'A' && !row.DS)) {
                         if (row.status[0] != 'D') {
                             cell += `<a class="has-text-danger delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
-                            cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
-                            if (!row.decliner)
+                            if (!row.decliner) {
+                                cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
                                 cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
+                            }
                         }
                         if (row.status[0] != 'D' || adminStatus == 'D')
                             if (!row.decliner)

@@ -1490,6 +1490,26 @@ class User extends Person {
     }
 
 
+    static reset = async (req, res) => {
+        try {
+            const { _id, password } = req.body
+
+            const [ result ] = await mysql.execute(query.main.update({
+                _passKey: await Bun.password.hash(password),
+                passReset: false,
+            }, { id: User.matchIdHash(_id) }))
+
+            if (result.affectedRows === 1)
+                await mysql.execute(query.passReset.delete({ userId: User.matchIdHash(_id) }))
+
+            res.redirect(addrBook.default)
+        } catch (err) {
+            const msg = 'Registration failed: Server could not process the request'
+            throwErr.data.server(res, msg, err)
+        }
+    }
+
+
 }
 
 

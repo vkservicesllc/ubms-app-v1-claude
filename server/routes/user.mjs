@@ -419,5 +419,10 @@ router.get('/pass-reset/:_id', async (req, res) => {
 })
 
 
+router.post('/pass-reset', [
+    UserForm.createPassword.validate(),
+], validationCheck, User.reset)
+
+
 
 export default router
