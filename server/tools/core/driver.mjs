@@ -1417,6 +1417,7 @@ class Application {
                 src = 'aplAddresses'
                 fields = [
                     'since',
+                    'enough',
                     'address1',
                     'address2',
                     'city',
