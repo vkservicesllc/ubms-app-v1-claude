@@ -297,7 +297,7 @@ class ApplicationForm {
         type: 'hidden',
         name: 'addrEnough',
         validator: {
-            sanitize: value => value === '1',
+            sanitizer: value => value === '1',
         },
     })
     static addrSince = createSinceForm({ selector: appSelector, target: 'addrSince', name: 'addrSince', label: 'Living since' })
@@ -360,7 +360,7 @@ class ApplicationForm {
         type: 'hidden',
         name: 'enough',
         validator: {
-            sanitize: value => value === '1',
+            sanitizer: value => value === '1',
         },
     })
 
