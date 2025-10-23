@@ -22,7 +22,7 @@ const applicantProfileFields = [
     'firstName', 'middleName', 'lastName', 'suffix',
     'gender', 'dob', 'ssn', 'marital', 'phone', 'email',
 ]
-const applicantAddressFields = ['address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince']
+const applicantAddressFields = ['addrEnough', address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince']
 const applicantFields = [...applicantProfileFields, 'position', ...applicantAddressFields, 'status', 'statusExp']
 applicantFields.forEach(prop => validateApplicant.push(ApplicationForm[prop].validate()))
 applicantProfileFields.forEach(prop => validateApplicantProfile.push(ApplicationForm[prop].validate()))
@@ -31,7 +31,7 @@ applicantAddressFields.forEach(prop => validateApplicantAddress.push(Application
 const validateApplicantPrevAddress = []
 const validatePrevAddressFields = [
     'livedAbroad', 'country',
-    '_addrSince', '_address1', '_address2',
+    '_addrSince', '_addrEnough', '_address1', '_address2',
     '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
 ]
 validatePrevAddressFields.forEach(prop => validateApplicantPrevAddress.push(ApplicationForm[prop].validate()))
