@@ -8,6 +8,7 @@ const selector = {
             gender: 'gender',
             address: 'address',
             since: 'update-date',
+            prevAddrEnough: 'prev-address-enough',
             position: 'position',
             driverLicense: 'driver-license',
             medCard: 'medical-card',
@@ -78,6 +79,8 @@ const selector = {
             id: 'id',
             deleteId: 'delete-id',
             appliedOn: 'applied-on',
+            addrEnough: 'address-enough',
+            prevAddrEnough: 'prev-address-enough',
         },
         text: {
             pin: 'pin',

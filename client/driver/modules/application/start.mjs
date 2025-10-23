@@ -22,6 +22,7 @@ const zipId = TS.addrZip
 const cityId = TS.addrCity
 const stateId = SS.addrState
 const addrSinceId = TS.addrSince
+const addrEnoughId = selector.id.hidden.addrEnough
 const positionId = SS.position
 const statusExpId = TS.statusExp
 
@@ -276,23 +277,26 @@ dateMask(addrSinceId, {
         $since.removeClass('is-valid is-invalid')
     },
     onComplete(mask, $since) {
-        const since = mask.value
+        let since = mask.value
 
         if (since) {
-            const date = moment(since, 'MM/DD/YYYY', true)
+            since = moment(since, 'MM/DD/YYYY', true)
 
-            if (!date.isValid()) {
+            if (!since.isValid()) {
                 $since.addClass('is-invalid')
                 $help.addrSince.text('* Invalid date')
             } else {
                 const today = moment()
 
-                if (date.isAfter(today)) {
+                if (since.isAfter(today)) {
                     $since.addClass('is-invalid')
                     $help.addrSince.text('* Future date forbidden')
                 } else {
                     $since.addClass('is-valid')
                     sessionStorage.setItem(addrSinceId.replace('#', ''), since)
+
+                    const limit = today.clone().subtract(3, 'years')
+                    $(addrEnoughId).val(since.isBefore(limit) ? '1' : '0')
                 }
             }
         }

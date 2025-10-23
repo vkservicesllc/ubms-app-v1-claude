@@ -10,6 +10,7 @@ const addr2Id = TS.address2
 const zipId = TS.addrZip
 const cityId = TS.addrCity
 const stateId = SS.addrState
+const addrEnoughId = selector.id.hidden.addrEnough
 const addrSinceId = TS.addrSince
 const livedAbroadId = TR.livedAbroad1
 const countryId = SS.country
@@ -73,11 +74,14 @@ dateMask(addrSinceId, {
                 } else {
                     const limit = moment($(selector.id.hidden.appliedOn).val()).clone().subtract(3, 'years')
                     const $prior = $('#prior-residence')
+                    const $enough = $(addrEnoughId)
 
                     if (since.isBefore(limit)) {
+                        $enough.val('1')
                         $prior.hide().find('input, select').prop('disabled', true)
                         $since.addClass('is-valid')
                     } else {
+                        $enough.val('0')
                         const livedAbroad = {}, props = ['yes', 'no']
                         let minDate
 

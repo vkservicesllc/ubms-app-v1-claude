@@ -759,10 +759,10 @@ class Application {
                     currentData.addrSince = currentData.since
                     currentData.addrEnough = currentData.enough
 
-                    const addrEnough = !dateAfter(data.addrSince, 3, 'years', this.finishedAt)
-                    const { addresses, livedAbroad } = data
+                    // const addrEnough = !dateAfter(data.addrSince, 3, 'years', this.finishedAt)
+                    const { addresses, addrEnough, livedAbroad } = data
                     delete data.addresses
-                    data.addrEnough = addrEnough
+                    // data.addrEnough = addrEnough
                     if (this.step === 0) data.step = 1
 
                     data = processData(data, {
@@ -774,7 +774,7 @@ class Application {
 
                     if (!addrEnough && !livedAbroad) {
                         const addrData = []
-                        const { address1, address2, zip, city, state, since, livedAbroad } = addresses
+                        const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
                         const count = zip.length
 
                         for (let i = 0; i < count; i++) {
@@ -786,6 +786,7 @@ class Application {
                                 city: city[i],
                                 state: state[i],
                                 since: since[i],
+                                enough: enough[i],
                                 livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
                             })
                         }
@@ -1772,11 +1773,12 @@ class Application {
         }
         data.createdIn = JSON.stringify(createdIn)
 
-        if (dateAfter(data.addrSince, 3, 'years')) {
-            /* Database has default values for the else condition */
-            data.addrEnough = false
-            data.step = 0
-        }
+        // if (dateAfter(data.addrSince, 3, 'years')) {
+        //     /* Database has default values for the else condition */
+        //     data.addrEnough = false
+        //     data.step = 0
+        // }
+        if (!data.addrEnough) data.step = 0
 
         let found = true
         do {

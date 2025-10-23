@@ -23,7 +23,7 @@ const createForm = (input = {}) => {
     if (name && (input.multiple === true || (type === 'checkbox' && data)))
         name += '[]'
 
-    if (type === 'hidden' || !name) validator = false
+    if (!name) validator = false
     const form = { properties: { required: required === true, initialType: type } }
 
     const initializeInput = (type, key, i) => {

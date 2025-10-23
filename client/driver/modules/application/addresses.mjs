@@ -120,6 +120,7 @@ function drawAddressForms() {
             if (!data.length)
                 data.push({
                     since: null,
+                    enough: null,
                     address1: null,
                     address2: null,
                     city: null,
