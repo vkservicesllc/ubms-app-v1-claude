@@ -5,6 +5,7 @@ const throwErr = require('../../tools/utils/error').data
 import moment from 'moment'
 import Person, { Relationship } from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
+import Geography from '../../../client/global/modules/tools/core/geography.mjs'
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
@@ -362,11 +363,13 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             misc: `${recUrl}/misc`,
         }
         hbs.linkUrl = {
+            priorAddr: `${url}/prior-residence`,
             citations: `${url}/citations`,
             accidents: `${url}/accidents`,
         }
         hbs.length = {}
         hbs.linkColor = {
+            // priorAddr: 'blue',
             citations: 'blue',
             accidents: 'blue',
         }
@@ -594,6 +597,10 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         /* RESIDENCE */
         {
             dropdown.addrState = ''
+            dropdown.country = ''
+            for (const country in Geography.countryList) {
+                dropdown.country += `\n${t}<div class="item" data-value="${country}">${Geography.countryList[country]}</div>`
+            }
         }
 
         /* DRIVER's LICENSE */

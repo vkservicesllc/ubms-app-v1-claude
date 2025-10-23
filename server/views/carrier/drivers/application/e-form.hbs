@@ -619,7 +619,31 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="three wide field" style="display: none;">
+                                    <label></label>
+                                    <div class="ui checkbox">
+                                        {{{form.livedAbroad2.checkbox.input}}}
+                                        {{{form.livedAbroad2.checkbox.label}}}
+                                    </div>
+                                </div>
+                                <div class="five wide field" style="display: none;">
+                                    {{{form.country.select.label}}}
+                                    <div class="ui fluid selection disabled required dropdown" id="addr-country-dropdown">
+                                        {{{form.country.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.country}}}
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="one wide field"></div>
+                                <div class="five wide field" id="prior-addresses" style="display: none;">
+                                    <label></label>
+                                    <a class="ui labeled basic icon button" href="{{linkUrl.priorAddr}}">
+                                        <i class="check icon"></i>
+                                        <span>Prior Residence <i class="angle double right icon"></i></span>
+                                    </a>
+                                </div>
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
@@ -633,6 +657,7 @@
                             <h5 class="ui blue text first header">Driver's License</h5>
                             <div class="ui compact grid" style="margin-top: 5px;">
                                 <div class="four wide field">
+                                    <label></label>
                                     <div class="ui checkbox">
                                         {{{form.dlCommercial2.checkbox.input}}}
                                         {{{form.dlCommercial2.checkbox.label}}}

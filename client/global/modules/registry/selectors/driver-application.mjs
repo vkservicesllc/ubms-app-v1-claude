@@ -202,6 +202,14 @@ const selector = {
                 divorced: 'marital-divorced',
                 widowed: 'marital-widowed',
             },
+            livedAbroad1: {
+                yes: 'had-foreign-residence-before-last',
+                no: 'had-no-foreign-residence-before-last',
+            },
+            livedAbroad2: {
+                yes: 'had-foreign-residence-before-prev',
+                no: 'had-no-foreign-residence-before-prev',
+            },
             status: {
                 citizen: 'citizen-status',
                 resident: 'resident-status',
@@ -294,16 +302,9 @@ const selector = {
                 yes: 'llc-assistance-needed',
                 no: 'llc-assistance-not-needed',
             },
-            livedAbroad1: {
-                yes: 'had-foreign-residence-before-last',
-                no: 'had-no-foreign-residence-before-last',
-            },
-            livedAbroad2: {
-                yes: 'had-foreign-residence-before-prev',
-                no: 'had-no-foreign-residence-before-prev',
-            },
         },
         checkbox: {
+            livedAbroad1: 'had-foreign-residence-before-last',
             dlCommercial: 'driver-license-commercial',
             dlDenied: 'driver-license-denied',
             dlRevoked: 'driver-license-revoked',

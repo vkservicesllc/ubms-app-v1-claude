@@ -298,31 +298,6 @@ class ApplicationForm {
 
     static marital = createMaritalStatus({ selector: appSelector, required })
 
-    static status = createForm({
-        selector: appSelector,
-        target: 'status',
-        type: 'select/radio',
-        name: 'legalStatus',
-        data: Application.legalStatusList,
-        keys: [ 'citizen', 'resident', 'authorized' ],
-        required,
-        disabled,
-        label: 'Immigration Status',
-        validator: {
-            rule: 'numeric',
-            sanitizer: value => +value,
-        },
-    })
-
-    static statusExp = createDateForm({
-        selector: appSelector,
-        target: 'statusExp',
-        name: 'legalExpiration',
-        required,
-        disabled,
-        label: 'Status Expires on',
-    })
-
     static livedAbroad = createYesNoForm({
         selector: appSelector,
         target: 'livedAbroad1',
@@ -332,6 +307,14 @@ class ApplicationForm {
         disabled,
         label: 'Lived Abroad',
     }, true)
+
+    static livedAbroad2 = createForm({
+        selector: appSelector,
+        target: 'livedAbroad1',
+        type: 'checkbox',
+        name: 'livedAbroad',
+        label: 'Lived abroad before this date',
+    })
 
     static country = (function() {
         const data = { ...Geography.countryList }
@@ -410,6 +393,31 @@ class ApplicationForm {
         required,
         disabled,
         label: 'Lived Abroad',
+    })
+
+    static status = createForm({
+        selector: appSelector,
+        target: 'status',
+        type: 'select/radio',
+        name: 'legalStatus',
+        data: Application.legalStatusList,
+        keys: [ 'citizen', 'resident', 'authorized' ],
+        required,
+        disabled,
+        label: 'Immigration Status',
+        validator: {
+            rule: 'numeric',
+            sanitizer: value => +value,
+        },
+    })
+
+    static statusExp = createDateForm({
+        selector: appSelector,
+        target: 'statusExp',
+        name: 'legalExpiration',
+        required,
+        disabled,
+        label: 'Status Expires on',
     })
 
 
