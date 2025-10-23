@@ -297,6 +297,7 @@ class ApplicationForm {
         type: 'hidden',
         name: 'addrEnough',
         validator: {
+            rule: 'boolean',
             sanitizer: value => value === '1',
         },
     })
@@ -360,6 +361,7 @@ class ApplicationForm {
         type: 'hidden',
         name: 'enough',
         validator: {
+            rule: 'boolean',
             sanitizer: value => value === '1',
         },
     })
