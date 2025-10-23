@@ -286,17 +286,26 @@ class ApplicationForm {
     static ssn = createSsnForm({ selector: appSelector, target: 'ssn' })
     static gender = createGenderForm({ selector: appSelector, target: 'gender', group: 'gender', required })
 
+    static marital = createMaritalStatus({ selector: appSelector, required })
+
     static phone = createPhoneForm({ selector: appSelector, target: 'phone', required })
     static email = createEmailForm({ selector: appSelector, target: 'email', required })
 
+    static addrEnough = createForm({
+        selector: appSelector,
+        target: 'addrEnough',
+        type: 'hidden',
+        name: 'addrEnough',
+        validator: {
+            sanitize: value => value === '1',
+        },
+    })
     static addrSince = createSinceForm({ selector: appSelector, target: 'addrSince', name: 'addrSince', label: 'Living since' })
     static address1 = createAddressForm({ selector: appSelector, target: 'address1' })
     static address2 = createAddressForm({ selector: appSelector, target: 'address2' }, { idx: 2 })
     static addrZip = createAddrZipForm({ selector: appSelector, target: 'addrZip' })
     static addrCity = createAddrCityForm({ selector: appSelector, target: 'addrCity' })
     static addrState = createAddrStateForm({ selector: appSelector, target: 'addrState' })
-
-    static marital = createMaritalStatus({ selector: appSelector, required })
 
     static livedAbroad = createYesNoForm({
         selector: appSelector,
@@ -307,7 +316,6 @@ class ApplicationForm {
         disabled,
         label: 'Lived Abroad',
     }, true)
-
     static livedAbroad2 = createForm({
         selector: appSelector,
         target: 'livedAbroad1',
@@ -343,6 +351,17 @@ class ApplicationForm {
         name: 'addresses[since][]',
         disabled,
         label: 'Lived since'
+    })
+
+    static _addrEnough = createForm({
+        selector: appSelector,
+        target: 'prevAddrEnough',
+        group: 'prevAddrEnough',
+        type: 'hidden',
+        name: 'enough',
+        validator: {
+            sanitize: value => value === '1',
+        },
     })
 
     static _address1 = createAddressForm({
