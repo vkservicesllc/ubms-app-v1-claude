@@ -153,8 +153,7 @@ nameEvent(TS.middleName)
 nameEvent(TS.lastName, {
     sfxId: true,
     onChange(lastName, $lastName, suffix) {
-        if (suffix)
-            $dropdown.suffix.dropdown('set selected', suffix)
+        if (suffix) $dropdown.suffix.dropdown('set selected', suffix)
     },
 })
 

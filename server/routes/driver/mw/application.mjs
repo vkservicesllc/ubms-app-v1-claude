@@ -298,6 +298,7 @@ export const applicationProgress = async (req, res) => {
                 address1, address2, addrZip, addrCity,
                 addrState: application.address.state[0],
                 addrSince: moment(application.address.since).format('MM/DD/YYYY'),
+                addrEnough: application.address.enough ? '1' : '0',
             }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })

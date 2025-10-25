@@ -72,6 +72,7 @@ if (aplStatus === 'started') {
     phoneId,
     emailId,
     genderId,
+    addrEnoughId,
     addr1Id,
     addr2Id,
     zipId,
@@ -215,8 +216,8 @@ dateMask(dobId, {
             }
 
             if (invalid) $help.dob.text(invalid)
-            else sessionStorage.setItem(dobId.replace('#', ''), dob)
-        } else sessionStorage.setItem(dobId.replace('#', ''), dob)
+            else sessionStorage.setItem(dobId.replace('#', ''), moment(dob, 'MM/DD/YYYY').format('MM/DD/YYYY'))
+        }
 
         if (check($form)) $help.form.hide().html(null)
     },
@@ -293,10 +294,12 @@ dateMask(addrSinceId, {
                     $help.addrSince.text('* Future date forbidden')
                 } else {
                     $since.addClass('is-valid')
-                    sessionStorage.setItem(addrSinceId.replace('#', ''), since)
+                    sessionStorage.setItem(addrSinceId.replace('#', ''), moment(since, 'MM/DD/YYYY').format('MM/DD/YYYY'))
 
                     const limit = today.clone().subtract(3, 'years')
-                    $(addrEnoughId).val(since.isBefore(limit) ? '1' : '0')
+                    const addrEnough = since.isBefore(limit) ? '1' : '0'
+                    $(addrEnoughId).val(addrEnough)
+                    sessionStorage.setItem(addrEnoughId.replace('#', ''), addrEnough)
                 }
             }
         }
