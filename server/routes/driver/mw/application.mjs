@@ -341,6 +341,7 @@ export const applicationProgress = async (req, res) => {
 
             updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 13 })
             options._addrState.select.input.options = { valOpt: true }
+            options._addrEnough = { hidden: { input: { class: 'driver-application-prev-addr-enough-hidden-input' } } }
 
             if (values.country) {
                 hbs.countryDisplay = ''

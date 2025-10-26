@@ -359,7 +359,7 @@ class ApplicationForm {
         target: 'prevAddrEnough',
         group: 'prevAddrEnough',
         type: 'hidden',
-        name: 'enough',
+        name: 'addresses[enough][]',
         validator: {
             rule: 'boolean',
             sanitizer: value => value === '1',

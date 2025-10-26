@@ -220,10 +220,15 @@ function resetEvents() {
                             $help.html(msg)
                         } else {
                             const $livedAbroad = $since.parent().parent().next()
+                            //! It's too bad I had to use a custom class
+                            const $enough = $since.parent().parent().parent().find('.driver-application-prev-addr-enough-hidden-input')
                             const minDate = moment($(selector.id.hidden.appliedOn).val()).clone().subtract(3, 'years')
 
-                            if (since.isSameOrAfter(minDate)) $livedAbroad.show().find('input').prop('disabled', false)
-                            else {
+                            if (since.isSameOrAfter(minDate)) {
+                                $livedAbroad.show().find('input').prop('disabled', false)
+                                $enough.val('0')
+                            } else {
+                                $enough.val('1')
                                 $livedAbroad.hide().find('input').prop('disabled', true)
                                 $country.hide().find('select').prop('disabled', true)
                             }

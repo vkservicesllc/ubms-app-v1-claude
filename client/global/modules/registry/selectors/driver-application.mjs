@@ -4,11 +4,11 @@ const prefix = 'driver-application'
 
 const selector = {
     class: {
+        //? APARENTLY NOT WORKING
         combo: {
             gender: 'gender',
             address: 'address',
             since: 'update-date',
-            prevAddrEnough: 'prev-address-enough',
             position: 'position',
             driverLicense: 'driver-license',
             medCard: 'medical-card',
@@ -17,6 +17,10 @@ const selector = {
             llcDetails: 'llc-details',
             currentVhlMMT: 'current-vehicle-make-model-type',
         },
+        //! doesn't work because "initialize" function doesn't allow it
+        // hidden: {
+        //     prevAddrEnough: 'prev-address-enough',
+        // },
         text: {
             citDate: 'citation-date',
             accDate: 'accident-date',
