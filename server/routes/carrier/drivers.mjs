@@ -366,12 +366,14 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             priorAddr: `${url}/prior-residence`,
             citations: `${url}/citations`,
             accidents: `${url}/accidents`,
+            prevEmployment: `${url}/prev-employers`,
         }
         hbs.length = {}
         hbs.linkColor = {
             // priorAddr: 'blue',
             citations: 'blue',
             accidents: 'blue',
+            prevEmployment: 'red',
         }
 
         hbs._id = application._id
@@ -659,6 +661,12 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
             }
         }
 
+        /* PREVIOUS EMPLOYERS */
+        {
+            hbs.length.prevEmployment = (await application.data('employers', res.session)).data.length
+            if (hbs.length.prevEmployment) hbs.linkColor.prevEmployment = 'blue'
+        }
+
         /* PREFERENCE */
         {
             // Desired Start Timeframe
@@ -784,12 +792,16 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
         hbs.finishedAt = moment(application.finishedAt).format('lll')
 
         const backLinkQuery = {
+            'prior-residence': 'residence',
             citations: 'legal-compliance',
             accidents: 'safety',
+            'prev-employers': 'prev-employment',
         }[target]
         const backLinkName = {
+            'prior-residence': 'Current Residence',
             citations: 'Legal Compliance',
             accidents: 'Safety',
+            'prev-employers': 'Previous Employment',
         }[target]
         hbs.backLink = `<a href="/drivers/application/${formId}/e-form?${backLinkQuery}">${backLinkName}</a>`
 
@@ -800,6 +812,12 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
             dropdown.state += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
 
         switch (target) {
+
+            case 'prior-residence':
+                if (application.address.enough) return respond404(res)
+                //! IMPORTANT
+                //? if not enough and country before current address (DO NOT ACCEPT) --- later
+                break
 
             case 'citations':
                 dropdown.violation = ''
@@ -823,6 +841,9 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
                         dropdown.accident += `\n${t}<div class="item" data-value="${item}">${items[item]}</div>`
                 }
                 options._accOtherType = { text: { input: { id: null, disabled: true } } }
+                break
+
+            case 'prev-employers':
                 break
 
         }

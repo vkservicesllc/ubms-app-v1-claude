@@ -111,6 +111,15 @@ module.exports = {
         },
     },
 
+    'drivers.application.e-form.prior-residence': {
+        external: [ ...online.external, 'jquery.masked-input', 'moment' ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
     'drivers.application.e-form.citations': {
         external: [ ...online.external, 'jquery.masked-input', 'moment' ],
         internal: {
@@ -121,6 +130,15 @@ module.exports = {
     },
 
     'drivers.application.e-form.accidents': {
+        external: [ ...online.external, 'jquery.masked-input', 'moment' ],
+        internal: {
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers.application.e-form.prev-employers': {
         external: [ ...online.external, 'jquery.masked-input', 'moment' ],
         internal: {
             css: [ ...online.internal.css ],

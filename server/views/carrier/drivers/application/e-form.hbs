@@ -97,7 +97,7 @@
                     <a class="item" data-tab="legal-compliance">{{idx steps 3}}</a>
                     <a class="item" data-tab="safety">{{idx steps 4}}</a>
                     <a class="item" data-tab="experience">{{idx steps 5}}</a>
-                    <a class="disabled item" data-tab="prev-employment">{{idx steps 6}}</a>
+                    <a class="item" data-tab="prev-employment">{{idx steps 6}}</a>
                     <a class="item" data-tab="preference">{{idx steps 7}}</a>
                     <a class="item" data-tab="business">{{idx steps 8}}</a>
                     <a class="item" data-tab="beneficiary">{{idx steps 9}}</a>
@@ -1157,7 +1157,15 @@
                     </div>
 
                     <div class="ui tab" data-tab="prev-employment">
-                        PRE-EMPLOYMENT FORMS
+                        <form class="ui loading form" id="safety-form" action="{{actionUrl.prevEmployment}}" method="POST" autocomplete="off">
+                            <h5 class="ui blue text first header">Previous Employment</h5>
+                            <a class="ui left labeled button" href="{{linkUrl.prevEmployment}}">
+                                <span class="ui {{linkColor.prevEmployment}} right pointing label">{{length.prevEmployment}}</span>
+                                <div class="ui basic {{linkColor.prevEmployment}} button">
+                                    Employers <i class="angle double right icon"></i>
+                                </div>
+                            </a>
+                        </form>
                     </div>
 
                     <div class="ui tab" data-tab="preference">
