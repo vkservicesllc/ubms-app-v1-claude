@@ -924,6 +924,13 @@ class ApplicationForm {
         label: 'Previously employed within the past 10 years',
     })
 
+    static _emplId = createForm({
+        selector: appSelector,
+        target: 'emplId',
+        type: 'hidden',
+        name: 'id[]',
+    })
+
     static _prevEmployer = createForm({
         selector: appSelector,
         target: 'prevEmployer',

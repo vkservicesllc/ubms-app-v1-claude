@@ -87,6 +87,7 @@ const selector = {
             appliedOn: 'applied-on',
             addrEnough: 'address-enough',
             prevAddrEnough: 'prev-address-enough',
+            emplId: 'employment-id',
         },
         text: {
             pin: 'pin',
