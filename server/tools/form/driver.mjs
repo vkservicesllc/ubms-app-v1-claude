@@ -1029,6 +1029,14 @@ class ApplicationForm {
         disabled,
         label: 'Subject to FMCSRs',
     })
+    static _emplFMCSR2 = createForm({
+        selector: appSelector,
+        target: 'emplFmcsr',
+        group: 'emplFmcsr',
+        type: 'checkbox',
+        name: 'fmcsr[]',
+        label: 'Subject to FMCSRs',
+    })
 
     static _emplDotDat = createYesNoForm({
         selector: appSelector,
@@ -1036,6 +1044,14 @@ class ApplicationForm {
         group: 'emplDotDat',
         name: 'dotDat[]',
         disabled,
+        label: 'Subject to DOT Drug/Alcohol Testing',
+    })
+    static _emplDotDat2 = createForm({
+        selector: appSelector,
+        target: 'emplDotDat',
+        group: 'emplDotDat',
+        type: 'checkbox',
+        name: 'dotDat[]',
         label: 'Subject to DOT Drug/Alcohol Testing',
     })
 

@@ -1,6 +1,11 @@
 {{> carrier/nav.alpha}}
 
     <div style="margin-left: 20px;">
+        <div class="ui breadcrumb" style="margin-bottom: 10px;">
+            {{{backLink}}}
+            <div class="divider"> / </div>
+            <div class="active section">Employers</div>
+        </div>
         <div class="ui relaxed horizontal list" style="display: block; margin-bottom: 15px; min-width: 1440px;">
             <div class="item">
                 <div class="content">
@@ -55,19 +60,137 @@
                 </div>
             </div>
         </div>
-        <div class="ui breadcrumb">
-            {{{backLink}}}
-            <i class="right chevron icon divider"></i>
-            <div class="active section">Employers</div>
-        </div>
     </div>
 
+    <style>
+        .ui.compact.grid {
+            margin-top: 8px !important;
+        }
+        #form-template {
+            display: none;
+        }
+    </style>
     <div style="margin-left: 20px;">
-        <p style="margin-top: 25px;"><span class="ui red text">Work in progress... Will be available in the future...</span></p>
         <div style="width: 1680px; margin-top: 20px;">
             <input type="hidden" id="id" value="{{_id}}" />
-            {{!-- 560px x 3 --}}
+            <button class="ui blue icon button">
+                <i class="plus icon"></i> Add Employer
+            </button>
+            <p style="margin-top: 25px;"><span class="ui red text">Work in progress... Will be available in the future...</span></p>
+            <div class="ui grid">
+                {{!-- <div class="seven wide column">
+                    
+                </div> --}}
+            </div>
         </div>
     </div>
+    <div id="form-template">
+        <div class="ui card" style="width: 100%;">
+            <div class="content">
+                <form class="ui form" action="" method="POST">
+                    <div class="ui compact grid">
+                        <div class="eight wide field">
+                            {{{form._prevEmployer.text.label}}}
+                            {{{form._prevEmployer.text.input}}}
+                        </div>
+                        <div class="four wide field">
+                            {{{form._emplStartDate.text.label}}}
+                            <div class="ui calendar" id="empl-start-calendar">
+                                <div class="ui fluid input left icon">
+                                    {{{form._emplStartDate.text.input}}}
+                                    <i class="calendar icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="four wide field">
+                            {{{form._emplEndDate.text.label}}}
+                            <div class="ui calendar" id="empl-end-calendar">
+                                <div class="ui fluid input left icon">
+                                    {{{form._emplEndDate.text.input}}}
+                                    <i class="calendar icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui compact grid">
+                        <div class="five wide field">
+                            {{{form._emplPhone.text.label}}}
+                            {{{form._emplPhone.text.input}}}
+                        </div>
+                        <div class="seven wide field">
+                            {{{form._emplAddr1.text.label}}}
+                            {{{form._emplAddr1.text.input}}}
+                        </div>
+                        <div class="four wide field">
+                            {{{form._emplAddr2.text.label}}}
+                            {{{form._emplAddr2.text.input}}}
+                        </div>
+                    </div>
+                    <div class="ui compact grid">
+                        <div class="four wide field">
+                            {{{form._emplAddrZip.text.label}}}
+                            {{{form._emplAddrZip.text.input}}}
+                        </div>
+                        <div class="seven wide field">
+                            {{{form._emplAddrCity.text.label}}}
+                            {{{form._emplAddrCity.text.input}}}
+                        </div>
+                        <div class="five wide field">
+                            <div class="field">
+                                {{{form._emplAddrState.select.label}}}
+                                <div class="ui fluid selection required dropdown" id="empl-addr-state-dropdown">
+                                    {{{form._emplAddrState.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.addrState}}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui compact grid">
+                        <div class="five wide field">
+                            {{{form._emplPosition.text.label}}}
+                            {{{form._emplPosition.text.input}}}
+                        </div>
+                        <div class="five wide field">
+                            {{{form._emplEarnings.text.label}}}
+                            <div class="ui left icon input">
+                                <i class="dollar icon"></i>
+                                {{{form._emplEarnings.text.input}}}
+                            </div>
+                        </div>
+                        <div class="six wide field">
+                            {{{form._emplRFL.text.label}}}
+                            {{{form._emplRFL.text.input}}}
+                        </div>
+                    </div>
+                    <div class="ui grouped fields">
+                        {{#if (eq cdl true)}}
+                        <div class="field">
+                            <div class="ui checkbox">
+                                {{{form._emplFMCSR2.checkbox.input}}}
+                                {{{form._emplFMCSR2.checkbox.label}}}
+                            </div>
+                        </div>
+                        {{/if}}
+                        <div class="field">
+                            <div class="ui checkbox">
+                                {{{form._emplDotDat2.checkbox.input}}}
+                                {{{form._emplDotDat2.checkbox.label}}}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="content">
+                {{!-- <button class="ui button">Cancel</button>
+                <button class="ui right floated blue button">Add</button> --}}
+                {{!-- <button class="ui red button">Delete</button>
+                <button class="ui right floated green button">Save</button> --}}
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/modules/drivers/application/prev-employers.mjs"></script>
 
 {{> carrier/nav.omega}}

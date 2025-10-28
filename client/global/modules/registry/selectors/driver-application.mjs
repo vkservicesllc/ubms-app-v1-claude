@@ -74,6 +74,8 @@ const selector = {
         checkbox: {
             straightExp: 'straight-truck-experience',
             semiExp: 'trailer-type-experience',
+            emplFmcsr: 'employment-subject-to-fmcsr',
+            emplDotDat: 'employment-subject-to-dot-drug-alcohol-test',
             haulRegion: 'hauling-region-preference',
             equipmentType: 'equipment-type-preference',
         },
@@ -342,6 +344,8 @@ const selector = {
             tandemExp: 'tandem-experience',
             vanExp: 'cargo-van-experience',
             cdlSchool: 'attended-cdl-school',
+            emplFmcsr: 'employment-subject-to-fmcsr',
+            emplDotDat: 'employment-subject-to-dot-drug-alcohol-test',
             haulRegion: {
                 loc: 'local-hauling-region-preference',
                 reg: 'regional-hauling-region-preference',

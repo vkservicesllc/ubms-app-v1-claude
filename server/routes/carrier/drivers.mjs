@@ -721,9 +721,8 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
         }
 
         for (const prop of ['addrState', 'dlState', 'schState', 'llcState'])
-            for (const state in Address.stateList) {
+            for (const state in Address.stateList)
                 dropdown[prop] += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
-            }
 
         if (complete) {
             const { unchecked, halfChecked } = checkMark
@@ -798,10 +797,10 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
             'prev-employers': 'prev-employment',
         }[target]
         const backLinkName = {
-            'prior-residence': 'Current Residence',
-            citations: 'Legal Compliance',
-            accidents: 'Safety',
-            'prev-employers': 'Previous Employment',
+            'prior-residence': '<i class="angle double left icon"></i> Current Residence',
+            citations: '<i class="angle double left icon"></i> Legal Compliance',
+            accidents: '<i class="angle double left icon"></i> Safety',
+            'prev-employers': '<i class="angle double left icon"></i> Application',
         }[target]
         hbs.backLink = `<a href="/drivers/application/${formId}/e-form?${backLinkQuery}">${backLinkName}</a>`
 
@@ -844,6 +843,11 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
                 break
 
             case 'prev-employers':
+                dropdown.addrState = ''
+                for (const state in Address.stateList)
+                    dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+                options._emplRFL = { text: { input: { rows: 2, placeholder: ' ' } } }
+                hbs.cdl = application?.dl?.commercial === true
                 break
 
         }
