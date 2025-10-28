@@ -928,7 +928,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'emplId',
         type: 'hidden',
-        name: 'id[]',
+        name: '_id[]',
     })
 
     static _prevEmployer = createForm({

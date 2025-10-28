@@ -73,7 +73,7 @@
     <div style="margin-left: 20px;">
         <div style="width: 1680px; margin-top: 20px;">
             <input type="hidden" id="id" value="{{_id}}" />
-            <button class="ui blue icon button" style="margin-bottom: 20px;">
+            <button class="ui blue icon button" id="add" style="margin-bottom: 20px;">
                 <i class="plus icon"></i> Add Employer
             </button>
             <div class="ui grid" id="employer-list">
@@ -81,7 +81,7 @@
         </div>
     </div>
 
-    <div class="ui modal" style="width: 735px;">
+    <div class="ui modal" id="add-modal" style="width: 735px;">
         <div class="header"><small>New</small> Previous Employer</div>
         <div class="content">
             <form class="ui form" id="new-employer-form" action="" method="POST">
@@ -93,7 +93,7 @@
                     </div>
                     <div class="four wide field">
                         {{{form._emplStartDate.text.label}}}
-                        <div class="ui calendar" id="empl-start-calendar">
+                        <div class="ui calendar empl-start-calendar">
                             <div class="ui fluid input left icon">
                                 {{{form._emplStartDate.text.input}}}
                                 <i class="calendar icon"></i>
@@ -102,7 +102,7 @@
                     </div>
                     <div class="four wide field">
                         {{{form._emplEndDate.text.label}}}
-                        <div class="ui calendar" id="empl-end-calendar">
+                        <div class="ui calendar empl-end-calendar">
                             <div class="ui fluid input left icon">
                                 {{{form._emplEndDate.text.input}}}
                                 <i class="calendar icon"></i>
@@ -136,7 +136,7 @@
                     <div class="five wide field">
                         <div class="field">
                             {{{form._emplAddrState.select.label}}}
-                            <div class="ui fluid selection required dropdown" id="empl-addr-state-dropdown">
+                            <div class="ui fluid selection required dropdown empl-addr-state-dropdown">
                                 {{{form._emplAddrState.hidden.input}}}
                                 <i class="dropdown icon"></i>
                                 <div class="default text"></div>
@@ -182,7 +182,7 @@
             </form>
         </div>
         <div class="actions">
-            <button class="ui left floated button">Cancel</button>
+            <button class="ui left floated cancel button">Cancel</button>
             <button type="submit" form="new-employer-form" class="ui blue button">Add</button>
         </div>
     </div>

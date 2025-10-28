@@ -845,7 +845,7 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
             case 'prev-employers':
                 dropdown.addrState = ''
                 for (const state in Address.stateList)
-                    dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+                    dropdown.addrState += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
                 const fields = [
                     '_prevEmployer', '_emplPhone', '_emplStartDate', '_emplEndDate',
                     '_emplAddr1', '_emplAddr2', '_emplAddrZip', '_emplAddrCity', ['_emplAddrState', 'hidden'],
@@ -858,7 +858,7 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
 
                     options[field] = { [prop]: { input: { disabled: false } } }
                 })
-                options._emplEndDate.text = { label: { content: 'Ended on' } }
+                options._emplEndDate.text.label = { content: 'Left on' }
                 options._emplRFL.text.input.rows = 2,
                 options._emplRFL.text.input.placeholder = ' '
                 hbs.cdl = application?.dl?.commercial === true
