@@ -846,7 +846,21 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
                 dropdown.addrState = ''
                 for (const state in Address.stateList)
                     dropdown.addrState += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
-                options._emplRFL = { text: { input: { rows: 2, placeholder: ' ' } } }
+                const fields = [
+                    '_prevEmployer', '_emplPhone', '_emplStartDate', '_emplEndDate',
+                    '_emplAddr1', '_emplAddr2', '_emplAddrZip', '_emplAddrCity', ['_emplAddrState', 'hidden'],
+                    '_emplPosition', '_emplEarnings', '_emplRFL',
+                ]
+                fields.forEach(field => {
+                    let prop = 'text'
+                    if (Array.isArray(field))
+                        [ field, prop ] = field
+
+                    options[field] = { [prop]: { input: { disabled: false } } }
+                })
+                options._emplEndDate.text = { label: { content: 'Ended on' } }
+                options._emplRFL.text.input.rows = 2,
+                options._emplRFL.text.input.placeholder = ' '
                 hbs.cdl = application?.dl?.commercial === true
                 break
 
