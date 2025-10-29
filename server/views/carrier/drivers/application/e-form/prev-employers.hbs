@@ -80,7 +80,6 @@
             </div>
         </div>
     </div>
-
     <div class="ui modal" id="add-modal" style="width: 735px;">
         <div class="header"><small>New</small> Previous Employer</div>
         <div class="content">
@@ -184,6 +183,19 @@
         <div class="actions">
             <button class="ui left floated cancel button">Cancel</button>
             <button type="submit" form="new-employer-form" class="ui blue button">Add</button>
+        </div>
+    </div>
+    <div class="ui tiny modal" id="delete-modal">
+        <div class="header"><small>Delete</small> Previous Employer</div>
+        <div class="content">
+            <form id="delete-employer-form" action="" method="POST">
+                <input type="hidden" id="delete-id" name="_id" />
+                <div id="delete-content"></div>
+            </form>
+        </div>
+        <div class="actions">
+            <button class="ui cancel button">Cancel</button>
+            <button type="submit" form="delete-employer-form" class="ui red button">Delete</button>
         </div>
     </div>
     <script type="module" src="/modules/drivers/application/prev-employers.mjs"></script>

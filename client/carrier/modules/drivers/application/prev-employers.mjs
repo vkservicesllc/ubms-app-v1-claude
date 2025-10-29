@@ -1,3 +1,4 @@
+import Person from '/modules/tools/core/person.mjs'
 import { inputEvent } from '/modules/events/form.mjs'
 import { busNameEvent } from '/modules/events/company.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
@@ -29,9 +30,12 @@ $template.removeAttr('id')
     const $button = {
         add: $('#add'),
     }
-    const $modal = $('#add-modal')
+    const $modal = {
+        add: $('#add-modal'),
+        delete: $('#delete-modal'),
+    }
 
-    $modal.modal({
+    $modal.add.modal({
         autofocus: false,
         closable: false,
         onHidden() {
@@ -41,8 +45,17 @@ $template.removeAttr('id')
         },
     })
 
+    $modal.delete.modal({
+        autofocus: false,
+        closable: false,
+        onHidden() {
+            $('#delete-id').val(null)
+            $('#delete-content').html(null)
+        },
+    })
+
     $button.add.click(function() {
-        $modal.modal('show')
+        $modal.add.modal('show')
     })
 
     $.ajax(`/api/drivers/application/${_id}/employments`, {
@@ -68,7 +81,7 @@ $template.removeAttr('id')
                 $form.attr('id', formId)
                 $form.find('label').removeAttr('for')
                 const $footer = $('<div class="content"></div>')
-                $footer.append(`<button class="ui red button" data-id="${_id}">Delete</button>`)
+                $footer.append(`<button class="ui red delete button" data-id="${_id}">Delete</button>`)
                 $footer.append(`<button type="submit" form="${formId}" class="ui right floated green button">Save</button>`)
 
                 $form.find('[name="_id[]"]').removeAttr('id').val(_id)
@@ -139,20 +152,35 @@ $template.removeAttr('id')
                 },
                 onInput(amount, $amount) {
                     amount = amount.replace(/\D/g, '')
-        
                     $amount.val(amount)
                 },
                 onBlur(amount, $amount) {
                     amount = (+amount).toLocaleString()
-        
                     $amount.val(amount)
                 },
             })
             
-            inputEvent(TS.emplRfl, {
-                capitalize: 'first',
-                strip: true,
-                word: true,
+            inputEvent(TS.emplRfl, { capitalize: 'first', strip: true, word: true })
+
+            $('.delete.button').on('click', function() {
+                const _id = $(this).data('id')
+
+                $.ajax(`/api/drivers/applications/prev-employer/${_id}`, {
+                    method: 'POST',
+                    success(response) {
+                        const { data } = response
+                        const { applicant, formId, employer, startedOn, leftOn } = data
+
+                        let html = '<p>Are you sure you would like to delete the following employer?</p>'
+                        html += `<b>${new Person(applicant).fullName()}</b> <small>(${formId})</small><br/>`
+                        html += `<b>${employer}</b> <small>(${moment(startedOn).format('ll')} –`
+                        html += `${leftOn ? moment(leftOn).format('ll') : 'Present'})</small>`
+
+                        $('#delete-id').val(_id)
+                        $('#delete-content').html(html)
+                        $modal.delete.modal('show')
+                    },
+                })
             })
 
             $list.fadeIn()

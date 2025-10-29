@@ -153,6 +153,15 @@ router.post('/drivers/applications/prev-employers', User.verify, Team.verify, as
     }
 })
 
+router.post('/drivers/applications/prev-employer/:_id', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { _id } = req.params
+        res.send({ data: await Employment.data(res.session, { _id }) })
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
 router.post('/drivers/applications/source/:source', User.verify, Team.verify, (req, res) => {
     try {
         const { source } = req.params
