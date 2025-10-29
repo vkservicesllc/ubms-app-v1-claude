@@ -114,6 +114,30 @@ router.post('/driver/application/delete', User.verify, Team.verify, async (req, 
     }
 })
 
+router.post('/driver/application/prev-employer/upsert', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { _id } = req.body
+        let formId
+
+        if (!_id) {
+            const { error, data: employment } = await Employment.create(res.session, req.body)
+            if (error) return res.send(error)
+
+            formId = employment.formId
+        } else {
+            const employment = await Employment.data(res.session, { _id })
+            formId = employment.formId
+
+            const { error } = await employment.modify(res.session, req.body)
+            if (error) return res.send(error)
+        }
+
+        res.redirect(`/drivers/application/${formId}/e-form/prev-employers`)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
 router.post('/driver/application/prev-employer/delete', User.verify, Team.verify, async (req, res) => {
     try {
         const { _id } = req.body
