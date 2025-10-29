@@ -147,7 +147,11 @@ router.post('/drivers/applications/filters', User.verify, Team.verify, async (re
 router.post('/drivers/applications/prev-employers', User.verify, Team.verify, async (req, res) => {
     try {
         const _teamId = res.session?.team?._id
-        res.send({ data: await Employment.list(res.session, { condition: 'c', _teamId }) })
+        let data = await Employment.list(res.session, { condition: 'c', _teamId })
+
+        data = sortArrayByObjectKey(data, 'startedOn', false)
+
+        res.send({ data })
     } catch (err) {
         throwErr.server(res, null, err)
     }

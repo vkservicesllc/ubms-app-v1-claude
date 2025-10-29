@@ -6,7 +6,7 @@ import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Company from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
-import Driver, { Application, Citation, Accident } from '../../tools/core/driver.mjs'
+import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
 import { inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 
 /* Validators */
@@ -114,8 +114,23 @@ router.post('/driver/application/delete', User.verify, Team.verify, async (req, 
     }
 })
 
+router.post('/driver/application/prev-employer/delete', User.verify, Team.verify, async (req, res) => {
+    try {
+        const { _id } = req.body
+        const employment = await Employment.data(res.session, { _id })
+        const { formId } = employment
+
+        const { error } = await employment.delete(res.session)
+        if (error) return res.send(error)
+
+        res.redirect(`/drivers/application/${formId}/e-form/prev-employers`)
+    } catch (err) {
+        throwErr.server(res, null, err)
+    }
+})
+
 router.post('/driver/application/:formId/edit/:step', User.verify, Team.verify,
-    dynamicApplicantValidator.applications,
+    dynamicApplicantValidator.applications, validationCheck,
     async (req, res) => {
         try {
             const { user } = res.session

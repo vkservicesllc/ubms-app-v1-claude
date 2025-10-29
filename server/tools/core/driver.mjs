@@ -2876,6 +2876,36 @@ class Employment {
                 match: { id: Employment.matchIdHash(this._id) },
             })))[0][0].id
 
+
+            this.delete = async session => {
+                let deleted = false,
+                    error = sessionError(session, { branches: [ 'carrier' ] })
+                const id = await this.id()
+
+                //! Deleting without a log
+                try {
+                    const [ result ] = await mysql.execute(query.aplEmployers.delete({ id }))
+                    if (result.affectedRows > 0) deleted = true
+                } catch(err) {
+                    console.error(err)
+                    error = 'DB Error'
+                }
+
+                if (deleted) {
+                    const { _aplId } = this
+                    const employers = await Employment.list(session, { _aplId })
+
+                    if (!employers.length) {
+                        const application = await Application.data(session, { _id: _aplId })
+                        const { error: modError } = await application.modify(session, 'prev-employment', { prevEmployed: false })
+                        if (modError) error = modError
+                    }
+                }
+
+                if (error) return { deleted, error }
+                return { deleted }
+            }
+
         }
     }
 
