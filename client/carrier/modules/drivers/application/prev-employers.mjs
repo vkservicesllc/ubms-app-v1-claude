@@ -1,6 +1,11 @@
+import { inputEvent } from '/modules/events/form.mjs'
+import { busNameEvent } from '/modules/events/company.mjs'
+import { telEvent } from '/modules/events/contacts.mjs'
+import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
+import patterns from '/modules/registry/patterns.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application, { dropdownEvent } from './hub.mjs'
 
@@ -88,12 +93,68 @@ $template.removeAttr('id')
                 $list.append($column)
             })
 
+            busNameEvent(TS.prevEmployer, true, {
+                onChange(busName, coType, $busName) {
+                    if (coType) $busName.val(`${busName}, ${coType}`)
+                },
+            })
+
             $('.empl-addr-state-dropdown').dropdown()
             $('.empl-start-calendar, .empl-end-calendar').calendar({
                 ...calSettings,
                 minDate: moment(finishedAt).subtract(10, 'years').toDate(),
                 maxDate: moment(finishedAt).toDate(),
             })
+
+            telEvent(TS.emplPhone)
+
+            addr1Event(TS.emplAddress1, {
+                onChange(addr1, $addr1) {
+                    const $addr2 = $addr1.parent().next().find(TS.emplAddress2)
+                    const addr2Patt = patterns.match.addr2
+                    let addr2 = addr2Patt.test(addr1)
+                        ? addr2Patt.exec(addr1)[0].toUpperCase()
+                        : null
+
+                    addr1 = addr1.replace(addr2Patt, '').trim()
+                    if (addr2) addr2 = patterns.replace(addr2, 'addr2')
+                    $addr1.val(addr1)
+                    $addr2.val(addr2)
+                },
+            })
+
+            addr2Event(TS.emplAddress2)
+
+            cityEvent(TS.emplAddrCity)
+
+            inputEvent(TS.emplPosition, {
+                capitalize: 'each',
+                strip: true,
+                word: true,
+            })
+            
+            inputEvent(TS.emplEarnings, {
+                onFocus(amount, $amount) {
+                    if (amount) $amount.val(Number(amount.replace(/,/g, '')))
+                },
+                onInput(amount, $amount) {
+                    amount = amount.replace(/\D/g, '')
+        
+                    $amount.val(amount)
+                },
+                onBlur(amount, $amount) {
+                    amount = (+amount).toLocaleString()
+        
+                    $amount.val(amount)
+                },
+            })
+            
+            inputEvent(TS.emplRfl, {
+                capitalize: 'first',
+                strip: true,
+                word: true,
+            })
+
             $list.fadeIn()
         },
     })

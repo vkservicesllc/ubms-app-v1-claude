@@ -17,7 +17,7 @@ export const telEvent = (id, options = {}) => {
         onKeydown,
         onKeyup,
         onCompleted,
-        value: formatTel(strip(value)),
+        value: value ? formatTel(strip(value)) : undefined,
     })
 }
 
