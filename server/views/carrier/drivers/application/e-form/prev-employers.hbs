@@ -85,7 +85,7 @@
         <div class="content">
             <form class="ui form" id="new-employer-form" action="/resource/driver/application/prev-employer/upsert" method="POST">
                 {{{form._emplId.hidden.input}}}
-                <input type="hidden" id="_aplId" value="{{_id}}" />
+                <input type="hidden" name="_aplId[]" value="{{_id}}" />
                 <div class="ui compact grid">
                     <div class="eight wide field">
                         {{{form._prevEmployer.text.label}}}

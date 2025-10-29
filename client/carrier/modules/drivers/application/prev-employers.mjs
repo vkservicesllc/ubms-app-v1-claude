@@ -12,16 +12,17 @@ import application, { dropdownEvent } from './hub.mjs'
 
 const $form = { add: $('#new-employer-form') }
 const $template = $form.add.clone()
-$template.removeAttr('id')
+$template.removeAttr('id').find('[name="_aplId[]"]').remove()
 
 {
-    $form.add.find('input:not([type="checkbox"]), textarea').val(null)
+    $form.add.find('input:not([name="_aplId[]"]):not([type="checkbox"]), textarea').val(null)
     $form.add.find('[type="checkbox"]').prop('checked', false)
 }
 
 
 (() => {
     if (!application || !Object.keys(application).length) return
+    $form.add.find('[name="_aplId[]"]').val(application._id)
 
     const { _id, finishedAt } = application
     const $list = $('#employer-list')
@@ -39,7 +40,7 @@ $template.removeAttr('id')
         autofocus: false,
         closable: false,
         onHidden() {
-            $form.add.find('input:not([type="checkbox"]), textarea').val(null)
+            $form.add.find('input:not([name="_aplId[]"]):not([type="checkbox"]), textarea').val(null)
             $form.add.find('[type="checkbox"]').prop('checked', false)
             $form.add.find('.empl-addr-state-dropdown').dropdown('clear')
         },

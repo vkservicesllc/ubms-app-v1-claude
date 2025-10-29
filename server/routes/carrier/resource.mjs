@@ -7,6 +7,7 @@ import Team from '../../tools/core/team.mjs'
 import Company from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
+import { ApplicationForm } from '../../tools/form/driver.mjs'
 import { inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 
 /* Validators */
@@ -19,6 +20,12 @@ const url = {
     },
 }
 
+const validateApplicantEmployers = []
+const applicantEmployerFields = [
+    '_prevEmployer', '_emplPhone', '_emplAddr1', '_emplAddr2', '_emplAddrZip', '_emplAddrCity', '_emplAddrState',
+    '_emplStartDate', '_emplPosition', '_emplEarnings', '_emplFMCSR2', '_emplDotDat2', '_emplRFL', '_emplEndDate',
+]
+applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(ApplicationForm[prop].validate()))
 
 
 /* User Resource */
@@ -114,28 +121,31 @@ router.post('/driver/application/delete', User.verify, Team.verify, async (req, 
     }
 })
 
-router.post('/driver/application/prev-employer/upsert', User.verify, Team.verify, async (req, res) => {
-    try {
-        const { _id } = req.body
-        let formId
+router.post('/driver/application/prev-employer/upsert', User.verify, Team.verify,
+    validateApplicantEmployers, validationCheck,
+    async (req, res) => {
+        try {
+            for (const prop in req.body) req.body[prop] = req.body[prop][0]
+            const { _id } = req.body
+            let formId
+return res.send(req.body)
+            if (!_id) {
+                const { error, data: employment } = await Employment.create(res.session, req.body)
+                if (error) return res.send(error)
 
-        if (!_id) {
-            const { error, data: employment } = await Employment.create(res.session, req.body)
-            if (error) return res.send(error)
+                formId = employment.formId
+            } else {
+                const employment = await Employment.data(res.session, { _id })
+                formId = employment.formId
 
-            formId = employment.formId
-        } else {
-            const employment = await Employment.data(res.session, { _id })
-            formId = employment.formId
+                const { error } = await employment.modify(res.session, req.body)
+                if (error) return res.send(error)
+            }
 
-            const { error } = await employment.modify(res.session, req.body)
-            if (error) return res.send(error)
+            res.redirect(`/drivers/application/${formId}/e-form/prev-employers`)
+        } catch (err) {
+            throwErr.server(res, null, err)
         }
-
-        res.redirect(`/drivers/application/${formId}/e-form/prev-employers`)
-    } catch (err) {
-        throwErr.server(res, null, err)
-    }
 })
 
 router.post('/driver/application/prev-employer/delete', User.verify, Team.verify, async (req, res) => {

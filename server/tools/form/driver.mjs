@@ -1043,6 +1043,10 @@ class ApplicationForm {
         type: 'checkbox',
         name: 'fmcsr[]',
         label: 'Subject to FMCSRs',
+        validator: {
+            rule: 'boolean',
+            sanitizer: value => value === 'on',
+        },
     })
 
     static _emplDotDat = createYesNoForm({
@@ -1060,6 +1064,10 @@ class ApplicationForm {
         type: 'checkbox',
         name: 'dotDat[]',
         label: 'Subject to DOT Drug/Alcohol Testing',
+        validator: {
+            rule: 'boolean',
+            sanitizer: value => value === 'on',
+        },
     })
 
     static _emplRFL = createForm({
