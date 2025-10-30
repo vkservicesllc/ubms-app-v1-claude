@@ -83,7 +83,8 @@ $template.removeAttr('id').find('[name="_aplId[]"]').remove()
                 $form.find('label').removeAttr('for')
                 const $footer = $('<div class="content"></div>')
                 $footer.append(`<button class="ui red delete button" data-id="${_id}">Delete</button>`)
-                $footer.append(`<button type="submit" form="${formId}" class="ui right floated green button">Save</button>`)
+                $footer.append(`<button type="submit" form="${formId}" class="ui right floated dark green button" disabled>Save</button>`)
+                $footer.append('<span class="right floated unsaved-changes" style="display: none; margin-right: 10px;"><i class="red exclamation triangle icon"></i></span>')
 
                 $form.find('[name="_id[]"]').removeAttr('id').val(_id)
                 $form.find(TS.prevEmployer).removeAttr('id').val(employer)
@@ -174,6 +175,14 @@ $template.removeAttr('id').find('[name="_aplId[]"]').remove()
             })
             
             inputEvent(TS.emplRfl, { capitalize: 'first', strip: true, word: true })
+
+            $('input, textarea').on('change', function() {
+                const $form = $(this).closest('form')
+                if ($form.attr('id') === 'new-employer-form') return
+
+                $form.parent().next().find('[type="submit"]').prop('disabled', false)
+                $form.parent().next().find('.unsaved-changes').show()
+            })
 
             $('.delete.button').on('click', function() {
                 const _id = $(this).data('id')

@@ -24,6 +24,11 @@
 .text.dark.brown, .icon.dark.brown { color: #573D29 !important; }
 .text.dark.grey, .icon.dark.grey { color: #5A5A5A !important; }
 
+.button.dark.green {
+    color: white !important;
+    background-color: #19A958 !important;
+}
+
 .field:not(.disabled) .required.dropdown:has(.default.text),
 .fields:not(.disabled) .required.dropdown:has(.default.text),
 .field:not(.disabled) textarea:required:placeholder-shown {
