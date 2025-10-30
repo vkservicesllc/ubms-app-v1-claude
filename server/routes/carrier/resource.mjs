@@ -128,8 +128,11 @@ router.post('/driver/application/prev-employer/upsert', User.verify, Team.verify
             for (const prop in req.body) req.body[prop] = req.body[prop][0]
             const { _id } = req.body
             let formId
-return res.send(req.body)
+
             if (!_id) {
+                const application = await Application.data(res.session, { _id: req.body._aplId })
+                req.body.fmcsr = application.dl.commercial ? !!req.body.fmcsr : null
+                req.body.dotDat = !!req.body.dotDat
                 const { error, data: employment } = await Employment.create(res.session, req.body)
                 if (error) return res.send(error)
 
@@ -137,6 +140,10 @@ return res.send(req.body)
             } else {
                 const employment = await Employment.data(res.session, { _id })
                 formId = employment.formId
+                const { _aplId } = employment
+                const application = await Application.data(res.session, { _id: _aplId })
+                req.body.fmcsr = application.dl.commercial ? !!req.body.fmcsr : null
+                req.body.dotDat = !!req.body.dotDat
 
                 const { error } = await employment.modify(res.session, req.body)
                 if (error) return res.send(error)

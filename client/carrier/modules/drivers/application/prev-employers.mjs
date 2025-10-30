@@ -139,6 +139,18 @@ $template.removeAttr('id').find('[name="_aplId[]"]').remove()
 
             addr2Event(TS.emplAddress2)
 
+            zipEvent(TS.emplAddrZip, {
+                onChange(zip, $zip, city, state) {
+                    if (city && state) {
+                        const $city = $zip.parent().parent().find(TS.emplAddrCity)
+                        const $stateDropdown = $zip.parent().parent().find('.empl-addr-state-dropdown')
+
+                        $city.val(city)
+                        $stateDropdown.dropdown('set selected', state)
+                    }
+                },
+            })
+
             cityEvent(TS.emplAddrCity)
 
             inputEvent(TS.emplPosition, {
