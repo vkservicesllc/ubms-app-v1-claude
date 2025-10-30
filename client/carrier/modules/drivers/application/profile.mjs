@@ -11,6 +11,7 @@ import application, { identity, count, unmatchedIdx, dropdownEvent, errorMessage
     const { firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email, finishedAt } = application
     const TS = selector.id.text, SS = selector.id.select
 
+    const $form = $('#profile-form')
     const $label = {
         dob: $(`label[for="${TS.dob.replace('#', '')}"]`),
         gender: $(`label[for="${SS.gender.replace('#', '')}"]`),
@@ -63,6 +64,11 @@ import application, { identity, count, unmatchedIdx, dropdownEvent, errorMessage
         },
     })
 
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
+
     if (identity.mismatch.dob) $label.dob.prepend(errorIcon).parent().addClass('error')
     else if (count.matched || unmatchedIdx !== 1) $calendar.dob.parent().addClass('disabled')
 
@@ -77,7 +83,7 @@ import application, { identity, count, unmatchedIdx, dropdownEvent, errorMessage
         ]
 
         $('.item[data-tab="profile"]').append(errorIcon)
-        $('#profile-form').after(errorMessage('Identity Error', message, list))
+        $form.after(errorMessage('Identity Error', message, list))
     }
 
     if (count.matched) $(TS.ssn).parent().addClass('disabled')

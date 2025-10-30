@@ -12,6 +12,7 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
     const vehicle = application.vehicle || {}
     const { mmt, length } = vehicle
     let { year, type, make, model } = vehicle
+    const $form = $('#position-form')
     const $vehicle = $('#vehicle-section')
     const $make = $(TS.currentVhlMake), $model = $(TS.currentVhlModel)
 
@@ -106,4 +107,9 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
 
         return $dropdown[prop][0]
     }
+
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 })()

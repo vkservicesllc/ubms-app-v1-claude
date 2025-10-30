@@ -7,6 +7,7 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
 
     const { experience, position } = application.decision || {}
 
+    const $form = $('#assign-form')
     const $dropdown = {
         user: $('#user-dropdown'),
         carrier: $('#carrier-dropdown'),
@@ -18,4 +19,9 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
 
     for (const prop in $dropdown)
         $dropdown[prop].dropdown()
+
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 })()

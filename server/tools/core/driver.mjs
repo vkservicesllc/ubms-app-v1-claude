@@ -713,12 +713,12 @@ class Application {
 
             case 'legal-status': //* Carrier UI only
                 {
-                    if (data.status < 2) data.statusExpiresOn = null
+                    if (data.legalStatus < 2) data.legalExpiration = null
                     data = processData(data, {
                         modifiedBy, branch, siteId,
                         currentData: {
                             status: this.legalStatus[0],
-                            statusExpiresOn: this.legalStatus[1],
+                            legalExpiration: this.legalStatus[1],
                         },
                         currentUpdateLog: await this.log('updateLog'),
                     })

@@ -9,6 +9,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const { address, finishedAt } = application
     const TS = selector.id.text, CS = selector.id.checkbox
 
+    const $form = $('#residence-form')
     const $dropdown = {
         state: [ $('#addr-state-dropdown'), address.state[0] ],
         country: [ $('#addr-country-dropdown'), address.country ],
@@ -60,6 +61,11 @@ import application, { dropdownEvent } from './hub.mjs'
             $dropdown.country[0].addClass('disabled').parent().hide()
             $priorAddr.show()
         }
+    })
+
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
     })
 
     //! warning if country is enabled and not selected

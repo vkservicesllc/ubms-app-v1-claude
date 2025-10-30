@@ -10,6 +10,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const { dl, finishedAt } = application
     const TS = selector.id.text, CS = selector.id.checkbox
 
+    const $form = $('#dl-form')
     const $commercial = $(CS.dlCommercial)
     const $endorsement = $(TS.dlEndrs)
     const $denied = $(CS.dlDenied), $revoked = $(CS.dlRevoked)
@@ -106,4 +107,9 @@ import application, { dropdownEvent } from './hub.mjs'
 
     inputEvent(TS.dlDeniedExpl, { strip: true, capitalize: 'first', value: dl.deniedExpl })
     inputEvent(TS.dlRevokedExpl, { strip: true, capitalize: 'first', value: dl.revokedExpl })
+
+    $form.find('input, textarea').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 })()

@@ -10,6 +10,7 @@ import application from './hub.mjs'
     const { expiresOn, issuedOn, nrcme } = application.mec || {}
     const TS = selector.id.text, TC = selector.id.checkbox
 
+    const $form = $('#mec-form')
     const $noMec = $(TC.noMec)
     const $fields = $('#mec-fields')
     const $calendar = {
@@ -76,4 +77,9 @@ import application from './hub.mjs'
     })
 
     inputEvent(TS.medList, { strip: true, capitalize: 'first' })
+
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 })()

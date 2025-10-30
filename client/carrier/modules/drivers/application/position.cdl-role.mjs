@@ -5,6 +5,7 @@ import application, { dropdownEvent } from './hub.mjs'
     if (!application || !Object.keys(application).length) return
 
     const { position, vehicle } = application
+    const $form = $('#position-form')
     const $vehicle = $('#vehicle-section')
 
     if (vehicle?.type) $vehicle.show()
@@ -32,4 +33,9 @@ import application, { dropdownEvent } from './hub.mjs'
     }
 
     dropdownEvent($dropdown)
+
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 })()

@@ -7,6 +7,7 @@ import application, { dropdownEvent } from './hub.mjs'
 
     const { finishedAt, legalStatus } = application
 
+    const $form = $('#status-form')
     const $calendar = {
         statusExp: $('#status-exp-calendar'),
     }
@@ -40,4 +41,9 @@ import application, { dropdownEvent } from './hub.mjs'
             .parent().show()
             .find('input').prop('disabled', false)
     }
+
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 })()

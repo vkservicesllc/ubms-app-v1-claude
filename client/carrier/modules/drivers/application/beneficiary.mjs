@@ -14,6 +14,7 @@ import application, { dropdownEvent, errorMessage, errorIcon } from './hub.mjs'
 
     const TS = selector.id.text
     const $otherRel = $(TS.benefOtherRel)
+    const $form = $('#beneficiary-form')
 
     const relationOnChange = value => {
         let disabled = true, action = 'hide'
@@ -85,4 +86,9 @@ import application, { dropdownEvent, errorMessage, errorIcon } from './hub.mjs'
         if ((relation === locked[1] || otherRel === locked[1]) && gender[0] == 'F')
             displayErrorMsg()
     }
+
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 })()

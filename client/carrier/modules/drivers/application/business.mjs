@@ -9,6 +9,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const TS = selector.id.text, TC = selector.id.checkbox
 
     const $inactiveLLC = $(TC.inactiveLLC)
+    const $form = $('#business-form')
     const $fields = $('#llc-fields')
 
     const $dropdown = {
@@ -33,4 +34,9 @@ import application, { dropdownEvent } from './hub.mjs'
 
     busNameEvent(TS.llcName, true, { value: business?.busName })
     einEvent(TS.llcEin, { value: business?.ein })
+
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 })()

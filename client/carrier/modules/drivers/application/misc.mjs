@@ -10,10 +10,16 @@ import application from './hub.mjs'
 
     const { phone, name, relation } = application.emergency
     const TS = selector.id.text
+    const $form = $('#misc-form')
 
     telEvent(TS.emergPhone, { value: phone })
     nameEvent(TS.emergName, { value: name })
     inputEvent(TS.emergRelation, { strip: true, word: true, capitalize: 'first', value: relation })
+
+    $form.find('input').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 
     $('.loading.form').removeClass('loading')
 })()

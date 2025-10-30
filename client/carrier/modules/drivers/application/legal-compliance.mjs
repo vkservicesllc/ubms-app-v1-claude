@@ -7,6 +7,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const { dui, duiInDecade, criminal, criminalExpl, dotDat } = application
     const TS = selector.id.text, CS = selector.id.checkbox, RS = selector.id.radio
     const $duiInDecade = $('.dui-in-decade'), $criminalExpl = $('#criminal-details')
+    const $form = $('#legal-form')
 
     if (dui) {
         $(CS.dui).prop('checked', true)
@@ -41,4 +42,8 @@ import application, { dropdownEvent } from './hub.mjs'
         $(TS.criminalExpl).prop('disabled', disabled)
     })
 
+    $form.find('input, textarea').on('change', () => {
+        $form.find('[type="submit"]').prop('disabled', false)
+        $form.find('.unsaved-changes').show()
+    })
 })()

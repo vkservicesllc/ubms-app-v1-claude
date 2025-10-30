@@ -54,5 +54,4 @@ import application from './hub.mjs'
                 $(`[name="vehicles[${group}][${value}]"]`).prop('checked', true)
             }
         }
-
 })()

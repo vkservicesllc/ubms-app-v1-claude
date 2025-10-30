@@ -23,6 +23,15 @@
             margin-right: -1px !important; /* fixes any small gap */
             box-shadow: none !important;   /* prevent any shadow making it look like a border */
         }
+        .actions > div {
+            float: right;
+        }
+        .unsaved-changes {
+            margin-right: 10px;
+        }
+        .tabular.menu .active.item {
+            background-color: rgb(240, 240, 480) !important;
+        }
     </style>
 
     <div style="margin-left: 20px;">
@@ -82,8 +91,8 @@
         </div>
 
         <div class="ui grid" style="width: 1080px;">
-            <div class="three wide column" style="margin-right: 0; padding-right: 0;">
-                <div class="ui vertical fluid tabular menu" id="section-menu">
+            <div class="three wide column" style="margin-right: 0; padding-right: 0; height: 750px !important;">
+                <div class="ui vertical tabular menu" id="section-menu">
                     <a class="active item" data-tab="workflow">Workflow</a>
                     {{#if (eq fileTab true)}}
                     <a class="item" data-tab="files">Files</a>
@@ -104,8 +113,8 @@
                     <a class="item" data-tab="misc">{{idx steps 10}}</a>
                 </div>
             </div>
-            <div class="thirteen wide stretched column" style="margin-left: 0; padding-left: 0;">
-                <div class="ui seamless right attached segment" id="sections" style="padding: 20px;">
+            <div class="thirteen wide stretched column" style="margin-left: 0; padding-left: 0; height: 750px;">
+                <div class="ui right attached segment" id="sections" style="padding: 20px;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
                     <div class="ui active tab" data-tab="workflow">
@@ -232,7 +241,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                         {{#if (eq complete true)}}
@@ -446,7 +458,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -477,7 +492,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -571,7 +589,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -647,7 +668,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -740,7 +764,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -797,7 +824,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -851,7 +881,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                             <a class="ui left labeled button" href="{{linkUrl.citations}}">
                                 <span class="ui {{linkColor.citations}} right pointing label">{{length.citations}}</span>
@@ -1151,7 +1184,10 @@
                             {{/if}}
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -1291,7 +1327,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -1333,7 +1372,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -1391,7 +1433,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -1415,7 +1460,10 @@
                             </div>
                             <div class="ui divider"></div>
                             <div class="actions">
-                                <button type="submit" class="ui right floated circular dark green button">Save</button>
+                                <div>
+                                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -1439,10 +1487,12 @@
         {{#if (eq cdlRole 1)}}
         <script type="module" src="/modules/drivers/application/experience.cdl-role.mjs"></script>
         {{/if}}
+        <script type="module" src="/modules/drivers/application/experience.form.mjs"></script>
         <script type="module" src="/modules/drivers/application/preference.mjs"></script>
         {{#if (eq cdlRole 1)}}
         <script type="module" src="/modules/drivers/application/preference.cdl-role.mjs"></script>
         {{/if}}
+        <script type="module" src="/modules/drivers/application/preference.form.mjs"></script>
         <script type="module" src="/modules/drivers/application/business.mjs"></script>
         <script type="module" src="/modules/drivers/application/beneficiary.mjs"></script>
         <script type="module" src="/modules/drivers/application/misc.mjs"></script>
