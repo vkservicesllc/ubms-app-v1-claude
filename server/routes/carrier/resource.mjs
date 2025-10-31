@@ -171,7 +171,7 @@ router.post('/driver/application/prev-employer/delete', User.verify, Team.verify
 })
 
 router.post('/driver/application/:formId/edit/:step', User.verify, Team.verify,
-    dynamicApplicantValidator.applications, validationCheck,
+    dynamicApplicantValidator.applications, //! validationCheck, // validationCheck returns error when checkbox is unchecked
     async (req, res) => {
         try {
             const { user } = res.session

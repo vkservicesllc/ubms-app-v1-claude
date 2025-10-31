@@ -39,15 +39,15 @@ export default async (carrier, application, addresses, violations, accidents, em
     let y = height - marginY, vLineX, vLineXOffsets, text, textWidth, lines
     const fieldHeight = 33, gap = 9, padding = 5.7, dateFormat = 'MM/DD/YYYY', outsideBorder = true
     const font = {
-        carrierB: await pdfDoc.embedFont(CustomFonts.SansationBold),
-        carrier: await pdfDoc.embedFont(CustomFonts.Sansation),
+        carrierB: await pdfDoc.embedFont(CustomFonts.MomoTrustSansBold),
+        carrier: await pdfDoc.embedFont(CustomFonts.MomoTrustSansSemiBold),
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         label: await pdfDoc.embedFont(StandardFonts.Helvetica),
         value: await pdfDoc.embedFont(StandardFonts.Helvetica),
         signature: await pdfDoc.embedFont(CustomFonts.MrsSaintDelafield),
     }
     const size = {
-        carrier: 15,
+        carrier: 15.5,
         section: 9.5,
         label: 8.9,
         value: 11.2,
@@ -241,7 +241,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             textWidth = font.carrier.widthOfTextAtSize(phone, size.carrier)
             coverPage.drawText(text, {
                 x: x - labelWidth - textWidth, y,
-                font: font.label, size: size.label * 1.4, color: color.section,
+                font: font.carrier, size: size.label * 1.4, color: color.carrier,
             })
             coverPage.drawText(phone, {
                 x: x - textWidth, y,
@@ -254,7 +254,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 textWidth = font.carrier.widthOfTextAtSize(fax, size.carrier)
                 coverPage.drawText(text, {
                     x: x - labelWidth - textWidth, y,
-                    font: font.label, size: size.label * 1.4, color: color.section,
+                    font: font.carrier, size: size.label * 1.4, color: color.carrier,
                 })
                 coverPage.drawText(fax, {
                     x: x - textWidth, y,
