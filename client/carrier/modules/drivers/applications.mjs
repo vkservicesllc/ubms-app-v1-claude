@@ -49,7 +49,7 @@ const table = $('#driver-apl-table').DataTable({
     columns: [
 
         {
-            title: '<a class="ui small basic button" href="/drivers/applicants">Applicants <i class="ui angle double right icon"></i></a>',
+            title: '<a class="ui small basic button" href="/drivers/applicants">Applicants <i class="angle double right icon"></i></a>',
             searchable: false,
             orderable: false,
             data(row) {
