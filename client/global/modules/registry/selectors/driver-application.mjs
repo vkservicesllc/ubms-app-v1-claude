@@ -315,6 +315,7 @@ const selector = {
         },
         checkbox: {
             livedAbroad1: 'had-foreign-residence-before-last',
+            livedAbroad2: 'had-foreign-residence-before-last',
             dlCommercial: 'driver-license-commercial',
             dlDenied: 'driver-license-denied',
             dlRevoked: 'driver-license-revoked',

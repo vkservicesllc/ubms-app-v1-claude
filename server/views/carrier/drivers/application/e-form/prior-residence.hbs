@@ -64,6 +64,76 @@
 
     <div style="margin-left: 20px;">
         <p style="margin-top: 25px;"><span class="ui red text">Work in progress... Will be available in the future...</span></p>
+        <div style="width: 1680px; margin-top: 20px;">
+            <input type="hidden" id="id" value="{{_id}}" />
+            <style>td { overflow: visible !important; }</style>
+            <table class="ui compact grey table" style="display: none?;">
+                <thead>
+                    <tr>
+                        <th style="width: 280px;">Street Address</th>
+                        <th style="width: 180px;">Apt/Unit</th>
+                        <th style="width: 200px;">Zip</th>
+                        <th style="width: 280px;">City</th>
+                        <th style="width: 240px;">State</th>
+                        <th style="width: 200px;">Lived since</th>
+                        <th style="width: 140px;"></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="form-template" style="display: none?;">
+                    <tr>
+                        <td class="ui form">
+                            <div class="field">
+                                {{{form._address1.text.input}}}
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                {{{form._address2.text.input}}}
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                {{{form._addrZip.text.input}}}
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                {{{form._addrCity.text.input}}}
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui fluid selection required dropdown addr-state">
+                                    {{{form._addrState.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.state}}}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="field">
+                                <div class="ui calendar addr-date">
+                                    <div class="ui fluid input left icon">
+                                        {{{form._addrSince.text.input}}}
+                                        <i class="calendar icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="ui form">
+                            <div class="ui checkbox" style="width: 240px;">
+                                {{{form._livedAbroad2.checkbox.input}}}
+                                {{{form._livedAbroad2.checkbox.label}}}
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+    <script type="module" src="/modules/drivers/application/prior-residence.mjs"></script>
 
 {{> carrier/nav.omega}}

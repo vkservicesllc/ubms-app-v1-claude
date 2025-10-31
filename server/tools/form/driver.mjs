@@ -415,6 +415,13 @@ class ApplicationForm {
         disabled,
         label: 'Lived Abroad',
     })
+    static _livedAbroad2 = createForm({
+        selector: appSelector,
+        target: 'livedAbroad2',
+        type: 'checkbox',
+        name: 'addresses[livedAbroad][]',
+        label: 'Lived abroad before this date',
+    })
 
     static status = createForm({
         selector: appSelector,

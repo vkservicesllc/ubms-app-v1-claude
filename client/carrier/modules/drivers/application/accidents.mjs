@@ -5,7 +5,7 @@ import { capitalizeEach } from '/modules/tools/utils/string.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import application, { dropdownEvent } from './hub.mjs'
+import application from './hub.mjs'
 
 const $form ={
     add: $('#new-form'),
