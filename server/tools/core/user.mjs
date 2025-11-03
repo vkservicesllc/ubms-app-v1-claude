@@ -14,7 +14,7 @@ const {
 import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Settings */
-import config, { addrBook } from '../../../config.mjs'
+import config, { addrBook, userApps } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
 /* Tools */
@@ -1479,8 +1479,42 @@ class User extends Person {
                 _passKey: await Bun.password.hash(password),
             }, { id: User.matchIdHash(_id) }))
 
-            if (result.affectedRows === 1)
+            if (result.affectedRows === 1) {
                 await mysql.execute(query.registration.delete({ userId: User.matchIdHash(_id) }))
+
+                const user = await User.data(res.session, { _id })
+                const { email, name } = user
+                let branchUrls = ''
+
+                for (const branch in userApps) {
+                    if (branch === 'admin' && !user.DSA) continue
+
+                    const { address, name } = userApps[branch]
+
+                    branchUrls += `<li><a href="${address}" target="_blank">`
+                    branchUrls += `${name}</a></li>`
+                }
+
+                const options = {
+                    from: sender,
+                    to: email,
+                    subject: 'Successful User Registration',
+                    html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                        Dear ${name},<br/>
+                        ${appName} welcomes you aboard! Your registration has been successfully completed, and your account is now active.<br/><br/>
+                        You can sign in to any of the available branches:<br/>
+                        <ul>
+                            ${branchUrls}
+                        </ul><br/>
+                        Best regards,
+                        ${appName} Automated Support
+                    </div>`,
+                }
+
+                transporter.sendMail(options, error => {
+                    if (error) console.error(error)
+                })
+            }
 
             res.redirect(addrBook.default)
         } catch (err) {
