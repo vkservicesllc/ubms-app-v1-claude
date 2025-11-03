@@ -1506,7 +1506,7 @@ class User extends Person {
                         <ul>
                             ${branchUrls}
                         </ul><br/>
-                        Best regards,
+                        Best regards,<br/>
                         ${appName} Automated Support
                     </div>`,
                 }
