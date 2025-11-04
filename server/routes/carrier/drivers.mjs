@@ -816,6 +816,14 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
                 if (application.address.enough) return respond404(res)
                 //! IMPORTANT
                 //? if not enough and country before current address (DO NOT ACCEPT) --- later
+
+                {
+                    const fields = ['_address1', '_address2', '_addrZip', '_addrCity', '_addrSince']
+                    fields.forEach(field => {
+                        options[field] = { text: { input: { disabled: false } } }
+                    })
+                    options._addrState = { hidden: { input: { disabled: false } } }
+                }
                 break
 
             case 'citations':

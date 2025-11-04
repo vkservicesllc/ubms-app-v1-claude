@@ -105,6 +105,9 @@ router.post('/drivers/application/:_id/:target?', User.verify, Team.verify, asyn
             let Src
 
             switch (target) {
+                case 'addresses':
+                    return res.send(await application.data(target, res.session))
+                    break
                 case 'citations':
                     Src = Citation
                     break
