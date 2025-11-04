@@ -805,7 +805,7 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
         hbs.backLink = `<a href="/drivers/application/${formId}/e-form?${backLinkQuery}">${backLinkName}</a>`
 
         let options = {}
-        const dropdown = { state: '' }, t = `\t`.repeat(9)
+        const dropdown = { state: '' }, t = `\t`.repeat(10)
 
         for (const state in Address.stateList)
             dropdown.state += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
@@ -823,6 +823,10 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
                         options[field] = { text: { input: { disabled: false } } }
                     })
                     options._addrState = { hidden: { input: { disabled: false } } }
+                }
+                dropdown.country = ''
+                for (const country in Geography.countryList) {
+                    dropdown.country += `\n\t\t\t\t\t\t\t<div class="item" data-value="${country}">${Geography.countryList[country]}</div>`
                 }
                 break
 

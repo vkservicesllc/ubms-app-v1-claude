@@ -62,12 +62,23 @@
         </div>
     </div>
 
+    <style>
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .unsaved-changes {
+            margin-right: 10px;
+        }
+    </style>
+
     <div style="margin-left: 20px;">
-        <p style="margin-top: 25px;"><span class="ui red text">Work in progress... Will be available in the future...</span></p>
-        <div style="width: 1680px; margin-top: 20px;">
+        <p style="margin-top: 25px;"><span class="ui red text">UNFINISHED... Work in progress...</span></p>
+        <form class="ui form" style="width: 1680px; margin-top: 20px;">
             <input type="hidden" id="id" value="{{_id}}" />
             <style>td { overflow: visible !important; }</style>
-            <table class="ui compact grey table" style="display: none?;">
+            <table class="ui compact grey table" style="display: none;">
                 <thead>
                     <tr>
                         <th style="width: 280px;">Street Address</th>
@@ -83,29 +94,29 @@
                 <tbody id="address-form"></tbody>
                 <tbody id="form-template" style="display: none;">
                     <tr>
-                        <td class="ui form">
+                        <td>
                             <div class="field">
                                 {{{form._address1.text.input}}}
                             </div>
                         </td>
-                        <td class="ui form">
+                        <td>
                             <div class="field">
                                 {{{form._address2.text.input}}}
                             </div>
                         </td>
-                        <td class="ui form">
+                        <td>
                             <div class="field">
                                 {{{form._addrZip.text.input}}}
                             </div>
                         </td>
-                        <td class="ui form">
+                        <td>
                             <div class="field">
                                 {{{form._addrCity.text.input}}}
                             </div>
                         </td>
-                        <td class="ui form">
+                        <td>
                             <div class="field">
-                                <div class="ui fluid selection required dropdown addr-state">
+                                <div class="ui fluid selection required dropdown addr-state-dropdown">
                                     {{{form._addrState.hidden.input}}}
                                     <i class="dropdown icon"></i>
                                     <div class="default text"></div>
@@ -114,7 +125,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="ui form">
+                        <td>
                             <div class="field">
                                 <div class="ui calendar addr-date">
                                     <div class="ui fluid input left icon">
@@ -124,8 +135,8 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="ui form">
-                            <div class="ui checkbox" style="width: 240px;">
+                        <td>
+                            <div class="ui checkbox lived-abroad" style="width: 240px; display: none;">
                                 {{{form._livedAbroad2.checkbox.input}}}
                                 {{{form._livedAbroad2.checkbox.label}}}
                             </div>
@@ -133,7 +144,23 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+            <div class="footer" style="display: none;">
+                <div class="three wide field" style="display: none;">
+                    {{{form.country.select.label}}}
+                    <div class="ui fluid selection disabled required dropdown" id="addr-country-dropdown">
+                        {{{form.country.hidden.input}}}
+                        <i class="dropdown icon"></i>
+                        <div class="default text"></div>
+                        <div class="menu">{{{dropdown.country}}}
+                        </div>
+                    </div>
+                </div>
+                <div id="actions" style="margin-left: auto;">
+                    <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                    <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                </div>
+            </div>
+        </form>
     </div>
     <script type="module" src="/modules/drivers/application/prior-residence.mjs"></script>
 
