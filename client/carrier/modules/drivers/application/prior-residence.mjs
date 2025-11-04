@@ -1,16 +1,11 @@
 import { inputEvent } from '/modules/events/form.mjs'
+import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+import patterns from '/modules/registry/patterns.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application, { dropdownEvent } from './hub.mjs'
-
-const $template = $('#form-template').find('tr').clone()
-{
-    $template.find('input').each(function() { $(this).removeAttr('id') })
-}
-
-
 
 (() => {
     if (!application || !Object.keys(application).length) return
@@ -18,6 +13,49 @@ const $template = $('#form-template').find('tr').clone()
     const { _id, finishedAt, address } = application
     const { country } = address
     const TS = selector.class.text
+    const $template = $('#form-template').find('tr').clone()
+    $template.find('input').each(function() { $(this).removeAttr('id') })
+
+    const  resetEvents = () => {
+        $(`${TS.prevAddress1}, ${TS.prevAddress2}, ${TS.prevAddrZip}, ${TS.prevAddrCity}`).off('input').off('change')
+        $('.addr-state-dropdown').dropdown('destroy')
+        $('.addr-date-calendar').calendar('destroy')
+
+        addr1Event(TS.prevAddress1, {
+            onChange(addr1, $addr1) {
+                const $addr2 = $addr1.parent().parent().next().find(TS.prevAddress2)
+                const addr2Patt = patterns.match.addr2
+                let addr2 = addr2Patt.test(addr1)
+                    ? addr2Patt.exec(addr1)[0].toUpperCase()
+                    : null
+
+                addr1 = addr1.replace(addr2Patt, '').trim()
+                if (addr2) addr2 = patterns.replace(addr2, 'addr2')
+                $addr1.val(addr1)
+                $addr2.val(addr2)
+            },
+        })
+
+        addr2Event(TS.prevAddress2)
+        
+        zipEvent(TS.prevAddrZip, {
+            onChange(zip, $zip, city, state) {
+                if (city && state) {
+                    const $city = $zip.parent().parent().next().find(TS.prevAddrCity)
+                    const $state = $zip.parent().parent().next().next().find('.addr-state-dropdown')
+    
+                    $city.val(city)
+                    $state.dropdown('set selected', state)
+                }
+            },
+        })
+
+        $('.addr-state-dropdown').dropdown()
+        $('.addr-date-calendar').calendar({
+            ...calSettings,
+            //! need an event listener to make decisions based on selected period
+        })
+    }
 
     $.ajax(`/api/drivers/application/${_id}/addresses`, {
         method: 'POST',
@@ -43,7 +81,9 @@ const $template = $('#form-template').find('tr').clone()
                     $('#address-form').append($row)
 
             })
-            $('.addr-state-dropdown').dropdown()
+
+            resetEvents()
+            
             if (country) {
                 $('#addr-country-dropdown').find('input').val(country)
                 $('#addr-country-dropdown').removeClass('disabled').parent().show()
