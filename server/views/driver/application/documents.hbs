@@ -6,20 +6,39 @@
             <div class="card-body pt-4">
                 <h5 class="card-title text-info">Professional Driver Application</h5>
                 <div class="card-text pt-1 pb-2">
-                    <div class="mb-3">
+                    <div class="text-start text-secondary px-3">
+                        <p>
+                            To help us begin the hiring process faster, you can upload your driver's license and required legal documents below.
+                            This allows us to verify your qualifications promptly and move forward with your application.
+                        </p>
+                    </div>
+                    <div class="border-bottom mb-3 pb-3">
                         <a href="{{href.summary}}" id="summary-link">Back to Summary</a>
+                        <form class="ms-4" id="certify-form" action="{{actionUrl.certify}}" method="POST" style="display: inline-block;">
+                            <button type="submit" class="btn btn-secondary btn-sm px-3">Skip Upload</button>
+                        </form>
+                    </div>
+                    <div class="container my-4">
+                        <h5 class="text-success mb-3">Upload Driver's License</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary" for="dl-front">FRONT</label>
+                                <input type="file" class="form-control" id="dl-front" accept="image/*">
+                                <div class="mt-2">
+                                    <img id="dl-front-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license front preview" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-secondary" for="dl-back">BACK</label>
+                                <input type="file" class="form-control" id="dl-back" accept="image/*">
+                                <div class="mt-2">
+                                    <img id="dl-back-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license back preview" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div>
-                        <p class="text-danger">Temporarily unavailable... Work in progress...</p>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <form id="certify-form" action="{{actionUrl.certify}}" method="POST">
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-secondary btn-sm">Skip Upload</button>
-                                </div>
-                            </form>
-                        </div>
+                        <p class="text-danger">Work in progress... Will be available soon...</p>
                     </div>
                 </div>
             </div>
