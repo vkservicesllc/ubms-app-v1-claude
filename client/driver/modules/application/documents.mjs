@@ -22,23 +22,10 @@ $('#certify-form').submit(function(evt) {
     }, duration)
 })
 
-function previewImage(input, previewId) {
-    const file = input.files[0]
-    const preview = document.getElementById(previewId)
+$('.browse').on('click', function() { $(this).next().click() })
 
-    if (file) {
-        preview.src = URL.createObjectURL(file)
-        preview.classList.remove('d-none')
-    } else {
-        preview.classList.add('d-none')
-        preview.src = ''
-    }
-}
-
-document.getElementById('dl-front').addEventListener('change', e => {
-    previewImage(e.target, 'dl-front-preview')
-})
-
-document.getElementById('dl-back').addEventListener('change', e => {
-    previewImage(e.target, 'dl-back-preview')
+$('[type="file"]').on('change', function() {
+    const file = this.files[0]
+    $(this).prev('.input-group').find('input[type="text"]').val(file.name)
+    $(this).next().find('img').removeClass('d-none').attr('src', URL.createObjectURL(file))
 })

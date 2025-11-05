@@ -23,14 +23,22 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label text-secondary" for="dl-front">FRONT</label>
-                                <input type="file" class="form-control" id="dl-front" accept="image/*">
+                                <div class="input-group browse">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="dl-front-btn">Browse...</button>
+                                    <input type="text" class="form-control" id="dl-front-placeholder" placeholder="No file selected" readonly />
+                                </div>
+                                <input type="file" id="dl-front" accept="image/*" style="display:none" />
                                 <div class="mt-2">
                                     <img id="dl-front-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license front preview" />
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-secondary" for="dl-back">BACK</label>
-                                <input type="file" class="form-control" id="dl-back" accept="image/*">
+                                <label class="form-label text-secondary" for="dl-back">FRONT</label>
+                                <div class="input-group browse">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="dl-back-btn">Browse...</button>
+                                    <input type="text" class="form-control" id="dl-back-placeholder" placeholder="No file selected" readonly />
+                                </div>
+                                <input type="file" id="dl-back" accept="image/*" style="display:none" />
                                 <div class="mt-2">
                                     <img id="dl-back-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license back preview" />
                                 </div>
