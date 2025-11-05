@@ -83,4 +83,16 @@ $form.submit(function(evt) {
     })
 })
 
-setTimeout(() => $(pinId).prop('disabled', false), 100)
+setTimeout(async () => {
+    $(pinId).prop('disabled', false)
+
+    const creds = await navigator.clipboard.readText()
+
+    if (creds.includes('[QuickPaste]')) {
+        const parts = creds.split('|')
+
+        $(phoneId).val(parts[1])
+        $(dobId).val(parts[2])
+        $(pinId).val(parts[3])
+    }
+}, 100)

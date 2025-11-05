@@ -296,6 +296,10 @@
                             <td class="apl-side-th"><span class="ui grey text">Form ID:</span></td>
                             <td class="apl-data" id="apl-id-card:formId"></td>
                         </tr>
+                        <tr>
+                            <td class="apl-side-th"><span class="ui grey text">Form URL:</span></td>
+                            <td class="apl-data" id="apl-id-card:url"></td>
+                        </tr>
                     </tbody>
                 </table>
                 <table class="ui very basic compact table">
@@ -314,6 +318,13 @@
                         </tr>
                     </tbody>
                 </table>
+                <div>
+                    <button class="ui small teal button" id="copy-apl-login">Copy Credentials</button>
+                    <span class="ui dark green text" id="apl-copy-sucess" style="margin-left: 15px; display: none;">
+                        <i class="check icon"></i>
+                        Login info successfully copied
+                    </span>
+                </div>
             </div>
             <script type="module" src="/modules/drivers/application.id-card.mjs"></script>
         </div>
