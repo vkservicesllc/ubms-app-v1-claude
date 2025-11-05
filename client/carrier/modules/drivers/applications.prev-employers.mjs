@@ -13,9 +13,11 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             const { data } = response
 
             data.forEach(row => {
-                row.group = `<small style="font-family: monospace;">${row.formId}:</small> `
-                    + new Person(row.applicant).fullName()
-                    + ` <small>(${moment(row.finishedAt).format('ll')})</small>`
+                const { formId, phone, carrier, finishedAt } = row.application
+
+                row.group = new Person(row.applicant).fullName() + ` <small><small class="bull">•</small> ${formatTel(phone)}`
+                if (carrier) row.group += ` <small class="bull">•</small> ${carrier}`
+                row.group += ` <small class="bull">•</small> ${moment(finishedAt).format('ll')} <small class="bull">•</small> ${formId}</small>`
             })
 
             return data
@@ -102,6 +104,16 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             title: 'Position',
             orderable: false,
             searchable: false,
+        },
+
+        {
+            data: null,
+            searchable: false,
+            orderable: false,
+            className: 'right aligned',
+            render() {
+                return '<a class="empl-edit" href=""><i class="dark green text edit outline icon"></i></a>' 
+            },
         },
 
     ],

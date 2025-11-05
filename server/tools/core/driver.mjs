@@ -2050,7 +2050,7 @@ class Application {
             {
                 db: db.business,
                 table: companyQuery.main.table,
-                join: [ 'id', 'companyId', 'carriers' ],
+                join: [ 'id', 'companyId', carrierQuery.main.table ],
             },
             {
                 db: db.business,
@@ -2857,8 +2857,6 @@ class Employment {
         this._id = data._id
         this._aplId = data._aplId
         this.status = data.status
-        this.applicant = new Person(data)
-        this.formId = data.formId
         this.employer = data.employer
         this.phone = data.phone
         this.address = new Address(data)
@@ -2869,6 +2867,14 @@ class Employment {
         this.dotDat = data.dotDat
         this.rfl = data.rfl
         this.leftOn = data.leftOn
+
+        this.applicant = new Person(data)
+        this.application = {
+            formId: data.formId,
+            finishedAt: data.finishedAt,
+            phone: data.aplPhone,
+            carrier: data.carrierId ?  `${data.busName}, ${data.coType}` : null,
+        }
 
         if (!light) {
 
@@ -3013,11 +3019,26 @@ class Employment {
                 table: query.applications.table,
                 fields: [
                     Team.hashId('teamId'), 'formId',
-                    'firstName', 'middleName', 'lastName', 'suffix',
-                    'createdAt', 'finishedAt',
+                    'firstName', 'middleName', 'lastName', 'suffix', ['phone', 'aplPhone'],
+                    'createdAt', 'finishedAt', 'carrierId',
                 ],
                 match: aplMatch,
                 join: [ 'id', 'aplId' ],
+            },
+            {
+                table: carrierQuery.main.table,
+                join: [ 'id', 'carrierId', 1 ],
+            },
+            {
+                db: db.business,
+                table: companyQuery.main.table,
+                join: [ 'id', 'companyId', carrierQuery.main.table ],
+            },
+            {
+                db: db.business,
+                table: companyQuery.names.table,
+                fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
+                join: [ 'companyId', 'id', { max: 'since', table: companyQuery.main.table } ],
             },
         ]
 
