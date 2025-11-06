@@ -135,7 +135,6 @@ router.post('/drivers/applications/filters', User.verify, Team.verify, async (re
 
         // if (teamCompanies && teamCompanies.includes('e'))
         //     filter.companies.excluded = true
-console.log((await res.session.user.relationship(res.session, 'carriers')).applied)
 
         res.send({
             // companies: await Application.companies(res.session, filter.companies),
