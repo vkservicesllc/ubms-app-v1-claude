@@ -417,6 +417,7 @@ class User extends Person {
                         Src = Team
                         break
                     case 'companies':
+                    case 'carriers':
                         Src = Company
                         break
                 }
@@ -553,9 +554,10 @@ class User extends Person {
                                     record.until = row.until
                                 }
                                 if (target === 'carrier') record._carrierId = row._carrierId
- 
+
                                 data.applied.push(record)
                             })
+
                         } else {
                             if (target !== 'teams') batch[1].match = { catId }
 
