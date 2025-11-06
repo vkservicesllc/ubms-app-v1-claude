@@ -417,8 +417,11 @@ class User extends Person {
                         Src = Team
                         break
                     case 'companies':
-                    case 'carriers':
+                    // case 'carriers':
                         Src = Company
+                        break
+                    case 'carriers':
+                        Src = Carrier
                         break
                 }
 
@@ -553,7 +556,10 @@ class User extends Person {
                                     record.active = row.active
                                     record.until = row.until
                                 }
-                                if (target === 'carrier') record._carrierId = row._carrierId
+                                if (target === 'carriers') {
+                                    record._id = row._companyId
+                                    record._carrierId = row._id
+                                }
 
                                 data.applied.push(record)
                             })
@@ -581,7 +587,10 @@ class User extends Person {
                                 const record = { _id, name, route }
                                 if (target === 'companies') record.catId = catId
                                 if (target !== 'teams') record.route = route
-                                if (target === 'carriers') record._carrierId = row._carrierId
+                                if (target === 'carriers') {
+                                    //? If glitch happens, look up self in DS sessionUser
+                                    record._carrierId = row._carrierId
+                                }
 
                                 data.all.push(record)
                             })
@@ -1365,6 +1374,7 @@ class User extends Person {
             const { originalUrl, query } = req
             const { session } = res
             const { excUrl, teams, companies, userApp } = session
+
             const { user: _id, clientIp } = req.session
             const reject = async apiErrMsg => {
                 if (api) throwErr.api.auth(res, apiErrMsg)

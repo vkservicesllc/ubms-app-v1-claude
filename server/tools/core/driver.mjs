@@ -2344,7 +2344,7 @@ class Application {
 
                         if (!teamCompanies || !teamCompanies.includes('i')) this.where('cmp.active', true)
                         if (!teamCompanies || !teamCompanies.includes('c')) this.where('cmp.until', null)
-                        if (!teamCompanies || !teamCompanies.includes('e')) this.whereIn('cmp.id', companyIds)
+                        if ((!teamCompanies || !teamCompanies.includes('e')) && !DS) this.whereIn('cmp.id', companyIds)
 
                         if (carrierIds.length) this.whereIn('apl.carrierId', carrierIds)
                     })
@@ -2412,7 +2412,6 @@ class Application {
                     { column: 'firstName', order: 'asc' },
                 ])
                 .limit(length).offset(start)
-
 
             /* Obtain Data and Counts */
             const [
