@@ -15,6 +15,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             data.forEach(row => {
                 const { formId, phone, carrier, finishedAt } = row.application
 
+                row.order = finishedAt + ' ' + row.startedOn
                 row.group = new Person(row.applicant).fullName() + ` <small><small class="bull">•</small> ${formatTel(phone)}`
                 if (carrier) row.group += ` <small class="bull">•</small> ${carrier}`
                 row.group += ` <small class="bull">•</small> ${moment(finishedAt).format('ll')} <small class="bull">•</small> ${formId}</small>`
@@ -25,6 +26,13 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
     },
 
     columns: [
+
+        {
+            data: 'order',
+            searchable: false,
+            orderable: false,
+            visible: false,
+        },
 
         {
             data: 'group',
@@ -107,26 +115,6 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
         },
 
         {
-            data: 'fmcsr',
-            title: 'Subject to<br/>FMCSR',
-            orderable: false,
-            searchable: false,
-            render(data) {
-                return data ? '<i class="ui dark green check icon"></i>' : '<i class="ui red close icon"></i>'
-            },
-        },
-
-        {
-            data: 'dotDat',
-            title: 'Subject to<br/>Drug/Alcohol Test',
-            orderable: false,
-            searchable: false,
-            render(data) {
-                return data ? '<i class="ui dark green check icon"></i>' : '<i class="ui red close icon"></i>'
-            },
-        },
-
-        {
             data: null,
             searchable: false,
             orderable: false,
@@ -173,6 +161,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
     },
 
     lengthMenu,
+    order: [[0, 'desc']],
 
     rowGroup: {
         dataSrc(row) {
