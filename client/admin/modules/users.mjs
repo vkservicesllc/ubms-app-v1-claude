@@ -72,6 +72,8 @@ const message = {
     },
 }
 
+$lockedCondition.prop('disabled', true)
+
 
 $status.on('change', function() {
     const status = $(this).val()

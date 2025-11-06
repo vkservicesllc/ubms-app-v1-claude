@@ -107,6 +107,26 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
         },
 
         {
+            data: 'fmcsr',
+            title: 'Subject to<br/>FMCSR',
+            orderable: false,
+            searchable: false,
+            render(data) {
+                return data ? '<i class="ui dark green check icon"></i>' : '<i class="ui red close icon"></i>'
+            },
+        },
+
+        {
+            data: 'dotDat',
+            title: 'Subject to<br/>Drug/Alcohol Test',
+            orderable: false,
+            searchable: false,
+            render(data) {
+                return data ? '<i class="ui dark green check icon"></i>' : '<i class="ui red close icon"></i>'
+            },
+        },
+
+        {
             data: null,
             searchable: false,
             orderable: false,
