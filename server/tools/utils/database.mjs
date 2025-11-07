@@ -38,9 +38,14 @@ export function processData(data = {}, options = {}) {
         }
 
         const encData = [ 'ssn', 'ein' ].includes(field)
-        const currentValue = currentData[field]
+        let currentValue = currentData[field]
         let value = data[field]
+
         if (value === '') value = null
+        else if (typeof value === 'boolean')
+            value = value ? 1 : 0
+        if (typeof currentValue === 'boolean')
+            currentValue = currentValue ? 1 : 0
 
         if (updateLog && field in currentData) {
             if (currentValue !== value) {
