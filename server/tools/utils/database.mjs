@@ -38,31 +38,13 @@ export function processData(data = {}, options = {}) {
         }
 
         const encData = [ 'ssn', 'ein' ].includes(field)
-        let currentValue = currentData[field]
-        let value = data[field]
-
-        if (value === '') value = null
-        else if (typeof value === 'boolean')
-            value = value ? 1 : 0
-        if (typeof currentValue === 'boolean')
-            currentValue = currentValue ? 1 : 0
+        const currentValue = currentData[field]
+        const value = data[field]
 
         if (updateLog && field in currentData) {
             if (currentValue !== value) {
-                updateLog[0].data[field] = value && encData
-                    ? encrypt(value)
-                    : (
-                        typeof value == 'string'
-                            ? value.replace(/"/g, '\\"')
-                            : value
-                    )
-                updateLog[0].oldData[field] = currentValue && encData
-                    ? encrypt(currentValue)
-                    : (
-                        typeof currentValue == 'string'
-                            ? currentValue.replace(/"/g, '\\"')
-                            : currentValue
-                    )
+                updateLog[0].data[field] = value && encData ? encrypt(value) : processValue(value)
+                updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : processValue(value)
             }
         }
 
@@ -114,4 +96,15 @@ export async function logDeletion(session, target, instance, ids = {}) {
     }
 
     await Bun.write(filePath, JSON.stringify(log, null, 4))
+}
+
+
+function processValue(value) {
+    if (typeof value === 'boolean') value = value ? 1 : 0
+    else if (typeof value === 'string') {
+        if (value === '') value = null
+        else value = value.replace(/"/g, '\\"')
+    }
+
+    return
 }

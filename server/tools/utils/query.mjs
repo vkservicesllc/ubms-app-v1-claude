@@ -384,11 +384,8 @@ class Query {
                 let condition
                 [ field, resField, condition ] = field.compare
                 const key = Object.keys(condition)[0]
-                const value = condition[key]
-                const oper = {
-                    eq: '=',
-                    ne: '!=',
-                }[key]
+                const oper = { eq: '=', ne: '!=' }[key]
+                let value = condition[key]
 
                 value = Query.#_value(value)
                 field = Query.#_field(field, table)
