@@ -381,6 +381,17 @@ class User extends Person {
                         ]
                         break
 
+                    case 'companies':
+                        targetDb = db.business
+                        batch = [
+                            {
+                                table: query.jx.companies.table,
+                                fields: [ [ 'companyId', 'id' ] ],
+                                match: { userId },
+                            },
+                        ]
+                        break
+
                     case 'carriers':
                         targetDb = db.business
                         batch = [
@@ -577,6 +588,7 @@ class User extends Person {
                             data.all = (await mysql.execute(Query.select(targetDb, batch)))[0]
                             data.all.map(row => relIds.push(row._id))
                             data.applied = data.applied.filter(row => relIds.includes(row._id))
+console.log({ target, relIds, data })
                         } else {
                             const relationData = await Src.list(session)
 
@@ -1757,6 +1769,7 @@ class Role {
 
     static list = async (session, filter = {}) => {
         const batch = Role.#batch(session, { filter })
+console.log(Query.select(db.online, batch)) //!TEMP
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
 
         list.forEach((data, i, arr) => arr[i] = new Role(data, true))

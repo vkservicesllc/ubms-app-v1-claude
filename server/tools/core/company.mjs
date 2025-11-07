@@ -846,7 +846,7 @@ class Company {
         if (!filter) filter = {}
 
         const { _id, id, ein, duns, route } = params
-        const { catId, global, lastLogo, _ownerId } = filter
+        const { ids, catId, global, lastLogo, _ownerId } = filter
 
         const match = {
             companies: { id, duns, catId, global, lastLogo },
@@ -854,6 +854,7 @@ class Company {
             ownerships: { ownerId: Owner.matchIdHash(_ownerId) },
         }
         if (!id) match.companies.id = Company.matchIdHash(_id)
+        if (ids) match.companies.id = ids
         if (route) match.names.route = { route: [ [ 'busName', 'coType' ], route ] }
         if (ein) match.companies.ein = { aes: [ ein, secret.ein ] }
         if (DS && branch === 'admin') {

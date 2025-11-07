@@ -115,6 +115,8 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
             hbs.input = input
             hbs.checked = checked
             hbs.self = user._id == sessionUser._id
+            hbs.sessionUser = { ...sessionUser }
+            hbs.sessionUser.status = sessionUser.status[0]
         } catch (err) {
             return respond404(res)
         }

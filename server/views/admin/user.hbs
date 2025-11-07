@@ -67,6 +67,14 @@
                             </div>
                         </div>
                         {{{input.id}}}
+                        {{#if (
+                            and
+                                (eq data.DS false)
+                                (eq self false)
+                        )}}
+                        {{#if (eq sessionUser.status 'A')}}
+                        <p class="has-text-danger-70 mt-4">Temporarily unavailable for regular admins... Work in progress...</p>
+                        {{else}}
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
@@ -139,7 +147,17 @@
                                 </div>
                             </div>
                         </div>
+                        {{/if}}
+                        {{/if}}
                     </div>
+                    {{#if (
+                        and
+                            (eq data.DS false)
+                            (eq self false)
+
+                            (ne sessionUser.status 'A')
+                    )}}
+                    {{{sessionUser.status}}}
                     <div class="column">
                         <div class="box">
                             <div class="columns is-vcentered">
@@ -176,17 +194,11 @@
                             </div>
                         </div>
                     </div>
+                    {{/if}}
                 </div>
-                
-                {{#if (
-                    and
-                        (eq data.DS false)
-                        (eq self false)
-                )}}
-                {{/if}}
                 {{#if (eq data.DS true)}}
 
-                <p class="has-text-success-45 mt-4">All permissions and teams are automatically available to this user</p>
+                <p class="has-text-success-45 mt-4">Access to all permissions, teams, and companies is granted to this user</p>
                 {{/if}}
                 {{#if (
                     and
@@ -194,7 +206,7 @@
                         (eq data.DS false)
                 )}}
 
-                <p class="has-text-danger-70 mt-4">Roles and teams are to be assigned by a super admin or another admin</p>
+                <p class="has-text-danger-70 mt-4">Roles, teams, and companies must be assigned to this user by a super admin or another admin from the same location</p>
                 {{/if}}
 
 {{> admin/nav.omega}}

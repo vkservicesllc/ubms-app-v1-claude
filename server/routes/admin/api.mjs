@@ -176,7 +176,13 @@ router.post('/role/:_id', User.verify, async (req, res) => {
 router.post('/companies', User.verify, async (req, res) => {
     try {
         //! It may be necessary to apply filters when requested in branches other than admin
-        res.send({ data: await Company.list(res.session) })
+        const filter = {}
+
+        const { user } = res.session
+        if (!user.DS)
+            filter.ids = await user.relIds(res.session, 'companies')
+
+        res.send({ data: await Company.list(res.session, filter) })
     } catch (err) {
         throwErr.server(res, null, err, false)
     }
