@@ -380,12 +380,19 @@ class Query {
                 field = `${prop.toUpperCase()}(${field})`
             }
 
-            else if ('eq' in field) {
-                let value
-                [ field, value, resField ] = field.eq
+            else if ('compare' in field) {
+                let condition
+                [ field, resField, condition ] = field.compare
+                const key = Object.keys(condition)[0]
+                const value = condition[key]
+                const oper = {
+                    eq: '=',
+                    ne: '!=',
+                }[key]
 
+                value = Query.#_value(value)
                 field = Query.#_field(field, table)
-                field = `(${field} = ${value}) as resField`
+                field = `(${field} ${oper} ${value}) as resField`
             }
 
             else if ('count' in field ) {
