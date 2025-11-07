@@ -93,9 +93,9 @@ class User extends Person {
             props._hash = data._hash
         }
 
-        this.public.status = User.statusList[data.status]
-        this.public.condition = User.conditionList[data.condition]
-        this.public.location = User.locationList[data.location]
+        this.expansion.status = User.statusList[data.status]
+        this.expansion.condition = User.conditionList[data.condition]
+        this.expansion.location = User.locationList[data.location]
         reSuper(this, props)
 
         if (single) {
@@ -113,11 +113,17 @@ class User extends Person {
                 return log
             }
 
+            this.flush = async () => {
+                return (await mysql.execute(query.main.update({ updateLog: null }, {
+                    id: User.matchIdHash(this._id),
+                })))[0]
+            }
+
             this.fetch = async (session, target = null, assign = false) => {}
 
             this.add = async (session, target, data) => {}
 
-            this.update = async (session, target, data) => {}
+            // this.update = async (session, target, data) => {}
 
             this.delete = async (session, target = null, ids = []) => {}
 
@@ -170,7 +176,7 @@ class User extends Person {
 
             this.hbs = () => {
                 const { _id, firstName, lastName, alias, email, phone, avaSrc, sex, unscoped, DS, DSA, self } = this
-                const { gender, status, condition, location } = this.public
+                const { gender, status, condition, location } = this.expansion
                 const name = this.full('AL')
                 const fullName = this.fullName('FAL')
 
@@ -471,7 +477,7 @@ class User extends Person {
             ids, firstName, lastName, alias, sex,
             status, location, condition, decliner, deleted,
         } = filter
-        const { allowDeleted, login, hideRawId, hideSensitive } = params
+        const { allowDeleted, login, hideRawId, hideSensitive, qBatch } = params
         const single = id || _id || _simpleId || username || email
         let deletedBy = null
         if (deleted === true) deletedBy = { null: false }
@@ -499,6 +505,8 @@ class User extends Person {
             }
         }
         if (!single) batch[1].join[2].max = 'lastLogin'
+
+        if (qBatch === true) return batch
 
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
         list.forEach((data, i, arr) => arr[i] = new User(data, { single, login, hideRawId, hideSensitive }))
@@ -932,13 +940,293 @@ class Role {
     constructor(data, options = {}) {
         if (!data?._id) throw new Error('Invalid Role Data')
 
+        let { single, hideRawId } = options
+        if (single === undefined || typeof single !== 'boolean') single = true
+        if (hideRawId === undefined || typeof hideRawId !== 'boolean') hideRawId = false
+
         this._id = data._id
-        this.catId = data.catId
+        if (!hideRawId) props.id = data.id
+        this.category = data.category
         this.location = data.location
         this.name = data.name
         this.permissions = data.permissions
-        this.public = { location: data.location ? User.locationList[data.location] : null }
+        this.expansion = {
+            location: data.location ? User.locationList[data.location] : null,
+            category: data.category ? Company.categoryList[data.category].item[1] : null,
+            categoryGroup: data.category ? Company.categoryList[data.category].item[0] : null,
+        }
+
+        if (single) {
+
+            this.log = async field => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+
+                let log = (await mysql.execute(query.roles.select(fields, {
+                    match: { id: Role.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
+
+            this.flush = async () => {
+                return (await mysql.execute(query.roles.update({ updateLog: null }, {
+                    id: Role.matchIdHash(this._id),
+                })))[0]
+            }
+
+            this.fetch = async (session, target = null, params = {}) => {
+                if (!session?.user || typeof session.user !== 'object') return
+                const { user: sessionUser } = session
+
+                const batch = [
+                    {
+                        table: query.jx.roles.table,
+                        match: { roleId: this.id },
+                    },
+                    {
+                        table: query.main.table,
+                        join: [ 'id', 'userId' ],
+                        match: { deletedBy: null, status: ['U', 'A'] },
+                    },
+                ]
+                let data = []
+
+                if (sessionUser.location != 'US')
+                    batch[1].match.location = sessionUser.location
+
+                switch (target) {
+
+                    case 'userIds':
+                        batch[0].fields = 'userId'
+
+                        const [ result ] = await mysql.execute(new Query(db.online, batch))
+                        result.forEach(row => data.push(row.userId))
+                        break
+
+                    case 'users':
+                        const { hideRawId, hideSensitive, sortBy, assign } = params
+                        const userBatch = await User.batch(session, {}, { qBatch: true })
+                        batch[1].fields = userBatch[0].fields
+
+                        [ data ] = await mysql.execute(new Query(db.online, batch))
+                        data.forEach((row, i) => data[i] = new User(row, { hideRawId, hideSensitive }))
+                        if (sortBy) data = sortArrayByObjectKey(data, sortBy)
+
+                        if (assign === true) {
+                            const filter = { status: [ 'US', 'A' ] }
+                            if (sessionUser.location != 'US') filter.location = sessionUser.location
+
+                            data = { applied: data }
+                            data.all = await User.fetch(session, filter, { hideRawId, hideSensitive })
+                            data.available = data.all.filter(user => !data.applied.some(appliedUser => appliedUser._id === user._id))
+                            if (sortBy) {
+                                data.all = sortArrayByObjectKey(data.all, sortBy)
+                                data.available = sortArrayByObjectKey(data.available, sortBy)
+                            }
+                        }
+
+                        break
+
+                }
+
+                return data
+            }
+
+            this.add = async (session, target, _ids) => {
+                let added = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { added, error }
+
+                //! convert _ids to ids
+                switch (target) {
+                    case 'users':
+                        break
+                }
+
+                return { added }
+            }
+
+            this.delete = async (session, target = null, ids = []) => {
+                if (!target) {
+                    let deleted = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                    if (error) return { deleted, error }
+
+                    const { id } = this
+                    const log = await this.log()
+
+                    try {
+                        const [ result ] = await mysql.execute(query.roles.delete({ id }))
+                        if (result.affectedRows > 0) deleted = true
+                    } catch(err) {
+                        console.error(err)
+                        error = 'DB Error'
+                    }
+
+                    if (error) return { deleted, error }
+                    for (const prop in log) this[prop] = log[prop]
+                    
+                    await logDeletion(session, 'roles', this, { id })
+
+                    return { deleted }
+                } else if (ids.length) { //? No delete log
+                    let result
+
+                    switch (target) {
+
+                        case 'users':
+                            [ result ] = await mysql.execute(query.jx.roles.delete({ userId: ids }))
+                            break
+
+                    }
+
+                    return { deleted: result.affectedRows > 0 }
+                }
+            }
+
+            this.modify = async (session, data) => {
+                let modified = false, error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+                if (error) return { modified, error }
+
+                const { permissions } = data
+                delete data.permissions
+
+                const { id } = this
+                const modifiedBy = session.user.id
+                const currentData = { ...this }
+                if (this.location) currentData.location = this.location[0]
+
+                //! Permission change is NOT logged yet
+                data = processData(data, {
+                    modifiedBy,
+                    currentData,
+                    currentUpdateLog: await this.log('updateLog'),
+                })
+
+                data.permissions = JSON.stringify(permissions)
+
+                try {
+                    const [ result ] = await mysql.execute(query.roles.update(data, { id }))
+                    if (result.affectedRows === 1) modified = true
+                } catch (err) {
+                    console.error(err)
+                    error = 'DB Error: Failed to modify Role'
+                }
+
+                return { modified, error, data: await Role.data(session, { id }) }
+            }
+
+            this.unique = async (session, params = {}) => {
+                let unique = false, original = true,
+                    error = error = sessionError(session, { branches: [ 'admin', 'user' ] })
+
+                if (!error) {
+                    const { name, category, location } = params
+
+                    if (
+                        (name !== this.name) ||
+                        (name === this.name && category !== this.category) ||
+                        (name === this.name && category === this.category && location !== this.location[0])
+                    ) {
+                        original = false
+
+                        const { found, error: sError } = await Role.find(session, params)
+                        if (sError) error = sError
+                        else unique = !found
+                    }
+                }
+
+                return { unique, original, error }
+            }
+
+        }
     }
+
+
+    static #algorithm = 'SHA-1'
+    static hashId = (field = 'id') => hash(field, Role.#algorithm)
+    static matchIdHash = value => matchHash(value, Role.#algorithm)
+
+
+    static create = async (session, data) => {
+        let created = false, error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+        if (error) return { created, error }
+
+        data = processData(data)
+
+        for (const prop of [ 'category', 'name', 'permissions' ])
+            if (!data[prop]) return { created, error: 'Invalid Data' }
+
+        if (await Role.list(session, {
+            category: data.category,
+            location: data.location || null,
+            name: data.name,
+        }).length) return { created, error: 'DB Error: Dublicated Data' }
+
+        data.permissions = JSON.stringify(data.permissions)
+        data.createdBy = session.user.id
+
+        const [ result ] = await mysql.execute(query.roles.insert(data))
+        const id = result.insertId
+        if (!id) return { created, error: 'DB Error: Failed to write Data' }
+
+        return { created, error, data: await Role.data(session, { id }) }
+    }
+
+
+    static fetch = async (session, filter = {}, params = {}) => {
+        if (!session?.user || typeof session.user !== 'object') return
+        const { user: sessionUser, branch, siteId } = session
+
+        const {
+            id, _id,
+            ids, category, name, location,
+        } = filter
+        const single = id || _id
+        const { qBatch } = params
+
+        const match = { id, category, name, location }
+        if (!match.id) match.id = Role.matchIdHash(_id)
+        if (ids) match.id = ids
+        
+        const batch = [
+            {
+                table: query.roles.table,
+                fields: [ 'id', Role.hashId(), 'category', 'location', 'name', 'permissions' ],
+                match,
+            },
+        ]
+
+        if (qBatch === true) return batch
+
+        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+        list.forEach((data, i, arr) => arr[i] = new Role(data, { single, hideRawId }))
+
+        return single ? list[0] : list
+    }
+
+
+    static find = async (session, params = {}) => {
+        if (!session?.user) return { error: 'Invalid User' }
+
+        const { name, category, exclude } = params
+        if (!name && !category) return { error: 'Invalid Parameters' }
+        let { location } = params
+        if (location !== undefined && !location) location = null
+
+        const match = { name, category, location }
+        if (exclude?._id) {
+            const role = await Role.data(session, { _id: exclude._id })
+
+            match.id = { not: role.id }
+        }
+
+        const data = (await mysql.execute(query.roles.select('id', { match: { name, category, location } })))[0]
+
+        return { found: data.length === 1 }
+    }
+
+
 }
 
 

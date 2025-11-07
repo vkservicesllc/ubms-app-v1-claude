@@ -202,6 +202,6 @@ export default class Geography {
         YE: "Yemen",
         ZM: "Zambia",
         ZW: "Zimbabwe",
-        }
+    }
 
 }

@@ -129,9 +129,9 @@ class User extends Person {
 
 
             this.flush = async () => {
-                return await mysql.execute(query.main.update({ updateLog: null }, {
+                return (await mysql.execute(query.main.update({ updateLog: null }, {
                     id: User.matchIdHash(this._id),
-                }))
+                })))[0]
             }
 
 
@@ -1609,9 +1609,9 @@ class Role {
 
 
             this.flush = async () => {
-                return await mysql.execute(query.roles.update({ updateLog: null }, {
+                return (await mysql.execute(query.roles.update({ updateLog: null }, {
                     id: Role.matchIdHash(this._id),
-                }))
+                })))[0]
             }
 
 

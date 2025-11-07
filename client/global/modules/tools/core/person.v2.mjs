@@ -19,7 +19,7 @@ class Person {
         this.age = this.dob ? calculateYearAge(this.dob) : null
         this.sex = sexInt ? data.sex : null
         this.gender = sexInt ? ['F', 'M'][data.sex] : 'X'
-        this.public = {
+        this.expansion = {
             gender: sexInt ? ['Female', 'Male'][data.sex] : null,
         }
     }
