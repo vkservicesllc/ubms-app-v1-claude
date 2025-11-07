@@ -562,7 +562,9 @@ class Query {
                     value = value[prop]
                     if (empty(value)) continue
 
-                    value = Query.#value(value)
+                    if (Array.isArray(value))
+                        [ value, operator, extension ] = combine(value)
+                    else value = Query.#value(value)
                     field = { [prop]: field }
                 }
 
@@ -577,7 +579,9 @@ class Query {
 
                     if (empty(value)) continue
 
-                    value = Query.#value(value)
+                    if (Array.isArray(value))
+                        [ value, operator, extension ] = combine(value)
+                    else value = Query.#value(value)
                     field = { sha2: field }
                 }
 

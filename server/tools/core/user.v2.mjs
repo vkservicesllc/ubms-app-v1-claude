@@ -474,7 +474,7 @@ class User extends Person {
 
         const {
             id, _id, _simpleId, username, email,
-            ids, firstName, lastName, alias, sex,
+            ids, _ids, firstName, lastName, alias, sex,
             status, location, condition, decliner, deleted,
         } = filter
         const { allowDeleted, login, hideRawId, hideSensitive, qBatch } = params
@@ -489,9 +489,12 @@ class User extends Person {
             status, location, condition, decliner,
         }
         if (allowDeleted === true) delete batch[0].match.deletedBy
-        if (!id && _id) batch[0].match.id = User.matchIdHash(_id)
-        if (!id && !_id) batch[0].match.id = ids
-        if (_simpleId) batch[0].match.id = User.matchSimpleIdHash(_simpleId)
+
+        if (!id) {
+            if (ids) batch[0].match.id = ids
+            else if (_simpleId) batch[0].match.id = User.matchSimpleIdHash(_simpleId)
+            else batch[0].match.id = User.matchIdHash(_id || _ids)
+        }
 
         if (login) {
             batch[0].fields.push([ '_passKey', '_hash' ])
@@ -1038,11 +1041,23 @@ class Role {
                 let added = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { added, error }
 
-                //! convert _ids to ids
+                const data = [], createdBy = session.user.id
+                let queryProp
+
                 switch (target) {
                     case 'users':
+                        const users = await User.fetch(session, { _ids })
+                        users.forEach(user => data.push({
+                            roleId: this.id,
+                            userId: user.id,
+                            createdBy,
+                        }))
+                        queryProp = 'roles'
                         break
                 }
+
+                const [ result ] = await mysql.execute(query.jx[queryProp].insert(data))
+                added = result.affectedRows > 0
 
                 return { added }
             }
@@ -1180,15 +1195,18 @@ class Role {
 
         const {
             id, _id,
-            ids, category, name, location,
+            ids, _ids, category, name, location,
         } = filter
         const single = id || _id
         const { qBatch } = params
 
         const match = { id, category, name, location }
-        if (!match.id) match.id = Role.matchIdHash(_id)
-        if (ids) match.id = ids
-        
+        if (!id) {
+            if (ids) match.id = ids
+            else match.id = Role.matchIdHash(_id || _ids)
+        }
+
+
         const batch = [
             {
                 table: query.roles.table,
