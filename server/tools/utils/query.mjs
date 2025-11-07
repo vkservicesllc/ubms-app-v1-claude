@@ -380,6 +380,14 @@ class Query {
                 field = `${prop.toUpperCase()}(${field})`
             }
 
+            else if ('eq' in field) {
+                let value
+                [ field, value, resField ] = field.eq
+
+                field = Query.#_field(field, table)
+                field = `(${field} = ${value}) as resField`
+            }
+
             else if ('count' in field ) {
                 [ field, resField ] = field.count
 
