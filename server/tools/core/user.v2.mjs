@@ -21,7 +21,7 @@ import db from '../../settings/mysql.mjs'
 import Team, { query as teamQuery } from './team.mjs'
 import Company, { query as companyQuery } from './company.mjs'
 import Carrier, { query as carrierQuery } from './carrier.mjs'
-import Person from '../../../client/global/modules/tools/core/person.v2.mjs' //! FIX DIR
+import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import recognizeApi from '../utils/api.mjs'
 import transporter, { sender } from '../utils/nodemailer.mjs'
