@@ -113,21 +113,203 @@ class User extends Person {
                 return log
             }
 
+
             this.flush = async () => {
                 return (await mysql.execute(query.main.update({ updateLog: null }, {
                     id: User.matchIdHash(this._id),
                 })))[0]
             }
 
-            this.fetch = async (session, target = null, assign = false) => {}
 
-            this.add = async (session, target, data) => {}
+            this.fetch = async (session, target = null, assign = false) => {
+                if (!session?.user || typeof session.user !== 'object') return
+                const { user: sessionUser } = session
 
-            // this.update = async (session, target, data) => {}
+                let data = [], batch
 
-            this.delete = async (session, target = null, ids = []) => {}
+                switch (target) {
 
-            this.modify = async (session, data) => {}
+                    case 'roleIds':
+                    case 'roles':
+                        {
+                            batch = [
+                                {
+                                    table: query.jx.roles.table,
+                                    match: { userId: this.id },
+                                },
+                                {
+                                    table: query.roles.table,
+                                    join: [ 'id', 'roleId' ],
+                                },
+                            ]
+                            if (!sessionUser.DS && !this.self)
+                                batch[0].match.roleId = await sessionUser.fetch(session, 'roleIds')
+                            //! to be continued...
+                        }
+                        break
+
+                    case 'teamIds':
+                    case 'teams':
+                        break
+
+                    case 'companyIds':
+                    case 'companies':
+                        break
+
+                    case 'carrierIds':
+                    case 'carriers':
+                        break
+
+                }
+
+                return data
+            }
+
+
+            this.add = async (session, target, _ids) => {
+                let added = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (error) return { added, error }
+
+                const data = [], createdBy = session.user.id, userId = this.id
+                let queryProp
+
+                switch (target) {
+
+                    case 'roles':
+                        const roles = await Role.fetch(session, { _ids })
+                        roles.forEach(role => data.push({
+                            roleId: role.id,
+                            userId, createdBy,
+                        }))
+                        break
+
+                    case 'teams':
+                        //! to be added
+                        break
+
+                    case 'companies':
+                        //! to be added
+                        break
+
+                }
+
+                const [ result ] = await mysql.execute(query.jx[target].insert(data))
+                added = result.affectedRows > 0
+
+                return { added }
+            }
+
+
+            this.delete = async (session, target = null, ids = []) => {
+                if (!target) {
+                    let deleted = false
+                    const error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
+                    if (error) return { deleted, error }
+
+                    const sessionUserId = session.user.id
+                    const update = processData({ username: null, _passKey: null, email: null, phone: null, condition: 'I' }, {
+                        modifiedBy: sessionUserId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+                    update.deletedBy = sessionUserId
+                    update.deletedAt = Query.timeStamp
+
+                    const [ result ] = await mysql.execute(query.main.update(update, { id: User.matchIdHash(this._id) }))
+                    if (result.affectedRows === 1) {
+                        deleted = true
+                        const match = { userId: User.matchIdHash(this._id) }
+
+                        await mysql.execute(query.registration.delete(match))
+                        await mysql.execute(query.passReset.delete(match))
+                        await mysql.execute(query.tokens.delete(match))
+                    }
+
+                    return { deleted }
+                } else if (ids.length) { //? No delete log
+                    const idProp = { roles: 'roleId', teams: 'teamId', companies: 'companyId' }[target]
+                    const [ result ] = await mysql.execute(query.jx[target].delete({ [idProp]: ids }))
+
+                    return { deleted: result.affectedRows > 0 }
+                }
+            }
+
+
+            this.modify = async (session, data) => {
+                let modified = false, modifiedUser, error = sessionError(session, { branches: [ 'admin', 'user' ] })
+                if (!error && this.status === 'D' && session.user.status !== 'D') error = 'Invalid Target: Immune User'
+
+                const { id } = this
+                const { branch, user: sessionUser } = session
+                const modifiedBy = sessionUser.id
+
+                if (!error) {
+                    if (branch === 'user' && id !== modifiedBy) error = 'Invalid Target'
+                    else {
+                        const { status, location } = sessionUser
+
+                        if (status === 'A') {
+                            if (this.status === 'S') error = 'Invalid Target: Immune User'
+                            else if (location !== 'US' && location !== this.location)
+                                error = 'Invalid Region'
+                        } else if (this.status === 'D') {
+                            if (data.status !== 'D') error = 'Invalid Target: Immune User'
+                            else if (data.location !== 'US') error = 'Invalid Region'
+                        }
+                    }
+                }
+
+                if (error) return { modified, error }
+
+                const currentData = { ...this }
+                currentData.status = this.status
+                currentData.location = this.location
+                currentData.condition = this.condition
+
+                const update = processData(data, {
+                    modifiedBy,
+                    currentData,
+                    currentUpdateLog: await this.log('updateLog'),
+                    branch,
+                })
+
+                if (this.status === 'US') {
+                    if (update.firstName) delete update.firstName
+                    if (update.lastName) delete update.lastName
+                    if (update.alias) delete update.alias
+                }
+                if ((this.location !== 'US' && update.location !== 'US') && update.phone)
+                    update.phone = null
+
+                try {
+                    const [ result ] = await mysql.execute(query.main.update(update, { id }))
+                    if (result.affectedRows === 1) {
+                        modified = true
+                        modifiedUser = await User.data(session, { id })
+
+                        if (!this.username && data.email && this.email !== data.email) {
+                            const [ rows ] = await mysql.execute(query.registration.select('formId', { match: { userId: id } }))
+
+                            if (rows.length) {
+                                const { formId } = rows[0]
+
+                                User.invite(session, modifiedUser, formId)
+
+                                const [ result ] = await mysql.execute(query.registration.update({ invitedAt: Query.timeStamp }, {
+                                    userId: id,
+                                    formId,
+                                }))
+                                if (result.affectedRows === 0) error = 'DB Error: Registration Not Updated'
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error(err)
+                    error = 'DB Error'
+                }
+
+                return { modified, error, data: modifiedUser }
+            }
 
 
             this.reset = async session => {
@@ -173,6 +355,7 @@ class User extends Person {
 
                 return { reset, error }
             }
+
 
             this.hbs = () => {
                 const { _id, firstName, lastName, alias, email, phone, avaSrc, sex, unscoped, DS, DSA, self } = this
@@ -973,11 +1156,13 @@ class Role {
                 return log
             }
 
+
             this.flush = async () => {
                 return (await mysql.execute(query.roles.update({ updateLog: null }, {
                     id: Role.matchIdHash(this._id),
                 })))[0]
             }
+
 
             this.fetch = async (session, target = null, params = {}) => {
                 if (!session?.user || typeof session.user !== 'object') return
@@ -1037,20 +1222,20 @@ class Role {
                 return data
             }
 
+
             this.add = async (session, target, _ids) => {
                 let added = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { added, error }
 
-                const data = [], createdBy = session.user.id
+                const data = [], createdBy = session.user.id, roleId = this.id
                 let queryProp
 
                 switch (target) {
                     case 'users':
                         const users = await User.fetch(session, { _ids })
                         users.forEach(user => data.push({
-                            roleId: this.id,
                             userId: user.id,
-                            createdBy,
+                            roleId, createdBy,
                         }))
                         queryProp = 'roles'
                         break
@@ -1061,6 +1246,7 @@ class Role {
 
                 return { added }
             }
+
 
             this.delete = async (session, target = null, ids = []) => {
                 if (!target) {
@@ -1085,19 +1271,13 @@ class Role {
 
                     return { deleted }
                 } else if (ids.length) { //? No delete log
-                    let result
-
-                    switch (target) {
-
-                        case 'users':
-                            [ result ] = await mysql.execute(query.jx.roles.delete({ userId: ids }))
-                            break
-
-                    }
+                    const idProp = { users: 'userId' }[target]
+                    const [ result ] = await mysql.execute(query.jx[target].delete({ [idProp]: ids }))
 
                     return { deleted: result.affectedRows > 0 }
                 }
             }
+
 
             this.modify = async (session, data) => {
                 let modified = false, error = sessionError(session, { status: 'DSA', branches: [ 'admin' ] })
@@ -1109,7 +1289,7 @@ class Role {
                 const { id } = this
                 const modifiedBy = session.user.id
                 const currentData = { ...this }
-                if (this.location) currentData.location = this.location[0]
+                if (this.location) currentData.location = this.location
 
                 //! Permission change is NOT logged yet
                 data = processData(data, {
@@ -1131,6 +1311,7 @@ class Role {
                 return { modified, error, data: await Role.data(session, { id }) }
             }
 
+
             this.unique = async (session, params = {}) => {
                 let unique = false, original = true,
                     error = error = sessionError(session, { branches: [ 'admin', 'user' ] })
@@ -1141,7 +1322,7 @@ class Role {
                     if (
                         (name !== this.name) ||
                         (name === this.name && category !== this.category) ||
-                        (name === this.name && category === this.category && location !== this.location[0])
+                        (name === this.name && category === this.category && location !== this.location)
                     ) {
                         original = false
 
@@ -1153,6 +1334,7 @@ class Role {
 
                 return { unique, original, error }
             }
+
 
         }
     }
