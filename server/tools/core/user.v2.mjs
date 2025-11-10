@@ -105,7 +105,7 @@ class User extends Person {
                 if (deleted) fields.push('deletedBy', 'deletedAt')
 
                 let log = (await mysql.execute(query.main.select(fields, {
-                    match: { id: User.matchIdHash(this._id) },
+                    match: { id: this.id || User.matchIdHash(this._id) },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
@@ -116,7 +116,7 @@ class User extends Person {
 
             this.flush = async () => {
                 return (await mysql.execute(query.main.update({ updateLog: null }, {
-                    id: User.matchIdHash(this._id),
+                    id: this.id || User.matchIdHash(this._id),
                 })))[0]
             }
 
@@ -135,7 +135,7 @@ class User extends Person {
                             batch = [
                                 {
                                     table: query.jx.roles.table,
-                                    match: { userId: this.id },
+                                    match: { userId: this.id || User.matchIdHash(this._id) },
                                 },
                                 {
                                     table: query.roles.table,
@@ -150,10 +150,40 @@ class User extends Person {
 
                     case 'teamIds':
                     case 'teams':
+                        {
+                            batch = [
+                                {
+                                    table: query.jx.teams.table,
+                                    match: { userId: this.id || User.matchIdHash(this._id) },
+                                },
+                                {
+                                    table: query.teams.table,
+                                    join: [ 'id', 'teamId' ],
+                                },
+                            ]
+                            if (!sessionUser.DS && !this.self)
+                                batch[0].match.teamId = await sessionUser.fetch(session, 'teamIds')
+                            //! to be continued...
+                        }
                         break
 
                     case 'companyIds':
                     case 'companies':
+                        {
+                            batch = [
+                                {
+                                    table: query.jx.companies.table,
+                                    match: { userId: this.id || User.matchIdHash(this._id) },
+                                },
+                                {
+                                    table: query.teams.table,
+                                    join: [ 'id', 'companyId' ],
+                                },
+                            ]
+                            if (!sessionUser.DS && !this.self)
+                                batch[0].match.companyId = await sessionUser.fetch(session, 'companyIds')
+                            //! to be continued...
+                        }
                         break
 
                     case 'carrierIds':
@@ -168,6 +198,7 @@ class User extends Person {
 
             this.add = async (session, target, _ids) => {
                 let added = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (!error && !this.id) error = 'Data Error: Raw ID is missing'
                 if (error) return { added, error }
 
                 const data = [], createdBy = session.user.id, userId = this.id
@@ -215,10 +246,10 @@ class User extends Person {
                     update.deletedBy = sessionUserId
                     update.deletedAt = Query.timeStamp
 
-                    const [ result ] = await mysql.execute(query.main.update(update, { id: User.matchIdHash(this._id) }))
+                    const [ result ] = await mysql.execute(query.main.update(update, { id: this.id || User.matchIdHash(this._id) }))
                     if (result.affectedRows === 1) {
                         deleted = true
-                        const match = { userId: User.matchIdHash(this._id) }
+                        const match = { userId: this.id || User.matchIdHash(this._id) }
 
                         await mysql.execute(query.registration.delete(match))
                         await mysql.execute(query.passReset.delete(match))
@@ -285,7 +316,7 @@ class User extends Person {
                     const [ result ] = await mysql.execute(query.main.update(update, { id }))
                     if (result.affectedRows === 1) {
                         modified = true
-                        modifiedUser = await User.data(session, { id })
+                        modifiedUser = await User.fetch(session, { id })
 
                         if (!this.username && data.email && this.email !== data.email) {
                             const [ rows ] = await mysql.execute(query.registration.select('formId', { match: { userId: id } }))
@@ -475,7 +506,7 @@ class User extends Person {
             this.settings = async (session, data) => {
                 if (this._id !== session?.user?._id) return
 
-                const match = { id: User.matchIdHash(this._id) }
+                const match = { id: this.id || User.matchIdHash(this._id) }
                 const [ result ] = await mysql.execute(query.main.select('settings', { match }))
                 let { settings }= result[0]
 
@@ -1148,7 +1179,7 @@ class Role {
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
 
                 let log = (await mysql.execute(query.roles.select(fields, {
-                    match: { id: Role.matchIdHash(this._id) },
+                    match: { id: this.id || Role.matchIdHash(this._id) },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
@@ -1159,7 +1190,7 @@ class Role {
 
             this.flush = async () => {
                 return (await mysql.execute(query.roles.update({ updateLog: null }, {
-                    id: Role.matchIdHash(this._id),
+                    id: this.id || Role.matchIdHash(this._id),
                 })))[0]
             }
 
@@ -1171,7 +1202,7 @@ class Role {
                 const batch = [
                     {
                         table: query.jx.roles.table,
-                        match: { roleId: this.id },
+                        match: { roleId: this.id || Role.matchIdHash(this._id) },
                     },
                     {
                         table: query.main.table,
@@ -1195,7 +1226,7 @@ class Role {
 
                     case 'users':
                         const { hideRawId, hideSensitive, sortBy, assign } = params
-                        const userBatch = await User.batch(session, {}, { qBatch: true })
+                        const userBatch = await User.fetch(session, {}, { qBatch: true })
                         batch[1].fields = userBatch[0].fields
 
                         [ data ] = await mysql.execute(new Query(db.online, batch))
@@ -1203,7 +1234,7 @@ class Role {
                         if (sortBy) data = sortArrayByObjectKey(data, sortBy)
 
                         if (assign === true) {
-                            const filter = { status: [ 'US', 'A' ] }
+                            const filter = { status: [ 'U', 'A' ] }
                             if (sessionUser.location != 'US') filter.location = sessionUser.location
 
                             data = { applied: data }
@@ -1225,6 +1256,7 @@ class Role {
 
             this.add = async (session, target, _ids) => {
                 let added = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                if (!error && !this.id) error = 'Data Error: Raw ID is missing'
                 if (error) return { added, error }
 
                 const data = [], createdBy = session.user.id, roleId = this.id
@@ -1253,7 +1285,7 @@ class Role {
                     let deleted = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                     if (error) return { deleted, error }
 
-                    const { id } = this
+                    const id = this.id || Role.matchIdHash(this._id)
                     const log = await this.log()
 
                     try {
@@ -1270,9 +1302,8 @@ class Role {
                     await logDeletion(session, 'roles', this, { id })
 
                     return { deleted }
-                } else if (ids.length) { //? No delete log
-                    const idProp = { users: 'userId' }[target]
-                    const [ result ] = await mysql.execute(query.jx[target].delete({ [idProp]: ids }))
+                } else if (target === 'users' && ids.length) { //? No delete log
+                    const [ result ] = await mysql.execute(query.jx.roles.delete({ userId: ids }))
 
                     return { deleted: result.affectedRows > 0 }
                 }
@@ -1286,7 +1317,7 @@ class Role {
                 const { permissions } = data
                 delete data.permissions
 
-                const { id } = this
+                const id = this.id || Role.matchIdHash(this._id)
                 const modifiedBy = session.user.id
                 const currentData = { ...this }
                 if (this.location) currentData.location = this.location
@@ -1308,7 +1339,7 @@ class Role {
                     error = 'DB Error: Failed to modify Role'
                 }
 
-                return { modified, error, data: await Role.data(session, { id }) }
+                return { modified, error, data: await Role.fetch(session, { id }) }
             }
 
 
@@ -1354,7 +1385,7 @@ class Role {
         for (const prop of [ 'category', 'name', 'permissions' ])
             if (!data[prop]) return { created, error: 'Invalid Data' }
 
-        if (await Role.list(session, {
+        if (await Role.fetch(session, {
             category: data.category,
             location: data.location || null,
             name: data.name,
@@ -1367,20 +1398,19 @@ class Role {
         const id = result.insertId
         if (!id) return { created, error: 'DB Error: Failed to write Data' }
 
-        return { created, error, data: await Role.data(session, { id }) }
+        return { created, error, data: await Role.fetch(session, { id }) }
     }
 
 
     static fetch = async (session, filter = {}, params = {}) => {
         if (!session?.user || typeof session.user !== 'object') return
-        const { user: sessionUser, branch, siteId } = session
 
         const {
             id, _id,
             ids, _ids, category, name, location,
         } = filter
         const single = id || _id
-        const { qBatch } = params
+        const { hideRawId, qBatch } = params
 
         const match = { id, category, name, location }
         if (!id) {
@@ -1416,7 +1446,7 @@ class Role {
 
         const match = { name, category, location }
         if (exclude?._id) {
-            const role = await Role.data(session, { _id: exclude._id })
+            const role = await Role.fetch(session, { _id: exclude._id })
 
             match.id = { not: role.id }
         }
