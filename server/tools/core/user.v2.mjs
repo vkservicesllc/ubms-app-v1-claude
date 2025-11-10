@@ -121,7 +121,7 @@ class User extends Person {
             }
 
 
-            this.fetch = async (session, target = null, assign = false) => {
+            this.fetch = async (session, target, assign = false) => {
                 if (!session?.user || typeof session.user !== 'object') return
                 const { user: sessionUser } = session
 
@@ -176,7 +176,7 @@ class User extends Person {
                                     match: { userId: this.id || User.matchIdHash(this._id) },
                                 },
                                 {
-                                    table: query.teams.table,
+                                    table: companyQuery.main.table,
                                     join: [ 'id', 'companyId' ],
                                 },
                             ]
