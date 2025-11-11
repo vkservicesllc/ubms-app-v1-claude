@@ -1,11 +1,28 @@
-import Query, { hash, matchHash } from '../utils/query.mjs'
+/* Registry */
+import inputLength from '../../../client/global/modules/registry/length.mjs'
+
+/* Settings */
+import config, { addrBook, userApps } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
+/* Tools */
+import Team, { query as teamQuery } from './team.mjs'
+import Company, { query as companyQuery } from './company.mjs'
+import Carrier, { query as carrierQuery } from './carrier.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
-import Company from './company.mjs'
-
-import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import Query, { hash, matchHash } from '../utils/query.mjs'
+import recognizeApi from '../utils/api.mjs'
+import transporter, { sender } from '../utils/nodemailer.mjs'
+import { generateRandomString } from '../utils/string.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
+import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import { numeric } from '../../../client/global/modules/tools/utils/number.mjs'
+import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
+import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+
+const { validationResult } = require('express-validator')
+const mysql = require('../utils/mysql')
+const throwErr = require('../utils/error')
 
 
 const query = {
@@ -160,7 +177,7 @@ class User extends Person {
 
         if (data) error = 'Invalid Data: Email registered'
         else {
-            body.created = sessionUser.id
+            body.createdBy = sessionUser.id
 
             const [ result ] = await mysql.execute(query.main.insert(body))
             const id = result.insertId
