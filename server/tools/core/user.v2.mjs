@@ -12,19 +12,13 @@ import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 class User extends Person {
     static #algorithm = 'SHA-512'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid User Data')
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true, login = false }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid User Data')
 
         super(data)
-
-        let { single, login, hideRawId, hideSensitive } = options
-        single = defProp(single, true, 'boolean')
-        hideRawId = defProp(hideRawId, false, 'boolean')
-        hideSensitive = defProp(hideSensitive, true, 'boolean')
-        login = defProp(login, false, 'boolean')
 
         const props = { _id: data._id, _simpleId: data._simpleId }
         if (!hideRawId) props.id = data.id
@@ -65,9 +59,8 @@ class User extends Person {
             this.log = () => {}
 
 
-            this.add = (session = {}, instr = {}) => {
-                if (!instr.target) throw new Error('Instance Add Error: Target not supplied')
-                if (!instr.data) throw new Error('Instance Add Error: Data not supplied')
+            this.add = ({ user: sessionUser = {} }, { target, data = [] } = {}) => {
+                if (!target) throw new Error('Instance Add Error: Target not supplied')
 
                 let added = false, error
 
@@ -77,9 +70,8 @@ class User extends Person {
             }
 
 
-            this.fetch = (session = {}, instr = {}) => {
-                if (!instr.target) throw new Error('Instance Fetch Error: Target not supplied')
-                instr.filter = defProp(instr.filter, {})
+            this.fetch = ({ user: sessionUser = {} }, { target, filter = {} } = {}) => {
+                if (!target) throw new Error('Instance Fetch Error: Target not supplied')
 
                 let data = [], error
 
@@ -89,14 +81,13 @@ class User extends Person {
             }
 
 
-            this.update = (session = {}, instr = {}) => {
+            this.update = ({ user: sessionUser = {} }, { target, data = [], ids = [] }) => {
                 let updated = false, error
 
-                if (!instr.target) {
+                if (!target) {
                     //* Update main
                 } else {
-                    if (!instr.data) throw new Error('Instance Update Error: Data not supplied')
-                    if (!instr.id) throw new Error('Instance Update Error: Identifiers not supplied')
+                    //* Update relationships
                 }
 
                 //* ...
@@ -105,13 +96,13 @@ class User extends Person {
             }
 
 
-            this.delete = (session = {}, instr = {}) => {
+            this.delete = ({ user: sessionUser = {} }, { target, ids = [] }) => {
                 let deleted = false, error
 
-                if (!instr.target) {
+                if (!target) {
                     //* Delete main
                 } else {
-                    if (!instr.id) throw new Error('Instance Delete Error: Identifiers not supplied')
+                    //* Delete relationships
                 }
 
                 //* ...
@@ -129,9 +120,7 @@ class User extends Person {
     static matchSimpleIdHash = value => matchHash(value)
 
 
-    static create = (session = {}, data = {}) => {
-        if (!instr.data) throw new Error('Static Add Error: Data not supplied')
-
+    static create = ({ user: sessionUser = {} }, data = {}) => {
         let created = false, error
 
         //* ...
@@ -140,8 +129,8 @@ class User extends Person {
     }
 
 
-    static fetch = (session = {}, filter = {}) => {
-        const batch = User.#batch(session, filter)
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = User.#batch({ user: sessionUser }, filter)
 
         //* ...
     }
@@ -157,6 +146,7 @@ class User extends Person {
 
         location: {
             'US': 'USA',
+            // 'CA': 'Canada',
             // 'MX': 'Mexico',
             'UA': 'Ukraine',
             // 'RU': 'Russia',
@@ -179,15 +169,11 @@ class User extends Person {
 class Role {
     static #algorithm = 'SHA-1'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Role Data')
-
-        let { single, hideRawId } = options
-        single = defProp(single, true, 'boolean')
-        hideRawId = defProp(hideRawId, false, 'boolean')
+    constructor(data = {}, { single = true, hideRawId = false }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Role Data')
 
         this._id = data._id
         if (!hideRawId) props.id = data.id
@@ -209,10 +195,10 @@ class Role {
     static matchIdHash = value => matchHash(value, Role.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data) => {}
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} }, filter) => {}
 
 
 }
