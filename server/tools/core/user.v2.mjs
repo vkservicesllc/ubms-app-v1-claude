@@ -5,6 +5,7 @@ import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Company from './company.mjs'
 
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import { processData, logDeletion } from '../utils/database.mjs'
 
 
 const query = {
@@ -131,17 +132,67 @@ class User extends Person {
     static matchSimpleIdHash = value => matchHash(value)
 
 
-    static create = async ({ user: sessionUser = {} }, data = {}) => {
-        let created = false, error
+    static #formId = async () => {
+        let formId, found = true
 
-        //* ...
+        do {
+            formId = generateRandomString(inputLength.user.formId.max)
 
-        return { created, error }
+            const [ rows ] = await mysql.execute(query.registration.select('formId', {
+                match: { formId }
+            }))
+
+            if (!rows.length) found = false
+        } while (found)
+
+        return formId
     }
 
 
-    static fetch = async ({ user: sessionUser = {}, branch, siteId = null }, filter = {}, { combined = false, login = false, hideRawId = false, hideSensitive = true, batch: qBatch = false }) => {
+    static create = async ({ user: sessionUser = {} }, body = {}) => {
+        if (!sessionUser.id) throw new Error('Session Fetch Error: No session user')
+
+        let created = false, error
+        body = processData(body)
+
+        const { email } = body
+        let data = await User.fetch({ sessionUser }, { email })
+
+        if (data) error = 'Invalid Data: Email registered'
+        else {
+            body.created = sessionUser.id
+
+            const [ result ] = await mysql.execute(query.main.insert(body))
+            const id = result.insertId
+
+            if (id) {
+                const formId = await User.#formId()
+
+                const [ result ] = await mysql.execute(query.registration.insert({
+                    formId, userId: id,
+                    invitedBy: sessionUser.id,
+                }))
+
+                if (!result.affectedRows) error = 'DB Error: Failed to register new user'
+                else {
+                    created = true
+                    data = await User.fetch({ sessionUser }, { id })
+
+                    //! INVITE THE USER
+                }
+            }
+        }
+
+        return { created, error, data }
+    }
+
+
+    static fetch = async (
+        { user: sessionUser = {}, branch, siteId = null }, filter = {},
+        { hideRawId = false, hideSensitive = true, combined = false, login = false, batch: qBatch = false }
+    ) => {
         const { id: sessionUserId = null } = sessionUser
+        if (!sessionUserId && !login) throw new Error('Session Fetch Error: No session user')
 
         const batch = [
             {
@@ -155,7 +206,7 @@ class User extends Person {
                     { compare: [ 'id', 'self', { eq: sessionUserId } ] },
                 ],
             },
-            {
+            { //!!! Need to reconsider this part as default
                 table: query.sessions.table,
                 fields: [ [ 'siteId', 'lastSiteId' ], [ 'branch', 'lastBranch' ], 'lastLogin', 'lastUrl' ], //* DEFAULT
                 join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ], //? In this case it doesn't confuse lastUrl
@@ -268,9 +319,6 @@ class User extends Person {
 class Role {
     static #algorithm = 'SHA-1'
 
-    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
-
-
     constructor(data = {}, { single = true, hideRawId = false }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Role Data')
 
@@ -360,10 +408,36 @@ class Role {
     }
 
 
-    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
-        const batch = Role.#batch({ user: sessionUser }, filter)
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batch: qBatch = false }) => {
+        if (!sessionUser.id) throw new Error('Session Fetch Error: No session user')
 
-        //* ...
+        const {
+            id, _id,
+            ids, _ids, category, name, location,
+        } = filter
+        const single = id || _id
+        const { hideRawId, qBatch } = params
+
+        const match = { id, category, name, location }
+        if (!id) {
+            if (ids) match.id = ids
+            else match.id = Role.matchIdHash(_id || _ids)
+        }
+
+        const batch = [
+            {
+                table: query.roles.table,
+                fields: [ 'id', Role.hashId(), 'category', 'location', 'name', 'permissions' ],
+                match,
+            },
+        ]
+
+        if (qBatch) return batch
+
+        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+        list.forEach((data, i, arr) => arr[i] = new Role(data, { single, hideRawId }))
+
+        return single ? list[0] : list
     }
 
 
