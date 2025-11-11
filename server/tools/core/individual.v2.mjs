@@ -4,7 +4,6 @@ import db from '../../settings/mysql.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 
-import defProp from '../utils/data.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 
@@ -13,18 +12,13 @@ import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buff
 class Individual extends Person {
     static #algorithm = 'SHA-512/256'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Person Data')
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Person Data')
 
         super(data)
-
-        let { single, hideRawId, hideSensitive } = options
-        single = defProp(single, true, 'boolean')
-        hideRawId = defProp(hideRawId, false, 'boolean')
-        hideSensitive = defProp(hideSensitive, true, 'boolean')
 
         const props = { _id: data._id }
         if (!hideRawId) props.id = data.id
@@ -48,17 +42,84 @@ class Individual extends Person {
 
         reSuper(this, props, { legalPresence, phone, email, marital, address, identification })
 
-        if (single) {}
+        if (single) {
+
+            this.log = () => {}
+
+
+            this.add = ({ user: sessionUser = {} }, { target, data = [] } = {}) => {
+                if (!target) throw new Error('Instance Add Error: Target not supplied')
+
+                let added = false, error
+
+                //* ...
+
+                return { added, error }
+            }
+
+
+            this.fetch = ({ user: sessionUser = {} }, { target, filter = {} } = {}) => {
+                if (!target) throw new Error('Instance Fetch Error: Target not supplied')
+
+                let data = [], error
+
+                //* ...
+
+                return { data, error }
+            }
+
+
+            this.update = ({ user: sessionUser = {} }, { target, data = [], ids = [] }) => {
+                let updated = false, error
+
+                if (!target) {
+                    //* Update main
+                } else {
+                    //* Update relationships
+                }
+
+                //* ...
+
+                return { updated, error }
+            }
+
+
+            this.delete = ({ user: sessionUser = {} }, { target, ids = [] }) => {
+                let deleted = false, error
+
+                if (!target) {
+                    //* Delete main
+                } else {
+                    //* Delete relationships
+                }
+
+                //* ...
+
+                return { deleted, error }
+            }
+
+
+        }
     }
 
     static hashId = (field = 'id') => hash(field, Individual.#algorithm)
     static matchIdHash = value => matchHash(value, Individual.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
     static list = {

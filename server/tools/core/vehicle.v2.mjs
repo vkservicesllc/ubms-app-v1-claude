@@ -1,32 +1,36 @@
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import db from '../../settings/mysql.mjs'
 
-import defProp from '../utils/data.mjs'
-
 
 
 class Vehicle {
     static #algorithm = 'SHA-256'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Vehicle Data')
-
-        let { single, hideRawId } = options
-        single = defProp(single, true, 'boolean')
-        hideRawId = defProp(hideRawId, false, 'boolean')
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Vehicle Data')
     }
 
     static hashId = (field = 'id') => hash(field, Vehicle.#algorithm)
     static matchIdHash = value => matchHash(value, Vehicle.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
 }
@@ -36,27 +40,33 @@ class Vehicle {
 class Truck extends Vehicle {
     static #algorithm = 'SHA-384'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Truck Data')
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Truck Data')
 
-        options.single = defProp(options.single, true, 'boolean')
-        options.hideRawId = defProp(options.hideRawId, false, 'boolean')
-        super(data, options)
-
-        const { single, hideRawId } = options
+        super(data, { single, hideRawId })
     }
 
     static hashId = (field = 'id') => hash(field, Truck.#algorithm)
     static matchIdHash = value => matchHash(value, Truck.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
     static list = {
@@ -81,27 +91,33 @@ class Truck extends Vehicle {
 class Trailer extends Vehicle {
     static #algorithm = 'SHA-384'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Trailer Data')
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Trailer Data')
 
-        options.single = defProp(options.single, true, 'boolean')
-        options.hideRawId = defProp(options.hideRawId, false, 'boolean')
-        super(data, options)
-
-        const { single, hideRawId } = options
+        super(data, { single, hideRawId })
     }
 
     static hashId = (field = 'id') => hash(field, Trailer.#algorithm)
     static matchIdHash = value => matchHash(value, Trailer.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
 }
@@ -111,27 +127,33 @@ class Trailer extends Vehicle {
 class Van extends Vehicle {
     static #algorithm = 'SHA-384'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Van Data')
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Van Data')
 
-        options.single = defProp(options.single, true, 'boolean')
-        options.hideRawId = defProp(options.hideRawId, false, 'boolean')
-        super(data, options)
-
-        const { single, hideRawId } = options
+        super(data, { single, hideRawId })
     }
 
     static hashId = (field = 'id') => hash(field, Van.#algorithm)
     static matchIdHash = value => matchHash(value, Van.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
     static list = {
@@ -156,27 +178,33 @@ class Van extends Vehicle {
 class Bus extends Vehicle {
     static #algorithm = 'SHA-384'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Bus Data')
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Bus Data')
 
-        options.single = defProp(options.single, true, 'boolean')
-        options.hideRawId = defProp(options.hideRawId, false, 'boolean')
-        super(data, options)
-
-        const { single, hideRawId } = options
+        super(data, { single, hideRawId })
     }
 
     static hashId = (field = 'id') => hash(field, Bus.#algorithm)
     static matchIdHash = value => matchHash(value, Bus.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
 }
@@ -186,27 +214,33 @@ class Bus extends Vehicle {
 class Car extends Vehicle {
     static #algorithm = 'SHA-384'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Car Data')
+    constructor(data = {}, { single = true, hideRawId = false }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Car Data')
 
-        options.single = defProp(options.single, true, 'boolean')
-        options.hideRawId = defProp(options.hideRawId, false, 'boolean')
-        super(data, options)
-
-        const { single, hideRawId } = options
+        super(data, { single, hideRawId })
     }
 
     static hashId = (field = 'id') => hash(field, Car.#algorithm)
     static matchIdHash = value => matchHash(value, Car.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
 }

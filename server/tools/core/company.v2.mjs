@@ -3,7 +3,6 @@ import db from '../../settings/mysql.mjs'
 
 import Individual from './individual.mjs'
 
-import defProp from '../utils/data.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 
@@ -12,22 +11,16 @@ import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buff
 class Company {
     static #algorithm = 'SHA-256'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Company Data')
-
-        options.single = defProp(options.single, true, 'boolean')
-        options.hideRawId = defProp(options.hideRawId, false, 'boolean')
-        options.hideSensitive = defProp(options.hideSensitive, true, 'boolean')
-        const { single, hideRawId, hideSensitive } = options
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Company Data')
 
         const props = { _id: data._id }
         if (!hideRawId) props.id = data.id
 
         this.category = data.category
-
         if (!hideSensitive) this.ein = stringifyBuffer(ein)
         this.duns = data.duns
         this.website = data.website
@@ -64,7 +57,7 @@ class Company {
                 sex: data.sex,
                 dob: data.dob,
                 ssn: data.ssn,
-            }, options)
+            }, { hideRawId, hideSensitive })
             : { _id: null }
         if (this.owner._id)
             this.owner.name = this.owner.fullName('FmLs')
@@ -90,17 +83,84 @@ class Company {
         this.fax = data.fax
         this.email = data.email
 
-        if (single) {}
+        if (single) {
+
+            this.log = () => {}
+
+
+            this.add = ({ user: sessionUser = {} }, { target, data = [] } = {}) => {
+                if (!target) throw new Error('Instance Add Error: Target not supplied')
+
+                let added = false, error
+
+                //* ...
+
+                return { added, error }
+            }
+
+
+            this.fetch = ({ user: sessionUser = {} }, { target, filter = {} } = {}) => {
+                if (!target) throw new Error('Instance Fetch Error: Target not supplied')
+
+                let data = [], error
+
+                //* ...
+
+                return { data, error }
+            }
+
+
+            this.update = ({ user: sessionUser = {} }, { target, data = [], ids = [] }) => {
+                let updated = false, error
+
+                if (!target) {
+                    //* Update main
+                } else {
+                    //* Update relationships
+                }
+
+                //* ...
+
+                return { updated, error }
+            }
+
+
+            this.delete = ({ user: sessionUser = {} }, { target, ids = [] }) => {
+                let deleted = false, error
+
+                if (!target) {
+                    //* Delete main
+                } else {
+                    //* Delete relationships
+                }
+
+                //* ...
+
+                return { deleted, error }
+            }
+
+
+        }
     }
 
     static hashId = (field = 'id') => hash(field, Company.#algorithm)
     static matchIdHash = value => matchHash(value, Company.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
     static list = {
@@ -156,18 +216,13 @@ class Company {
 class Owner extends Individual {
     static #algorithm = 'SHA-1'
 
-    static #batch = (session = {}, filter = {}) => {}
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
 
 
-    constructor(data = {}, options = {}) {
-        if (!data?._id) throw new Error('Invalid Owner Data')
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Owner Data')
 
-        options.single = defProp(options.single, true, 'boolean')
-        options.hideRawId = defProp(options.hideRawId, false, 'boolean')
-        options.hideSensitive = defProp(options.hideSensitive, true, 'boolean')
-        super(data, options)
-
-        const { single, hideRawId, hideSensitive } = options
+        super(data, { single, hideRawId, hideSensitive })
 
         const props = { _id: data._id, _personId: data._personId }
         if (!hideRawId) {
@@ -186,17 +241,84 @@ class Owner extends Individual {
 
         reSuper(this, props, props2)
 
-        if (single) {}
+        if (single) {
+
+            this.log = () => {}
+
+
+            this.add = ({ user: sessionUser = {} }, { target, data = [] } = {}) => {
+                if (!target) throw new Error('Instance Add Error: Target not supplied')
+
+                let added = false, error
+
+                //* ...
+
+                return { added, error }
+            }
+
+
+            this.fetch = ({ user: sessionUser = {} }, { target, filter = {} } = {}) => {
+                if (!target) throw new Error('Instance Fetch Error: Target not supplied')
+
+                let data = [], error
+
+                //* ...
+
+                return { data, error }
+            }
+
+
+            this.update = ({ user: sessionUser = {} }, { target, data = [], ids = [] }) => {
+                let updated = false, error
+
+                if (!target) {
+                    //* Update main
+                } else {
+                    //* Update relationships
+                }
+
+                //* ...
+
+                return { updated, error }
+            }
+
+
+            this.delete = ({ user: sessionUser = {} }, { target, ids = [] }) => {
+                let deleted = false, error
+
+                if (!target) {
+                    //* Delete main
+                } else {
+                    //* Delete relationships
+                }
+
+                //* ...
+
+                return { deleted, error }
+            }
+
+
+        }
     }
 
     static hashId = (field = 'id') => hash(field, Owner.#algorithm)
     static matchIdHash = value => matchHash(value, Owner.#algorithm)
 
 
-    static create = (session, data) => {}
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
 
 
-    static fetch = (session, filter) => {}
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
 }
