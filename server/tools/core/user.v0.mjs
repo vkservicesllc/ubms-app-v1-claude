@@ -817,7 +817,7 @@ class User extends Person {
         },
 
 
-        async session(req, res){
+        async session(req, res) {
             try {
                 const { session } = res
                 const { branch, siteId, defUrl } = session

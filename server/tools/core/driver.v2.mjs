@@ -732,7 +732,39 @@ class Employment {
 
 
 
-class DriverUser {}
+class DriverUser {
+
+
+    static mw = {
+
+
+        async login(req, res) {},
+
+
+        async session(req, res) {},
+
+
+        async verify(req, res, next) {},
+
+
+        logout(req, res) {
+            if (req.session.user) delete req.session.user
+            if (res.session.user) delete res.session.user
+            if (req.session.team) delete req.session.team
+            if (res.session.team) delete res.session.team
+
+            return req.session.destroy((err) => {
+                if (err) return res.status(500).send('Failed to log out')
+
+                res.redirect('/')
+            })
+        },
+
+
+    }
+
+
+}
 
 
 
