@@ -5,8 +5,106 @@ import Person from '../../../client/global/modules/tools/core/person.mjs'
 
 
 
-class Individual extends Person {}
+class Individual extends Person {
+    static #algorithm = 'SHA-512/256'
+
+    constructor(data = {}, options = {}) {
+        if (!data?._id) throw new Error('Invalid Person Data')
+    }
+
+    static hashId = (field = 'id') => hash(field, Individual.#algorithm)
+    static matchIdHash = value => matchHash(value, Individual.#algorithm)
 
 
+    static list = {
+
+        prefix: {
+            'Mr': 'Mister',
+            'Mrs': 'Mistress',
+            'Ms': 'Miss',
+        },
+
+        suffix: {
+            'Sr': 'Senior (I)',
+            'Jr': 'Junior (II)',
+            'II': 'II',
+            'III': 'III',
+            'IV': 'IV',
+            'V': 'V',
+        },
+
+        gender: {
+            'M': 'Male',
+            'F': 'Female',
+        },
+
+        marital: {
+            's': 'Single',
+            'm': 'Married',
+            'd': 'Divorced',
+            'p': 'Separated',
+            'w': 'Widowed',
+        },
+
+    }
+
+
+}
+
+
+
+class Relationship {
+
+    static list = {
+        'Spouse': [['Husband', 'M'], ['Wife', 'F']],
+        'Parent': [['Father', 'M'], ['Mother', 'F'], ['Stepfather', 'M'], ['Stepmother', 'F']],
+        'Child': [['Son', 'M'], ['Daughter', 'F'], ['Stepson', 'M'], ['Stepdaughter', 'F']],
+        'Sibling': [['Brother', 'M'],  ['Sister', 'F'], ['Stepbrother', 'M'], ['Stepsister', 'F']],
+        'Grandparent': [['Grandfather', 'M'], ['Grandmother', 'F']],
+        'Grandchild': [['Grandson', 'M'], ['Granddaughter', 'F']],
+        'Immediate In-Law': [['Father-in-law', 'M'], ['Mother-in-law', 'F'], ['Son-in-law', 'M'], ['Daughter-in-law', 'F'], ['Brother-in-law', 'M'], ['Sister-in-law', 'F']],
+        'Other': [['Uncle', 'M'], ['Aunt', 'F'], ['Nephew', 'M'], ['Niece', 'F'], 'Cousin', 'Fiancé(e)', 'Domestic Partner', 'Friend', 'Other'],
+    }
+
+    static data = () => {
+        const list = Relationship.list
+        const data = {}
+
+        for (const group in list) {
+            data[group] = {}
+
+            for (let relation of list[group]) {
+                if (Array.isArray(relation)) relation = relation[0]
+                data[group][relation] = relation
+            }
+        }
+
+        return data
+    }
+
+    static gender = member => {
+        let gender = null
+        const list = Relationship.list
+
+        groupLoop:
+        for (const group in list) {
+            for (let relation of list[group]) {
+                if (!Array.isArray(relation)) continue
+                if (relation[0] === member) {
+                    gender = relation[1]
+                    break groupLoop
+                }
+            }
+        }
+
+        return gender
+    }
+
+}
+
+
+
+delete Individual.formSelect
 
 export default Individual
+export { Relationship }
