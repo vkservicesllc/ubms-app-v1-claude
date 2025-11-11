@@ -2,6 +2,11 @@ import Query, { hash, matchHash } from '../utils/query.mjs'
 import db from '../../settings/mysql.mjs'
 
 import Person from '../../../client/global/modules/tools/core/person.mjs'
+import Address from '../../../client/global/modules/tools/core/address.us.mjs'
+
+import defProp from '../utils/data.mjs'
+import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 
 
 
@@ -10,6 +15,37 @@ class Individual extends Person {
 
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Person Data')
+
+        super(data)
+
+        let { single, hideRawId, hideSensitive } = options
+        single = defProp(single, true, 'boolean')
+        hideRawId = defProp(hideRawId, false, 'boolean')
+        hideSensitive = defProp(hideSensitive, true, 'boolean')
+
+        const props = { _id: data._id }
+        if (!hideRawId) props.id = data.id
+        if (!hideSensitive) this.ssn = stringifyBuffer(data.ssn)
+
+        const { phone, email, marital } = data
+        const legalPresence = { status: data.status, expiresOn: data.statusExpiresOn }
+        const address = new Address(data)
+
+        const identification = {
+            driver: data.driver,
+            commercial: data.commercial,
+            number: data.idNumber,
+            class: data.idClass,
+            state: data.idState,
+            issuedOn: data.idIssuedOn,
+            expiresOn: data.idExpiresOn,
+            endorsement: data.idEndorsement,
+            restriction: data.idRestriction,
+        }
+
+        reSuper(this, props, { legalPresence, phone, email, marital, address, identification })
+
+        if (single) {}
     }
 
     static hashId = (field = 'id') => hash(field, Individual.#algorithm)

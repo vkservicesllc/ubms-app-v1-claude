@@ -1,7 +1,15 @@
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import db from '../../settings/mysql.mjs'
 
+import Person from '../../../client/global/modules/tools/core/person.mjs'
+import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Individual from './individual.mjs'
+
+import moment from 'moment'
+import defProp from '../utils/data.mjs'
+import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
+import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import bool from '../../../client/global/modules/tools/utils/boolean.mjs'
 
 
 
@@ -10,6 +18,26 @@ class Driver extends Individual {
 
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Driver Data')
+
+        options.single = defProp(options.single, true, 'boolean')
+        options.hideRawId = defProp(options.hideRawId, false, 'boolean')
+        options.hideSensitive = defProp(options.hideSensitive, true, 'boolean')
+        super(data, options)
+
+        const { single, hideRawId } = options
+
+        const props = { _id: data._id, _personId: data._personId }
+        if (!hideRawId) {
+            props.id = data.id
+            props.personId = data.personId
+        }
+        props.blacklisted = data.blacklisted
+
+        const props2 = {} //! add driver's secondary properties
+
+        reSuper(this, props, props2)
+
+        if (single) {}
     }
 
     static hashId = (field = 'id') => hash(field, Driver.#algorithm)
@@ -39,6 +67,233 @@ class Application {
 
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Application Data')
+
+        let { single, hideRawId, hideSensitive } = options
+        single = defProp(single, true, 'boolean')
+        hideRawId = defProp(hideRawId, false, 'boolean')
+        hideSensitive = defProp(hideSensitive, true, 'boolean')
+
+        this._id = data._id
+        this._driverId = data._driverId
+        this._personId = data._personId
+        this._teamId = data._teamId
+        this._userId = data._userId
+        this._carrierId = data._carrierId
+        if (!hideRawId) {
+            this.id = data.id
+            this.driverId = data.driverId
+            this.personId = data.personId
+            this.teamId = data.teamId
+            this.userId = data.userId
+            this.carrierId = data.carrierId
+        }
+
+        this.cdlRole = data.cdlRole
+        this.formId = data.formId
+        this.position = data.position
+        this.condition = data.condition
+        this.appliedAt = data.createdAt
+        this.appliedOn = moment(data.createdAt).format('YYYY-MM-DD')
+        this.finishedAt = data.finishedAt
+        this.matched = data.matched
+
+        this.checklist = {
+            dlScn: data.dlScn,
+            dlScnId: data.dlScnId,
+            dlVrfId: data.dlVrfId,
+            mecScn: data.mecScn,
+            mecScnId: data.mecScnId,
+            mecVrfId: data.mecVrfId,
+            docScn: data.docScn,
+            docScnId: data.docScnId,
+            docVrfId: data.docVrfId,
+            mvrUplId: data.mvrUplId,
+            pspUplId: data.pspUplId,
+        }
+
+        this.legalStatus = [ data.legalStatus, data.legalExpiration ]
+        this.step = data.step
+
+        if (data.decExperience || data.decPosition)
+            this.decision = {
+                experience: data.decExperience,
+                position: data.decPosition,
+            }
+
+        const person = new Person(data)
+        this.firstName = person.firstName
+        this.middleName = person.middleName
+        this.lastName = person.lastName
+        this.suffix = person.suffix
+        this.name = person.fullName()
+        this.fullName = person.fullName('FMLs')
+        this.dob = person.dob
+        this.sex = person.sex
+        this.gender = person.gender
+        if (!hideSensitive) this.ssn = data.ssn ? stringifyBuffer(data.ssn) : null
+
+        this.marital = data.marital
+        this.email = data.email
+        this.phone = data.phone
+        this.address = new Address(data)
+        this.address.since = data.addrSince
+        this.address.enough = !!data.addrEnough
+        this.address.livedAbroad = bool(data.livedAbroad)
+        this.address.country = data.country
+
+        this.team = {
+            name: data.teamName,
+        }
+
+        if (data.userLastName) {
+            const {
+                userFirstName: firstName,
+                userLastName: lastName,
+                userAlias: alias,
+            } = data
+            const person = new Person({ firstName, lastName, alias })
+
+            this.user = {
+                firstName,
+                lastName,
+                alias,
+                name: person.fullName('AL'),
+                shortName: person.fullName('Al'),
+                fullName: person.fullName('FAL'),
+                location: data.userLocation,
+                condition: data.userCondition,
+                deleted: !!data.userDeletedAt,
+            }
+        }
+
+        if (data.busName) {
+            this.carrier = {
+                busName: data.busName,
+                coType: data.coType,
+                alias: data.companyAlias,
+                name: `${data.busName}, ${data.coType}`,
+            }
+        }
+
+        if (data.dlNumber)
+            this.dl = {
+                number: data.dlNumber,
+                commercial: !!data.dlCommercial,
+                class: data.dlClass,
+                state: data.dlState,
+                issuedOn: data.dlIssuedOn,
+                expiresOn: data.dlExpiresOn,
+                endorsement: data.dlEndors,
+                restriction: data.dlRestr,
+                denied: !!data.dlDenied,
+                deniedExpl: data.dlDeniedExpl,
+                revoked: !!data.dlRevoked,
+                revokedExpl: data.dlRevokedExpl,
+            }
+
+        this.medCard = !!data.medCard
+        if (this.medCard && data.mecExpiresOn)
+            this.mec = {
+                nrcme: data.nrcme,
+                issuedOn: data.mecIssuedOn,
+                expiresOn: data.mecExpiresOn,
+            }
+        this.underMeds = bool(data.underMeds)
+        this.medList = data.medList
+
+        this.dui = bool(data.dui)
+        this.duiInDecade = bool(data.duiInDecade)
+        this.criminal = bool(data.criminal)
+        this.criminalExpl = data.criminalExpl
+        this.dotDat = bool(data.dotDat)
+        this.citations = bool(data.citations)
+
+        this.accidents = bool(data.accidents)
+
+        this.experience = bool(data.experience)
+        if (this.experience)
+            this.experience = {
+                cmv: bool(data.cmvExp),
+                vehicles: data.expVehicles,
+                firstDate: data.expFirstDate,
+                lastDate: data.expLastDate,
+                mileage: data.expMileage,
+                hours: data.expHours,
+            }
+
+        this.cdlSchool = bool(data.cdlSchool)
+        if (this.cdlSchool)
+            this.cdlSchool = {
+                name: data.schName,
+                phone: data.schPhone,
+                state: data.schState,
+                endDate: data.schEndDate,
+                duration: data.schDuration,
+            }
+
+        this.prevEmployed = bool(data.prevEmployed)
+
+        if (data.startPref !== null) {
+            this.preference = {
+                startPref: data.startPref.toString(),
+                operType: data.operType,
+            }
+
+            if (this.cdlRole) {
+                this.preference.teamName = data.partnerName
+                this.preference.teamPhone = data.partnerPhone
+                this.preference.haulRegion = data.haulRegion
+                this.preference.equipmentType = data.equipmentType
+            }
+        }
+
+        this.activeBusiness = bool(data.activeBusiness)
+        if (this.activeBusiness) {
+            this.business = {
+                busName: data.ownBusName,
+                state: data.busState,
+            }
+            if (!hideSensitive) this.business.ein = data.busEin ? stringifyBuffer(data.busEin) : null
+        }
+
+        if (data.vhlType || data.vhlMmt)
+            this.vehicle = {
+                mmt: data.vhlMmt,
+                make: data.vhlMake,
+                model: data.vhlModel,
+                year: data.vhlYear,
+                type: data.vhlType,
+                length: data.vhlLength,
+            }
+
+        if (data.benefRelation) {
+            let { benefRelation: relation, benefOtherRel: otherRel } = data
+
+            this.beneficiary = {
+                firstName: data.benefFirstName,
+                middleName: data.benefMiddleName,
+                lastName: data.benefLastName,
+                suffix: data.benefSuffix,
+                relation: relation,
+                otherRel: otherRel,
+                phone: data.benefPhone,
+            }
+            if (!hideSensitive) this.beneficiary.ssn = data.benefSsn ? stringifyBuffer(data.benefSsn) : null
+        }
+
+        if (data.emergPhone)
+            this.emergency = {
+                phone: data.emergPhone,
+                name: data.emergName,
+                relation: data.emergRelation,
+            }
+
+        this.expansion = {
+            position: Driver.list.position[data.position],
+            gender: person.expansion.gender,
+        }
+
+        if (single) {}
     }
 
     static hashId = (field = 'id') => hash(field, Application.#algorithm)
@@ -141,6 +396,32 @@ class Citation {
 
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Citation Data')
+
+        let { single, hideRawId } = options
+        single = defProp(single, true, 'boolean')
+        hideRawId = defProp(hideRawId, false, 'boolean')
+
+        this._id = data._id
+        this._aplId = data._aplId
+        this._teamId = data._teamId
+        if (!hideRawId) {
+            this.id = data.id
+            this.aplId = data.aplId
+            this.teamId = data.teamId
+        }
+
+        this.formId = data.formId
+        this.aplCondition = data.condition
+        this.firstName = data.firstName
+        this.middleName = data.middleName
+        this.lastName = data.lastName
+        this.suffix = data.suffix
+        this.violation = data.violation
+        this.other = data.other
+        this.citedOn = data.citedOn
+        this.state = data.state
+
+        if (single) {}
     }
 
     static hashId = (field = 'id') => hash(field, Citation.#algorithm)
@@ -204,6 +485,34 @@ class Accident {
 
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Accident Data')
+
+        let { single, hideRawId } = options
+        single = defProp(single, true, 'boolean')
+        hideRawId = defProp(hideRawId, false, 'boolean')
+
+        this._id = data._id
+        this._aplId = data._aplId
+        this._teamId = data._teamId
+        if (!hideRawId) {
+            this.id = data.id
+            this.aplId = data.aplId
+            this.teamId = data.teamId
+        }
+
+        this.formId = data.formId
+        this.aplCondition = data.condition
+        this.firstName = data.firstName
+        this.middleName = data.middleName
+        this.lastName = data.lastName
+        this.suffix = data.suffix
+        this.collision = data.collision
+        this.other = data.other
+        this.date = data.date
+        this.state = data.state
+        this.injuries = bool(data.injuries)
+        this.fatalities = bool(data.fatalities)
+
+        if (single) {}
     }
 
     static hashId = (field = 'id') => hash(field, Accident.#algorithm)
@@ -251,6 +560,39 @@ class Employment {
 
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Employment Data')
+
+        let { single, hideRawId } = options
+        single = defProp(single, true, 'boolean')
+        hideRawId = defProp(hideRawId, false, 'boolean')
+
+        this._id = data._id
+        this._aplId = data._aplId
+        if (!hideRawId) {
+            this.id = data.id
+            this.aplId = data.aplId
+        }
+
+        this.status = data.status
+        this.employer = data.employer
+        this.phone = data.phone
+        this.address = new Address(data)
+        this.startedOn = data.startedOn
+        this.position = data.position
+        this.earnings = data.earnings
+        this.fmcsr = data.fmcsr
+        this.dotDat = data.dotDat
+        this.rfl = data.rfl
+        this.leftOn = data.leftOn
+
+        this.applicant = new Person(data)
+        this.application = {
+            formId: data.formId,
+            finishedAt: data.finishedAt,
+            phone: data.aplPhone,
+            carrier: data.carrierId ?  `${data.busName}, ${data.coType}` : null,
+        }
+
+        if (single) {}
     }
 
     static hashId = (field = 'id') => hash(field, Employment.#algorithm)

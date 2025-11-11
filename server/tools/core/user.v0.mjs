@@ -62,9 +62,9 @@ class User extends Person {
 
         let { single, login, hideRawId, hideSensitive } = options
         if (single === undefined || typeof single !== 'boolean') single = true
-        if (login === undefined || typeof login !== 'boolean') login = false
         if (hideRawId === undefined || typeof hideRawId !== 'boolean') hideRawId = false
         if (hideSensitive === undefined || typeof hideSensitive !== 'boolean') hideSensitive = true
+        if (login === undefined || typeof login !== 'boolean') login = false
 
         const props = { _id: data._id, _simpleId: data._simpleId }
         if (!hideRawId) props.id = data.id

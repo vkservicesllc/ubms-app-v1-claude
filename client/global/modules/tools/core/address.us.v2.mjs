@@ -10,7 +10,7 @@ export default class Address {
         this.state = data.state
         this.zip = data.zip
         this.expansion = {
-            state: Address.stateList[data.state],
+            state: Address.list.state[data.state],
         }
     }
 
