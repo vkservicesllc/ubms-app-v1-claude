@@ -1,10 +1,11 @@
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import db from '../../settings/mysql.mjs'
 
-
-
-class Team {}
+import Company from './company.mjs'
 
 
 
-export default Team
+class Carrier extends Company {}
+
+
+export default Carrier
