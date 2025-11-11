@@ -11,6 +11,9 @@ import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 class Student extends Individual {
     static #algorithm = 'SHA-224'
 
+    static #batch = (session = {}, filter = {}) => {}
+
+
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Student Data')
 
@@ -36,12 +39,23 @@ class Student extends Individual {
 
     static hashId = (field = 'id') => hash(field, Student.#algorithm)
     static matchIdHash = value => matchHash(value, Student.#algorithm)
+
+
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
+
+
 }
 
 
 
 class Application {
     static #algorithm = 'SHA-256'
+
+    static #batch = (session = {}, filter = {}) => {}
+
 
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Application Data')
@@ -55,6 +69,14 @@ class Application {
 
     static hashId = (field = 'id') => hash(field, Application.#algorithm)
     static matchIdHash = value => matchHash(value, Application.#algorithm)
+
+
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
+
+
 }
 
 

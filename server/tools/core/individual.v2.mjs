@@ -13,6 +13,9 @@ import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buff
 class Individual extends Person {
     static #algorithm = 'SHA-512/256'
 
+    static #batch = (session = {}, filter = {}) => {}
+
+
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Person Data')
 
@@ -50,6 +53,12 @@ class Individual extends Person {
 
     static hashId = (field = 'id') => hash(field, Individual.#algorithm)
     static matchIdHash = value => matchHash(value, Individual.#algorithm)
+
+
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
 
 
     static list = {

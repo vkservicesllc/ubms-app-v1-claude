@@ -16,6 +16,9 @@ import bool from '../../../client/global/modules/tools/utils/boolean.mjs'
 class Driver extends Individual {
     static #algorithm = 'SHA-224'
 
+    static #batch = (session = {}, filter = {}) => {}
+
+
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Driver Data')
 
@@ -64,6 +67,9 @@ class Driver extends Individual {
 
 class Application {
     static #algorithm = 'SHA-256'
+
+    static #batch = (session = {}, filter = {}) => {}
+
 
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Application Data')
@@ -300,6 +306,12 @@ class Application {
     static matchIdHash = value => matchHash(value, Application.#algorithm)
 
 
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
+
+
     static list = {
 
         step: [
@@ -394,6 +406,9 @@ class Application {
 class Citation {
     static #algorithm = 'MD5'
 
+    static #batch = (session = {}, filter = {}) => {}
+
+
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Citation Data')
 
@@ -426,6 +441,12 @@ class Citation {
 
     static hashId = (field = 'id') => hash(field, Citation.#algorithm)
     static matchIdHash = value => matchHash(value, Citation.#algorithm)
+
+
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
 
 
     static list = {
@@ -483,6 +504,9 @@ class Citation {
 class Accident {
     static #algorithm = 'MD5'
 
+    static #batch = (session = {}, filter = {}) => {}
+
+
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Accident Data')
 
@@ -517,6 +541,12 @@ class Accident {
 
     static hashId = (field = 'id') => hash(field, Accident.#algorithm)
     static matchIdHash = value => matchHash(value, Accident.#algorithm)
+
+
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
 
 
     static list = {
@@ -558,6 +588,9 @@ class Accident {
 class Employment {
     static #algorithm = 'MD5'
 
+    static #batch = (session = {}, filter = {}) => {}
+
+
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Employment Data')
 
@@ -597,6 +630,14 @@ class Employment {
 
     static hashId = (field = 'id') => hash(field, Employment.#algorithm)
     static matchIdHash = value => matchHash(value, Employment.#algorithm)
+
+
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
+
+
 }
 
 

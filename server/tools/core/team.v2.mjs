@@ -8,6 +8,9 @@ import defProp from '../utils/data.mjs'
 class Team {
     static #algorithm = 'MD5'
 
+    static #batch = (session = {}, filter = {}) => {}
+
+
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Team Data')
 
@@ -48,6 +51,14 @@ class Team {
 
     static hashId = (field = 'id') => hash(field, Team.#algorithm)
     static matchIdHash = value => matchHash(value, Team.#algorithm)
+
+
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
+
+
 }
 
 

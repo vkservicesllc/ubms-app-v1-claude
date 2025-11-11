@@ -12,6 +12,9 @@ import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buff
 class Company {
     static #algorithm = 'SHA-256'
 
+    static #batch = (session = {}, filter = {}) => {}
+
+
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Company Data')
 
@@ -94,6 +97,12 @@ class Company {
     static matchIdHash = value => matchHash(value, Company.#algorithm)
 
 
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
+
+
     static list = {
 
         category:{
@@ -133,12 +142,22 @@ class Company {
     }
 
 
+    static share = {
+
+        batch(session, filter) { return Company.#batch(session, filter) },
+
+    }
+
+
 }
 
 
 
 class Owner extends Individual {
     static #algorithm = 'SHA-1'
+
+    static #batch = (session = {}, filter = {}) => {}
+
 
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Owner Data')
@@ -172,6 +191,14 @@ class Owner extends Individual {
 
     static hashId = (field = 'id') => hash(field, Owner.#algorithm)
     static matchIdHash = value => matchHash(value, Owner.#algorithm)
+
+
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
+
+
 }
 
 

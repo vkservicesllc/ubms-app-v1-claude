@@ -11,6 +11,9 @@ import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 class Carrier extends Company {
     static #algorithm = 'SHA-512/224'
 
+    static #batch = (session = {}, filter = {}) => {}
+
+
     constructor(data = {}, options = {}) {
         if (!data?._id) throw new Error('Invalid Carrier Data')
 
@@ -48,6 +51,14 @@ class Carrier extends Company {
 
     static hashId = (field = 'id') => hash(field, Carrier.#algorithm)
     static matchIdHash = value => matchHash(value, Carrier.#algorithm)
+
+
+    static create = (session, data) => {}
+
+
+    static fetch = (session, filter) => {}
+
+
 }
 
 
