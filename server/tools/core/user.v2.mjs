@@ -26,7 +26,7 @@ import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils
 
 const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
-const throwErr = require('../utils/error')
+const sendError = require('../utils/error')
 
 
 
@@ -49,7 +49,7 @@ const query = {
 class User extends Person {
     static #algorithm = 'SHA-512'
 
-    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true, login = false }) {
+    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true, login = false }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid User Data')
 
         super(data)
@@ -89,11 +89,10 @@ class User extends Person {
         reSuper(this, props)
 
         if (single) {
+            this.session = session
 
-            this.log = () => {}
 
-
-            this.add = ({ user: sessionUser = {} }, { target, data = [] } = {}) => {
+            this.add = ({ target, data = [] } = {}) => {
                 if (!target) throw new Error('Instance Add Error: Target not supplied')
 
                 let added = false, error
@@ -104,7 +103,7 @@ class User extends Person {
             }
 
 
-            this.fetch = ({ user: sessionUser = {} }, { target, filter = {} } = {}) => {
+            this.fetch = ({ target, filter = {} } = {}) => {
                 if (!target) throw new Error('Instance Fetch Error: Target not supplied')
 
                 let data = [], error
@@ -115,7 +114,7 @@ class User extends Person {
             }
 
 
-            this.update = ({ user: sessionUser = {} }, { target, data = [], ids = [] }) => {
+            this.update = ({ target, data = [], ids = [] }) => {
                 let updated = false, error
 
                 if (!target) {
@@ -130,7 +129,7 @@ class User extends Person {
             }
 
 
-            this.delete = ({ user: sessionUser = {} }, { target, ids = [] }) => {
+            this.delete = ({ target, ids = [] }) => {
                 let deleted = false, error
 
                 if (!target) {
@@ -145,9 +144,44 @@ class User extends Person {
             }
 
 
-            this.invite = ({ user: sessionUser = {} }) => {}
+            this.invite = formId => {
+                if (!formId) throw new Error('User Invitation Error: Form ID not supplied')
+
+                const url = `${addrBook.user}/register/${this._id}?form=${formId}`
+
+                const mailOpts = {
+                    from: sender,
+                    to: this.email,
+                    subject: 'User Registration',
+                    html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                        Dear ${this.name},<br/>
+                        Welcome to ${config.site.name}!<br/><br/>
+                        We are thrilled to have you join our team and look forward to your contributions.
+                        To get started, we need you to complete a few simple steps to finalize your registration.<br/><br/>
+                        Please follow the link below to complete your registration:<br/>
+                        <a href="${url}" target="_blank">Proceed with Registration</a><br/><br/>
+                        Kindly complete this process within the next 24 hours to ensure a smooth onboarding experience.
+                    </div>`,
+                }
+
+                transporter.sendMail(mailOpts, error => {
+                    if (error) console.error(error)
+                })
+            }
 
 
+            this.log = async (field, deleted = false) => {
+                const fields = ['createdBy', 'createdAt', 'updateLog']
+                if (deleted) fields.push('deletedBy', 'deletedAt')
+
+                let log = (await mysql.execute(query.main.select(fields, {
+                    match: { id: User.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
         }
     }
 
@@ -172,6 +206,8 @@ class User extends Person {
 
     static #formId = async () => await User.idStr('formId', inputLength.user.formId.max, query.registration)
     static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.passReset)
+
+    static #authUrl = (session, _id, status) => `${addrBook.user}/authenticate?user=${_id}&branch=${btoa(session.branch)}&site=${btoa(session.siteId)}&status=${status}`
 
 
     static create = async ({ user: sessionUser = {} }, body = {}) => {
@@ -201,7 +237,7 @@ class User extends Person {
         const user = await User.fetch({ sessionUser }, { id })
         if (!user) throw Error('Fetch Error: New user not found')
 
-        user.invite({ sessionUser })
+        user.invite(formId)
 
         return user
     }
@@ -226,12 +262,14 @@ class User extends Person {
                     { compare: [ 'id', 'self', { eq: sessionUserId } ] },
                 ],
             },
-            { //!!! Need to reconsider this part as default
-                table: query.sessions.table,
-                fields: [ [ 'siteId', 'lastSiteId' ], [ 'branch', 'lastBranch' ], 'lastLogin', 'lastUrl' ], //* DEFAULT
-                join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ], //? In this case it doesn't confuse lastUrl
-            },
         ]
+
+        if (branch)
+            batch.push({
+                table: query.sessions.table,
+                fields: [ [ 'siteId', 'lastSiteId' ], [ 'branch', 'lastBranch' ], 'lastLogin', 'lastUrl' ],
+                join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],
+            })
 
         const {
             id, _id, _simpleId, username, email,
@@ -266,12 +304,13 @@ class User extends Person {
                 if (location !== 'US') batch[0].match.location = location
             }
         }
-        if (!single) batch[1].join[2].max = 'lastLogin'
+        if (branch && !single) batch[1].join[2].max = 'lastLogin'
 
         if (qBatch) return batch
 
+        const session = { userId: sessionUserId, siteId, branch }
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
-        list.forEach((data, i, arr) => arr[i] = new User(data, { single, login, hideRawId, hideSensitive }))
+        list.forEach((data, i, arr) => arr[i] = new User(data, { single, session, login, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
     }
@@ -306,7 +345,131 @@ class User extends Person {
     static mw = {
 
 
-        async login(req, res) {},
+        async login(req, res) {
+            const api = recognizeApi(req)
+
+            try {
+                const validationFails = validationResult(req)
+                const { errors } = validationFails
+
+                const apiRes = api ? { error: {}, username: true, password: true, condition: 'A' } : null
+
+                if (!validationFails.isEmpty()) {
+                    res.status(400)
+
+                    if (api) {
+                        apiRes.error.validation = { errors }
+                        apiRes.username = false
+                        apiRes.password = false
+
+                        return res.send(apiRes)
+                    }
+
+                    let errorList = '<pre>Validation Errors:<ol>'
+                    errors.forEach(error => {
+                        errorList += `<li>${error.msg}</li>`
+                    })
+                    errorList += '</ol></pre>'
+
+                    return res.send(errorList)
+                }
+
+
+                /* Step 1: Lookup User by Username */
+
+                const { branch, siteId } = res.session
+                const { username, password } = req.body
+                let user = await User.fetch(res.session, { username }, { login: true, hideSensitive: false })
+
+                // Interrupt if User not found
+                if (!user) {
+                    if (api) {
+                        apiRes.username = false
+                        apiRes.error.username = `${branch === 'admin' ? 'Admin' : 'User'} not found`
+
+                        return res.send(apiRes)
+                    } else return sendError.auth(res, 'Authentication failed: User not found')
+                }
+
+
+                /* Step 2: Verify Password if User found */
+
+                const { loginAttempts } = config.session
+                const { id, _hash, condition  } = user
+                let { fails} = user
+
+                const matched = await Bun.password.verify(password, _hash)
+
+                // Interrupt if Password mismatched
+                // Increment Fails if API or alter Status if Limit is reached
+                if (!matched) {
+                    if (api) {
+                        apiRes.password = false
+                        apiRes.error.password = 'Incorrect password'
+
+                        if (fails < loginAttempts && condition !== 'L') {
+                            fails++
+                            let update = { fails }
+
+                            if (fails === loginAttempts) {
+                                update.condition = 'L'
+                                user = await User.fetch(res.session, { id })
+
+                                const currentData = { ...user }
+                                const currentUpdateLog = await user.log('updateLog')
+                                currentData.condition = user.condition
+
+                                const options = { currentData, currentUpdateLog, modifiedBy: 0, modifiedIn: { branch } }
+                                if (siteId) options.modifiedIn.siteId = siteId
+
+                                update = processData(update, options)
+                            }
+
+                            await mysql.execute(query.main.update(update, { id }))
+                        }
+                    } else return sendError.auth(res, 'Authentication failed: User not verified')
+                }
+
+
+                /* Step 3: Check User's Condition if Password verified */
+
+                if (condition !== 'A') {
+                    const conditions = User.list.condition
+
+                    if (api) {
+                        apiRes.condition = condition
+                        if (!apiRes.error.username)
+                            apiRes.error.username = `User is ${conditions[condition].toLowerCase()}`
+                    } else return sendError.auth(res, `Authentication failed: ${conditions[condition]} user`)
+                }
+
+
+                // Respond if API
+                if (api) {
+                    apiRes.fails = fails
+
+                    return res.send(apiRes)
+                }
+
+
+                /* Step 4: Verify IP Token and redirect to Authentication page in User branch */
+
+                //? Interrupt if User not found
+                if (!user) return sendError.auth(res, 'Authentication failed: User not found')
+
+                const { clientIp } = req.session
+                const token = Token.fetch({ userId: id, clientIp })
+                const { key, verified, expired } = token
+
+                if (!key || (!verified && expired)) await Token.create({ userId: id, clientIp })
+
+                await mysql.execute(query.main.update({ fails: 0 }, { id }))
+
+                res.redirect(User.#authUrl(session, user._id, 'pending'))
+            } catch (err) {
+                sendError.server(res, err, api)
+            }
+        },
 
 
         async session(req, res) {},
@@ -381,7 +544,7 @@ class Token {
             const user = await UserSrc.fetch({}, { id: userId }, { login: true })
             if (!user) throw new Error('Token Delivery Error: User not found')
 
-            const email = {
+            const mailOpts = {
                 from: sender,
                 to: user.email,
                 subject: 'New Authentication Token',
@@ -400,7 +563,7 @@ class Token {
                 </div>`,
             }
 
-            transporter.sendMail(email, error => {
+            transporter.sendMail(mailOpts, error => {
                 if (error) console.error({ error })
             })
         }
