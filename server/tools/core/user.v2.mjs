@@ -145,6 +145,9 @@ class User extends Person {
             }
 
 
+            this.invite = ({ user: sessionUser = {} }) => {}
+
+
         }
     }
 
@@ -154,58 +157,53 @@ class User extends Person {
     static matchSimpleIdHash = value => matchHash(value)
 
 
-    static #formId = async () => {
-        let formId, found = true
+    static idStr = async (target, length, queryInst) => {
+        let idStr, found = true
 
         do {
-            formId = generateRandomString(inputLength.user.formId.max)
+            idStr = generateRandomString(length)
 
-            const [ rows ] = await mysql.execute(query.registration.select('formId', {
-                match: { formId }
-            }))
-
+            const [ rows ] = await mysql.execute(queryInst.select(target, { match: { [target]: idStr }}))
             if (!rows.length) found = false
         } while (found)
 
-        return formId
+        return idStr
     }
+
+    static #formId = async () => await User.idStr('formId', inputLength.user.formId.max, query.registration)
+    static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.passReset)
 
 
     static create = async ({ user: sessionUser = {} }, body = {}) => {
-        if (!sessionUser.id) throw new Error('Session Fetch Error: No session user')
+        if (!sessionUser.id) throw new Error('Session Create Error: No session user')
 
-        let created = false, error
         body = processData(body)
 
         const { email } = body
-        let data = await User.fetch({ sessionUser }, { email })
+        if (await User.fetch({ sessionUser }, { email })) return
 
-        if (data) error = 'Invalid Data: Email registered'
-        else {
-            body.createdBy = sessionUser.id
+        body.createdBy = sessionUser.id
 
-            const [ result ] = await mysql.execute(query.main.insert(body))
-            const id = result.insertId
+        let [ result ] = await mysql.execute(query.main.insert(body))
+        const id = result.insertId
 
-            if (id) {
-                const formId = await User.#formId()
+        if (!id) throw new Error('DB Error: Failed to create user')
 
-                const [ result ] = await mysql.execute(query.registration.insert({
-                    formId, userId: id,
-                    invitedBy: sessionUser.id,
-                }))
+        const formId = await User.#formId()
+        (
+            [ result ] = await mysql.execute(query.registration.insert({
+                formId, userId: id,
+                invitedBy: sessionUser.id,
+            }))
+        )
+        if (!result.affectedRows) throw new Error('DB Error: Failed to register user')
 
-                if (!result.affectedRows) error = 'DB Error: Failed to register new user'
-                else {
-                    created = true
-                    data = await User.fetch({ sessionUser }, { id })
+        const user = await User.fetch({ sessionUser }, { id })
+        if (!user) throw Error('Fetch Error: New user not found')
 
-                    //! INVITE THE USER
-                }
-            }
-        }
+        user.invite({ sessionUser })
 
-        return { created, error, data }
+        return user
     }
 
 
