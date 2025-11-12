@@ -134,14 +134,14 @@ class User extends Person {
 
 
             this.update = async body => {
-                const { userId: sessionUserId, branch } = this.session || {}
-                if (!sessionUserId || !branch) throw new Error('User Update Error: Session user or branch not found')
+                const { user: sessionUser, branch } = this.session || {}
+                if (!sessionUser || !branch) throw new Error('User Update Error: Session user or branch not found')
                 if (!this.self && (this.status === 'D' || branch !== 'user')) throw new Error('User Update Error: Immune user or invalid branch')
 
                 let updated = false
                 
                 body = processData(body, {
-                    modifiedBy: sessionUserId, branch,
+                    modifiedBy: sessionUser.id, branch,
                     currentData: this, currentUpdateLog: await this.log('updateLog'),
                 })
 
@@ -170,11 +170,11 @@ class User extends Person {
             }
 
 
-            this.delete = async ({ target, ids = [] } = {}) => {
-                const { userId: sessionUserId } = this.session || {}
-                if (!sessionUserId) throw new Error('User Delete Error: Session user not found')
-
+            this.delete = async (target, ids) => {
+                if (!this.session?.user?.id) throw new Error('User Delete Error: Session user not found')
                 if (this.status === 'D') throw new Error('User Delete Error: Developer can not be deleted')
+
+                const targets = User.#relTargets
 
                 if (!target) {
                     const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
@@ -183,7 +183,7 @@ class User extends Person {
                         currentUpdateLog: await this.log('updateLog'),
                     })
                     update._passKey = null
-                    update.deletedBy = sessionUserId
+                    update.deletedBy = session.user.id
                     update.deletedAt = Query.timeStamp
 
                     const [ result ] = await mysql.execute(query.main.update(update, { id: this.id || User.matchIdHash(this._id) }))
@@ -195,8 +195,8 @@ class User extends Person {
                     await mysql.execute(query.tokens.delete(match))
 
                     return true
-                } else if (['roles', 'teams', 'companies'].includes(target) && ids.length) {
-                    const idProp = { roles: 'roleId', teams: 'teamId', companies: 'companyId' }[target]
+                } else if (Object.keys(targets).includes(target) && ids.length) {
+                    const idProp = targets[target][1]
 
                     const [ result ] = await mysql.execute(query.jx[target].delete({ [idProp]: ids }))
 
@@ -864,6 +864,33 @@ class Role {
                 rows.map(row => ids.push(rows[idProp]))
 
                 return await Src.fetch(this.session, { ids }, { hideRawId })
+            }
+
+
+            this.delete = async (target, ids = []) => {
+                if (!this.session?.user?.id) throw new Error('Role Delete Error: Session user not found')
+
+                const targets = Role.#relTargets
+
+                if (!target) {
+                    const log = await this.log()
+
+                    const [ result ] = await mysql.execute(query.roles.delete({ id: this.id || Role.matchIdHash(this._id) }))
+                    if (!result.affectedRows) return false
+
+                    for (const prop in log) this[prop] = log[prop]
+                    await logDeletion(session, 'roles', this, { id })
+
+                    return true
+
+                } else if (Object.keys(targets).includes(target) && ids.length) {
+                    const idProp = targets[target][1]
+                    const queryInst = targets[target][2]
+
+                    const [ result ] = await mysql.execute(queryInst.delete({ [idProp]: ids }))
+
+                    return result.affectedRows > 0
+                }
             }
 
 
