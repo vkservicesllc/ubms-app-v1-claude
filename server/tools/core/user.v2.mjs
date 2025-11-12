@@ -472,7 +472,58 @@ class User extends Person {
         },
 
 
-        async session(req, res) {},
+        async session(req, res) {
+            try {
+                const { clientIp } = req.session
+                const { branch, siteId, defUrl } = res.session
+                const { user: _id, token: providedToken } = req.body
+
+                const user = await User.fetch(res.session, { _id })
+                if (!user) throw new Error('Session Error: User not found')
+
+                const { id: userId } = user
+                const token = await Token.fetch({ userId, clientIp })
+                if (!token.key) throw new Error('Session Error: Token not found')
+
+                const { key: tokenKey, verified, expired } = token
+
+                if (!verified) {
+                    if (tokenKey !== providedToken) return res.redirect(User.#authUrl(res.session, _id, 'mismatch'))
+                    else if (expired) {
+                        await Token.create({ userId, clientIp })
+                        return res.redirect(User.#authUrl(res.session, _id, 'expired'))
+                    } else await token.verify()
+                }
+
+                const settings = await user.settings(res.session) //! UNAVAILABLE YET
+                const lastUrl = determineUrl(branch, settings, user.lastUrl, defUrl)
+
+                const body = { userId, siteId, branch, clientIp: { ip: clientIp }, lastUrl }
+                const [ result ] = await mysql.execute(query.sessions.insert(body))
+
+                if (!result.affectedRows) {
+                    if (req.session.user) delete req.session.user
+                    if (res.session.user) delete res.session.user
+                    if (req.session.team) delete req.session.team
+                    if (res.session.team) delete res.session.team
+
+                    return req.session.destroy((err) => {
+                        if (err) return res.status(500).send('Failed to log out')
+            
+                        return sendError.auth(res, 'Authentication failed: Session failed')
+                    })
+                }
+
+                const _token = await Bun.password.hash(token)
+
+                req.session.user = _id
+                res.cookie('connect.token', _token, { httpOnly: true })
+
+                res.redirect(lastUrl)
+            } catch (err) {
+                sendError.server(res, err, api)
+            }
+        },
 
 
         async verify(req, res, next) {},
@@ -721,3 +772,36 @@ delete User.formSelect
 
 export default User
 export { Role }
+
+
+
+/* Supportive Functions */
+
+
+function determineUrl(branch, settings, lastUrl, defUrl) {
+    let url = lastUrl || defUrl
+
+    if (
+        settings && typeof settings === 'object' &&
+        branch in settings && 'lastUrl' in settings[branch] &&
+        settings[branch].lastUrl === 0
+    ) url = defUrl
+
+    return url
+}
+
+
+function stripUrl(url, query, rmKey) {
+    url = url.split('?')[0]
+
+    delete query[rmKey]
+
+    if (Object.keys(query).length) {
+        url += '?'
+
+        for (const key in query)
+            url += `${key}=${query[key]}`
+    }
+
+    return url
+}
