@@ -3,7 +3,7 @@ export default {
     user: {
         username: { min: 3, max: 16 },
         password: { min: 12, max: 24 },
-        token: { min: 12, max: 12 },
+        token: { min: 9, max: 9 },
         formId: { min: 24, max: 24 },
         roleName: { max: 24 },
     },

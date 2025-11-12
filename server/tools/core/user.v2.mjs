@@ -1,3 +1,7 @@
+require('dotenv').config({ path: '../../.env' })
+const { DB__MYSQL_AES_SESSION_TOKEN: tokenSecret } = process.env
+
+
 /* Registry */
 import inputLength from '../../../client/global/modules/registry/length.mjs'
 
@@ -23,6 +27,7 @@ import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils
 const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
 const throwErr = require('../utils/error')
+
 
 
 const query = {
@@ -326,6 +331,86 @@ class User extends Person {
         },
 
 
+    }
+
+
+}
+
+
+
+class Token {
+    constructor(data = {}) {
+        if (!data?.key) throw new Error('Constructor Error: Invalid Token Data')
+
+        this.key = stringifyBuffer(data.key)
+        this.verified = !!data.verified
+        this.createdAt = data.createdAt
+        this.expiresAt = new Date(this.createdAt.getTime() + data.tokenAge * 60 * 1000)
+        this.expired = new Date >= this.expiresAt
+    }
+
+    verify = async () => {}
+
+
+    static create = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
+        let token = generateRandomString(inputLength.user.token.max, 'd')
+        clientIp = { ip: this.clientIp }
+
+        let [ result ] = await mysql.execute(queryInst.delete({ userId, clientIp }))
+        if (!result.affectedRows) throw new Error('DB Error: Failed to clear token')
+
+        [ result ] = await mysql.execute(queryInst.insert({
+            userId, clientIp,
+            token: { aes: [ token, tokenSecret ]},
+        }))
+        if (!result.affectedRows) throw new Error('DB Error: Failed to register token')
+
+        if (config.notification.email.authToken) {
+            const { tokenAge } = config.session
+            const tokenExpiration = `${tokenAge} minute${tokenAge > 1 ? 's' : ''}`
+
+            const user = await UserSrc.fetch({}, { id: userId }, { login: true })
+            if (!user) throw new Error('Token Delivery Error: User not found')
+
+            const email = {
+                from: sender,
+                to: user.email,
+                subject: 'New Authentication Token',
+                html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                    <p>
+                        Your one-time Security Token is <strong style="padding: 4px; outline: 1px solid lightgrey;">${token}</strong>.<br />
+                        The token will expire in ${tokenExpiration}.
+                    </p>
+                    <p>
+                        <em style="background-color: yellow;">To ensure your security, keep this token confidential.</em><br />
+                        No one from ${config.site.name} will request this number from you.
+                    </p>
+                    <p>
+                        <span style="color: red;">If someone requests this token, do <u>NOT</u> disclose it.</span>
+                    </p>
+                </div>`,
+            }
+
+            transporter.sendMail(email, error => {
+                if (error) console.error({ error })
+            })
+        }
+
+        return await Token.fetch({ userId, clientIp })
+    }
+
+
+    static fetch = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
+        clientIp = { ip: clientIp }
+
+        const [ rows ] = await mysql.execute(queryInst.select([
+            [ { aes: [ 'token', tokenSecret ] }, 'key' ],
+            'verified', 'createdAt',
+        ], { match: { userId, clientIp } }))
+
+        if (!rows.length) return {}
+
+        return new Token(rows[0])
     }
 
 
