@@ -74,11 +74,11 @@ class User extends Person {
             props.lastLogin = data.lastLogin
             props.lastBranch = data.lastBranch
             props.lastSiteId = data.lastSiteId
+            props.lastUrl = data.lastUrl
             //? May consider adding create/invite log info (like inviter)
         }
         if (login) {
             props.fails = data.fails
-            props.lastUrl = data.lastUrl
             props._hash = data._hash
         }
 
@@ -170,12 +170,48 @@ class User extends Person {
             }
 
 
+            this.settings = async (action = 'fetch', data = {}) => {
+                if (!this.self) return
+
+                const match = { id: this.id || User.matchIdHash(this._id) }
+                let settings = (await mysql.execute(query.main.select('settings', { match })))[0] || {}
+
+                if (action === 'fetch') return settings
+
+                if (action === 'update') {
+                    if (!this.session.branch) throw new Error('User Settings Error: Session branch missing')
+
+                    settings[this.session.branch] = data
+                    settings = JSON.stringify(settings)
+
+                    await mysql.execute(query.main.update({ settings }, match))
+                }
+            }
+
+
+            this.url = async (lastUrl) => {
+                if (!this.self || lastUrl.slice(0, 5) === '/api/' || lastUrl.includes('/files/') || lastUrl.includes('/image/') || lastUrl.endsWith('.map')) return
+
+                const { branch, siteId } = this.session || {}
+                if (!branch) throw Error('User URL Error: Session branch not supplied')
+
+                const { id: userId, lastLogin } = this
+
+                await mysql.execute(query.sessions.update(
+                    { lastUrl },
+                    { userId, siteId, branch, lastLogin }
+                ))
+
+                this.lastUrl = lastUrl
+            }
+
+
             this.log = async (field, deleted = false) => {
                 const fields = ['createdBy', 'createdAt', 'updateLog']
                 if (deleted) fields.push('deletedBy', 'deletedAt')
 
                 let log = (await mysql.execute(query.main.select(fields, {
-                    match: { id: User.matchIdHash(this._id) },
+                    match: { id: this.id || User.matchIdHash(this._id) },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
@@ -495,8 +531,10 @@ class User extends Person {
                     } else await token.verify()
                 }
 
-                const settings = await user.settings(res.session) //! UNAVAILABLE YET
-                const lastUrl = determineUrl(branch, settings, user.lastUrl, defUrl)
+                const settings = await user.settings()
+                let { lastUrl } = user
+                let url = lastUrl
+                if (settings?.[branch]?.lastUrl === 0) url = defUrl
 
                 const body = { userId, siteId, branch, clientIp: { ip: clientIp }, lastUrl }
                 const [ result ] = await mysql.execute(query.sessions.insert(body))
@@ -519,14 +557,44 @@ class User extends Person {
                 req.session.user = _id
                 res.cookie('connect.token', _token, { httpOnly: true })
 
-                res.redirect(lastUrl)
+                res.redirect(url)
             } catch (err) {
                 sendError.server(res, err, api)
             }
         },
 
 
-        async verify(req, res, next) {},
+        async verify(req, res, next) {
+            const api = recognizeApi(req)
+
+            try {
+                const { method, originalUrl, query } = req
+                const { user: _id, clientIp } = req.session
+                const { excUrl, teams, companies, userApp } = res.session
+
+                const reject = async apiErrMsg => {
+                    if (api) sendError.auth(res, apiErrMsg, api)
+                    else {
+                        const { refer } = query
+                        const { logoutUrl } = config.session
+
+                        if (refer) {
+                            const user = await User.fetch(session, { _id: refer })
+                            if (method !== 'POST' && !excUrl.includes(originalUrl))
+                                await user.url(session, stripUrl(originalUrl, query, 'refer')) //! UNAVAILABLE YET
+                        }
+
+                        if (!next) return false
+                        else return res.redirect(logoutUrl)
+                    }
+                }
+
+                //!..
+
+            } catch (err) {
+                sendError.server(res, err, api)
+            }
+        },
 
 
         logout(req, res) {
@@ -776,19 +844,6 @@ export { Role }
 
 
 /* Supportive Functions */
-
-
-function determineUrl(branch, settings, lastUrl, defUrl) {
-    let url = lastUrl || defUrl
-
-    if (
-        settings && typeof settings === 'object' &&
-        branch in settings && 'lastUrl' in settings[branch] &&
-        settings[branch].lastUrl === 0
-    ) url = defUrl
-
-    return url
-}
 
 
 function stripUrl(url, query, rmKey) {
