@@ -92,55 +92,112 @@ class User extends Person {
             this.session = session
 
 
-            this.add = ({ target, data = [] } = {}) => {
-                if (!target) throw new Error('Instance Add Error: Target not supplied')
+            this.add = async (target, ids = []) => {
+                if (!this.session?.user?.id) throw new Error('User Add Error: No session user')
+                if (!target) throw new Error('User Add Error: Target not supplied')
+                if (!['roles', 'teams', 'companies'].includes(target)) throw new Error('User Add Error: Invalid target supplied')
 
-                let added = false, error
+                const data = []
+                const [ Src, idProp ] = { roles: [ Role, 'roleId' ], teams: [ Team, 'teamId' ], company: [ Company, 'companyId' ] }[target]
+                const list = await Src.fetch(this.session, { ids })
 
-                //* ...
+                list.map(item => data.push({
+                    userId: this.id,
+                    [idProp]: item.id,
+                    createdBy: session.user.id,
+                }))
 
-                return { added, error }
+                const [ result ] = await mysql.execute(query.jx[target].insert(data))
+
+                return result.affectedRows > 0
             }
 
 
-            this.fetch = ({ target, filter = {} } = {}) => {
-                if (!target) throw new Error('Instance Fetch Error: Target not supplied')
+            this.fetch = async (target, { hideRawId = false } = {}) => {
+                if (!this.session?.user?.id) throw new Error('User Fetch Error: No session user')
+                if (!target) throw new Error('User Fetch Error: Target not supplied')
+                if (!['roles', 'teams', 'companies'].includes(target)) throw new Error('User Fetch Error: Invalid target supplied')
 
-                let data = [], error
+                const [ Src, idProp ] = { roles: [ Role, 'roleId' ], teams: [ Team, 'teamId' ], company: [ Company, 'companyId' ] }[target]
 
-                //* ...
+                const ids = []
+                const [ rows ] = (await mysql.execute(query.jx[target].select(idProp, { userId: this.id || User.matchIdHash(this._id) })))
 
-                return { data, error }
+                rows.map(row => ids.push(rows[idProp]))
+
+                return await Src.fetch(this.session, { ids }, { hideRawId })
             }
 
 
-            this.update = ({ target, data = [], ids = [] }) => {
-                let updated = false, error
+            this.update = async body => {
+                const { userId: sessionUserId, branch } = this.session || {}
+                if (!sessionUserId || !branch) throw new Error('User Update Error: Session user or branch not found')
+                if (!this.self && (this.status === 'D' || branch !== 'user')) throw new Error('User Update Error: Immune user or invalid branch')
 
-                if (!target) {
-                    //* Update main
-                } else {
-                    //* Update relationships
+                let updated = false
+                
+                body = processData(body, {
+                    modifiedBy: sessionUserId, branch,
+                    currentData: this, currentUpdateLog: await this.log('updateLog'),
+                })
+
+                if (this.location !== 'US' && body.location !== 'US' && body.phone) body.phone = null
+
+                const [ result ] = await mysql.execute(query.main.update(body, { id: this.id || User.matchIdHash(this._id) }))
+
+                if (result.affectedRows) {
+                    updated = true
+
+                    if (!this.username && body.email && this.email !== data.email) {
+                        const { formId } = (await mysql.execute(query.registration.select('formId', { match: { userId: this.id || User.matchIdHash(this._id) } })))[0][0]
+
+                        if (formId) {
+                            this.invite(formId)
+
+                            const [ result ] = await mysql.execute(query.registration.update({ invitedAt: Query.timeStamp }, {
+                                userId: this.id, formId,
+                            }))
+                            if (!result.affectedRows) throw new Error('User Update Error: Failed to update registration timestamp')
+                        }
+                    }
                 }
 
-                //* ...
-
-                return { updated, error }
+                return updated
             }
 
 
-            this.delete = ({ target, ids = [] }) => {
-                let deleted = false, error
+            this.delete = async ({ target, ids = [] } = {}) => {
+                const { userId: sessionUserId } = this.session || {}
+                if (!sessionUserId) throw new Error('User Delete Error: Session user not found')
+
+                if (this.status === 'D') throw new Error('User Delete Error: Developer can not be deleted')
 
                 if (!target) {
-                    //* Delete main
-                } else {
-                    //* Delete relationships
+                    const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
+                        modifiedBy: sessionUserId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+                    update._passKey = null
+                    update.deletedBy = sessionUserId
+                    update.deletedAt = Query.timeStamp
+
+                    const [ result ] = await mysql.execute(query.main.update(update, { id: this.id || User.matchIdHash(this._id) }))
+                    if (!result.affectedRows) return false
+
+                    const match = { userId: this.id || User.matchIdHash(this._id) }
+                    await mysql.execute(query.registration.delete(match))
+                    await mysql.execute(query.passReset.delete(match))
+                    await mysql.execute(query.tokens.delete(match))
+
+                    return true
+                } else if (['roles', 'teams', 'companies'].includes(target) && ids.length) {
+                    const idProp = { roles: 'roleId', teams: 'teamId', companies: 'companyId' }[target]
+
+                    const [ result ] = await mysql.execute(query.jx[target].delete({ [idProp]: ids }))
+
+                    return result.affectedRows > 0
                 }
-
-                //* ...
-
-                return { deleted, error }
             }
 
 
@@ -193,7 +250,7 @@ class User extends Person {
                 if (!this.self || lastUrl.slice(0, 5) === '/api/' || lastUrl.includes('/files/') || lastUrl.includes('/image/') || lastUrl.endsWith('.map')) return
 
                 const { branch, siteId } = this.session || {}
-                if (!branch) throw Error('User URL Error: Session branch not supplied')
+                if (!branch) throw new Error('User URL Error: Session branch not supplied')
 
                 const { id: userId, lastLogin } = this
 
@@ -247,7 +304,7 @@ class User extends Person {
 
 
     static create = async ({ user: sessionUser = {} }, body = {}) => {
-        if (!sessionUser.id) throw new Error('Session Create Error: No session user')
+        if (!sessionUser.id) throw new Error('User Create Error: No session user')
 
         body = processData(body)
 
@@ -271,7 +328,7 @@ class User extends Person {
         if (!result.affectedRows) throw new Error('DB Error: Failed to register user')
 
         const user = await User.fetch({ sessionUser }, { id })
-        if (!user) throw Error('Fetch Error: New user not found')
+        if (!user) throw new Error('Fetch Error: New user not found')
 
         user.invite(formId)
 
@@ -284,7 +341,7 @@ class User extends Person {
         { hideRawId = false, hideSensitive = true, combined = false, login = false, batch: qBatch = false }
     ) => {
         const { id: sessionUserId = null } = sessionUser
-        if (!sessionUserId && !login) throw new Error('Session Fetch Error: No session user')
+        if (!sessionUserId && !login) throw new Error('User Fetch Error: No session user')
 
         const batch = [
             {
@@ -344,7 +401,7 @@ class User extends Person {
 
         if (qBatch) return batch
 
-        const session = { userId: sessionUserId, siteId, branch }
+        const session = { user: { id: sessionUserId }, siteId, branch }
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
         list.forEach((data, i, arr) => arr[i] = new User(data, { single, session, login, hideRawId, hideSensitive }))
 
@@ -381,7 +438,7 @@ class User extends Person {
     static mw = {
 
 
-        async login(req, res) {
+        login: async (req, res) => {
             const api = recognizeApi(req)
 
             try {
@@ -449,7 +506,7 @@ class User extends Person {
 
                             if (fails === loginAttempts) {
                                 update.condition = 'L'
-                                user = await User.fetch(res.session, { id })
+                                user = await User.fetch(res.session, { id }, { hideSensitive: false })
 
                                 const currentData = { ...user }
                                 const currentUpdateLog = await user.log('updateLog')
@@ -508,13 +565,13 @@ class User extends Person {
         },
 
 
-        async session(req, res) {
+        session: async (req, res) => {
             try {
                 const { clientIp } = req.session
                 const { branch, siteId, defUrl } = res.session
                 const { user: _id, token: providedToken } = req.body
 
-                const user = await User.fetch(res.session, { _id })
+                const user = await User.fetch(res.session, { _id }, { hideSensitive: false })
                 if (!user) throw new Error('Session Error: User not found')
 
                 const { id: userId } = user
@@ -564,7 +621,7 @@ class User extends Person {
         },
 
 
-        async verify(req, res, next) {
+        verify: async (req, res, next) => {
             const api = recognizeApi(req)
 
             try {
@@ -579,9 +636,9 @@ class User extends Person {
                         const { logoutUrl } = config.session
 
                         if (refer) {
-                            const user = await User.fetch(session, { _id: refer })
+                            const user = await User.fetch(session, { _id: refer }, { hideSensitive: false })
                             if (method !== 'POST' && !excUrl.includes(originalUrl))
-                                await user.url(session, stripUrl(originalUrl, query, 'refer')) //! UNAVAILABLE YET
+                                await user.url(stripUrl(originalUrl, query, 'refer'))
                         }
 
                         if (!next) return false
@@ -589,15 +646,48 @@ class User extends Person {
                     }
                 }
 
-                //!..
+                if (!_id) return await reject('Authentication check failed: Not authenticated')
 
+                const user = await User.fetch(res.session, { _id })
+
+                if (!user) {
+                    User.logout(req, res)
+                    return sendError.auth(res, 'Authentication check failed: No user found', api)
+                }
+
+                const connectToken = req.cookies['connect.token']
+                const { key: token } = await Token.fetch({ userId: user.id, clientIp })
+
+                if (!connectToken || !token || !(await Bun.password.verify(token, connectToken)))
+                    return await reject('Authentication check failed: Token verification failed')
+
+                if (res.session.branch === 'admin' && user.status === 'U')
+                    return await reject('Authentication check failed: Unauthorized Environment')
+
+                if (user.DS && user.location !== 'US')
+                    return await reject('Verification failed: Incorrect status in current location')
+
+                if (query.refer) {
+                    const newUrl = stripUrl(originalUrl, query, 'refer')
+
+                    if (method !== 'POST') await user.url(newUrl)
+                    return res.redirect(newUrl)
+                }
+
+                if (method !== 'POST' && !excUrl.includes(originalUrl))
+                    await user.url(originalUrl)
+
+                if (!next) return user
+
+                res.session.user = user
+                next()
             } catch (err) {
                 sendError.server(res, err, api)
             }
         },
 
 
-        logout(req, res) {
+        logout: (req, res) => {
             if (req.session.user) delete req.session.user
             if (res.session.user) delete res.session.user
             if (req.session.team) delete req.session.team
@@ -800,7 +890,7 @@ class Role {
 
 
     static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batch: qBatch = false }) => {
-        if (!sessionUser.id) throw new Error('Session Fetch Error: No session user')
+        if (!sessionUser.id) throw new Error('Role Fetch Error: No session user')
 
         const {
             id, _id,
