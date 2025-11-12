@@ -343,20 +343,31 @@ class Token {
         if (!data?.key) throw new Error('Constructor Error: Invalid Token Data')
 
         this.key = stringifyBuffer(data.key)
+        this.userId = data.userId
+        this.clientIp = data.clientIp
         this.verified = !!data.verified
         this.createdAt = data.createdAt
         this.expiresAt = new Date(this.createdAt.getTime() + data.tokenAge * 60 * 1000)
         this.expired = new Date >= this.expiresAt
     }
 
-    verify = async () => {}
+    verify = async ({ queryInst = query.tokens } = {}) => {
+        const clientIp = { ip: this.clientIp }
+        const token = token = { aes: [ this.key, tokenSecret ]}
+
+        const [ result ] = await mysql.execute(queryInst.update({ verified: true }, {
+            userId: this.userId,
+            clientIp, token,
+        }))
+
+        if (!result.affectedRows) throw new Error('DB Error: Token verification failed')
+    }
 
 
     static create = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
         let token = generateRandomString(inputLength.user.token.max, 'd')
-        clientIp = { ip: this.clientIp }
 
-        let [ result ] = await mysql.execute(queryInst.delete({ userId, clientIp }))
+        let [ result ] = await mysql.execute(queryInst.delete({ userId, clientIp: { ip: clientIp } }))
         if (!result.affectedRows) throw new Error('DB Error: Failed to clear token')
 
         [ result ] = await mysql.execute(queryInst.insert({
@@ -401,16 +412,14 @@ class Token {
 
 
     static fetch = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
-        clientIp = { ip: clientIp }
-
         const [ rows ] = await mysql.execute(queryInst.select([
             [ { aes: [ 'token', tokenSecret ] }, 'key' ],
             'verified', 'createdAt',
-        ], { match: { userId, clientIp } }))
+        ], { match: { userId, clientIp: { ip: clientIp } } }))
 
         if (!rows.length) return {}
 
-        return new Token(rows[0])
+        return new Token({ userId, clientIp, ...rows[0] })
     }
 
 
