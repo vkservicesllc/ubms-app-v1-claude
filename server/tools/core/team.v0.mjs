@@ -391,8 +391,7 @@ class Team {
                 if (!user.DS && !found) {
                     delete req.session.team
                     return res.redirect('/')
-                } else
-                    if (team) res.session.team = team
+                } else if (team) res.session.team = team
 
                 next()
             } catch (err) {

@@ -1,5 +1,20 @@
-import Query, { hash, matchHash } from '../utils/query.mjs'
+/* Settings */
 import db from '../../settings/mysql.mjs'
+
+/* Tools */
+import User, { query as userQuery } from './user.mjs'
+import Company from './company.mjs'
+import Carrier from './carrier.mjs'
+import Driver from './driver.mjs'
+import Address from '../../../client/global/modules/tools/core/address.us.mjs'
+import { sessionError } from './user.mjs'
+import Query, { hash, matchHash } from '../utils/query.mjs'
+import recognizeApi from '../utils/api.mjs'
+import { processData, logDeletion } from '../utils/database.mjs'
+import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+
+const mysql = require('../utils/mysql')
+const sendError = require('../utils/error')
 
 
 
@@ -74,6 +89,50 @@ class Team {
 
 
     static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false }) => {}
+
+
+    static mw = {
+
+
+        verify: async (req, res, next) => {
+            const api = recognizeApi(req)
+
+            try {
+                const { user } = res.session
+                if (!user) return sendError.auth(res, null, api)
+
+                if (user.unscoped) {
+                    delete req.session.team
+
+                    return next()
+                }
+
+                const { team: _id } = req.session
+                if (!_id) return res.redirect('/')
+    
+                const team = await Team.fetch(res.session, { _id })
+    
+                const userId = user.id
+                const teamId = team.id
+                const found = (await mysql.execute(userQuery.jx.teams.select('teamId', {
+                    match: { userId, teamId },
+                })))[0].length === 1
+    
+                if ((!user.DS && !found) || !team) {
+                    delete req.session.team
+
+                    return res.redirect('/')
+                }
+
+                res.session.team = team
+                next()
+            } catch (err) {
+                sendError.server(res, err, api)
+            }
+        },
+
+
+    }
 
 
 }

@@ -13,6 +13,7 @@ import db from '../../settings/mysql.mjs'
 import Team from './team.mjs'
 import Company, { query as companyQuery } from './company.mjs'
 import Carrier, { query as carrierQuery } from './carrier.mjs'
+//! Add more classes and query instances when more categories are available
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import recognizeApi from '../utils/api.mjs'
@@ -65,6 +66,7 @@ class User extends Person {
         props.unscoped = props.DS || !!data.unscoped
         props.self = !!data.self
         props.avaSrc = `/images/icons/gender/${this.gender}.png`
+
         if (!hideSensitive) {
             props.decliner = !!data.decliner
             props.passReset = data.passReset
@@ -72,8 +74,8 @@ class User extends Person {
             props.lastBranch = data.lastBranch
             props.lastSiteId = data.lastSiteId
             props.lastUrl = data.lastUrl
-            //? May consider adding create/invite log info (like inviter)
         }
+
         if (login) {
             props.fails = data.fails
             props._hash = data._hash
