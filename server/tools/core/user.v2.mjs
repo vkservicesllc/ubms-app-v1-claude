@@ -112,7 +112,7 @@ class User extends Person {
             }
 
 
-            this.fetch = async (target, { hideRawId = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('User Fetch Error: No session user')
                 if (!target) throw new Error('User Fetch Error: Target not supplied')
 
@@ -126,7 +126,7 @@ class User extends Person {
 
                 rows.map(row => ids.push(rows[idProp]))
 
-                return await Src.fetch(this.session, { ids }, { hideRawId })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId })
             }
 
 
@@ -381,7 +381,7 @@ class User extends Person {
 
     static fetch = async (
         { user: sessionUser = {}, branch, siteId = null }, filter = {},
-        { hideRawId = false, hideSensitive = true, combined = false, login = false, batch: qBatch = false }
+        { hideRawId = false, hideSensitive = true, combined = false, login = false, batchOnly = false }
     ) => {
         const { id: sessionUserId = null } = sessionUser
         if (!sessionUserId && !login) throw new Error('User Fetch Error: No session user')
@@ -442,7 +442,7 @@ class User extends Person {
         }
         if (branch && !single) batch[1].join[2].max = 'lastLogin'
 
-        if (qBatch) return batch
+        if (batchOnly) return batch
 
         const session = { user: { id: sessionUserId }, siteId, branch }
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
@@ -886,7 +886,7 @@ class Role {
             }
 
 
-            this.fetch = async (target, { hideRawId = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Role Fetch Error: No session user')
                 if (!target) throw new Error('Role Fetch Error: Target not supplied')
 
@@ -900,7 +900,7 @@ class Role {
 
                 rows.map(row => ids.push(rows[idProp]))
 
-                return await Src.fetch(this.session, { ids }, { hideRawId })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId })
             }
 
 
@@ -992,7 +992,7 @@ class Role {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batch: qBatch = false }) => {
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false }) => {
         if (!sessionUser.id) throw new Error('Role Fetch Error: No session user')
 
         const {
@@ -1016,7 +1016,7 @@ class Role {
             },
         ]
 
-        if (qBatch) return batch
+        if (batchOnly) return batch
 
         const session = { user: { id: sessionUser.id }, siteId, branch }
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
