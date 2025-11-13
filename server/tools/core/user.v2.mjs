@@ -10,9 +10,8 @@ import config, { addrBook, userApps } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
 /* Tools */
-import Team, { query as teamQuery } from './team.mjs'
-import Company, { query as companyQuery } from './company.mjs'
-import Carrier, { query as carrierQuery } from './carrier.mjs'
+import Team from './team.mjs'
+import Company from './company.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import recognizeApi from '../utils/api.mjs'
@@ -20,9 +19,7 @@ import transporter, { sender } from '../utils/nodemailer.mjs'
 import { generateRandomString } from '../utils/string.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
-import { numeric } from '../../../client/global/modules/tools/utils/number.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
-import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
@@ -264,6 +261,46 @@ class User extends Person {
                 ))
 
                 this.lastUrl = lastUrl
+            }
+
+
+            this.permissions = async () => {
+                const { branch } = this.session || {}
+                if ( !branch) throw new Error('User Permissions Error: Branch not found')
+
+                const catList = Company.list.category
+                let category
+
+                for (const prop in catList) {
+                    if (catList[prop].branch !== branch) continue
+                    category = prop
+                    break
+                }
+
+                if (!category) throw new Error('User Permissions Error: Category not determined')
+
+                const batch = [
+                    {
+                        table: query.jx.roles.table,
+                        match: { userId: this.id },
+                    },
+                    {
+                        table: query.roles.table,
+                        fields: 'permissions',
+                        join: [ 'id', 'roleId' ],
+                        match: { category, location: [ null, this.location ] },
+                    },
+                ]
+
+                const [ result ] = await mysql.execute(Query.select(db.online, batch))
+
+                return result.reduce((acc, item) => {
+                    Object.entries(item.permissions).forEach(([ key, values ]) => {
+                        acc[key] = [ ...new Set([ ...(acc[key] || []), ...values ])]
+                    })
+
+                    return acc
+                }, {})
             }
 
 
@@ -864,6 +901,24 @@ class Role {
                 rows.map(row => ids.push(rows[idProp]))
 
                 return await Src.fetch(this.session, { ids }, { hideRawId })
+            }
+
+
+            this.update = async body => {
+                if (!this.session?.user?.id) throw new Error('Role Update Error: Session user not found')
+
+                const { permissions } = body
+                delete body.permissions
+                
+                body = processData(body, {
+                    modifiedBy: sessionUser.id,
+                    currentData: this, currentUpdateLog: await this.log('updateLog'),
+                })
+                body.permissions = JSON.stringify(permissions)
+
+                const [ result ] = await mysql.execute(query.roles.update(body, { id: this.id || Role.matchIdHash(this._id) }))
+                
+                return result.affectedRows > 0
             }
 
 
