@@ -26,6 +26,7 @@ const mysql = require('../utils/mysql')
 const sendError = require('../utils/error')
 
 
+const { name: appName } = config.site
 
 const query = {
     main: new Query(db.online, 'users'),
@@ -213,7 +214,7 @@ class User extends Person {
                     subject: 'User Registration',
                     html: `<div style="font-family: Arial, Helvetica, sans-serif;">
                         Dear ${this.name},<br/>
-                        Welcome to ${config.site.name}!<br/><br/>
+                        Welcome to ${appName}!<br/><br/>
                         We are thrilled to have you join our team and look forward to your contributions.
                         To get started, we need you to complete a few simple steps to finalize your registration.<br/><br/>
                         Please follow the link below to complete your registration:<br/>
@@ -225,6 +226,17 @@ class User extends Person {
                 transporter.sendMail(mailOpts, error => {
                     if (error) console.error(error)
                 })
+            }
+
+
+            this.inviter = async session => {
+                let id = await this.log('createdBy')
+                if (!id) return { name: appName, email: null }
+
+                const user = await User.fetch(session, { id })
+                const { name, email } = user
+
+                return { name, email }
             }
 
 
@@ -304,9 +316,90 @@ class User extends Person {
             }
 
 
-            this.log = async (field, deleted = false) => {
-                const fields = ['createdBy', 'createdAt', 'updateLog']
-                if (deleted) fields.push('deletedBy', 'deletedAt')
+            this.report = async session => {
+                const result = { user: this }
+                const log = await this.log()
+
+                const { createdBy, deletedBy, updateLog } = log
+                /*
+                    The timestamps will only be correct on the Live Server
+                    if it is set up with UTC tz
+                */
+
+                let id = [ createdBy ]
+                if (deletedBy) id.push(deletedBy)
+
+                if (updateLog)
+                    updateLog.forEach(log => {
+                        id.push(log.modifiedBy)
+                    })
+                id = [ ...new Set(id) ]
+
+                const labelList = {
+                    username: 'Username',
+                    status: 'Status',
+                    location: 'Location',
+                    condition: 'Condition',
+                    fails: 'Login Attempts',
+                    email: 'Email',
+                    phone: 'US Cell Phone',
+                    firstName: 'First Name',
+                    lastName: 'Last Name',
+                    alias: 'Alias',
+                    sex: 'Gender',
+                }
+                const labels = {}
+                const names = {}
+                const users = await User.list(session, { id })
+
+                if (users)
+                    for (let i = 0; i < users.length; i++) {
+                        const id = await users[i].id()
+                        names[id] = users[i].name
+                    }
+
+                log.createdBy = names[createdBy] || appName
+                if (deletedBy) log.deletedBy = names[deletedBy]
+
+                if (updateLog)
+                    for (let i = 0; i < updateLog.length; i++) {
+                        log.updateLog[i].modifiedBy = names[updateLog[i].modifiedBy] || appName
+
+                        for (const prop in updateLog[i].data) {
+                            switch (prop) {
+                                case 'status':
+                                    log.updateLog[i].data.status = User.list.status[updateLog[i].data.status]
+                                    log.updateLog[i].oldData.status = User.list.status[updateLog[i].oldData.status]
+                                    break
+                                case 'location':
+                                    log.updateLog[i].data.location = User.list.location[updateLog[i].data.location]
+                                    log.updateLog[i].oldData.location = User.list.location[updateLog[i].oldData.location]
+                                    break
+                                case 'condition':
+                                    log.updateLog[i].data.condition = User.list.condition[updateLog[i].data.condition]
+                                    log.updateLog[i].oldData.condition = User.list.condition[updateLog[i].oldData.condition]
+                                    break
+                                case 'sex':
+                                    const genders = { '0': 'Female', '1': 'Male' }
+                                    const { sex } = updateLog[i].data
+                                    const { sex: oldSex } = updateLog[i].oldData
+                                    if ([0, 1].includes(sex)) log.updateLog[i].data.sex = genders[sex]
+                                    if ([0, 1].includes(oldSex)) log.updateLog[i].oldData.sex = genders[oldSex]
+                            }
+
+                            if (!(prop in labels)) labels[prop] = labelList[prop]
+                        }
+                    }
+
+                result.log = log
+                result.labels = labels
+        
+                return result
+            }
+
+
+            this.log = async field => {
+                const fields = ['createdBy', 'createdAt', 'deletedBy', 'deletedAt', 'updateLog']
 
                 let log = (await mysql.execute(query.main.select(fields, {
                     match: { id: this.id || User.matchIdHash(this._id) },
@@ -807,7 +900,7 @@ class Token {
                     </p>
                     <p>
                         <em style="background-color: yellow;">To ensure your security, keep this token confidential.</em><br />
-                        No one from ${config.site.name} will request this number from you.
+                        No one from ${appName} will request this number from you.
                     </p>
                     <p>
                         <span style="color: red;">If someone requests this token, do <u>NOT</u> disclose it.</span>
