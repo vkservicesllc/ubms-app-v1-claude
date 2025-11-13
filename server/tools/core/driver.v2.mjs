@@ -738,20 +738,18 @@ class DriverUser {
     static mw = {
 
 
-        async login(req, res) {},
+        login: async (req, res) => {},
 
 
-        async session(req, res) {},
+        session: async (req, res) => {},
 
 
-        async verify(req, res, next) {},
+        verify: async (req, res, next) => {},
 
 
-        logout(req, res) {
+        logout: (req, res) => {
             if (req.session.user) delete req.session.user
             if (res.session.user) delete res.session.user
-            if (req.session.team) delete req.session.team
-            if (res.session.team) delete res.session.team
 
             return req.session.destroy((err) => {
                 if (err) return res.status(500).send('Failed to log out')

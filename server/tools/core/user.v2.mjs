@@ -45,8 +45,6 @@ const query = {
 
 
 class User extends Person {
-    static #algorithm = 'SHA-512'
-
     constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true, login = false }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid User Data')
 
@@ -412,6 +410,7 @@ class User extends Person {
         }
     }
 
+    static #algorithm = 'SHA-512'
     static hashId = (field = 'id') => hash(field, User.#algorithm)
     static hashSimpleId = (field = 'id') => hash(field)
     static matchIdHash = value => matchHash(value, User.#algorithm)
@@ -844,98 +843,7 @@ class User extends Person {
 
 
 
-class Token {
-    constructor(data = {}) {
-        if (!data?.key) throw new Error('Constructor Error: Invalid Token Data')
-
-        this.key = stringifyBuffer(data.key)
-        this.userId = data.userId
-        this.clientIp = data.clientIp
-        this.verified = !!data.verified
-        this.createdAt = data.createdAt
-        this.expiresAt = new Date(this.createdAt.getTime() + data.tokenAge * 60 * 1000)
-        this.expired = new Date >= this.expiresAt
-    }
-
-    verify = async ({ queryInst = query.tokens } = {}) => {
-        const clientIp = { ip: this.clientIp }
-        const token = token = { aes: [ this.key, tokenSecret ]}
-
-        const [ result ] = await mysql.execute(queryInst.update({ verified: true }, {
-            userId: this.userId,
-            clientIp, token,
-        }))
-
-        if (!result.affectedRows) throw new Error('DB Error: Token verification failed')
-    }
-
-
-    static create = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
-        let token = generateRandomString(inputLength.user.token.max, 'd')
-
-        let [ result ] = await mysql.execute(queryInst.delete({ userId, clientIp: { ip: clientIp } }))
-        if (!result.affectedRows) throw new Error('DB Error: Failed to clear token')
-
-        [ result ] = await mysql.execute(queryInst.insert({
-            userId, clientIp,
-            token: { aes: [ token, tokenSecret ]},
-        }))
-        if (!result.affectedRows) throw new Error('DB Error: Failed to register token')
-
-        if (config.notification.email.authToken) {
-            const { tokenAge } = config.session
-            const tokenExpiration = `${tokenAge} minute${tokenAge > 1 ? 's' : ''}`
-
-            const user = await UserSrc.fetch({}, { id: userId }, { login: true })
-            if (!user) throw new Error('Token Delivery Error: User not found')
-
-            const mailOpts = {
-                from: sender,
-                to: user.email,
-                subject: 'New Authentication Token',
-                html: `<div style="font-family: Arial, Helvetica, sans-serif;">
-                    <p>
-                        Your one-time Security Token is <strong style="padding: 4px; outline: 1px solid lightgrey;">${token}</strong>.<br />
-                        The token will expire in ${tokenExpiration}.
-                    </p>
-                    <p>
-                        <em style="background-color: yellow;">To ensure your security, keep this token confidential.</em><br />
-                        No one from ${appName} will request this number from you.
-                    </p>
-                    <p>
-                        <span style="color: red;">If someone requests this token, do <u>NOT</u> disclose it.</span>
-                    </p>
-                </div>`,
-            }
-
-            transporter.sendMail(mailOpts, error => {
-                if (error) console.error({ error })
-            })
-        }
-
-        return await Token.fetch({ userId, clientIp })
-    }
-
-
-    static fetch = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
-        const [ rows ] = await mysql.execute(queryInst.select([
-            [ { aes: [ 'token', tokenSecret ] }, 'key' ],
-            'verified', 'createdAt',
-        ], { match: { userId, clientIp: { ip: clientIp } } }))
-
-        if (!rows.length) return {}
-
-        return new Token({ userId, clientIp, ...rows[0] })
-    }
-
-
-}
-
-
-
 class Role {
-    static #algorithm = 'SHA-1'
-
     constructor(data = {}, { single = true, session, hideRawId = false }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Role Data')
 
@@ -1056,6 +964,7 @@ class Role {
         }
     }
 
+    static #algorithm = 'SHA-1'
     static hashId = (field = 'id') => hash(field, Role.#algorithm)
     static matchIdHash = value => matchHash(value, Role.#algorithm)
 
@@ -1123,10 +1032,99 @@ class Role {
 
 
 
+class Token {
+    constructor(data = {}) {
+        if (!data?.key) throw new Error('Constructor Error: Invalid Token Data')
+
+        this.key = stringifyBuffer(data.key)
+        this.userId = data.userId
+        this.clientIp = data.clientIp
+        this.verified = !!data.verified
+        this.createdAt = data.createdAt
+        this.expiresAt = new Date(this.createdAt.getTime() + data.tokenAge * 60 * 1000)
+        this.expired = new Date >= this.expiresAt
+    }
+
+    verify = async ({ queryInst = query.tokens } = {}) => {
+        const clientIp = { ip: this.clientIp }
+        const token = token = { aes: [ this.key, tokenSecret ]}
+
+        const [ result ] = await mysql.execute(queryInst.update({ verified: true }, {
+            userId: this.userId,
+            clientIp, token,
+        }))
+
+        if (!result.affectedRows) throw new Error('DB Error: Token verification failed')
+    }
+
+
+    static create = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
+        let token = generateRandomString(inputLength.user.token.max, 'd')
+
+        let [ result ] = await mysql.execute(queryInst.delete({ userId, clientIp: { ip: clientIp } }))
+        if (!result.affectedRows) throw new Error('DB Error: Failed to clear token')
+
+        [ result ] = await mysql.execute(queryInst.insert({
+            userId, clientIp,
+            token: { aes: [ token, tokenSecret ]},
+        }))
+        if (!result.affectedRows) throw new Error('DB Error: Failed to register token')
+
+        if (config.notification.email.authToken) {
+            const { tokenAge } = config.session
+            const tokenExpiration = `${tokenAge} minute${tokenAge > 1 ? 's' : ''}`
+
+            const user = await UserSrc.fetch({}, { id: userId }, { login: true })
+            if (!user) throw new Error('Token Delivery Error: User not found')
+
+            const mailOpts = {
+                from: sender,
+                to: user.email,
+                subject: 'New Authentication Token',
+                html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                    <p>
+                        Your one-time Security Token is <strong style="padding: 4px; outline: 1px solid lightgrey;">${token}</strong>.<br />
+                        The token will expire in ${tokenExpiration}.
+                    </p>
+                    <p>
+                        <em style="background-color: yellow;">To ensure your security, keep this token confidential.</em><br />
+                        No one from ${appName} will request this number from you.
+                    </p>
+                    <p>
+                        <span style="color: red;">If someone requests this token, do <u>NOT</u> disclose it.</span>
+                    </p>
+                </div>`,
+            }
+
+            transporter.sendMail(mailOpts, error => {
+                if (error) console.error({ error })
+            })
+        }
+
+        return await Token.fetch({ userId, clientIp })
+    }
+
+
+    static fetch = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
+        const [ rows ] = await mysql.execute(queryInst.select([
+            [ { aes: [ 'token', tokenSecret ] }, 'key' ],
+            'verified', 'createdAt',
+        ], { match: { userId, clientIp: { ip: clientIp } } }))
+
+        if (!rows.length) return {}
+
+        return new Token({ userId, clientIp, ...rows[0] })
+    }
+
+
+}
+
+
+
 delete User.formSelect
 
 export default User
-export { Role }
+export { Role, Token }
 
 
 

@@ -4,12 +4,7 @@ import db from '../../settings/mysql.mjs'
 
 
 class Team {
-    static #algorithm = 'MD5'
-
-    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
-
-
-    constructor(data = {}, { single = true, hideRawId = false }) {
+    constructor(data = {}, { single = true, session, hideRawId = false }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Team Data')
 
         this._id = data._id
@@ -41,83 +36,44 @@ class Team {
         }
 
         if (single) {
+            this.session = session
 
-            this.log = () => {}
+
+            this.add = async (target, ids = []) => {}
 
 
-            this.add = ({ user: sessionUser = {} }, { target, data = [] } = {}) => {
-                if (!target) throw new Error('Instance Add Error: Target not supplied')
+            this.fetch = async (target, { hideRawId = false, idsOnly = false } = {}) => {}
 
-                let added = false, error
 
-                //* ...
+            this.update = async body => {}
 
-                return { added, error }
+
+            this.delete = async (target, ids = []) => {}
+
+
+            this.log = async field => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+
+                let log = (await mysql.execute(query.main.select(fields, {
+                    match: { id: this.id || Role.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
             }
-
-
-            this.fetch = ({ user: sessionUser = {} }, { target, filter = {} } = {}) => {
-                if (!target) throw new Error('Instance Fetch Error: Target not supplied')
-
-                let data = [], error
-
-                //* ...
-
-                return { data, error }
-            }
-
-
-            this.update = ({ user: sessionUser = {} }, { target, data = [], ids = [] }) => {
-                let updated = false, error
-
-                if (!target) {
-                    //* Update main
-                } else {
-                    //* Update relationships
-                }
-
-                //* ...
-
-                return { updated, error }
-            }
-
-
-            this.delete = ({ user: sessionUser = {} }, { target, ids = [] }) => {
-                let deleted = false, error
-
-                if (!target) {
-                    //* Delete main
-                } else {
-                    //* Delete relationships
-                }
-
-                //* ...
-
-                return { deleted, error }
-            }
-
-
         }
     }
 
+    static #algorithm = 'MD5'
     static hashId = (field = 'id') => hash(field, Team.#algorithm)
     static matchIdHash = value => matchHash(value, Team.#algorithm)
 
 
-    static create = ({ user: sessionUser = {} }, data = {}) => {
-        let created = false, error
-
-        //* ...
-
-        return { created, error }
-    }
+    static create = async ({ user: sessionUser = {} }, body = {}) => {}
 
 
-    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
-        const batch = Role.#batch({ user: sessionUser }, filter)
-
-        //* ...
-    }
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false }) => {}
 
 
 }
