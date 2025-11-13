@@ -11,7 +11,8 @@ import db from '../../settings/mysql.mjs'
 
 /* Tools */
 import Team from './team.mjs'
-import Company from './company.mjs'
+import Company, { query as companyQuery } from './company.mjs'
+import Carrier, { query as carrierQuery } from './carrier.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import recognizeApi from '../utils/api.mjs'
@@ -115,15 +116,55 @@ class User extends Person {
                 if (!this.session?.user?.id) throw new Error('User Fetch Error: No session user')
                 if (!target) throw new Error('User Fetch Error: Target not supplied')
 
-                const targets = User.#relTargets
-                if (!Object.keys(targets).includes(target)) throw new Error('User Fetch Error: Invalid target supplied')
-
-                const [ Src, idProp ] = targets[target]
+                const targets = User.#relTargets, specTargets = [ 'carriers' ] //! Add more targets when more categories are available
+                const special = specTargets.includes(target)
+                if (!Object.keys(targets).includes(target) && !special) throw new Error('User Fetch Error: Invalid target supplied')
 
                 const ids = []
-                const [ rows ] = (await mysql.execute(query.jx[target].select(idProp, { userId: this.id || User.matchIdHash(this._id) })))
+                let Src, idProp
 
-                rows.map(row => ids.push(rows[idProp]))
+                if (special) {
+                    const batch = [
+                        {
+                            table: query.jx.companies.table,
+                            fields: 'companyId',
+                            match: { userId: this.id || User.matchIdHash(this._id) },
+                        },
+                        {
+                            table: companyQuery.main.table,
+                            join: [ 'id', 'companyId' ],
+                        },
+                    ]
+
+                    switch (target) {
+
+                        case 'carriers':
+                            Src = Carrier
+                            batch[1].match = { category: 'crr' }
+                            batch.push({
+                                table: carrierQuery.main.table,
+                                fields: 'id',
+                            })
+                            break
+
+                        //! Add more cases when more categories are available
+
+                    }
+
+                    const [ rows ] = await mysql.execute(Query.select(db.online, batch))
+
+                    rows.map(row => {
+                        const { id, companyId } = row
+
+                        if (idsOnly) ids.push({ id, companyId })
+                        else ids.push(id)
+                    })
+                } else {
+                    [ Src, idProp ] = targets[target]
+
+                    const [ rows ] = await mysql.execute(query.jx[target].select(idProp, { userId: this.id || User.matchIdHash(this._id) }))
+                    rows.map(row => ids.push(row[idProp]))
+                }
 
                 return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId })
             }
@@ -897,7 +938,7 @@ class Role {
                 const [ Src, idProp, queryInst ] = targets[target]
 
                 const ids = []
-                const [ rows ] = (await mysql.execute(queryInst.select(idProp, { roleId: this.id || Role.matchIdHash(this._id) })))
+                const [ rows ] = await mysql.execute(queryInst.select(idProp, { roleId: this.id || Role.matchIdHash(this._id) }))
 
                 rows.map(row => ids.push(rows[idProp]))
 
