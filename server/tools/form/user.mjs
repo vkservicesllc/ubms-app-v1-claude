@@ -16,13 +16,13 @@ import { getStaticProps } from '../../../client/global/modules/tools/utils/class
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
 
 const required = true, disabled = true
-const statusList = { ...User.statusList }
+const statusList = { ...User.list.status }
 delete statusList['D']
 
 const propsData = {
     status: statusList,
-    location: User.locationList,
-    condition: User.conditionList,
+    location: User.list.location,
+    condition: User.list.condition,
 }
 
 const conditionKeys = ['active', 'inactive', 'locked']

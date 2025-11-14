@@ -7,6 +7,10 @@ import Team from '../../tools/core/team.mjs'
 import Company, { Owner } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
+import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+
+
+const hideRawId = true
 
 
 
@@ -31,21 +35,21 @@ router.post('/log/:env/:_id', User.mw.verify, User.mw.superAdminOnly, async (req
 })
 
 
-router.post('/flush/:env/:_id/:target?', User.mw.verify, User.mw.developerOnly, async (req, res) => {
-    try {
-        const { env, _id, target } = req.params
-        let success = false
+// router.post('/flush/:env/:_id/:target?', User.mw.verify, User.mw.developerOnly, async (req, res) => {
+//     try {
+//         const { env, _id, target } = req.params
+//         let success = false
 
-        const Src = { User, Role, Team, Individual, Company, Owner, Carrier }[capitalizeFirst(env)]
-        const instance = await Src.data(res.session, { _id })
-        const [ result ] = await instance.flush(target)
-        if (result.affectedRows == 1) success = true
+//         const Src = { User, Role, Team, Individual, Company, Owner, Carrier }[capitalizeFirst(env)]
+//         const instance = await Src.data(res.session, { _id })
+//         const [ result ] = await instance.flush(target)
+//         if (result.affectedRows == 1) success = true
 
-        res.send({ success })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
+//         res.send({ success })
+//     } catch (err) {
+//         sendError.server(res, err, true)
+//     }
+// })
 
 
 
@@ -54,7 +58,7 @@ router.post('/flush/:env/:_id/:target?', User.mw.verify, User.mw.developerOnly, 
 
 router.post('/users', User.mw.verify, async (req, res) => {
     try {
-        res.send({ data: await User.fetch(res.session, {}, { hideRawId: false, hideSensitive: false }) })
+        res.send({ data: await User.fetch(res.session, {}, { hideRawId, hideSensitive: false }) })
     } catch (err) {
         sendError.server(res, err, true)
     }
@@ -64,41 +68,33 @@ router.post('/users', User.mw.verify, async (req, res) => {
 router.post('/user/:_id', User.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
-        const { count, countFilter } = req.query
         const { status } = res.session.user
-        const data = await User.fetch(res.session, { _id })
+        const user = await User.fetch(res.session, { _id }, { hideRawId, hideSensitive: true })
 
-        if (!data || (data.status[0] == 'D' && status[0] != 'D'))
-            return res.send({})
+        if (!user || (user.status === 'D' && status !== 'D'))
+            return res.send({ data: {}, error: 'Request Error: Immune User' })
 
-        if (count) {
-            let { applied } = await data[count](res.session)
+        const roles = await user.fetch('roles')
+        const locationRoles = roles.filter(role => role.location === user.location)
+        user.count.locationRoles = locationRoles.length
 
-            if (countFilter == 'location')
-                applied = applied.filter(item => item.location == data.location[0])
-
-            data.count = {
-                [count]: applied.length,
-            }
-        }
-
-        res.send(data)
+        res.send({ data: user })
     } catch (err) {
         sendError.server(res, err, true)
     }
 })
 
 
-router.post('/user/:_id/roles', User.mw.verify, async (req, res) => {
-    try {
-        const { _id } = req.params
-        const user = await User.fetch(res.session, { _id })
+//! router.post('/user/:_id/roles', User.mw.verify, async (req, res) => {
+//     try {
+//         const { _id } = req.params
+//         const user = await User.fetch(res.session, { _id })
 
-        res.send({ data: await user.roles(res.session) })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
+//         res.send({ data: await user.roles(res.session) })
+//     } catch (err) {
+//         sendError.server(res, err, true)
+//     }
+// })
 
 
 router.post('/user/:_id/toggle-unscoped', User.mw.verify, async (req, res) => {
@@ -121,8 +117,25 @@ router.post('/user/:_id/:target', User.mw.verify, async (req, res) => {
     try {
         const { _id, target } = req.params
         const user = await User.fetch(res.session, { _id })
+        const [ Src, sortBy ] = { roles: [ Role, 'name' ], teams: [ Team, 'name' ], companies: [ Company, 'name' ] }[target]
 
-        const data = await user.relationship(res.session, target)
+        const data = {
+            all: await Src.fetch(res.session, {}, { hideRawId }),
+            applied: await user.fetch(target, { hideRawId }),
+        }
+
+        if (!res.session.DS) {
+            const sessData = await res.session.user.fetch(target)
+
+            //! reduce data.all and data.applied to whatever session user has
+        }
+
+        data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
+
+        data.all = sortArrayByObjectKey(data.all, sortBy)
+        data.applied = sortArrayByObjectKey(data.applied, sortBy)
+        data.available = sortArrayByObjectKey(data.available, sortBy)
+
         res.send({ data })
     } catch (err) {
         sendError.server(res, err, true)
@@ -149,7 +162,7 @@ router.post('/roles/:roleCategory?', User.mw.verify, async (req, res) => {
             }
 
         if (!category) error = 'Error: Category could not be udentified'
-        else data = await Role.fetch(res.session, { category }, { hideRawId: true })
+        else data = await Role.fetch(res.session, { category }, { hideRawId })
 
         res.send({ error, data })
     } catch (err) {
@@ -228,7 +241,7 @@ router.post('/company-owner/:_id', User.mw.verify, User.mw.superAdminOnly, async
 
 router.post('/teams', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
-        res.send({ data: await Team.list(res.session) })
+        res.send({ data: await Team.fetch(res.session, {}, { hideRawId }) })
     } catch (err) {
         sendError.server(res, err, true)
     }
@@ -239,7 +252,7 @@ router.post('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, re
     try {
         const { _id } = req.params
 
-        res.send({ data: await Team.data(res.session, { _id }) })
+        res.send({ data: await Team.fetch(res.session, { _id }, { hideRawId }) })
     } catch (err) {
         sendError.server(res, err, true)
     }
@@ -266,34 +279,34 @@ router.delete('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, 
 })
 
 
-router.post('/team/:_id/:relType', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        let error
-        const { _id, relType } = req.params
-        const team = await Team.data(res.session, { _id })
+//! router.post('/team/:_id/:relType', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+//     try {
+//         let error
+//         const { _id, relType } = req.params
+//         const team = await Team.fetch(res.session, { _id })
 
-        let data = await team.data(res.session, relType)
+//         let data = await team.fetch(relType, { hideRawId })
+// console.log(data)
+//         res.send({ data: { team, data } })
+//     } catch (err) {
+//         sendError.server(res, err, true)
+//     }
+// })
 
-        res.send({ data: { team, data } })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
 
+//! router.post('/team/:_id/:relType/:_relId', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+//     try {
+//         const { _id, relType, _relId } = req.params
+//         const { action } = req.body
+//         const team = await Team.data(res.session, { _id })
 
-router.post('/team/:_id/:relType/:_relId', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        const { _id, relType, _relId } = req.params
-        const { action } = req.body
-        const team = await Team.data(res.session, { _id })
+//         const { modified, error } = await team.manage(res.session, relType, action, _relId)
 
-        const { modified, error } = await team.manage(res.session, relType, action, _relId)
-
-        res.send({ modified, error })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
+//         res.send({ modified, error })
+//     } catch (err) {
+//         sendError.server(res, err, true)
+//     }
+// })
 
 
 

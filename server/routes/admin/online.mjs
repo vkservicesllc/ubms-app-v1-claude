@@ -84,23 +84,23 @@ router.get('/user/:identifier', User.mw.verify, async (req, res) => {
 
         try {
             const { identifier } = req.params
-            let user = await User.data(res.session, { username: identifier })
-            if (!user) user = await User.data(res.session, { _id: identifier })
-            const { name, email, username, condition, status, location, unscoped, sex, gender } = user
+            let user = await User.fetch(res.session, { username: identifier }, { hideSensitive: false })
+            if (!user) user = await User.fetch(res.session, { _id: identifier })
+            const { email, username, status, condition, unscoped, sex, expansion } = user
 
             const sessionUser = res.session.user
 
-            if (sessionUser.status[0] == 'A' && user.DS) return respond404(res)
+            if (sessionUser.status === 'A' && user.DS) return respond404(res)
 
             const display = {
-                name: `<span class="has-text-weight-bold">${name}</span>`,
-                condition: username ? condition[1] : 'Not Registered',
-                status: (status[0] === 'U' ? 'Basic ' : '') + status[1],
-                location: location[1],
-                gender: sex === null ? '<span class="has-text-danger-70">Not specified</span>' : gender[1],
+                name: `<span class="has-text-weight-bold">${user.fullName('FAL')}</span>`,
+                condition: username ? expansion.condition : 'Not Registered',
+                status: (status === 'U' ? 'Basic ' : '') + expansion.status,
+                location: expansion.location,
+                gender: sex === null ? '<span class="has-text-danger-70">Not specified</span>' : expansion.gender,
             }
             display.name += ` <small><i>(${email})</i></small>`
-            if (!username || ['I', 'L'].includes(condition[0]))
+            if (!username || ['I', 'L'].includes(condition))
                 display.condition = `<span class="has-text-danger-70">${display.condition}</span>`
 
             const input = {
@@ -116,7 +116,7 @@ router.get('/user/:identifier', User.mw.verify, async (req, res) => {
             hbs.checked = checked
             hbs.self = user._id == sessionUser._id
             hbs.sessionUser = { ...sessionUser }
-            hbs.sessionUser.status = sessionUser.status[0]
+            hbs.sessionUser.status = sessionUser.status
         } catch (err) {
             return respond404(res)
         }

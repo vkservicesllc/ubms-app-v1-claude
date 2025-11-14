@@ -196,7 +196,7 @@ const locationReq = $.ajax('/api/session/location', { method: 'POST' })
 $.when(statusReq, locationReq).done((statusRes, locationRes) => {
     const [ adminStatus ] = statusRes
     const [ adminLocation ] = locationRes
-    const interval = 30000
+    const interval = 15000
     let refreshed = false
 
     const table = new DataTable('#users-table', {
@@ -217,7 +217,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 width: '30px',
                 render(data, type, row) {
                     data = data[0]
-                    if (row.status[0] == 'D' || (adminStatus == 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
+                    if (row.status == 'D' || (adminStatus == 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
                     if (row.decliner) return '<i class="fas fa-user-lock has-text-grey"></i>'
                     if (!row.username || row.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
 
@@ -331,14 +331,14 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     let cell = '<div class="dt-action">'
 
                     if (['D', 'S'].includes(adminStatus) || (adminStatus == 'A' && !row.DS)) {
-                        if (row.status[0] != 'D') {
+                        if (row.status != 'D') {
                             cell += `<a class="has-text-danger delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
                             if (!row.decliner) {
                                 cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
                                 cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
                             }
                         }
-                        if (row.status[0] != 'D' || adminStatus == 'D')
+                        if (row.status != 'D' || adminStatus == 'D')
                             if (!row.decliner)
                                 cell += `<a class="has-text-success-45 edit-user" data-id="${row._id}" title="Edit"><i class="fas fa-user-pen"></i></a>`
                     }
@@ -485,16 +485,23 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
             $.ajax(`/api/user/${_id}`, {
                 method: 'POST',
-                success(data) {
+                success(response) {
+                    const { error, data } = response
+
+                    if (error) {
+                        alert(error)
+                        return
+                    }
+
                     const { _id, name, condition } = data
 
                     $id.val(_id)
-                    if (condition[0] == 'L') $lockedCondition.prop('disabled', false)
+                    if (condition == 'L') $lockedCondition.prop('disabled', false)
                     $condition.filter(function() {
-                        return $(this).val() == condition[0]
+                        return $(this).val() == condition
                     }).prop('checked', true)
 
-                    $title.userCondition.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${escapeHTML(name)}</strong>`)
+                    $title.userCondition.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
                     $('#user-condition-modal').addClass('is-active')
                 },
             })
@@ -526,23 +533,22 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             const src = $(this).hasClass('edit-user') ? 'edit' : 'delete'
             const _id = $(this).data('id')
 
-            $.ajax(`/api/user/${_id}?count=roles&countFilter=location`, {
+            $.ajax(`/api/user/${_id}`, {
                 method: 'POST',
-                success(data) {
-                    const { _id, name } = data
+                success(response) {
+                    const { error, data } = response
+                    if (error) return alert(error)
+
+                    const { _id } = data
                     $id.val(_id)
 
                     if (src === 'delete') {
-                        $title.deleteUser.html(`<small class="has-text-danger is-size-6">Delete User</small> <strong>${escapeHTML(name)}</strong>`)
+                        $title.deleteUser.html(`<small class="has-text-danger is-size-6">Delete User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
 
                         return $('#user-delete-modal').addClass('is-active')
                     }
 
-                    const { username, email, phone, firstName, lastName, alias, sex, count } = data
-
-                    let { status, location } = data
-                    status = status[0]
-                    location = location[0]
+                    const { username, status, location, email, phone, firstName, lastName, alias, sex, count } = data
 
                     const $sex = [
                         $(selector.id.radio.gender.female),
@@ -550,7 +556,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     ]
                     let disabled = false
 
-                    $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${escapeHTML(name)}</strong>`)
+                    $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
                     $hiddenUsername.val(username)
                     // $emailHidden.val(email)
                     if (status === 'D') {
@@ -559,7 +565,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                         $field.status.hide()
                     } else {
                         $status.val(status)
-                        if (count.roles) disabled = true
+                        if (count.locationRoles) disabled = true
                         if (status === 'S')
                             $location.find('option:not([value=US])').prop('disabled', true)
                     }

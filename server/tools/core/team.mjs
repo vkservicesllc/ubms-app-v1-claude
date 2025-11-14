@@ -55,8 +55,9 @@ class Team {
             users: data.userCount,
         }
 
+        if (single) this.session = session
+
         if (single && !hideRawId) {
-            this.session = session
 
 
             this.add = async (target, ids = []) => {
@@ -173,6 +174,8 @@ class Team {
 
                 return log
             }
+
+
         }
     }
 
@@ -209,20 +212,20 @@ class Team {
         const {
             id, _id, name,
             ids, _ids,
-        } = params
+        } = filter
         const single = id || _id || name
 
         const match = { id, name }
         if (!id) {
             if (ids) match.id = ids
-            else match.id = Role.matchIdHash(_id || _ids)
+            else match.id = Team.matchIdHash(_id || _ids)
         }
 
-        const join = ['teamId', 'id']
+        const join = [ 'teamId', 'id' ]
         const batch = [
             {
                 table: query.main.table,
-                fields: [ Team.hashId(), 'name', 'description', 'settings' ],
+                fields: [ 'id', Team.hashId(), 'name', 'description', 'settings' ],
                 match,
                 group: 'id',
             },
@@ -240,7 +243,6 @@ class Team {
                 table: userQuery.jx.teams.table,
                 fields: [ { countDist: ['userId', 'userCount', {
                     case: {
-                        db: db.online,
                         table: userQuery.main.table,
                         match: { deletedBy: null },
                     },
@@ -248,7 +250,6 @@ class Team {
                 join,
             },
             {
-                db: db.online,
                 table: userQuery.main.table,
                 join: ['id', 'userId', { table: userQuery.jx.teams.table }],
             },
@@ -296,6 +297,8 @@ class Team {
 
                     return res.redirect('/')
                 }
+
+                team.session = { user: { id: user.id } }
 
                 res.session.team = team
                 next()

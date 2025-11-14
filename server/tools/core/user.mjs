@@ -10,7 +10,7 @@ import config, { addrBook, userApps } from '../../../config.mjs'
 import db from '../../settings/mysql.mjs'
 
 /* Tools */
-import Team from './team.mjs'
+import Team, { query as teamQuery } from './team.mjs'
 import Company, { query as companyQuery } from './company.mjs'
 import Carrier, { query as carrierQuery } from './carrier.mjs'
 //! Add more classes and query instances when more categories are available
@@ -28,6 +28,7 @@ const mysql = require('../utils/mysql')
 const sendError = require('../utils/error')
 
 
+const { sqlMode } = Query
 const query = {
     main: new Query(db.online, 'users'),
     registration: new Query(db.online, 'user_registration'),
@@ -79,6 +80,13 @@ class User extends Person {
             props._hash = data._hash
         }
 
+        this.count = {
+            roles: data.roleCount,
+            teams: data.teamCount,
+            companies: data.companyCount,
+        }
+        if (single) this.session = session
+
         this.expansion.status = User.list.status[data.status]
         this.expansion.condition = User.list.condition[data.condition]
         this.expansion.location = User.list.location[data.location]
@@ -86,7 +94,6 @@ class User extends Person {
         reSuper(this, props)
 
         if (single && !hideRawId) {
-            this.session = session
 
 
             this.add = async (target, ids = []) => {
@@ -452,6 +459,8 @@ class User extends Person {
 
                 return log
             }
+
+
         }
     }
 
@@ -521,6 +530,7 @@ class User extends Person {
         const { id: sessionUserId = null } = sessionUser
         if (!sessionUserId && !login) throw new Error('User Fetch Error: No session user')
 
+        const join = [ 'userId', 'id' ]
         const batch = [
             {
                 table: query.main.table,
@@ -532,6 +542,23 @@ class User extends Person {
                     'passReset', 'unscoped', 'decliner', 'fails',
                     { compare: [ 'id', 'self', { eq: sessionUserId } ] },
                 ],
+                group: 'id',
+            },
+            {
+                table: query.jx.roles.table,
+                fields: [ { countDist: [ 'roleId', 'roleCount' ] } ],
+                join,
+            },
+            {
+                table: query.jx.teams.table,
+                fields: [ { countDist: [ 'teamId', 'teamCount' ] } ],
+                join,
+            },
+            {
+                db: db.business,
+                table: query.jx.companies.table,
+                fields: [ { countDist: [ 'companyId', 'companyCount' ] } ],
+                join,
             },
         ]
 
@@ -566,7 +593,7 @@ class User extends Person {
 
         if (login) {
             batch[0].fields.push([ '_passKey', '_hash' ])
-            batch[1].fields.push({ ip: 'clientIp' })
+            batch[4].fields.push({ ip: 'clientIp' })
 
             if (branch === 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
         } else {
@@ -575,12 +602,14 @@ class User extends Person {
                 if (location !== 'US') batch[0].match.location = location
             }
         }
-        if (branch && !single) batch[1].join[2].max = 'lastLogin'
+        if (branch && !single) batch[4].join[2].max = 'lastLogin'
 
         if (batchOnly) return batch
 
-        const session = { user: { id: sessionUserId }, siteId, branch }
+        await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+
+        const session = { user: { id: sessionUserId }, siteId, branch }
         list.forEach((data, i, arr) => arr[i] = new User(data, { single, login, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
@@ -733,8 +762,7 @@ class User extends Person {
                 const token = await Token.fetch({ userId: id, clientIp })
                 const { key, verified, expired } = token
 
-                if (!key || (!verified && expired))
-                    await Token.create({ userId: id, clientIp })
+                if (!key || (!verified && expired)) await Token.create({ userId: id, clientIp })
 
                 await mysql.execute(query.main.update({ fails: 0 }, { id }))
 
@@ -809,7 +837,7 @@ class User extends Person {
             try {
                 const { method, originalUrl, query } = req
                 const { user: _id, clientIp } = req.session
-                const { excUrl, teams, companies, userApp } = res.session //! RECONSIDER
+                const { excUrl, branch, siteId, teams, companies, userApp } = res.session //! RECONSIDER
 
                 const reject = async apiErrMsg => {
                     if (api) sendError.auth(res, apiErrMsg, api)
@@ -858,6 +886,11 @@ class User extends Person {
 
                 if (method !== 'POST' && !excUrl.includes(originalUrl))
                     await user.url(originalUrl)
+
+                user.session = {
+                    branch, siteId,
+                    user: { id: user.id },
+                }
 
                 if (!next) return user
 
@@ -921,6 +954,8 @@ class Role {
         this.location = data.location
         this.name = data.name
         this.permissions = data.permissions
+        if (single) this.session = session
+
         this.expansion = {
             location: data.location ? User.list.location[data.location] : null,
             category: data.category ? Company.list.category[data.category].item[1] : null,
@@ -928,7 +963,6 @@ class Role {
         }
 
         if (single && !hideRawId) {
-            this.session = session
 
 
             this.add = async (target, ids = []) => {
@@ -1027,6 +1061,8 @@ class Role {
 
                 return log
             }
+
+
         }
     }
 
@@ -1124,10 +1160,9 @@ class Token {
     static create = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
         let token = generateRandomString(inputLength.user.token.max, 'd')
 
-        let [ result ] = await mysql.execute(queryInst.delete({ userId, clientIp: { ip: clientIp } }))
-        if (!result.affectedRows) throw new Error('DB Error: Failed to clear token')
+        await mysql.execute(queryInst.delete({ userId, clientIp: { ip: clientIp } }))
 
-        [ result ] = await mysql.execute(queryInst.insert({
+        const [ result ] = await mysql.execute(queryInst.insert({
             userId, clientIp: { ip: clientIp },
             token: { aes: [ token, tokenSecret ]},
         }))

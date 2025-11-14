@@ -384,6 +384,7 @@ const displayTeams = () => {
             $('.team-relationship').on('click', function() {
                 const relType = $(this).data('relationship')
                 const _id = $(this).data('team-id')
+                $('.modify-team-relationship').off('change')
 
                 $.ajax({
                     url: `/api/team/${_id}/${relType}`,

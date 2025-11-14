@@ -287,9 +287,7 @@ router.get('/authenticate', async (req, res) => {
         const token = await Token.fetch({ userId: user.id, clientIp })
 
         const { key: tokenKey, verified } = token
-        let value = config.notification.email.authToken
-            ? ''
-            : tokenKey
+        let value = config.notification.email.authToken ? '' : tokenKey
 
         hbs.status = status
         hbs.actionUrl = address + sessionUrl
