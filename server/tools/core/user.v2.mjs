@@ -87,7 +87,7 @@ class User extends Person {
 
         reSuper(this, props)
 
-        if (single) {
+        if (single && !hideRawId) {
             this.session = session
 
 
@@ -130,7 +130,7 @@ class User extends Person {
                         {
                             table: query.jx.companies.table,
                             fields: 'companyId',
-                            match: { userId: this.id || User.matchIdHash(this._id) },
+                            match: { userId: this.id },
                         },
                         {
                             table: companyQuery.main.table,
@@ -164,7 +164,7 @@ class User extends Person {
                 } else {
                     [ Src, idProp ] = targets[target]
 
-                    const [ rows ] = await mysql.execute(query.jx[target].select(idProp, { userId: this.id || User.matchIdHash(this._id) }))
+                    const [ rows ] = await mysql.execute(query.jx[target].select(idProp, { userId: this.id }))
                     rows.map(row => ids.push(row[idProp]))
                 }
 
@@ -186,13 +186,17 @@ class User extends Person {
 
                 if (this.location !== 'US' && body.location !== 'US' && body.phone) body.phone = null
 
-                const [ result ] = await mysql.execute(query.main.update(body, { id: this.id || User.matchIdHash(this._id) }))
+                const [ result ] = await mysql.execute(query.main.update(body, { id: this.id }))
 
                 if (result.affectedRows) {
                     updated = true
 
+                    if (['S', 'D'].includes(body.status))
+                        for (const queryProp in query.jx)
+                            await mysql.execute(query.jx[queryProp].delete({ userId: this.id }))
+
                     if (!this.username && body.email && this.email !== data.email) {
-                        const { formId } = (await mysql.execute(query.registration.select('formId', { match: { userId: this.id || User.matchIdHash(this._id) } })))[0][0]
+                        const { formId } = (await mysql.execute(query.registration.select('formId', { match: { userId: this.id } })))[0][0]
 
                         if (formId) {
                             this.invite(formId)
@@ -225,10 +229,10 @@ class User extends Person {
                     update.deletedBy = session.user.id
                     update.deletedAt = Query.timeStamp
 
-                    const [ result ] = await mysql.execute(query.main.update(update, { id: this.id || User.matchIdHash(this._id) }))
+                    const [ result ] = await mysql.execute(query.main.update(update, { id: this.id }))
                     if (!result.affectedRows) return false
 
-                    const match = { userId: this.id || User.matchIdHash(this._id) }
+                    const match = { userId: this.id }
                     await mysql.execute(query.registration.delete(match))
                     await mysql.execute(query.passReset.delete(match))
                     await mysql.execute(query.tokens.delete(match))
@@ -284,7 +288,7 @@ class User extends Person {
             this.settings = async (action = 'fetch', data = {}) => {
                 if (!this.self) return
 
-                const match = { id: this.id || User.matchIdHash(this._id) }
+                const match = { id: this.id }
                 let settings = (await mysql.execute(query.main.select('settings', { match })))[0] || {}
 
                 if (action === 'fetch') return settings
@@ -443,7 +447,7 @@ class User extends Person {
                 const fields = ['createdBy', 'createdAt', 'deletedBy', 'deletedAt', 'updateLog']
 
                 let log = (await mysql.execute(query.main.select(fields, {
-                    match: { id: this.id || User.matchIdHash(this._id) },
+                    match: { id: this.id },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
@@ -903,7 +907,7 @@ class Role {
             categoryGroup: data.category ? Company.list.category[data.category].item[0] : null,
         }
 
-        if (single) {
+        if (single && !hideRawId) {
             this.session = session
 
 
@@ -940,9 +944,9 @@ class Role {
                 const [ Src, idProp, queryInst ] = targets[target]
 
                 const ids = []
-                const [ rows ] = await mysql.execute(queryInst.select(idProp, { roleId: this.id || Role.matchIdHash(this._id) }))
+                const [ rows ] = await mysql.execute(queryInst.select(idProp, { roleId: this.id }))
 
-                rows.map(row => ids.push(rows[idProp]))
+                rows.map(row => ids.push(row[idProp]))
 
                 return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId })
             }
@@ -960,7 +964,7 @@ class Role {
                 })
                 body.permissions = JSON.stringify(permissions)
 
-                const [ result ] = await mysql.execute(query.roles.update(body, { id: this.id || Role.matchIdHash(this._id) }))
+                const [ result ] = await mysql.execute(query.roles.update(body, { id: this.id }))
                 
                 return result.affectedRows > 0
             }
@@ -974,14 +978,13 @@ class Role {
                 if (!target) {
                     const log = await this.log()
 
-                    const [ result ] = await mysql.execute(query.roles.delete({ id: this.id || Role.matchIdHash(this._id) }))
+                    const [ result ] = await mysql.execute(query.roles.delete({ id: this.id }))
                     if (!result.affectedRows) return false
 
                     for (const prop in log) this[prop] = log[prop]
                     await logDeletion(session, 'roles', this, { id })
 
                     return true
-
                 } else if (Object.keys(targets).includes(target) && ids.length) {
                     const idProp = targets[target][1]
                     const queryInst = targets[target][2]
@@ -997,7 +1000,7 @@ class Role {
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
 
                 let log = (await mysql.execute(query.roles.select(fields, {
-                    match: { id: this.id || Role.matchIdHash(this._id) },
+                    match: { id: this.id },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
@@ -1045,7 +1048,6 @@ class Role {
             ids, _ids, category, name, location,
         } = filter
         const single = id || _id
-        const { hideRawId, qBatch } = params
 
         const match = { id, category, name, location }
         if (!id) {

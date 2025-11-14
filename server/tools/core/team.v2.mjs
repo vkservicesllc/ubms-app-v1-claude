@@ -17,6 +17,12 @@ const mysql = require('../utils/mysql')
 const sendError = require('../utils/error')
 
 
+const query = {
+    main: new Query(db.online, 'teams'),
+    profiles: new Query(db.online, 'team_profiles'),
+}
+
+
 
 class Team {
     constructor(data = {}, { single = true, session, hideRawId = false }) {
@@ -50,27 +56,118 @@ class Team {
             users: data.userCount,
         }
 
-        if (single) {
+        if (single && !hideRawId) {
             this.session = session
 
 
-            this.add = async (target, ids = []) => {}
+            this.add = async (target, ids = []) => {
+                if (!this.session?.user?.id) throw new Error('Team Add Error: No session user')
+                if (!target) throw new Error('Team Add Error: Target not supplied')
+
+                const targets = Team.#relTargets
+                if (!Object.keys(targets).includes(target)) throw new Error('Team Add Error: Invalid target supplied')
+
+                const data = []
+                const [ Src, idProp, queryInst ] = targets[target]
+                const list = await Src.fetch(this.session, { ids })
+
+                list.map(item => data.push({
+                    teamId: this.id,
+                    [idProp]: item.id,
+                    createdBy: session.user.id,
+                }))
+
+                const [ result ] = await mysql.execute(queryInst.insert(data))
+
+                return result.affectedRows > 0
+            }
 
 
-            this.fetch = async (target, { hideRawId = false, idsOnly = false } = {}) => {}
+            this.fetch = async (target, { hideRawId = false, idsOnly = false } = {}) => {
+                if (!this.session?.user?.id) throw new Error('Team Fetch Error: No session user')
+                if (!target) throw new Error('Team Fetch Error: Target not supplied')
+
+                const targets = Team.#relTargets
+                if (!Object.keys(targets).includes(target)) throw new Error('Team Fetch Error: Invalid target supplied')
+
+                const [ Src, idProp, queryInst ] = targets[target]
+
+                const ids = []
+                const [ rows ] = await mysql.execute(queryInst.select(idProp, { teamId: this.id }))
+
+                rows.map(row => ids.push(row[idProp]))
+
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId })
+            }
 
 
-            this.update = async body => {}
+            this.update = async (body, queryProp = 'main') => {
+                if (!this.session?.user?.id) throw new Error('Team Update Error: Session user not found')
+
+                const idProp = queryProp === 'main' ? 'id' : 'teamId'
+                const modifiedBy = sessionUser.id
+                const currentUpdateLog = await this.log('updateLog', queryProp)
+
+                if (queryProp === 'main') {
+                    const { settings } = body
+                    delete body.settings
+                    
+                    body = processData(body, { modifiedBy, currentData: this, currentUpdateLog })
+                    if (settings) body.settings = JSON.stringify(settings)
+                } else {
+                    let currentData
+
+                    switch (queryProp) {
+
+                        case 'profiles':
+                            if (!this.profile) return false
+
+                            currentData = { ...this.profile, ...this.profile.address }
+                            break
+
+                    }
+
+                    body = processData(body, { modifiedBy, currentData, currentUpdateLog })
+                }
+
+                const [ result ] = await mysql.execute(query[queryProp].update(body, { [idProp]: this.id }))
+
+                return result.affectedRows > 0
+            }
 
 
-            this.delete = async (target, ids = []) => {}
+            this.delete = async (target, ids = []) => {
+                if (!this.session?.user?.id) throw new Error('Team Delete Error: Session user not found')
+
+                const targets = Team.#relTargets
+
+                if (!target) {
+                    const log = await this.log()
+
+                    const [ result ] = await mysql.execute(query.teams.delete({ id: this.id }))
+                    if (!result.affectedRows) return false
+
+                    for (const prop in log) this[prop] = log[prop]
+                    await logDeletion(session, 'teams', this, { id })
+
+                    return true
+                } else if (Object.keys(targets).includes(target) && ids.length) {
+                    const idProp = targets[target][1]
+                    const queryInst = targets[target][2]
+
+                    const [ result ] = await mysql.execute(queryInst.delete({ [idProp]: ids }))
+
+                    return result.affectedRows > 0
+                }
+            }
 
 
-            this.log = async field => {
+            this.log = async (field, queryProp = 'main') => {
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+                const idProp = queryProp === 'main' ? 'id' : 'teamId'
 
-                let log = (await mysql.execute(query.main.select(fields, {
-                    match: { id: this.id || Role.matchIdHash(this._id) },
+                let log = (await mysql.execute(query[queryProp].select(fields, {
+                    match: { [idProp]: this.id },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
@@ -84,11 +181,90 @@ class Team {
     static hashId = (field = 'id') => hash(field, Team.#algorithm)
     static matchIdHash = value => matchHash(value, Team.#algorithm)
 
+    static #relTargets = { users: [ User, 'userId', userQuery.jx.teams ] }
 
-    static create = async ({ user: sessionUser = {} }, body = {}) => {}
+
+    static create = async ({ user: sessionUser = {} }, body = {}) => {
+        if (!sessionUser.id) throw new Error('Team Create Error: No session user')
+
+        body = processData(body)
+
+        const { name } = body
+        if (await Team.fetch({ sessionUser }, { name })) return
+
+        body.createdBy = sessionUser.id
+
+        const [ result ] = await mysql.execute(query.main.insert(body))
+        const id = result.insertId
+
+        if (!id) throw new Error('DB Error: Failed to create team')
+
+        const team = await Team.fetch({ sessionUser }, { id })
+        if (!team) throw new Error('Fetch Error: New team not found')
+
+        return team
+    }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false }) => {}
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false }) => {
+        if (!sessionUser.id) throw new Error('Team Fetch Error: No session user')
+
+        const {
+            id, _id, name,
+            ids, _ids,
+        } = params
+        const single = id || _id || name
+
+        const match = { id, name }
+        if (!id) {
+            if (ids) match.id = ids
+            else match.id = Role.matchIdHash(_id || _ids)
+        }
+
+        const join = ['teamId', 'id']
+        const batch = [
+            {
+                table: query.main.table,
+                fields: [ Team.hashId(), 'name', 'description', 'settings' ],
+                match,
+                group: 'id',
+            },
+            {
+                table: query.profiles.table,
+                fields: [
+                    'busName', 'coType',
+                    { concat: [ [ 'busName', '^, ', 'coType' ], 'company' ] },
+                    'phone', 'email', 'website',
+                    'address1', 'address2', 'city', 'state', 'zip',
+                ],
+                join,
+            },
+            {
+                table: userQuery.jx.teams.table,
+                fields: [ { countDist: ['userId', 'userCount', {
+                    case: {
+                        db: db.online,
+                        table: userQuery.main.table,
+                        match: { deletedBy: null },
+                    },
+                }] } ],
+                join,
+            },
+            {
+                db: db.online,
+                table: userQuery.main.table,
+                join: ['id', 'userId', { table: userQuery.jx.teams.table }],
+            },
+        ]
+
+        if (batchOnly) return batch
+
+        const session = { user: { id: sessionUser.id } }
+        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+        list.forEach((data, i, arr) => arr[i] = new Team(data, { single, session, hideRawId }))
+
+        return single ? list[0] : list
+    }
 
 
     static mw = {
