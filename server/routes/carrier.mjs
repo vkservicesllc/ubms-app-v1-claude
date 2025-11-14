@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../tools/utils/error').data
+const sendError = require('../tools/utils/error')
 
 /* Tools */
 import User from '../tools/core/user.mjs'
@@ -151,7 +151,7 @@ router.get('/', async (req, res, next) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 }, User.mw.verify, async (req, res) => {
     try {
@@ -188,7 +188,7 @@ router.get('/', async (req, res, next) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -221,7 +221,7 @@ router.get('/dashboard', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -234,7 +234,7 @@ router.get('/settings', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.render(`app/${key}`, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 

@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const mysql = require('../tools/utils/mysql')
-const throwErr = require('../tools/utils/error').api
+const sendError = require('../tools/utils/error')
 
 /* Settings */
 import db from '../settings/mysql.mjs'
@@ -23,7 +23,7 @@ router.get('/us-zips/:zip', async (req, res) => {
 
         res.send(rows[0] || {})
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -62,7 +62,7 @@ router.post('/source/:source', (req, res) => {
 
         res.send(result)
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 

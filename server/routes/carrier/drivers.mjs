@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/utils/error').data
+const sendError = require('../../tools/utils/error')
 
 /* Tools */
 import moment from 'moment'
@@ -78,7 +78,7 @@ router.get('/', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -108,7 +108,7 @@ router.get('/files/application/:route?', User.mw.verify, Team.mw.verify, async (
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -134,7 +134,7 @@ router.get('/pre-applications', User.mw.verify, Team.mw.verify, async (req, res)
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -221,7 +221,7 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -245,7 +245,7 @@ router.get('/applicants', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -296,7 +296,7 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
         // res.redirect(`/drivers/application/${formId}/e-form`)
     }
 })
@@ -751,7 +751,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -884,7 +884,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -910,7 +910,7 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -936,7 +936,7 @@ router.get('/hired', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -962,7 +962,7 @@ router.get('/pay-agreements', User.mw.verify, Team.mw.verify, async (req, res) =
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -988,7 +988,7 @@ router.get('/leaving', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -1014,7 +1014,7 @@ router.get('/former', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 

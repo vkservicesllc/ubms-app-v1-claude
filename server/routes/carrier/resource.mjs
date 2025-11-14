@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/utils/error').data
+const sendError = require('../../tools/utils/error')
 
 /* Tools */
 import User from '../../tools/core/user.mjs'
@@ -34,14 +34,14 @@ router.post('/user/:_id/app/settings', User.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
         if (_id != res.session.user._id)
-            return throwErr.server(res, 'Server Internal Error: Invalid User')
+            return sendError.server(res, 'Server Internal Error: Invalid User')
 
         const user = await User.data(res.session, { _id })
         await user.settings(res.session, req.body)
 
         res.redirect('/settings')
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -55,7 +55,7 @@ router.post('/driver/application/new', User.mw.verify, Team.mw.verify, async (re
         const { DS } = user
         const permissions = await user.permissions(res.session)
         if (!withPrivileges('d:drv/apl', 'create', permissions, DS))
-            return throwErr.auth(res)
+            return sendError.auth(res)
 
         const { company: route } = req.body
         delete req.body.company
@@ -76,13 +76,13 @@ router.post('/driver/application/new', User.mw.verify, Team.mw.verify, async (re
             res.redirect(url.drivers.applications)
         }
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 }, validateApplicant, validationCheck, async (req, res) => {
     try {
         const { status, statusExpiresOn } = req.body
         if (status == 2 && !statusExpiresOn)
-            return throwErr.server(res, 'DB Error: Invalid data provided', err)
+            return sendError.server(res, 'DB Error: Invalid data provided', err)
 
         // const { team } = res.session
 
@@ -93,11 +93,11 @@ router.post('/driver/application/new', User.mw.verify, Team.mw.verify, async (re
         // req.body.deptId = team.settings.deptId[0]
 
         const { error } = await Application.create(res.session, req.body)
-        if (error) return throwErr.server(res, error, err)
+        if (error) return sendError.server(res, error, err)
 
         res.redirect(url.drivers.applications)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -107,17 +107,17 @@ router.post('/driver/application/delete', User.mw.verify, Team.mw.verify, async 
         const { DS } = user
         const permissions = await user.permissions(res.session)
         if (!withPrivileges('d:drv/apl', 'delete', permissions, DS))
-            return throwErr.auth(res)
+            return sendError.auth(res)
 
         const { _id } = req.body
         const application = await Application.data(res.session, { _id })
 
         const { error } = await application.delete(res.session)
-        if (error) return throwErr.server(res, error)
+        if (error) return sendError.server(res, error)
 
         res.redirect(url.drivers.applications)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -151,7 +151,7 @@ router.post('/driver/application/prev-employer/upsert', User.mw.verify, Team.mw.
 
             res.redirect(`/drivers/application/${formId}/e-form/prev-employers`)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
 })
 
@@ -166,7 +166,7 @@ router.post('/driver/application/prev-employer/delete', User.mw.verify, Team.mw.
 
         res.redirect(`/drivers/application/${formId}/e-form/prev-employers`)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -180,18 +180,18 @@ router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.ve
             // if (!withPrivileges('d:drv/apl', ['modify', 'update'], permissions, DS))
             //! NOT sure about update permission
             if (!withPrivileges('d:drv/apl', 'modify', permissions, DS))
-                return throwErr.auth(res)
+                return sendError.auth(res)
 
             const { formId, step } = req.params
             const application = await Application.data(res.session, { formId })
-            if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
+            if (!application) return sendError.server(res, 'Server Internal Error: Unidentified Application')
 
             const { error } = await application.modify(res.session, step, req.body)
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(`/drivers/application/${formId}/e-form?${step}`)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 )
@@ -202,7 +202,7 @@ router.post('/driver/application/:formId/delete/:target', User.mw.verify, Team.m
         const { DS } = user
         const permissions = await user.permissions(res.session)
         if (!withPrivileges('d:drv/apl', 'modify', permissions, DS))
-            return throwErr.auth(res)
+            return sendError.auth(res)
 
         const { target } = req.params
         const { _id } = req.body
@@ -212,7 +212,7 @@ router.post('/driver/application/:formId/delete/:target', User.mw.verify, Team.m
             case 'citation':
                 const citation = await Citation.data(res.session, { _id })
                 error = (await citation.delete(res.session)).error
-                if (error) return throwErr.data(error)
+                if (error) return sendError.server(res, error)
 
                 formId = citation.formId
                 dir = 'citations'
@@ -220,7 +220,7 @@ router.post('/driver/application/:formId/delete/:target', User.mw.verify, Team.m
             case 'accident':
                 const accident = await Accident.data(res.session, { _id })
                 error = (await accident.delete(res.session)).error
-                if (error) return throwErr.data(error)
+                if (error) return sendError.server(res, error)
 
                 formId = accident.formId
                 dir = 'accidents'
@@ -229,7 +229,7 @@ router.post('/driver/application/:formId/delete/:target', User.mw.verify, Team.m
 
         res.redirect(`/drivers/application/${formId}/e-form/${dir}`)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 

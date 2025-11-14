@@ -1,7 +1,7 @@
 import User, { Role } from '../../../tools/core/user.mjs'
 import Company from '../../../tools/core/company.mjs'
 
-const throwErr = require('../../../tools/utils/error').data
+const sendError = require('../../../tools/utils/error')
 
 const url = '/online/users'
 const errMsg = {
@@ -56,7 +56,7 @@ export default class {
                 break
         }
     
-        if (error) return throwErr.data.server(res, error)
+        if (error) return sendError.server(res, error)
     
         try {
             const { _id } = body
@@ -64,18 +64,18 @@ export default class {
     
             if (!_id) {
                 const { error } = await User.create(session, body)
-                if (error) return throwErr.server(res, error)
+                if (error) return sendError.server(res, error)
             } else {
                 const user = await User.data(session, { _id })
-                if (!user) return throwErr.server(res, errMsg.user)
+                if (!user) return sendError.server(res, errMsg.user)
     
                 const { error } = await user.modify(session, body)
-                if (error) return throwErr.server(res, error)
+                if (error) return sendError.server(res, error)
             }
     
             res.redirect(url)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -85,14 +85,14 @@ export default class {
             const { _id, condition } = req.body
     
             const user = await User.data(res.session, { _id })
-            if (!user) return throwErr.server(res, errMsg.user)
+            if (!user) return sendError.server(res, errMsg.user)
     
             const { error } = await user.modify(res.session, { condition })
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
     
             res.redirect(url)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -102,14 +102,14 @@ export default class {
             const { _id } = req.body
     
             const user = await User.data(res.session, { _id })
-            if (!user) return throwErr.server(res, errMsg.user)
+            if (!user) return sendError.server(res, errMsg.user)
     
             const { error } = await user.delete(res.session)
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
     
             res.redirect(url)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -119,14 +119,14 @@ export default class {
             const { _id } = req.body
     
             const user = await User.data(res.session, { _id })
-            if (!user) return throwErr.server(res, errMsg.user)
+            if (!user) return sendError.server(res, errMsg.user)
     
             const { error } = await user.reset(res.session)
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
     
             res.redirect(url)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -148,13 +148,13 @@ export default class {
                     catId = key
                     break
                 }
-            if (!catId) return throwErr.server('Server Internal Error: Category not found')
+            if (!catId) return sendError.server(res, 'Server Internal Error: Category not found')
 
             const data = { ...req.body, catId }
 
             if (_id) {
                 const role = await Role.data(res.session, { _id })
-                if (!role) return throwErr.server(res, errMsg.role)
+                if (!role) return sendError.server(res, errMsg.role)
                 else {
                     ({ error } = await role.modify(res.session, data))
                 }
@@ -162,11 +162,11 @@ export default class {
                 ({ error } = await Role.create(res.session, data))
             }
 
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(`${url}?role=${catId}`)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -178,11 +178,11 @@ export default class {
 
             const { error } = await role.delete(res.session)
 
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(`${url}?role=${role.catId}`)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -194,14 +194,14 @@ export default class {
             const user = await User.data(res.session, { _id })
 
             const { error } = await user.roles(res.session, action, _roleIds)
-            if (error) return throwErr.server(res, null, error)
+            if (error) return sendError.server(res, error)
 
             const { username } = user
             const identifier = username || _id
 
             res.redirect(`/online/user/${identifier}`)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -213,14 +213,14 @@ export default class {
             const user = await User.data(res.session, { _id })
 
             const { error } = await user.relationship(res.session, 'teams', action, _teamIds)
-            if (error) return throwErr.server(res, null, error)
+            if (error) return sendError.server(res, error)
 
             const { username } = user
             const identifier = username || _id
 
             res.redirect(`/online/user/${identifier}`)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -232,14 +232,14 @@ export default class {
             const user = await User.data(res.session, { _id })
 
             const { error } = await user.relationship(res.session, 'companies', action, _companyIds)
-            if (error) return throwErr.server(res, null, error)
+            if (error) return sendError.server(res, error)
 
             const { username } = user
             const identifier = username || _id
 
             res.redirect(`/online/user/${identifier}`)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 

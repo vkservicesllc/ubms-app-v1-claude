@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/utils/error').data
+const sendError = require('../../tools/utils/error')
 
 /* Tools */
 import User from '../../tools/core/user.mjs'
@@ -13,7 +13,7 @@ router.get('/data', User.mw.verify, User.mw.developerOnly, (req, res) => {
 
         res.render('dev-data', hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -25,7 +25,7 @@ router.get('/logs', User.mw.verify, User.mw.developerOnly, (req, res) => {
 
         res.render('dev-logs', hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 

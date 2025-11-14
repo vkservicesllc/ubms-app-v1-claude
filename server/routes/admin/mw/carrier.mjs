@@ -1,7 +1,7 @@
 /* Assets */
 import Carrier from '../../../tools/core/carrier.mjs'
 
-const throwErr = require('../../../tools/utils/error').data
+const sendError = require('../../../tools/utils/error')
 
 const url = {
     company: '/business/company/',
@@ -18,7 +18,7 @@ export default class {
         try {
             const { _companyId } = req.params
             const carrier = await Carrier.data(res.session, { _companyId })
-            if (!carrier) return throwErr.server(res, errMsg)
+            if (!carrier) return sendError.server(res, errMsg)
 
             let error
 
@@ -28,11 +28,11 @@ export default class {
                 ({ error } = await carrier.modify(res.session, req.body))
             }
 
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(url.company + _companyId)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 

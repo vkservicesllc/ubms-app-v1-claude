@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../tools/utils/error').api
+const sendError = require('../tools/utils/error')
 
 /* Tools */
 import Individual from '../tools/core/individual.mjs'
@@ -31,7 +31,7 @@ export const sessionDetails = (req, res) => {
 
         res.send(data)
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 }
 
@@ -68,7 +68,7 @@ router.post('/unique/original/:env', User.mw.verify, async (req, res) => {
 
         res.send(response)
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -85,7 +85,7 @@ router.post('/unique/:env', User.mw.verify, async (req, res) => {
 
         res.send(response)
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 

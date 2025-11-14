@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/utils/error').api
+const sendError = require('../../tools/utils/error')
 
 /* Tools */
 import User, { Role } from '../../tools/core/user.mjs'
@@ -26,7 +26,7 @@ router.post('/log/:env/:_id', User.mw.verify, User.mw.superAdminOnly, async (req
 
         res.send(log)
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -43,7 +43,7 @@ router.post('/flush/:env/:_id/:target?', User.mw.verify, User.mw.developerOnly, 
 
         res.send({ success })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -56,7 +56,7 @@ router.post('/users', User.mw.verify, async (req, res) => {
     try {
         res.send({ data: await User.list(res.session) })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -84,7 +84,7 @@ router.post('/user/:_id', User.mw.verify, async (req, res) => {
 
         res.send(data)
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -96,7 +96,7 @@ router.post('/user/:_id/roles', User.mw.verify, async (req, res) => {
 
         res.send({ data: await user.roles(res.session) })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -112,7 +112,7 @@ router.post('/user/:_id/toggle-unscoped', User.mw.verify, async (req, res) => {
         const { error } = await user.modify(res.session, { unscoped })
         res.send({ error })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -125,7 +125,7 @@ router.post('/user/:_id/:target', User.mw.verify, async (req, res) => {
         const data = await user.relationship(res.session, target)
         res.send({ data })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -153,7 +153,7 @@ router.post('/roles/:category?', User.mw.verify, async (req, res) => {
 
         res.send({ error, data })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -164,7 +164,7 @@ router.post('/role/:_id', User.mw.verify, async (req, res) => {
 
         res.send({ data: await Role.data(res.session, { _id }) })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -184,7 +184,7 @@ router.post('/companies', User.mw.verify, async (req, res) => {
 
         res.send({ data: await Company.list(res.session, filter) })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -197,7 +197,7 @@ router.post('/company/:_id/:target', User.mw.verify, User.mw.superAdminOnly, asy
 
         res.send({ data: companyTeams })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -206,7 +206,7 @@ router.post('/company-owners', User.mw.verify, User.mw.superAdminOnly, async (re
     try {
         res.send({ data: await Owner.list(res.session) })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -217,7 +217,7 @@ router.post('/company-owner/:_id', User.mw.verify, User.mw.superAdminOnly, async
 
         res.send(await Owner.data(res.session, { _id }))
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -230,7 +230,7 @@ router.post('/teams', User.mw.verify, User.mw.superAdminOnly, async (req, res) =
     try {
         res.send({ data: await Team.list(res.session) })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -241,7 +241,7 @@ router.post('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, re
 
         res.send({ data: await Team.data(res.session, { _id }) })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -261,7 +261,7 @@ router.delete('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, 
 
         res.send({ deleted, error })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -276,7 +276,7 @@ router.post('/team/:_id/:relType', User.mw.verify, User.mw.superAdminOnly, async
 
         res.send({ data: { team, data } })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -291,7 +291,7 @@ router.post('/team/:_id/:relType/:_relId', User.mw.verify, User.mw.superAdminOnl
 
         res.send({ modified, error })
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 

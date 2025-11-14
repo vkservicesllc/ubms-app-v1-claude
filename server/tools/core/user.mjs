@@ -751,7 +751,7 @@ class User extends Person {
                 const { branch, siteId, defUrl } = res.session
                 const { user: _id, token: providedToken } = req.body
 
-                const user = await User.fetch(res.session, { _id }, { hideSensitive: false })
+                const user = await User.fetch(res.session, { _id }, { hideSensitive: false, login: true })
                 if (!user) throw new Error('Session Error: User not found')
 
                 const { id: userId } = user
@@ -789,14 +789,14 @@ class User extends Person {
                     })
                 }
 
-                const _token = await Bun.password.hash(token)
+                const _token = await Bun.password.hash(tokenKey)
 
                 req.session.user = _id
                 res.cookie('connect.token', _token, { httpOnly: true })
 
                 res.redirect(url)
             } catch (err) {
-                sendError.server(res, err, api)
+                sendError.server(res, err)
             }
         },
 
@@ -807,7 +807,7 @@ class User extends Person {
             try {
                 const { method, originalUrl, query } = req
                 const { user: _id, clientIp } = req.session
-                const { excUrl, teams, companies, userApp } = res.session
+                const { excUrl, teams, companies, userApp } = res.session //! RECONSIDER
 
                 const reject = async apiErrMsg => {
                     if (api) sendError.auth(res, apiErrMsg, api)
@@ -828,10 +828,10 @@ class User extends Person {
 
                 if (!_id) return await reject('Authentication check failed: Not authenticated')
 
-                const user = await User.fetch(res.session, { _id })
+                const user = await User.fetch(res.session, { _id }, { login: true })
 
                 if (!user) {
-                    User.logout(req, res)
+                    User.mw.logout(req, res)
                     return sendError.auth(res, 'Authentication check failed: No user found', api)
                 }
 

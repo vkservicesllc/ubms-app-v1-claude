@@ -23,7 +23,7 @@ import CarrierForm from '../../../tools/form/carrier.mjs'
 import { labelClass, labelClassRequired } from '../assets.mjs'
 import { addrBook } from '../../../../config.mjs'
 
-const throwErr = require('../../../tools/utils/error').data
+const sendError = require('../../../tools/utils/error')
 
 const url = {
     company: '/business/company/',
@@ -43,11 +43,11 @@ export default class {
     static add = async (req, res) => {
         try {
             const { error, data: company } = await Company.create(res.session, req.body)
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(url.company + company._id)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -57,7 +57,7 @@ export default class {
             const { _id } = req.params
 
             const company = await Company.data(res.session, { _id })
-            if (!company) return throwErr.server(res, errMsg.company)
+            if (!company) return sendError.server(res, errMsg.company)
 
             const { catId, since, ein, duns, website, busName, coType, alias } = req.body
             let error
@@ -65,18 +65,18 @@ export default class {
             ({ error } = await company.modify(res.session, 'companies', { catId, since, ein, duns, website }))
             if (!error)
                ({ error } = await company.modify(res.session, 'names', { busName, coType, alias }))
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(url.company + company._id)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
 
     static update = async (req, res) => { // name
         try {} catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -87,17 +87,17 @@ export default class {
             const { alias } = req.body
 
             const company = await Company.data(res.session, { _id })
-            if (!company) return throwErr.server(res, errMsg.company)
+            if (!company) return sendError.server(res, errMsg.company)
 
             if (alias != company.alias)
-                return throwErr.server(res, `Request Error: Incorrect confirmation alias<br/><a href="${url.companies}">Back to Companies</a>`)
+                return sendError.server(res, `Request Error: Incorrect confirmation alias<br/><a href="${url.companies}">Back to Companies</a>`)
 
             const { error } = await company.delete(res.session)
-            if (error) return throwErr.server(res, error + `<a href="${url.companies}">Back to Companies</a>`)
+            if (error) return sendError.server(res, error + `<a href="${url.companies}">Back to Companies</a>`)
 
             res.redirect(url.companies)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -107,10 +107,10 @@ export default class {
             const { _id } = req.params
 
             const company = await Company.data(res.session, { _id })
-            if (!company) return throwErr.server(res, errMsg.company)
+            if (!company) return sendError.server(res, errMsg.company)
 
             const { confirmed, error } = await company.confirm(res.session)
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             let redirectUrl = url.company + company._id
             if (confirmed) {
@@ -122,7 +122,7 @@ export default class {
 
             res.redirect(redirectUrl)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -133,31 +133,31 @@ export default class {
             const { _ownerId, since } = req.body //* if `since` is undefined, company `since` will be used
 
             const company = await Company.data(res.session, { _id })
-            if (!company) return throwErr.server(res, errMsg.company)
+            if (!company) return sendError.server(res, errMsg.company)
 
             const owner = await Owner.data(res.session, { _id: _ownerId })
-            if (!owner) return throwErr.server(res, errMsg.owner)
+            if (!owner) return sendError.server(res, errMsg.owner)
 
             const { error } = await company.delete(res.session, 'ownerships', { since })
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
             else {
                 const { error } = await company.update(res.session, 'ownerships', {
                     ownerId: await owner.id(),
                     since,
                 })
-                if (error) return throwErr.server(res, error)
+                if (error) return sendError.server(res, error)
             }
 
             res.redirect(url.company + _id)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
 
     static updateOwnership = async (req, res) => {
         try {} catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -166,7 +166,7 @@ export default class {
         try {
             const { _id } = req.params
             const company = await Company.data(res.session, { _id })
-            if (!company) return throwErr.server(res, errMsg.company)
+            if (!company) return sendError.server(res, errMsg.company)
 
             const { body } = req
             const { address } = company
@@ -195,11 +195,11 @@ export default class {
                 if (error) errors.push(error)
             }
 
-            if (errors.length) return throwErr.server(res, errors.join(' / '))
+            if (errors.length) return sendError.server(res, errors.join(' / '))
 
             res.redirect(url.company + _id)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -210,7 +210,7 @@ export default class {
 
             //!..
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -219,7 +219,7 @@ export default class {
         try {
             const { _id } = req.params
             const company = await Company.data(res.session, { _id })
-            if (!company) return throwErr.server(res, errMsg.company)
+            if (!company) return sendError.server(res, errMsg.company)
 
             const { body } = req
             const action = { phone: null, fax: null, email: null }
@@ -257,11 +257,11 @@ export default class {
                 if (error) errors.push(error)
             }
 
-            if (errors.length) return throwErr.server(res, errors.join(' / '))
+            if (errors.length) return sendError.server(res, errors.join(' / '))
 
             res.redirect(url.company + _id)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -272,7 +272,7 @@ export default class {
 
             //!..
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -284,11 +284,11 @@ export default class {
             const company = await Company.data(res.session, { _id })
 
             const { error } = await company.relationship(res.session, 'users', action, _userIds)
-            if (error) return throwErr.server(res, null, error)
+            if (error) return sendError.server(res, null, error)
 
             res.redirect(`/business/${Company.categoryList[company.catId].path[1]}/${company.route}?users`)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -300,11 +300,11 @@ export default class {
     //         const company = await Company.data(res.session, { _id })
 
     //         const { error } = await company.relationship(res.session, 'teams', action, _teamIds)
-    //         if (error) return throwErr.server(res, null, error)
+    //         if (error) return sendError.server(res, null, error)
 
     //         res.redirect(`/business/${Company.categoryList[company.catId].path[1]}/${company.route}?teams`)
     //     } catch (err) {
-    //         throwErr.server(res, null, err)
+    //         sendError.server(res, err)
     //     }
     // }
 
@@ -317,16 +317,16 @@ export default class {
 
             if (!_id) {
                 const { error, data: owner } = await Owner.create(res.session, req.body)
-                if (error) return throwErr.server(res, error)
+                if (error) return sendError.server(res, error)
 
                 if (_companyId) {
                     const company = await Company.data(res.session, { _id: _companyId })
 
                     const { error } = await company.delete(res.session, 'ownerships', { since })
-                    if (error) return throwErr.server(res, error)
+                    if (error) return sendError.server(res, error)
                     else {
                         const { error } = await company.update(res.session, 'ownerships', { ownerId: await owner.id(), since })
-                        if (error) return throwErr.server(res, error)
+                        if (error) return sendError.server(res, error)
                     }
                     //* `since` is undefined if owner is added at company registration
                     //* `since` must be requested via url query if owner is added at ownership update
@@ -335,12 +335,12 @@ export default class {
                 const owner = await Owner.data(res.session, { _id })
 
                 const { error } = await owner.modify(res.session, req.body)
-                if (error) return throwErr.server(res, error)
+                if (error) return sendError.server(res, error)
             }
 
             res.redirect(_companyId ? url.company + _companyId : url.owners)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -354,11 +354,11 @@ export default class {
             const owner = await Owner.data(res.session, { _id })
 
             const { error } = await owner.update(res.session, req.body)
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(_companyId ? url.company + _companyId : url.owners)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -368,28 +368,28 @@ export default class {
             const { _id } = req.body
 
             const owner = await Owner.data(res.session, { _id })
-            if (!owner) return throwErr.server(res, errMsg.owner)
+            if (!owner) return sendError.server(res, errMsg.owner)
 
             const { error } = await owner.delete(res.session)
-            if (error) return throwErr.server(res, error + `<a href="${url.owners}">Back to Company Owners</a>`)
+            if (error) return sendError.server(res, error + `<a href="${url.owners}">Back to Company Owners</a>`)
 
             res.redirect(url.owners)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
 
     static upsertOwnerPhone = async (req, res) => {
         try {} catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
 
     static updateOwnerPhone = async (req, res) => {
         try {} catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -757,7 +757,7 @@ export const companyById = async (req, res) => {
         res.render(key, hbs)
 
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 }
 
@@ -847,6 +847,6 @@ export const companyByCategoryAndRoute = async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 }

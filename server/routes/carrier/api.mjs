@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/utils/error').api
+const sendError = require('../../tools/utils/error')
 
 /* Tools */
 import User from '../../tools/core/user.mjs'
@@ -22,7 +22,7 @@ router.post('/session/team/:_id/switch', User.mw.verify, async (req, res) => {
 
         res.send(switched)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -50,7 +50,7 @@ router.post('/login/validation', async (req, res) => {
 
 //         res.send(companies)
 //     } catch (err) {
-//         throwErr.server(res, null, err)
+//         sendError.server(res, err, true)
 //     }
 // })
 
@@ -58,7 +58,7 @@ router.post('/carriers', User.mw.verify, Team.mw.verify, (req, res) => {
     try {
         res.send(res.session.companies)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -75,7 +75,7 @@ router.post('/teams', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.send(data)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -122,7 +122,7 @@ router.post('/drivers/application/:_id/:target?', User.mw.verify, Team.mw.verify
             res.send({ data: await Src.list(res.session, { _aplId: application._id }) })
         }
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -142,7 +142,7 @@ router.post('/drivers/applications/filters', User.mw.verify, Team.mw.verify, asy
             users: await Application.users(res.session, filter.users)
         })
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -156,7 +156,7 @@ router.post('/drivers/applications/prev-employers', User.mw.verify, Team.mw.veri
 
         res.send({ data })
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -165,7 +165,7 @@ router.post('/drivers/applications/prev-employer/:_id', User.mw.verify, Team.mw.
         const { _id } = req.params
         res.send({ data: await Employment.data(res.session, { _id }) })
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -185,7 +185,7 @@ router.post('/drivers/applications/source/:source', User.mw.verify, Team.mw.veri
 
         res.send(data)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -206,7 +206,7 @@ router.post('/drivers/applications/:source/:_id', User.mw.verify, Team.mw.verify
 
         res.send(await Src.data(res.session, { _id }))
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -224,7 +224,7 @@ router.post('/drivers/charts', User.mw.verify, Team.mw.verify, async (req, res) 
 
         res.send(await Application.charts(res.session, { teamId }))
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
@@ -256,7 +256,7 @@ router.post('/resource/drivers/applications/:source', User.mw.verify, Team.mw.ve
 
         res.send({ error })
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 

@@ -1,7 +1,7 @@
 /* Assets */
 import Team from '../../../tools/core/team.mjs'
 
-const throwErr = require('../../../tools/utils/error').data
+const sendError = require('../../../tools/utils/error')
 
 const url = '/online/teams'
 const errMsg = 'Server Internal Error: Team not found'
@@ -20,7 +20,7 @@ export default class {
 
             if (_id) {
                 const team = await Team.data(res.session, { _id })
-                if (!team) return throwErr.server(res, errMsg)
+                if (!team) return sendError.server(res, errMsg)
                 else {
                     ({ error } = await team.modify(res.session, req.body))
                 }
@@ -28,11 +28,11 @@ export default class {
                 ({ error } = await Team.create(res.session, req.body))
             }
 
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(url)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -45,11 +45,11 @@ export default class {
             const team = await Team.data(res.session, { _id })
             const { error } = await team.profileData(res.session, req.body)
 
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(url)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -62,11 +62,11 @@ export default class {
             const team = await Team.data(res.session, { _id })
             const { error } = await team.settingsData(res.session, req.body)
 
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(url)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 
@@ -75,14 +75,14 @@ export default class {
         try {
             const { _id } = req.body
             const team = await Team.data(res.session, { _id })
-            if (!team) return throwErr.server(res, errMsg)
+            if (!team) return sendError.server(res, errMsg)
 
             const { error } = await team.delete(res.session)
-            if (error) return throwErr.server(res, error)
+            if (error) return sendError.server(res, error)
 
             res.redirect(url)
         } catch (err) {
-            throwErr.server(res, null, err)
+            sendError.server(res, err)
         }
     }
 

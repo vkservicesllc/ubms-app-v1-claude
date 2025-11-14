@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/utils/error').api
+const sendError = require('../../tools/utils/error')
 
 /* Tools */
 import Team from '../../tools/core/team.mjs'
@@ -17,7 +17,7 @@ import { sessionDetails } from '../api.mjs'
 router.post('/local-session/:prop', (req, res, next) => {
     if (req.session.application) return next()
 
-    return throwErr.auth(res)
+    return sendError.auth(res, null, true)
 }, sessionDetails)
 
 
@@ -46,7 +46,7 @@ router.post('/application/login/:formId', validateApplicantLogin, async (req, re
     try {
         const { formId } = req.params
         const application = await Application.data({ ...res.session, user: true }, { formId })
-        if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
+        if (!application) return sendError.server(res, 'Server Internal Error: Unidentified Application', true)
 
         const { phone, dob, pin } = req.body
         let passed = false
@@ -56,13 +56,13 @@ router.post('/application/login/:formId', validateApplicantLogin, async (req, re
 
         res.send({ passed })
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err, true)
     }
 })
 
 
 router.post('/application/:formId/:target', (req, res, next) => {
-    if (!req.session.application) return throwErr.auth(res)
+    if (!req.session.application) return sendError.auth(res, null, true)
 
     next()
 }, async (req, res) => {

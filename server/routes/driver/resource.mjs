@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const { body } = require('express-validator')
-const throwErr = require('../../tools/utils/error').data
+const sendError = require('../../tools/utils/error')
 
 /* Tools */
 import User from '../../tools/core/user.mjs'
@@ -186,7 +186,7 @@ router.post('/application/login/:formId', validateApplicantLogin, validationChec
     try {
         const { formId } = req.params
         const application = await Application.data({ ...res.session, user: true }, { formId })
-        if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
+        if (!application) return sendError.server(res, 'Server Internal Error: Unidentified Application')
 
         const { phone, dob, pin } = req.body
 
@@ -195,9 +195,9 @@ router.post('/application/login/:formId', validateApplicantLogin, validationChec
             req.session.application = application._id
 
             res.redirect(referer)
-        } else throwErr.auth(res, 'Auth Error: Incorrect credentials used')
+        } else sendError.auth(res, 'Auth Error: Incorrect credentials used')
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -207,14 +207,14 @@ router.post('/application/form/:formId/:step', dynamicValidator.applications, va
         const session = { ...res.session, user: true }
         const { formId, step } = req.params
         const application = await Application.data(session, { formId })
-        if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
+        if (!application) return sendError.server(res, 'Server Internal Error: Unidentified Application')
 
         const { error } = await application.modify(session, step, req.body)
-        if (error) return throwErr.server(res, error)
+        if (error) return sendError.server(res, error)
 
         res.redirect(`/application/${formId}`)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -224,14 +224,14 @@ router.post('/application/:action/form/:formId', async (req, res) => {
         const session = { ...res.session, user: true }
         const { formId, action } = req.params
         const application = await Application.data(session, { formId })
-        if (!application) return throwErr.server(res, 'Server Internal Error: Unidentified Application')
+        if (!application) return sendError.server(res, 'Server Internal Error: Unidentified Application')
 
         const { error } = await application[action](session)
-        if (error) return throwErr.server(res, error)
+        if (error) return sendError.server(res, error)
 
         res.redirect(`/application/${formId}`)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -250,14 +250,14 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
 
         if (_teamId !== 'global') {
             team = await Team.data(session, { _id: _teamId })
-            if (!team) return throwErr.server(res, 'Server Internal Error: Unidentified Environment')
+            if (!team) return sendError.server(res, 'Server Internal Error: Unidentified Environment')
 
             res.session.team = team
         }
 
         if (_carrierId) {
             const carrier = await Carrier.data(session, { _id: _carrierId })
-            if (!carrier) return throwErr.server(res, 'Server Internal Error: Unidentified Carrier')
+            if (!carrier) return sendError.server(res, 'Server Internal Error: Unidentified Carrier')
 
             req.body.carrierId = await carrier.id()
         }
@@ -268,19 +268,19 @@ router.post('/application/:_teamId/:_carrierId?', validateApplicant, validationC
 
         if (userId) {
             const user = await User.data(session, { _simpleId: userId })
-            if (!user) return throwErr.server(res, 'Server Internal Error: Unidentified Agent')
+            if (!user) return sendError.server(res, 'Server Internal Error: Unidentified Agent')
 
             req.body.userId = await user.id()
         }
 
         const { error, url, data: application } = await Application.create(res.session, req.body)
-        if (error) return throwErr.server(res, error)
+        if (error) return sendError.server(res, error)
 
         req.session.application = application._id
 
         res.redirect(res.hbs.addrBook.driver + url)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 

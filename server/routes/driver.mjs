@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../tools/utils/error').data
+const sendError = require('../tools/utils/error')
 
 /* Tools */
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'

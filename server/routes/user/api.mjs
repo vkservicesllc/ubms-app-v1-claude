@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const throwErr = require('../../tools/utils/error').api
+const sendError = require('../../tools/utils/error')
 
 /* Settings */
 import config from '../../../config.mjs'
@@ -21,7 +21,7 @@ router.post('/unique/user/new/username', async (req, res) => {
 
         res.send(response)
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 
@@ -84,7 +84,7 @@ router.post('/user/decline/:_id', async (req, res) => {
 
         res.send('OK')
     } catch (err) {
-        throwErr.server(res, null, err, false)
+        sendError.server(res, err, true)
     }
 })
 

@@ -20,6 +20,6 @@ export default (req, res, next) => {
 
         res.render(key, hbs)
     } catch (err) {
-        require('../../../tools/utils/error').data.server(res, null, err)
+        require('../../../tools/utils/error').server(res, err)
     }
 }
