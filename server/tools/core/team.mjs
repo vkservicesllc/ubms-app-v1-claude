@@ -55,9 +55,8 @@ class Team {
             users: data.userCount,
         }
 
-        if (single) this.session = session
-
         if (single && !hideRawId) {
+            this.session = session
 
 
             this.add = async (target, ids = []) => {
@@ -72,7 +71,7 @@ class Team {
                 const list = await Src.fetch(this.session, { ids })
 
                 list.map(item => data.push({
-                    teamId: this.id,
+                    teamId: this.id || Team.matchIdHash(this._id),
                     [idProp]: item.id,
                     createdBy: session.user.id,
                 }))
@@ -93,7 +92,7 @@ class Team {
                 const [ Src, idProp, queryInst ] = targets[target]
 
                 const ids = []
-                const [ rows ] = await mysql.execute(queryInst.select(idProp, { teamId: this.id }))
+                const [ rows ] = await mysql.execute(queryInst.select(idProp, { teamId: this.id || Team.matchIdHash(this._id) }))
 
                 rows.map(row => ids.push(row[idProp]))
 
@@ -130,7 +129,7 @@ class Team {
                     body = processData(body, { modifiedBy, currentData, currentUpdateLog })
                 }
 
-                const [ result ] = await mysql.execute(query[queryProp].update(body, { [idProp]: this.id }))
+                const [ result ] = await mysql.execute(query[queryProp].update(body, { [idProp]: this.id || Team.matchIdHash(this._id) }))
 
                 return result.affectedRows > 0
             }
@@ -144,7 +143,7 @@ class Team {
                 if (!target) {
                     const log = await this.log()
 
-                    const [ result ] = await mysql.execute(query.teams.delete({ id: this.id }))
+                    const [ result ] = await mysql.execute(query.teams.delete({ id: this.id || Team.matchIdHash(this._id) }))
                     if (!result.affectedRows) return false
 
                     for (const prop in log) this[prop] = log[prop]
@@ -167,15 +166,13 @@ class Team {
                 const idProp = queryProp === 'main' ? 'id' : 'teamId'
 
                 let log = (await mysql.execute(query[queryProp].select(fields, {
-                    match: { [idProp]: this.id },
+                    match: { [idProp]: this.id || Team.matchIdHash(this._id) },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
 
                 return log
             }
-
-
         }
     }
 

@@ -85,7 +85,6 @@ class User extends Person {
             teams: data.teamCount,
             companies: data.companyCount,
         }
-        if (single) this.session = session
 
         this.expansion.status = User.list.status[data.status]
         this.expansion.condition = User.list.condition[data.condition]
@@ -93,7 +92,8 @@ class User extends Person {
 
         reSuper(this, props)
 
-        if (single && !hideRawId) {
+        if (single) {
+            this.session = session
 
 
             this.add = async (target, ids = []) => {
@@ -108,7 +108,7 @@ class User extends Person {
                 const list = await Src.fetch(this.session, { ids })
 
                 list.map(item => data.push({
-                    userId: this.id,
+                    userId: this.id || User.matchIdHash(this._id),
                     [idProp]: item.id,
                     createdBy: session.user.id,
                 }))
@@ -135,7 +135,7 @@ class User extends Person {
                         {
                             table: query.jx.companies.table,
                             fields: 'companyId',
-                            match: { userId: this.id },
+                            match: { userId: this.id || User.matchIdHash(this._id) },
                         },
                         {
                             table: companyQuery.main.table,
@@ -169,7 +169,7 @@ class User extends Person {
                 } else {
                     [ Src, idProp ] = targets[target]
 
-                    const [ rows ] = await mysql.execute(query.jx[target].select(idProp, { userId: this.id }))
+                    const [ rows ] = await mysql.execute(query.jx[target].select(idProp, { userId: this.id || User.matchIdHash(this._id) }))
                     rows.map(row => ids.push(row[idProp]))
                 }
 
@@ -191,14 +191,14 @@ class User extends Person {
 
                 if (this.location !== 'US' && body.location !== 'US' && body.phone) body.phone = null
 
-                const [ result ] = await mysql.execute(query.main.update(body, { id: this.id }))
+                const [ result ] = await mysql.execute(query.main.update(body, { id: this.id || User.matchIdHash(this._id) }))
 
                 if (result.affectedRows) {
                     updated = true
 
                     if (['S', 'D'].includes(body.status))
                         for (const queryProp in query.jx)
-                            await mysql.execute(query.jx[queryProp].delete({ userId: this.id }))
+                            await mysql.execute(query.jx[queryProp].delete({ userId: this.id || User.matchIdHash(this._id) }))
 
                     if (!this.username && body.email && this.email !== data.email) {
                         const { formId } = (await mysql.execute(query.registration.select('formId', { match: { userId: this.id } })))[0][0]
@@ -207,7 +207,7 @@ class User extends Person {
                             this.invite(formId)
 
                             const [ result ] = await mysql.execute(query.registration.update({ invitedAt: Query.timeStamp }, {
-                                userId: this.id, formId,
+                                userId: this.id || User.matchIdHash(this._id), formId,
                             }))
                             if (!result.affectedRows) throw new Error('User Update Error: Failed to update registration timestamp')
                         }
@@ -234,10 +234,10 @@ class User extends Person {
                     update.deletedBy = session.user.id
                     update.deletedAt = Query.timeStamp
 
-                    const [ result ] = await mysql.execute(query.main.update(update, { id: this.id }))
+                    const [ result ] = await mysql.execute(query.main.update(update, { id: this.id || User.matchIdHash(this._id) }))
                     if (!result.affectedRows) return false
 
-                    const match = { userId: this.id }
+                    const match = { userId: this.id || User.matchIdHash(this._id) }
                     await mysql.execute(query.registration.delete(match))
                     await mysql.execute(query.passReset.delete(match))
                     await mysql.execute(query.tokens.delete(match))
@@ -293,7 +293,7 @@ class User extends Person {
             this.settings = async (action = 'fetch', data = {}) => {
                 if (!this.self) return
 
-                const match = { id: this.id }
+                const match = { id: this.id || User.matchIdHash(this._id) }
                 let settings = (await mysql.execute(query.main.select('settings', { match })))[0] || {}
 
                 if (action === 'fetch') return settings
@@ -344,7 +344,7 @@ class User extends Person {
                 const batch = [
                     {
                         table: query.jx.roles.table,
-                        match: { userId: this.id },
+                        match: { userId: this.id || User.matchIdHash(this._id) },
                     },
                     {
                         table: query.roles.table,
@@ -452,15 +452,13 @@ class User extends Person {
                 const fields = ['createdBy', 'createdAt', 'deletedBy', 'deletedAt', 'updateLog']
 
                 let log = (await mysql.execute(query.main.select(fields, {
-                    match: { id: this.id },
+                    match: { id: this.id || User.matchIdHash(this._id) },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
 
                 return log
             }
-
-
         }
     }
 
@@ -954,7 +952,6 @@ class Role {
         this.location = data.location
         this.name = data.name
         this.permissions = data.permissions
-        if (single) this.session = session
 
         this.expansion = {
             location: data.location ? User.list.location[data.location] : null,
@@ -963,6 +960,7 @@ class Role {
         }
 
         if (single && !hideRawId) {
+            this.session = session
 
 
             this.add = async (target, ids = []) => {
@@ -977,7 +975,7 @@ class Role {
                 const list = await Src.fetch(this.session, { ids })
 
                 list.map(item => data.push({
-                    roleId: this.id,
+                    roleId: this.id || Role.matchIdHash(this._id),
                     [idProp]: item.id,
                     createdBy: session.user.id,
                 }))
@@ -998,7 +996,7 @@ class Role {
                 const [ Src, idProp, queryInst ] = targets[target]
 
                 const ids = []
-                const [ rows ] = await mysql.execute(queryInst.select(idProp, { roleId: this.id }))
+                const [ rows ] = await mysql.execute(queryInst.select(idProp, { roleId: this.id || Role.matchIdHash(this._id) }))
 
                 rows.map(row => ids.push(row[idProp]))
 
@@ -1018,7 +1016,7 @@ class Role {
                 })
                 body.permissions = JSON.stringify(permissions)
 
-                const [ result ] = await mysql.execute(query.roles.update(body, { id: this.id }))
+                const [ result ] = await mysql.execute(query.roles.update(body, { id: this.id || Role.matchIdHash(this._id) }))
                 
                 return result.affectedRows > 0
             }
@@ -1032,7 +1030,7 @@ class Role {
                 if (!target) {
                     const log = await this.log()
 
-                    const [ result ] = await mysql.execute(query.roles.delete({ id: this.id }))
+                    const [ result ] = await mysql.execute(query.roles.delete({ id: this.id || Role.matchIdHash(this._id) }))
                     if (!result.affectedRows) return false
 
                     for (const prop in log) this[prop] = log[prop]
@@ -1054,15 +1052,13 @@ class Role {
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
 
                 let log = (await mysql.execute(query.roles.select(fields, {
-                    match: { id: this.id },
+                    match: { id: this.id || Role.matchIdHash(this._id) },
                 })))[0][0]
 
                 if (fields.includes(field)) log = log[field]
 
                 return log
             }
-
-
         }
     }
 

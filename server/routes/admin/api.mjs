@@ -53,7 +53,7 @@ router.post('/log/:env/:_id', User.mw.verify, User.mw.superAdminOnly, async (req
 
 
 
-/* USER */
+/* LIST */
 
 
 router.post('/users', User.mw.verify, async (req, res) => {
@@ -65,13 +65,79 @@ router.post('/users', User.mw.verify, async (req, res) => {
 })
 
 
+//? router.post('/roles/:roleCategory?', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+//     try {
+//         const { roleCategory } = req.params
+//         const catList = Company.list.category
+//         let category, error, data = []
+//         if (!roleCategory) category = 'def'
+//         else
+//             for (const key in catList) {
+//                 if (roleCategory != catList[key].path[1]) continue
+
+//                 category = key
+//                 break
+//             }
+
+//         if (!category) error = 'Error: Category could not be udentified'
+//         else data = await Role.fetch(res.session, { category }, { hideRawId })
+
+//         res.send({ error, data })
+//     } catch (err) {
+//         sendError.server(res, err, true)
+//     }
+// })
+
+
+router.post('/teams', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        res.send({ data: await Team.fetch(res.session, {}, { hideRawId }) })
+    } catch (err) {
+        sendError.server(res, err, true)
+    }
+})
+
+
+//? router.post('/companies', User.mw.verify, async (req, res) => {
+//     try {
+//         //! It may be necessary to apply filters when requested in branches other than admin
+//         const filter = {}
+
+//         const { user } = res.session
+//         if (!user.DS)
+//             filter.ids = await user.relIds(res.session, 'companies')
+
+//         res.send({ data: await Company.list(res.session, filter) })
+//     } catch (err) {
+//         sendError.server(res, err, true)
+//     }
+// })
+
+
+//? router.post('/company-owners', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+//     try {
+//         res.send({ data: await Owner.list(res.session) })
+//     } catch (err) {
+//         sendError.server(res, err, true)
+//     }
+// })
+
+
+
+
+
+
+/* USER */
+
+
 router.post('/user/:_id', User.mw.verify, async (req, res) => {
     try {
+        const { user: sessionUser } = res.session
         const { _id } = req.params
-        const { status } = res.session.user
-        const user = await User.fetch(res.session, { _id }, { hideRawId, hideSensitive: true })
 
-        if (!user || (user.status === 'D' && status !== 'D'))
+        const user = await User.fetch(res.session, { _id }, { hideRawId, hideSensitive: true })
+        if (!user) return res.send({ data: {}, error: 'API Error: User not found' })
+        if ((user.status === 'D' && sessionUser.status !== 'D') || (user.DS && ! sessionUser.DS))
             return res.send({ data: {}, error: 'Request Error: Immune User' })
 
         const roles = await user.fetch('roles')
@@ -85,16 +151,54 @@ router.post('/user/:_id', User.mw.verify, async (req, res) => {
 })
 
 
-//! router.post('/user/:_id/roles', User.mw.verify, async (req, res) => {
-//     try {
-//         const { _id } = req.params
-//         const user = await User.fetch(res.session, { _id })
+router.post('/user/:_id/relationships', User.mw.verify, async (req, res) => {
+    try {
+        const { user: sessionUser } = res.session
+        const { _id } = req.params
+        const user = await User.fetch(res.session, { _id })
 
-//         res.send({ data: await user.roles(res.session) })
-//     } catch (err) {
-//         sendError.server(res, err, true)
-//     }
-// })
+        res.send({ data: [] })
+    } catch (err) {
+        sendError.server(res, err, true)
+    }
+})
+
+
+router.post('/user/:_id/:target', User.mw.verify, async (req, res) => {
+    try {
+        const { user: sessionUser } = res.session
+        const { _id, target } = req.params
+
+        const user = await User.fetch(res.session, { _id }, { hideRawId, hideSensitive: true })
+        if (!user) return res.send({ data: {}, error: 'API Error: User not found' })
+        if ((user.status === 'D' && sessionUser.status !== 'D') || (user.DS && ! sessionUser.DS))
+            return res.send({ data: {}, error: 'Request Error: Immune User' })
+
+        //! ... reconsider
+        const [ Src, sortBy ] = { roles: [ Role, 'name' ], teams: [ Team, 'name' ], companies: [ Company, 'name' ] }[target]
+
+        const data = {
+            all: await Src.fetch(res.session, {}, { hideRawId }),
+            applied: await user.fetch(target, { hideRawId }),
+        }
+
+        if (!sessionUser.DS) {
+            const sessData = await sessionUser.fetch(target)
+
+            //! reduce data.all and data.applied to whatever session user has
+        }
+
+        data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
+
+        data.all = sortArrayByObjectKey(data.all, sortBy)
+        data.applied = sortArrayByObjectKey(data.applied, sortBy)
+        data.available = sortArrayByObjectKey(data.available, sortBy)
+
+        res.send({ data })
+    } catch (err) {
+        sendError.server(res, err, true)
+    }
+})
 
 
 router.post('/user/:_id/toggle-unscoped', User.mw.verify, async (req, res) => {
@@ -113,62 +217,8 @@ router.post('/user/:_id/toggle-unscoped', User.mw.verify, async (req, res) => {
 })
 
 
-router.post('/user/:_id/:target', User.mw.verify, async (req, res) => {
-    try {
-        const { _id, target } = req.params
-        const user = await User.fetch(res.session, { _id })
-        const [ Src, sortBy ] = { roles: [ Role, 'name' ], teams: [ Team, 'name' ], companies: [ Company, 'name' ] }[target]
 
-        const data = {
-            all: await Src.fetch(res.session, {}, { hideRawId }),
-            applied: await user.fetch(target, { hideRawId }),
-        }
-
-        if (!res.session.DS) {
-            const sessData = await res.session.user.fetch(target)
-
-            //! reduce data.all and data.applied to whatever session user has
-        }
-
-        data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
-
-        data.all = sortArrayByObjectKey(data.all, sortBy)
-        data.applied = sortArrayByObjectKey(data.applied, sortBy)
-        data.available = sortArrayByObjectKey(data.available, sortBy)
-
-        res.send({ data })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
-
-
-
-/* ROLES */
-
-
-router.post('/roles/:roleCategory?', User.mw.verify, async (req, res) => {
-    try {
-        const { roleCategory } = req.params
-        const catList = Company.list.category
-        let category, error, data = []
-        if (!roleCategory) category = 'def'
-        else
-            for (const key in catList) {
-                if (roleCategory != catList[key].path[1]) continue
-
-                category = key
-                break
-            }
-
-        if (!category) error = 'Error: Category could not be udentified'
-        else data = await Role.fetch(res.session, { category }, { hideRawId })
-
-        res.send({ error, data })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
+/* ROLE */
 
 
 router.post('/role/:_id', User.mw.verify, async (req, res) => {
@@ -183,69 +233,7 @@ router.post('/role/:_id', User.mw.verify, async (req, res) => {
 
 
 
-/* COMPANY */
-
-
-router.post('/companies', User.mw.verify, async (req, res) => {
-    try {
-        //! It may be necessary to apply filters when requested in branches other than admin
-        const filter = {}
-
-        const { user } = res.session
-        if (!user.DS)
-            filter.ids = await user.relIds(res.session, 'companies')
-
-        res.send({ data: await Company.list(res.session, filter) })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
-
-
-router.post('/company/:_id/:target', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        const { _id, target } = req.params
-        const company = await Company.data(res.session, { _id })
-        const companyTeams = await company.relationship(res.session, target)
-
-        res.send({ data: companyTeams })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
-
-
-router.post('/company-owners', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        res.send({ data: await Owner.list(res.session) })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
-
-
-router.post('/company-owner/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        const { _id } = req.params
-
-        res.send(await Owner.data(res.session, { _id }))
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
-
-
-
 /* TEAM */
-
-
-router.post('/teams', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        res.send({ data: await Team.fetch(res.session, {}, { hideRawId }) })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
 
 
 router.post('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
@@ -307,6 +295,34 @@ router.delete('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, 
 //         sendError.server(res, err, true)
 //     }
 // })
+
+
+
+/* COMPANY */
+
+
+router.post('/company/:_id/:target', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { _id, target } = req.params
+        const company = await Company.data(res.session, { _id })
+        const companyTeams = await company.relationship(res.session, target)
+
+        res.send({ data: companyTeams })
+    } catch (err) {
+        sendError.server(res, err, true)
+    }
+})
+
+
+router.post('/company-owner/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { _id } = req.params
+
+        res.send(await Owner.data(res.session, { _id }))
+    } catch (err) {
+        sendError.server(res, err, true)
+    }
+})
 
 
 
