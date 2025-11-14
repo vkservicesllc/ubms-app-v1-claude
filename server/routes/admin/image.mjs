@@ -5,12 +5,12 @@ const router = require('express').Router()
 
 /* Tools */
 import fs from 'fs'
-import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
+import User from '../../tools/core/user.mjs'
 import Company from '../../tools/core/company.mjs'
 
 
 
-router.get('/business/company/logo/:_id/:filename', User.verify, async (req, res) => {
+router.get('/business/company/logo/:_id/:filename', User.mw.verify, async (req, res) => {
     const { _id, filename } = req.params
     const company = await Company.data(res.session, { _id })
     const id = await company.id()

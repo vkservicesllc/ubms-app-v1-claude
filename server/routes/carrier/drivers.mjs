@@ -3,9 +3,10 @@ const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
 import moment from 'moment'
-import Person, { Relationship } from '../../../client/global/modules/tools/core/person.mjs'
+import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Geography from '../../../client/global/modules/tools/core/geography.mjs'
+import { Relationship } from '../../tools/core/individual.mjs'
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
@@ -53,7 +54,7 @@ const navItems = (permissions, DS, activeIdx) => {
 }
 
 
-router.get('/', User.verify, Team.verify, async (req, res) => {
+router.get('/', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const key = 'drivers'
         let { hbs } = res
@@ -82,7 +83,7 @@ router.get('/', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/files/application/:route?', User.verify, Team.verify, async (req, res) => {
+router.get('/files/application/:route?', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user } = res.session
         const { DS } = user
@@ -112,7 +113,7 @@ router.get('/files/application/:route?', User.verify, Team.verify, async (req, r
 })
 
 
-router.get('/pre-applications', User.verify, Team.verify, async (req, res) => {
+router.get('/pre-applications', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -138,7 +139,7 @@ router.get('/pre-applications', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/applications', User.verify, Team.verify, async (req, res) => {
+router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -225,7 +226,7 @@ router.get('/applications', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/applicants', User.verify, Team.verify, async (req, res) => {
+router.get('/applicants', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -250,12 +251,12 @@ router.get('/applicants', User.verify, Team.verify, async (req, res) => {
 
 
 router.get('/application/:formId/files/application', async (req, res, next) => {
-    const user = await User.verify(req, res)
+    const user = await User.mw.verify(req, res)
     if (!user) return res.send('Your session has expired, so you can no longer view this file.<br/>Please log in using another tab and refresh this page to regain access.')
 
     res.session.user = user
     next()
-}, Team.verify, async (req, res) => {
+}, Team.mw.verify, async (req, res) => {
     const { formId } = req.params
 
     try {
@@ -301,7 +302,7 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
 })
 
 
-router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, res) => {
+router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const aplUrl = '/drivers/applications'
         const { user, team } = res.session
@@ -755,7 +756,7 @@ router.get('/application/:formId/e-form', User.verify, Team.verify, async (req, 
 })
 
 
-router.get('/application/:formId/e-form/:target', User.verify, Team.verify, async (req, res) => {
+router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const aplUrl = '/drivers/applications'
         const { user, team } = res.session
@@ -888,7 +889,7 @@ router.get('/application/:formId/e-form/:target', User.verify, Team.verify, asyn
 })
 
 
-router.get('/previous-employments', User.verify, Team.verify, async (req, res) => {
+router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -914,7 +915,7 @@ router.get('/previous-employments', User.verify, Team.verify, async (req, res) =
 })
 
 
-router.get('/hired', User.verify, Team.verify, async (req, res) => {
+router.get('/hired', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -940,7 +941,7 @@ router.get('/hired', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/pay-agreements', User.verify, Team.verify, async (req, res) => {
+router.get('/pay-agreements', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -966,7 +967,7 @@ router.get('/pay-agreements', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/leaving', User.verify, Team.verify, async (req, res) => {
+router.get('/leaving', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -992,7 +993,7 @@ router.get('/leaving', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/former', User.verify, Team.verify, async (req, res) => {
+router.get('/former', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user

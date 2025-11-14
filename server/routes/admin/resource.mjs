@@ -1,7 +1,7 @@
 const router = require('express').Router()
 
 /* Tools */
-import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
+import User from '../../tools/core/user.mjs'
 import { permits } from '../../tools/core/carrier.mjs'
 
 /* Validators */
@@ -25,14 +25,14 @@ const validateUser = []
 const userFields = ['status', 'location', 'email', 'phone', 'firstName', 'lastName', 'alias', 'gender']
 userFields.map(prop => validateUser.push(UserForm[prop].validate()))
 
-router.post('/user', User.verify, UserMW.resetValidation, validateUser, validationCheck, UserMW.upsert)
-router.post('/user/modify/condition', User.verify, [ UserForm.condition.validate() ], validationCheck, UserMW.modifyCondition)
-router.post('/user/delete', User.verify, UserMW.delete)
-router.post('/user/reset', User.verify, UserMW.reset)
+router.post('/user', User.mw.verify, UserMW.resetValidation, validateUser, validationCheck, UserMW.upsert)
+router.post('/user/modify/condition', User.mw.verify, [ UserForm.condition.validate() ], validationCheck, UserMW.modifyCondition)
+router.post('/user/delete', User.mw.verify, UserMW.delete)
+router.post('/user/reset', User.mw.verify, UserMW.reset)
 
-router.post('/user/:_id/roles', User.verify, UserMW.updateRoles)
-router.post('/user/:_id/teams', User.verify, UserMW.updateTeams)
-router.post('/user/:_id/companies', User.verify, UserMW.updateCompanies)
+router.post('/user/:_id/roles', User.mw.verify, UserMW.updateRoles)
+router.post('/user/:_id/teams', User.mw.verify, UserMW.updateTeams)
+router.post('/user/:_id/companies', User.mw.verify, UserMW.updateCompanies)
 
 
 /* User Role Resource */
@@ -41,15 +41,15 @@ const validateRole = []
 const roleFields = ['roleName', 'roleLocation']
 roleFields.map(prop => validateRole.push(RoleForm[prop].validate()))
 
-router.post('/role/delete', User.verify, superAdminUserOnly, UserMW.deleteRole)
-router.post('/role/:category?', User.verify, superAdminUserOnly, validateRole, validationCheck, UserMW.upsertRole)
+router.post('/role/delete', User.mw.verify, User.mw.superAdminOnly, UserMW.deleteRole)
+router.post('/role/:category?', User.mw.verify, User.mw.superAdminOnly, validateRole, validationCheck, UserMW.upsertRole)
 
 
 
 /* Company Resource */
 
 const validateCompany = []
-const companyFields = ['catId', 'ein', 'duns', 'busName', 'coType', 'alias', 'website', 'since']
+const companyFields = ['category', 'ein', 'duns', 'busName', 'coType', 'alias', 'website', 'since']
 companyFields.map(prop => validateCompany.push(CompanyForm[prop].validate()))
 
 const validateCompanyAddress = []
@@ -63,23 +63,23 @@ const validateCompanyContacts = []
 const companyContactsFields = ['phone', 'fax', 'email']
 companyContactsFields.map(prop => validateCompanyContacts.push(CompanyForm[prop].validate()))
 
-router.post('/company/add', User.verify, superAdminUserOnly, validateCompany, validationCheck, CompanyMW.add)
-router.post('/company/:_id/modify', User.verify, superAdminUserOnly, validateCompany, validationCheck, CompanyMW.modify)
-router.post('/company/:_id/update', User.verify, superAdminUserOnly, CompanyMW.update) //! unfinished
-router.post('/company/:_id/delete', User.verify, superAdminUserOnly, CompanyMW.delete)
-router.post('/company/:_id/confirm', User.verify, superAdminUserOnly, CompanyMW.confirm)
+router.post('/company/add', User.mw.verify, User.mw.superAdminOnly, validateCompany, validationCheck, CompanyMW.add)
+router.post('/company/:_id/modify', User.mw.verify, User.mw.superAdminOnly, validateCompany, validationCheck, CompanyMW.modify)
+router.post('/company/:_id/update', User.mw.verify, User.mw.superAdminOnly, CompanyMW.update) //! unfinished
+router.post('/company/:_id/delete', User.mw.verify, User.mw.superAdminOnly, CompanyMW.delete)
+router.post('/company/:_id/confirm', User.mw.verify, User.mw.superAdminOnly, CompanyMW.confirm)
 
-router.post('/company/:_id/ownership', User.verify, superAdminUserOnly, CompanyMW.upsertOwnership)
-router.post('/company/:_id/ownership/update', User.verify, superAdminUserOnly, CompanyMW.updateOwnership) //! unfinished
+router.post('/company/:_id/ownership', User.mw.verify, User.mw.superAdminOnly, CompanyMW.upsertOwnership)
+router.post('/company/:_id/ownership/update', User.mw.verify, User.mw.superAdminOnly, CompanyMW.updateOwnership) //! unfinished
 
-router.post('/company/:_id/address', User.verify, superAdminUserOnly, validateCompanyAddress, validationCheck, CompanyMW.upsertAddress)
-router.post('/company/:_id/address/:type/update', User.verify, superAdminUserOnly, CompanyMW.updateAddress) //! unfinished
+router.post('/company/:_id/address', User.mw.verify, User.mw.superAdminOnly, validateCompanyAddress, validationCheck, CompanyMW.upsertAddress)
+router.post('/company/:_id/address/:type/update', User.mw.verify, User.mw.superAdminOnly, CompanyMW.updateAddress) //! unfinished
 
-router.post('/company/:_id/contacts', User.verify, superAdminUserOnly, validateCompanyContacts, validationCheck, CompanyMW.upsertContacts)
-router.post('/company/:_id/contacts/:type/update', User.verify, superAdminUserOnly, CompanyMW.updateContact) //! unfinished
+router.post('/company/:_id/contacts', User.mw.verify, User.mw.superAdminOnly, validateCompanyContacts, validationCheck, CompanyMW.upsertContacts)
+router.post('/company/:_id/contacts/:type/update', User.mw.verify, User.mw.superAdminOnly, CompanyMW.updateContact) //! unfinished
 
-// router.post('/company/:_id/teams', User.verify, superAdminUserOnly, CompanyMW.updateTeams)
-router.post('/company/:_id/users', User.verify, superAdminUserOnly, CompanyMW.updateUsers)
+// router.post('/company/:_id/teams', User.mw.verify, User.mw.superAdminOnly, CompanyMW.updateTeams)
+router.post('/company/:_id/users', User.mw.verify, User.mw.superAdminOnly, CompanyMW.updateUsers)
 
 
 
@@ -92,11 +92,11 @@ ownerFields.push('gender', 'dob', 'ssn')
 ownerFields.map(prop => validateOwner.push(OwnerForm[prop].validate()))
 ownerNameFields.map(prop => validateOwnerName.push(OwnerForm[prop].validate()))
 
-router.post('/company-owner', User.verify, superAdminUserOnly, validateOwner, validationCheck, CompanyMW.upsertOwner)
-router.post('/company-owner/update', User.verify, superAdminUserOnly, validateOwnerName, validationCheck, CompanyMW.updateOwner)
-router.post('/company-owner/delete', User.verify, superAdminUserOnly, CompanyMW.deleteOwner)
-router.post('/company-owner/phone', User.verify, superAdminUserOnly, CompanyMW.upsertOwnerPhone) //! unfinished
-router.post('/company-owner/phone/update', User.verify, superAdminUserOnly, CompanyMW.updateOwnerPhone) //! unfinished
+router.post('/company-owner', User.mw.verify, User.mw.superAdminOnly, validateOwner, validationCheck, CompanyMW.upsertOwner)
+router.post('/company-owner/update', User.mw.verify, User.mw.superAdminOnly, validateOwnerName, validationCheck, CompanyMW.updateOwner)
+router.post('/company-owner/delete', User.mw.verify, User.mw.superAdminOnly, CompanyMW.deleteOwner)
+router.post('/company-owner/phone', User.mw.verify, User.mw.superAdminOnly, CompanyMW.upsertOwnerPhone) //! unfinished
+router.post('/company-owner/phone/update', User.mw.verify, User.mw.superAdminOnly, CompanyMW.updateOwnerPhone) //! unfinished
 
 
 
@@ -107,8 +107,8 @@ const carrierFields = ['mc', 'usdot', 'ifta', 'scac', 'irp', 'efs', 'fleetOne', 
 Object.keys(permits).forEach(prop => carrierFields.push(`${prop}Permit`))
 carrierFields.map(prop => validateCarrier.push(CarrierForm[prop].validate()))
 
-router.post('/carrier/:_companyId', User.verify, superAdminUserOnly, validateCarrier, validationCheck, CarrierMW.upsert)
-router.post('/carrier/:_id/:target/update', User.verify, superAdminUserOnly) //! unfinished
+router.post('/carrier/:_companyId', User.mw.verify, User.mw.superAdminOnly, validateCarrier, validationCheck, CarrierMW.upsert)
+router.post('/carrier/:_id/:target/update', User.mw.verify, User.mw.superAdminOnly) //! unfinished
 
 
 
@@ -127,10 +127,10 @@ const teamProfileFields = [
 ]
 teamProfileFields.map(prop => validateTeamProfile.push(TeamForm[prop].validate()))
 
-router.post('/team', User.verify, superAdminUserOnly, validateTeam, validationCheck, TeamMW.upsert)
-router.post('/team/profile', User.verify, superAdminUserOnly, validateTeamProfile, validationCheck, TeamMW.upsertProfile)
-router.post('/team/settings', User.verify, superAdminUserOnly, TeamMW.upsertSettings)
-router.post('/team/delete', User.verify, superAdminUserOnly, TeamMW.delete) //! unused, deleted through api DELETE method
+router.post('/team', User.mw.verify, User.mw.superAdminOnly, validateTeam, validationCheck, TeamMW.upsert)
+router.post('/team/profile', User.mw.verify, User.mw.superAdminOnly, validateTeamProfile, validationCheck, TeamMW.upsertProfile)
+router.post('/team/settings', User.mw.verify, User.mw.superAdminOnly, TeamMW.upsertSettings)
+router.post('/team/delete', User.mw.verify, User.mw.superAdminOnly, TeamMW.delete) //! unused, deleted through api DELETE method
 
 
 

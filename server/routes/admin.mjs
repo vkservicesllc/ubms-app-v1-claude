@@ -74,10 +74,10 @@ router.use((req, res, next) => {
 })
 
 
-router.get('/init', User.initialize)
+// router.get('/init', User.initialize)
 
 
-router.get('/', login, User.verify, async (req, res) => {
+router.get('/', login, User.mw.verify, async (req, res) => {
     try {
         const key = 'dash'
         let { hbs } = res
@@ -90,7 +90,7 @@ router.get('/', login, User.verify, async (req, res) => {
 })
 
 
-router.get('/charts', User.verify, (req, res) => {
+router.get('/charts', User.mw.verify, (req, res) => {
     try {
         const key = 'charts'
         let { hbs } = res
@@ -103,7 +103,7 @@ router.get('/charts', User.verify, (req, res) => {
 })
 
 
-router.get('/settings', User.verify, (req, res) => {
+router.get('/settings', User.mw.verify, (req, res) => {
     try {
         const key = 'settings'
         let { hbs } = res

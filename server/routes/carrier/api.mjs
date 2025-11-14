@@ -9,7 +9,7 @@ import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils
 
 
 
-router.post('/session/team/:_id/switch', User.verify, async (req, res) => {
+router.post('/session/team/:_id/switch', User.mw.verify, async (req, res) => {
     try {
         let switched = false
         const { _id } = req.params
@@ -44,7 +44,7 @@ router.post('/login/validation', async (req, res) => {
 
 
 
-// router.post('/team/companies', User.verify, Team.verify, async (req, res) => {
+// router.post('/team/companies', User.mw.verify, Team.mw.verify, async (req, res) => {
 //     try {
 //         const { applied: companies } = (await res.session.team.data(res.session, 'companies')).companies
 
@@ -54,7 +54,7 @@ router.post('/login/validation', async (req, res) => {
 //     }
 // })
 
-router.post('/carriers', User.verify, Team.verify, (req, res) => {
+router.post('/carriers', User.mw.verify, Team.mw.verify, (req, res) => {
     try {
         res.send(res.session.companies)
     } catch (err) {
@@ -62,7 +62,7 @@ router.post('/carriers', User.verify, Team.verify, (req, res) => {
     }
 })
 
-router.post('/teams', User.verify, Team.verify, async (req, res) => {
+router.post('/teams', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const teams = await Team.list(res.session)
         let data = []
@@ -82,7 +82,7 @@ router.post('/teams', User.verify, Team.verify, async (req, res) => {
 
 
 
-router.post('/drivers/application/:_id/:target?', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/application/:_id/:target?', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { _id, target } = req.params
 
@@ -127,7 +127,7 @@ router.post('/drivers/application/:_id/:target?', User.verify, Team.verify, asyn
 })
 
 
-router.post('/drivers/applications/filters', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/applications/filters', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         // const settings = await res.session.user.settings(res.session)
         // const { teamCompanies } = settings?.carrier || {}
@@ -147,7 +147,7 @@ router.post('/drivers/applications/filters', User.verify, Team.verify, async (re
 })
 
 
-router.post('/drivers/applications/prev-employers', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/applications/prev-employers', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const _teamId = res.session?.team?._id
         let data = await Employment.list(res.session, { condition: 'c', _teamId })
@@ -160,7 +160,7 @@ router.post('/drivers/applications/prev-employers', User.verify, Team.verify, as
     }
 })
 
-router.post('/drivers/applications/prev-employer/:_id', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/applications/prev-employer/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
         res.send({ data: await Employment.data(res.session, { _id }) })
@@ -169,7 +169,7 @@ router.post('/drivers/applications/prev-employer/:_id', User.verify, Team.verify
     }
 })
 
-router.post('/drivers/applications/source/:source', User.verify, Team.verify, (req, res) => {
+router.post('/drivers/applications/source/:source', User.mw.verify, Team.mw.verify, (req, res) => {
     try {
         const { source } = req.params
         let data
@@ -189,7 +189,7 @@ router.post('/drivers/applications/source/:source', User.verify, Team.verify, (r
     }
 })
 
-router.post('/drivers/applications/:source/:_id', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/applications/:source/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { source } = req.params
         const { _id } = req.params
@@ -211,10 +211,10 @@ router.post('/drivers/applications/:source/:_id', User.verify, Team.verify, asyn
 })
 
 
-router.post('/drivers/applications/:archived?', User.verify, Team.verify, Application.dtList)
+// router.post('/drivers/applications/:archived?', User.mw.verify, Team.mw.verify, Application.dtList)
 
 
-router.post('/drivers/charts', User.verify, Team.verify, async (req, res) => {
+router.post('/drivers/charts', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         let team, teamId
         if (req.session.team) {
@@ -229,11 +229,11 @@ router.post('/drivers/charts', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.post('/drivers/:blacklisted?', User.verify, Team.verify, Driver.dtList)
+// router.post('/drivers/:blacklisted?', User.mw.verify, Team.mw.verify, Driver.dtList)
 
 
 
-router.post('/resource/drivers/applications/:source', User.verify, Team.verify, async (req, res) => {
+router.post('/resource/drivers/applications/:source', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { source } = req.params
         const { _id } = req.body

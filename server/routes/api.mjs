@@ -36,19 +36,19 @@ export const sessionDetails = (req, res) => {
 }
 
 
-router.post('/login', User.login)
+router.post('/login', User.mw.login)
 
 
-router.get('/session/keep-alive', User.verify, (req, res) => {
+router.get('/session/keep-alive', User.mw.verify, (req, res) => {
     if (req.session) req.session.touch()
     return res.sendStatus(204)
 })
 
 
-router.post('/session/:prop', User.verify, sessionDetails)
+router.post('/session/:prop', User.mw.verify, sessionDetails)
 
 
-router.post('/unique/original/:env', User.verify, async (req, res) => {
+router.post('/unique/original/:env', User.mw.verify, async (req, res) => {
     try {
         const { env } = req.params
         const { _id } = req.body
@@ -73,7 +73,7 @@ router.post('/unique/original/:env', User.verify, async (req, res) => {
 })
 
 
-router.post('/unique/:env', User.verify, async (req, res) => {
+router.post('/unique/:env', User.mw.verify, async (req, res) => {
     try {
         const response = { unique: true }
         const { env } = req.params
@@ -90,7 +90,7 @@ router.post('/unique/:env', User.verify, async (req, res) => {
 })
 
 
-router.post('/source/:source/:_id?', User.verify, async (req, res) => {
+router.post('/source/:source/:_id?', User.mw.verify, async (req, res) => {
     const { filter, self, call } = req.query
     const { source } = req.params
     let { _id } = req.params

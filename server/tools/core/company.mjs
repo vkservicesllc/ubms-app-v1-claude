@@ -15,7 +15,7 @@ import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Team from './team.mjs'
 import User, { query as userQuery } from './user.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
-import { sessionError } from './user.mjs'
+// import { sessionError } from './user.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { encrypt } from '../utils/crypto.mjs'
@@ -250,7 +250,7 @@ class Company {
 
                 if (action && ids) {
                     let modified = false,
-                        error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                        error = null // null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                     if (error) return { modified, error }
 
                     if (!Array.isArray(ids)) ids = [ ids ]
@@ -389,7 +389,7 @@ class Company {
 
             //     if (action && teamIds) {
             //         let modified = false,
-            //             error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+            //             error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
             //         if (error) return { modified, error }
 
             //         if (!Array.isArray(teamIds)) teamIds = [ teamIds ]
@@ -471,7 +471,7 @@ class Company {
 
             this.modify = async (session, target, data) => {
                 let modified = false,
-                    error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                    error = null // null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { modified, error }
 
                 const { user } = session
@@ -541,7 +541,7 @@ class Company {
 
 
             this.update = async (session, target, data) => {
-                let updated = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                let updated = false, error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { updated, error }
 
                 data = processData(data)
@@ -559,7 +559,7 @@ class Company {
 
 
             this.delete = async (session, target = targets[0], filter = {}) => {
-                let deleted = false, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                let deleted = false, error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { deleted, error }
 
                 const id = await this.id()
@@ -627,7 +627,7 @@ class Company {
 
 
             this.confirm = async session => {
-                let { confirmed } = this, error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                let { confirmed } = this, error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { confirmed, error }
 
                 if (!confirmed) {
@@ -717,7 +717,7 @@ class Company {
 
     static create = async (session, data) => {
         let created = false
-        const error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+        const error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
         if (error) return { created, error }
 
         data = processData(data)
@@ -988,7 +988,7 @@ class Owner extends Individual {
 
             this.modify = async (session, data) => {
                 let modified = false
-                const error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                const error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { modified, error }
 
                 const { _id, _personId } = this
@@ -1005,7 +1005,7 @@ class Owner extends Individual {
 
             this.update = async (session, data) => {
                 let updated = false
-                const error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                const error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { updated, error }
 
                 const { _id, _personId } = this
@@ -1022,7 +1022,7 @@ class Owner extends Individual {
 
             this.delete = async session => {
                 let deleted = false,
-                    error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                    error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { deleted, error }
 
                 try {
@@ -1076,7 +1076,7 @@ class Owner extends Individual {
 
     static create = async (session, data) => {
         let created = false
-        const error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+        const error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
         if (error) return { created, error }
 
         const result = await Individual.create(session, data)

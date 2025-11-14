@@ -6,7 +6,7 @@ import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Tools */
 import Company, { query as companyQuery } from './company.mjs'
-import { sessionError } from './user.mjs'
+// import { sessionError } from './user.mjs'
 import Query, { hash, matchHash }  from '../utils/query.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { processData } from '../utils/database.mjs'
@@ -113,7 +113,7 @@ class Carrier extends Company {
 
             this.initialize = async (session, data) => {
                 let initialized = false,
-                    error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                    error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { initialized, error }
 
                 data = {
@@ -167,7 +167,7 @@ class Carrier extends Company {
 
             this.modify = async (session, data) => {
                 let modified = false,
-                    error = sessionError(session, { status: 'DS', branches: [ 'admin' ] })
+                    error = null // sessionError(session, { status: 'DS', branches: [ 'admin' ] })
                 if (error) return { modified, error }
 
                 data = {

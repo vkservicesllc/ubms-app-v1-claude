@@ -39,7 +39,7 @@ const createCategoryForm = (selector, props = {}) => {
     return createForm({
         selector,
         target: 'category',
-        name: 'catId',
+        name: 'category',
         emptyOpt,
         required,
         label: 'Category',
@@ -112,7 +112,7 @@ class CompanyForm {
 
     static id = createIdForm({ selector: companySelector })
     static deleteId = createIdForm({ selector: companySelector, target: 'deleteId' })
-    static catId = createCategoryForm(companySelector)
+    static category = createCategoryForm(companySelector)
     static since = createSinceForm({
         selector: companySelector,
         label: 'Launch Date',

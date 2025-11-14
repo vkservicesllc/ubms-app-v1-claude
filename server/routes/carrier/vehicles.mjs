@@ -10,7 +10,7 @@ import { navBuilder } from './tools.mjs'
 
 
 
-router.get('/', User.verify, Team.verify, async (req, res) => {
+router.get('/', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const key = 'vehicles'
         let { hbs } = res

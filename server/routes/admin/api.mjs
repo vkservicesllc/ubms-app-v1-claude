@@ -2,7 +2,7 @@ const router = require('express').Router()
 const throwErr = require('../../tools/utils/error').api
 
 /* Tools */
-import User, { Role, superAdminUserOnly, developerOnly, adminBranchOnly } from '../../tools/core/user.mjs'
+import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Company, { Owner } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
@@ -10,7 +10,7 @@ import { capitalizeFirst } from '../../../client/global/modules/tools/utils/stri
 
 
 
-router.post('/log/:env/:_id', User.verify, superAdminUserOnly, async (req, res) => {
+router.post('/log/:env/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { env, _id } = req.params
         let log
@@ -31,7 +31,7 @@ router.post('/log/:env/:_id', User.verify, superAdminUserOnly, async (req, res) 
 })
 
 
-router.post('/flush/:env/:_id/:target?', User.verify, developerOnly, async (req, res) => {
+router.post('/flush/:env/:_id/:target?', User.mw.verify, User.mw.developerOnly, async (req, res) => {
     try {
         const { env, _id, target } = req.params
         let success = false
@@ -52,7 +52,7 @@ router.post('/flush/:env/:_id/:target?', User.verify, developerOnly, async (req,
 /* USER */
 
 
-router.post('/users', User.verify, async (req, res) => {
+router.post('/users', User.mw.verify, async (req, res) => {
     try {
         res.send({ data: await User.list(res.session) })
     } catch (err) {
@@ -61,7 +61,7 @@ router.post('/users', User.verify, async (req, res) => {
 })
 
 
-router.post('/user/:_id', User.verify, async (req, res) => {
+router.post('/user/:_id', User.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
         const { count, countFilter } = req.query
@@ -89,7 +89,7 @@ router.post('/user/:_id', User.verify, async (req, res) => {
 })
 
 
-router.post('/user/:_id/roles', User.verify, async (req, res) => {
+router.post('/user/:_id/roles', User.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
         const user = await User.data(res.session, { _id })
@@ -101,7 +101,7 @@ router.post('/user/:_id/roles', User.verify, async (req, res) => {
 })
 
 
-router.post('/user/:_id/toggle-unscoped', User.verify, adminBranchOnly, async (req, res) => {
+router.post('/user/:_id/toggle-unscoped', User.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
         let { unscoped } = req.body
@@ -117,7 +117,7 @@ router.post('/user/:_id/toggle-unscoped', User.verify, adminBranchOnly, async (r
 })
 
 
-router.post('/user/:_id/:target', User.verify, async (req, res) => {
+router.post('/user/:_id/:target', User.mw.verify, async (req, res) => {
     try {
         const { _id, target } = req.params
         const user = await User.data(res.session, { _id })
@@ -134,7 +134,7 @@ router.post('/user/:_id/:target', User.verify, async (req, res) => {
 /* ROLES */
 
 
-router.post('/roles/:category?', User.verify, async (req, res) => {
+router.post('/roles/:category?', User.mw.verify, async (req, res) => {
     try {
         const { category } = req.params
         const catList = Company.categoryList
@@ -158,7 +158,7 @@ router.post('/roles/:category?', User.verify, async (req, res) => {
 })
 
 
-router.post('/role/:_id', User.verify, async (req, res) => {
+router.post('/role/:_id', User.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
 
@@ -173,7 +173,7 @@ router.post('/role/:_id', User.verify, async (req, res) => {
 /* COMPANY */
 
 
-router.post('/companies', User.verify, async (req, res) => {
+router.post('/companies', User.mw.verify, async (req, res) => {
     try {
         //! It may be necessary to apply filters when requested in branches other than admin
         const filter = {}
@@ -189,7 +189,7 @@ router.post('/companies', User.verify, async (req, res) => {
 })
 
 
-router.post('/company/:_id/:target', User.verify, superAdminUserOnly, async (req, res) => {
+router.post('/company/:_id/:target', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { _id, target } = req.params
         const company = await Company.data(res.session, { _id })
@@ -202,7 +202,7 @@ router.post('/company/:_id/:target', User.verify, superAdminUserOnly, async (req
 })
 
 
-router.post('/company-owners', User.verify, superAdminUserOnly, async (req, res) => {
+router.post('/company-owners', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         res.send({ data: await Owner.list(res.session) })
     } catch (err) {
@@ -211,7 +211,7 @@ router.post('/company-owners', User.verify, superAdminUserOnly, async (req, res)
 })
 
 
-router.post('/company-owner/:_id', User.verify, superAdminUserOnly, async (req, res) => {
+router.post('/company-owner/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { _id } = req.params
 
@@ -226,7 +226,7 @@ router.post('/company-owner/:_id', User.verify, superAdminUserOnly, async (req, 
 /* TEAM */
 
 
-router.post('/teams', User.verify, superAdminUserOnly, async (req, res) => {
+router.post('/teams', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         res.send({ data: await Team.list(res.session) })
     } catch (err) {
@@ -235,7 +235,7 @@ router.post('/teams', User.verify, superAdminUserOnly, async (req, res) => {
 })
 
 
-router.post('/team/:_id', User.verify, superAdminUserOnly, async (req, res) => {
+router.post('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { _id } = req.params
 
@@ -246,7 +246,7 @@ router.post('/team/:_id', User.verify, superAdminUserOnly, async (req, res) => {
 })
 
 
-router.delete('/team/:_id', User.verify, superAdminUserOnly, async (req, res) => {
+router.delete('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         let deleted = false, error
         const { _id } = req.params
@@ -266,7 +266,7 @@ router.delete('/team/:_id', User.verify, superAdminUserOnly, async (req, res) =>
 })
 
 
-router.post('/team/:_id/:relType', User.verify, superAdminUserOnly, async (req, res) => {
+router.post('/team/:_id/:relType', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         let error
         const { _id, relType } = req.params
@@ -281,7 +281,7 @@ router.post('/team/:_id/:relType', User.verify, superAdminUserOnly, async (req, 
 })
 
 
-router.post('/team/:_id/:relType/:_relId', User.verify, superAdminUserOnly, async (req, res) => {
+router.post('/team/:_id/:relType/:_relId', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { _id, relType, _relId } = req.params
         const { action } = req.body

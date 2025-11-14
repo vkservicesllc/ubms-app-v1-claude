@@ -2,11 +2,11 @@ const router = require('express').Router()
 const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
-import User, { developerOnly } from '../../tools/core/user.mjs'
+import User from '../../tools/core/user.mjs'
 
 
 
-router.get('/data', User.verify, developerOnly, (req, res) => {
+router.get('/data', User.mw.verify, User.mw.developerOnly, (req, res) => {
     try {
         let { hbs } = res
         hbs = hbs.set('devData')
@@ -18,7 +18,7 @@ router.get('/data', User.verify, developerOnly, (req, res) => {
 })
 
 
-router.get('/logs', User.verify, developerOnly, (req, res) => {
+router.get('/logs', User.mw.verify, User.mw.developerOnly, (req, res) => {
     try {
         let { hbs } = res
         hbs = hbs.set('devLogs')

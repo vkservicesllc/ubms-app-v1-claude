@@ -30,7 +30,7 @@ applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(Applicat
 
 /* User Resource */
 
-router.post('/user/:_id/app/settings', User.verify, async (req, res) => {
+router.post('/user/:_id/app/settings', User.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
         if (_id != res.session.user._id)
@@ -49,7 +49,7 @@ router.post('/user/:_id/app/settings', User.verify, async (req, res) => {
 
 /* Driver Application Resource */
 
-router.post('/driver/application/new', User.verify, Team.verify, async (req, res, next) => {
+router.post('/driver/application/new', User.mw.verify, Team.mw.verify, async (req, res, next) => {
     try {
         const { user } = res.session
         const { DS } = user
@@ -101,7 +101,7 @@ router.post('/driver/application/new', User.verify, Team.verify, async (req, res
     }
 })
 
-router.post('/driver/application/delete', User.verify, Team.verify, async (req, res) => {
+router.post('/driver/application/delete', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user } = res.session
         const { DS } = user
@@ -121,7 +121,7 @@ router.post('/driver/application/delete', User.verify, Team.verify, async (req, 
     }
 })
 
-router.post('/driver/application/prev-employer/upsert', User.verify, Team.verify,
+router.post('/driver/application/prev-employer/upsert', User.mw.verify, Team.mw.verify,
     validateApplicantEmployers, validationCheck,
     async (req, res) => {
         try {
@@ -155,7 +155,7 @@ router.post('/driver/application/prev-employer/upsert', User.verify, Team.verify
         }
 })
 
-router.post('/driver/application/prev-employer/delete', User.verify, Team.verify, async (req, res) => {
+router.post('/driver/application/prev-employer/delete', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { _id } = req.body
         const employment = await Employment.data(res.session, { _id })
@@ -170,7 +170,7 @@ router.post('/driver/application/prev-employer/delete', User.verify, Team.verify
     }
 })
 
-router.post('/driver/application/:formId/edit/:step', User.verify, Team.verify,
+router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.verify,
     dynamicApplicantValidator.applications, //! validationCheck, // validationCheck returns error when checkbox is unchecked
     async (req, res) => {
         try {
@@ -196,7 +196,7 @@ router.post('/driver/application/:formId/edit/:step', User.verify, Team.verify,
     }
 )
 
-router.post('/driver/application/:formId/delete/:target', User.verify, Team.verify, async (req, res) => {
+router.post('/driver/application/:formId/delete/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user } = res.session
         const { DS } = user

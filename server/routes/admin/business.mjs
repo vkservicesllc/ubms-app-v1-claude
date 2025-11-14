@@ -2,7 +2,7 @@ const router = require('express').Router()
 const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
-import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
+import User from '../../tools/core/user.mjs'
 
 /* Forms */
 import { updateFormOptions } from '../../tools/form/builder.mjs'
@@ -16,7 +16,7 @@ import { labelClass, labelClassRequired } from './assets.mjs'
 
 
 
-router.get('/companies', User.verify, (req, res) => {
+router.get('/companies', User.mw.verify, (req, res) => {
     try {
         const key = 'companies'
         let { hbs } = res
@@ -29,13 +29,13 @@ router.get('/companies', User.verify, (req, res) => {
 })
 
 
-router.get('/company/:_id', User.verify, superAdminUserOnly, companyById)
+router.get('/company/:_id', User.mw.verify, User.mw.superAdminOnly, companyById)
 
 
-router.get('/:category/:route', User.verify, superAdminUserOnly, companyByCategoryAndRoute)
+router.get('/:category/:route', User.mw.verify, User.mw.superAdminOnly, companyByCategoryAndRoute)
 
 
-router.get('/company-owners', User.verify, (req, res) => {
+router.get('/company-owners', User.mw.verify, (req, res) => {
     try {
         const key = 'owners'
         let { hbs } = res
@@ -62,7 +62,7 @@ router.get('/company-owners', User.verify, (req, res) => {
 })
 
 
-router.get('/branches', User.verify, superAdminUserOnly, (req, res) => {
+router.get('/branches', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
     try {
         const key = 'branches'
         let { hbs } = res

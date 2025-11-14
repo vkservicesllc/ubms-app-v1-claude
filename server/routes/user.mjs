@@ -94,7 +94,7 @@ router.use((req, res, next) => {
 
 router.get('/', async (req, res) => {
     try {
-        const verified = await User.verify(req, res)
+        const verified = await User.mw.verify(req, res)
         if (verified) return res.redirect('/profile')
 
         res.redirect('/login')
@@ -106,7 +106,7 @@ router.get('/', async (req, res) => {
 
 router.get('/login', async (req, res) => {
     try {
-        const verified = await User.verify(req, res)
+        const verified = await User.mw.verify(req, res)
         if (verified) return res.redirect('/profile')
 
         const key = 'login'
@@ -131,7 +131,7 @@ router.get('/login', async (req, res) => {
 })
 
 
-router.get('/profile', User.verify, (req, res) => {
+router.get('/profile', User.mw.verify, (req, res) => {
     try {
         const key = 'profile'
         let { hbs } = res
@@ -155,7 +155,7 @@ router.get('/profile', User.verify, (req, res) => {
 })
 
 
-router.post('/profile', User.verify, [
+router.post('/profile', User.mw.verify, [
     UserForm.firstName.validate(),
     UserForm.lastName.validate(),
     UserForm.alias.validate(),
@@ -172,7 +172,7 @@ router.post('/profile', User.verify, [
 })
 
 
-router.get('/account', User.verify, (req, res) => {
+router.get('/account', User.mw.verify, (req, res) => {
     try {
         const key = 'account'
         let { hbs } = res
@@ -199,7 +199,7 @@ router.get('/account', User.verify, (req, res) => {
 })
 
 
-router.post('/account', User.verify, [
+router.post('/account', User.mw.verify, [
     UserForm.newUsername.validate(),
     UserForm.email.validate(),
     UserForm.phone.validate(),
@@ -215,7 +215,7 @@ router.post('/account', User.verify, [
 })
 
 
-router.get('/security', User.verify, (req, res) => {
+router.get('/security', User.mw.verify, (req, res) => {
     try {
         const key = 'security'
         let { hbs } = res
@@ -236,7 +236,7 @@ router.get('/security', User.verify, (req, res) => {
 })
 
 
-router.post('/security', User.verify, [
+router.post('/security', User.mw.verify, [
     UserForm.password.validate(),
     UserForm.createPassword.validate(),
 ], validationCheck, async(req, res) => {
@@ -248,7 +248,7 @@ router.post('/security', User.verify, [
 })
 
 
-router.get('/apps', User.verify, (req, res) => {
+router.get('/apps', User.mw.verify, (req, res) => {
     try {
         const key = 'apps'
         let { hbs } = res
@@ -375,10 +375,10 @@ router.get('/register/:_id', async (req, res) => {
 })
 
 
-router.post('/register', [
-    UserForm.newUsername.validate(),
-    UserForm.createPassword.validate(),
-], validationCheck, User.register)
+// router.post('/register', [
+//     UserForm.newUsername.validate(),
+//     UserForm.createPassword.validate(),
+// ], validationCheck, User.register)
 
 
 router.get('/pass-reset/:_id', async (req, res) => {
@@ -419,9 +419,9 @@ router.get('/pass-reset/:_id', async (req, res) => {
 })
 
 
-router.post('/pass-reset', [
-    UserForm.createPassword.validate(),
-], validationCheck, User.reset)
+// router.post('/pass-reset', [
+//     UserForm.createPassword.validate(),
+// ], validationCheck, User.reset)
 
 
 

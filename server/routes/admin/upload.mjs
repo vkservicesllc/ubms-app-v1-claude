@@ -2,7 +2,7 @@ const router = require('express').Router()
 
 /* Tools */
 import moment from 'moment'
-import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
+import User from '../../tools/core/user.mjs'
 import Company from '../../tools/core/company.mjs'
 import uploader from '../../tools/utils/multer.mjs'
 
@@ -14,7 +14,7 @@ const upload = {
 
 
 
-router.post('/business/company/logo/:_id', User.verify, superAdminUserOnly, async (req, res, next) => {
+router.post('/business/company/logo/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res, next) => {
     const { _id } = req.params
     const { since } = req.query
 

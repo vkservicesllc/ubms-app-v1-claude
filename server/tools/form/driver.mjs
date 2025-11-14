@@ -22,7 +22,7 @@ import { createBusNameForm, createEinForm } from './company.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
-import Driver, { Application } from '../core/driver.mjs'
+import Driver, { Application, Citation, Accident } from '../core/driver.mjs'
 import { Truck, Van } from '../core/vehicle.mjs'
 import Geography from '../../../client/global/modules/tools/core/geography.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
@@ -253,7 +253,7 @@ class ApplicationForm {
         target: 'experience',
         type: 'select',
         name: 'experience',
-        data: Application.experienceList,
+        data: Driver.list.experience,
         emptyOpt,
         label: 'Recognized Experience',
         validator: {
@@ -428,7 +428,7 @@ class ApplicationForm {
         target: 'status',
         type: 'select/radio',
         name: 'legalStatus',
-        data: Application.legalStatusList,
+        data: Application.list.legalStatus,
         keys: [ 'citizen', 'resident', 'authorized' ],
         required,
         disabled,
@@ -628,7 +628,7 @@ class ApplicationForm {
         group: 'citReason',
         type: 'select',
         name: 'violation[]',
-        data: Application.violationList,
+        data: Citation.list.violation,
         emptyOpt,
         required,
         // disabled,
@@ -682,7 +682,7 @@ class ApplicationForm {
         group: 'accType',
         type: 'select',
         name: 'collision[]',
-        data: Application.accidentList,
+        data: Accident.list.collision,
         emptyOpt,
         required: true,
         // disabled,
@@ -784,7 +784,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'straightExp',
         type: 'checkbox',
-        data: Application.vehicleList.straight,
+        data: Application.list.vehicle.straight,
         name: 'vehicles[straight]',
         label: 'Straight Truck',
     })
@@ -794,7 +794,7 @@ class ApplicationForm {
         target: 'semiExp',
         group: 'semiExp',
         type: 'checkbox',
-        data: Application.vehicleList.semi,
+        data: Application.list.vehicle.semi,
         name: 'vehicles[semi]',
         label: 'Semi Tractor/Trailer',
     })
@@ -911,7 +911,7 @@ class ApplicationForm {
         group: 'cdlSchool',
         type: 'select',
         name: 'duration',
-        data: Application.schoolDurationList,
+        data: Application.list.schoolDuration,
         emptyOpt,
         required,
         disabled,
@@ -1132,7 +1132,7 @@ class ApplicationForm {
         group: 'haulRegion',
         type: 'checkbox',
         name: 'haulRegion',
-        data: Application.haulRegionList,
+        data: Application.list.haulRegion,
         // required,
         label: 'Hauling Region',
     })
@@ -1143,7 +1143,7 @@ class ApplicationForm {
         group: 'equipmentType',
         type: 'checkbox',
         name: 'equipment',
-        data: Application.vehicleList.semi,
+        data: Application.list.vehicle.semi,
         // required,
         label: 'Equipment Type',
     })
@@ -1154,7 +1154,7 @@ class ApplicationForm {
         group: 'startPref',
         type: 'select/radio',
         name: 'startPref',
-        data: Application.startPrefList,
+        data: Application.list.startPref,
         keys: ['zero', 'one', 'two', 'three', 'four'],
         emptyOpt,
         required,

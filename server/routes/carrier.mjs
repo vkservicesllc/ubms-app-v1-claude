@@ -153,7 +153,7 @@ router.get('/', async (req, res, next) => {
     } catch (err) {
         throwErr.server(res, null, err)
     }
-}, User.verify, async (req, res) => {
+}, User.mw.verify, async (req, res) => {
     try {
         const { user } = res.session
         const { team } = req.session
@@ -193,7 +193,7 @@ router.get('/', async (req, res, next) => {
 })
 
 
-router.post('/session/team/enter', User.verify, async (req, res) => {
+router.post('/session/team/enter', User.mw.verify, async (req, res) => {
     const { _id } = req.body
     const team = await Team.data(res.session, { _id })
 
@@ -203,14 +203,14 @@ router.post('/session/team/enter', User.verify, async (req, res) => {
 })
 
 
-router.post('/session/team/exit', User.verify, (req, res) => {
+router.post('/session/team/exit', User.mw.verify, (req, res) => {
     if (req.session.team) delete req.session.team
 
     res.redirect('/')
 })
 
 
-router.get('/dashboard', User.verify, Team.verify, async (req, res) => {
+router.get('/dashboard', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const key = 'dash'
         let { hbs } = res
@@ -226,7 +226,7 @@ router.get('/dashboard', User.verify, Team.verify, async (req, res) => {
 })
 
 
-router.get('/settings', User.verify, Team.verify, async (req, res) => {
+router.get('/settings', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const key = 'settings'
         let { hbs } = res

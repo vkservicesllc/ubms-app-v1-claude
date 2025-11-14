@@ -2,7 +2,7 @@ const router = require('express').Router()
 const throwErr = require('../../tools/utils/error').data
 
 /* Tools */
-import User, { superAdminUserOnly } from '../../tools/core/user.mjs'
+import User from '../../tools/core/user.mjs'
 import permissions, { html as roleHtml } from '../../tools/core/user/permissions.mjs'
 import carrierPermissions from '../../tools/core/user/permissions.carrier.mjs'
 import { respond404 } from '../../tools/utils/response.mjs'
@@ -20,7 +20,7 @@ import { labelClass, labelClassRequired } from './assets.mjs'
 
 
 
-router.get('/domains', User.verify, superAdminUserOnly, (req, res) => {
+router.get('/domains', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
     try {
         const key = 'domains'
         let { hbs } = res
@@ -33,7 +33,7 @@ router.get('/domains', User.verify, superAdminUserOnly, (req, res) => {
 })
 
 
-router.get('/users', User.verify, (req, res) => {
+router.get('/users', User.mw.verify, (req, res) => {
     try {
         const key = 'users'
         let { hbs } = res
@@ -73,7 +73,7 @@ router.get('/users', User.verify, (req, res) => {
 })
 
 
-router.get('/user/:identifier', User.verify, async (req, res) => {
+router.get('/user/:identifier', User.mw.verify, async (req, res) => {
     try {
         const key = 'user'
         let { hbs } = res
@@ -128,7 +128,7 @@ router.get('/user/:identifier', User.verify, async (req, res) => {
 })
 
 
-router.get('/teams', User.verify, superAdminUserOnly, (req, res) => {
+router.get('/teams', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
     try {
         const key = 'teams'
         let { hbs } = res

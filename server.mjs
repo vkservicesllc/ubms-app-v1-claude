@@ -132,9 +132,9 @@ export default branch => {
 
     server.get('/*.map', (req, res) => res.sendStatus(204))
     //? server.get(/.*\.map$/, (req, res) => res.sendStatus(204))
-    server.post(loginUrl, validateLocalAuth, validationCheck, UserSrc.login)
-    server.post(sessionUrl, validateSession, validationCheck, UserSrc.session)
-    server.get(logoutUrl, UserSrc.logout)
+    server.post(loginUrl, validateLocalAuth, validationCheck, UserSrc.mw.login)
+    server.post(sessionUrl, validateSession, validationCheck, UserSrc.mw.session)
+    server.get(logoutUrl, UserSrc.mw.logout)
 
     if (route) server.use(route)
     if (routes && routes.length)

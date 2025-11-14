@@ -4,75 +4,24 @@ import { formSelect } from '../utils/html/form.mjs'
 
 
 class Person {
-    constructor(data = {}) {
-        if (data?.firstName && data?.lastName) {
+    constructor(data) {
+        if (!data?.firstName || !data?.lastName) throw new Error('Invalid Person Data')
 
-            this.sex = data.sex !== undefined ? data.sex : data.gender
-            if (typeof this.sex === 'string') {
-                this.sex = this.sex.toLowerCase()
-                if (!['male', 'female', 'm', 'f', '1', '0'].includes(this.sex))
-                    this.sex = null
-            }
-            switch (this.sex) {
-                case 'male':
-                case 'm':
-                case '1':
-                case 1:
-                case true:
-                    this.sex = 1
-                    this.gender = [ 'M', 'Male' ]
-                    break
-                case 'female':
-                case 'f':
-                case '0':
-                case 0:
-                case false:
-                    this.sex = 0
-                    this.gender = [ 'F', 'Female' ]
-                    break
-                default:
-                    this.sex = null
-                    this.gender = null
-            }
+        const sexInt = [0, 1].includes(data.sex)
 
-            this.prefix = data.prefix || data.pfx || null
-            this.firstName = data.firstName || data.fname
-            this.middleName = data.middleName || data.mname || null
-            this.lastName = data.lastName || data.lname
-            this.suffix = data.suffix || data.sfx || null
-            this.alias = data.alias || null
-
-            this.dob = data.dob || null
-            this.age = this.dob ? calculateYearAge(this.dob) : null
+        this.prefix = data.prefix || data.pfx || null
+        this.firstName = data.firstName || data.fname
+        this.middleName = data.middleName || data.mname || null
+        this.lastName = data.lastName || data.lname
+        this.suffix = data.suffix || data.sfx || null
+        this.alias = data.alias || null
+        this.dob = data.dob || null
+        this.age = this.dob ? calculateYearAge(this.dob) : null
+        this.sex = sexInt ? data.sex : null
+        this.gender = sexInt ? ['F', 'M'][data.sex] : 'X'
+        this.expansion = {
+            gender: sexInt ? ['Female', 'Male'][data.sex] : null,
         }
-    }
-
-    static prefixList = {
-        'Mr': 'Mister',
-        'Mrs': 'Mistress',
-        'Ms': 'Miss',
-    }
-
-    static suffixList = {
-        'Sr': 'Senior (I)',
-        'Jr': 'Junior (II)',
-        'II': 'II',
-        'III': 'III',
-        'IV': 'IV',
-        'V': 'V',
-    }
-
-    static genderList = {
-        'M': 'Male',
-        'F': 'Female',
-    }
-
-    static maritalList = {
-        's': 'Single',
-        'm': 'Married',
-        'd': 'Divorced',
-        'p': 'Separated',
-        'w': 'Widowed',
     }
 
 
@@ -171,56 +120,6 @@ class Person {
 }
 
 
-class Relationship {
-
-    static list = {
-        'Spouse': [['Husband', 'M'], ['Wife', 'F']],
-        'Parent': [['Father', 'M'], ['Mother', 'F'], ['Stepfather', 'M'], ['Stepmother', 'F']],
-        'Child': [['Son', 'M'], ['Daughter', 'F'], ['Stepson', 'M'], ['Stepdaughter', 'F']],
-        'Sibling': [['Brother', 'M'],  ['Sister', 'F'], ['Stepbrother', 'M'], ['Stepsister', 'F']],
-        'Grandparent': [['Grandfather', 'M'], ['Grandmother', 'F']],
-        'Grandchild': [['Grandson', 'M'], ['Granddaughter', 'F']],
-        'Immediate In-Law': [['Father-in-law', 'M'], ['Mother-in-law', 'F'], ['Son-in-law', 'M'], ['Daughter-in-law', 'F'], ['Brother-in-law', 'M'], ['Sister-in-law', 'F']],
-        'Other': [['Uncle', 'M'], ['Aunt', 'F'], ['Nephew', 'M'], ['Niece', 'F'], 'Cousin', 'Fiancé(e)', 'Domestic Partner', 'Friend', 'Other'],
-    }
-
-    static data = () => {
-        const list = Relationship.list
-        const data = {}
-
-        for (const group in list) {
-            data[group] = {}
-
-            for (let relation of list[group]) {
-                if (Array.isArray(relation)) relation = relation[0]
-                data[group][relation] = relation
-            }
-        }
-
-        return data
-    }
-
-    static gender = member => {
-        let gender = null
-        const list = Relationship.list
-
-        groupLoop:
-        for (const group in list) {
-            for (let relation of list[group]) {
-                if (!Array.isArray(relation)) continue
-                if (relation[0] === member) {
-                    gender = relation[1]
-                    break groupLoop
-                }
-            }
-        }
-
-        return gender
-    }
-
-}
-
-
 
 export default Person
-export { Relationship }
+export class Relationship {}
