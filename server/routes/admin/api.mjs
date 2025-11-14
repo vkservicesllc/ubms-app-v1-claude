@@ -18,7 +18,7 @@ router.post('/log/:env/:_id', User.mw.verify, User.mw.superAdminOnly, async (req
         switch (env) {
 
             case 'user':
-                const user = await User.data(res.session, { _id })
+                const user = await User.fetch(res.session, { _id })
                 log = await user.report(res.session)
                 break
 
@@ -54,7 +54,7 @@ router.post('/flush/:env/:_id/:target?', User.mw.verify, User.mw.developerOnly, 
 
 router.post('/users', User.mw.verify, async (req, res) => {
     try {
-        res.send({ data: await User.list(res.session) })
+        res.send({ data: await User.fetch(res.session, {}, { hideRawId: false, hideSensitive: false }) })
     } catch (err) {
         sendError.server(res, err, true)
     }
@@ -66,7 +66,7 @@ router.post('/user/:_id', User.mw.verify, async (req, res) => {
         const { _id } = req.params
         const { count, countFilter } = req.query
         const { status } = res.session.user
-        const data = await User.data(res.session, { _id })
+        const data = await User.fetch(res.session, { _id })
 
         if (!data || (data.status[0] == 'D' && status[0] != 'D'))
             return res.send({})
@@ -92,7 +92,7 @@ router.post('/user/:_id', User.mw.verify, async (req, res) => {
 router.post('/user/:_id/roles', User.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
-        const user = await User.data(res.session, { _id })
+        const user = await User.fetch(res.session, { _id })
 
         res.send({ data: await user.roles(res.session) })
     } catch (err) {
@@ -107,7 +107,7 @@ router.post('/user/:_id/toggle-unscoped', User.mw.verify, async (req, res) => {
         let { unscoped } = req.body
         unscoped = unscoped === 'true'
 
-        const user = await User.data(res.session, { _id })
+        const user = await User.fetch(res.session, { _id })
 
         const { error } = await user.modify(res.session, { unscoped })
         res.send({ error })
@@ -120,7 +120,7 @@ router.post('/user/:_id/toggle-unscoped', User.mw.verify, async (req, res) => {
 router.post('/user/:_id/:target', User.mw.verify, async (req, res) => {
     try {
         const { _id, target } = req.params
-        const user = await User.data(res.session, { _id })
+        const user = await User.fetch(res.session, { _id })
 
         const data = await user.relationship(res.session, target)
         res.send({ data })
@@ -134,22 +134,22 @@ router.post('/user/:_id/:target', User.mw.verify, async (req, res) => {
 /* ROLES */
 
 
-router.post('/roles/:category?', User.mw.verify, async (req, res) => {
+router.post('/roles/:roleCategory?', User.mw.verify, async (req, res) => {
     try {
-        const { category } = req.params
-        const catList = Company.categoryList
-        let catId, error, data = []
-        if (!category) catId = 'def'
+        const { roleCategory } = req.params
+        const catList = Company.list.category
+        let category, error, data = []
+        if (!roleCategory) category = 'def'
         else
             for (const key in catList) {
-                if (category != catList[key].path[1]) continue
+                if (roleCategory != catList[key].path[1]) continue
 
-                catId = key
+                category = key
                 break
             }
 
-        if (!catId) error = 'Error: Category could not be udentified'
-        else data = await Role.list(res.session, { catId })
+        if (!category) error = 'Error: Category could not be udentified'
+        else data = await Role.fetch(res.session, { category }, { hideRawId: true })
 
         res.send({ error, data })
     } catch (err) {

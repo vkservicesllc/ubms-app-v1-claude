@@ -45,7 +45,7 @@ const query = {
 
 
 class User extends Person {
-    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true, login = false }) {
+    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true, login = false } = {}) {
         if (!data?._id) throw new Error('Constructor Error: Invalid User Data')
 
         super(data)
@@ -516,7 +516,7 @@ class User extends Person {
 
     static fetch = async (
         { user: sessionUser = {}, branch, siteId = null }, filter = {},
-        { hideRawId = false, hideSensitive = true, combined = false, login = false, batchOnly = false }
+        { hideRawId = false, hideSensitive = true, combined = false, login = false, batchOnly = false } = {}
     ) => {
         const { id: sessionUserId = null } = sessionUser
         if (!sessionUserId && !login) throw new Error('User Fetch Error: No session user')
@@ -570,7 +570,7 @@ class User extends Person {
 
             if (branch === 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
         } else {
-            if (session?.user?.location) {
+            if (sessionUser?.location) {
                 const location = sessionUser.location
                 if (location !== 'US') batch[0].match.location = location
             }
@@ -581,7 +581,7 @@ class User extends Person {
 
         const session = { user: { id: sessionUserId }, siteId, branch }
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
-        list.forEach((data, i, arr) => arr[i] = new User(data, { single, session, login, hideRawId, hideSensitive }))
+        list.forEach((data, i, arr) => arr[i] = new User(data, { single, login, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
     }
@@ -770,10 +770,12 @@ class User extends Person {
 
                 const settings = await user.settings()
                 let { lastUrl } = user
-                let url = lastUrl
+                let url = lastUrl || '/'
                 if (settings?.[branch]?.lastUrl === 0) url = defUrl
 
-                const body = { userId, siteId, branch, clientIp: { ip: clientIp }, lastUrl }
+                const body = { userId, siteId, branch, clientIp: { ip: clientIp } }
+                if (lastUrl) body.lastUrl = lastUrl
+
                 const [ result ] = await mysql.execute(query.sessions.insert(body))
 
                 if (!result.affectedRows) {
@@ -909,11 +911,11 @@ class User extends Person {
 
 
 class Role {
-    constructor(data = {}, { single = true, session, hideRawId = false }) {
+    constructor(data = {}, { single = true, session, hideRawId = false } = {}) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Role Data')
 
         this._id = data._id
-        if (!hideRawId) props.id = data.id
+        if (!hideRawId) this.id = data.id
 
         this.category = data.category
         this.location = data.location
@@ -1056,7 +1058,7 @@ class Role {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false }) => {
+    static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, batchOnly = false } = {}) => {
         if (!sessionUser.id) throw new Error('Role Fetch Error: No session user')
 
         const {
@@ -1081,7 +1083,7 @@ class Role {
 
         if (batchOnly) return batch
 
-        const session = { user: { id: sessionUser.id }, siteId, branch }
+        const session = { user: { id: sessionUser.id } }
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
         list.forEach((data, i, arr) => arr[i] = new Role(data, { single, session, hideRawId }))
 

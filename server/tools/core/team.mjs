@@ -24,11 +24,11 @@ const query = {
 
 
 class Team {
-    constructor(data = {}, { single = true, session, hideRawId = false }) {
+    constructor(data = {}, { single = true, session, hideRawId = false } = {}) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Team Data')
 
         this._id = data._id
-        if (!hideRawId) props.id = data.id
+        if (!hideRawId) this.id = data.id
 
         this.name = data.name
         this.description = data.description
@@ -203,7 +203,7 @@ class Team {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false }) => {
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false } = {}) => {
         if (!sessionUser.id) throw new Error('Team Fetch Error: No session user')
 
         const {

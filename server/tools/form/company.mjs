@@ -28,8 +28,8 @@ const required = true, disabled = true
 
 const createCategoryForm = (selector, props = {}) => {
     const data = {}
-    for (const key in Company.categoryList)
-        data[key] = Company.categoryList[key].item[1]
+    for (const key in Company.list.category)
+        data[key] = Company.list.category[key].item[1]
 
     //! Temporary
     let { options } = props
@@ -70,7 +70,7 @@ const createCoTypeForm = (selector, props = {}) => createForm({
     options: { valOpt: true },
     ...props,
     type: 'select',
-    data: Company.typeList.full(),
+    data: Company.list.type.full(),
 })
 
 const createAliasForm = (confirm = false) => createForm({

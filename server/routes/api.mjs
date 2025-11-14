@@ -7,7 +7,7 @@ import User, { Role } from '../tools/core/user.mjs'
 import Team from '../tools/core/team.mjs'
 import Company, { Owner } from '../tools/core/company.mjs'
 import Carrier from '../tools/core/carrier.mjs'
-import Driver, { Application as DriverApplication } from '../tools/core/driver.mjs'
+import Driver, { Application as DriverApplication, Citation, Accident } from '../tools/core/driver.mjs'
 import { capitalizeFirst } from '../../client/global/modules/tools/utils/string.mjs'
 
 export const sessionDetails = (req, res) => {
@@ -24,8 +24,6 @@ export const sessionDetails = (req, res) => {
 
             default:
                 data = res.session.user[req.params.prop]
-                const { key } = req.query
-                if (key) data = data[key]
 
         }
 
@@ -101,8 +99,8 @@ router.post('/source/:source/:_id?', User.mw.verify, async (req, res) => {
         case 'user':
             Src = User
             result = {
-                statuses: User.statusList,
-                locations: User.locationList,
+                statuses: User.list.status,
+                locations: User.list.location,
             }
             if (self === 'true') _id = req.session.user
             break
@@ -110,23 +108,23 @@ router.post('/source/:source/:_id?', User.mw.verify, async (req, res) => {
         case 'company':
             Src = Company
             result = {
-                categories: Company.categoryList,
-                types: Company.typeList,
+                categories: Company.list.category,
+                types: Company.list.type,
             }
             break
 
         case 'driver':
             Src = Driver
             result = {
-                positions: Driver.positionList,
+                positions: Driver.list.position,
             }
             break
 
         case 'driver-application':
             Src = DriverApplication
             result = {
-                violations: DriverApplication.citationList,
-                accidents: DriverApplication.accidentList,
+                violations: Citation.list.violation,
+                accidents: Accident.list.accident,
             }
             break
 

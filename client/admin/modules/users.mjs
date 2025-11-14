@@ -1,3 +1,4 @@
+import Person from '/modules/tools/core/person.mjs'
 import escapeHTML from '/modules/tools/utils/html.mjs'
 import selector from '/modules/registry/selectors/user.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
@@ -189,8 +190,8 @@ emailEvent(emailId, {
 telEvent(phoneId)
 
 
-const statusReq = $.ajax('/api/session/status?key=0', { method: 'POST' })
-const locationReq = $.ajax('/api/session/location?key=0', { method: 'POST' })
+const statusReq = $.ajax('/api/session/status', { method: 'POST' })
+const locationReq = $.ajax('/api/session/location', { method: 'POST' })
 
 $.when(statusReq, locationReq).done((statusRes, locationRes) => {
     const [ adminStatus ] = statusRes
@@ -257,8 +258,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 render(data, type, row) {
                     if (row.decliner) return '<strong>DECLINED</strong>'
 
-                    data = data[1]
-                    if (adminLocation == 'US') data += ` <small class="has-text-grey">(${row.location[1]})</small>`
+                    data = row.expansion.status
+                    if (adminLocation === 'US') data += ` <small class="has-text-grey">(${row.location})</small>`
                     if (row.unscoped) data += ` <sup><i class="far fa-star has-text-success" style="font-size: .75em;"></i></sup>`
 
                     return data
@@ -268,8 +269,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             {
                 data: 'name',
                 title: 'Name',
-                render(data) {
-                    return `<span class="has-text-weight-semibold">${escapeHTML(data)}</span>`
+                render(data, type, row) {
+                    return `<span class="has-text-weight-semibold">${new Person(row).fullName('FAL')}</span>`
                 },
             },
 
