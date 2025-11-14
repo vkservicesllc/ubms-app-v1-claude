@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const mysql = require('../tools/utils/mysql')
-const throwErr = require('../tools/utils/error').data
+const sendError = require('../tools/utils/error')
 
 /* Settings */
 import config from '../../config.mjs'
@@ -11,7 +11,7 @@ import length from '../../client/global/modules/registry/length.mjs'
 
 /* Tools */
 import Site from '../tools/core/site.mjs'
-import User, { query } from '../tools/core/user.mjs'
+import User, { Token, query } from '../tools/core/user.mjs'
 import { respond404 } from '../tools/utils/response.mjs'
 import { calculateHourAge } from '../../client/global/modules/tools/utils/date.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
@@ -99,7 +99,7 @@ router.get('/', async (req, res) => {
 
         res.redirect('/login')
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -126,7 +126,7 @@ router.get('/login', async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -150,7 +150,7 @@ router.get('/profile', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -167,7 +167,7 @@ router.post('/profile', User.mw.verify, [
 
         res.redirect('/profile')
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -194,7 +194,7 @@ router.get('/account', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -210,7 +210,7 @@ router.post('/account', User.mw.verify, [
 
         res.redirect('/account')
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -231,7 +231,7 @@ router.get('/security', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -243,7 +243,7 @@ router.post('/security', User.mw.verify, [
     try {
         //
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -258,7 +258,7 @@ router.get('/apps', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -275,7 +275,7 @@ router.get('/authenticate', async (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key, { titlePfx: 'User Authentication' })
 
-        const user = await User.data({ ...res.session, user: true }, { _id })
+        const user = await User.fetch(res.session, { _id }, { login: true })
         const site = await new Site(branch, siteId)
 
         if (!user || !site) return respond404(res)
@@ -283,10 +283,13 @@ router.get('/authenticate', async (req, res) => {
         const { address } = site
         const { sessionUrl, tokenAge } = config.session
         const { clientIp } = req.session
-        const { token, verified } = await user.token({ clientIp })
+
+        const token = await Token.fetch({ userId: user.id, clientIp })
+
+        const { key: tokenKey, verified } = token
         let value = config.notification.email.authToken
             ? ''
-            : token
+            : tokenKey
 
         hbs.status = status
         hbs.actionUrl = address + sessionUrl
@@ -295,7 +298,7 @@ router.get('/authenticate', async (req, res) => {
         hbs.script = `$('.container').show()`
 
         if (verified) {
-            value = token
+            value = tokenKey
             hbs.script = `$('form').submit()`
         }
 
@@ -305,7 +308,7 @@ router.get('/authenticate', async (req, res) => {
 
         return res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -323,7 +326,7 @@ router.get('/register/:_id', async (req, res) => {
         hbs.validForm = true
         hbs.expiredForm = false
 
-        const user = await User.data(res.session, { _id })
+        const user = await User.fetch(res.session, { _id })
         if (!user) return respond404(res)
 
         if (user.username) hbs.userRegistered = true
@@ -370,7 +373,7 @@ router.get('/register/:_id', async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 
@@ -386,7 +389,7 @@ router.get('/pass-reset/:_id', async (req, res) => {
         const { _id } = req.params
         const { form: resetId } = req.query
 
-        const user = await User.data(res.session, { _id })
+        const user = await User.fetch(res.session, { _id })
         if (!user || !resetId) return respond404(res)
 
         const [ result ] = await mysql.execute(query.passReset.select('userId', {
@@ -414,7 +417,7 @@ router.get('/pass-reset/:_id', async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(res, err)
     }
 })
 

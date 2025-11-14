@@ -389,7 +389,7 @@ class Query {
 
                 value = Query.#_value(value)
                 field = Query.#_field(field, table)
-                field = `(${field} ${oper} ${value}) as resField`
+                field = `(${field} ${oper} ${value})`
             }
 
             else if ('count' in field ) {

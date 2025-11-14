@@ -140,10 +140,11 @@ export const loginEvent = (callback = {}) => {
                     },
                     error(err) {
                         const { error } = err.responseJSON
-                        if (error) {
-                            alert(error)
-                            location.reload()
-                        }
+console.error(error)
+                        // if (error) {
+                        //     alert(error)
+                        //     location.reload()
+                        // }
                     },
                 })
             }, 500)

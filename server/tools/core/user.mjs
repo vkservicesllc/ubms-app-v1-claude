@@ -478,8 +478,6 @@ class User extends Person {
     static #formId = async () => await User.idStr('formId', inputLength.user.formId.max, query.registration)
     static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.passReset)
 
-    static #authUrl = (session, _id, status) => `${addrBook.user}/authenticate?user=${_id}&branch=${btoa(session.branch)}&site=${btoa(session.siteId)}&status=${status}`
-
     static #relTargets = { roles: [ Role, 'roleId' ], teams: [ Team, 'teamId' ], company: [ Company, 'companyId' ] }
 
 
@@ -730,15 +728,17 @@ class User extends Person {
                 //? Interrupt if User not found
                 if (!user) return sendError.auth(res, 'Authentication failed: User not found')
 
+
                 const { clientIp } = req.session
-                const token = Token.fetch({ userId: id, clientIp })
+                const token = await Token.fetch({ userId: id, clientIp })
                 const { key, verified, expired } = token
 
-                if (!key || (!verified && expired)) await Token.create({ userId: id, clientIp })
+                if (!key || (!verified && expired))
+                    await Token.create({ userId: id, clientIp })
 
                 await mysql.execute(query.main.update({ fails: 0 }, { id }))
 
-                res.redirect(User.#authUrl(session, user._id, 'pending'))
+                res.redirect(authUrl(res.session, user._id, 'pending'))
             } catch (err) {
                 sendError.server(res, err, api)
             }
@@ -761,10 +761,10 @@ class User extends Person {
                 const { key: tokenKey, verified, expired } = token
 
                 if (!verified) {
-                    if (tokenKey !== providedToken) return res.redirect(User.#authUrl(res.session, _id, 'mismatch'))
+                    if (tokenKey !== providedToken) return res.redirect(authUrl(res.session, _id, 'mismatch'))
                     else if (expired) {
                         await Token.create({ userId, clientIp })
-                        return res.redirect(User.#authUrl(res.session, _id, 'expired'))
+                        return res.redirect(authUrl(res.session, _id, 'expired'))
                     } else await token.verify()
                 }
 
@@ -1095,14 +1095,14 @@ class Role {
 
 class Token {
     constructor(data = {}) {
-        if (!data?.key) throw new Error('Constructor Error: Invalid Token Data')
+        if (!data?.tokenKey) throw new Error('Constructor Error: Invalid Token Data')
 
-        this.key = stringifyBuffer(data.key)
+        this.key = stringifyBuffer(data.tokenKey)
         this.userId = data.userId
         this.clientIp = data.clientIp
         this.verified = !!data.verified
         this.createdAt = data.createdAt
-        this.expiresAt = new Date(this.createdAt.getTime() + data.tokenAge * 60 * 1000)
+        this.expiresAt = new Date(this.createdAt).getTime() + data.tokenAge * 60 * 1000
         this.expired = new Date >= this.expiresAt
     }
 
@@ -1126,7 +1126,7 @@ class Token {
         if (!result.affectedRows) throw new Error('DB Error: Failed to clear token')
 
         [ result ] = await mysql.execute(queryInst.insert({
-            userId, clientIp,
+            userId, clientIp: { ip: clientIp },
             token: { aes: [ token, tokenSecret ]},
         }))
         if (!result.affectedRows) throw new Error('DB Error: Failed to register token')
@@ -1168,7 +1168,7 @@ class Token {
 
     static fetch = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
         const [ rows ] = await mysql.execute(queryInst.select([
-            [ { aes: [ 'token', tokenSecret ] }, 'key' ],
+            [ { aes: [ 'token', tokenSecret ] }, 'tokenKey' ],
             'verified', 'createdAt',
         ], { match: { userId, clientIp: { ip: clientIp } } }))
 
@@ -1194,6 +1194,10 @@ function userTargets() { return { roles: [ Role, 'roleId' ], teams: [ Team, 'tea
 
 
 function roleTargets() { return { users: [ User, 'userId', query.jx.roles ] } }
+
+
+
+function authUrl(session, _id, status) { return `${addrBook.user}/authenticate?user=${_id}&branch=${btoa(session.branch)}&site=${btoa(session.siteId)}&status=${status}` }
 
 
 
