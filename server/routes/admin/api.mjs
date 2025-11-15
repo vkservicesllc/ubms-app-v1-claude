@@ -2,8 +2,8 @@ const router = require('express').Router()
 const sendError = require('../../tools/utils/error')
 
 /* Tools */
-import User, { Role } from '../../tools/core/user.mjs'
-import Team from '../../tools/core/team.mjs'
+import User, { Role, relTargets as userRelTargets } from '../../tools/core/user.mjs'
+import Team, { relTargets as teamRelTargets } from '../../tools/core/team.mjs'
 import Company, { Owner } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
@@ -151,48 +151,34 @@ router.post('/user/:_id', User.mw.verify, async (req, res) => {
 })
 
 
-router.post('/user/:_id/relationships', User.mw.verify, async (req, res) => {
+router.get('/user/:_id/relationships', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser } = res.session
         const { _id } = req.params
+
         const user = await User.fetch(res.session, { _id })
-
-        res.send({ data: [] })
-    } catch (err) {
-        sendError.server(res, err, true)
-    }
-})
-
-
-router.post('/user/:_id/:target', User.mw.verify, async (req, res) => {
-    try {
-        const { user: sessionUser } = res.session
-        const { _id, target } = req.params
-
-        const user = await User.fetch(res.session, { _id }, { hideRawId, hideSensitive: true })
         if (!user) return res.send({ data: {}, error: 'API Error: User not found' })
         if ((user.status === 'D' && sessionUser.status !== 'D') || (user.DS && ! sessionUser.DS))
             return res.send({ data: {}, error: 'Request Error: Immune User' })
 
-        //! ... reconsider
-        const [ Src, sortBy ] = { roles: [ Role, 'name' ], teams: [ Team, 'name' ], companies: [ Company, 'name' ] }[target]
+        const data = {}
+        const targets = userRelTargets('main')
 
-        const data = {
-            all: await Src.fetch(res.session, {}, { hideRawId }),
-            applied: await user.fetch(target, { hideRawId }),
+        for (const target in targets) {
+            const [ Src ] = targets[target]
+            data[target] = {}
+
+            data[target].all = await Src.fetch(res.session, {}, { hideRawId })
+            data[target].applied = await user.fetch(target, { hideRawId })
+
+            if (!sessionUser.DS) {
+                const sessData = await sessionUser.fetch(target)
+
+                //! reduce data.all and data.applied to whatever session user has
+            }
+
+            data[target].available = data[target].all.filter(row => !data[target].applied.some(appliedRow => appliedRow._id === row._id))
         }
-
-        if (!sessionUser.DS) {
-            const sessData = await sessionUser.fetch(target)
-
-            //! reduce data.all and data.applied to whatever session user has
-        }
-
-        data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
-
-        data.all = sortArrayByObjectKey(data.all, sortBy)
-        data.applied = sortArrayByObjectKey(data.applied, sortBy)
-        data.available = sortArrayByObjectKey(data.available, sortBy)
 
         res.send({ data })
     } catch (err) {
@@ -209,7 +195,7 @@ router.post('/user/:_id/toggle-unscoped', User.mw.verify, async (req, res) => {
 
         const user = await User.fetch(res.session, { _id })
 
-        const { error } = await user.modify(res.session, { unscoped })
+        const { error } = await user.update(res.session, { unscoped })
         res.send({ error })
     } catch (err) {
         sendError.server(res, err, true)

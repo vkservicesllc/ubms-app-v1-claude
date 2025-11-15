@@ -43,17 +43,6 @@ const query = {
     },
 }
 
-const relTargets = {
-    main: {
-        roles: [ Role, 'roleId', query.jx.roles ],
-        teams: [ Team, 'teamId', query.jx.teams ],
-        companies: [ Company, 'companyId', query.jx.companies ],
-    },
-    role: {
-        users: [ User, 'userId', query.jx.roles ],
-    },
-}
-
 
 
 class User extends Person {
@@ -111,11 +100,10 @@ class User extends Person {
                 if (!this.session?.user?.id) throw new Error('User Add Error: No session user')
                 if (!target) throw new Error('User Add Error: Target not supplied')
 
-                const targets = relTargets.main
-                if (!Object.keys(targets).includes(target)) throw new Error('User Add Error: Invalid target supplied')
+                const targets = relTargets('main', target)
 
                 const data = []
-                const [ Src, idProp, queryInst ] = targets[target]
+                const [ Src, idProp, queryInst ] = targets
                 const list = await Src.fetch(this.session, { ids })
 
                 list.map(item => data.push({
@@ -130,16 +118,15 @@ class User extends Person {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, sortBy = null, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, sort = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('User Fetch Error: No session user')
                 if (!target) throw new Error('User Fetch Error: Target not supplied')
 
-                const targets = relTargets.main, specTargets = [ 'carriers' ] //! Add more targets when more categories are available
+                const targets = relTargets('main', target), specTargets = [ 'carriers' ] //! Add more targets when more categories are available
                 const special = specTargets.includes(target)
-                if (!Object.keys(targets).includes(target) && !special) throw new Error('User Fetch Error: Invalid target supplied')
 
                 const ids = []
-                let Src, idProp
+                let Src, idProp, queryInst
 
                 if (special) {
                     const batch = [
@@ -178,7 +165,7 @@ class User extends Person {
                         else ids.push(id)
                     })
                 } else {
-                    [ Src, idProp, queryInst ] = targets[target]
+                    [ Src, idProp, queryInst ] = targets
 
                     const [ rows ] = await mysql.execute(queryInst.select(idProp, { userId: this.id || User.matchIdHash(this._id) }))
                     rows.map(row => ids.push(row[idProp]))
@@ -233,7 +220,7 @@ class User extends Person {
                 if (!this.session?.user?.id) throw new Error('User Delete Error: Session user not found')
                 if (this.status === 'D') throw new Error('User Delete Error: Developer can not be deleted')
 
-                const targets = relTargets.main
+                const targets = relTargets('main', target)
 
                 if (!target) {
                     const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
@@ -254,9 +241,8 @@ class User extends Person {
                     await mysql.execute(query.tokens.delete(match))
 
                     return true
-                } else if (Object.keys(targets).includes(target) && ids.length) {
-                    const idProp = targets[target][1]
-
+                } else if (ids.length) {
+                    const idProp = targets[1]
                     const [ result ] = await mysql.execute(query.jx[target].delete({ [idProp]: ids }))
 
                     return result.affectedRows > 0
@@ -532,7 +518,7 @@ class User extends Person {
 
     static fetch = async (
         { user: sessionUser = {}, branch, siteId = null }, filter = {},
-        { hideRawId = false, hideSensitive = true, combined = false, login = false, batchOnly = false, sortBy = null } = {}
+        { hideRawId = false, hideSensitive = true, combined = false, login = false, batchOnly = false, sort = null } = {}
     ) => {
         const { id: sessionUserId = null } = sessionUser
         if (!sessionUserId && !login) throw new Error('User Fetch Error: No session user')
@@ -976,11 +962,9 @@ class Role {
                 if (!this.session?.user?.id) throw new Error('Role Add Error: No session user')
                 if (!target) throw new Error('Role Add Error: Target not supplied')
 
-                const targets = relTargets.role
-                if (!Object.keys(targets).includes(target)) throw new Error('Role Add Error: Invalid target supplied')
-
+                const targets = relTargets('role', target)
                 const data = []
-                const [ Src, idProp, queryInst ] = targets[target]
+                const [ Src, idProp, queryInst ] = targets
                 const list = await Src.fetch(this.session, { ids })
 
                 list.map(item => data.push({
@@ -995,14 +979,12 @@ class Role {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, sortBy = null, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, sort = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Role Fetch Error: No session user')
                 if (!target) throw new Error('Role Fetch Error: Target not supplied')
 
-                const targets = relTargets.role
-                if (!Object.keys(targets).includes(target)) throw new Error('Role Fetch Error: Invalid target supplied')
-
-                const [ Src, idProp, queryInst ] = targets[target]
+                const targets = relTargets('role', target)
+                const [ Src, idProp, queryInst ] = targets
 
                 const ids = []
                 const [ rows ] = await mysql.execute(queryInst.select(idProp, { roleId: this.id || Role.matchIdHash(this._id) }))
@@ -1034,7 +1016,7 @@ class Role {
             this.delete = async (target, ids = []) => {
                 if (!this.session?.user?.id) throw new Error('Role Delete Error: Session user not found')
 
-                const targets = relTargets.role
+                const targets = relTargets('role', target)
 
                 if (!target) {
                     const log = await this.log()
@@ -1046,9 +1028,9 @@ class Role {
                     await logDeletion(session, 'roles', this, { id })
 
                     return true
-                } else if (Object.keys(targets).includes(target) && ids.length) {
-                    const idProp = targets[target][1]
-                    const queryInst = targets[target][2]
+                } else if (ids.length) {
+                    const idProp = targets[1]
+                    const queryInst = targets[2]
 
                     const [ result ] = await mysql.execute(queryInst.delete({ [idProp]: ids }))
 
@@ -1099,7 +1081,7 @@ class Role {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, batchOnly = false, sortBy = null } = {}) => {
+    static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, batchOnly = false, sort = null } = {}) => {
         if (!sessionUser.id) throw new Error('Role Fetch Error: No session user')
 
         const {
@@ -1224,10 +1206,27 @@ class Token {
 
 
 
+function relTargets(src, target = null) {
+    const targets =  {
+        main: {
+            roles: [ Role, 'roleId', query.jx.roles ],
+            teams: [ Team, 'teamId', query.jx.teams ],
+            // companies: [ Company, 'companyId', query.jx.companies ],
+        },
+        role: {
+            users: [ User, 'userId', query.jx.roles ],
+        },
+    }[src]
+
+    return target ? targets[target] : targets
+}
+
+
+
 delete User.formSelect
 
 export default User
-export { Role, Token, query }
+export { Role, Token, query, relTargets }
 
 
 

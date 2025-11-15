@@ -21,12 +21,6 @@ const query = {
     profiles: new Query(db.online, 'team_profiles'),
 }
 
-const relTargets = {
-    main: {
-        users: [ User, 'userId', userQuery.jx.teams ],
-    },
-}
-
 
 
 class Team {
@@ -69,11 +63,11 @@ class Team {
                 if (!this.session?.user?.id) throw new Error('Team Add Error: No session user')
                 if (!target) throw new Error('Team Add Error: Target not supplied')
 
-                const targets = relTargets.main
+                const targets = relTargets('main', target)
                 if (!Object.keys(targets).includes(target)) throw new Error('Team Add Error: Invalid target supplied')
 
                 const data = []
-                const [ Src, idProp, queryInst ] = targets[target]
+                const [ Src, idProp, queryInst ] = targets
                 const list = await Src.fetch(this.session, { ids })
 
                 list.map(item => data.push({
@@ -88,14 +82,14 @@ class Team {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, sortBy = null, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, sort = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Team Fetch Error: No session user')
                 if (!target) throw new Error('Team Fetch Error: Target not supplied')
 
-                const targets = relTargets.main
+                const targets = relTargets('main', target)
                 if (!Object.keys(targets).includes(target)) throw new Error('Team Fetch Error: Invalid target supplied')
 
-                const [ Src, idProp, queryInst ] = targets[target]
+                const [ Src, idProp, queryInst ] = targets
 
                 const ids = []
                 const [ rows ] = await mysql.execute(queryInst.select(idProp, { teamId: this.id || Team.matchIdHash(this._id) }))
@@ -144,7 +138,7 @@ class Team {
             this.delete = async (target, ids = []) => {
                 if (!this.session?.user?.id) throw new Error('Team Delete Error: Session user not found')
 
-                const targets = relTargets.main
+                const targets = relTargets('main', target)
 
                 if (!target) {
                     const log = await this.log()
@@ -157,8 +151,8 @@ class Team {
 
                     return true
                 } else if (Object.keys(targets).includes(target) && ids.length) {
-                    const idProp = targets[target][1]
-                    const queryInst = targets[target][2]
+                    const idProp = targets[1]
+                    const queryInst = targets[2]
 
                     const [ result ] = await mysql.execute(queryInst.delete({ [idProp]: ids }))
 
@@ -209,7 +203,7 @@ class Team {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false, sortBy = null } = {}) => {
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false, sort = null } = {}) => {
         if (!sessionUser.id) throw new Error('Team Fetch Error: No session user')
 
         const {
@@ -318,5 +312,17 @@ class Team {
 
 
 
+function relTargets(src, target = null) {
+    const targets =  {
+        main: {
+            users: [ User, 'userId', userQuery.jx.teams ],
+        },
+    }[src]
+
+    return target ? targets[target] : targets
+}
+
+
+
 export default Team
-export { query }
+export { query, relTargets }

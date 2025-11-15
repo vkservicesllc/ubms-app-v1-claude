@@ -56,13 +56,14 @@ class Query {
         const tables = []
         const joins = []
         const matches = []
+        const sorts = [] //! UNTESTED
+
         let grouper
-        // ...unfinished / add sort filter
         let columns = []
         let primaryTable
 
         for (const cluster of batch) {
-            let { db, table, fields, match, group } = cluster
+            let { db, table, fields, match, sort, group } = cluster
             const { join } = cluster
             let joiner
 
@@ -136,16 +137,15 @@ class Query {
             if (!primaryTable) primaryTable = table
 
             match = Query.#match(match, table)
-
-            // ...unfinished / add sort filter
+            sort = Query.#sort(sort, table) //! UNTESTED
 
             databases.push(db)
             tables.push(table)
             columns = [ ...columns, ...fields ]
             if (joiner) joins.push(joiner)
             if (match) matches.push(match)
+            if (sort) sorts.push(sort) //! UNTESTED
             if (!grouper && group) grouper = Query.#field(group, table)
-            // ...unfinished / add sort filter
         }
 
         let query = `\nSELECT DISTINCT\n`
@@ -157,10 +157,9 @@ class Query {
 
             query += `${join + table}\nON ${id}\n`
         })
-        if (matches.length)
-            query += `WHERE ${matches.join(`\nAND `)}\n`
+        if (matches.length) query += `WHERE ${matches.join(`\nAND `)}\n`
         if (grouper) query += `GROUP BY ${Query.#_field(grouper)}\n`
-        // ...unfinished / add sort filter
+        if (sorts.length) query += `ORDER BY ${sorts.join(', ')}\n` //! UNTESTED
         if (limit) query += `LIMIT ${limit}\n`
 
         return query
