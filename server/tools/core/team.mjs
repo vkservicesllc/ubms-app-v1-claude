@@ -21,6 +21,12 @@ const query = {
     profiles: new Query(db.online, 'team_profiles'),
 }
 
+const relTargets = {
+    main: {
+        users: [ User, 'userId', userQuery.jx.teams ],
+    },
+}
+
 
 
 class Team {
@@ -63,7 +69,7 @@ class Team {
                 if (!this.session?.user?.id) throw new Error('Team Add Error: No session user')
                 if (!target) throw new Error('Team Add Error: Target not supplied')
 
-                const targets = teamTargets()
+                const targets = relTargets.main
                 if (!Object.keys(targets).includes(target)) throw new Error('Team Add Error: Invalid target supplied')
 
                 const data = []
@@ -82,11 +88,11 @@ class Team {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, sortBy = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Team Fetch Error: No session user')
                 if (!target) throw new Error('Team Fetch Error: Target not supplied')
 
-                const targets = teamTargets()
+                const targets = relTargets.main
                 if (!Object.keys(targets).includes(target)) throw new Error('Team Fetch Error: Invalid target supplied')
 
                 const [ Src, idProp, queryInst ] = targets[target]
@@ -138,7 +144,7 @@ class Team {
             this.delete = async (target, ids = []) => {
                 if (!this.session?.user?.id) throw new Error('Team Delete Error: Session user not found')
 
-                const targets = teamTargets()
+                const targets = relTargets.main
 
                 if (!target) {
                     const log = await this.log()
@@ -203,7 +209,7 @@ class Team {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false } = {}) => {
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false, sortBy = null } = {}) => {
         if (!sessionUser.id) throw new Error('Team Fetch Error: No session user')
 
         const {
@@ -314,7 +320,3 @@ class Team {
 
 export default Team
 export { query }
-
-
-
-function teamTargets() { return { users: [ User, 'userId', userQuery.jx.teams ] } }
