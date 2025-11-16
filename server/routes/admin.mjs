@@ -62,8 +62,8 @@ router.use((req, res, next) => {
             nav[navKey] = active
         }
         if (user) {
-            const { _id, name, username, avaSrc, status, DS, DSA } = user
-            hbs.user = { _id, name, username, avaSrc, status: status[1], DS, DSA }
+            const { _id, username, avaSrc, status, DS, DSA } = user
+            hbs.user = { _id, name: user.fullName('AL'), username, avaSrc, status: status[1], DS, DSA }
             hbs.user.D = user.status[0] == 'D'
         }
 

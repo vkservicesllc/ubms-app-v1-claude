@@ -209,7 +209,8 @@ const displayTeams = () => {
         url: '/api/teams',
         method: 'POST',
         success(response) {
-            const data = sortArrayByObjectKey(response.data, 'name')
+            // const data = sortArrayByObjectKey(response.data, 'name')
+            const { data } = response
             let i = 0, html = ''
 
             for (const [ idx, row ] of data.entries()) {

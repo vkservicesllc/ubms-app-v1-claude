@@ -82,15 +82,15 @@ class Team {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, sort = null, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, sorts = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Team Fetch Error: No session user')
                 if (!target) throw new Error('Team Fetch Error: Target not supplied')
 
                 const targets = relTargets('main', target)
                 if (!Object.keys(targets).includes(target)) throw new Error('Team Fetch Error: Invalid target supplied')
 
-                const [ Src, idProp, queryInst, defSort ] = targets
-                if (!sort) sort = defSort
+                const [ Src, idProp, queryInst, defSorts ] = targets
+                if (!sorts) sorts = defSorts
 
                 const ids = []
                 const [ rows ] = await mysql.execute(queryInst.select(idProp, {
@@ -99,7 +99,7 @@ class Team {
 
                 rows.map(row => ids.push(row[idProp]))
 
-                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sort })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sorts })
             }
 
 
@@ -183,6 +183,8 @@ class Team {
     static hashId = (field = 'id') => hash(field, Team.#algorithm)
     static matchIdHash = value => matchHash(value, Team.#algorithm)
 
+    static defSorts = [ 'name' ]
+
 
     static create = async ({ user: sessionUser = {} }, body = {}) => {
         if (!sessionUser.id) throw new Error('Team Create Error: No session user')
@@ -206,7 +208,7 @@ class Team {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false, sort = null } = {}) => {
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false, sorts = Team.defSorts } = {}) => {
         if (!sessionUser.id) throw new Error('Team Fetch Error: No session user')
 
         const {
@@ -254,6 +256,9 @@ class Team {
                 join: ['id', 'userId', { table: userQuery.jx.teams.table }],
             },
         ]
+
+        if (!single && Array.isArray(sorts))
+            sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
 
         if (batchOnly) return batch
 
@@ -318,7 +323,7 @@ class Team {
 function relTargets(src, target = null) {
     const targets =  {
         main: {
-            users: [ User, 'userId', userQuery.jx.teams ],
+            users: [ User, 'userId', userQuery.jx.teams, User.defSort ],
         },
     }[src]
 

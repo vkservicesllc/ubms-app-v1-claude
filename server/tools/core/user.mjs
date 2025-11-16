@@ -118,7 +118,7 @@ class User extends Person {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, sort = null, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, sorts = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('User Fetch Error: No session user')
                 if (!target) throw new Error('User Fetch Error: Target not supplied')
 
@@ -126,7 +126,7 @@ class User extends Person {
                 const special = specTargets.includes(target)
 
                 const ids = []
-                let Src, idProp, queryInst
+                let Src, idProp, queryInst, defSorts
 
                 if (special) {
                     const batch = [
@@ -166,8 +166,8 @@ class User extends Person {
                         else ids.push(id)
                     })
                 } else {
-                    [ Src, idProp, queryInst, defSort ] = targets
-                    if (!sort) sort = defSort
+                    [ Src, idProp, queryInst, defSorts ] = targets
+                    if (!sorts) sorts = defSorts
 
                     const [ rows ] = await mysql.execute(queryInst.select(idProp, {
                         match: { userId: this.id || User.matchIdHash(this._id) },
@@ -175,7 +175,7 @@ class User extends Person {
                     rows.map(row => ids.push(row[idProp]))
                 }
 
-                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sort })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sorts })
             }
 
 
@@ -469,6 +469,8 @@ class User extends Person {
     static matchIdHash = value => matchHash(value, User.#algorithm)
     static matchSimpleIdHash = value => matchHash(value)
 
+    static defSorts = null
+
 
     static idStr = async (target, length, queryInst) => {
         let idStr, found = true
@@ -522,7 +524,7 @@ class User extends Person {
 
     static fetch = async (
         { user: sessionUser = {}, branch, siteId = null }, filter = {},
-        { hideRawId = false, hideSensitive = true, combined = false, login = false, batchOnly = false, sort = null } = {}
+        { hideRawId = false, hideSensitive = true, combined = false, login = false, batchOnly = false, sorts = User.defSorts } = {}
     ) => {
         const { id: sessionUserId = null } = sessionUser
         if (!sessionUserId && !login) throw new Error('User Fetch Error: No session user')
@@ -600,6 +602,9 @@ class User extends Person {
             }
         }
         if (branch && !single) batch[4].join[2].max = 'lastLogin'
+
+        if (!single && Array.isArray(sorts))
+            sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
 
         if (batchOnly) return batch
 
@@ -983,13 +988,13 @@ class Role {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, sort = null, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, sorts = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Role Fetch Error: No session user')
                 if (!target) throw new Error('Role Fetch Error: Target not supplied')
 
                 const targets = relTargets('role', target)
-                const [ Src, idProp, queryInst, defSort ] = targets
-                if (!sort) sort = defSort
+                const [ Src, idProp, queryInst, defSorts ] = targets
+                if (!sorts) sorts = defSorts
 
                 const ids = []
                 const [ rows ] = await mysql.execute(queryInst.select(idProp, {
@@ -998,7 +1003,7 @@ class Role {
 
                 rows.map(row => ids.push(row[idProp]))
 
-                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sort })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sorts })
             }
 
 
@@ -1064,6 +1069,8 @@ class Role {
     static hashId = (field = 'id') => hash(field, Role.#algorithm)
     static matchIdHash = value => matchHash(value, Role.#algorithm)
 
+    static defSorts = [ [ 'name', 'location', 'category' ] ]
+
 
     static create = async ({ user: sessionUser = {} }, body = {}) => {
         if (!sessionUser.id) throw new Error('Role Create Error: No session user')
@@ -1088,7 +1095,7 @@ class Role {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, batchOnly = false, sort = null } = {}) => {
+    static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, batchOnly = false, sorts = Role.defSorts } = {}) => {
         if (!sessionUser.id) throw new Error('Role Fetch Error: No session user')
 
         const {
@@ -1110,6 +1117,10 @@ class Role {
                 match,
             },
         ]
+
+        if (!single && Array.isArray(sorts))
+            sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
+
 
         if (batchOnly) return batch
 
@@ -1216,12 +1227,12 @@ class Token {
 function relTargets(src, target = null) {
     const targets =  {
         main: {
-            roles: [ Role, 'roleId', query.jx.roles, [ 'name', 'location', 'category' ] ],
-            teams: [ Team, 'teamId', query.jx.teams, 'name' ],
-            // companies: [ Company, 'companyId', query.jx.companies, [ 'busName', 'coType' ] ],
+            roles: [ Role, 'roleId', query.jx.roles, Role.defSorts ],
+            teams: [ Team, 'teamId', query.jx.teams, Team.defSorts ],
+            // companies: [ Company, 'companyId', query.jx.companies, [ null, [ 'busName', 'coType' ] ] ],
         },
         role: {
-            users: [ User, 'userId', query.jx.roles ],
+            users: [ User, 'userId', query.jx.roles, User.defSort ],
         },
     }[src]
 

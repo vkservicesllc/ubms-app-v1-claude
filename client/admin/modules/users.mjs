@@ -512,8 +512,10 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
             $.ajax(`/api/user/${_id}`, {
                 method: 'POST',
-                success(data) {
-                    const { name, email } = data
+                success(response) {
+                    const { data: user } = response
+                    const { email } = user
+                    const name = new Person(user).fullName('AL')
 
                     $id.val(_id)
                     $('#user-security-modal-body').html(`

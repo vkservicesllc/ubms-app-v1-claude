@@ -151,7 +151,7 @@ router.post('/user/:_id', User.mw.verify, async (req, res) => {
 })
 
 
-router.get('/user/:_id/relationships', User.mw.verify, async (req, res) => {
+router.post('/user/:_id/relationships', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser } = res.session
         const { _id } = req.params
@@ -165,10 +165,11 @@ router.get('/user/:_id/relationships', User.mw.verify, async (req, res) => {
         const targets = userRelTargets('main')
 
         for (const target in targets) {
-            const [ Src ] = targets[target]
+            const Src = targets[target][0]
+            const sorts = targets[target][3]
             data[target] = {}
 
-            data[target].all = await Src.fetch(res.session, {}, { hideRawId })
+            data[target].all = await Src.fetch(res.session, {}, { hideRawId, sorts })
             data[target].applied = await user.fetch(target, { hideRawId })
 
             if (!sessionUser.DS) {

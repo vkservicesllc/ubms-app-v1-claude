@@ -3,16 +3,19 @@ import selector from "/modules/registry/selectors/user.mjs"
 const _id = $(selector.id.hidden.id).val()
 
 if (_id) {
-    const response = { categories: $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON }
-    const targets = ['roles', 'teams' ] //, 'companies']
-    targets.forEach(target => response[target] = $.ajax(`/api/user/${_id}/${target}`, { async: false, method: 'POST' }).responseJSON)
+    // const response = { categories: $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON }
+    // const targets = ['roles', 'teams' ] //, 'companies']
+    // targets.forEach(target => response[target] = $.ajax(`/api/user/${_id}/${target}`, { async: false, method: 'POST' }).responseJSON)
 
+    const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+    const relationships = $.ajax(`/api/user/${_id}/relationships`, { async: false, method: 'POST' }).responseJSON.data
+console.log(relationships)
     const defOpts = { available: '', applied: '' }
     const optgroup = '<optgroup><option value=""></option></optgroup>'
     const keys = Object.keys(defOpts)
 
     {
-        const { data: roles } = response.roles
+        const { roles } = relationships
         const $roles = {
             available: $('#available-roles'),
             applied: $('#user-roles'),
@@ -29,7 +32,7 @@ if (_id) {
             }, {})
 
             for (const category in optgroups[prop]) {
-                options[prop] += `<optgroup label="${response.categories[category].item[1]}">`
+                options[prop] += `<optgroup label="${categories[category].item[1]}">`
                 for (const role of optgroups[prop][category]) {
                     const { _id, location } = role
                     let { name } = role
@@ -46,7 +49,7 @@ if (_id) {
     }
 
     {
-        const { data: teams } = response.teams
+        const { teams } = relationships
         const $teams = {
             available: $('#available-teams'),
             applied: $('#user-teams'),
@@ -69,7 +72,7 @@ if (_id) {
             // }, {})
 
             // for (const category in optgroups[prop]) {
-            //     options[prop] += `<optgroup label="${response.categories[category].item[1]}">`
+            //     options[prop] += `<optgroup label="${categories[category].item[1]}">`
             //     for (const team of optgroups[prop][category]) {
             //         const { _id, name } = team
             //         options[prop] += `<option value="${_id}">${name}</option>`
@@ -103,7 +106,7 @@ if (_id) {
     }
 
     // {
-    //     const { data: companies } = response.companies
+    //     const { companies } = relationships
     //     const $companies = {
     //         available: $('#available-companies'),
     //         applied: $('#user-companies'),
@@ -120,7 +123,7 @@ if (_id) {
     //         }, {})
 
     //         for (const category in optgroups[prop]) {
-    //             options[prop] += `<optgroup label="${response.categories[category].item[1]}">`
+    //             options[prop] += `<optgroup label="${categories[category].item[1]}">`
     //             for (const company of optgroups[prop][category]) {
     //                 const { _id, name } = company
     //                 options[prop] += `<option value="${_id}">${name}</option>`
