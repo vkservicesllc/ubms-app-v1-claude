@@ -310,8 +310,8 @@ class User extends Person {
             }
 
 
-            this.url = async (lastUrl) => {
-                if (!this.self || lastUrl.slice(0, 5) === '/api/' || lastUrl.includes('/files/') || lastUrl.includes('/image/') || lastUrl.endsWith('.map')) return
+            this.url = async lastUrl => {
+                if (lastUrl.slice(0, 5) === '/api/' || lastUrl.includes('/files/') || lastUrl.includes('/image/') || lastUrl.endsWith('.map')) return
 
                 const { branch, siteId } = this.session || {}
                 if (!branch) throw new Error('User URL Error: Session branch not supplied')
@@ -860,7 +860,7 @@ class User extends Person {
 
                 if (!_id) return await reject('Authentication check failed: Not authenticated')
 
-                const user = await User.fetch(res.session, { _id }, { login: true })
+                const user = await User.fetch(res.session, { _id }, { login: true, hideSensitive: false })
 
                 if (!user) {
                     User.mw.logout(req, res)

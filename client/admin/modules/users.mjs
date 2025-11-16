@@ -203,7 +203,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
         ajax: {
             url: '/api/users',
-            dataSrc(response) {
+            dataSrc(response) { console.log(response.data)
                 return response.data
             },
         },
@@ -267,26 +267,29 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             },
 
             {
-                data: 'name',
+                data: null,
                 title: 'Name',
                 render(data, type, row) {
-                    return `<span class="has-text-weight-semibold">${new Person(row).fullName('FAL')}</span>`
+                    let name = `<span class="has-text-weight-semibold">${new Person(row).fullName('FAL')}</span>`
+                    if (row.self) name += ' <small class="tag table-tag mx-1">You</small>'
+
+                    return name
                 },
             },
 
-            {
-                data: 'username',
-                title: 'Username',
-                defaultContent: '<small class="has-text-danger">...pending</small>',
-                render(data, type, row) {
-                    if (row.decliner) return '<small class="has-text-danger">N/A</small>'
+            // {
+            //     data: 'username',
+            //     title: 'Username',
+            //     defaultContent: '<small class="has-text-danger">...pending</small>',
+            //     render(data, type, row) {
+            //         if (row.decliner) return '<small class="has-text-danger">N/A</small>'
 
-                    if (row.passReset)
-                        return data + ' <sup><i class="fas fa-clock-rotate-left has-text-grey"></i></sup>'
+            //         if (row.passReset)
+            //             return data + ' <sup><i class="fas fa-clock-rotate-left has-text-grey"></i></sup>'
 
-                    return escapeHTML(data)
-                },
-            },
+            //         return escapeHTML(data)
+            //     },
+            // },
 
             {
                 data: 'email',
@@ -320,6 +323,31 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                         : data
                 },
             },
+
+            // {
+            //     data: null,
+            //     searchable: false,
+            //     orderable: false,
+            //     render(data, type, row) {
+            //         if (row.DS) return ''
+            //         let cell = '<div class="field is-grouped is-grouped-multiline">'
+
+            //         for (let target in row.count) {
+            //             const count = row.count[target]
+            //             target = capitalizeFirst(target)
+            //             const tag = !count ? 'span' : 'a'
+
+            //             cell += '<div class ="control"><div class="tags has-addons">'
+            //             cell += `<${tag} class="tag${!count ? ' has-text-danger' : ''}">${target}</${tag}>`
+            //             cell += `<span class="tag is-${!count ? 'danger' : 'success'}">${count}</span>`
+            //             cell += '</div></div>'
+            //         }
+
+            //         cell += '</div>'
+
+            //         return cell
+            //     },
+            // },
 
             {
                 data: null,
