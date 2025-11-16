@@ -55,7 +55,7 @@ class Team {
             users: data.userCount,
         }
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
 
@@ -89,14 +89,17 @@ class Team {
                 const targets = relTargets('main', target)
                 if (!Object.keys(targets).includes(target)) throw new Error('Team Fetch Error: Invalid target supplied')
 
-                const [ Src, idProp, queryInst ] = targets
+                const [ Src, idProp, queryInst, defSort ] = targets
+                if (!sort) sort = defSort
 
                 const ids = []
-                const [ rows ] = await mysql.execute(queryInst.select(idProp, { teamId: this.id || Team.matchIdHash(this._id) }))
+                const [ rows ] = await mysql.execute(queryInst.select(idProp, {
+                    match: { teamId: this.id || Team.matchIdHash(this._id) },
+                }))
 
                 rows.map(row => ids.push(row[idProp]))
 
-                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sort })
             }
 
 

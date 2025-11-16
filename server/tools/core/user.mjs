@@ -150,6 +150,7 @@ class User extends Person {
                                 table: carrierQuery.main.table,
                                 fields: 'id',
                             })
+                            //! UNKNOWN SORT
                             break
 
                         //! Add more cases when more categories are available
@@ -165,13 +166,16 @@ class User extends Person {
                         else ids.push(id)
                     })
                 } else {
-                    [ Src, idProp, queryInst ] = targets
+                    [ Src, idProp, queryInst, defSort ] = targets
+                    if (!sort) sort = defSort
 
-                    const [ rows ] = await mysql.execute(queryInst.select(idProp, { userId: this.id || User.matchIdHash(this._id) }))
+                    const [ rows ] = await mysql.execute(queryInst.select(idProp, {
+                        match: { userId: this.id || User.matchIdHash(this._id) },
+                    }))
                     rows.map(row => ids.push(row[idProp]))
                 }
 
-                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sort })
             }
 
 
@@ -954,7 +958,7 @@ class Role {
             categoryGroup: data.category ? Company.list.category[data.category].item[0] : null,
         }
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
 
@@ -984,14 +988,17 @@ class Role {
                 if (!target) throw new Error('Role Fetch Error: Target not supplied')
 
                 const targets = relTargets('role', target)
-                const [ Src, idProp, queryInst ] = targets
+                const [ Src, idProp, queryInst, defSort ] = targets
+                if (!sort) sort = defSort
 
                 const ids = []
-                const [ rows ] = await mysql.execute(queryInst.select(idProp, { roleId: this.id || Role.matchIdHash(this._id) }))
+                const [ rows ] = await mysql.execute(queryInst.select(idProp, {
+                    match: { roleId: this.id || Role.matchIdHash(this._id) },
+                }))
 
                 rows.map(row => ids.push(row[idProp]))
 
-                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sort })
             }
 
 
@@ -1209,9 +1216,9 @@ class Token {
 function relTargets(src, target = null) {
     const targets =  {
         main: {
-            roles: [ Role, 'roleId', query.jx.roles ],
-            teams: [ Team, 'teamId', query.jx.teams ],
-            // companies: [ Company, 'companyId', query.jx.companies ],
+            roles: [ Role, 'roleId', query.jx.roles, [ 'name', 'location', 'category' ] ],
+            teams: [ Team, 'teamId', query.jx.teams, 'name' ],
+            // companies: [ Company, 'companyId', query.jx.companies, [ 'busName', 'coType' ] ],
         },
         role: {
             users: [ User, 'userId', query.jx.roles ],

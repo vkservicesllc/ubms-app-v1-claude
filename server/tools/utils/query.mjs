@@ -137,7 +137,7 @@ class Query {
             if (!primaryTable) primaryTable = table
 
             match = Query.#match(match, table)
-            sort = Query.#sort(sort, table) //! UNTESTED
+            if (sort) sort = Query.#sort(sort, table) //! UNTESTED
 
             databases.push(db)
             tables.push(table)
@@ -628,19 +628,19 @@ class Query {
     }
 
 
-    static #sort(sort, table) {
+    static #sort(sort, table) {console.log({ sort, table })
         if (typeof sort === 'object') {
             if (Array.isArray(sort))
                 sort = sort.map(item => resolve(item, table)).join(', ')
             else
                 sort = resolve(sort, table)
-        }
+        } else sort = `${Query.#field(sort, table)}`
 
         return sort
 
 
         function resolve(sort, table) {
-            let order = 'asc'
+            let order = ''
 
             if (typeof sort === 'object') {
                 order = Object.keys(sort)[0]
@@ -651,7 +651,7 @@ class Query {
 
             const field = Query.#field(sort, table)
 
-            return `${field} ${order.toUpperCase()}`
+            return (`${field} ${order.toUpperCase()}`).trim()
         }
 
     }
