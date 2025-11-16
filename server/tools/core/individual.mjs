@@ -17,17 +17,12 @@ const query = {
     addresses: new Query(db.person, 'addresses'),
     emails: new Query(db.person, 'emails'),
     identifications: new Query(db.person, 'identifications'),
-    //! ...add more
+    //! ...add more if needed
 }
 
 
 
 class Individual extends Person {
-    static #algorithm = 'SHA-512/256'
-
-    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
-
-
     constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Person Data')
 
@@ -55,84 +50,20 @@ class Individual extends Person {
 
         reSuper(this, props, { legalPresence, phone, email, marital, address, identification })
 
-        if (single) {
-
-            this.log = () => {}
-
-
-            this.add = ({ user: sessionUser = {} }, { target, data = [] } = {}) => {
-                if (!target) throw new Error('Instance Add Error: Target not supplied')
-
-                let added = false, error
-
-                //* ...
-
-                return { added, error }
-            }
-
-
-            this.fetch = ({ user: sessionUser = {} }, { target, filter = {} } = {}) => {
-                if (!target) throw new Error('Instance Fetch Error: Target not supplied')
-
-                let data = [], error
-
-                //* ...
-
-                return { data, error }
-            }
-
-
-            this.update = ({ user: sessionUser = {} }, { target, data = [], ids = [] }) => {
-                let updated = false, error
-
-                if (!target) {
-                    //* Update main
-                } else {
-                    //* Update relationships
-                }
-
-                //* ...
-
-                return { updated, error }
-            }
-
-
-            this.delete = ({ user: sessionUser = {} }, { target, ids = [] }) => {
-                let deleted = false, error
-
-                if (!target) {
-                    //* Delete main
-                } else {
-                    //* Delete relationships
-                }
-
-                //* ...
-
-                return { deleted, error }
-            }
-
-
-        }
+        if (single) {}
     }
 
+    static #algorithm = 'SHA-512/256'
     static hashId = (field = 'id') => hash(field, Individual.#algorithm)
     static matchIdHash = value => matchHash(value, Individual.#algorithm)
 
-
-    static create = ({ user: sessionUser = {} }, data = {}) => {
-        let created = false, error
-
-        //* ...
-
-        return { created, error }
-    }
+    static defSorts = [ null, [ 'lastName', 'suffix', 'firstName', 'middleName' ] ]
 
 
-    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
-        const batch = Role.#batch({ user: sessionUser }, filter)
+    static create = ({ user: sessionUser = {} }, body = {}) => {}
 
-        //* ...
-    }
+
+    static fetch = ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false, sorts = Individual.defSorts } = {}) => {}
 
 
     static list = {
