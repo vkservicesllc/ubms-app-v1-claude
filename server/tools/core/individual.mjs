@@ -23,7 +23,7 @@ const query = {
 
 
 class Individual extends Person {
-    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Person Data')
 
         super(data)
@@ -37,8 +37,8 @@ class Individual extends Person {
         const address = new Address(data)
 
         const identification = {
-            driver: data.driver,
-            commercial: data.commercial,
+            driver: !!data.driver,
+            commercial: !!data.commercial,
             number: data.idNumber,
             class: data.idClass,
             state: data.idState,
@@ -50,7 +50,32 @@ class Individual extends Person {
 
         reSuper(this, props, { legalPresence, phone, email, marital, address, identification })
 
-        if (single) {}
+        if (single) {
+            this.session = session
+
+
+            this.add = async (queryProp = 'main', body) => {}
+
+
+            this.update = async (body, queryProp = 'main', match = {}) => {}
+
+
+            this.delete = async (queryProp = 'main', match = {}) => {}
+
+
+            this.log = async (field, queryProp = 'main') => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+                const idProp = queryProp === 'main' ? 'id' : 'personId'
+
+                let log = (await mysql.execute(query[queryProp].select(fields, {
+                    match: { [idProp]: this.id || Individual.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
+        }
     }
 
     static #algorithm = 'SHA-512/256'
