@@ -99,6 +99,7 @@ class User extends Person {
             this.add = async (target, ids = []) => {
                 if (!this.session?.user?.id) throw new Error('User Add Error: No session user')
                 if (!target) throw new Error('User Add Error: Target not supplied')
+                if (!this.id) throw new Error('User Add Error: Personal ID is missing')
 
                 const targets = relTargets('main', target)
 
@@ -107,7 +108,7 @@ class User extends Person {
                 const list = await Src.fetch(this.session, { ids })
 
                 list.map(item => data.push({
-                    userId: this.id || User.matchIdHash(this._id),
+                    userId: this.id,
                     [idProp]: item.id,
                     createdBy: session.user.id,
                 }))
@@ -970,6 +971,7 @@ class Role {
             this.add = async (target, ids = []) => {
                 if (!this.session?.user?.id) throw new Error('Role Add Error: No session user')
                 if (!target) throw new Error('Role Add Error: Target not supplied')
+                if (!this.id) throw new Error('Role Add Error: Personal ID is missing')
 
                 const targets = relTargets('role', target)
                 const data = []
@@ -977,7 +979,7 @@ class Role {
                 const list = await Src.fetch(this.session, { ids })
 
                 list.map(item => data.push({
-                    roleId: this.id || Role.matchIdHash(this._id),
+                    roleId: this.id,
                     [idProp]: item.id,
                     createdBy: session.user.id,
                 }))

@@ -62,6 +62,7 @@ class Team {
             this.add = async (target, ids = []) => {
                 if (!this.session?.user?.id) throw new Error('Team Add Error: No session user')
                 if (!target) throw new Error('Team Add Error: Target not supplied')
+                if (!this.id) throw new Error('Team Add Error: Personal ID is missing')
 
                 const targets = relTargets('main', target)
                 if (!Object.keys(targets).includes(target)) throw new Error('Team Add Error: Invalid target supplied')
@@ -71,7 +72,7 @@ class Team {
                 const list = await Src.fetch(this.session, { ids })
 
                 list.map(item => data.push({
-                    teamId: this.id || Team.matchIdHash(this._id),
+                    teamId: this.id,
                     [idProp]: item.id,
                     createdBy: session.user.id,
                 }))
@@ -146,7 +147,7 @@ class Team {
                 if (!target) {
                     const log = await this.log()
 
-                    const [ result ] = await mysql.execute(query.teams.delete({ id: this.id || Team.matchIdHash(this._id) }))
+                    const [ result ] = await mysql.execute(query.main.delete({ id: this.id || Team.matchIdHash(this._id) }))
                     if (!result.affectedRows) return false
 
                     for (const prop in log) this[prop] = log[prop]

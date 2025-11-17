@@ -7,26 +7,27 @@ import db from '../../settings/mysql.mjs'
 /* Tools */
 import moment from 'moment'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
-// import { sessionError } from './user.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
-import { ssn as formatSsn } from '../../../client/global/modules/tools/utils/formatter.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { encrypt } from '../utils/crypto.mjs'
 
+const mysql = require('../utils/mysql')
 
+
+const { sqlMode } = Query //! TEST IF NEED COUNTERS
 const query = {
     main: new Query(db.person, 'individuals'),
     names: new Query(db.person, 'names'),
     legalPresence: new Query(db.person, 'legal_presence'),
     maritals: new Query(db.person, 'maritals'),
-    //?...
+    //?... Any needed in between?
     phones: new Query(db.person, 'phones'),
     addresses: new Query(db.person, 'addresses'),
     emails: new Query(db.person, 'emails'),
     identifications: new Query(db.person, 'identifications'),
-    //! ...add more if needed
+    //! ...Add more if needed
 }
 
 
@@ -63,13 +64,120 @@ class Individual extends Person {
             this.session = session
 
 
-            this.add = async (target, body) => {}
+            this.add = async (target, body) => {
+                const { user: sessionUser, branch, siteId } = this.session
+
+                if (sessionUser?.id) throw new Error('Individual Add Error: No session user')
+                if (!target) throw new Error('Individual Add Error: Target not supplied')
+                if (!this.id) throw new Error('Individual Add Error: Personal ID is missing')
+
+                const targets = Object.keys(query)
+                if (!targets.includes(target) || target === 'main') throw new Error('Individual Add Error: Invalid target supplied')
+
+                const createdIn = { branch }
+                if (siteId) createdIn.siteId = siteId
+
+                body = processData(body)
+                body.personId = this.id
+                body.createdBy = sessionUser.id
+                body.createdIn = JSON.stringify(createdIn)
+
+                const [ result ] = await mysql.execute(query[target].insert(body))
+                if (!result.affectedRows) throw new Error('DB Error: Failed to update individual')
+            }
 
 
-            this.update = async (body, target, { since }) => {}
+            this.update = async (body, target, { since }) => {
+                if (!target) throw new Error('Individual Update Error: Target not supplied')
+
+                const targets = Object.keys(query)
+                if (!targets.includes(target)) throw new Error('Individual Update Error: Invalid target supplied')
+
+                if (target !== 'main' && (!since || since <= this.dob)) throw new Error('Individual Update Error: Incorrect effective date supplied')
+
+                const idProp = target === 'main' ? 'id' : 'personId'
+                const match = { [idProp]: this.id | Individual.#algorithm.matchIdHash(this._id) }
+                if (since) match.since = since
+
+                const { user: sessionUser, branch, siteId } = this.session
+                const modifiedBy = sessionUser?.id || null
+                const createdIn = { branch }
+                if (siteId) createdIn.siteId = siteId
+                let currentData = this
+
+                if (target === 'legalPresence') currentData = this.legalPresence
+                if (target === 'addresses') currentData = this.address
+                if (target === 'identifications') currentData = this.identification
+
+                body = processData(body, {
+                    modifiedBy, branch, siteId,
+                    currentData, currentUpdateLog: await this.log('updateLog', target)
+                })
+
+                const [ result ] = await mysql.execute(query[target].update(body, match))
+
+                return result.affectedRows > 0
+            }
 
 
-            this.delete = async (target, { since }) => {}
+            this.delete = async (target, { since }) => {
+                if (!this.session?.user?.id) throw new Error('Individual Delete Error: Session user not found')
+
+                if (!target) {
+                    const log = await this.log()
+                    const history = {
+                        names: await this.history(session, 'names', true),
+                    }
+
+                    const [ result ] = await mysql.execute(query.main.delete({ id: this.id || Individual.matchIdHash(this._id) }))
+                    if (!result.affectedRows) return false
+
+                    const reduntant = [
+                        'gender',
+                        'prefix',
+                        'firstName',
+                        'middleName',
+                        'lastName',
+                        'suffix',
+                        'alias',
+                        'age',
+                    ]
+
+                    for (const prop of reduntant) delete this[prop]
+                    this.ssn = ssn ? encrypt(ssn) : null
+                    this.history = history
+                    for (const prop in log) this[prop] = log[prop]
+
+                    await logDeletion(session, 'individuals', this, { id })
+                } else if (Object.keys(query).includes(target) && target !== 'main' && since) {
+                    const [ result ] = await mysql.execute(query[target].delete({
+                        personId: this.id || Individual.matchIdHash(this._id), since,
+                    }))
+
+                    return result.affectedRows > 0
+                }
+            }
+
+
+            this.history = async (target, log = false) => {
+                let fields, sort = { desc: 'since' }
+
+                switch (target) {
+                    case 'names':
+                        fields = [ 'since', 'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix' ]
+                        break
+                    case 'phones':
+                        fields = [ 'since', 'number' ]
+                        break
+                    //! Add more if needed...
+                }
+                if (log) fields.push('createdBy', 'createdAt', 'createdIn', 'updateLog')
+
+                return (await mysql.execute(query[target].select(fields, {
+                    match: { personId: this.id || Individual.matchIdHash(this._id) },
+                    sort,
+                })))[0]
+            }
 
 
             this.log = async (field, queryProp = 'main') => {
@@ -190,6 +298,7 @@ class Individual extends Person {
             {
                 table: query.main.table,
                 fields: [ Individual.hashId(), 'dob', 'sex', { aes: [ 'ssn', secret ] } ],
+                // group: 'id',
             },
             {
                 table: query.names.table,
@@ -262,8 +371,10 @@ class Individual extends Person {
 
         if (batchOnly) return batch
 
-        const session = { user: { id: sessionUser.id } }
+        // await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+
+        const session = { user: { id: sessionUser.id } }
         list.forEach((data, i, arr) => arr[i] = new Team(data, { single, session, hideRawId }))
 
         return single ? list[0] : list
