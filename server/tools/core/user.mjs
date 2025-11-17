@@ -525,7 +525,7 @@ class User extends Person {
 
     static fetch = async (
         { user: sessionUser = {}, branch, siteId = null }, filter = {},
-        { hideRawId = false, hideSensitive = true, combined = false, login = false, batchOnly = false, sorts = User.defSorts } = {}
+        { hideRawId = false, hideSensitive = true, combined = false, login = false, sorts = User.defSorts, mode = 'data' } = {}
     ) => {
         const { id: sessionUserId = null } = sessionUser
         if (!sessionUserId && !login) throw new Error('User Fetch Error: No session user')
@@ -607,10 +607,13 @@ class User extends Person {
         if (!single && Array.isArray(sorts))
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
 
-        if (batchOnly) return batch
+        if (mode === 'batch') return batch
+
+        const queryStr = Query.select(db.online, batch)
+        if (mode === 'query') return queryStr
 
         await mysql.query(sqlMode.onlyFullGroupBy.remove)
-        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+        const list = (await mysql.execute(queryStr))[0]
 
         const session = { user: { id: sessionUserId }, siteId, branch }
         list.forEach((data, i, arr) => arr[i] = new User(data, { single, login, session, hideRawId, hideSensitive }))
@@ -1097,7 +1100,7 @@ class Role {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, batchOnly = false, sorts = Role.defSorts } = {}) => {
+    static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, sorts = Role.defSorts, mode = 'data' } = {}) => {
         if (!sessionUser.id) throw new Error('Role Fetch Error: No session user')
 
         const {
@@ -1124,10 +1127,13 @@ class Role {
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
 
 
-        if (batchOnly) return batch
+        if (mode === 'batch') return batch
+
+        const queryStr = Query.select(db.online, batch)
+        if (mode === 'query') return queryStr
 
         const session = { user: { id: sessionUser.id } }
-        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+        const list = (await mysql.execute(queryStr))[0]
         list.forEach((data, i, arr) => arr[i] = new Role(data, { single, session, hideRawId }))
 
         return single ? list[0] : list

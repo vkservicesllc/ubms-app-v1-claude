@@ -209,7 +209,7 @@ class Team {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false, sorts = Team.defSorts } = {}) => {
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, sorts = Team.defSorts, mode = 'data' } = {}) => {
         if (!sessionUser.id) throw new Error('Team Fetch Error: No session user')
 
         const {
@@ -261,10 +261,13 @@ class Team {
         if (!single && Array.isArray(sorts))
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
 
-        if (batchOnly) return batch
+        if (mode === 'batch') return batch
+
+        const queryStr = Query.select(db.online, batch)
+        if (mode === 'query') return queryStr
 
         const session = { user: { id: sessionUser.id } }
-        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+        const list = (await mysql.execute(queryStr))[0]
         list.forEach((data, i, arr) => arr[i] = new Team(data, { single, session, hideRawId }))
 
         return single ? list[0] : list

@@ -292,7 +292,7 @@ class Individual extends Person {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, batchOnly = false, sorts = Individual.defSorts } = {}) => {
+    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, sorts = Individual.defSorts, mode = 'data' } = {}) => {
         const join = [ 'personId', 'id', { max: 'since' } ]
         const batch = [
             {
@@ -369,10 +369,13 @@ class Individual extends Person {
         if (!single && Array.isArray(sorts))
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
 
-        if (batchOnly) return batch
+        if (mode === 'batch') return batch
+
+        const queryStr = Query.select(db.online, batch)
+        if (mode === 'query') return queryStr
 
         // await mysql.query(sqlMode.onlyFullGroupBy.remove)
-        const list = (await mysql.execute(Query.select(db.online, batch)))[0]
+        const list = (await mysql.execute(queryStr))[0]
 
         const session = { user: { id: sessionUser.id } }
         list.forEach((data, i, arr) => arr[i] = new Team(data, { single, session, hideRawId }))
