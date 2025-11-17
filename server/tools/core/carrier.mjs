@@ -99,10 +99,10 @@ class Carrier extends Company {
         batch[0].match.category = 'crr'
 
         const {
-            id, _id, companyId,  _companyId, ein, duns, route,
+            id, _id, companyId,  _companyId, ein, duns, busName, coType, alias, route,
             ids, _ids, companyIds, _companyIds,
         } = filter
-        const single = id || _id || companyId || _companyId || ein || duns || route
+        const single = id || _id || companyId || _companyId || ein || duns || (busName && coType) || alias || route
 
         const idx = batch.length - 3
         if (id || _id || ids || _ids) {

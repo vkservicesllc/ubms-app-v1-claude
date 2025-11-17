@@ -125,7 +125,37 @@ class Company {
     static defSorts = [ null, [ 'busName', 'coType' ] ]
 
 
-    static create = async ({ user: sessionUser = {} }, body = {}) => {}
+    static create = async ({ user: sessionUser = {} }, body = {}) => {
+        if (!sessionUser.id) throw new Error('Company Create Error: No session user')
+
+        body = processData(body)
+
+        const { category, ein, duns, since, busName, coType, alias } = body
+
+        if (await Company.fetch({ sessionUser }, { ein, duns, busName, coType, alias })) return
+
+        const createdBy = sessionUser.id
+        const data = {
+            main: { category, duns, since, createdBy },
+            name: { since, busName, coType, alias, createdBy },
+        }
+        if (ein) data.main.ein = { aes: [ ein, secret.ein ] }
+
+        let [ result ] = await mysql.execute(query.main.insert(data.main))
+        const id = result.insertId
+
+        if (!id) throw new Error('DB Error: Failed to create company')
+
+        data.name.companyId = id
+
+        [ result ] = await mysql.execute(query.names.insert(data.name))
+        if (!result.affectedRows) throw new Error('DB Error: Failed to register company name')
+
+        const company = await Company.fetch({ sessionUser }, { id })
+        if (!company) throw new Error('Fetch Error: New company not found')
+
+        return company
+    }
 
 
     static fetch = async (
@@ -210,14 +240,14 @@ class Company {
         ]
 
         const {
-            id, _id, ein, duns, route,
+            id, _id, ein, duns, busName, coType, alias, route,
             ids, _ids, ownerId, _ownerId, category, global, lastLogo
         } = filter
-        const single = id || _id || ein || duns || route
+        const single = id || _id || ein || duns || (busName && coType) || alias || route
 
         const match = {
             main: { id, duns, category, global, lastLogo },
-            names: {},
+            names: { alias },
             ownerships: { ownerId: ownerId || Owner.matchIdHash(_ownerId) },
         }
         if (!id) {
@@ -225,6 +255,10 @@ class Company {
             match.main.id = Company.matchIdHash(_id || _ids)
         }
         if (ein) match.main.ein = { aes: [ ein, secret.ein ] }
+        if (busName && coType) {
+            match.main.busName = busName
+            match.main.coType = coType
+        }
         if (route) match.names.route = { route: [ [ 'busName', 'coType' ], route ] }
 
         if (sessionUser.DS && branch === 'admin') {
@@ -335,7 +369,33 @@ class Owner extends Individual {
     static defSorts = [ null, null, [ 'lastName', 'suffix', 'firstName', 'middleName' ] ]
 
 
-    static create = async ({ user: sessionUser = {} }, body = {}) => {}
+    static create = async ({ user: sessionUser = {} }, body = {}) => {
+        if (!sessionUser.id) throw new Error('Owner Create Error: No session user')
+
+        body = processData(body)
+
+        const { ssn } = body
+        let person = await Individual.fetch({ sessionUser }, { ssn })
+
+        if (!person) person = await Individual.create({ sessionUser }, body)
+        else {
+            const { dob } = person
+
+            if (dob !== body.dob) throw new Error('Owner Create Error: SSN recognized; DOB mismatch')
+        }
+        const personId = person.id
+        const createdBy = sessionUser.id
+
+        const [ result ] = await mysql(query.owners.insert({ personId, createdBy }))
+        const id = result.insertId
+
+        if (!id) throw new Error('DB Error: Failed to create owner')
+
+        const owner = await User.fetch({ sessionUser }, { id })
+        if (!owner) throw new Error('Fetch Error: New owner not found')
+
+        return owner
+    }
 
 
     static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, hideSensitive = true, sorts = Role.defSorts, mode = 'data' } = {}) => {

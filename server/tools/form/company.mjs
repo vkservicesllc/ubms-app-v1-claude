@@ -91,7 +91,7 @@ const createEinForm = (selector, props = {}) => createForm({
     target: 'ein',
     mode: 'numeric',
     name: 'ein',
-    required,
+    // required,
     label: {
         content: 'EIN',
         title: 'Employer Identification Number',
