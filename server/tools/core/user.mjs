@@ -1126,7 +1126,6 @@ class Role {
         if (!single && Array.isArray(sorts))
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
 
-
         if (mode === 'batch') return batch
 
         const queryStr = Query.select(db.online, batch)
