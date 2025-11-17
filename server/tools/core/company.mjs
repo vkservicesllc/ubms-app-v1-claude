@@ -128,7 +128,10 @@ class Company {
     static create = async ({ user: sessionUser = {} }, body = {}) => {}
 
 
-    static fetch = async ({ user: sessionUser = {}, branch, siteId } = {}, filter = {}, { hideRawId = false, hideSensitive = true, sorts = Company.defSorts, mode = 'data' } = {}) => {
+    static fetch = async (
+        { user: sessionUser = {}, branch, siteId } = {}, filter = {},
+        { hideRawId = false, hideSensitive = true, sorts = Company.defSorts, mode = 'data' } = {}
+    ) => {
         if (!sessionUser.id) throw new Error('Company Fetch Error: No session user')
 
         const join = [ 'companyId', 'id', { max: 'since' } ]

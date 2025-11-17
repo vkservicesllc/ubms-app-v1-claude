@@ -63,13 +63,13 @@ class Carrier extends Company {
     static create = async ({ user: sessionUser = {} }, body = {}) => {}
 
 
-    static fetch = async ({ user: sessionUser = {}, branch, siteId } = {}, filter = {}, { hideRawId = false, hideSensitive = true,
-        //! need to decide
-        sorts = Company.defSorts,
-    mode = 'data' } = {}) => {
+    static fetch = async (
+        { user: sessionUser = {}, branch, siteId } = {}, filter = {},
+        { hideRawId = false, hideSensitive = true, sorts = Company.defSorts, mode = 'data' } = {}
+    ) => {
         if (!sessionUser.id) throw new Error('Carrier Fetch Error: No session user')
 
-        const batch = Company.fetch({ sessionUser }, filter, { hideRawId, hideSensitive, mode: 'batch' })
+        const batch = Company.fetch({ sessionUser }, filter, { hideRawId, hideSensitive, sorts, mode: 'batch' })
 
         const join = [ 'carrierId', 'id', 'carriers' ]
         const stateTaxFields = []
@@ -133,6 +133,8 @@ class Carrier extends Company {
 
 
 
+delete Carrier.sortDefs
+delete Carrier.create
 delete Carrier.list
 
 export default Carrier
