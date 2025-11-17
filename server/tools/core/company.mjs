@@ -136,7 +136,7 @@ class Company {
             {
                 table: query.main.table,
                 fields: [
-                    'id', Company.hashId(), 'catId', { aes: [ 'ein', secret.ein ] }, 'duns', 'website',
+                    'id', Company.hashId(), 'category', { aes: [ 'ein', secret.ein ] }, 'duns', 'website',
                     'since', 'until', 'global', 'active', 'confirmed', 'lastLogo', 'style',
                 ],
             },
@@ -244,7 +244,7 @@ class Company {
 
         if (mode === 'batch') return batch
 
-        const queryStr = Query.select(db.online, batch)
+        const queryStr = Query.select(db.business, batch)
         if (mode === 'query') return queryStr
 
         const list = (await mysql.execute(queryStr))[0]
@@ -312,11 +312,11 @@ class Owner extends Individual {
         }
         if (!hideSensitive) this.ssn = stringifyBuffer(data.ssn)
 
-        const props2 = { count: { companies: companyCount } }
+        const props2 = { count: { companies: data.companyCount } }
 
         const categories = Company.list.category
-        for (const catId in categories) {
-            const path = categories[catId].path[0]
+        for (const category in categories) {
+            const path = categories[category].path[0]
             props2.count[path] = data[`${path}Count`]
         }
 
@@ -374,7 +374,7 @@ class Owner extends Individual {
             },
             {
                 table: query.main.table,
-                fields: [ { count: [ 'catId', 'companyCount' ] } ],
+                fields: [ { count: [ 'category', 'companyCount' ] } ],
                 join: [ 'id', 'companyId', 4 ],
             },
         ]
@@ -411,7 +411,7 @@ class Owner extends Individual {
 
         if (mode === 'batch') return batch
 
-        const queryStr = Query.select(db.online, batch)
+        const queryStr = Query.select(db.business, batch)
         if (mode === 'query') return queryStr
 
         await mysql.query(sqlMode.onlyFullGroupBy.remove)

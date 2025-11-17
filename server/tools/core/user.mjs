@@ -1236,7 +1236,7 @@ function relTargets(src, target = null) {
         main: {
             roles: [ Role, 'roleId', query.jx.roles, Role.defSorts ],
             teams: [ Team, 'teamId', query.jx.teams, Team.defSorts ],
-            // companies: [ Company, 'companyId', query.jx.companies, [ null, [ 'busName', 'coType' ] ] ],
+            companies: [ Company, 'companyId', query.jx.companies, [ null, [ 'busName', 'coType' ] ] ],
         },
         role: {
             users: [ User, 'userId', query.jx.roles, User.defSort ],

@@ -628,7 +628,7 @@ class Query {
     }
 
 
-    static #sort(sort, table) {console.log({ sort, table })
+    static #sort(sort, table) {
         if (typeof sort === 'object') {
             if (Array.isArray(sort))
                 sort = sort.map(item => resolve(item, table)).join(', ')

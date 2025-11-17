@@ -3,13 +3,9 @@ import selector from "/modules/registry/selectors/user.mjs"
 const _id = $(selector.id.hidden.id).val()
 
 if (_id) {
-    // const response = { categories: $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON }
-    // const targets = ['roles', 'teams' ] //, 'companies']
-    // targets.forEach(target => response[target] = $.ajax(`/api/user/${_id}/${target}`, { async: false, method: 'POST' }).responseJSON)
-
     const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
     const relationships = $.ajax(`/api/user/${_id}/relationships`, { async: false, method: 'POST' }).responseJSON.data
-console.log(relationships)
+
     const defOpts = { available: '', applied: '' }
     const optgroup = '<optgroup><option value=""></option></optgroup>'
     const keys = Object.keys(defOpts)
@@ -105,36 +101,36 @@ console.log(relationships)
         })
     }
 
-    // {
-    //     const { companies } = relationships
-    //     const $companies = {
-    //         available: $('#available-companies'),
-    //         applied: $('#user-companies'),
-    //     }
+    {
+        const { companies } = relationships
+        const $companies = {
+            available: $('#available-companies'),
+            applied: $('#user-companies'),
+        }
 
-    //     const options = { ...defOpts }, optgroups = {}
+        const options = { ...defOpts }, optgroups = {}
 
-    //     for (const prop of keys) {
-    //         optgroups[prop] = companies[prop].reduce((cat, { _id, name, category}) => {
-    //             if (!cat[category]) cat[category] = []
-    //             cat[category].push({ _id, name })
+        for (const prop of keys) {
+            optgroups[prop] = companies[prop].reduce((cat, { _id, name, category}) => {
+                if (!cat[category]) cat[category] = []
+                cat[category].push({ _id, name })
     
-    //             return cat
-    //         }, {})
+                return cat
+            }, {})
 
-    //         for (const category in optgroups[prop]) {
-    //             options[prop] += `<optgroup label="${categories[category].item[1]}">`
-    //             for (const company of optgroups[prop][category]) {
-    //                 const { _id, name } = company
-    //                 options[prop] += `<option value="${_id}">${name}</option>`
-    //             }
-    //             options[prop] += '</optgroup>'
-    //         }
-    //     }
+            for (const category in optgroups[prop]) {
+                options[prop] += `<optgroup label="${categories[category].item[1]}">`
+                for (const company of optgroups[prop][category]) {
+                    const { _id, name } = company
+                    options[prop] += `<option value="${_id}">${name}</option>`
+                }
+                options[prop] += '</optgroup>'
+            }
+        }
 
-    //     $companies.available.html(options.available || optgroup)
-    //     $companies.applied.html(options.applied || optgroup)
-    // }
+        $companies.available.html(options.available || optgroup)
+        $companies.applied.html(options.applied || optgroup)
+    }
 
     $('.loader-wrapper').remove()
 }
