@@ -52,7 +52,26 @@ class Carrier extends Company {
 
         reSuper(this, props, props2)
 
-        if (single) {}
+        if (single) {
+            this.session = session
+
+
+            this.add = async (target, body) => {}
+
+
+            this.log = async (field, queryProp = 'main') => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+                const idProp = queryProp === 'main' ? 'id' : 'companyId'
+
+                let log = (await mysql.execute(query[queryProp].select(fields, {
+                    match: { [idProp]: this.id || Carrier.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
+        }
     }
 
     static #algorithm = 'SHA-512/224'
@@ -60,7 +79,27 @@ class Carrier extends Company {
     static matchIdHash = value => matchHash(value, Carrier.#algorithm)
 
 
-    static create = async ({ user: sessionUser = {} }, body = {}) => {}
+    static create = async ({ user: sessionUser = {} }, body = {}) => {
+        if (!sessionUser.id) throw new Error('Carrier Create Error: No session user')
+
+        body = processData(body)
+
+        const { usdot, mc } = body
+
+        if (await Company.fetch({ sessionUser }, { usdot, mc })) return
+
+        body.createdBy = sessionUser.id
+
+        const [ result ] = await mysql.execute(query.main.insert(body))
+        const id = result.insertId
+
+        if (!id) throw new Error('DB Error: Failed to create carrier')
+
+        const carrier = await Company.fetch({ sessionUser }, { id })
+        if (!carrier) throw new Error('Fetch Error: New carrier not found')
+
+        return carrier
+    }
 
 
     static fetch = async (
@@ -99,12 +138,13 @@ class Carrier extends Company {
         batch[0].match.category = 'crr'
 
         const {
-            id, _id, companyId,  _companyId, ein, duns, busName, coType, alias, route,
+            id, _id, companyId,  _companyId, ein, duns, busName, coType, alias, route, usdot, mc,
             ids, _ids, companyIds, _companyIds,
         } = filter
         const single = id || _id || companyId || _companyId || ein || duns || (busName && coType) || alias || route
 
         const idx = batch.length - 3
+        batch[idx].match = { usdot, mc }
         if (id || _id || ids || _ids) {
             batch[idx].match.id = { id }
             if (!id) {
@@ -129,65 +169,67 @@ class Carrier extends Company {
     }
 
 
+    static list = {
+
+        permit: {
+            ca: {
+                content: 'CA Number',
+                title: 'California Number & Weight-Mile Tax',
+            },
+            fl: {
+                content: 'FL Highway Use Permit',
+                title: 'Florida Highway Use Permit',
+            },
+            il: {
+                content: 'IL MFUT',
+                title: 'Illinois Motor Fuel Use Tax',
+            },
+            in: {
+                content: 'IN MCFT',
+                title: 'Indiana Motor Carrier Fuel Tax',
+            },
+            ky: {
+                content: 'KYU Number',
+                title: 'Kentucky Weight Distance Tax Number (Permit)',
+            },
+            nj: {
+                content: 'NJ HUT',
+                title: 'New Jersey Highway Use Tax',
+            },
+            nm: {
+                content: 'NM Permit',
+                title: 'New Mexico Weight Distance Tax Permit',
+            },
+            nv: {
+                content: 'NV Highway Use Fees',
+                title: 'Nevada Highway Use Fees',
+            },
+            ny: {
+                content: 'HUT Certificate (NY)',
+                title: 'New York Highway Use Tax Certificate Number (Permit)',
+            },
+            or: {
+                content: 'OR Permit',
+                title: 'Oregon Motor Carrier Permit',
+            },
+            tx: {
+                content: 'TX Motor Carrier Registration',
+                title: 'Texas Motor Carrier Registration',
+            },
+            wa: {
+                content: 'WA Weight Distance Permit',
+                title: 'Washington State Weight Distance Permit',
+            },
+        },
+
+    }
+
+
 }
 
 
 
 delete Carrier.sortDefs
-delete Carrier.create
-delete Carrier.list
 
 export default Carrier
 export { query }
-
-
-export const permits = {
-    ca: {
-        content: 'CA Number',
-        title: 'California Number & Weight-Mile Tax',
-    },
-    fl: {
-        content: 'FL Highway Use Permit',
-        title: 'Florida Highway Use Permit',
-    },
-    il: {
-        content: 'IL MFUT',
-        title: 'Illinois Motor Fuel Use Tax',
-    },
-    in: {
-        content: 'IN MCFT',
-        title: 'Indiana Motor Carrier Fuel Tax',
-    },
-    ky: {
-        content: 'KYU Number',
-        title: 'Kentucky Weight Distance Tax Number (Permit)',
-    },
-    nj: {
-        content: 'NJ HUT',
-        title: 'New Jersey Highway Use Tax',
-    },
-    nm: {
-        content: 'NM Permit',
-        title: 'New Mexico Weight Distance Tax Permit',
-    },
-    nv: {
-        content: 'NV Highway Use Fees',
-        title: 'Nevada Highway Use Fees',
-    },
-    ny: {
-        content: 'HUT Certificate (NY)',
-        title: 'New York Highway Use Tax Certificate Number (Permit)',
-    },
-    or: {
-        content: 'OR Permit',
-        title: 'Oregon Motor Carrier Permit',
-    },
-    tx: {
-        content: 'TX Motor Carrier Registration',
-        title: 'Texas Motor Carrier Registration',
-    },
-    wa: {
-        content: 'WA Weight Distance Permit',
-        title: 'Washington State Weight Distance Permit',
-    },
-}

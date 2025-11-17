@@ -2,7 +2,7 @@ const router = require('express').Router()
 
 /* Tools */
 import User from '../../tools/core/user.mjs'
-import { permits } from '../../tools/core/carrier.mjs'
+import Carrier from '../../tools/core/carrier.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
@@ -104,7 +104,7 @@ router.post('/company-owner/phone/update', User.mw.verify, User.mw.superAdminOnl
 
 const validateCarrier = []
 const carrierFields = ['mc', 'usdot', 'ifta', 'scac', 'irp', 'efs', 'fleetOne', 'transflo']
-Object.keys(permits).forEach(prop => carrierFields.push(`${prop}Permit`))
+Object.keys(Carrier.list.permit).forEach(prop => carrierFields.push(`${prop}Permit`))
 carrierFields.map(prop => validateCarrier.push(CarrierForm[prop].validate()))
 
 router.post('/carrier/:_companyId', User.mw.verify, User.mw.superAdminOnly, validateCarrier, validationCheck, CarrierMW.upsert)

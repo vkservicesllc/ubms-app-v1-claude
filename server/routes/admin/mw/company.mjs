@@ -6,7 +6,7 @@ import moment from 'moment'
 
 /* Tools */
 import Company, { Owner } from '../../../tools/core/company.mjs'
-import Carrier, { permits } from '../../../tools/core/carrier.mjs'
+import Carrier from '../../../tools/core/carrier.mjs'
 import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
 import escapeHTML from '../../../../client/global/modules/tools/utils/html.mjs'
 import { ein as formatEin, duns as formatDuns, tel as formatTel } from '../../../../client/global/modules/tools/utils/formatter.mjs'
@@ -34,6 +34,8 @@ const errMsg = {
     company: `Server Internal Error: Company not found<br/><a href="${url.companies}">Back to Companies</a>`,
     owner: `Server Internal Error: Company Owner not found<br/><a href="${url.owners}">Back to Company Owners</a>`,
 }
+
+const permits = Carrier.list.permit
 
 
 

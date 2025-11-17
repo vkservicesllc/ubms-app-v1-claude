@@ -32,15 +32,14 @@ const { sqlMode } = Query
 const query = {
     main: new Query(db.business, 'companies'),
     names: new Query(db.business, 'company_names'),
-    owners: new Query(db.business, 'company_owners'),  // * 2
     ownerships: new Query(db.business, 'company_ownerships'),
-    addresses: new Query(db.business, 'company_addresses'),  // * 4
-    mail: new Query(db.business, 'company_mail'),  // * 5
+    addresses: new Query(db.business, 'company_addresses'),
+    mail: new Query(db.business, 'company_mail'),
     phones: new Query(db.business, 'company_phones'),
     faxes: new Query(db.business, 'company_faxes'),
     emails: new Query(db.business, 'company_emails'),
-    //? teams: new Query(db.business, 'teams_companies'),
-    //! users: new Query(db.business, 'companies_users'),
+    //! ...Add more if needed
+    owners: new Query(db.business, 'company_owners'),
 }
 
 
@@ -115,7 +114,68 @@ class Company {
         this.fax = data.fax
         this.email = data.email
 
-        if (single) {}
+        if (single) {
+            this.session = session
+
+
+            this.add = async (target, bodyOrIds) => {
+                const { user: sessionUser } = this.session
+
+                if (sessionUser?.id) throw new Error('Company Add Error: No session user')
+                if (!target) throw new Error('Company Add Error: Target not supplied')
+                if (!this.id) throw new Error('Company Add Error: Personal ID is missing')
+
+                let targets = Object.keys(query), jxTargets = [ 'users' ]
+                if (!targets.includes(target) || !jxTargets.includes(target) || target === 'main' || target === 'owners')
+                    throw new Error('Company Add Error: Invalid target supplied')
+
+                if (targets.includes(target)) {
+                    let body = bodyOrIds
+
+                    body = processData(body)
+                    body.companyId = this.id
+                    body.createdBy = sessionUser.id
+
+                    const [ result ] = await mysql.execute(query[target].insert(body))
+                    if (!result.affectedRows) throw new Error('DB Error: Failed to update company')
+
+                    return true
+                } else {
+                    if (!Array.isArray(bodyOrIds)) throw new Error('Company Add Error: IDs of incorrect type')
+                    const ids = bodyOrIds
+
+                    target = relTargets('main', target)
+
+                    const data = []
+                    const [ Src, idProp, queryInst ] = targets
+                    const list = await Src.fetch(this.session, { ids })
+
+                    list.map(item => data.push({
+                        companyId: this.id,
+                        [idProp]: item.id,
+                        createdBy: sessionUser.id,
+                    }))
+
+                    const [ result ] = await mysql.execute(queryInst.insert(data))
+
+                    return result.affectedRows > 0
+                }
+            }
+
+
+            this.log = async (field, queryProp = 'main') => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+                const idProp = queryProp === 'main' ? 'id' : 'companyId'
+
+                let log = (await mysql.execute(query[queryProp].select(fields, {
+                    match: { [idProp]: this.id || Company.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
+        }
     }
 
     static #algorithm = 'SHA-256'
@@ -359,7 +419,35 @@ class Owner extends Individual {
 
         reSuper(this, props, props2)
 
-        if (single) {}
+        if (single) {
+            this.session = session
+
+
+            this.add = async (target, body) => {
+                const { user: sessionUser } = this.session
+
+                if (sessionUser?.id) throw new Error('Owner Add Error: No session user')
+                if (!this.id) throw new Error('Owner Add Error: Personal ID is missing')
+                
+                const person = await Individual.fetch({ sessionUser }, { id: this.id, _id: this.personId })
+                if (!person) throw new Error('Owner Add Error: Individual not determined')
+
+                return await person.add(target, body)
+            }
+
+
+            this.log = async field => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+
+                let log = (await mysql.execute(query.owners.select(fields, {
+                    match: { id: this.id || Owner.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
+        }
     }
 
     static #algorithm = 'SHA-1'
@@ -487,6 +575,18 @@ class Owner extends Individual {
     }
 
 
+}
+
+
+
+function relTargets(src, target = null) {
+    const targets =  {
+        main: {
+            users: [ User, 'userId', userQuery.jx.companies, User.defSort ],
+        },
+    }[src]
+
+    return target ? targets[target] : targets
 }
 
 

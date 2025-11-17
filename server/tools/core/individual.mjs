@@ -23,7 +23,6 @@ const query = {
     names: new Query(db.person, 'names'),
     legalPresence: new Query(db.person, 'legal_presence'),
     maritals: new Query(db.person, 'maritals'),
-    //?... Any needed in between?
     phones: new Query(db.person, 'phones'),
     addresses: new Query(db.person, 'addresses'),
     emails: new Query(db.person, 'emails'),
@@ -85,6 +84,8 @@ class Individual extends Person {
 
                 const [ result ] = await mysql.execute(query[target].insert(body))
                 if (!result.affectedRows) throw new Error('DB Error: Failed to update individual')
+
+                return true
             }
 
 
