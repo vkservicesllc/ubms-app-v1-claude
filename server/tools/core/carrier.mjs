@@ -55,6 +55,9 @@ class Carrier extends Company {
         if (single) {
             this.session = session
 
+            delete this.history
+            delete this.confirm
+
 
             this.add = async (target, body) => {}
 

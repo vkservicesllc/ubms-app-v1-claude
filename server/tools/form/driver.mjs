@@ -326,7 +326,7 @@ class ApplicationForm {
     })
 
     static country = (function() {
-        const data = { ...Geography.countryList }
+        const data = { ...Geography.list.country }
         delete data.US
 
         return createForm({
@@ -1444,11 +1444,11 @@ export function currentExpediteVhlMMTData() {
     let vehicles = {
         van: {
             group: 'Cargo Van',
-            data: Van.cargoMakeModelList,
+            data: Van.list.cargoMakeModel,
         },
         straightBox: {
             group: 'Box Truck',
-            data: Truck.straightBoxMakeModelList,
+            data: Truck.list.straightBoxMakeModel,
         },
     }
 

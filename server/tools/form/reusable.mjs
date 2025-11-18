@@ -1,17 +1,18 @@
 import createForm from './builder.mjs'
-import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
+import Individual from '../core/individual.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import patterns from '../../../client/global/modules/registry/patterns.mjs'
 import { capitalizeEach } from '../../../client/global/modules/tools/utils/string.mjs'
 import strip from '../../../client/global/modules/tools/utils/formatter.mjs'
+import Individual from '../core/individual.mjs'
 
 export const emptyOpt = '--'
 const required = true
 
 const nameData = {
-    prefix: Person.prefixList,
-    suffix: Person.suffixList,
+    prefix: Individual.list.prefix,
+    suffix: Individual.list.suffix,
 }
 
 const addrField = (prop, mail) => mail !== null
@@ -82,7 +83,7 @@ export const createGenderForm = (props = {}) => createForm({
     name: 'sex',
     label: 'Gender',
     ...props,
-    data: Person.genderList,
+    data: Individual.list.gender,
     keys: ['male', 'female'],
     emptyOpt,
     validator: {
@@ -99,7 +100,7 @@ export const createMaritalStatus = (props = {}) => createForm({
     name: 'marital',
     label: 'Marital Status',
     ...props,
-    data: Person.maritalList,
+    data: Individual.list.marital,
     keys: ['single', 'married', 'divorced', 'separated', 'widowed'],
     emptyOpt,
 })
@@ -123,7 +124,7 @@ export const createUsStateForm = (props = {}) => createForm({
     emptyOpt,
     ...props,
     type: 'select',
-    data: Address.stateList,
+    data: Address.list.state,
 })
 
 
