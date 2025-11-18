@@ -5,7 +5,6 @@ import length from '../../../client/global/modules/registry/length.mjs'
 import patterns from '../../../client/global/modules/registry/patterns.mjs'
 import { capitalizeEach } from '../../../client/global/modules/tools/utils/string.mjs'
 import strip from '../../../client/global/modules/tools/utils/formatter.mjs'
-import Individual from '../core/individual.mjs'
 
 export const emptyOpt = '--'
 const required = true

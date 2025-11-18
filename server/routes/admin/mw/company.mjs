@@ -61,10 +61,10 @@ export default class {
             const company = await Company.data(res.session, { _id })
             if (!company) return sendError.server(res, errMsg.company)
 
-            const { catId, since, ein, duns, website, busName, coType, alias } = req.body
+            const { category, since, ein, duns, website, busName, coType, alias } = req.body
             let error
 
-            ({ error } = await company.modify(res.session, 'companies', { catId, since, ein, duns, website }))
+            ({ error } = await company.modify(res.session, 'companies', { category, since, ein, duns, website }))
             if (!error)
                ({ error } = await company.modify(res.session, 'names', { busName, coType, alias }))
             if (error) return sendError.server(res, error)
@@ -91,7 +91,7 @@ export default class {
             const company = await Company.data(res.session, { _id })
             if (!company) return sendError.server(res, errMsg.company)
 
-            if (alias != company.alias)
+            if (alias !== company.alias)
                 return sendError.server(res, `Request Error: Incorrect confirmation alias<br/><a href="${url.companies}">Back to Companies</a>`)
 
             const { error } = await company.delete(res.session)
@@ -116,10 +116,9 @@ export default class {
 
             let redirectUrl = url.company + company._id
             if (confirmed) {
-                const { catId, route } = company
-                const category = Company.categoryList[catId].path[1]
+                const { category, route } = company
 
-                redirectUrl = `/business/${category}/${route}`
+                redirectUrl = `/business/${Company.categoryList[category].path[1]}/${route}`
             }
 
             res.redirect(redirectUrl)
@@ -232,14 +231,14 @@ export default class {
                 if (body.fax) action.fax = 'update'
                 if (body.email) action.email = 'update'
             } else {
-                if (body.phone != company.phone) action.phone = 'modify'
+                if (body.phone !== company.phone) action.phone = 'modify'
                 if (!body.fax && company.fax) action.fax = 'delete'
                 else if (body.fax && !company.fax) action.fax = 'update'
-                else if (body.fax && company.fax && body.fax != company.fax)
+                else if (body.fax && company.fax && body.fax !== company.fax)
                     action.fax = 'modify'
                 if (!body.email && company.email) action.email = 'delete'
                 else if (body.email && !company.email) action.email = 'update'
-                else if (body.email && company.email && body.email != company.email)
+                else if (body.email && company.email && body.email !== company.email)
                     action.email = 'modify'
             }
 
@@ -288,7 +287,7 @@ export default class {
             const { error } = await company.relationship(res.session, 'users', action, _userIds)
             if (error) return sendError.server(res, null, error)
 
-            res.redirect(`/business/${Company.categoryList[company.catId].path[1]}/${company.route}?users`)
+            res.redirect(`/business/${Company.categoryList[company.category].path[1]}/${company.route}?users`)
         } catch (err) {
             sendError.server(res, err)
         }
@@ -304,7 +303,7 @@ export default class {
     //         const { error } = await company.relationship(res.session, 'teams', action, _teamIds)
     //         if (error) return sendError.server(res, null, error)
 
-    //         res.redirect(`/business/${Company.categoryList[company.catId].path[1]}/${company.route}?teams`)
+    //         res.redirect(`/business/${Company.categoryList[company.category].path[1]}/${company.route}?teams`)
     //     } catch (err) {
     //         sendError.server(res, err)
     //     }
@@ -440,7 +439,7 @@ const display = (data, ein) => {
         display.data.email = data.email || na
     }
 
-    if (data.catId == 'crr') {
+    if (data.category === 'crr') {
         display.data.scac = data.scac || na
         display.data.irp = data.irp || na
         display.data.ifta = data.ifta || na
@@ -508,7 +507,7 @@ export const companyById = async (req, res) => {
         const instr = { labelClass, labelClassRequired, textClass: 'input' }
         const icon = {
             select: {
-                catId: '<i class="fas fa-file-circle-question"></i>',
+                category: '<i class="fas fa-file-circle-question"></i>',
             },
         }
         const button = { submit: {}, add: {}, edit: {}, upsert: {} }
@@ -524,30 +523,30 @@ export const companyById = async (req, res) => {
 
         /* Defaults */
         for (const block of blocks) {
-            if (block == 'confirmation') break
+            if (block === 'confirmation') break
 
             submitProps[block] = { style: 'is-link', content: 'Next' }
 
-            if (block == 'record') continue
+            if (block === 'record') continue
 
             steps[block] = step
             visibility[block] = hidden
         }
-        let catId, since, ein, duns, busName, coType, alias, website
+        let category, since, ein, duns, busName, coType, alias, website
         const checked = { mailAddress: '' }
 
 
         /* Current Company */
-        if (_id != 'new') {
+        if (_id !== 'new') {
             data = await Company.data(res.session, { _id })
             if (!data) return respond404(res)
 
-            {({ _id, catId, since, duns, busName, coType, alias, website } = data)}
+            {({ _id, category, since, duns, busName, coType, alias, website } = data)}
             ein = await data.ein(res.session)
 
             const { name, owner } = data
             const { _id: _ownerId } = owner
-            const { icon: catIdIcon } = Company.categoryList[catId]
+            const { icon: catIdIcon } = Company.categoryList[category]
 
             step1 = 'Record'
             titlePfx = name
@@ -560,7 +559,7 @@ export const companyById = async (req, res) => {
             visibility.ownership = ''
             actionUrl.param.record = `/${_id}/modify`
             actionUrl.query.owner = `?company=${_id}`
-            if (catIdIcon) icon.select.catId = catIdIcon
+            if (catIdIcon) icon.select.category = catIdIcon
             submitProps.record = saveSubmit
 
 
@@ -605,7 +604,7 @@ export const companyById = async (req, res) => {
                         let catOptions = {}
 
 
-                        switch (catId) {
+                        switch (category) {
 
 
                             case 'crr':
@@ -720,7 +719,7 @@ export const companyById = async (req, res) => {
         /* Record HBS Form & Submit */
         {
             if (since) since = moment(since).format('MM/DD/YYYY')
-            const values = { catId, since, ein, duns, busName, coType, alias, website }
+            const values = { category, since, ein, duns, busName, coType, alias, website }
             options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 6 })
 
             const { content, style } = submitProps.record
@@ -728,7 +727,7 @@ export const companyById = async (req, res) => {
         }
 
         /* Category Form & Final Polish */
-        if (data.catId == 'crr')
+        if (data.category === 'crr')
             css.card = {
                 minHeight: '455px',
             }
@@ -766,19 +765,19 @@ export const companyById = async (req, res) => {
 
 export const companyByCategoryAndRoute = async (req, res) => {
     try {
-        const { category, route } = req.params
+        const { route } = req.params
         let company = await Company.data(res.session, { route })
-        const { _id: _companyId, catId } = company
+        const { _id: _companyId, category } = company
         const ein = await company.ein(res.session)
 
         if (!company) return respond404(res)
-        if (category != Company.categoryList[catId].path[1])
+        if (req.params.category !== Company.categoryList[category].path[1])
             return respond404(res)
 
         const css = {}
         let logoList = ''
 
-        switch (catId) {
+        switch (category) {
 
             case 'crr':
                 company = await Carrier.data(res.session, { _companyId })
@@ -792,7 +791,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         company.alias = escapeHTML(company.alias)
         company.owner.name = escapeHTML(company.owner.name)
 
-        const icon = Company.categoryList[catId].icon
+        const icon = Company.categoryList[category].icon
         let cardTitle = company.name
         if (icon) cardTitle = `${icon}&nbsp;&nbsp;${cardTitle}`
 
