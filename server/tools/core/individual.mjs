@@ -128,7 +128,7 @@ class Individual extends Person {
                 if (!target) {
                     const log = await this.log()
                     const history = {
-                        names: await this.history(session, 'names', true),
+                        names: await this.history('names', true),
                     }
 
                     const [ result ] = await mysql.execute(query.main.delete({ id: this.id || Individual.matchIdHash(this._id) }))
@@ -150,7 +150,7 @@ class Individual extends Person {
                     this.history = history
                     for (const prop in log) this[prop] = log[prop]
 
-                    await logDeletion(session, 'individuals', this, { id })
+                    await logDeletion(this.session, 'individuals', this, { id })
                 } else if (Object.keys(query).includes(target) && target !== 'main' && since) {
                     const [ result ] = await mysql.execute(query[target].delete({
                         personId: this.id || Individual.matchIdHash(this._id), since,

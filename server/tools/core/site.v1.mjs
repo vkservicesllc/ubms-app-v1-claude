@@ -1,5 +1,4 @@
 import config, { apps } from '../../../config.mjs'
-import Company from './company.mjs'
 import Query from '../utils/query.mjs'
 import db from '../../settings/mysql.mjs'
 
@@ -16,11 +15,11 @@ export default class {
 
         return (async () => {
             const app = apps[branch]
-            const { type, category, name, address } = app
+            const { type, catId, name, address } = app
 
-            let site = { ...config.site, name, address, category: category || null }
+            let site = { ...config.site, name, address, catId: catId || null }
 
-            if (!category || !identifier) return site
+            if (!catId || !identifier) return site
 
             let { id, _id, domain } = site
 
@@ -30,7 +29,7 @@ export default class {
 
             const fields = [
                 'id',
-                'category',
+                'catId',
                 'active',
                 'domain',
                 'name',
@@ -46,19 +45,15 @@ export default class {
             site.address = 'https://'
             if (type === 'secondary') site.address += branch + '.'
             site.address += site.domain
-            site.expansion = {
-                category: Company.categoryList[site.category].item[1],
-                categoryGroup: Company.categoryList[site.category].item[0],
-            }
 
             return site
         })()
     }
 
 
-    static fetch = async () => await mysql.execute(query.main.select([
+    static list = async () => await mysql.execute(query.main.select([
         { md5: 'id' },
-        'category',
+        'catId',
         'active',
         'domain',
         'name',

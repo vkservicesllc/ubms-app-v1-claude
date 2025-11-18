@@ -125,8 +125,9 @@ class Company {
                 if (!target) throw new Error('Company Add Error: Target not supplied')
                 if (!this.id) throw new Error('Company Add Error: Personal ID is missing')
 
-                let targets = Object.keys(query), jxTargets = [ 'users' ]
-                if (!targets.includes(target) || !jxTargets.includes(target) || target === 'main' || target === 'owners')
+                const jxTargets = relTargets('main')
+                let targets = Object.keys(query)
+                if (!targets.includes(target) || !Object.keys(jxTargets).includes(target) || target === 'main' || target === 'owners')
                     throw new Error('Company Add Error: Invalid target supplied')
 
                 if (targets.includes(target)) {
@@ -144,10 +145,8 @@ class Company {
                     if (!Array.isArray(bodyOrIds)) throw new Error('Company Add Error: IDs of incorrect type')
                     const ids = bodyOrIds
 
-                    target = relTargets('main', target)
-
                     const data = []
-                    const [ Src, idProp, queryInst ] = targets
+                    const [ Src, idProp, queryInst ] = jxTargets[target]
                     const list = await Src.fetch(this.session, { ids })
 
                     list.map(item => data.push({
@@ -160,6 +159,97 @@ class Company {
 
                     return result.affectedRows > 0
                 }
+            }
+
+
+            this.delete = async (target, matchOrIds) => {
+                if (!this.session?.user?.id) throw new Error('Company Delete Error: Session user not found')
+
+                const jxTargets = relTargets('main')
+
+                if (!target) {
+                    const log = await this.log()
+                    const history = {}
+
+                    const historyProps = [ 'names', 'ownerships', 'addresses', 'mail', 'phones', 'faxes', 'emails' ]
+                    for (const prop of historyProps)
+                        history[prop] = await this.history(prop, true)
+
+                    const [ result ] = await mysql.execute(query.main.delete({ id: this.id || Company.matchIdHash(this._id) }))
+                    if (!result.affectedRows) return false
+
+                    const reduntant = [
+                        'category',
+                        'group',
+                        'route',
+                        'style',
+                        'busName',
+                        'coType',
+                        'alias',
+                        'owner',
+                        'address',
+                        'phone',
+                        'fax',
+                        'email',
+                    ]
+
+                    for (const prop of reduntant) delete this[prop]
+                    this.ein = ein ? encrypt(ein) : null
+                    this.history = history
+                    for (const prop in log) this[prop] = log[prop]
+
+                    await logDeletion(this.session, 'companies', this, { id })
+                } else if (Object.keys(query) && target !== 'main' && target !== 'owners' && matchOrIds?.since) {
+                    const match = matchOrIds
+                    match.id = this.id || Company.matchIdHash(this._id)
+
+                    const [ result ] = await mysql.execute(query[target].delete(match))
+
+                    return result.affectedRows > 0
+                } else if (Object.keys(jxTargets).includes(target)) {
+                    if (!Array.isArray(matchOrIds)) throw new Error('Company Delete Error: IDs of incorrect type')
+
+                    const ids = matchOrIds
+                    if (!ids) return
+
+                    const queryInst = jxTargets[target][2]
+                    const idProp = jxTargets[target][1]
+
+                    const [ result ] = await mysql.execute(queryInst.delete({ [idProp]: ids }))
+
+                    return result.affectedRows > 0
+                }
+            }
+
+
+            this.history = async (target, log = false) => {
+                let fields, sort = { desc: 'since' }
+
+                switch (target) {
+                    case 'names':
+                        fields = [ 'since', 'busName', 'coType', 'alias' ]
+                        break
+                    case 'ownerships':
+                        fields = [ 'since', 'ownerId' ]
+                        break
+                    case 'addresses':
+                    case 'mail':
+                        fields = [ 'since', 'address1', 'address2', 'city', 'state', 'zip' ]
+                        break
+                    case 'phones':
+                    case 'faxes':
+                        fields = [ 'since', 'number' ]
+                        break
+                    case 'emails':
+                        fields = [ 'since', 'email' ]
+                        break
+                }
+                if (log === true) fields.push('createdBy', 'createdAt', 'updateLog')
+
+                return (await mysql.execute(query[target].select(fields, {
+                    match: { companyId: this.id || Company.matchIdHash(this._id) },
+                    sort,
+                })))[0]
             }
 
 
@@ -433,6 +523,16 @@ class Owner extends Individual {
                 if (!person) throw new Error('Owner Add Error: Individual not determined')
 
                 return await person.add(target, body)
+            }
+
+
+            this.history = async (target = 'names', log = false) => {
+                if (target === 'names') {
+                    const individual = await Individual.data(this.session, { _id: this._personId })
+                    return individual.history('names', log)
+                }
+
+                return []
             }
 
 
