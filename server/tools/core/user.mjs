@@ -1036,9 +1036,12 @@ class Role {
                 const targets = relTargets('role', target)
 
                 if (!target) {
+                    if (!this.id) throw new Error('Role Delete Error: Personal ID missing')
+
+                    const { id } = this
                     const log = await this.log()
 
-                    const [ result ] = await mysql.execute(query.roles.delete({ id: this.id || Role.matchIdHash(this._id) }))
+                    const [ result ] = await mysql.execute(query.roles.delete({ id }))
                     if (!result.affectedRows) return false
 
                     for (const prop in log) this[prop] = log[prop]

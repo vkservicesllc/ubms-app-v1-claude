@@ -145,9 +145,12 @@ class Team {
                 const targets = relTargets('main', target)
 
                 if (!target) {
+                    if (!this.id) throw new Error('Team Delete Error: Personal ID missing')
+
+                    const { id } = this
                     const log = await this.log()
 
-                    const [ result ] = await mysql.execute(query.main.delete({ id: this.id || Team.matchIdHash(this._id) }))
+                    const [ result ] = await mysql.execute(query.main.delete({ id }))
                     if (!result.affectedRows) return false
 
                     for (const prop in log) this[prop] = log[prop]

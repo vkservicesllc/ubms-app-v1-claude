@@ -160,6 +160,9 @@ class Company {
                     return result.affectedRows > 0
                 }
             }
+            
+            
+            this.update = async (body, target, { since }) => {}
 
 
             this.delete = async (target, matchOrIds) => {
@@ -168,6 +171,9 @@ class Company {
                 const jxTargets = relTargets('main')
 
                 if (!target) {
+                    if (!this.id) throw new Error('Company Delete Error: Personal ID missing')
+
+                    const { id } = this
                     const log = await this.log()
                     const history = {}
 
@@ -175,7 +181,7 @@ class Company {
                     for (const prop of historyProps)
                         history[prop] = await this.history(prop, true)
 
-                    const [ result ] = await mysql.execute(query.main.delete({ id: this.id || Company.matchIdHash(this._id) }))
+                    const [ result ] = await mysql.execute(query.main.delete({ id }))
                     if (!result.affectedRows) return false
 
                     const reduntant = [
@@ -199,6 +205,8 @@ class Company {
                     for (const prop in log) this[prop] = log[prop]
 
                     await logDeletion(this.session, 'companies', this, { id })
+
+                    return true
                 } else if (Object.keys(query) && target !== 'main' && target !== 'owners' && matchOrIds?.since) {
                     const match = matchOrIds
                     match.id = this.id || Company.matchIdHash(this._id)
@@ -219,6 +227,22 @@ class Company {
 
                     return result.affectedRows > 0
                 }
+            }
+
+
+            this.confirm = async () => {
+                if (!this.session?.user?.id) throw new Error('Company Confirm Error: Session user not found')
+
+                const data = processData({ confirmed: true }, {
+                    modifiedBy: this.session.user.id,
+                    currentData: this,
+                    currentUpdateLog: await this.log('updateLog'),
+                })
+
+                const [ result ] = await mysql.execute(query.main.update(data, { id: this.id || Company.matchIdHash(this._id) }))
+                if (!result.affectedRows) throw new Error('DB Error: Failed to confirm company')
+
+                return true
             }
 
 
@@ -523,6 +547,43 @@ class Owner extends Individual {
                 if (!person) throw new Error('Owner Add Error: Individual not determined')
 
                 return await person.add(target, body)
+            }
+
+
+            this.update = async (body, target, { since }) => {}
+
+
+            this.delete = async () => {
+                if (!this.session?.user?.id) throw new Error('Owner Delete Error: Session user not found')
+                if (!this.id) throw new Error('Owner Delete Error: Personal ID missing')
+
+                const { id } = this
+                const log = await this.log()
+                const history = {
+                    names: await this.history('names', true),
+                }
+
+                const [ result ] = await mysql.execute(query.owners.delete({ id }))
+                if (!result.affectedRows) return false
+
+                const reduntant = [
+                    'gender',
+                    'prefix',
+                    'firstName',
+                    'middleName',
+                    'lastName',
+                    'suffix',
+                    'alias',
+                    'age',
+                ]
+
+                for (const prop of reduntant) delete this[prop]
+                this.history = history
+                for (const prop in log) this[prop] = log[prop]
+
+                await logDeletion(this.session, 'company-owners', this, { id })
+
+                return true
             }
 
 

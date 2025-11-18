@@ -126,12 +126,15 @@ class Individual extends Person {
                 if (!this.session?.user?.id) throw new Error('Individual Delete Error: Session user not found')
 
                 if (!target) {
+                    if (!this.id) throw new Error('Individual Delete Error: Personal ID missing')
+
+                    const { id } = this
                     const log = await this.log()
                     const history = {
                         names: await this.history('names', true),
                     }
 
-                    const [ result ] = await mysql.execute(query.main.delete({ id: this.id || Individual.matchIdHash(this._id) }))
+                    const [ result ] = await mysql.execute(query.main.delete({ id }))
                     if (!result.affectedRows) return false
 
                     const reduntant = [
@@ -151,6 +154,8 @@ class Individual extends Person {
                     for (const prop in log) this[prop] = log[prop]
 
                     await logDeletion(this.session, 'individuals', this, { id })
+
+                    return true
                 } else if (Object.keys(query).includes(target) && target !== 'main' && since) {
                     const [ result ] = await mysql.execute(query[target].delete({
                         personId: this.id || Individual.matchIdHash(this._id), since,
