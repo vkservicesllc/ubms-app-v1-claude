@@ -45,7 +45,7 @@ const query = {
 
 
 class Company {
-    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true } = {}) {
+    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true } = {}) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Company Data')
 
         const props = { _id: data._id }
@@ -511,7 +511,7 @@ class Company {
 
 
 class Owner extends Individual {
-    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Owner Data')
 
         super(data, { single, hideRawId, hideSensitive })
@@ -647,7 +647,7 @@ class Owner extends Individual {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, hideSensitive = true, sorts = Role.defSorts, mode = 'data' } = {}) => {
+    static fetch = async ({ user: sessionUser = {}, branch, siteId } = {}, filter = {}, { hideRawId = false, hideSensitive = true, sorts = Owner.defSorts, mode = 'data' } = {}) => {
         if (!sessionUser.id) throw new Error('Owner Fetch Error: No session user')
 
         const batch = [

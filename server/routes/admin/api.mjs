@@ -98,29 +98,28 @@ router.post('/teams', User.mw.verify, User.mw.superAdminOnly, async (req, res) =
 })
 
 
-//? router.post('/companies', User.mw.verify, async (req, res) => {
-//     try {
-//         //! It may be necessary to apply filters when requested in branches other than admin
-//         const filter = {}
+router.post('/companies', User.mw.verify, async (req, res) => {
+    try {
+        const filter = {}
+        const { user: sessionUser } = res.session
 
-//         const { user } = res.session
-//         if (!user.DS)
-//             filter.ids = await user.relIds(res.session, 'companies')
+        if (!sessionUser.DS)
+            filter.ids = await sessionUser.fetch('companies', { idsOnly: true })
 
-//         res.send({ data: await Company.list(res.session, filter) })
-//     } catch (err) {
-//         sendError.server(res, err, true)
-//     }
-// })
+        res.send({ data: await Company.fetch(res.session, filter, { hideRawId }) })
+    } catch (err) {
+        sendError.server(res, err, true)
+    }
+})
 
 
-//? router.post('/company-owners', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-//     try {
-//         res.send({ data: await Owner.list(res.session) })
-//     } catch (err) {
-//         sendError.server(res, err, true)
-//     }
-// })
+router.post('/company-owners', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        res.send({ data: await Owner.fetch(res.session, {}, { hideRawId }) })
+    } catch (err) {
+        sendError.server(res, err, true)
+    }
+})
 
 
 

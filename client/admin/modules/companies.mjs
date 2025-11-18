@@ -4,14 +4,14 @@ import escapeHTML from './tools/utils/html.mjs'
 import { tel as formatTel } from './tools/utils/formatter.mjs'
 
 
-const statusReq = $.ajax('/api/session/status?key=0', { method: 'POST' })
+const statusReq = $.ajax('/api/session/status', { method: 'POST' })
 
 $.when(statusReq).done(statusRes => {
     const [ adminStatus ] = statusRes
     const interval = 30000
 
     let emptyTableMsg = 'No companies registered at this time'
-    if (adminStatus == 'A') emptyTableMsg = 'No companies to display'
+    if (adminStatus === 'A') emptyTableMsg = 'No companies to display'
 
     const table = new DataTable('#companies-table', {
 
@@ -26,7 +26,7 @@ $.when(statusReq).done(statusRes => {
                     const { confirmed, owner } = company
 
                     if (!confirmed)
-                        company.group = '<small class="has-text-weight-normal has-text-danger">... pending</small>'
+                        company.expansion.categoryGroup = '<small class="has-text-weight-normal has-text-danger">... pending</small>'
 
                     owner.name = new Person(owner).fullName()
                     owners.push({ [owner._id]: owner.name })
@@ -56,13 +56,6 @@ $.when(statusReq).done(statusRes => {
         },
 
         columns: [
-
-            {
-                data: 'group',
-                title: 'Group',
-                visible: false,
-                searchable: false,
-            },
 
             {
                 data: 'category',
@@ -141,7 +134,7 @@ $.when(statusReq).done(statusRes => {
                 render(data) {
                     if (!data.physical.state) return
 
-                    return data.physical.state[1]
+                    return data.physical.expansion.state
                 }
             },
 
@@ -221,7 +214,7 @@ $.when(statusReq).done(statusRes => {
 
         rowGroup: {
             dataSrc(row) {
-                return row.group
+                return row.expansion.categoryGroup
             },
         },
 
