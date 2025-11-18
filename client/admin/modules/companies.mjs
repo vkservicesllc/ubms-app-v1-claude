@@ -28,7 +28,7 @@ $.when(statusReq).done(statusRes => {
                     if (!confirmed)
                         company.expansion.categoryGroup = '<small class="has-text-weight-normal has-text-danger">... pending</small>'
 
-                    owner.name = new Person(owner).fullName()
+                    if (owner._id) owner.name = new Person(owner).fullName()
                     owners.push({ [owner._id]: owner.name })
                 })
 
@@ -180,7 +180,7 @@ $.when(statusReq).done(statusRes => {
                         let fa, url = '/business'
 
                         if (row.confirmed) {
-                            const category = row.category.toLowerCase()
+                            const category = row.expansion.category.toLowerCase()
                             const { route } = row
                             fa = 'file-lines'
                             url += `/${category}/${route}`

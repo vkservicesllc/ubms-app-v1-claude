@@ -196,7 +196,7 @@ class Team {
         body = processData(body)
 
         const { name } = body
-        if (await Team.fetch({ sessionUser }, { name })) return
+        if (await Team.fetch({ user: sessionUser }, { name })) return
 
         body.createdBy = sessionUser.id
 
@@ -205,7 +205,7 @@ class Team {
 
         if (!id) throw new Error('DB Error: Failed to create team')
 
-        const team = await Team.fetch({ sessionUser }, { id })
+        const team = await Team.fetch({ user: sessionUser }, { id })
         if (!team) throw new Error('Fetch Error: New team not found')
 
         return team
@@ -274,6 +274,25 @@ class Team {
         list.forEach((data, i, arr) => arr[i] = new Team(data, { single, session, hideRawId }))
 
         return single ? list[0] : list
+    }
+
+
+    static find = async (session, params = {}) => {
+        if (!session?.user) return { error: 'Invalid User' }
+
+        const { name, exclude } = params
+        if (!name) return { error: 'Invalid Parameters' }
+
+        const match = { name }
+        if (exclude?._id) {
+            const team = await Team.fetch(session, { _id: exclude._id })
+
+            match.id = { not: team.id }
+        }
+
+        const data = (await mysql.execute(query.main.select('id', { match })))[0]
+
+        return { found: data.length === 1 }
     }
 
 

@@ -291,7 +291,7 @@ class Individual extends Person {
                     createdIn,
                 }))
 
-            person = await Individual({ sessionUser }, { id })
+            person = await Individual.fetch({ user: sessionUser }, { id })
             if (!person) throw new Error('Fetch Error: New individual not found')
         }
 
@@ -388,6 +388,24 @@ class Individual extends Person {
         list.forEach((data, i, arr) => arr[i] = new Team(data, { single, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
+    }
+
+
+    static find = async (session, params = {}) => {
+        if (!session?.user) return { error: 'Invalid User' }
+
+        const { ssn } = params
+        if (!ssn) return { error: 'Invalid Parameters' }
+
+        let found = false, personId
+
+        const data = (await mysql.execute(query.main.select('id', {
+            match: { ssn: { aes: [ ssn, secret ] } },
+        })))[0]
+        found = data.length === 1
+        if (found) personId = data[0].id
+
+        return { found, personId }
     }
 
 

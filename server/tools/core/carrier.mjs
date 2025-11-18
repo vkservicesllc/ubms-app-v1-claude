@@ -25,7 +25,7 @@ const stateTaxIds = Object.keys(inputLength.carrier.permit.max)
 
 
 class Carrier extends Company {
-    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Carrier Data')
 
         super(data, { single, hideRawId, hideSensitive })
@@ -89,7 +89,7 @@ class Carrier extends Company {
 
         const { usdot, mc } = body
 
-        if (await Company.fetch({ sessionUser }, { usdot, mc })) return
+        if (await Company.fetch({ user: sessionUser }, { usdot, mc })) return
 
         body.createdBy = sessionUser.id
 
@@ -98,7 +98,7 @@ class Carrier extends Company {
 
         if (!id) throw new Error('DB Error: Failed to create carrier')
 
-        const carrier = await Company.fetch({ sessionUser }, { id })
+        const carrier = await Company.fetch({ user: sessionUser }, { id })
         if (!carrier) throw new Error('Fetch Error: New carrier not found')
 
         return carrier
@@ -111,7 +111,7 @@ class Carrier extends Company {
     ) => {
         if (!sessionUser.id) throw new Error('Carrier Fetch Error: No session user')
 
-        const batch = Company.fetch({ sessionUser }, filter, { hideRawId, hideSensitive, sorts, mode: 'batch' })
+        const batch = await Company.fetch({ user: sessionUser }, filter, { hideRawId, hideSensitive, sorts, mode: 'batch' })
 
         const join = [ 'carrierId', 'id', 'carriers' ]
         const stateTaxFields = []
@@ -121,7 +121,7 @@ class Carrier extends Company {
             db: db.carrier,
             table: query.main.table,
             fields: [
-                'carrierId', [ Carrier.hashId(), 'carrierId' ],
+                [ 'id', 'carrierId' ], [ Carrier.hashId(), 'carrierId' ],
                 'mc', 'usdot', 'scac', 'irp',
                 'efs', 'fleetOne', 'transflo',
             ],
@@ -137,6 +137,7 @@ class Carrier extends Company {
             fields: stateTaxFields,
             join,
         })
+
         delete batch[0].match.id
         batch[0].match.category = 'crr'
 

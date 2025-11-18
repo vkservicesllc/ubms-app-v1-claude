@@ -7,7 +7,7 @@ import strip, { ein as formatEin } from '../tools/utils/formatter.mjs'
 const categories = $.ajax('/api/public/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 
 
-export const catIdEvent = (id, iconId, onChange, options = {}) => {
+export const categoryEvent = (id, iconId, onChange, options = {}) => {
     const { onFocus, onBlur, value } = options
 
     selectEvent(id, {

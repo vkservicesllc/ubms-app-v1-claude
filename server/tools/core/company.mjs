@@ -76,7 +76,7 @@ class Company {
         }
 
         this.owner = data._ownerId
-        ? new Owner({
+            ? new Owner({
                 _id: data._ownerId,
                 _personId: data._personId,
                 id: data.ownerId,
@@ -306,7 +306,7 @@ class Company {
 
         const { category, ein, duns, since, busName, coType, alias } = body
 
-        if (await Company.fetch({ sessionUser }, { ein, duns, busName, coType, alias })) return
+        if (await Company.fetch({ user: sessionUser }, { ein, duns, busName, coType, alias })) return
 
         const createdBy = sessionUser.id
         const data = {
@@ -325,7 +325,7 @@ class Company {
         [ result ] = await mysql.execute(query.names.insert(data.name))
         if (!result.affectedRows) throw new Error('DB Error: Failed to register company name')
 
-        const company = await Company.fetch({ sessionUser }, { id })
+        const company = await Company.fetch({ user: sessionUser }, { id })
         if (!company) throw new Error('Fetch Error: New company not found')
 
         return company
@@ -446,7 +446,7 @@ class Company {
             match.main.confirmed = true
         }
 
-        batch[0].match = match.companies
+        batch[0].match = match.main
         batch[1].match = match.names
         batch[2].match = match.ownerships
 
@@ -464,6 +464,34 @@ class Company {
         list.forEach((data, i, arr) => arr[i] = new Company(data, { single, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
+    }
+    
+    
+    static find = async (session, params = {}) => {
+        if (!session?.user) return { error: 'Invalid User' }
+
+        const { ein, duns, busName, coType, alias, exclude } = params
+        if (
+            (!ein && !duns && !alias && !busName && !coType) ||
+            (busName && !coType) || (!busName && coType)
+        ) return { error: 'Invalid Parameters' }
+
+        let target = 'names', idProp = 'companyId'
+        if (ein || duns) target = 'main', idProp = 'id'
+
+        const match = { alias, busName, coType }
+        if (ein) match.ein = { aes: [ strip(ein), secret.ein ] }
+        if (duns) match.duns = strip(duns)
+
+        if (exclude?._id) {
+            const company = await Company.fetch(session, { _id: exclude._id })
+
+            match[idProp] = { not: company.id }
+        }
+
+        const data = (await mysql.execute(query[target].select(idProp, { match })))[0]
+
+        return { found: data.length === 1 }
     }
 
 
@@ -543,7 +571,7 @@ class Owner extends Individual {
                 if (sessionUser?.id) throw new Error('Owner Add Error: No session user')
                 if (!this.id) throw new Error('Owner Add Error: Personal ID is missing')
                 
-                const person = await Individual.fetch({ sessionUser }, { id: this.id, _id: this.personId })
+                const person = await Individual.fetch({ user: sessionUser }, { id: this.id, _id: this.personId })
                 if (!person) throw new Error('Owner Add Error: Individual not determined')
 
                 return await person.add(target, body)
@@ -624,9 +652,9 @@ class Owner extends Individual {
         body = processData(body)
 
         const { ssn } = body
-        let person = await Individual.fetch({ sessionUser }, { ssn })
+        let person = await Individual.fetch({ user: sessionUser }, { ssn })
 
-        if (!person) person = await Individual.create({ sessionUser }, body)
+        if (!person) person = await Individual.create({ user: sessionUser }, body)
         else {
             const { dob } = person
 
@@ -640,7 +668,7 @@ class Owner extends Individual {
 
         if (!id) throw new Error('DB Error: Failed to create owner')
 
-        const owner = await User.fetch({ sessionUser }, { id })
+        const owner = await User.fetch({ user: sessionUser }, { id })
         if (!owner) throw new Error('Fetch Error: New owner not found')
 
         return owner
@@ -733,6 +761,33 @@ class Owner extends Individual {
         list.forEach((data, i, arr) => arr[i] = new Owner(data, { single, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
+    }
+
+
+    static find = async (session, params = {}) => {
+        if (!session?.user?.DS) return { error: 'Invalid User' }
+
+        const { ssn } = params
+        if (!ssn) return { error: 'Invalid Parameters' }
+
+        let { scope } = params
+        if (!scope || !['global', 'local'].includes(scope)) scope = 'local'
+
+        //* Global search first by default
+        const result = await Individual.find(session, { ssn })
+        let { found } = result
+
+        //* Search in owners only
+        if (result?.personId && scope === 'local') {
+            const { personId } = result
+            const data = (await mysql.execute(query.owners.select('id', {
+                match: { personId },
+            })))
+
+            found = data.length === 1
+        }
+
+        return { found }
     }
 
 

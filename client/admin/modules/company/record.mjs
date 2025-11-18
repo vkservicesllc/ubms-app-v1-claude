@@ -1,6 +1,6 @@
 import Tip from '../tools/tip.mjs'
 import getIdFromUrl from '../tools/id.mjs'
-import { catIdEvent, busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '../events/company.mjs'
+import { categoryEvent, busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '../events/company.mjs'
 import { urlEvent } from '../events/web.mjs'
 import { inputEvent } from '../events/form.mjs'
 import selector from '../registry/selectors/company.mjs'
@@ -87,7 +87,7 @@ const handleChange = (props = {}) => {
 }
 
 
-catIdEvent(catId, 'business-category-select-icon')
+categoryEvent(catId, 'business-category-select-icon')
 
 einEvent(einId, {
     onInput() {

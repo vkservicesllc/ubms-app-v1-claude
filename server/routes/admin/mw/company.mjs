@@ -44,8 +44,7 @@ export default class {
 
     static add = async (req, res) => {
         try {
-            const { error, data: company } = await Company.create(res.session, req.body)
-            if (error) return sendError.server(res, error)
+            const company = await Company.create(res.session, req.body)
 
             res.redirect(url.company + company._id)
         } catch (err) {
@@ -58,7 +57,7 @@ export default class {
         try {
             const { _id } = req.params
 
-            const company = await Company.data(res.session, { _id })
+            const company = await Company.fetch(res.session, { _id })
             if (!company) return sendError.server(res, errMsg.company)
 
             const { category, since, ein, duns, website, busName, coType, alias } = req.body
@@ -88,7 +87,7 @@ export default class {
             const { _id } = req.params
             const { alias } = req.body
 
-            const company = await Company.data(res.session, { _id })
+            const company = await Company.fetch(res.session, { _id })
             if (!company) return sendError.server(res, errMsg.company)
 
             if (alias !== company.alias)
@@ -108,7 +107,7 @@ export default class {
         try {
             const { _id } = req.params
 
-            const company = await Company.data(res.session, { _id })
+            const company = await Company.fetch(res.session, { _id })
             if (!company) return sendError.server(res, errMsg.company)
 
             const { confirmed, error } = await company.confirm(res.session)
@@ -118,7 +117,7 @@ export default class {
             if (confirmed) {
                 const { category, route } = company
 
-                redirectUrl = `/business/${Company.categoryList[category].path[1]}/${route}`
+                redirectUrl = `/business/${Company.list.category[category].path[1]}/${route}`
             }
 
             res.redirect(redirectUrl)
@@ -133,10 +132,10 @@ export default class {
             const { _id } = req.params
             const { _ownerId, since } = req.body //* if `since` is undefined, company `since` will be used
 
-            const company = await Company.data(res.session, { _id })
+            const company = await Company.fetch(res.session, { _id })
             if (!company) return sendError.server(res, errMsg.company)
 
-            const owner = await Owner.data(res.session, { _id: _ownerId })
+            const owner = await Owner.fetch(res.session, { _id: _ownerId })
             if (!owner) return sendError.server(res, errMsg.owner)
 
             const { error } = await company.delete(res.session, 'ownerships', { since })
@@ -166,7 +165,7 @@ export default class {
     static upsertAddress = async (req, res) => {
         try {
             const { _id } = req.params
-            const company = await Company.data(res.session, { _id })
+            const company = await Company.fetch(res.session, { _id })
             if (!company) return sendError.server(res, errMsg.company)
 
             const { body } = req
@@ -219,7 +218,7 @@ export default class {
     static upsertContacts = async (req, res) => {
         try {
             const { _id } = req.params
-            const company = await Company.data(res.session, { _id })
+            const company = await Company.fetch(res.session, { _id })
             if (!company) return sendError.server(res, errMsg.company)
 
             const { body } = req
@@ -282,12 +281,12 @@ export default class {
         try {
             const { _id } = req.params
             const { action, users: _userIds } = req.body
-            const company = await Company.data(res.session, { _id })
+            const company = await Company.fetch(res.session, { _id })
 
             const { error } = await company.relationship(res.session, 'users', action, _userIds)
             if (error) return sendError.server(res, null, error)
 
-            res.redirect(`/business/${Company.categoryList[company.category].path[1]}/${company.route}?users`)
+            res.redirect(`/business/${Company.list.category[company.category].path[1]}/${company.route}?users`)
         } catch (err) {
             sendError.server(res, err)
         }
@@ -298,12 +297,12 @@ export default class {
     //     try {
     //         const { _id } = req.params
     //         const { action, teams: _teamIds } = req.body
-    //         const company = await Company.data(res.session, { _id })
+    //         const company = await Company.fetch(res.session, { _id })
 
     //         const { error } = await company.relationship(res.session, 'teams', action, _teamIds)
     //         if (error) return sendError.server(res, null, error)
 
-    //         res.redirect(`/business/${Company.categoryList[company.category].path[1]}/${company.route}?teams`)
+    //         res.redirect(`/business/${Company.list.category[company.category].path[1]}/${company.route}?teams`)
     //     } catch (err) {
     //         sendError.server(res, err)
     //     }
@@ -321,7 +320,7 @@ export default class {
                 if (error) return sendError.server(res, error)
 
                 if (_companyId) {
-                    const company = await Company.data(res.session, { _id: _companyId })
+                    const company = await Company.fetch(res.session, { _id: _companyId })
 
                     const { error } = await company.delete(res.session, 'ownerships', { since })
                     if (error) return sendError.server(res, error)
@@ -333,7 +332,7 @@ export default class {
                     //* `since` must be requested via url query if owner is added at ownership update
                 }
             } else {
-                const owner = await Owner.data(res.session, { _id })
+                const owner = await Owner.fetch(res.session, { _id })
 
                 const { error } = await owner.modify(res.session, req.body)
                 if (error) return sendError.server(res, error)
@@ -352,7 +351,7 @@ export default class {
             const { _id } = req.body
             delete req.body._id
 
-            const owner = await Owner.data(res.session, { _id })
+            const owner = await Owner.fetch(res.session, { _id })
 
             const { error } = await owner.update(res.session, req.body)
             if (error) return sendError.server(res, error)
@@ -368,7 +367,7 @@ export default class {
         try {
             const { _id } = req.body
 
-            const owner = await Owner.data(res.session, { _id })
+            const owner = await Owner.fetch(res.session, { _id })
             if (!owner) return sendError.server(res, errMsg.owner)
 
             const { error } = await owner.delete(res.session)
@@ -407,9 +406,9 @@ const display = (data, ein) => {
     if (ein) {
         const typeList = {}
 
-        for (const group in Company.typeList)
-            for (const type in Company.typeList[group])
-                typeList[type] = Company.typeList[group][type]
+        for (const group in Company.list.type)
+            for (const type in Company.list.type[group])
+                typeList[type] = Company.list.type[group][type]
 
         display.data.ein = formatEin(ein)
         display.data.type = typeList[data.coType]
@@ -443,7 +442,7 @@ const display = (data, ein) => {
         display.data.scac = data.scac || na
         display.data.irp = data.irp || na
         display.data.ifta = data.ifta || na
-        display.data.iftaJur = Address.stateList[data.iftaJur]
+        display.data.iftaJur = Address.list.state[data.iftaJur]
         display.data.stateTax = {}
         display.label.stateTax = {}
 
@@ -538,7 +537,7 @@ export const companyById = async (req, res) => {
 
         /* Current Company */
         if (_id !== 'new') {
-            data = await Company.data(res.session, { _id })
+            data = await Company.fetch(res.session, { _id })
             if (!data) return respond404(res)
 
             {({ _id, category, since, duns, busName, coType, alias, website } = data)}
@@ -546,7 +545,7 @@ export const companyById = async (req, res) => {
 
             const { name, owner } = data
             const { _id: _ownerId } = owner
-            const { icon: catIdIcon } = Company.categoryList[category]
+            const { icon: catIdIcon } = Company.list.category[category]
 
             step1 = 'Record'
             titlePfx = name
@@ -608,7 +607,7 @@ export const companyById = async (req, res) => {
 
 
                             case 'crr':
-                                data = await Carrier.data(res.session, { _companyId: _id })
+                                data = await Carrier.fetch(res.session, { _companyId: _id })
                                 if (!data) return respond404(res)
 
                                 const {
@@ -766,12 +765,11 @@ export const companyById = async (req, res) => {
 export const companyByCategoryAndRoute = async (req, res) => {
     try {
         const { route } = req.params
-        let company = await Company.data(res.session, { route })
-        const { _id: _companyId, category } = company
-        const ein = await company.ein(res.session)
+        let company = await Company.fetch(res.session, { route, hideSensitive: false })
+        const { _id: _companyId, category, ein } = company
 
         if (!company) return respond404(res)
-        if (req.params.category !== Company.categoryList[category].path[1])
+        if (req.params.category !== Company.list.category[category].path[1])
             return respond404(res)
 
         const css = {}
@@ -780,7 +778,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         switch (category) {
 
             case 'crr':
-                company = await Carrier.data(res.session, { _companyId })
+                company = await Carrier.fetch(res.session, { _companyId })
                 css.card = { minHeight: '455px' }
                 css.multiSelect = { minHeight: '310px' }
                 break
@@ -791,7 +789,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         company.alias = escapeHTML(company.alias)
         company.owner.name = escapeHTML(company.owner.name)
 
-        const icon = Company.categoryList[category].icon
+        const icon = Company.list.category[category].icon
         let cardTitle = company.name
         if (icon) cardTitle = `${icon}&nbsp;&nbsp;${cardTitle}`
 

@@ -8,7 +8,7 @@ import db from '../settings/mysql.mjs'
 /* Tools */
 import Query from '../tools/utils/query.mjs'
 import Company from '../tools/core/company.mjs'
-import Driver, { Application as DriverApplication } from '../tools/core/driver.mjs'
+import Driver, { Application as DriverApplication, Citation, Accident } from '../tools/core/driver.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
 
@@ -38,21 +38,21 @@ router.post('/source/:source', (req, res) => {
 
             case 'company':
                 result = {
-                    categories: Company.categoryList,
-                    types: Company.typeList,
+                    categories: Company.list.category,
+                    types: Company.list.type,
                 }
                 break
 
             case 'driver':
                 result = {
-                    positions: Driver.positionList,
+                    positions: Driver.list.position,
                 }
                 break
 
             case 'driver-application':
                 result = {
-                    violations: DriverApplication.citationList,
-                    accidents: DriverApplication.accidentList,
+                    violations: Citation.list.violation,
+                    accidents: Accident.list.collision,
                 }
                 break
 

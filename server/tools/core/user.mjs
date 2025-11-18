@@ -496,7 +496,7 @@ class User extends Person {
         body = processData(body)
 
         const { email } = body
-        if (await User.fetch({ sessionUser }, { email })) return
+        if (await User.fetch({ user: sessionUser }, { email })) return
 
         body.createdBy = sessionUser.id
 
@@ -514,7 +514,7 @@ class User extends Person {
         )
         if (!result.affectedRows) throw new Error('DB Error: Failed to register user')
 
-        const user = await User.fetch({ sessionUser }, { id })
+        const user = await User.fetch({ user: sessionUser }, { id })
         if (!user) throw new Error('Fetch Error: New user not found')
 
         user.invite(formId)
@@ -619,6 +619,25 @@ class User extends Person {
         list.forEach((data, i, arr) => arr[i] = new User(data, { single, login, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
+    }
+
+
+    static find = async (session, params = {}) => {
+        if (!session?.user) return { error: 'Invalid User' }
+
+        const { username, email, exclude } = params
+        if (!username && !email) return { error: 'Invalid Parameters' }
+
+        const match = { username, email }
+        if (exclude?._id) {
+            const user = await User.fetch(session, { _id: exclude._id })
+
+            match.id = { not: user.id }
+        }
+
+        const data = (await mysql.execute(query.main.select('id', { match })))[0]
+
+        return { found: data.length === 1 }
     }
 
 
@@ -1086,7 +1105,7 @@ class Role {
         body = processData(body)
 
         const { name, category, location } = body
-        if (await Role.fetch({ sessionUser }, { name, category, location })) return
+        if (await Role.fetch({ user: sessionUser }, { name, category, location })) return
 
         body.permissions = JSON.stringify(body.permissions)
         body.createdBy = sessionUser.id
@@ -1096,7 +1115,7 @@ class Role {
 
         if (!id) throw new Error('DB Error: Failed to create role')
 
-        const role = await Role.fetch({ sessionUser }, { id })
+        const role = await Role.fetch({ user: sessionUser }, { id })
         if (!role) throw new Error('Fetch Error: New role not found')
 
         return role
@@ -1139,6 +1158,27 @@ class Role {
         list.forEach((data, i, arr) => arr[i] = new Role(data, { single, session, hideRawId }))
 
         return single ? list[0] : list
+    }
+
+
+    static find = async (session, params = {}) => {
+        if (!session?.user) return { error: 'Invalid User' }
+
+        const { name, category, exclude } = params
+        if (!name && !category) return { error: 'Invalid Parameters' }
+        let { location } = params
+        if (location !== undefined && !location) location = null
+
+        const match = { name, category, location }
+        if (exclude?._id) {
+            const role = await Role.fetch(session, { _id: exclude._id })
+
+            match.id = { not: role.id }
+        }
+
+        const data = (await mysql.execute(query.roles.select('id', { match: { name, category, location } })))[0]
+
+        return { found: data.length === 1 }
     }
 
 
