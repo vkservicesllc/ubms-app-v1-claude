@@ -1,3 +1,4 @@
+import Person from '/modules/tools/core/person.mjs'
 import selector from '/modules/registry/selectors/company.mjs'
 
 const $tabs = $('.company-card-tabs')
@@ -35,15 +36,16 @@ if ($content.users.length) {
         applied: $('#current-users'),
     }
 
-    $.ajax(`/api/company/${_id}/users`, {
+    $.ajax(`/api/company/${_id}/users?sensitive=1`, {
         method: 'POST',
-        success(response) {console.log(response)
+        success(response) {
             const { data: users } = response
             const options = { available: '', applied: '' }
             const option = '<option value=""></option>'
 
             const optionItem = (user, prop) => {
-                const { name, username } = user
+                const name = new Person(user).fullName('AL')
+                const { username } = user
                 let option = name
                 if (username) option += ` (${username})`
                 else option += ' (pending...)'

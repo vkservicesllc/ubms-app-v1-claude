@@ -4,7 +4,7 @@ const sendError = require('../../tools/utils/error')
 /* Tools */
 import User, { Role, relTargets as userRelTargets } from '../../tools/core/user.mjs'
 import Team, { relTargets as teamRelTargets } from '../../tools/core/team.mjs'
-import Company, { Owner } from '../../tools/core/company.mjs'
+import Company, { Owner, relTargets as companyRelTargets } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
@@ -290,10 +290,24 @@ router.delete('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, 
 router.post('/company/:_id/:target', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { _id, target } = req.params
-        const company = await Company.fetch(res.session, { _id })
-        const companyTeams = await company.fetch(target)
+        const { sensitive } = req.query
+        const hideSensitive = !(sensitive && (sensitive === 'true' || sensitive == '1'))
+        const filter = {}
 
-        res.send({ data: companyTeams })
+        const targets = companyRelTargets('main')
+        const Src = targets[target][0]
+        const sorts = targets[target][3]
+
+        if (target === 'users') filter.status = ['U', 'A']
+
+        const company = await Company.fetch(res.session, { _id })
+        const data = {
+            all: await Src.fetch(res.session, filter, { hideRawId, hideSensitive, sorts }),
+            applied: await company.fetch(target, { hideRawId, hideSensitive }),
+        }
+        data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
+
+        res.send({ data })
     } catch (err) {
         sendError.server(res, err, true)
     }

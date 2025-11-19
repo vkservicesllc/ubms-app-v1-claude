@@ -13,6 +13,7 @@ import { ein as formatEin, duns as formatDuns, tel as formatTel } from '../../..
 import { respond404 } from '../../../tools/utils/response.mjs'
 import { getFiles } from '../../../tools/utils/fs.mjs'
 import { button as formButton } from '../../../../client/global/modules/tools/utils/html/components.mjs'
+import { sortObjectByValue } from '../../../../client/global/modules/tools/utils/sorter.mjs'
 
 /* Forms */
 import { updateFormOptions } from '../../../tools/form/builder.mjs'
@@ -538,8 +539,7 @@ export const companyById = async (req, res) => {
             data = await Company.fetch(res.session, { _id })
             if (!data) return respond404(res)
 
-            {({ _id, category, since, duns, busName, coType, alias, website } = data)}
-            ein = await data.ein(res.session)
+            {({ _id, category, since, ein, duns, busName, coType, alias, website } = data)}
 
             const { name, owner } = data
             const { _id: _ownerId } = owner
@@ -691,7 +691,16 @@ export const companyById = async (req, res) => {
             {
                 const values = { confirmAlias: null, ownership: _ownerId }
                 options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
-                options.ownership.select.input.data = await Owner.inputData(res.session)
+                options.ownership.select.input.data = {} //await Owner.inputData(res.session)
+
+                const owners = await Owner.fetch(res.session)
+                const data = {}, names = []
+
+                owners.map(owner => names.push(owner.fullName()))
+                let dublicates = names.filter((name, i) => names.indexOf(name) !== i)
+                dublicates = [ ...new Set(dublicates) ]
+                owners.forEach((owner, i) => data[owner._id] = names[i] + (dublicates.includes(names[i]) ? ` (${owner.age})` : ''))
+                options.ownership.select.input.data = sortObjectByValue(data)
 
                 const { content, style } = submitProps.ownership
                 button.submit.ownership = submitButton('ownership-submit', content, style)

@@ -161,6 +161,27 @@ class Company {
                     return result.affectedRows > 0
                 }
             }
+
+
+            this.fetch = async (target, { hideRawId = false, hideSensitive = true, sorts = null, idsOnly = false } = {}) => {
+                if (!this.session?.user?.id) throw new Error('Company Fetch Error: No session user')
+                if (!target) throw new Error('Company Fetch Error: Target not supplied')
+
+                const targets = relTargets('main')
+                if (!Object.keys(targets).includes(target)) throw new Error('Company Fetch Error: Invalid target supplied')
+
+                const [ Src, idProp, queryInst, defSorts ] = targets[target]
+                if (!sorts) sorts = defSorts
+
+                const ids = []
+                const [ rows ] = await mysql.execute(queryInst.select(idProp, {
+                    match: { companyId: this.id || Company.matchIdHash(this._id) },
+                }))
+
+                rows.map(row => ids.push(row[idProp]))
+
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, hideSensitive, sorts })
+            }
             
             
             this.update = async (body, target, { since }) => {}
@@ -300,13 +321,12 @@ class Company {
     static defSorts = [ null, [ 'busName', 'coType' ] ]
 
 
-    static create = async ({ user: sessionUser = {} }, body = {}) => {
+    static create = async ({ user: sessionUser = {}, branch, siteId }, body = {}) => {
         if (!sessionUser.id) throw new Error('Company Create Error: No session user')
 
         body = processData(body)
 
         const { category, ein, duns, since, busName, coType, alias } = body
-
         if (await Company.fetch({ user: sessionUser }, { ein, duns, busName, coType, alias })) return
 
         const createdBy = sessionUser.id
@@ -321,12 +341,11 @@ class Company {
 
         if (!id) throw new Error('DB Error: Failed to create company')
 
-        data.name.companyId = id
-
+        { data.name.companyId = id }
         [ result ] = await mysql.execute(query.names.insert(data.name))
         if (!result.affectedRows) throw new Error('DB Error: Failed to register company name')
 
-        const company = await Company.fetch({ user: sessionUser }, { id })
+        const company = await Company.fetch({ user: sessionUser, branch, siteId }, { id, confirmed: false })
         if (!company) throw new Error('Fetch Error: New company not found')
 
         return company
@@ -431,8 +450,8 @@ class Company {
         }
         if (ein) match.main.ein = { aes: [ ein, secret.ein ] }
         if (busName && coType) {
-            match.main.busName = busName
-            match.main.coType = coType
+            match.names.busName = busName
+            match.names.coType = coType
         }
         if (route) match.names.route = { route: [ [ 'busName', 'coType' ], route ] }
 
@@ -799,7 +818,7 @@ class Owner extends Individual {
 function relTargets(src, target = null) {
     const targets =  {
         main: {
-            users: [ User, 'userId', userQuery.jx.companies, User.defSort ],
+            users: [ User, 'userId', userQuery.jx.companies, User.defSorts ],
         },
     }[src]
 
@@ -809,4 +828,4 @@ function relTargets(src, target = null) {
 
 
 export default Company
-export { Owner, query }
+export { Owner, query, relTargets }

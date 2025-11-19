@@ -83,14 +83,14 @@ class Team {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, sorts = null, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, hideSensitive = true, sorts = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Team Fetch Error: No session user')
                 if (!target) throw new Error('Team Fetch Error: Target not supplied')
 
-                const targets = relTargets('main', target)
+                const targets = relTargets('main')
                 if (!Object.keys(targets).includes(target)) throw new Error('Team Fetch Error: Invalid target supplied')
 
-                const [ Src, idProp, queryInst, defSorts ] = targets
+                const [ Src, idProp, queryInst, defSorts ] = targets[target]
                 if (!sorts) sorts = defSorts
 
                 const ids = []
@@ -100,7 +100,7 @@ class Team {
 
                 rows.map(row => ids.push(row[idProp]))
 
-                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sorts })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, hideSensitive, sorts })
             }
 
 

@@ -119,7 +119,7 @@ class User extends Person {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, sorts = null, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, hideSensitive = true, sorts = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('User Fetch Error: No session user')
                 if (!target) throw new Error('User Fetch Error: Target not supplied')
 
@@ -176,7 +176,7 @@ class User extends Person {
                     rows.map(row => ids.push(row[idProp]))
                 }
 
-                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sorts })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, hideSensitive, sorts })
             }
 
 
@@ -1012,7 +1012,7 @@ class Role {
             }
 
 
-            this.fetch = async (target, { hideRawId = false, sorts = null, idsOnly = false } = {}) => {
+            this.fetch = async (target, { hideRawId = false, hideSensitive = true, sorts = null, idsOnly = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Role Fetch Error: No session user')
                 if (!target) throw new Error('Role Fetch Error: Target not supplied')
 
@@ -1027,7 +1027,7 @@ class Role {
 
                 rows.map(row => ids.push(row[idProp]))
 
-                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, sorts })
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, hideSensitive, sorts })
             }
 
 
