@@ -58,6 +58,16 @@ $.when(statusReq).done(statusRes => {
         columns: [
 
             {
+                data: null,
+                title: 'Group',
+                visible: false,
+                searchable: false,
+                render(data, type, row) {
+                    return row.expansion.categoryGroup
+                },
+            },
+
+            {
                 data: 'category',
                 title: 'Category',
                 visible: false,
