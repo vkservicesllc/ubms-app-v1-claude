@@ -574,7 +574,7 @@ class User extends Person {
             ids, _ids, firstName, lastName, alias, sex, status, location, condition, decliner, deleted,
         } = filter
 
-        const single = id || _id || _simpleId || username || email
+        const single = !!id || !!_id || !!_simpleId || !!username || !!email
         let deletedBy
         if (!combined)  deletedBy = deleted ? { null: false } : null
 
@@ -1129,7 +1129,7 @@ class Role {
             id, _id,
             ids, _ids, category, name, location,
         } = filter
-        const single = id || _id
+        const single = !!id || !!_id
 
         const match = { id, category, name, location }
         if (!id) {

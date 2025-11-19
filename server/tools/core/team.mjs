@@ -219,7 +219,7 @@ class Team {
             id, _id, name,
             ids, _ids,
         } = filter
-        const single = id || _id || name
+        const single = !!id || !!_id || !!name
 
         const match = { id, name }
         if (!id) {

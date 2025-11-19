@@ -58,6 +58,12 @@
         <section class="company-card-content" id="company-card-content">
             <div class="columns">
                 <div class="column is-one-half px-5">
+                    {{#if (eq data.confirmed 1)}}
+                    <div class="is-flex is-justify-content-space-between">
+                        <small>Status:</small>
+                        <strong class="has-text-right">{{{display.status}}}</strong>
+                    </div>
+                    {{/if}}
                     <div class="is-flex is-justify-content-space-between">
                         <small>Business Name:</small>
                         <strong class="has-text-right">{{data.name}}</strong>
@@ -74,15 +80,9 @@
                         <small>Launch Date:</small>
                         <strong class="has-text-right">{{display.data.since}}</strong>
                     </div>
-                    {{#if (eq data.confirmed 1)}}
-                    <div class="is-flex is-justify-content-space-between">
-                        <small>Status:</small>
-                        <strong class="has-text-right">{{{display.status}}}</strong>
-                    </div>
-                    {{/if}}
                     <div class="is-flex is-justify-content-space-between mt-5">
                         <small>Category:</small>
-                        <strong class="has-text-right">{{data.group}} / {{data.category}}</strong>
+                        <strong class="has-text-right">{{data.expansion.group}} / {{data.expansion.category}}</strong>
                     </div>
                     <div class="is-flex is-justify-content-space-between">
                         <small>Type:</small>
@@ -90,7 +90,7 @@
                     </div>
                     <div class="is-flex is-justify-content-space-between">
                         <small>EIN:</small>
-                        <strong class="has-text-right">{{display.data.ein}}</strong>
+                        <strong class="has-text-right">{{{display.data.ein}}}</strong>
                     </div>
                     <div class="is-flex is-justify-content-space-between">
                         <small>DUNS:</small>

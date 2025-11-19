@@ -358,7 +358,7 @@ class Individual extends Person {
             id, _id, ssn,
             ids, _ids, sex, firstName, lastName
         } = filter
-        const single = id || _id || ssn
+        const single = !!id || !!_id || !!ssn
 
         const match = {
             main: { id, sex },

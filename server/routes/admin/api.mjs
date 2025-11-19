@@ -41,7 +41,7 @@ router.post('/log/:env/:_id', User.mw.verify, User.mw.superAdminOnly, async (req
 //         let success = false
 
 //         const Src = { User, Role, Team, Individual, Company, Owner, Carrier }[capitalizeFirst(env)]
-//         const instance = await Src.data(res.session, { _id })
+//         const instance = await Src.fetch(res.session, { _id })
 //         const [ result ] = await instance.flush(target)
 //         if (result.affectedRows == 1) success = true
 
@@ -211,7 +211,7 @@ router.post('/role/:_id', User.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
 
-        res.send({ data: await Role.data(res.session, { _id }) })
+        res.send({ data: await Role.fetch(res.session, { _id }) })
     } catch (err) {
         sendError.server(res, err, true)
     }
@@ -237,7 +237,7 @@ router.delete('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, 
     try {
         let deleted = false, error
         const { _id } = req.params
-        const team = await Team.data(res.session, { _id })
+        const team = await Team.fetch(res.session, { _id })
 
         try {
             ({ deleted, error } = await team.delete(res.session))
@@ -272,7 +272,7 @@ router.delete('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, 
 //     try {
 //         const { _id, relType, _relId } = req.params
 //         const { action } = req.body
-//         const team = await Team.data(res.session, { _id })
+//         const team = await Team.fetch(res.session, { _id })
 
 //         const { modified, error } = await team.manage(res.session, relType, action, _relId)
 
@@ -290,8 +290,8 @@ router.delete('/team/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, 
 router.post('/company/:_id/:target', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { _id, target } = req.params
-        const company = await Company.data(res.session, { _id })
-        const companyTeams = await company.relationship(res.session, target)
+        const company = await Company.fetch(res.session, { _id })
+        const companyTeams = await company.fetch(target)
 
         res.send({ data: companyTeams })
     } catch (err) {
@@ -304,7 +304,7 @@ router.post('/company-owner/:_id', User.mw.verify, User.mw.superAdminOnly, async
     try {
         const { _id } = req.params
 
-        res.send(await Owner.data(res.session, { _id }))
+        res.send(await Owner.fetch(res.session, { _id }))
     } catch (err) {
         sendError.server(res, err, true)
     }

@@ -145,7 +145,7 @@ class Carrier extends Company {
             id, _id, companyId,  _companyId, ein, duns, busName, coType, alias, route, usdot, mc,
             ids, _ids, companyIds, _companyIds,
         } = filter
-        const single = id || _id || companyId || _companyId || ein || duns || (busName && coType) || alias || route
+        const single = !!id || !!_id || !!companyId || !!_companyId || !!ein || !!duns || !!(busName && coType) || !!alias || !!route
 
         const idx = batch.length - 3
         batch[idx].match = { usdot, mc }

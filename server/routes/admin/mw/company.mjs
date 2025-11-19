@@ -403,20 +403,18 @@ const display = (data, ein) => {
     display.data = {}
     display.label = {}
 
-    if (ein) {
-        const typeList = {}
+    const typeList = {}
+    for (const group in Company.list.type)
+        for (const type in Company.list.type[group])
+            typeList[type] = Company.list.type[group][type]
+    display.data.type = typeList[data.coType]
 
-        for (const group in Company.list.type)
-            for (const type in Company.list.type[group])
-                typeList[type] = Company.list.type[group][type]
+    display.data.ein = formatEin(ein) || na
 
-        display.data.ein = formatEin(ein)
-        display.data.type = typeList[data.coType]
-        display.data.website = na
-        if (data.website) {
-            const href = `https://${data.website}`
-            display.data.website = `<a href="${href}" target="_blank">${href}</a>`
-        }
+    display.data.website = na
+    if (data.website) {
+        const href = `https://${data.website}`
+        display.data.website = `<a href="${href}" target="_blank">${href}</a>`
     }
 
     if (data.since) {
@@ -765,9 +763,9 @@ export const companyById = async (req, res) => {
 export const companyByCategoryAndRoute = async (req, res) => {
     try {
         const { route } = req.params
-        let company = await Company.fetch(res.session, { route, hideSensitive: false })
-        const { _id: _companyId, category, ein } = company
+        let company = await Company.fetch(res.session, { route }, { hideSensitive: false })
 
+        const { _id: _companyId, category, ein } = company
         if (!company) return respond404(res)
         if (req.params.category !== Company.list.category[category].path[1])
             return respond404(res)
@@ -779,6 +777,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
 
             case 'crr':
                 company = await Carrier.fetch(res.session, { _companyId })
+
                 css.card = { minHeight: '455px' }
                 css.multiSelect = { minHeight: '310px' }
                 break
@@ -787,7 +786,8 @@ export const companyByCategoryAndRoute = async (req, res) => {
 
         company.name = escapeHTML(company.name)
         company.alias = escapeHTML(company.alias)
-        company.owner.name = escapeHTML(company.owner.name)
+
+        company.owner.name = escapeHTML(company.owner.fullName())
 
         const icon = Company.list.category[category].icon
         let cardTitle = company.name
@@ -840,7 +840,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
             },
         }
         hbs.display.status = company.active
-            ? 'Active'
+            ? '<span class="has-text-success-45">Active</span>'
             : '<i class="has-text-danger">Inactive</i>'
         hbs.display.statusTrigger = company.active ? 'Deactivate' : 'Activate'
 

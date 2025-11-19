@@ -48,11 +48,11 @@ class Company {
     constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true } = {}) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Company Data')
 
-        const props = { _id: data._id }
-        if (!hideRawId) props.id = data.id
+        this._id = data._id
+        if (!hideRawId) this.id = data.id
 
         this.category = data.category
-        if (!hideSensitive) this.ein = stringifyBuffer(ein)
+        if (!hideSensitive) this.ein = stringifyBuffer(data.ein)
         this.duns = data.duns
         this.website = data.website
         this.route = data.route
@@ -71,8 +71,9 @@ class Company {
         if (!this.style.text) this.style.text = null
 
         this.expansion = {
-            category: data.category ? Company.list.category[data.category].item[1] : null,
-            categoryGroup: data.category ? Company.list.category[data.category].item[0] : null,
+            category: Company.list.category[data.category].item[1],
+            categoryGroup: Company.list.category[data.category].item[0],
+            group: Company.list.category[data.category].group,
         }
 
         this.owner = data._ownerId
@@ -417,7 +418,7 @@ class Company {
             id, _id, ein, duns, busName, coType, alias, route,
             ids, _ids, ownerId, _ownerId, category, global, lastLogo
         } = filter
-        const single = id || _id || ein || duns || (busName && coType) || alias || route
+        const single = !!id || !!_id || !!ein || !!duns || !!(busName && coType) || !!alias || !!route
 
         const match = {
             main: { id, duns, category, global, lastLogo },
@@ -729,7 +730,7 @@ class Owner extends Individual {
             id, _id, ssn,
             ids, _ids, sex, firstName, lastName,
         } = filter
-        const single = id || _id || ssn
+        const single = !!id || !!_id || !!ssn
 
         const match = {
             main: { id },
