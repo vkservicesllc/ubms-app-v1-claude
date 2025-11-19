@@ -1,6 +1,6 @@
 import Tip from './tools/tip.mjs'
 import { teamNameEvent, teamDescEvent } from '/modules/events/team.mjs'
-import { catIdEvent, busNameEvent, coTypeEvent } from '/modules/events/company.mjs'
+import { categoryEvent, busNameEvent, coTypeEvent } from '/modules/events/company.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import { urlEvent } from '/modules/events/web.mjs'
 import { addr1Event, addr2Event, cityEvent, zipEvent } from '/modules/events/address.mjs'
@@ -135,7 +135,7 @@ teamNameEvent({
     },
 })
 
-// catIdEvent(catId, ids.catIdIcon)
+// categoryEvent(catId, ids.catIdIcon)
 
 teamDescEvent({
     onInput(desc) {
