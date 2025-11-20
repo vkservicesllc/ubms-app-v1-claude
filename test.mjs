@@ -28,6 +28,8 @@ role.add('jx.users', ids)
 
 role.fetch('jx.users')
 
+role.update(req.body)
+
 role.delete()
 role.delete('jx.users', ids)
 
