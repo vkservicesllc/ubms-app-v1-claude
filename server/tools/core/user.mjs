@@ -615,7 +615,7 @@ class User extends Person {
         await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const list = (await mysql.execute(queryStr))[0]
 
-        const session = { user: { id: sessionUserId }, siteId, branch }
+        const session = setSession(sessionUser, branch, siteId)
         list.forEach((data, i, arr) => arr[i] = new User(data, { single, login, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
@@ -1122,7 +1122,7 @@ class Role {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} } = {}, filter = {}, { hideRawId = false, sorts = Role.defSorts, mode = 'data' } = {}) => {
+    static fetch = async ({ user: sessionUser = {}, branch, siteId = null } = {}, filter = {}, { hideRawId = false, sorts = Role.defSorts, mode = 'data' } = {}) => {
         if (!sessionUser.id) throw new Error('Role Fetch Error: No session user')
 
         const {
@@ -1153,7 +1153,7 @@ class Role {
         const queryStr = Query.select(db.online, batch)
         if (mode === 'query') return queryStr
 
-        const session = { user: { id: sessionUser.id } }
+        const session = setSession(sessionUser, branch, siteId)
         const list = (await mysql.execute(queryStr))[0]
         list.forEach((data, i, arr) => arr[i] = new Role(data, { single, session, hideRawId }))
 
@@ -1291,10 +1291,21 @@ function relTargets(src, target = null) {
 
 
 
+function setSession(user = {}, branch, siteId) {
+    const { id, DS, DSA, status, location } = user
+
+    return {
+        user: { id, DS, DSA, status, location },
+        branch, siteId,
+    }
+}
+
+
+
 delete User.formSelect
 
 export default User
-export { Role, Token, query, relTargets }
+export { Role, Token, query, relTargets, setSession }
 
 
 
