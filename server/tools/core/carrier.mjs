@@ -6,7 +6,7 @@ import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Tools */
 import Company, { query as companyQuery } from './company.mjs'
-// import { sessionError } from './user.mjs'
+import { setSession } from './user.mjs'
 import Query, { hash, matchHash }  from '../utils/query.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { processData } from '../utils/database.mjs'
@@ -106,7 +106,7 @@ class Carrier extends Company {
 
 
     static fetch = async (
-        { user: sessionUser = {}, branch, siteId } = {}, filter = {},
+        { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
         { hideRawId = false, hideSensitive = true, sorts = Company.defSorts, mode = 'data' } = {}
     ) => {
         if (!sessionUser.id) throw new Error('Carrier Fetch Error: No session user')
@@ -166,7 +166,7 @@ class Carrier extends Company {
 
         const list = (await mysql.execute(queryStr))[0]
 
-        const session = { user: { id: sessionUser.id }, siteId, branch }
+        const session = setSession(sessionUser, branch, siteId)
         list.forEach((data, i, arr) => arr[i] = new Carrier(data, { single, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
