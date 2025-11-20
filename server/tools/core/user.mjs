@@ -1122,7 +1122,10 @@ class Role {
     }
 
 
-    static fetch = async ({ user: sessionUser = {}, branch, siteId = null } = {}, filter = {}, { hideRawId = false, sorts = Role.defSorts, mode = 'data' } = {}) => {
+    static fetch = async (
+        { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
+        { hideRawId = false, sorts = Role.defSorts, mode = 'data' } = {}
+    ) => {
         if (!sessionUser.id) throw new Error('Role Fetch Error: No session user')
 
         const {
