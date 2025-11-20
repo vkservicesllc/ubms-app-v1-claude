@@ -2,7 +2,7 @@
 import db from '../../settings/mysql.mjs'
 
 /* Tools */
-import User, { query as userQuery } from './user.mjs'
+import User, { query as userQuery, setSession } from './user.mjs'
 import Company from './company.mjs'
 import Carrier from './carrier.mjs'
 import Driver from './driver.mjs'
@@ -212,7 +212,10 @@ class Team {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, sorts = Team.defSorts, mode = 'data' } = {}) => {
+    static fetch = async (
+        { user: sessionUser = {}, branch, siteId = null }, filter = {},
+        { hideRawId = false, sorts = Team.defSorts, mode = 'data' } = {}
+    ) => {
         if (!sessionUser.id) throw new Error('Team Fetch Error: No session user')
 
         const {
@@ -269,7 +272,7 @@ class Team {
         const queryStr = Query.select(db.online, batch)
         if (mode === 'query') return queryStr
 
-        const session = { user: { id: sessionUser.id } }
+        const session = setSession(sessionUser, branch, siteId)
         const list = (await mysql.execute(queryStr))[0]
         list.forEach((data, i, arr) => arr[i] = new Team(data, { single, session, hideRawId }))
 
