@@ -13,7 +13,7 @@ import moment from 'moment'
 import Individual, { query as personQuery } from './individual.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Team from './team.mjs'
-import User, { query as userQuery } from './user.mjs'
+import User, { query as userQuery, setSession } from './user.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 // import { sessionError } from './user.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
@@ -321,7 +321,7 @@ class Company {
     static defSorts = [ null, [ 'busName', 'coType' ] ]
 
 
-    static create = async ({ user: sessionUser = {}, branch, siteId }, body = {}) => {
+    static create = async ({ user: sessionUser = {}, branch, siteId = null }, body = {}) => {
         if (!sessionUser.id) throw new Error('Company Create Error: No session user')
 
         body = processData(body)
@@ -353,7 +353,7 @@ class Company {
 
 
     static fetch = async (
-        { user: sessionUser = {}, branch, siteId } = {}, filter = {},
+        { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
         { hideRawId = false, hideSensitive = true, sorts = Company.defSorts, mode = 'data' } = {}
     ) => {
         if (!sessionUser.id) throw new Error('Company Fetch Error: No session user')
@@ -480,7 +480,7 @@ class Company {
 
         const list = (await mysql.execute(queryStr))[0]
 
-        const session = { user: { id: sessionUser.id }, siteId, branch }
+        const session = setSession (sessionUser, branch, siteId)
         list.forEach((data, i, arr) => arr[i] = new Company(data, { single, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
@@ -695,7 +695,10 @@ class Owner extends Individual {
     }
 
 
-    static fetch = async ({ user: sessionUser = {}, branch, siteId } = {}, filter = {}, { hideRawId = false, hideSensitive = true, sorts = Owner.defSorts, mode = 'data' } = {}) => {
+    static fetch = async (
+        { user: sessionUser = {}, branch, siteId = null} = {}, filter = {},
+        { hideRawId = false, hideSensitive = true, sorts = Owner.defSorts, mode = 'data' } = {}
+    ) => {
         if (!sessionUser.id) throw new Error('Owner Fetch Error: No session user')
 
         const batch = [
@@ -777,7 +780,7 @@ class Owner extends Individual {
         await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const list = (await mysql.execute(queryStr))[0]
 
-        const session = { user: { id: sessionUser.id }, siteId, branch }
+        const session = setSession (sessionUser, branch, siteId)
         list.forEach((data, i, arr) => arr[i] = new Owner(data, { single, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
