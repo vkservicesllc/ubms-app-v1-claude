@@ -30,12 +30,18 @@ const sendError = require('../utils/error')
 
 const { sqlMode } = Query
 const query = {
-    main: new Query(db.online, 'users'),
-    registration: new Query(db.online, 'user_registration'),
-    passReset: new Query(db.online, 'user_passreset'),
-    roles: new Query(db.online, 'user_roles'),
-    tokens: new Query(db.online, 'tokens'),
-    sessions: new Query(db.online, 'sessions'),
+    users: {
+        main: new Query(db.online, 'users'),
+        registration: new Query(db.online, 'user_registration'),
+        passReset: new Query(db.online, 'user_passreset'),
+    },
+    roles: {
+        main: new Query(db.online, 'user_roles'),
+    },
+    sessions: {
+        main: new Query(db.online, 'sessions'),
+        tokens: new Query(db.online, 'tokens'),
+    },
     jx: {
         roles: new Query(db.online, 'user_role_map'),
         teams: new Query(db.online, 'user_team_map'),
@@ -194,7 +200,7 @@ class User extends Person {
 
                 if (this.location !== 'US' && body.location !== 'US' && body.phone) body.phone = null
 
-                const [ result ] = await mysql.execute(query.main.update(body, { id: this.id || User.matchIdHash(this._id) }))
+                const [ result ] = await mysql.execute(query.users.main.update(body, { id: this.id || User.matchIdHash(this._id) }))
 
                 if (result.affectedRows) {
                     updated = true
@@ -204,12 +210,12 @@ class User extends Person {
                             await mysql.execute(query.jx[queryProp].delete({ userId: this.id || User.matchIdHash(this._id) }))
 
                     if (!this.username && body.email && this.email !== data.email) {
-                        const { formId } = (await mysql.execute(query.registration.select('formId', { match: { userId: this.id } })))[0][0]
+                        const { formId } = (await mysql.execute(query.users.registration.select('formId', { match: { userId: this.id } })))[0][0]
 
                         if (formId) {
                             this.invite(formId)
 
-                            const [ result ] = await mysql.execute(query.registration.update({ invitedAt: Query.timeStamp }, {
+                            const [ result ] = await mysql.execute(query.users.registration.update({ invitedAt: Query.timeStamp }, {
                                 userId: this.id || User.matchIdHash(this._id), formId,
                             }))
                             if (!result.affectedRows) throw new Error('User Update Error: Failed to update registration timestamp')
@@ -237,13 +243,13 @@ class User extends Person {
                     update.deletedBy = session.user.id
                     update.deletedAt = Query.timeStamp
 
-                    const [ result ] = await mysql.execute(query.main.update(update, { id: this.id || User.matchIdHash(this._id) }))
+                    const [ result ] = await mysql.execute(query.users.main.update(update, { id: this.id || User.matchIdHash(this._id) }))
                     if (!result.affectedRows) return false
 
                     const match = { userId: this.id || User.matchIdHash(this._id) }
-                    await mysql.execute(query.registration.delete(match))
-                    await mysql.execute(query.passReset.delete(match))
-                    await mysql.execute(query.tokens.delete(match))
+                    await mysql.execute(query.users.registration.delete(match))
+                    await mysql.execute(query.users.passReset.delete(match))
+                    await mysql.execute(query.sessions.tokens.delete(match))
 
                     return true
                 } else if (ids.length) {
@@ -296,7 +302,7 @@ class User extends Person {
                 if (!this.self) return
 
                 const match = { id: this.id || User.matchIdHash(this._id) }
-                let settings = (await mysql.execute(query.main.select('settings', { match })))[0] || {}
+                let settings = (await mysql.execute(query.users.main.select('settings', { match })))[0] || {}
 
                 if (action === 'fetch') return settings
 
@@ -306,7 +312,7 @@ class User extends Person {
                     settings[this.session.branch] = data
                     settings = JSON.stringify(settings)
 
-                    await mysql.execute(query.main.update({ settings }, match))
+                    await mysql.execute(query.users.main.update({ settings }, match))
                 }
             }
 
@@ -319,7 +325,7 @@ class User extends Person {
 
                 const { id: userId, lastLogin } = this
 
-                await mysql.execute(query.sessions.update(
+                await mysql.execute(query.sessions.main.update(
                     { lastUrl },
                     { userId, siteId, branch, lastLogin }
                 ))
@@ -349,7 +355,7 @@ class User extends Person {
                         match: { userId: this.id || User.matchIdHash(this._id) },
                     },
                     {
-                        table: query.roles.table,
+                        table: query.roles.main.table,
                         fields: 'permissions',
                         join: [ 'id', 'roleId' ],
                         match: { category, location: [ null, this.location ] },
@@ -453,7 +459,7 @@ class User extends Person {
             this.log = async field => {
                 const fields = ['createdBy', 'createdAt', 'deletedBy', 'deletedAt', 'updateLog']
 
-                let log = (await mysql.execute(query.main.select(fields, {
+                let log = (await mysql.execute(query.users.main.select(fields, {
                     match: { id: this.id || User.matchIdHash(this._id) },
                 })))[0][0]
 
@@ -486,8 +492,8 @@ class User extends Person {
         return idStr
     }
 
-    static #formId = async () => await User.idStr('formId', inputLength.user.formId.max, query.registration)
-    static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.passReset)
+    static #formId = async () => await User.idStr('formId', inputLength.user.formId.max, query.users.registration)
+    static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.users.passReset)
 
 
     static create = async ({ user: sessionUser = {} }, body = {}) => {
@@ -500,14 +506,14 @@ class User extends Person {
 
         body.createdBy = sessionUser.id
 
-        let [ result ] = await mysql.execute(query.main.insert(body))
+        let [ result ] = await mysql.execute(query.users.main.insert(body))
         const id = result.insertId
 
         if (!id) throw new Error('DB Error: Failed to create user')
 
         const formId = await User.#formId()
         (
-            [ result ] = await mysql.execute(query.registration.insert({
+            [ result ] = await mysql.execute(query.users.registration.insert({
                 formId, userId: id,
                 invitedBy: sessionUser.id,
             }))
@@ -533,7 +539,7 @@ class User extends Person {
         const join = [ 'userId', 'id' ]
         const batch = [
             {
-                table: query.main.table,
+                table: query.users.main.table,
                 fields: [
                     'id', User.hashId(), [ User.hashSimpleId(), 'simpleId' ],
                     'username', 'email', 'phone',
@@ -564,7 +570,7 @@ class User extends Person {
 
         if (branch)
             batch.push({
-                table: query.sessions.table,
+                table: query.sessions.main.table,
                 fields: [ [ 'siteId', 'lastSiteId' ], [ 'branch', 'lastBranch' ], 'lastLogin', 'lastUrl' ],
                 join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],
             })
@@ -635,7 +641,7 @@ class User extends Person {
             match.id = { not: user.id }
         }
 
-        const data = (await mysql.execute(query.main.select('id', { match })))[0]
+        const data = (await mysql.execute(query.users.main.select('id', { match })))[0]
 
         return { found: data.length === 1 }
     }
@@ -750,7 +756,7 @@ class User extends Person {
                                 update = processData(update, options)
                             }
 
-                            await mysql.execute(query.main.update(update, { id }))
+                            await mysql.execute(query.users.main.update(update, { id }))
                         }
                     } else return sendError.auth(res, 'Authentication failed: User not verified')
                 }
@@ -789,7 +795,7 @@ class User extends Person {
 
                 if (!key || (!verified && expired)) await Token.create({ userId: id, clientIp })
 
-                await mysql.execute(query.main.update({ fails: 0 }, { id }))
+                await mysql.execute(query.users.main.update({ fails: 0 }, { id }))
 
                 res.redirect(authUrl(res.session, user._id, 'pending'))
             } catch (err) {
@@ -829,7 +835,7 @@ class User extends Person {
                 const body = { userId, siteId, branch, clientIp: { ip: clientIp } }
                 if (lastUrl) body.lastUrl = lastUrl
 
-                const [ result ] = await mysql.execute(query.sessions.insert(body))
+                const [ result ] = await mysql.execute(query.sessions.main.insert(body))
 
                 if (!result.affectedRows) {
                     if (req.session.user) delete req.session.user
@@ -1034,6 +1040,7 @@ class Role {
             this.update = async body => {
                 if (!this.session?.user?.id) throw new Error('Role Update Error: Session user not found')
 
+                const { user: sessionUser } = this.session
                 const { permissions } = body
                 delete body.permissions
                 
@@ -1043,7 +1050,7 @@ class Role {
                 })
                 body.permissions = JSON.stringify(permissions)
 
-                const [ result ] = await mysql.execute(query.roles.update(body, { id: this.id || Role.matchIdHash(this._id) }))
+                const [ result ] = await mysql.execute(query.roles.main.update(body, { id: this.id || Role.matchIdHash(this._id) }))
                 
                 return result.affectedRows > 0
             }
@@ -1060,7 +1067,7 @@ class Role {
                     const { id } = this
                     const log = await this.log()
 
-                    const [ result ] = await mysql.execute(query.roles.delete({ id }))
+                    const [ result ] = await mysql.execute(query.roles.main.delete({ id }))
                     if (!result.affectedRows) return false
 
                     for (const prop in log) this[prop] = log[prop]
@@ -1081,7 +1088,7 @@ class Role {
             this.log = async field => {
                 const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
 
-                let log = (await mysql.execute(query.roles.select(fields, {
+                let log = (await mysql.execute(query.roles.main.select(fields, {
                     match: { id: this.id || Role.matchIdHash(this._id) },
                 })))[0][0]
 
@@ -1110,7 +1117,7 @@ class Role {
         body.permissions = JSON.stringify(body.permissions)
         body.createdBy = sessionUser.id
 
-        const [ result ] = await mysql.execute(query.roles.insert(body))
+        const [ result ] = await mysql.execute(query.roles.main.insert(body))
         const id = result.insertId
 
         if (!id) throw new Error('DB Error: Failed to create role')
@@ -1142,7 +1149,7 @@ class Role {
 
         const batch = [
             {
-                table: query.roles.table,
+                table: query.roles.main.table,
                 fields: [ 'id', Role.hashId(), 'category', 'location', 'name', 'permissions' ],
                 match,
             },
@@ -1179,7 +1186,7 @@ class Role {
             match.id = { not: role.id }
         }
 
-        const data = (await mysql.execute(query.roles.select('id', { match: { name, category, location } })))[0]
+        const data = (await mysql.execute(query.roles.main.select('id', { match: { name, category, location } })))[0]
 
         return { found: data.length === 1 }
     }
@@ -1202,7 +1209,7 @@ class Token {
         this.expired = new Date >= this.expiresAt
     }
 
-    verify = async ({ queryInst = query.tokens } = {}) => {
+    verify = async ({ queryInst = query.sessions.tokens } = {}) => {
         const clientIp = { ip: this.clientIp }
         const token = { aes: [ this.key, tokenSecret ]}
 
@@ -1215,7 +1222,7 @@ class Token {
     }
 
 
-    static create = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
+    static create = async ({ userId, clientIp }, { queryInst = query.sessions.tokens, UserSrc = User } = {}) => {
         let token = generateRandomString(inputLength.user.token.max, 'd')
 
         await mysql.execute(queryInst.delete({ userId, clientIp: { ip: clientIp } }))
@@ -1261,7 +1268,7 @@ class Token {
     }
 
 
-    static fetch = async ({ userId, clientIp }, { queryInst = query.tokens, UserSrc = User } = {}) => {
+    static fetch = async ({ userId, clientIp }, { queryInst = query.sessions.tokens, UserSrc = User } = {}) => {
         const [ rows ] = await mysql.execute(queryInst.select([
             [ { aes: [ 'token', tokenSecret ] }, 'tokenKey' ],
             'verified', 'createdAt',

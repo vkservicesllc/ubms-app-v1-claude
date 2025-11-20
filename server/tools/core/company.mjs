@@ -120,18 +120,19 @@ class Company {
 
 
             this.add = async (target, bodyOrIds) => {
-                const { user: sessionUser } = this.session
+                const { user: sessionUser } = this.session || {}
 
                 if (sessionUser?.id) throw new Error('Company Add Error: No session user')
                 if (!target) throw new Error('Company Add Error: Target not supplied')
                 if (!this.id) throw new Error('Company Add Error: Personal ID is missing')
 
                 const jxTargets = relTargets('main')
-                let targets = Object.keys(query)
-                if (!targets.includes(target) || !Object.keys(jxTargets).includes(target) || target === 'main' || target === 'owners')
+                const targets = Object.keys(query)
+                const inTargets = Object.keys(targets).includes(target)
+                if (!inTargets || !Object.keys(jxTargets).includes(target) || target === 'main' || target === 'owners')
                     throw new Error('Company Add Error: Invalid target supplied')
 
-                if (targets.includes(target)) {
+                if (inTargets) {
                     let body = bodyOrIds
 
                     body = processData(body)

@@ -17,8 +17,10 @@ const sendError = require('../utils/error')
 
 
 const query = {
-    main: new Query(db.online, 'teams'),
-    profiles: new Query(db.online, 'team_profiles'),
+    teams : {
+        main: new Query(db.online, 'teams'),
+        profile: new Query(db.online, 'team_profiles'),
+    },
 }
 
 
@@ -60,12 +62,19 @@ class Team {
 
 
             this.add = async (target, ids = []) => {
-                if (!this.session?.user?.id) throw new Error('Team Add Error: No session user')
+                const { user: sessionUser } = this.session || {}
+
+                if (!sessionUser?.id) throw new Error('Team Add Error: No session user')
                 if (!target) throw new Error('Team Add Error: Target not supplied')
                 if (!this.id) throw new Error('Team Add Error: Personal ID is missing')
 
-                const targets = relTargets('main', target)
-                if (!Object.keys(targets).includes(target)) throw new Error('Team Add Error: Invalid target supplied')
+                const jxTargets = relTargets('main')
+                const targets = Object.keys(query)
+                const inTargets = Object.keys(targets).includes(target)
+                if (!inTargets || !Object.keys(jxTargets).includes(target) || target === 'main')
+                    throw new Error('Team Add Error: Invalid target supplied')
+
+                if (inTargets) {}
 
                 const data = []
                 const [ Src, idProp, queryInst ] = targets
@@ -74,7 +83,7 @@ class Team {
                 list.map(item => data.push({
                     teamId: this.id,
                     [idProp]: item.id,
-                    createdBy: session.user.id,
+                    createdBy: sessionUser.id,
                 }))
 
                 const [ result ] = await mysql.execute(queryInst.insert(data))
@@ -107,6 +116,7 @@ class Team {
             this.update = async (body, queryProp = 'main') => {
                 if (!this.session?.user?.id) throw new Error('Team Update Error: Session user not found')
 
+                const { user: sessionUser } = this.session
                 const idProp = queryProp === 'main' ? 'id' : 'teamId'
                 const modifiedBy = sessionUser.id
                 const currentUpdateLog = await this.log('updateLog', queryProp)
@@ -150,7 +160,7 @@ class Team {
                     const { id } = this
                     const log = await this.log()
 
-                    const [ result ] = await mysql.execute(query.main.delete({ id }))
+                    const [ result ] = await mysql.execute(query.teams.main.delete({ id }))
                     if (!result.affectedRows) return false
 
                     for (const prop in log) this[prop] = log[prop]
@@ -200,7 +210,7 @@ class Team {
 
         body.createdBy = sessionUser.id
 
-        const [ result ] = await mysql.execute(query.main.insert(body))
+        const [ result ] = await mysql.execute(query.teams.main.insert(body))
         const id = result.insertId
 
         if (!id) throw new Error('DB Error: Failed to create team')
@@ -233,13 +243,13 @@ class Team {
         const join = [ 'teamId', 'id' ]
         const batch = [
             {
-                table: query.main.table,
+                table: query.teams.main.table,
                 fields: [ 'id', Team.hashId(), 'name', 'description', 'settings' ],
                 match,
                 group: 'id',
             },
             {
-                table: query.profiles.table,
+                table: query.teams.profile.table,
                 fields: [
                     'busName', 'coType',
                     { concat: [ [ 'busName', '^, ', 'coType' ], 'company' ] },
@@ -293,7 +303,7 @@ class Team {
             match.id = { not: team.id }
         }
 
-        const data = (await mysql.execute(query.main.select('id', { match })))[0]
+        const data = (await mysql.execute(query.teams.main.select('id', { match })))[0]
 
         return { found: data.length === 1 }
     }
