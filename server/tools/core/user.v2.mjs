@@ -16,7 +16,6 @@ import Carrier, { query as carrierQuery } from './carrier.mjs'
 //! Add more classes and query instances when more categories are available
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
-import { classInstance } from '../utils/class.mjs'
 import recognizeApi from '../utils/api.mjs'
 import transporter, { sender } from '../utils/nodemailer.mjs'
 import { generateRandomString } from '../utils/string.mjs'
@@ -31,15 +30,15 @@ const sendError = require('../utils/error')
 
 const { sqlMode } = Query
 const query = {
-    user: {
+    users: {
         main: new Query(db.online, 'users'),
         registration: new Query(db.online, 'user_registration'),
         passReset: new Query(db.online, 'user_passreset'),
     },
-    role: {
+    roles: {
         main: new Query(db.online, 'user_roles'),
     },
-    session: {
+    sessions: {
         main: new Query(db.online, 'sessions'),
         tokens: new Query(db.online, 'tokens'),
     },
@@ -99,23 +98,375 @@ class User extends Person {
 
         reSuper(this, props)
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
-            this.config = {
-                // enforceUser: true,
-                query: query.user,
-                idProp: 'userId',
-                jxTargets: jxTargets('main'),
-                logDeleted: false,
-                // logUpdated: true,
-                // logFile: null,
-                // logLocation: false,
-                logFields: [ ...classInstance.redFields, 'deletedBy', 'deletedAt' ],
+
+            this.add = async (target, ids = []) => {
+                if (!this.session?.user?.id) throw new Error('User Add Error: No session user')
+                if (!target) throw new Error('User Add Error: Target not supplied')
+                if (!this.id) throw new Error('User Add Error: Personal ID is missing')
+
+                const targets = relTargets('main', target)
+
+                const data = []
+                const [ Src, idProp, queryInst ] = targets
+                const list = await Src.fetch(this.session, { ids })
+
+                list.map(item => data.push({
+                    userId: this.id,
+                    [idProp]: item.id,
+                    createdBy: session.user.id,
+                }))
+
+                const [ result ] = await mysql.execute(queryInst.insert(data))
+
+                return result.affectedRows > 0
             }
 
 
-            this.log = field => classInstance.log(this, new.target, field)
+            this.fetch = async (target, { hideRawId = false, hideSensitive = true, sorts = null, idsOnly = false } = {}) => {
+                if (!this.session?.user?.id) throw new Error('User Fetch Error: No session user')
+                if (!target) throw new Error('User Fetch Error: Target not supplied')
+
+                const targets = relTargets('main', target), specTargets = [ 'carriers' ] //! Add more targets when more categories are available
+                const special = specTargets.includes(target)
+
+                const ids = []
+                let Src, idProp, queryInst, defSorts
+
+                if (special) {
+                    const batch = [
+                        {
+                            table: query.jx.companies.table,
+                            fields: 'companyId',
+                            match: { userId: this.id || User.matchIdHash(this._id) },
+                        },
+                        {
+                            table: companyQuery.main.table,
+                            join: [ 'id', 'companyId' ],
+                        },
+                    ]
+
+                    switch (target) {
+
+                        case 'carriers':
+                            Src = Carrier
+                            batch[1].match = { category: 'crr' }
+                            batch.push({
+                                table: carrierQuery.main.table,
+                                fields: 'id',
+                            })
+                            //! UNKNOWN SORT
+                            break
+
+                        //! Add more cases when more categories are available
+
+                    }
+
+                    const [ rows ] = await mysql.execute(Query.select(db.online, batch))
+
+                    rows.map(row => {
+                        const { id, companyId } = row
+
+                        if (idsOnly) ids.push({ id, companyId })
+                        else ids.push(id)
+                    })
+                } else {
+                    [ Src, idProp, queryInst, defSorts ] = targets
+                    if (!sorts) sorts = defSorts
+
+                    const [ rows ] = await mysql.execute(queryInst.select(idProp, {
+                        match: { userId: this.id || User.matchIdHash(this._id) },
+                    }))
+                    rows.map(row => ids.push(row[idProp]))
+                }
+
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, hideSensitive, sorts })
+            }
+
+
+            this.update = async body => {
+                const { user: sessionUser, branch } = this.session || {}
+                if (!sessionUser || !branch) throw new Error('User Update Error: Session user or branch not found')
+                if (!this.self && (this.status === 'D' || branch !== 'user')) throw new Error('User Update Error: Immune user or invalid branch')
+
+                let updated = false
+                
+                body = processData(body, {
+                    modifiedBy: sessionUser.id, branch,
+                    currentData: this, currentUpdateLog: await this.log('updateLog'),
+                })
+
+                if (this.location !== 'US' && body.location !== 'US' && body.phone) body.phone = null
+
+                const [ result ] = await mysql.execute(query.users.main.update(body, { id: this.id || User.matchIdHash(this._id) }))
+
+                if (result.affectedRows) {
+                    updated = true
+
+                    if (['S', 'D'].includes(body.status))
+                        for (const queryProp in query.jx)
+                            await mysql.execute(query.jx[queryProp].delete({ userId: this.id || User.matchIdHash(this._id) }))
+
+                    if (!this.username && body.email && this.email !== data.email) {
+                        const { formId } = (await mysql.execute(query.users.registration.select('formId', { match: { userId: this.id } })))[0][0]
+
+                        if (formId) {
+                            this.invite(formId)
+
+                            const [ result ] = await mysql.execute(query.users.registration.update({ invitedAt: Query.timeStamp }, {
+                                userId: this.id || User.matchIdHash(this._id), formId,
+                            }))
+                            if (!result.affectedRows) throw new Error('User Update Error: Failed to update registration timestamp')
+                        }
+                    }
+                }
+
+                return updated
+            }
+
+
+            this.delete = async (target, ids) => {
+                if (!this.session?.user?.id) throw new Error('User Delete Error: Session user not found')
+                if (this.status === 'D') throw new Error('User Delete Error: Developer can not be deleted')
+
+                const targets = relTargets('main', target)
+
+                if (!target) {
+                    const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
+                        modifiedBy: sessionUserId,
+                        currentData: this,
+                        currentUpdateLog: await this.log('updateLog'),
+                    })
+                    update._passKey = null
+                    update.deletedBy = session.user.id
+                    update.deletedAt = Query.timeStamp
+
+                    const [ result ] = await mysql.execute(query.users.main.update(update, { id: this.id || User.matchIdHash(this._id) }))
+                    if (!result.affectedRows) return false
+
+                    const match = { userId: this.id || User.matchIdHash(this._id) }
+                    await mysql.execute(query.users.registration.delete(match))
+                    await mysql.execute(query.users.passReset.delete(match))
+                    await mysql.execute(query.sessions.tokens.delete(match))
+
+                    return true
+                } else if (ids.length) {
+                    const idProp = targets[1]
+                    const [ result ] = await mysql.execute(query.jx[target].delete({ [idProp]: ids }))
+
+                    return result.affectedRows > 0
+                }
+            }
+
+
+            this.invite = formId => {
+                if (!formId) throw new Error('User Invitation Error: Form ID not supplied')
+
+                const url = `${addrBook.user}/register/${this._id}?form=${formId}`
+
+                const mailOpts = {
+                    from: sender,
+                    to: this.email,
+                    subject: 'User Registration',
+                    html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                        Dear ${this.name},<br/>
+                        Welcome to ${config.site.name}!<br/><br/>
+                        We are thrilled to have you join our team and look forward to your contributions.
+                        To get started, we need you to complete a few simple steps to finalize your registration.<br/><br/>
+                        Please follow the link below to complete your registration:<br/>
+                        <a href="${url}" target="_blank">Proceed with Registration</a><br/><br/>
+                        Kindly complete this process within the next 24 hours to ensure a smooth onboarding experience.
+                    </div>`,
+                }
+
+                transporter.sendMail(mailOpts, error => {
+                    if (error) console.error(error)
+                })
+            }
+
+
+            this.inviter = async session => {
+                let id = await this.log('createdBy')
+                if (!id) return { name: appName, email: null }
+
+                const user = await User.fetch(session, { id })
+                const { name, email } = user
+
+                return { name, email }
+            }
+
+
+            this.settings = async (action = 'fetch', data = {}) => {
+                if (!this.self) return
+
+                const match = { id: this.id || User.matchIdHash(this._id) }
+                let settings = (await mysql.execute(query.users.main.select('settings', { match })))[0] || {}
+
+                if (action === 'fetch') return settings
+
+                if (action === 'update') {
+                    if (!this.session.branch) throw new Error('User Settings Error: Session branch missing')
+
+                    settings[this.session.branch] = data
+                    settings = JSON.stringify(settings)
+
+                    await mysql.execute(query.users.main.update({ settings }, match))
+                }
+            }
+
+
+            this.url = async lastUrl => {
+                if (lastUrl.slice(0, 5) === '/api/' || lastUrl.includes('/files/') || lastUrl.includes('/image/') || lastUrl.endsWith('.map')) return
+
+                const { branch, siteId } = this.session || {}
+                if (!branch) throw new Error('User URL Error: Session branch not supplied')
+
+                const { id: userId, lastLogin } = this
+
+                await mysql.execute(query.sessions.main.update(
+                    { lastUrl },
+                    { userId, siteId, branch, lastLogin }
+                ))
+
+                this.lastUrl = lastUrl
+            }
+
+
+            this.permissions = async () => {
+                const { branch } = this.session || {}
+                if ( !branch) throw new Error('User Permissions Error: Branch not found')
+
+                const catList = Company.list.category
+                let category
+
+                for (const prop in catList) {
+                    if (catList[prop].branch !== branch) continue
+                    category = prop
+                    break
+                }
+
+                if (!category) throw new Error('User Permissions Error: Category not determined')
+
+                const batch = [
+                    {
+                        table: query.jx.roles.table,
+                        match: { userId: this.id || User.matchIdHash(this._id) },
+                    },
+                    {
+                        table: query.roles.main.table,
+                        fields: 'permissions',
+                        join: [ 'id', 'roleId' ],
+                        match: { category, location: [ null, this.location ] },
+                    },
+                ]
+
+                const [ result ] = await mysql.execute(Query.select(db.online, batch))
+
+                return result.reduce((acc, item) => {
+                    Object.entries(item.permissions).forEach(([ key, values ]) => {
+                        acc[key] = [ ...new Set([ ...(acc[key] || []), ...values ])]
+                    })
+
+                    return acc
+                }, {})
+            }
+
+
+            this.report = async session => {
+                const result = { user: this }
+                const log = await this.log()
+
+                const { createdBy, deletedBy, updateLog } = log
+                /*
+                    The timestamps will only be correct on the Live Server
+                    if it is set up with UTC tz
+                */
+
+                let id = [ createdBy ]
+                if (deletedBy) id.push(deletedBy)
+
+                if (updateLog)
+                    updateLog.forEach(log => {
+                        id.push(log.modifiedBy)
+                    })
+                id = [ ...new Set(id) ]
+
+                const labelList = {
+                    username: 'Username',
+                    status: 'Status',
+                    location: 'Location',
+                    condition: 'Condition',
+                    fails: 'Login Attempts',
+                    email: 'Email',
+                    phone: 'US Cell Phone',
+                    firstName: 'First Name',
+                    lastName: 'Last Name',
+                    alias: 'Alias',
+                    sex: 'Gender',
+                }
+                const labels = {}
+                const names = {}
+                const users = await User.list(session, { id })
+
+                if (users)
+                    for (let i = 0; i < users.length; i++) {
+                        const id = await users[i].id()
+                        names[id] = users[i].name
+                    }
+
+                log.createdBy = names[createdBy] || appName
+                if (deletedBy) log.deletedBy = names[deletedBy]
+
+                if (updateLog)
+                    for (let i = 0; i < updateLog.length; i++) {
+                        log.updateLog[i].modifiedBy = names[updateLog[i].modifiedBy] || appName
+
+                        for (const prop in updateLog[i].data) {
+                            switch (prop) {
+                                case 'status':
+                                    log.updateLog[i].data.status = User.list.status[updateLog[i].data.status]
+                                    log.updateLog[i].oldData.status = User.list.status[updateLog[i].oldData.status]
+                                    break
+                                case 'location':
+                                    log.updateLog[i].data.location = User.list.location[updateLog[i].data.location]
+                                    log.updateLog[i].oldData.location = User.list.location[updateLog[i].oldData.location]
+                                    break
+                                case 'condition':
+                                    log.updateLog[i].data.condition = User.list.condition[updateLog[i].data.condition]
+                                    log.updateLog[i].oldData.condition = User.list.condition[updateLog[i].oldData.condition]
+                                    break
+                                case 'sex':
+                                    const genders = { '0': 'Female', '1': 'Male' }
+                                    const { sex } = updateLog[i].data
+                                    const { sex: oldSex } = updateLog[i].oldData
+                                    if ([0, 1].includes(sex)) log.updateLog[i].data.sex = genders[sex]
+                                    if ([0, 1].includes(oldSex)) log.updateLog[i].oldData.sex = genders[oldSex]
+                            }
+
+                            if (!(prop in labels)) labels[prop] = labelList[prop]
+                        }
+                    }
+
+                result.log = log
+                result.labels = labels
+        
+                return result
+            }
+
+
+            this.log = async field => {
+                const fields = ['createdBy', 'createdAt', 'deletedBy', 'deletedAt', 'updateLog']
+
+                let log = (await mysql.execute(query.users.main.select(fields, {
+                    match: { id: this.id || User.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
         }
     }
 
@@ -141,8 +492,8 @@ class User extends Person {
         return idStr
     }
 
-    static #formId = async () => await User.idStr('formId', inputLength.user.formId.max, query.user.registration)
-    static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.user.passReset)
+    static #formId = async () => await User.idStr('formId', inputLength.user.formId.max, query.users.registration)
+    static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.users.passReset)
 
 
     static create = async ({ user: sessionUser = {} }, body = {}) => {
@@ -155,14 +506,14 @@ class User extends Person {
 
         body.createdBy = sessionUser.id
 
-        let [ result ] = await mysql.execute(query.user.main.insert(body))
+        let [ result ] = await mysql.execute(query.users.main.insert(body))
         const id = result.insertId
 
         if (!id) throw new Error('DB Error: Failed to create user')
 
         const formId = await User.#formId()
         (
-            [ result ] = await mysql.execute(query.user.registration.insert({
+            [ result ] = await mysql.execute(query.users.registration.insert({
                 formId, userId: id,
                 invitedBy: sessionUser.id,
             }))
@@ -188,7 +539,7 @@ class User extends Person {
         const join = [ 'userId', 'id' ]
         const batch = [
             {
-                table: query.user.main.table,
+                table: query.users.main.table,
                 fields: [
                     'id', User.hashId(), [ User.hashSimpleId(), 'simpleId' ],
                     'username', 'email', 'phone',
@@ -219,7 +570,7 @@ class User extends Person {
 
         if (branch)
             batch.push({
-                table: query.session.main.table,
+                table: query.sessions.main.table,
                 fields: [ [ 'siteId', 'lastSiteId' ], [ 'branch', 'lastBranch' ], 'lastLogin', 'lastUrl' ],
                 join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],
             })
@@ -290,7 +641,7 @@ class User extends Person {
             match.id = { not: user.id }
         }
 
-        const data = (await mysql.execute(query.user.main.select('id', { match })))[0]
+        const data = (await mysql.execute(query.users.main.select('id', { match })))[0]
 
         return { found: data.length === 1 }
     }
@@ -405,7 +756,7 @@ class User extends Person {
                                 update = processData(update, options)
                             }
 
-                            await mysql.execute(query.user.main.update(update, { id }))
+                            await mysql.execute(query.users.main.update(update, { id }))
                         }
                     } else return sendError.auth(res, 'Authentication failed: User not verified')
                 }
@@ -444,7 +795,7 @@ class User extends Person {
 
                 if (!key || (!verified && expired)) await Token.create({ userId: id, clientIp })
 
-                await mysql.execute(query.user.main.update({ fails: 0 }, { id }))
+                await mysql.execute(query.users.main.update({ fails: 0 }, { id }))
 
                 res.redirect(authUrl(res.session, user._id, 'pending'))
             } catch (err) {
@@ -484,7 +835,7 @@ class User extends Person {
                 const body = { userId, siteId, branch, clientIp: { ip: clientIp } }
                 if (lastUrl) body.lastUrl = lastUrl
 
-                const [ result ] = await mysql.execute(query.session.main.insert(body))
+                const [ result ] = await mysql.execute(query.sessions.main.insert(body))
 
                 if (!result.affectedRows) {
                     if (req.session.user) delete req.session.user
@@ -641,7 +992,111 @@ class Role {
             categoryGroup: data.category ? Company.list.category[data.category].item[0] : null,
         }
 
-        if (single) {}
+        if (single) {
+            this.session = session
+
+
+            this.add = async (target, ids = []) => {
+                if (!this.session?.user?.id) throw new Error('Role Add Error: No session user')
+                if (!target) throw new Error('Role Add Error: Target not supplied')
+                if (!this.id) throw new Error('Role Add Error: Personal ID is missing')
+
+                const targets = relTargets('role', target)
+                const data = []
+                const [ Src, idProp, queryInst ] = targets
+                const list = await Src.fetch(this.session, { ids })
+
+                list.map(item => data.push({
+                    roleId: this.id,
+                    [idProp]: item.id,
+                    createdBy: session.user.id,
+                }))
+
+                const [ result ] = await mysql.execute(queryInst.insert(data))
+
+                return result.affectedRows > 0
+            }
+
+
+            this.fetch = async (target, { hideRawId = false, hideSensitive = true, sorts = null, idsOnly = false } = {}) => {
+                if (!this.session?.user?.id) throw new Error('Role Fetch Error: No session user')
+                if (!target) throw new Error('Role Fetch Error: Target not supplied')
+
+                const targets = relTargets('role', target)
+                const [ Src, idProp, queryInst, defSorts ] = targets
+                if (!sorts) sorts = defSorts
+
+                const ids = []
+                const [ rows ] = await mysql.execute(queryInst.select(idProp, {
+                    match: { roleId: this.id || Role.matchIdHash(this._id) },
+                }))
+
+                rows.map(row => ids.push(row[idProp]))
+
+                return idsOnly ? ids : await Src.fetch(this.session, { ids }, { hideRawId, hideSensitive, sorts })
+            }
+
+
+            this.update = async body => {
+                if (!this.session?.user?.id) throw new Error('Role Update Error: Session user not found')
+
+                const { user: sessionUser } = this.session
+                const { permissions } = body
+                delete body.permissions
+                
+                body = processData(body, {
+                    modifiedBy: sessionUser.id,
+                    currentData: this, currentUpdateLog: await this.log('updateLog'),
+                })
+                body.permissions = JSON.stringify(permissions)
+
+                const [ result ] = await mysql.execute(query.roles.main.update(body, { id: this.id || Role.matchIdHash(this._id) }))
+                
+                return result.affectedRows > 0
+            }
+
+
+            this.delete = async (target, ids = []) => {
+                if (!this.session?.user?.id) throw new Error('Role Delete Error: Session user not found')
+
+                const targets = relTargets('role', target)
+
+                if (!target) {
+                    if (!this.id) throw new Error('Role Delete Error: Personal ID missing')
+
+                    const { id } = this
+                    const log = await this.log()
+
+                    const [ result ] = await mysql.execute(query.roles.main.delete({ id }))
+                    if (!result.affectedRows) return false
+
+                    for (const prop in log) this[prop] = log[prop]
+                    await logDeletion(session, 'roles', this, { id })
+
+                    return true
+                } else if (ids.length) {
+                    const idProp = targets[1]
+                    const queryInst = targets[2]
+
+                    const [ result ] = await mysql.execute(queryInst.delete({ [idProp]: ids }))
+
+                    return result.affectedRows > 0
+                }
+            }
+
+
+            this.log = async field => {
+                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
+
+                let log = (await mysql.execute(query.roles.main.select(fields, {
+                    match: { id: this.id || Role.matchIdHash(this._id) },
+                })))[0][0]
+
+                if (fields.includes(field)) log = log[field]
+
+                return log
+            }
+        }
     }
 
     static #algorithm = 'SHA-1'
@@ -662,7 +1117,7 @@ class Role {
         body.permissions = JSON.stringify(body.permissions)
         body.createdBy = sessionUser.id
 
-        const [ result ] = await mysql.execute(query.role.main.insert(body))
+        const [ result ] = await mysql.execute(query.roles.main.insert(body))
         const id = result.insertId
 
         if (!id) throw new Error('DB Error: Failed to create role')
@@ -694,7 +1149,7 @@ class Role {
 
         const batch = [
             {
-                table: query.role.main.table,
+                table: query.roles.main.table,
                 fields: [ 'id', Role.hashId(), 'category', 'location', 'name', 'permissions' ],
                 match,
             },
@@ -731,7 +1186,7 @@ class Role {
             match.id = { not: role.id }
         }
 
-        const data = (await mysql.execute(query.role.main.select('id', { match: { name, category, location } })))[0]
+        const data = (await mysql.execute(query.roles.main.select('id', { match: { name, category, location } })))[0]
 
         return { found: data.length === 1 }
     }
@@ -754,7 +1209,7 @@ class Token {
         this.expired = new Date >= this.expiresAt
     }
 
-    verify = async ({ queryInst = query.session.tokens } = {}) => {
+    verify = async ({ queryInst = query.sessions.tokens } = {}) => {
         const clientIp = { ip: this.clientIp }
         const token = { aes: [ this.key, tokenSecret ]}
 
@@ -767,7 +1222,7 @@ class Token {
     }
 
 
-    static create = async ({ userId, clientIp }, { queryInst = query.session.tokens, UserSrc = User } = {}) => {
+    static create = async ({ userId, clientIp }, { queryInst = query.sessions.tokens, UserSrc = User } = {}) => {
         let token = generateRandomString(inputLength.user.token.max, 'd')
 
         await mysql.execute(queryInst.delete({ userId, clientIp: { ip: clientIp } }))
@@ -813,7 +1268,7 @@ class Token {
     }
 
 
-    static fetch = async ({ userId, clientIp }, { queryInst = query.session.tokens, UserSrc = User } = {}) => {
+    static fetch = async ({ userId, clientIp }, { queryInst = query.sessions.tokens, UserSrc = User } = {}) => {
         const [ rows ] = await mysql.execute(queryInst.select([
             [ { aes: [ 'token', tokenSecret ] }, 'tokenKey' ],
             'verified', 'createdAt',
@@ -829,7 +1284,7 @@ class Token {
 
 
 
-function jxTargets(src, target = null) {
+function relTargets(src, target = null) {
     const targets =  {
         main: {
             roles: [ Role, 'roleId', query.jx.roles, Role.defSorts ],
@@ -860,7 +1315,7 @@ function setSession(user = {}, branch, siteId = null) {
 delete User.formSelect
 
 export default User
-export { Role, Token, query, jxTargets, setSession }
+export { Role, Token, query, relTargets, setSession }
 
 
 

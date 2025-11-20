@@ -3,7 +3,7 @@ import { processData, logDeletion } from './database.mjs'
 const mysql = require('./mysql')
 
 
-export const _instance = {
+export const classInstance = {
 
 
     redFields: ['createdBy', 'createdAt', 'createdIn', 'updateLog', 'deletedBy', 'deletedAt', 'deletedIn'],
