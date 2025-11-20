@@ -8,6 +8,7 @@ import db from '../../settings/mysql.mjs'
 import moment from 'moment'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
+import { setSession} from './user.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
@@ -209,7 +210,7 @@ class Individual extends Person {
     static defSorts = [ null, [ 'lastName', 'suffix', 'firstName', 'middleName' ] ]
 
 
-    static create = async ({ user: sessionUser = {}, branch, siteId }, body = {}) => {
+    static create = async ({ user: sessionUser = {}, branch, siteId = null }, body = {}) => {
         body = processData(body)
 
         const { ssn } = body
@@ -299,7 +300,10 @@ class Individual extends Person {
     }
 
 
-    static fetch = async ({ user: sessionUser = {} }, filter = {}, { hideRawId = false, hideSensitive = true, sorts = Individual.defSorts, mode = 'data' } = {}) => {
+    static fetch = async (
+        { user: sessionUser = {}, branch, siteId = null }, filter = {},
+        { hideRawId = false, hideSensitive = true, sorts = Individual.defSorts, mode = 'data' } = {}
+    ) => {
         const join = [ 'personId', 'id', { max: 'since' } ]
         const batch = [
             {
@@ -384,7 +388,7 @@ class Individual extends Person {
         // await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const list = (await mysql.execute(queryStr))[0]
 
-        const session = { user: { id: sessionUser.id } }
+        const session = setSession(sessionUser, branch, siteId)
         list.forEach((data, i, arr) => arr[i] = new Team(data, { single, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
