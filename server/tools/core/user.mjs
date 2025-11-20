@@ -1294,7 +1294,7 @@ function relTargets(src, target = null) {
 
 
 
-function setSession(user = {}, branch, siteId) {
+function setSession(user = {}, branch, siteId = null) {
     const { id, DS, DSA, status, location } = user
 
     return {
