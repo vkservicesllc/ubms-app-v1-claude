@@ -11,6 +11,11 @@ const sendError = require('../tools/utils/error')
 // ==== ROUTES ==== //
 
 
+router.post('/test', (req, res) => {
+    res.send('test')
+})
+
+
 
 // ==== EXPORT ==== //
 

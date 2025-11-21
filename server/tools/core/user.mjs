@@ -17,7 +17,6 @@ import Carrier, { query as carrierQuery } from './carrier.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import { classInstance } from '../utils/class.mjs'
-import recognizeApi from '../utils/api.mjs'
 import transporter, { sender } from '../utils/nodemailer.mjs'
 import { generateRandomString } from '../utils/string.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
@@ -26,6 +25,7 @@ import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buff
 
 const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
+const recognizeApi = require('../utils/api')
 const sendError = require('../utils/error')
 
 
@@ -588,7 +588,7 @@ class User extends Person {
                         apiRes.error.username = `${branch === 'admin' ? 'Admin' : 'User'} not found`
 
                         return res.send(apiRes)
-                    } else return sendError.auth(res, 'Authentication failed: User not found')
+                    } else return sendError.auth(req, res, 'Authentication failed: User not found')
                 }
 
 
@@ -627,7 +627,7 @@ class User extends Person {
 
                             await mysql.execute(query.user.main.update(update, { id }))
                         }
-                    } else return sendError.auth(res, 'Authentication failed: User not verified')
+                    } else return sendError.auth(req, res, 'Authentication failed: User not verified')
                 }
 
 
@@ -640,7 +640,7 @@ class User extends Person {
                         apiRes.condition = condition
                         if (!apiRes.error.username)
                             apiRes.error.username = `User is ${conditions[condition].toLowerCase()}`
-                    } else return sendError.auth(res, `Authentication failed: ${conditions[condition]} user`)
+                    } else return sendError.auth(req, res, `Authentication failed: ${conditions[condition]} user`)
                 }
 
 
@@ -655,7 +655,7 @@ class User extends Person {
                 /* Step 4: Verify IP Token and redirect to Authentication page in User branch */
 
                 //? Interrupt if User not found
-                if (!user) return sendError.auth(res, 'Authentication failed: User not found')
+                if (!user) return sendError.auth(req, res, 'Authentication failed: User not found')
 
 
                 const { clientIp } = req.session
@@ -668,7 +668,7 @@ class User extends Person {
 
                 res.redirect(authUrl(res.session, user._id, 'pending'))
             } catch (err) {
-                sendError.server(res, err, api)
+                sendError.server(req, res, err)
             }
         },
 
@@ -715,7 +715,7 @@ class User extends Person {
                     return req.session.destroy((err) => {
                         if (err) return res.status(500).send('Failed to log out')
             
-                        return sendError.auth(res, 'Authentication failed: Session failed')
+                        return sendError.auth(req, res, 'Authentication failed: Session failed')
                     })
                 }
 
@@ -726,7 +726,7 @@ class User extends Person {
 
                 res.redirect(url)
             } catch (err) {
-                sendError.server(res, err)
+                sendError.server(req, res, err)
             }
         },
 
@@ -740,7 +740,7 @@ class User extends Person {
                 const { excUrl, branch, siteId, teams, companies, userApp } = res.session //! RECONSIDER
 
                 const reject = async apiErrMsg => {
-                    if (api) sendError.auth(res, apiErrMsg, api)
+                    if (api) sendError.auth(req, res, apiErrMsg)
                     else {
                         const { refer } = query
                         const { logoutUrl } = config.session
@@ -762,7 +762,7 @@ class User extends Person {
 
                 if (!user) {
                     User.mw.logout(req, res)
-                    return sendError.auth(res, 'Authentication check failed: No user found', api)
+                    return sendError.auth(req, res, 'Authentication check failed: No user found')
                 }
 
                 const connectToken = req.cookies['connect.token']
@@ -795,9 +795,17 @@ class User extends Person {
                 if (!next) return user
 
                 res.session.user = user
+                {
+                    const status = ['D', 'S', 'A', 'U'].indexOf(user.status)
+                    const DS = +user.DS
+                    const DSA = +user.DSA
+                    const location = +(user.location === 'US')
+
+                    res.session.client = '' + status + DS + DSA + location
+                }
                 next()
             } catch (err) {
-                sendError.server(res, err, api)
+                sendError.server(req, res, err)
             }
         },
 
@@ -806,7 +814,7 @@ class User extends Person {
             if (res.session.branch !== 'admin' || res.session.user.status === 'A') {
                 const api = recognizeApi(req)
         
-                return sendError.auth(res, 'Error: Access to this path is granted to Super Admin only<br><a href="/">Home</a>', api)
+                return sendError.auth(req, res, 'Error: Access to this path is granted to Super Admin only<br><a href="/">Home</a>')
             }
             next()
         },
@@ -816,7 +824,7 @@ class User extends Person {
             if (res.session.branch !== 'admin' || res.session.user.status === 'D') {
                 const api = recognizeApi(req)
         
-                return sendError.auth(res, 'Error: Access to this path is granted to Developer only<br><a href="/">Home</a>', api)
+                return sendError.auth(req, res, 'Error: Access to this path is granted to Developer only<br><a href="/">Home</a>')
             }
             next()
         },

@@ -9,11 +9,11 @@ import Driver from './driver.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import { classInstance } from '../utils/class.mjs'
-import recognizeApi from '../utils/api.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 const mysql = require('../utils/mysql')
+const recognizeApi = require('../utils/api')
 const sendError = require('../utils/error')
 
 
@@ -290,7 +290,7 @@ class Team {
 
             try {
                 const { user } = res.session
-                if (!user) return sendError.auth(res, null, api)
+                if (!user) return sendError.auth(req, res)
 
                 if (user.unscoped) {
                     delete req.session.team
@@ -320,7 +320,7 @@ class Team {
                 res.session.team = team
                 next()
             } catch (err) {
-                sendError.server(res, err, api)
+                sendError.server(req, res, err)
             }
         },
 

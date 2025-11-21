@@ -1,19 +1,35 @@
+const recognizeApi = require('./api')
+
+
 module.exports = {
 
-    auth: (res, errMsg, api = false) => {
-        if (!errMsg) errMsg = 'Unauthorized: Authentication failed'
-        const error = api ? { error: errMsg } : errMsg
+    auth: (req, res, message = 'Unauthorized: Authentication failed') => {
+        res.status(401)
 
-        console.error(error)
-        return res.status(401).send(error)
+        if (recognizeApi(req)) return res.json({ message })
+
+        return res.send(message)
     },
 
-    server: (res, errMsg, api = false) => {
-        if (!errMsg) errMsg = 'Internal Server Error'
-        const error = api ? { error: errMsg } : errMsg
+    server: (req, res, error) => {
+        let message = error?.message ? `${error.name}: ${error.message}` : 'Server Internal Error'
+        res.status(500)
 
-        console.error(error)
-        return res.status(500).send(error)
+        if (recognizeApi(req)) {
+            let xhr = { message }
+
+            if (res.session?.user?.status === 'D') {
+                const { name, message, stack } = error
+                xhr = { name, message, stack }
+            }
+
+            return res.json(xhr)
+        } else {
+            if (res.session?.user?.status === 'D')
+                message = error.stack
+
+            return res.send(message)
+        }
     },
 
 }
