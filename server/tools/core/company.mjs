@@ -96,13 +96,7 @@ class Company {
             this.owner.name = this.owner.fullName('FmLs')
 
         this.address = {
-            physical: new Address({
-                address1: data.address1,
-                address2: data.address2,
-                city: data.city,
-                state: data.state,
-                zip: data.zip,
-            }),
+            physical: new Address(data),
             mail: new Address({
                 address1: data.mailAddress1,
                 address2: data.mailAddress2,
@@ -111,6 +105,7 @@ class Company {
                 zip: data.mailZip,
             }),
         }
+        this.address.physical.mail = !!data.mail
 
         this.phone = data.phone
         this.fax = data.fax
@@ -404,7 +399,7 @@ class Company {
             },
             {
                 table: query.addresses.table,
-                fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
+                fields: [ 'address1', 'address2', 'city', 'state', 'zip', 'mail' ],
                 join,
             },
             {
@@ -420,12 +415,12 @@ class Company {
             },
             {
                 table: query.phones.table,
-                fields: [ [ 'number', 'phone' ] ],
+                fields: 'phone',
                 join,
             },
             {
                 table: query.faxes.table,
-                fields: [ [ 'number', 'fax' ] ],
+                fields: 'fax',
                 join,
             },
             {
