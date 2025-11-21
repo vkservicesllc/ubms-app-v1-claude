@@ -78,6 +78,64 @@ class Team {
     })
 
 
+    static fetch = (session, filter, { hideRawId = false, sorts = Team.config().defSorts, mode } = {}) => {
+        const join = ['teamId', 'id']
+
+        return classStatic.fetch(this, session, filter, {
+            hideRawId, sorts, mode,
+        }, {
+            batch: [
+                {
+                    table: query.team.main.table,
+                    fields: [ 'id', Team.hashId(), 'name', 'description', 'settings' ],
+                    group: 'id',
+                },
+                {
+                    table: query.team.profile.table,
+                    fields: [
+                        'busName', 'coType',
+                        { concat: [ [ 'busName', '^, ', 'coType' ], 'company' ] },
+                        'phone', 'email', 'website',
+                        'address1', 'address2', 'city', 'state', 'zip',
+                    ],
+                    join,
+                },
+                {
+                    table: userQuery.jx.teams.table,
+                    fields: [ { countDist: ['userId', 'userCount', {
+                        case: {
+                            table: userQuery.user.main.table,
+                            match: { deletedBy: null },
+                        },
+                    }] } ],
+                    join,
+                },
+                {
+                    table: userQuery.user.main.table,
+                    join: ['id', 'userId', { table: userQuery.jx.teams.table }],
+                },
+            ],
+            handleFilter(batch, filter) {
+                const {
+                    id, _id, name,
+                    ids, _ids,
+                } = filter
+                const single = !!id || !!_id || !!name
+
+                const match = { id, name }
+                if (!id) {
+                    if (ids) match.id = ids
+                    else match.id = Team.matchIdHash(_id || _ids)
+                }
+
+                batch[0].match = match
+
+                return { single, batch }
+            },
+        })
+    }
+
+
     static mw = {
 
 

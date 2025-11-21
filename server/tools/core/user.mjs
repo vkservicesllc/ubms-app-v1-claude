@@ -112,6 +112,7 @@ class User extends Person {
     static matchSimpleIdHash = value => matchHash(value)
 
     static config = () => ({
+        // enforceUser: false,
         db: db.online,
         query: query.user,
         idProp: 'userId',
@@ -138,7 +139,7 @@ class User extends Person {
 
 
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
-        { hideRawId = false, hideSensitive = true, combined = false, login = false, sorts = User.config.defSorts, mode } = {}
+        { hideRawId = false, hideSensitive = true, combined = false, login = false, sorts = User.config().defSorts, mode } = {}
     ) => {
         const join = ['userId', 'id']
 
@@ -173,14 +174,15 @@ class User extends Person {
                     fields: [ { countDist: [ 'companyId', 'companyCount' ] } ],
                     join,
                 },
+                {
+                    table: query.session.main.table,
+                    fields: [ [ 'siteId', 'lastSiteId' ], [ 'branch', 'lastBranch' ], 'lastLogin', 'lastUrl' ],
+                    join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],
+                },
             ],
             handleFilter(batch, filter) {
                 if (branch)
-                    batch.push({
-                        table: query.session.main.table,
-                        fields: [ [ 'siteId', 'lastSiteId' ], [ 'branch', 'lastBranch' ], 'lastLogin', 'lastUrl' ],
-                        join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],
-                    })
+                    batch.push()
 
                 const {
                     id, _id, _simpleId, username, email,
@@ -210,13 +212,9 @@ class User extends Person {
                     batch[4].fields.push({ ip: 'clientIp' })
 
                     if (branch === 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
-                } else {
-                    if (sessionUser?.location) {
-                        const location = sessionUser.location
-                        if (location !== 'US') batch[0].match.location = location
-                    }
                 }
-                if (branch && !single) batch[4].join[2].max = 'lastLogin'
+
+                if (!single) batch[4].join[2].max = 'lastLogin'
 
                 return { single, batch }
             },
@@ -599,7 +597,7 @@ class Role {
     })
 
 
-    static fetch = (session, filter, { hideRawId = false, sorts = Role.config.defSorts, mode } = {}) => classStatic.fetch(this, session, filter, {
+    static fetch = (session, filter, { hideRawId = false, sorts = Role.config().defSorts, mode } = {}) => classStatic.fetch(this, session, filter, {
         hideRawId, sorts, mode,
     }, {
         batch: [
