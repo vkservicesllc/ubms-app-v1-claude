@@ -8,6 +8,7 @@ import Carrier from './carrier.mjs'
 import Driver from './driver.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
+import { classInstance } from '../utils/class.mjs'
 import recognizeApi from '../utils/api.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
@@ -17,7 +18,7 @@ const sendError = require('../utils/error')
 
 
 const query = {
-    teams : {
+    team : {
         main: new Query(db.online, 'teams'),
         profile: new Query(db.online, 'team_profiles'),
     },
@@ -59,6 +60,13 @@ class Team {
 
         if (single && !hideRawId) {
             this.session = session
+            
+            this.config = {
+                query: query.team,
+                idProp: 'teamId',
+                jxTargets: jxTargets('team'),
+                logFile: 'teams',
+            }
 
 
             this.add = async (target, ids = []) => {
@@ -149,47 +157,12 @@ class Team {
             }
 
 
-            this.delete = async (target, ids = []) => {
-                if (!this.session?.user?.id) throw new Error('Team Delete Error: Session user not found')
-
-                const targets = relTargets('main', target)
-
-                if (!target) {
-                    if (!this.id) throw new Error('Team Delete Error: Personal ID missing')
-
-                    const { id } = this
-                    const log = await this.log()
-
-                    const [ result ] = await mysql.execute(query.teams.main.delete({ id }))
-                    if (!result.affectedRows) return false
-
-                    for (const prop in log) this[prop] = log[prop]
-                    await logDeletion(session, 'teams', this, { id })
-
-                    return true
-                } else if (Object.keys(targets).includes(target) && ids.length) {
-                    const idProp = targets[1]
-                    const queryInst = targets[2]
-
-                    const [ result ] = await mysql.execute(queryInst.delete({ [idProp]: ids }))
-
-                    return result.affectedRows > 0
-                }
-            }
+            this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids)
 
 
-            this.log = async (field, queryProp = 'main') => {
-                const fields = [ 'createdBy', 'createdAt', 'updateLog' ]
-                const idProp = queryProp === 'main' ? 'id' : 'teamId'
+            this.log = (field, target) => classInstance.log(this, new.target, field, { target })
 
-                let log = (await mysql.execute(query[queryProp].select(fields, {
-                    match: { [idProp]: this.id || Team.matchIdHash(this._id) },
-                })))[0][0]
 
-                if (fields.includes(field)) log = log[field]
-
-                return log
-            }
         }
     }
 
@@ -210,7 +183,7 @@ class Team {
 
         body.createdBy = sessionUser.id
 
-        const [ result ] = await mysql.execute(query.teams.main.insert(body))
+        const [ result ] = await mysql.execute(query.team.main.insert(body))
         const id = result.insertId
 
         if (!id) throw new Error('DB Error: Failed to create team')
@@ -243,13 +216,13 @@ class Team {
         const join = [ 'teamId', 'id' ]
         const batch = [
             {
-                table: query.teams.main.table,
+                table: query.team.main.table,
                 fields: [ 'id', Team.hashId(), 'name', 'description', 'settings' ],
                 match,
                 group: 'id',
             },
             {
-                table: query.teams.profile.table,
+                table: query.team.profile.table,
                 fields: [
                     'busName', 'coType',
                     { concat: [ [ 'busName', '^, ', 'coType' ], 'company' ] },
@@ -303,7 +276,7 @@ class Team {
             match.id = { not: team.id }
         }
 
-        const data = (await mysql.execute(query.teams.main.select('id', { match })))[0]
+        const data = (await mysql.execute(query.team.main.select('id', { match })))[0]
 
         return { found: data.length === 1 }
     }
@@ -361,7 +334,7 @@ class Team {
 
 function jxTargets(src, target = null) {
     const targets =  {
-        main: {
+        team: {
             users: [ userQuery.jx.teams, 'userId', User, User.defSort ],
         },
     }[src]

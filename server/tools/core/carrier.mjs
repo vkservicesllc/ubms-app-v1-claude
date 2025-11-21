@@ -8,6 +8,7 @@ import inputLength from '../../../client/global/modules/registry/length.mjs'
 import Company, { query as companyQuery } from './company.mjs'
 import { setSession } from './user.mjs'
 import Query, { hash, matchHash }  from '../utils/query.mjs'
+import { classInstance } from '../utils/class.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { processData } from '../utils/database.mjs'
 

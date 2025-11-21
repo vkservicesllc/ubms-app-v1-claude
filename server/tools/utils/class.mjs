@@ -102,11 +102,10 @@ export const classInstance = {
     },
 
 
-    delete: async (inst, Cls, targetOrCB = null, sinceOrIds) => {
+    delete: async (inst, Cls, target = null, sinceOrIds, handle) => {
         const { user: sessionUser } = inst.session || {}
         if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Session user not supplied`)
 
-        let target = typeof targetOrCB === 'string' ? targetOrCB : null
         if (target === 'main') target = null
 
         const { idProp } = inst.config
@@ -133,8 +132,7 @@ export const classInstance = {
             return result.affectedRows > 0 // Boolean
         }
 
-        const handle = typeof targetOrCB === 'function' ? targetOrCB : null
-        if (handle) return handle(inst, Cls)
+        if (typeof handle === 'function') return handle()
 
         const { query, logDeleted = true, logFile } = inst.config
         const { id } = inst
@@ -166,9 +164,11 @@ export const classInstance = {
         if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
 
         fields = fields ?? this.logFields
+        let { idProp } = this.config
+        if (target === 'main') idProp = 'id'
 
         const { query } = inst.config
-        const log = (await mysql.execute(query[target].select(fields, { match: { id: inst.id } })))[0][0]
+        const log = (await mysql.execute(query[target].select(fields, { match: { [idProp]: inst.id } })))[0][0]
 
         return fields.includes(field) ? log[field] : log
     }

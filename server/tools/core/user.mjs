@@ -116,7 +116,223 @@ class User extends Person {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
-            this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids)
+            this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids, async () => {
+                const { sessionUser } = this.session
+
+                const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
+                    modifiedBy: sessionUser.id,
+                    currentData: this,
+                    currentUpdateLog: await this.log('updateLog'),
+                })
+                update._passKey = null
+                update.deletedBy = sessionUser.id
+                update.deletedAt = Query.timeStamp
+
+                const [ result ] = await mysql.execute(query.user.main.update(update, { id: this.id }))
+                if (!result.affectedRows) return false
+
+                const match = { userId: this.id }
+                await mysql.execute(query.user.registration.delete(match))
+                await mysql.execute(query.user.passReset.delete(match))
+                await mysql.execute(query.session.token.delete(match))
+
+                return true
+            })
+
+
+            this.invite = formId => {
+                if (!formId) throw new Error('User Invitation Error: Form ID not supplied')
+
+                const url = `${addrBook.user}/register/${this._id}?form=${formId}`
+
+                const mailOpts = {
+                    from: sender,
+                    to: this.email,
+                    subject: 'User Registration',
+                    html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                        Dear ${this.name},<br/>
+                        Welcome to ${config.site.name}!<br/><br/>
+                        We are thrilled to have you join our team and look forward to your contributions.
+                        To get started, we need you to complete a few simple steps to finalize your registration.<br/><br/>
+                        Please follow the link below to complete your registration:<br/>
+                        <a href="${url}" target="_blank">Proceed with Registration</a><br/><br/>
+                        Kindly complete this process within the next 24 hours to ensure a smooth onboarding experience.
+                    </div>`,
+                }
+
+                transporter.sendMail(mailOpts, error => {
+                    if (error) console.error(error)
+                })
+            }
+
+
+            this.inviter = async session => {
+                let id = await this.log('createdBy')
+                if (!id) return { name: appName, email: null }
+
+                const user = await User.fetch(session, { id })
+                const { name, email } = user
+
+                return { name, email }
+            }
+
+
+            this.settings = async (action = 'fetch', data = {}) => {
+                if (!this.self) return
+
+                const match = { id: this.id || User.matchIdHash(this._id) }
+                let settings = (await mysql.execute(query.user.main.select('settings', { match })))[0] || {}
+
+                if (action === 'fetch') return settings
+
+                if (action === 'update') {
+                    if (!this.session.branch) throw new Error('User Settings Error: Session branch missing')
+
+                    settings[this.session.branch] = data
+                    settings = JSON.stringify(settings)
+
+                    await mysql.execute(query.user.main.update({ settings }, match))
+                }
+            }
+
+
+            this.url = async lastUrl => {
+                if (lastUrl.slice(0, 5) === '/api/' || lastUrl.includes('/files/') || lastUrl.includes('/image/') || lastUrl.endsWith('.map')) return
+
+                const { branch, siteId } = this.session || {}
+                if (!branch) throw new Error('User URL Error: Session branch not supplied')
+
+                const { id: userId, lastLogin } = this
+
+                await mysql.execute(query.sessions.main.update(
+                    { lastUrl },
+                    { userId, siteId, branch, lastLogin }
+                ))
+
+                this.lastUrl = lastUrl
+            }
+
+
+            this.permissions = async () => {
+                const { branch } = this.session || {}
+                if ( !branch) throw new Error('User Permissions Error: Branch not found')
+
+                const catList = Company.list.category
+                let category
+
+                for (const prop in catList) {
+                    if (catList[prop].branch !== branch) continue
+                    category = prop
+                    break
+                }
+
+                if (!category) throw new Error('User Permissions Error: Category not determined')
+
+                const batch = [
+                    {
+                        table: query.jx.roles.table,
+                        match: { userId: this.id || User.matchIdHash(this._id) },
+                    },
+                    {
+                        table: query.role.main.table,
+                        fields: 'permissions',
+                        join: [ 'id', 'roleId' ],
+                        match: { category, location: [ null, this.location ] },
+                    },
+                ]
+
+                const [ result ] = await mysql.execute(Query.select(db.online, batch))
+
+                return result.reduce((acc, item) => {
+                    Object.entries(item.permissions).forEach(([ key, values ]) => {
+                        acc[key] = [ ...new Set([ ...(acc[key] || []), ...values ])]
+                    })
+
+                    return acc
+                }, {})
+            }
+
+
+            this.report = async session => {
+                const result = { user: this }
+                const log = await this.log()
+
+                const { createdBy, deletedBy, updateLog } = log
+                /*
+                    The timestamps will only be correct on the Live Server
+                    if it is set up with UTC tz
+                */
+
+                let id = [ createdBy ]
+                if (deletedBy) id.push(deletedBy)
+
+                if (updateLog)
+                    updateLog.forEach(log => {
+                        id.push(log.modifiedBy)
+                    })
+                id = [ ...new Set(id) ]
+
+                const labelList = {
+                    username: 'Username',
+                    status: 'Status',
+                    location: 'Location',
+                    condition: 'Condition',
+                    fails: 'Login Attempts',
+                    email: 'Email',
+                    phone: 'US Cell Phone',
+                    firstName: 'First Name',
+                    lastName: 'Last Name',
+                    alias: 'Alias',
+                    sex: 'Gender',
+                }
+                const labels = {}
+                const names = {}
+                const users = await User.list(session, { id })
+
+                if (users)
+                    for (let i = 0; i < users.length; i++) {
+                        const id = await users[i].id()
+                        names[id] = users[i].name
+                    }
+
+                log.createdBy = names[createdBy] || appName
+                if (deletedBy) log.deletedBy = names[deletedBy]
+
+                if (updateLog)
+                    for (let i = 0; i < updateLog.length; i++) {
+                        log.updateLog[i].modifiedBy = names[updateLog[i].modifiedBy] || appName
+
+                        for (const prop in updateLog[i].data) {
+                            switch (prop) {
+                                case 'status':
+                                    log.updateLog[i].data.status = User.list.status[updateLog[i].data.status]
+                                    log.updateLog[i].oldData.status = User.list.status[updateLog[i].oldData.status]
+                                    break
+                                case 'location':
+                                    log.updateLog[i].data.location = User.list.location[updateLog[i].data.location]
+                                    log.updateLog[i].oldData.location = User.list.location[updateLog[i].oldData.location]
+                                    break
+                                case 'condition':
+                                    log.updateLog[i].data.condition = User.list.condition[updateLog[i].data.condition]
+                                    log.updateLog[i].oldData.condition = User.list.condition[updateLog[i].oldData.condition]
+                                    break
+                                case 'sex':
+                                    const genders = { '0': 'Female', '1': 'Male' }
+                                    const { sex } = updateLog[i].data
+                                    const { sex: oldSex } = updateLog[i].oldData
+                                    if ([0, 1].includes(sex)) log.updateLog[i].data.sex = genders[sex]
+                                    if ([0, 1].includes(oldSex)) log.updateLog[i].oldData.sex = genders[oldSex]
+                            }
+
+                            if (!(prop in labels)) labels[prop] = labelList[prop]
+                        }
+                    }
+
+                result.log = log
+                result.labels = labels
+        
+                return result
+            }
 
 
             this.log = field => classInstance.log(this, new.target, field, { fields: [ ...classInstance.logFields, 'deletedBy', 'deletedAt' ] })
@@ -652,10 +868,17 @@ class Role {
                 query: query.role,
                 idProp: 'roleId',
                 jxTargets: jxTargets('role'),
+                logFile: 'roles',
             }
 
 
+            this.add = (target, ids = []) => classInstance.add(this, new.target, target, ids)
+
+
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids)
 
 
             this.log = field => classInstance.log(this, new.target, field)

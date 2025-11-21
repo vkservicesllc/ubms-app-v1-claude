@@ -12,6 +12,7 @@ import { setSession} from './user.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
+import { classInstance } from '../utils/class.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { encrypt } from '../utils/crypto.mjs'
 
