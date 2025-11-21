@@ -1,94 +1,116 @@
-require('dotenv').config({ path: '../../.env' })
-const { DB__MYSQL_AES_SSN, DB__MYSQL_AES_EIN } = process.env
-const ssnSecret = DB__MYSQL_AES_SSN
-const einSecret = DB__MYSQL_AES_EIN
-
-
-/* Settings */
-import { addrBook } from '../../../config.mjs'
+import Query, { hash, matchHash } from '../utils/query.mjs'
 import db from '../../settings/mysql.mjs'
 
-/* Tools */
-import moment from 'moment'
-import { utcTimeStamp } from '../utils/date.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
-import Individual, { query as personQuery } from './individual.mjs'
-import Team, { query as teamQuery } from './team.mjs'
-import User, { query as userQuery } from './user.mjs'
-import Company, { query as companyQuery } from './company.mjs'
-import Carrier, { query as carrierQuery } from './carrier.mjs'
-import Query, { hash, matchHash } from '../utils/query.mjs'
-import transporter, { senderParams } from '../utils/nodemailer.mjs'
-import { processData, logDeletion } from '../utils/database.mjs'
-import { generateRandomString } from '../utils/string.mjs'
-import { dateAfter } from '../utils/date.mjs'
+import Individual from './individual.mjs'
+
+import moment from 'moment'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import bool from '../../../client/global/modules/tools/utils/boolean.mjs'
-import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
-import { tel as formatTel } from '../../../client/global/modules/tools/utils/formatter.mjs'
-
-const mysql = require('../utils/mysql')
-const knex = require('../utils/knex')
-const throwErr = require('../utils/error')
-
-const query = {
-    driver: {
-        main: new Query(db.carrier, 'drivers'),
-    },
-    application: {
-        main: new Query(db.carrier, 'applications'),
-        address: new Query(db.carrier, 'application_addresses'),
-        license: new Query(db.carrier, 'application_DLs'),
-        medical: new Query(db.carrier, 'application_MECs'),
-        citation: new Query(db.carrier, 'application_citations'),
-        accident: new Query(db.carrier, 'application_accidents'),
-        experience: new Query(db.carrier, 'application_experiences'),
-        school: new Query(db.carrier, 'application_cdlschools'),
-        employer: new Query(db.carrier, 'application_employments'),
-        preference: new Query(db.carrier, 'application_preferences'),
-        business: new Query(db.carrier, 'application_businesses'),
-        vehicle: new Query(db.carrier, 'application_vehicles'),
-        beneficiary: new Query(db.carrier, 'application_beneficiaries'),
-        emergency: new Query(db.carrier, 'application_emergencies'),
-        checklist: new Query(db.carrier, 'application_checklists'),
-        decision: new Query(db.carrier, 'application_decisions'),
-    },
-}
-
-const subQuery = (db, table, maxField, groupId) => knex
-    .select('*')
-    .from(`${db}.${table}`)
-    .whereIn(maxField, function() {
-        this.select(knex.raw(`MAX(${maxField})`))
-            .from(`${db}.${table}`)
-            .groupBy(groupId)
-    })
 
 
 
 class Driver extends Individual {
-    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true }) {
+    static #algorithm = 'SHA-224'
+
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
+
+
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Driver Data')
 
         super(data, { single, hideRawId, hideSensitive })
 
-        const { _id, _personId, blackListed } = data
-        const properties = {} //! add driver properties
+        const props = { _id: data._id, _personId: data._personId }
+        if (!hideRawId) {
+            props.id = data.id
+            props.personId = data.personId
+        }
+        props.blacklisted = data.blacklisted
 
-        reSuper(this, { _id, _personId, blackListed }, properties)
+        const props2 = {} //! add driver's secondary properties
+
+        reSuper(this, props, props2)
+
+        if (single) {
+
+            this.log = () => {}
+
+
+            this.add = ({ user: sessionUser = {} }, { target, data = [] } = {}) => {
+                if (!target) throw new Error('Instance Add Error: Target not supplied')
+
+                let added = false, error
+
+                //* ...
+
+                return { added, error }
+            }
+
+
+            this.fetch = ({ user: sessionUser = {} }, { target, filter = {} } = {}) => {
+                if (!target) throw new Error('Instance Fetch Error: Target not supplied')
+
+                let data = [], error
+
+                //* ...
+
+                return { data, error }
+            }
+
+
+            this.update = ({ user: sessionUser = {} }, { target, data = [], ids = [] }) => {
+                let updated = false, error
+
+                if (!target) {
+                    //* Update main
+                } else {
+                    //* Update relationships
+                }
+
+                //* ...
+
+                return { updated, error }
+            }
+
+
+            this.delete = ({ user: sessionUser = {} }, { target, ids = [] }) => {
+                let deleted = false, error
+
+                if (!target) {
+                    //* Delete main
+                } else {
+                    //* Delete relationships
+                }
+
+                //* ...
+
+                return { deleted, error }
+            }
+
+
+        }
     }
 
-
-    static #algorithm = 'SHA-224'
     static hashId = (field = 'id') => hash(field, Driver.#algorithm)
     static matchIdHash = value => matchHash(value, Driver.#algorithm)
 
-    static config = {
-        query: query.driver,
-        idProp: 'driverId',
-        defSorts: null,
+
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
+
+
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
     }
 
 
@@ -101,6 +123,8 @@ class Driver extends Individual {
             'LP': 'Lease Purchaser',
         },
 
+        experience: { e: 'Experienced', i: 'Inexperienced', s: 'Student' },
+
     }
 
 
@@ -109,8 +133,13 @@ class Driver extends Individual {
 
 
 class Application {
-    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true }) {
-        if (!data?._id) throw new Error('Constructor Error: Invalid Driver Application Data')
+    static #algorithm = 'SHA-256'
+
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
+
+
+    constructor(data = {}, { single = true, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Application Data')
 
         this._id = data._id
         this._driverId = data._driverId
@@ -332,22 +361,27 @@ class Application {
             gender: person.expansion.gender,
         }
 
-        if (single && !hideRawId) {
-            this.session = session
-        }
+        if (single) {}
     }
 
-    static #algorithm = 'SHA-256'
     static hashId = (field = 'id') => hash(field, Application.#algorithm)
     static matchIdHash = value => matchHash(value, Application.#algorithm)
 
-    static config = () => ({
-        enforceUser: false,
-        query: query.application,
-        idProp: 'aplId',
-        defSorts: null,
-        logFile: 'driver-applications',
-    })
+
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
+
+
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
     static list = {
@@ -442,13 +476,103 @@ class Application {
 
 
 class Citation {
-    constructor(data = {}, { single = true, session, hideRawId = false }) {
-        if (!data?._id) throw new Error('Constructor Error: Invalid Citation Data')
+    static #algorithm = 'MD5'
+
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
+
+
+    constructor(data = {}, { single = true, hideRawId = false }) {
+        if (!data?._id) throw new Error('Invalid Citation Data')
+
+        this._id = data._id
+        this._aplId = data._aplId
+        this._teamId = data._teamId
+        if (!hideRawId) {
+            this.id = data.id
+            this.aplId = data.aplId
+            this.teamId = data.teamId
+        }
+
+        this.formId = data.formId
+        this.aplCondition = data.condition
+        this.firstName = data.firstName
+        this.middleName = data.middleName
+        this.lastName = data.lastName
+        this.suffix = data.suffix
+        this.violation = data.violation
+        this.other = data.other
+        this.citedOn = data.citedOn
+        this.state = data.state
+
+        if (single) {}
     }
 
-    static #algorithm = 'MD5'
     static hashId = (field = 'id') => hash(field, Citation.#algorithm)
     static matchIdHash = value => matchHash(value, Citation.#algorithm)
+
+
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
+
+
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
+
+
+    static list = {
+
+        violation: {
+            "Moving Violations": {
+                speeding_5_9: "Speeding (5–9 MPH)",
+                speeding_10_14: "Speeding (10–14 MPH)",
+                speeding_15_19: "Speeding (15–19 MPH)",
+                speeding_20_plus: "Speeding (20+ MPH)",
+                failure_yield: "Failure to Yield",
+                red_light: "Running Red Light",
+                stop_sign: "Running Stop Sign",
+                improper_lane: "Improper Lane Change",
+                tailgating: "Following Too Closely",
+                reckless: "Reckless Driving",
+                distracted: "Distracted Driving",
+            },
+            "Non-Moving Violations": {
+                seatbelt: "Seat Belt Violation",
+                parking: "Parking Violation",
+            },
+            "License & Documents": {
+                no_license: "No Driver's License",
+                suspended_license: "Suspended/Revoked License",
+                no_registration: "No Registration",
+                expired_registration: "Expired Registration",
+                no_insurance: "No Insurance",
+                expired_insurance: "Expired Insurance",
+                false_docs: "Falsified Documents",
+            },
+            "Alcohol/Drug Related": {
+                dui: "DUI/DWI",
+                open_container: "Open Container",
+                refusal_test: "Refused Testing",
+            },
+            "Commercial Vehicle": {
+                logbook: "Logbook Violation",
+                hos: "Hours of Service",
+                unsecured_load: "Unsecured Load",
+                overweight: "Overweight Vehicle",
+            },
+            "Misc": {
+                other: "Other",
+            },
+        },
+
+    }
 
 
 }
@@ -456,13 +580,89 @@ class Citation {
 
 
 class Accident {
-    constructor(data = {}, { single = true, session, hideRawId = false }) {
-        if (!data?._id) throw new Error('Constructor Error: Invalid Accident Data')
+    static #algorithm = 'MD5'
+
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
+
+
+    constructor(data = {}, { single = true, hideRawId = false }) {
+        if (!data?._id) throw new Error('Invalid Accident Data')
+
+        this._id = data._id
+        this._aplId = data._aplId
+        this._teamId = data._teamId
+        if (!hideRawId) {
+            this.id = data.id
+            this.aplId = data.aplId
+            this.teamId = data.teamId
+        }
+
+        this.formId = data.formId
+        this.aplCondition = data.condition
+        this.firstName = data.firstName
+        this.middleName = data.middleName
+        this.lastName = data.lastName
+        this.suffix = data.suffix
+        this.collision = data.collision
+        this.other = data.other
+        this.date = data.date
+        this.state = data.state
+        this.injuries = bool(data.injuries)
+        this.fatalities = bool(data.fatalities)
+
+        if (single) {}
     }
 
-    static #algorithm = 'MD5'
     static hashId = (field = 'id') => hash(field, Accident.#algorithm)
     static matchIdHash = value => matchHash(value, Accident.#algorithm)
+
+
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
+
+
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
+
+
+    static list = {
+
+        collision: {
+            "Vehicle-to-Vehicle": {
+                head_on: "Head-on",
+                rear_end: "Rear-End",
+                sideswipe: "Sideswipe",
+                broadside: "Broadside (T-bone)",
+                backing: "Backing Collision",
+                multi_vehicle: "Chain Reaction / Multi-Vehicle",
+            },
+            "Vehicle-to-Other": {
+                pedestrian: "Vehicle vs. Pedestrian",
+                bicyclist: "Vehicle vs. Bicyclist",
+                animal: "Vehicle vs. Animal",
+                parked: "Parked Vehicle",
+                object: "Struck Object",
+                work_zone: "Work Zone Collision",
+            },
+            "Misc": {
+                rollover: "Rollover",
+                run_off_road: "Run-Off-Road",
+                non_collision: "Non-Collision Incident",
+            },
+            "Other": {
+                other: "Other",
+            }
+        },
+
+    }
 
 
 }
@@ -470,14 +670,62 @@ class Accident {
 
 
 class Employment {
-    constructor(data = {}, { single = true, session, hideRawId = false }) {
-        if (!data?._id) throw new Error('Constructor Error: Invalid Employer Data')
+    static #algorithm = 'MD5'
 
+    static #batch = ({ user: sessionUser = {} }, filter = {}) => {}
+
+
+    constructor(data = {}, { single = true, hideRawId = false }) {
+        if (!data?._id) throw new Error('Invalid Employment Data')
+
+        this._id = data._id
+        this._aplId = data._aplId
+        if (!hideRawId) {
+            this.id = data.id
+            this.aplId = data.aplId
+        }
+
+        this.status = data.status
+        this.employer = data.employer
+        this.phone = data.phone
+        this.address = new Address(data)
+        this.startedOn = data.startedOn
+        this.position = data.position
+        this.earnings = data.earnings
+        this.fmcsr = data.fmcsr
+        this.dotDat = data.dotDat
+        this.rfl = data.rfl
+        this.leftOn = data.leftOn
+
+        this.applicant = new Person(data)
+        this.application = {
+            formId: data.formId,
+            finishedAt: data.finishedAt,
+            phone: data.aplPhone,
+            carrier: data.carrierId ?  `${data.busName}, ${data.coType}` : null,
+        }
+
+        if (single) {}
     }
 
-    static #algorithm = 'MD5'
     static hashId = (field = 'id') => hash(field, Employment.#algorithm)
     static matchIdHash = value => matchHash(value, Employment.#algorithm)
+
+
+    static create = ({ user: sessionUser = {} }, data = {}) => {
+        let created = false, error
+
+        //* ...
+
+        return { created, error }
+    }
+
+
+    static fetch = ({ user: sessionUser = {} } = {}, filter = {}) => {
+        const batch = Role.#batch({ user: sessionUser }, filter)
+
+        //* ...
+    }
 
 
 }

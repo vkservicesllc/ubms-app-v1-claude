@@ -12,7 +12,10 @@ const sendError = require('../tools/utils/error')
 
 
 router.post('/test', (req, res) => {
-    res.send('test')
+    const arr = []
+    arr[1] = 'one'
+    arr[5] = 5
+    res.json(arr)
 })
 
 
