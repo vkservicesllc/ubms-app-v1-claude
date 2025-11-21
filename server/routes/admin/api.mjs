@@ -2,9 +2,9 @@ const router = require('express').Router()
 const sendError = require('../../tools/utils/error')
 
 /* Tools */
-import User, { Role, relTargets as userRelTargets } from '../../tools/core/user.mjs'
-import Team, { relTargets as teamRelTargets } from '../../tools/core/team.mjs'
-import Company, { Owner, relTargets as companyRelTargets } from '../../tools/core/company.mjs'
+import User, { Role, jxTargets as userRelTargets } from '../../tools/core/user.mjs'
+import Team, { jxTargets as teamRelTargets } from '../../tools/core/team.mjs'
+import Company, { Owner, jxTargets as companyRelTargets } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'

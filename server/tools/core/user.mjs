@@ -41,7 +41,7 @@ const query = {
     },
     session: {
         main: new Query(db.online, 'sessions'),
-        tokens: new Query(db.online, 'tokens'),
+        token: new Query(db.online, 'tokens'),
     },
     jx: {
         roles: new Query(db.online, 'user_role_map'),
@@ -103,19 +103,23 @@ class User extends Person {
             this.session = session
 
             this.config = {
-                // enforceUser: true,
                 query: query.user,
                 idProp: 'userId',
-                jxTargets: jxTargets('main'),
+                jxTargets: jxTargets('user'),
                 logDeleted: false,
-                // logUpdated: true,
-                // logFile: null,
-                // logLocation: false,
-                logFields: [ ...classInstance.redFields, 'deletedBy', 'deletedAt' ],
             }
 
 
-            this.log = field => classInstance.log(this, new.target, field)
+            this.add = (target, ids = []) => classInstance.add(this, new.target, target, ids)
+
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids)
+
+
+            this.log = field => classInstance.log(this, new.target, field, { fields: [ ...classInstance.logFields, 'deletedBy', 'deletedAt' ] })
         }
     }
 
@@ -641,7 +645,21 @@ class Role {
             categoryGroup: data.category ? Company.list.category[data.category].item[0] : null,
         }
 
-        if (single) {}
+        if (single && !hideRawId) {
+            this.session = session
+
+            this.config = {
+                query: query.role,
+                idProp: 'roleId',
+                jxTargets: jxTargets('role'),
+            }
+
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.log = field => classInstance.log(this, new.target, field)
+        }
     }
 
     static #algorithm = 'SHA-1'
@@ -754,7 +772,7 @@ class Token {
         this.expired = new Date >= this.expiresAt
     }
 
-    verify = async ({ queryInst = query.session.tokens } = {}) => {
+    verify = async ({ queryInst = query.session.token } = {}) => {
         const clientIp = { ip: this.clientIp }
         const token = { aes: [ this.key, tokenSecret ]}
 
@@ -767,7 +785,7 @@ class Token {
     }
 
 
-    static create = async ({ userId, clientIp }, { queryInst = query.session.tokens, UserSrc = User } = {}) => {
+    static create = async ({ userId, clientIp }, { queryInst = query.session.token, UserSrc = User } = {}) => {
         let token = generateRandomString(inputLength.user.token.max, 'd')
 
         await mysql.execute(queryInst.delete({ userId, clientIp: { ip: clientIp } }))
@@ -813,7 +831,7 @@ class Token {
     }
 
 
-    static fetch = async ({ userId, clientIp }, { queryInst = query.session.tokens, UserSrc = User } = {}) => {
+    static fetch = async ({ userId, clientIp }, { queryInst = query.session.token, UserSrc = User } = {}) => {
         const [ rows ] = await mysql.execute(queryInst.select([
             [ { aes: [ 'token', tokenSecret ] }, 'tokenKey' ],
             'verified', 'createdAt',
@@ -831,13 +849,13 @@ class Token {
 
 function jxTargets(src, target = null) {
     const targets =  {
-        main: {
-            roles: [ Role, 'roleId', query.jx.roles, Role.defSorts ],
-            teams: [ Team, 'teamId', query.jx.teams, Team.defSorts ],
-            companies: [ Company, 'companyId', query.jx.companies, [ null, [ 'busName', 'coType' ] ] ],
+        user: {
+            roles: [ query.jx.roles, 'roleId', Role ],
+            teams: [ query.jx.teams, 'teamId', Team ],
+            companies: [ query.jx.companies, 'companyId', Company ],
         },
         role: {
-            users: [ User, 'userId', query.jx.roles, User.defSort ],
+            users: [ query.jx.roles, 'userId', User ],
         },
     }[src]
 

@@ -6,7 +6,7 @@ const mysql = require('./mysql')
 export const classInstance = {
 
 
-    redFields: ['createdBy', 'createdAt', 'createdIn', 'updateLog', 'deletedBy', 'deletedAt', 'deletedIn'],
+    redFields: ['createdBy', 'createdAt', 'updateLog', 'deletedBy', 'deletedAt', 'deletedIn'],
     logFields: ['createdBy', 'createdAt', 'updateLog'],
 
 
@@ -14,7 +14,7 @@ export const classInstance = {
         const { enforceUser = true } = inst.config
         const { user: sessionUser } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [ADD]: Session user not supplied`)
-        if (target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [ADD]: Target not supplied`)
+        if (!target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [ADD]: Target not supplied`)
 
         const createdBy = sessionUser?.id || null
         const jx = target.slice(0, 3) === 'jx.'
@@ -63,7 +63,7 @@ export const classInstance = {
         const { enforceUser = true } = inst.config
         const { user: sessionUser } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Session user not supplied`)
-        if (target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Target not supplied`)
+        if (!target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Target not supplied`)
 
         const { idProp } = inst.config
         const jx = target.slice(0, 3) === 'jx.'
@@ -74,11 +74,11 @@ export const classInstance = {
             if (!jxTargets) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Junction targets not found`)
 
             const ids = []
-            const [ jxQuery, jxIdProp, Src, defSorts ] = jxTargets[target]
-            if (!sorts) sorts = defSorts
+            const [ jxQuery, jxIdProp, Src ] = jxTargets[target]
+            if (!sorts) sorts = Src.defSorts
 
             const [ rows ] = await mysql.execute(jxQuery.select(jxIdProp, { match: { [idProp]: inst.id } }))
-            rows.map(row => ids.push(row[idProp]))
+            rows.map(row => ids.push(row[jxIdProp]))
 
             return idsOnly ? ids : await Src.fetch(inst.session, { ids }, { hideRawId, hideSensitive, sorts })
         }
@@ -153,15 +153,15 @@ export const classInstance = {
     },
 
 
-    history: async (inst, Cls, target) => {
-        const { user: sessionUser } = inst.session || {}
-        if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [HISTORY]: Session user not supplied`)
+    // history: async (inst, Cls, target) => {
+    //     const { user: sessionUser } = inst.session || {}
+    //     if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [HISTORY]: Session user not supplied`)
 
-        //! not finished...
-    },
+    //     //! not finished...
+    // },
 
 
-    log: async (inst, Cls, field = null, { target = 'main', fields }) => {
+    log: async (inst, Cls, field = null, { target = 'main', fields } = {}) => {
         const { user: sessionUser } = inst.session || {}
         if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
 

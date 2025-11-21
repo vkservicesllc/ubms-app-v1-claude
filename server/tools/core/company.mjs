@@ -819,10 +819,10 @@ class Owner extends Individual {
 
 
 
-function relTargets(src, target = null) {
+function jxTargets(src, target = null) {
     const targets =  {
         main: {
-            users: [ User, 'userId', userQuery.jx.companies, User.defSorts ],
+            users: [ userQuery.jx.companies, 'userId', User ],
         },
     }[src]
 
@@ -832,4 +832,4 @@ function relTargets(src, target = null) {
 
 
 export default Company
-export { Owner, query, relTargets }
+export { Owner, query, jxTargets }

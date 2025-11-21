@@ -10,6 +10,16 @@ import Carrier from '../tools/core/carrier.mjs'
 import Driver, { Application as DriverApplication, Citation, Accident } from '../tools/core/driver.mjs'
 import { capitalizeFirst } from '../../client/global/modules/tools/utils/string.mjs'
 
+
+router.get('/test', async (req, res) => {
+    res.session.user = { id: 1 }
+
+    const user = await User.fetch(res.session, { id: 2 })
+
+    res.send(await user.fetch('jx.teams'))
+})
+
+
 export const sessionDetails = (req, res) => {
     try {
         const { prop } = req.params

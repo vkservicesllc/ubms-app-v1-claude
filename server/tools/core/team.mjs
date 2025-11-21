@@ -57,7 +57,7 @@ class Team {
             users: data.userCount,
         }
 
-        if (single) {
+        if (single && !hideRawId) {
             this.session = session
 
 
@@ -262,14 +262,14 @@ class Team {
                 table: userQuery.jx.teams.table,
                 fields: [ { countDist: ['userId', 'userCount', {
                     case: {
-                        table: userQuery.main.table,
+                        table: userQuery.user.main.table,
                         match: { deletedBy: null },
                     },
                 }] } ],
                 join,
             },
             {
-                table: userQuery.main.table,
+                table: userQuery.user.main.table,
                 join: ['id', 'userId', { table: userQuery.jx.teams.table }],
             },
         ]
@@ -359,10 +359,10 @@ class Team {
 
 
 
-function relTargets(src, target = null) {
+function jxTargets(src, target = null) {
     const targets =  {
         main: {
-            users: [ User, 'userId', userQuery.jx.teams, User.defSort ],
+            users: [ userQuery.jx.teams, 'userId', User, User.defSort ],
         },
     }[src]
 
@@ -372,4 +372,4 @@ function relTargets(src, target = null) {
 
 
 export default Team
-export { query, relTargets }
+export { query, jxTargets }
