@@ -31,7 +31,7 @@ export const createMatchForm = (field, value) => createForm({
     type: 'hidden',
     name: `match[${field}]`,
     value,
-}]
+})
 
 
 export const createPersonNameForm = (flag, props = {}) => {

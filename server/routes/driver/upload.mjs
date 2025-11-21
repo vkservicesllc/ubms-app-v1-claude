@@ -1,8 +1,17 @@
+// ==== IMPORT ==== //
+
 const router = require('express').Router()
-
-/* Tools */
-import uploader from '../../tools/utils/multer.mjs'
+const sendError = require('../../tools/utils/error')
 
 
+// ==== SETUP ==== //
+
+
+
+// ==== ROUTES ==== //
+
+
+
+// ==== EXPORT ==== //
 
 export default router
