@@ -27,6 +27,13 @@ export const createIdForm = (props = {}) => createForm({
 })
 
 
+export const createMatchForm = (field, value) => createForm({
+    type: 'hidden',
+    name: `match[${field}]`,
+    value,
+}]
+
+
 export const createPersonNameForm = (flag, props = {}) => {
     let name = flag, type, data, sanitizer
     const required = ['first', 'last'].includes(flag)
