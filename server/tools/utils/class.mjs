@@ -1,6 +1,8 @@
+import Query from './query.mjs'
 import { processData, logDeletion } from './database.mjs'
 
 const mysql = require('./mysql')
+const { sqlMode } = Query
 
 
 export const classInstance = {
@@ -197,29 +199,31 @@ export const classInstance = {
 export const classStatic = {
 
 
-    fetch: async (Cls, { user: sessionUser = {}, branch, siteId = null } = {}, filter = {}, {
-        hideRawId = false, hideSensitive = true, sorts, mode = 'data',
-        batch, handleFilter,
-    }) => {
+    fetch: async (Cls, { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
+        { hideRawId = false, hideSensitive = true, sorts, mode = 'data', },
+        { batch, handleFilter, removeFullGroupBy = false }
+    ) => {
         const { enforceUser = true } = Cls.config()
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [FETCH]: Session user not supplied`)
         if (!batch || !batch.length) throw new Error(`${Cls.name} Static Method Error [FETCH]: Batch not supplied`)
 
-        let single = false, matches = []
-        if (typeof handleFilter === 'function') ({ single = false, matches = [] } = handleFilter(batch, filter))
-
-        matches.map((match, i) => { if (match) batch[i].match = match })
+        let single = false
+        if (typeof handleFilter === 'function') ({ batch, single = false } = handleFilter(batch, filter))
 
         if (!single && Array.isArray(sorts))
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
 
         if (mode === 'batch') return batch
 
-        const queryStr = Query.select(db.online, batch)
+        const { db } = Cls.config()
+
+        const queryStr = Query.select(db, batch)
         if (mode === 'query') return queryStr
 
-        const session = setSession(sessionUser, branch, siteId)
+        if (removeFullGroupBy) await mysql.query(sqlMode.onlyFullGroupBy.remove)
         const list = (await mysql.execute(queryStr))[0]
+
+        const session = setSession(sessionUser, branch, siteId)
         list.forEach((data, i, arr) => arr[i] = new Cls(data, { single, session, hideRawId, hideSensitive }))
 
         return single ? list[0] : list
@@ -231,10 +235,10 @@ export const classStatic = {
 
 
 function setSession(user = {}, branch, siteId = null) {
-    const { id, DS, DSA, status, location } = user
+    const { id, DS, DSA, status, location, unscoped } = user
 
     return {
-        user: { id, DS, DSA, status, location },
+        user: { id, DS, DSA, status, location, unscoped },
         branch, siteId,
     }
 }

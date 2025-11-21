@@ -75,6 +75,7 @@ class Individual extends Person {
 
     static config = () => ({
         enforceUser: false,
+        db: db.person,
         query: query.person,
         idProp: 'personId',
         defSorts: [ null, [ 'lastName', 'suffix', 'firstName', 'middleName' ] ],

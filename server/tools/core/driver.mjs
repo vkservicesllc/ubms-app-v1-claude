@@ -86,6 +86,7 @@ class Driver extends Individual {
     static matchIdHash = value => matchHash(value, Driver.#algorithm)
 
     static config = {
+        db: db.carrier,
         query: query.driver,
         idProp: 'driverId',
         defSorts: null,
@@ -343,6 +344,7 @@ class Application {
 
     static config = () => ({
         enforceUser: false,
+        db: db.carrier,
         query: query.application,
         idProp: 'aplId',
         defSorts: null,

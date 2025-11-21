@@ -65,6 +65,7 @@ class Carrier extends Company {
     static matchIdHash = value => matchHash(value, Carrier.#algorithm)
 
     static config = () => ({
+        db: db.carrier,
         query: query.carrier,
     })
 

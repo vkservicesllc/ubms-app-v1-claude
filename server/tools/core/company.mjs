@@ -126,6 +126,7 @@ class Company {
     static matchIdHash = value => matchHash(value, Company.#algorithm)
 
     static config = () => ({
+        db: db.business,
         query: query.company,
         idProp: 'companyId',
         jxTargets: jxTargets('company'),
@@ -211,6 +212,7 @@ class Owner extends Individual {
     static matchIdHash = value => matchHash(value, Owner.#algorithm)
 
     static config = () => ({
+        db: db.business,
         query: query.owner,
         idProp: 'ownerId',
         defSorts: [ null, null, [ 'lastName', 'suffix', 'firstName', 'middleName' ] ],

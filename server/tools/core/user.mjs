@@ -112,6 +112,7 @@ class User extends Person {
     static matchSimpleIdHash = value => matchHash(value)
 
     static config = () => ({
+        db: db.online,
         query: query.user,
         idProp: 'userId',
         jxTargets: jxTargets('user'),
@@ -134,6 +135,94 @@ class User extends Person {
 
     static #formId = async () => await User.idStr('formId', inputLength.user.formId.max, query.user.registration)
     static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.user.passReset)
+
+
+    static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
+        { hideRawId = false, hideSensitive = true, combined = false, login = false, sorts = User.config.defSorts, mode } = {}
+    ) => {
+        const join = ['userId', 'id']
+
+        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, mode, },
+        {
+            batch: [
+                {
+                    table: query.user.main.table,
+                    fields: [
+                        'id', User.hashId(), [ User.hashSimpleId(), 'simpleId' ],
+                        'username', 'email', 'phone',
+                        'firstName', 'lastName', 'alias', 'sex',
+                        'status', 'condition', 'location',
+                        'passReset', 'unscoped', 'decliner', 'fails',
+                        { compare: [ 'id', 'self', { eq: sessionUser.id } ] },
+                    ],
+                    group: 'id',
+                },
+                {
+                    table: query.jx.roles.table,
+                    fields: [ { countDist: [ 'roleId', 'roleCount' ] } ],
+                    join,
+                },
+                {
+                    table: query.jx.teams.table,
+                    fields: [ { countDist: [ 'teamId', 'teamCount' ] } ],
+                    join,
+                },
+                {
+                    db: db.business,
+                    table: query.jx.companies.table,
+                    fields: [ { countDist: [ 'companyId', 'companyCount' ] } ],
+                    join,
+                },
+            ],
+            handleFilter(batch, filter) {
+                if (branch)
+                    batch.push({
+                        table: query.session.main.table,
+                        fields: [ [ 'siteId', 'lastSiteId' ], [ 'branch', 'lastBranch' ], 'lastLogin', 'lastUrl' ],
+                        join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],
+                    })
+
+                const {
+                    id, _id, _simpleId, username, email,
+                    ids, _ids, firstName, lastName, alias, sex, status, location, condition, decliner, deleted,
+                } = filter
+
+                const single = !!id || !!_id || !!_simpleId || !!username || !!email
+
+                let deletedBy
+                if (!combined)  deletedBy = deleted ? { null: false } : null
+
+                batch[0].match = {
+                    deletedBy,
+                    id, username, email,
+                    firstName, lastName, alias, sex,
+                    status, location, condition, decliner,
+                }
+
+                if (!id) {
+                    if (ids) batch[0].match.id = ids
+                    else if (_simpleId) batch[0].match.id = User.matchSimpleIdHash(_simpleId)
+                    else batch[0].match.id = User.matchIdHash(_id || _ids)
+                }
+
+                if (login) {
+                    batch[0].fields.push([ '_passKey', '_hash' ])
+                    batch[4].fields.push({ ip: 'clientIp' })
+
+                    if (branch === 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
+                } else {
+                    if (sessionUser?.location) {
+                        const location = sessionUser.location
+                        if (location !== 'US') batch[0].match.location = location
+                    }
+                }
+                if (branch && !single) batch[4].join[2].max = 'lastLogin'
+
+                return { single, batch }
+            },
+            removeFullGroupBy: true,
+        })
+    }
 
 
     static list = {
@@ -501,11 +590,41 @@ class Role {
     static matchIdHash = value => matchHash(value, Role.#algorithm)
 
     static config = () => ({
+        db: db.online,
         query: query.role,
         idProp: 'roleId',
         jxTargets: jxTargets('role'),
         defSorts: [ [ 'name', 'location', 'category' ] ],
         logFile: 'roles',
+    })
+
+
+    static fetch = (session, filter, { hideRawId = false, sorts = Role.config.defSorts, mode } = {}) => classStatic.fetch(this, session, filter, {
+        hideRawId, sorts, mode,
+    }, {
+        batch: [
+            {
+                table: query.role.main.table,
+                fields: [ 'id', Role.hashId(), 'category', 'location', 'name', 'permissions' ],
+            },
+        ],
+        handleFilter(batch, filter,) {
+            const {
+                id, _id,
+                ids, _ids, category, name, location,
+            } = filter
+            const single = !!id || !!_id
+
+            const match = { id, category, name, location }
+            if (!id) {
+                if (ids) match.id = ids
+                else match.id = Role.matchIdHash(_id || _ids)
+            }
+
+            batch[0].match = match
+
+            return { single, batch }
+        },
     })
 
 

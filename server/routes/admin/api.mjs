@@ -1,5 +1,5 @@
 // ==== IMPORT ==== //
-import User from '../../tools/core/user.mjs'
+import User, { Role } from '../../tools/core/user.mjs'
 
 const router = require('express').Router()
 const sendError = require('../../tools/utils/error')

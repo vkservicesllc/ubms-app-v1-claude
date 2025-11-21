@@ -69,6 +69,7 @@ class Team {
     static matchIdHash = value => matchHash(value, Team.#algorithm)
             
     static config = () => ({
+        db: db.online,
         query: query.team,
         idProp: 'teamId',
         jxTargets: jxTargets('team'),
