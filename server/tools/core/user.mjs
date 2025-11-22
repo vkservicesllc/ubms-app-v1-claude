@@ -117,6 +117,21 @@ class User extends Person {
     static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.user.passReset)
 
 
+    static create = ({ user: sessionUser = {}, branch, siteId = null }, body, params) => classStatic.create(this, { user: sessionUser, branch, siteId }, body, params, {
+        async final(user, userId) {
+            const formId = await User.#formId()
+
+            const [ result ] = await mysql.execute(query.user.registration.insert({
+                formId, userId,
+                invitedBy: sessionUser.id,
+            }))
+            if (!result.affectedRows) throw new Error('DB Error: Failed to register user')
+
+            user.invite(formId)
+        },
+    })
+
+
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
         { hideRawId = false, hideSensitive = true, combined = false, login = false, sorts = User.config().defSorts, mode } = {}
     ) => {
@@ -574,6 +589,17 @@ class Role {
         jxTargets: jxTargets('role'),
         defSorts: [ [ 'name', 'location', 'category' ] ],
         logFile: 'roles',
+    })
+
+
+    static create = (session, body, params) => classStatic.create(this, session, body, params, {
+        async find(body, hideRawId) {
+            const { name, category, location } = body
+            const data = await Role.fetch(session, { name, category, location }, { hideRawId })
+
+            return { found: !!data, data }
+        },
+        stringify: [ 'permissions' ],
     })
 
 

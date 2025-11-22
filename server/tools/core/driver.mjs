@@ -321,6 +321,7 @@ class Application {
 
     static config = () => ({
         enforceUser: false,
+        enforceLocation: true,
         db: db.carrier,
         query: query.driver_application,
         idProp: 'aplId',

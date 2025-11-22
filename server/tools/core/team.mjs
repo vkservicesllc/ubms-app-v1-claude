@@ -72,6 +72,16 @@ class Team {
     })
 
 
+    static create = (session, body, params) => classStatic.create(this, session, body, params, {
+        async find(body, hideRawId) {
+            const { name } = body
+            const data = await Team.fetch(session, { name }, { hideRawId })
+
+            return { found: !!data, data }
+        },
+    })
+
+
     static fetch = (session, filter, { hideRawId = false, sorts = Team.config().defSorts, mode } = {}) => {
         const join = ['teamId', 'id']
 

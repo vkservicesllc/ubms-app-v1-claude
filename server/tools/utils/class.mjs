@@ -203,11 +203,59 @@ export const classInstance = {
 export const classStatic = {
 
 
+    create: async (Cls, { user: sessionUser = {}, branch, siteId = null }, body = {}, { hideRawId = false } = {}, {
+        find, stringify = [], split, final,
+    } = {}) => {
+        const { enforceUser = true, enforceLocation = false, query, idProp } = Cls.config()
+        if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [CREATE]: Session user not supplied`)
+
+        let found = false, data
+        if (typeof find === 'function') ({ found, data } = find(body, hideRawId))
+
+        if (found) return { created: false, data }
+
+        body = processData(body)
+        stringify.map(field => body[field] = JSON.stringify(field))
+
+        if (typeof split === 'function') body = split(body)
+        else body = { main: body }
+
+        let createdIn = { branch }
+        if (siteId) createdIn.siteId = siteId
+        createdIn = JSON.stringify(createdIn)
+
+        if (sessionUser?.id) body.main.createdBy = sessionUser.id
+        if (enforceLocation) body.main.createdIn = createdIn
+
+        const [ result ] = await mysql.execute(query.main.insert(body.main))
+        const id = result.insertId
+        if (!id) throw new Error(`DB Error: Failed to create ${Cls.name.toLowerCase()}`)
+
+        delete body.main
+        if (Object.keys(body).length) {
+            for (const target in body) {
+                body[target][idProp] = id
+                if (sessionUser?.id) body[target].createdBy = sessionUser.id
+                if (enforceLocation) body[main].createdIn = createdIn
+
+                const [ result ] = await mysql.execute(query[target].insert(body[target]))
+                if (!result.affectedRows) throw new Error(`DB Error: Failed to create ${Cls.name.toLowerCase()}'s ${target}`)
+            }
+        }
+
+        data = await Cls.fetch({ user: sessionUser, branch, siteId }, { id }, { hideRawId })
+
+        if (typeof final === 'function') final(data, id)
+
+        return { created: true, data }
+    },
+
+
     fetch: async (Cls, { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
         { hideRawId = false, hideSensitive = true, sorts, mode = 'data', },
         { batch, handleFilter, removeFullGroupBy = false }
     ) => {
-        const { enforceUser = true } = Cls.config()
+        const { enforceUser = true, db } = Cls.config()
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [FETCH]: Session user not supplied`)
         if (!batch || !batch.length) throw new Error(`${Cls.name} Static Method Error [FETCH]: Batch not supplied`)
 
@@ -218,8 +266,6 @@ export const classStatic = {
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
 
         if (mode === 'batch') return batch
-
-        const { db } = Cls.config()
 
         const queryStr = Query.select(db, batch)
         if (mode === 'query') return queryStr

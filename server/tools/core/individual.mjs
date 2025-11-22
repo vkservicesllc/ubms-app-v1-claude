@@ -69,6 +69,7 @@ class Individual extends Person {
 
     static config = () => ({
         enforceUser: false,
+        enforceLocation: true,
         db: db.person,
         query: query.person,
         idProp: 'personId',
