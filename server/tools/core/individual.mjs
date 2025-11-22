@@ -2,7 +2,7 @@ require('dotenv').config({ path: '../../.env' })
 const { DB__MYSQL_AES_SSN: secret } = process.env
 
 /* Settings */
-import db from '../../settings/mysql.mjs'
+import db, { query } from '../../settings/mysql.mjs'
 
 /* Tools */
 import moment from 'moment'
@@ -18,22 +18,6 @@ import { encrypt } from '../utils/crypto.mjs'
 const mysql = require('../utils/mysql')
 
 
-const { sqlMode } = Query //! TEST IF NEED COUNTERS
-const query = {
-    person: {
-        main: new Query(db.person, 'individuals'),
-        names: new Query(db.person, 'names'),
-        legal: new Query(db.person, 'legal_presence'),
-        maritals: new Query(db.person, 'maritals'),
-        phones: new Query(db.person, 'phones'),
-        addresses: new Query(db.person, 'addresses'),
-        emails: new Query(db.person, 'emails'),
-        identifications: new Query(db.person, 'identifications'),
-        //! ...Add more if needed
-    },
-}
-
-
 
 class Individual extends Person {
     constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true }) {
@@ -46,26 +30,36 @@ class Individual extends Person {
         if (!hideSensitive) this.ssn = stringifyBuffer(data.ssn)
 
         const { phone, email, marital } = data
-        const legalPresence = { status: data.status, expiresOn: data.statusExpiresOn }
-        const address = new Address(data)
+        const legal = data.status ? { status: data.status, expiresOn: data.statusExpiresOn } : null
+        const address = data.zip ? new Address(data) : null
 
-        const identification = {
-            driver: !!data.driver,
-            commercial: !!data.commercial,
-            number: data.idNumber,
-            class: data.idClass,
-            state: data.idState,
-            issuedOn: data.idIssuedOn,
-            expiresOn: data.idExpiresOn,
-            endorsement: data.idEndorsement,
-            restriction: data.idRestriction,
+        const identification = data.idNumber
+            ? {
+                driver: !!data.driver,
+                commercial: !!data.commercial,
+                number: data.idNumber,
+                class: data.idClass,
+                state: data.idState,
+                issuedOn: data.idIssuedOn,
+                expiresOn: data.idExpiresOn,
+                endorsement: data.idEndorsement,
+                restriction: data.idRestriction,
+            }
+            : null
+
+        const count = {
+            companyOwners: data.ownerCount,
+            drivers: data.driverCount,
+            driverApplications: data.driverAplCount,
         }
 
-        reSuper(this, props, { legalPresence, phone, email, marital, address, identification })
+        reSuper(this, props, { legal, phone, email, marital, address, identification, count })
 
         if (single && !hideRawId) {
             this.session = session
 
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
         }
     }
 
@@ -81,6 +75,109 @@ class Individual extends Person {
         defSorts: [ null, [ 'lastName', 'suffix', 'firstName', 'middleName' ] ],
         logFile: 'individuals',
     })
+
+
+    static fetch = async (session, filter, { hideRawId = false, hideSensitive = true, sorts = Individual.defSorts, mode = 'data' }) => {
+        const join = [ 'personId', 'id', { max: 'since' } ]
+
+        return classStatic.fetch(this, session, filter, {
+            hideRawId, hideSensitive, sorts, mode,
+        }, {
+            batch: [
+                {
+                    table: query.person.main.table,
+                    fields: [ Individual.hashId(), 'dob', 'sex', { aes: [ 'ssn', secret ] } ],
+                    group: 'id',
+                },
+                {
+                    table: query.person.name.table,
+                    fields: [ 'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix' ],
+                    join,
+                },
+                {
+                    table: query.person.legal.table,
+                    fields: [ 'status', [ 'expiresOn', 'statusExpiredOn' ] ],
+                    join,
+                },
+                {
+                    table: query.person.phone.table,
+                    fields: 'phone',
+                    join,
+                },
+                {
+                    table: query.person.address.table,
+                    fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
+                    join,
+                },
+                {
+                    table: query.person.email.table,
+                    fields: 'email',
+                    join,
+                },
+                {
+                    table: query.person.identification.table,
+                    fields: [
+                        'driver',
+                        'commercial',
+                        [ 'number', 'idNumber' ],
+                        [ 'class', 'idClass' ],
+                        [ 'state', 'idState' ],
+                        [ 'issuedOn', 'idIssuedOn' ],
+                        [ 'expiresOn', 'idExpiresOn' ],
+                        [ 'endorsement', 'idEndorsement' ],
+                        [ 'restriction', 'idRestriction' ],
+                    ],
+                    join: [ 'personId', 'id', { max: 'issuedOn' } ],
+                },
+                {
+                    table: query.person.marital.table,
+                    fields: [ [ 'status', 'marital' ] ],
+                    join,
+                },
+                {
+                    db: db.business,
+                    table: query.company_owner.main.table,
+                    fields: [ { count: [ 'id', 'ownerCount' ] } ],
+                    join: [ 'personId', 'id' ],
+                },
+                {
+                    db: db.carrier,
+                    table: query.driver.main.table,
+                    fields: [ { count: [ 'id', 'driverCount' ] } ],
+                    join: [ 'personId', 'id' ],
+                },
+                {
+                    db: db.carrier,
+                    table: query.driver_application.main.table,
+                    fields: [ { count: [ 'id', 'driverAplCount' ] } ],
+                    join: [ 'driverId', 'id', query.driver.main.table ],
+                },
+            ],
+            handleFilter(batch, filter) {
+                const {
+                    id, _id, ssn,
+                    ids, _ids, sex, firstName, lastName
+                } = filter
+                const single = !!id || !!_id || !!ssn
+
+                const match = {
+                    main: { id, sex },
+                    names: { firstName, lastName },
+                }
+                if (!id) {
+                    if (ids) match.main.id = ids
+                    match.main.id = Individual.matchIdHash(_id || _ids)
+                }
+                if (ssn) match.main.ssn = { aes: [ ssn, secret ] }
+
+                batch[0].match = match.main
+                batch[1].match = match.names
+
+                return { single, batch }
+            },
+            removeFullGroupBy: true,
+        })
+    }
 
 
     static list = {
@@ -174,4 +271,4 @@ class Relationship {
 delete Individual.formSelect
 
 export default Individual
-export { Relationship, query }
+export { Relationship }

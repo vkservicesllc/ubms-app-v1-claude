@@ -61,7 +61,7 @@ export const classInstance = {
     },
 
 
-    fetch: async (inst, Cls, target, { hideRawId = false, hideSensitive = true, idsOnly = false, sorts = null, since } = {}) => {
+    fetch: async (inst, Cls, target, { hideRawId = false, hideSensitive = true, idsOnly = false, filter = {}, sorts = null, since } = {}) => {
         const { enforceUser = true } = Cls.config()
         const { user: sessionUser } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Session user not supplied`)
@@ -87,11 +87,11 @@ export const classInstance = {
             }))
             rows.map(row => ids.push(row[jxIdProp]))
 
-            return idsOnly ? ids : await Src.fetch(inst.session, { ids }, { hideRawId, hideSensitive, sorts })
+            return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, sorts })
         }
 
         const { query, redFields = {} } = Cls.config()
-        //! Problem with redFields
+//! POSSIBLE Problem with redFields
 
         if (!redFields[target]) redFields[target] = this.redFields
 

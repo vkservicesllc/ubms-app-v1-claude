@@ -1,12 +1,8 @@
 import config, { apps } from '../../../config.mjs'
 import Company from './company.mjs'
-import Query from '../utils/query.mjs'
-import db from '../../settings/mysql.mjs'
+import { query } from '../../settings/mysql.mjs'
 
 const mysql = require('../utils/mysql')
-export const query = {
-    main: new Query(db.online, 'sites'),
-}
 
 
 export default class {
@@ -39,7 +35,7 @@ export default class {
             const match = { domain, id }
             if (_id) match.id = { md5: _id }
 
-            const [ rows ] = await mysql.execute(query.main.select(fields, match))
+            const [ rows ] = await mysql.execute(query.site.main.select(fields, match))
             if (!rows.length) return site
 
             site = rows[0]
@@ -56,7 +52,7 @@ export default class {
     }
 
 
-    static fetch = async () => await mysql.execute(query.main.select([
+    static fetch = async () => await mysql.execute(query.site.main.select([
         { md5: 'id' },
         'category',
         'active',

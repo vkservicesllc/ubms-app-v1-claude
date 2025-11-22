@@ -2,7 +2,8 @@
 
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
-import Company from '../../tools/core/company.mjs'
+import Individual from '../../tools/core/individual.mjs'
+import Company, { Owner } from '../../tools/core/company.mjs'
 
 const router = require('express').Router()
 const sendError = require('../../tools/utils/error')
@@ -32,11 +33,38 @@ router.post('/list/users', User.mw.verify, async (req, res) => {
 })
 
 
+router.post('/list/companies', User.mw.verify, async (req, res) => {
+    try {
+        const { user: sessionUser, client } = res.session
+        let closed, confirmed // combine active/closed & confirmed/unconfirmed
+
+        if (!sessionUser.DS)
+            return res.json({ client, data: await sessionUser.fetch('jx.companies', { hideRawId, filter: { closed } }) })
+
+        res.json({ client, data: await Company.fetch(res.session, { closed, confirmed }, { hideRawId }) })
+    } catch(err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/list/individuals', User.mw.verify, User.mw.developerOnly, async (req, res) => {
+    try {
+        const { client } = res.session
+
+        res.json({ client, data: await Individual.fetch(res.session, {}, { hideRawId }) })
+    } catch(err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/list/:src', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { client } = res.session
         const { src } = req.params
-        const Src = { roles: Role, teams: Team }[src]
+        const Src = { roles: Role, teams: Team, 'company-owners': Owner }[src]
+        if (!Src) throw new Error('Invalid source')
 
         res.json({ client, data: await Src.fetch(res.session, {}, { hideRawId }) })
     } catch(err) {
@@ -89,6 +117,18 @@ router.post('/data/user/:id/:target?', async (req, res) => {
     }
 })
 
+//! UNFINISHED (Not tested)
+router.post('/data/company-owner/:id', async (req, res) => {
+    try {
+        const { client } = res.session
+        const { id } = req.params
+
+        res.json({ client, data: await Owner.fetch(res.session, {}, { hideRawId, hideSensitive }) })
+    } catch(err) {
+        sendError.server(req, res, err)
+    }
+})
+
 //! UNFINISHED (Not tested on company yet)
 router.post('/data/:src/:id/:target?', async (req, res) => {
     try {
@@ -126,6 +166,10 @@ router.post('/data/:src/:id/:target?', async (req, res) => {
         sendError.server(req, res, err)
     }
 })
+
+
+
+// ---- HISTORY ROUTES ---- //
 
 
 

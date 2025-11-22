@@ -6,18 +6,18 @@ const einSecret = DB__MYSQL_AES_EIN
 
 /* Settings */
 import { addrBook } from '../../../config.mjs'
-import db from '../../settings/mysql.mjs'
+import db, { query } from '../../settings/mysql.mjs'
 
 /* Tools */
 import moment from 'moment'
 import { utcTimeStamp } from '../utils/date.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
-import Individual, { query as personQuery } from './individual.mjs'
-import Team, { query as teamQuery } from './team.mjs'
-import User, { query as userQuery } from './user.mjs'
-import Company, { query as companyQuery } from './company.mjs'
-import Carrier, { query as carrierQuery } from './carrier.mjs'
+import Individual from './individual.mjs'
+import Team from './team.mjs'
+import User from './user.mjs'
+import Company from './company.mjs'
+import Carrier from './carrier.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import transporter, { senderParams } from '../utils/nodemailer.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
@@ -33,29 +33,6 @@ const mysql = require('../utils/mysql')
 const knex = require('../utils/knex')
 const throwErr = require('../utils/error')
 
-const query = {
-    driver: {
-        main: new Query(db.carrier, 'drivers'),
-    },
-    application: {
-        main: new Query(db.carrier, 'applications'),
-        address: new Query(db.carrier, 'application_addresses'),
-        license: new Query(db.carrier, 'application_DLs'),
-        medical: new Query(db.carrier, 'application_MECs'),
-        citation: new Query(db.carrier, 'application_citations'),
-        accident: new Query(db.carrier, 'application_accidents'),
-        experience: new Query(db.carrier, 'application_experiences'),
-        school: new Query(db.carrier, 'application_cdlschools'),
-        employer: new Query(db.carrier, 'application_employments'),
-        preference: new Query(db.carrier, 'application_preferences'),
-        business: new Query(db.carrier, 'application_businesses'),
-        vehicle: new Query(db.carrier, 'application_vehicles'),
-        beneficiary: new Query(db.carrier, 'application_beneficiaries'),
-        emergency: new Query(db.carrier, 'application_emergencies'),
-        checklist: new Query(db.carrier, 'application_checklists'),
-        decision: new Query(db.carrier, 'application_decisions'),
-    },
-}
 
 const subQuery = (db, table, maxField, groupId) => knex
     .select('*')
@@ -345,7 +322,7 @@ class Application {
     static config = () => ({
         enforceUser: false,
         db: db.carrier,
-        query: query.application,
+        query: query.driver_application,
         idProp: 'aplId',
         defSorts: null,
         logFile: 'driver-applications',

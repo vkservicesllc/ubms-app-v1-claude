@@ -6,14 +6,14 @@ const secret = {
 }
 
 /* Settings */
-import db from '../../settings/mysql.mjs'
+import db, { query } from '../../settings/mysql.mjs'
 
 /* Tools */
 import moment from 'moment'
-import Individual, { query as personQuery } from './individual.mjs'
+import Individual from './individual.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Team from './team.mjs'
-import User, { query as userQuery } from './user.mjs'
+import User from './user.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 // import { sessionError } from './user.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
@@ -27,25 +27,6 @@ import strip, { ein as formatEin, ssn as formatSsn } from '../../../client/globa
 import { sortArrayByObjectKey, sortObjectByValue } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 const mysql = require('../utils/mysql')
-
-
-const { sqlMode } = Query
-const query = {
-    company: {
-        main: new Query(db.business, 'companies'),
-        name: new Query(db.business, 'company_names'),
-        ownership: new Query(db.business, 'company_ownerships'),
-        address: new Query(db.business, 'company_addresses'),
-        mail: new Query(db.business, 'company_mail'),
-        phone: new Query(db.business, 'company_phones'),
-        fax: new Query(db.business, 'company_faxes'),
-        email: new Query(db.business, 'company_emails'),
-        //! ...Add more if needed
-    },
-    owner: {
-        main: new Query(db.business, 'company_owners'),
-    },
-}
 
 
 
@@ -118,6 +99,8 @@ class Company {
         if (single && !hideRawId) {
             this.session = session
 
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
         }
     }
 
@@ -133,6 +116,120 @@ class Company {
         defSorts: [ null, [ 'busName', 'coType' ] ],
         logFile: 'companies',
     })
+
+
+    static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
+        { hideRawId = false, hideSensitive = true, sorts = Company.config().defSorts, mode } = {}
+    ) => {
+        const join = [ 'companyId', 'id', { max: 'since' } ]
+
+        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter,  { hideRawId, hideSensitive, sorts, mode }, {
+            batch: [
+                {
+                    table: query.company.main.table,
+                    fields: [
+                        'id', Company.hashId(), 'category', { aes: [ 'ein', secret.ein ] }, 'duns', 'website',
+                        'since', 'until', 'global', 'active', 'confirmed', 'lastLogo', 'style',
+                    ],
+                },
+                {
+                    table: query.company.name.table,
+                    fields: [
+                        'busName', 'coType', 'alias',
+                        { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
+                        { route: [ [ 'busName', 'coType' ] ] },
+                    ],
+                    join,
+                },
+                {
+                    table: query.company.ownership.table,
+                    join,
+                },
+                {
+                    table: query.company_owner.main.table,
+                    fields: [ [ 'id', 'ownerId' ], [ Owner.hashId(), 'ownerId' ], 'personId', Individual.hashId('personId') ],
+                    join: [ 'id', 'ownerId', 'company_ownerships' ],
+                },
+                {
+                    db: db.person,
+                    table: query.person.main.table,
+                    fields: [ 'dob', 'sex', { aes: [ 'ssn', secret.ssn ] } ],
+                    join: [ 'id', 'personId', 'company_owners' ],
+                },
+                {
+                    db: db.person,
+                    table: query.person.name.table,
+                    fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
+                    join: [ 'personId', 'id', {
+                        table: 'individuals',
+                        max: 'since',
+                    } ],
+                },
+                {
+                    table: query.company.address.table,
+                    fields: [ 'address1', 'address2', 'city', 'state', 'zip', 'mail' ],
+                    join,
+                },
+                {
+                    table: query.company.mail.table,
+                    fields: [
+                        [ 'address1', 'mailAddress1' ],
+                        [ 'address2', 'mailAddress2' ],
+                        [ 'city', 'mailCity' ],
+                        [ 'state', 'mailState' ],
+                        [ 'zip', 'mailZip' ],
+                    ],
+                    join,
+                },
+                {
+                    table: query.company.phone.table,
+                    fields: 'phone',
+                    join,
+                },
+                {
+                    table: query.company.fax.table,
+                    fields: 'fax',
+                    join,
+                },
+                {
+                    table: query.company.email.table,
+                    fields: 'email',
+                    join,
+                },
+            ],
+            handleFilter(batch, filter) {
+                const {
+                    id, _id, ein, duns, busName, coType, alias, route,
+                    ids, _ids, ownerId, _ownerId, category, global, lastLogo,
+                    closed = false, confirmed = true, active, // Combined when undefined
+                } = filter
+                const single = !!id || !!_id || !!ein || !!duns || !!(busName && coType) || !!alias || !!route
+
+                const match = {
+                    main: { id, duns, category, global, lastLogo, confirmed, active },
+                    names: { alias },
+                    ownerships: { ownerId: ownerId || Owner.matchIdHash(_ownerId) },
+                }
+                if (!id) {
+                    if (ids) match.main.id = ids
+                    match.main.id = Company.matchIdHash(_id || _ids)
+                }
+                if (ein) match.main.ein = { aes: [ ein, secret.ein ] }
+                if (busName && coType) {
+                    match.names.busName = busName
+                    match.names.coType = coType
+                }
+                if (route) match.names.route = { route: [ [ 'busName', 'coType' ], route ] }
+                if (typeof closed === 'boolean') match.main.until = { null: !closed }
+
+                batch[0].match = match.main
+                batch[1].match = match.names
+                batch[2].match = match.ownerships
+
+                return { single, batch }
+            },
+        })
+    }
 
 
     static list = {
@@ -201,9 +298,11 @@ class Owner extends Individual {
 
         reSuper(this, props, props2)
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
         }
     }
 
@@ -213,10 +312,87 @@ class Owner extends Individual {
 
     static config = () => ({
         db: db.business,
-        query: query.owner,
+        query: query.company_owner,
         idProp: 'ownerId',
         defSorts: [ null, null, [ 'lastName', 'suffix', 'firstName', 'middleName' ] ],
         logFile: 'company-owners',
+    })
+
+
+    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Owner.defSorts, mode }) => classStatic.fetch(this, session, filter, {
+        hideRawId, hideSensitive, sorts, mode,
+    }, {
+        batch: [
+            {
+                table: query.company_owner.main.table,
+                fields: [ 'id', Owner.hashId(), 'personId', Individual.hashId('personId') ],
+                group: 'id',
+            },
+            {
+                db: db.person,
+                table: query.person.main.table,
+                fields: [ 'dob', 'sex', { aes: [ 'ssn', secret.ssn ] } ],
+                join: [ 'id', 'personId' ],
+            },
+            {
+                db: db.person,
+                table: query.person.name.table,
+                fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
+                join: [ 'personId', 'id', {
+                    table: 'individuals',
+                    max: 'since',
+                } ],
+            },
+            {
+                db: db.person,
+                table: query.person.phone.table,
+                fields: 'phone',
+                join: [ 'personId', 'id', {
+                    table: 'individuals',
+                    max: 'since',
+                } ],
+            },
+            {
+                table: query.company.ownership.table,
+                join: [ 'ownerId', 'id' ],
+            },
+            {
+                table: query.company.main.table,
+                fields: [ { count: [ 'category', 'companyCount' ] } ],
+                join: [ 'id', 'companyId', 4 ],
+            },
+        ],
+        handleFilter(batch, filter) {
+            const categories = Company.list.category
+            for (const category in categories)
+                batch[5].fields.push({
+                    countCase: [ { category }, `${categories[category].path[0]}Count` ],
+                })
+
+            const {
+                id, _id, ssn,
+                ids, _ids, sex, firstName, lastName,
+            } = filter
+            const single = !!id || !!_id || !!ssn
+
+            const match = {
+                main: { id },
+                individuals: { sex },
+                names: { firstName, lastName },
+            }
+            if (!id) {
+                if (ids) match.main.id = ids
+                match.main.id = Owner.matchIdHash(_id || _ids)
+            }
+            if (ssn) match.individuals.ssn = { aes: [ ssn, secret.ssn ] }
+
+            batch[0].match = match.main
+            batch[1].match = match.individuals
+            batch[2].match = match.names
+
+            return { single, batch }
+        },
+        removeFullGroupBy: true,
     })
 
 
@@ -227,7 +403,7 @@ class Owner extends Individual {
 function jxTargets(src, target = null) {
     const targets =  {
         company: {
-            users: [ userQuery.jx.companies, 'userId', User ],
+            users: [ query.jx.users_companies, 'userId', User ],
         },
     }[src]
 
@@ -237,4 +413,4 @@ function jxTargets(src, target = null) {
 
 
 export default Company
-export { Owner, query, jxTargets }
+export { Owner }

@@ -7,12 +7,11 @@ import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Settings */
 import config, { addrBook, userApps } from '../../../config.mjs'
-import db from '../../settings/mysql.mjs'
+import db, { query } from '../../settings/mysql.mjs'
 
 /* Tools */
-import Team, { query as teamQuery } from './team.mjs'
-import Company, { query as companyQuery } from './company.mjs'
-import Carrier, { query as carrierQuery } from './carrier.mjs'
+import Team from './team.mjs'
+import Company from './company.mjs'
 //! Add more classes and query instances when more categories are available
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
@@ -27,28 +26,6 @@ const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
 const recognizeApi = require('../utils/api')
 const sendError = require('../utils/error')
-
-
-const { sqlMode } = Query
-const query = {
-    user: {
-        main: new Query(db.online, 'users'),
-        registration: new Query(db.online, 'user_registration'),
-        passReset: new Query(db.online, 'user_passreset'),
-    },
-    role: {
-        main: new Query(db.online, 'user_roles'),
-    },
-    session: {
-        main: new Query(db.online, 'sessions'),
-        token: new Query(db.online, 'tokens'),
-    },
-    jx: {
-        roles: new Query(db.online, 'user_role_map'),
-        teams: new Query(db.online, 'user_team_map'),
-        companies: new Query(db.business, 'user_company_map'),
-    },
-}
 
 
 
@@ -145,8 +122,7 @@ class User extends Person {
     ) => {
         const join = ['userId', 'id']
 
-        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, mode, },
-        {
+        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, mode }, {
             batch: [
                 {
                     table: query.user.main.table,
@@ -725,12 +701,12 @@ class Token {
 function jxTargets(src, target = null) {
     const targets =  {
         user: {
-            roles: [ query.jx.roles, 'roleId', Role ],
-            teams: [ query.jx.teams, 'teamId', Team ],
-            // companies: [ query.jx.companies, 'companyId', Company ],
+            roles: [ query.jx.users_roles, 'roleId', Role ],
+            teams: [ query.jx.users_teams, 'teamId', Team ],
+            companies: [ query.jx.users_companies, 'companyId', Company ],
         },
         role: {
-            users: [ query.jx.roles, 'userId', User ],
+            users: [ query.jx.users_roles, 'userId', User ],
         },
     }[src]
 
@@ -742,7 +718,7 @@ function jxTargets(src, target = null) {
 delete User.formSelect
 
 export default User
-export { Role, Token, query }
+export { Role, Token }
 
 
 

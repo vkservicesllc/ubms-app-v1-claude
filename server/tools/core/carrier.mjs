@@ -1,11 +1,11 @@
 /* Settings */
-import db from '../../settings/mysql.mjs'
+import db, { query } from '../../settings/mysql.mjs'
 
 /* Registry */
 import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Tools */
-import Company, { query as companyQuery } from './company.mjs'
+import Company from './company.mjs'
 import Query, { hash, matchHash }  from '../utils/query.mjs'
 import { classInstance } from '../utils/class.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
@@ -13,14 +13,6 @@ import { processData } from '../utils/database.mjs'
 
 const mysql = require('../utils/mysql')
 
-
-const query = {
-    carrier: {
-        main: new Query(db.carrier, 'carriers'),
-        ifta: new Query(db.carrier, 'carrier_ifta'),
-        stateTax: new Query(db.carrier, 'carrier_state_permits'),
-    },
-}
 
 const stateTaxIds = Object.keys(inputLength.carrier.permit.max)
 
@@ -133,4 +125,3 @@ class Carrier extends Company {
 delete Carrier.sortDefs
 
 export default Carrier
-export { query }

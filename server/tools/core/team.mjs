@@ -1,8 +1,8 @@
 /* Settings */
-import db from '../../settings/mysql.mjs'
+import db, { query } from '../../settings/mysql.mjs'
 
 /* Tools */
-import User, { query as userQuery } from './user.mjs'
+import User from './user.mjs'
 import Company from './company.mjs'
 import Carrier from './carrier.mjs'
 import Driver from './driver.mjs'
@@ -15,14 +15,6 @@ import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils
 const mysql = require('../utils/mysql')
 const recognizeApi = require('../utils/api')
 const sendError = require('../utils/error')
-
-
-const query = {
-    team : {
-        main: new Query(db.online, 'teams'),
-        profile: new Query(db.online, 'team_profiles'),
-    },
-}
 
 
 
@@ -83,9 +75,7 @@ class Team {
     static fetch = (session, filter, { hideRawId = false, sorts = Team.config().defSorts, mode } = {}) => {
         const join = ['teamId', 'id']
 
-        return classStatic.fetch(this, session, filter, {
-            hideRawId, sorts, mode,
-        }, {
+        return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
             batch: [
                 {
                     table: query.team.main.table,
@@ -103,18 +93,18 @@ class Team {
                     join,
                 },
                 {
-                    table: userQuery.jx.teams.table,
+                    table: query.jx.users_teams.table,
                     fields: [ { countDist: ['userId', 'userCount', {
                         case: {
-                            table: userQuery.user.main.table,
+                            table: query.user.main.table,
                             match: { deletedBy: null },
                         },
                     }] } ],
                     join,
                 },
                 {
-                    table: userQuery.user.main.table,
-                    join: ['id', 'userId', { table: userQuery.jx.teams.table }],
+                    table: query.user.main.table,
+                    join: ['id', 'userId', { table: query.jx.users_teams.table }],
                 },
             ],
             handleFilter(batch, filter) {
@@ -161,7 +151,7 @@ class Team {
     
                 const userId = user.id
                 const teamId = team.id
-                const found = (await mysql.execute(userQuery.jx.teams.select('teamId', {
+                const found = (await mysql.execute(query.jx.users_teams.select('teamId', {
                     match: { userId, teamId },
                 })))[0].length === 1
     
@@ -191,7 +181,7 @@ class Team {
 function jxTargets(src, target = null) {
     const targets =  {
         team: {
-            users: [ userQuery.jx.teams, 'userId', User, User.defSort ],
+            users: [ query.jx.users_teams, 'userId', User, User.defSort ],
         },
     }[src]
 
@@ -201,4 +191,3 @@ function jxTargets(src, target = null) {
 
 
 export default Team
-export { query, jxTargets }
