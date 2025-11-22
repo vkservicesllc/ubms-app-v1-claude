@@ -82,17 +82,21 @@ export const classInstance = {
             const [ jxQuery, jxIdProp, Src ] = jxTargets[target]
             if (!sorts) sorts = Src.config().defSorts || null
 
-            const [ rows ] = await mysql.execute(jxQuery.select(jxIdProp, { match: { [idProp]: inst.id } }))
+            const [ rows ] = await mysql.execute(jxQuery.select(jxIdProp, {
+                match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
+            }))
             rows.map(row => ids.push(row[jxIdProp]))
 
             return idsOnly ? ids : await Src.fetch(inst.session, { ids }, { hideRawId, hideSensitive, sorts })
         }
 
-        const { query, redFields } = Cls.config()
+        const { query, redFields = {} } = Cls.config()
+        //! Problem with redFields
+
         if (!redFields[target]) redFields[target] = this.redFields
 
         const options = {
-            match: { [idProp]: inst.id, since },
+            match: { [idProp]: inst.id || Cls.matchIdHash(inst._id), since },
         }
 
         if (history) {

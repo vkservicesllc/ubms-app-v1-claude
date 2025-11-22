@@ -99,9 +99,11 @@ class User extends Person {
 
         reSuper(this, props)
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
         }
     }
 
@@ -577,9 +579,11 @@ class Role {
             categoryGroup: data.category ? Company.list.category[data.category].item[0] : null,
         }
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
         }
     }
 
@@ -723,7 +727,7 @@ function jxTargets(src, target = null) {
         user: {
             roles: [ query.jx.roles, 'roleId', Role ],
             teams: [ query.jx.teams, 'teamId', Team ],
-            companies: [ query.jx.companies, 'companyId', Company ],
+            // companies: [ query.jx.companies, 'companyId', Company ],
         },
         role: {
             users: [ query.jx.roles, 'userId', User ],
@@ -738,7 +742,7 @@ function jxTargets(src, target = null) {
 delete User.formSelect
 
 export default User
-export { Role, Token, query, jxTargets }
+export { Role, Token, query }
 
 
 

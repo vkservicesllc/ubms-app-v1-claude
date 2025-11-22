@@ -11,7 +11,7 @@ const sendError = require('../tools/utils/error')
 router.use((req, res, next) => {
     res.session.user = {
         id: 1,
-        status: 'A',
+        status: 'D',
         location: 'US',
     }
     res.session.user.DS = res.session.user.status === 'D' || res.session.user.status == 'S'

@@ -58,9 +58,11 @@ class Team {
             users: data.userCount,
         }
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
         }
     }
 

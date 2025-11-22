@@ -1,6 +1,8 @@
 // ==== IMPORT ==== //
+
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
+import Company from '../../tools/core/company.mjs'
 
 const router = require('express').Router()
 const sendError = require('../../tools/utils/error')
@@ -12,67 +14,73 @@ const hideRawId = true
 
 
 
-// ==== ROUTES ==== //
+// ==== LIST ROUTES ==== //
 
 
-// ---- Lists ---- //
-
-
-router.post('/users', async (req, res) => {
+router.post('/list/users', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser, client } = res.session
+        const { location } = sessionUser
+
         const filter = {}
+        if (location !== 'US') filter.location = location
 
-        if (sessionUser?.location) {
-            const { location } = sessionUser
-            if (location !== 'US') filter.location = location
-        }
-
-        const users = await User.fetch(res.session, filter, { hideRawId, hideSensitive: false })
-
-        res.json({ client, data: users })
+        res.json({ client, data: await User.fetch(res.session, filter, { hideRawId, hideSensitive: false }) })
     } catch(err) {
         sendError.server(req, res, err)
     }
 })
 
 
-router.post('/roles', async (req, res) => {
+router.post('/list/:src', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { client } = res.session
-        const roles = await Role.fetch(res.session, {}, { hideRawId })
+        const { src } = req.params
+        const Src = { roles: Role, teams: Team }[src]
 
-        res.json({ client, data: roles })
+        res.json({ client, data: await Src.fetch(res.session, {}, { hideRawId }) })
     } catch(err) {
         sendError.server(req, res, err)
     }
 })
 
 
-router.post('/teams', async (req, res) => {
+
+// ---- DATA ROUTES ---- //
+
+//! UNFINISHED
+router.post('/data/user/:id/:target?', async (req, res) => {
     try {
-        const { client } = res.session
-        const teams = await Team.fetch(res.session, {}, { hideRawId })
-
-        res.json({ client, data: teams })
-    } catch(err) {
-        sendError.server(req, res, err)
-    }
-})
-
-
-// ---- Data ---- //
-
-
-router.post('/user/:id/:target?', async (req, res) => {
-    try {
-        const { client } = res.session
+        const { user: sessionUser, client } = res.session
         const { id, target } = req.params
+        const relationship = target === 'relationship'
+        if (target && !relationship) throw new Error('Invalid user target')
 
         const user = await User.fetch(res.session, { id }, { hideRawId })
+        if (!user) throw new Error('User not found')
 
-        if (target === 'relationship') {
-            // return all relationships
+        if (relationship) {
+            const data = {}
+            const targets = User.config().jxTargets
+
+            for (const target in targets) {
+                const Src = targets[target][2]
+                const sorts = Src.config().sorts
+                data[target] = {}
+
+                data[target].all = await Src.fetch(res.session, {}, { hideRawId, sorts })
+                data[target].applied = await user.fetch(`jx.${target}`, { hideRawId })
+
+                if (!sessionUser.DS) {
+                    const sessData = await sessionUser.fetch(target)
+
+                    //! reduce data.all and data.applied to whatever session user has
+                }
+
+                data[target].available = data[target].all.filter(row => !data[target].applied.some(appliedRow => appliedRow._id === row._id))
+            }
+
+            return res.json({ client, data })
         }
 
         res.json({ client, data: user })
@@ -81,29 +89,39 @@ router.post('/user/:id/:target?', async (req, res) => {
     }
 })
 
-
-router.post('/role/:id/:target?', async (req, res) => {
+//! UNFINISHED (Not tested on company yet)
+router.post('/data/:src/:id/:target?', async (req, res) => {
     try {
         const { client } = res.session
-        const { id } = req.params
+        const { src, id, target } = req.params
+        const [ PriSrc ] = { role: [ Role ], team: [ Team ], company: [ Company ] }[src]
+        if (!PriSrc) throw new Error('Invalid data requested')
 
-        const role = await Role.fetch(res.session, { id }, { hideRawId })
+        const inst = await PriSrc.fetch(res.session, { id }, { hideRawId })
+        if (!inst) throw new Error(`${PriSrc.name} not found`)
 
-        res.json({ client, data: role })
-    } catch(err) {
-        sendError.server(req, res, err)
-    }
-})
+        if (target) {
+            const targets = PriSrc.config().jxTargets
+            if (!Object.keys(targets).includes(target)) throw new Error(`Invalid ${PriSrc.name.toLowerCase()} target`)
 
+            const Src = targets[target][2]
+            const sorts = Src.config().sorts
+            const data = {}, filter = {}
 
-router.post('/team/:id/:target?', async (req, res) => {
-    try {
-        const { client } = res.session
-        const { id, target } = req.params
-console.log({ id, target })
-        const team = await Team.fetch(res.session, { id }, { hideRawId })
+            switch (target) {
+                case 'users':
+                    filter.status = ['U', 'A']
+                    break
+            }
 
-        res.json({ client, data: team })
+            data.all = await Src.fetch(res.session, filter, { hideRawId, sorts })
+            data.applied = await inst.fetch(`jx.${target}`, { hideRawId })
+            data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
+
+            return res.json({ client, data })
+        }
+
+        res.json({ client, data: inst })
     } catch(err) {
         sendError.server(req, res, err)
     }
