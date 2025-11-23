@@ -135,7 +135,7 @@ class User extends Person {
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
         { hideRawId = false, hideSensitive = true, combined = false, login = false, sorts = User.config().defSorts, mode } = {}
     ) => {
-        const join = ['userId', 'id']
+        const join = [ 'userId', 'id' ]
 
         return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, mode }, {
             batch: [
@@ -411,6 +411,7 @@ class User extends Person {
                     if (res.session.user) delete res.session.user
                     if (req.session.team) delete req.session.team
                     if (res.session.team) delete res.session.team
+                    if (res.session.client) delete res.session.client
 
                     return req.session.destroy((err) => {
                         if (err) return res.status(500).send('Failed to log out')
