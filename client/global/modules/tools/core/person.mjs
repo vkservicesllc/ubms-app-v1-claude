@@ -103,20 +103,6 @@ class Person {
     }
 
 
-    static formSelect(target, props) {
-        if (target !== 'prefix' && target !== 'suffix' && target !== 'gender') return
-
-        let data = Person[`${target}List`]
-        const options = props.options ? { ...props.options } : {}
-
-        if (!options.emptyOpt) options.emptyOpt = ''
-        if (!options.valOpt) options.valOpt = true
-        if (target === 'gender') options.valOpt = false
-
-        return formSelect(props, data, options)
-    }
-
-
 }
 
 
