@@ -100,21 +100,21 @@ class User extends Person {
     })
 
 
-    static idStr = async (target, length, queryInst) => {
+    static #idStr = async (idField, length, queryInst) => {
         let idStr, found = true
 
         do {
             idStr = generateRandomString(length)
 
-            const [ rows ] = await mysql.execute(queryInst.select(target, { match: { [target]: idStr }}))
+            const [ rows ] = await mysql.execute(queryInst.select(idField, { match: { [idField]: idStr }}))
             if (!rows.length) found = false
         } while (found)
 
         return idStr
     }
 
-    static #formId = async () => await User.idStr('formId', inputLength.user.formId.max, query.user.registration)
-    static #resetId = async () => await User.idStr('resetId', inputLength.user.resetId.max, query.user.passReset)
+    static #formId = async () => await User.#idStr('formId', inputLength.user.formId.max, query.user.registration)
+    static #resetId = async () => await User.#idStr('resetId', inputLength.user.resetId.max, query.user.passReset)
 
 
     static create = ({ user: sessionUser = {}, branch, siteId = null }, body, params) => classStatic.create(this, { user: sessionUser, branch, siteId }, body, params, {
