@@ -301,7 +301,5 @@ class Relationship {
 
 
 
-delete Individual.formSelect
-
 export default Individual
 export { Relationship }
