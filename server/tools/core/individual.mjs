@@ -78,12 +78,42 @@ class Individual extends Person {
     })
 
 
-    static fetch = async (session, filter, { hideRawId = false, hideSensitive = true, sorts = Individual.defSorts, mode = 'data' }) => {
+    static create = (session, body, params) => classStatic.create(this, session, body, params, {
+        async find(body, hideRawId) {
+            const { ssn, dob } = body
+            let data
+
+            if (ssn) {
+                data = await Individual.fetch(session, { ssn }, { hideRawId })
+
+                if (data.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
+            }
+
+            return { found: !!data, data }
+        },
+        split(body) {
+            const {
+                dob, sex, ssn,
+                prefix, firstName, middleName, lastName, suffix, alias,
+            } = body
+
+            body = {
+                main: { dob, sex, ssn },
+                name: { prefix, firstName, middleName, lastName, suffix, alias, },
+            }
+
+            return body
+        },
+    })
+
+
+    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Individual.defSorts, mode = 'data' }) => {
         const join = [ 'personId', 'id', { max: 'since' } ]
 
         return classStatic.fetch(this, session, filter, {
             hideRawId, hideSensitive, sorts, mode,
         }, {
+            removeFullGroupBy: true,
             batch: [
                 {
                     table: query.person.main.table,
@@ -176,7 +206,6 @@ class Individual extends Person {
 
                 return { single, batch }
             },
-            removeFullGroupBy: true,
         })
     }
 

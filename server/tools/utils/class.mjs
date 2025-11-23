@@ -1,3 +1,10 @@
+require('dotenv').config({ path: '../../.env' })
+const { DB__MYSQL_AES_EIN, DB__MYSQL_AES_SSN } = process.env
+const secret = {
+    ein: DB__MYSQL_AES_EIN,
+    ssn: DB__MYSQL_AES_SSN,
+}
+
 import Query from './query.mjs'
 import { processData, logDeletion } from './database.mjs'
 
@@ -217,6 +224,9 @@ export const classStatic = {
         body = processData(body)
         stringify.map(field => body[field] = JSON.stringify(field))
 
+        if (body?.ssn) body.ssn = { aes: [ ssn, secret.ssn ] }
+        if (body?.ein) body.ein = { aes: [ ein, secret.ein ] }
+
         if (typeof split === 'function') body = split(body)
         else body = { main: body }
 
@@ -229,7 +239,7 @@ export const classStatic = {
 
         const [ result ] = await mysql.execute(query.main.insert(body.main))
         const id = result.insertId
-        if (!id) throw new Error(`DB Error: Failed to create ${Cls.name.toLowerCase()}`)
+        if (!id) throw new Error(`Failed to create ${Cls.name.toLowerCase()}`)
 
         delete body.main
         if (Object.keys(body).length) {
@@ -239,7 +249,7 @@ export const classStatic = {
                 if (enforceLocation) body[main].createdIn = createdIn
 
                 const [ result ] = await mysql.execute(query[target].insert(body[target]))
-                if (!result.affectedRows) throw new Error(`DB Error: Failed to create ${Cls.name.toLowerCase()}'s ${target}`)
+                if (!result.affectedRows) throw new Error(`Failed to create ${Cls.name.toLowerCase()}'s ${target}`)
             }
         }
 

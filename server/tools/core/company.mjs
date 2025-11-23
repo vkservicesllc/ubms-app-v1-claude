@@ -118,6 +118,26 @@ class Company {
     })
 
 
+    static create = (session, body, params) => classStatic.create(this, session, body, params, {
+        async find(body, hideRawId) {
+            const { busName, coType } = body
+            const data = await Company.fetch(session, { busName, coType }, { hideRawId })
+
+            return { found: !!data, data }
+        },
+        split(body) {
+            const { category, ein, duns, since, busName, coType, alias } = body
+
+            body = {
+                main: { category, ein, duns, since },
+                name: { since, busName, coType, alias },
+            }
+
+            return body
+        },
+    })
+
+
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
         { hideRawId = false, hideSensitive = true, sorts = Company.config().defSorts, mode } = {}
     ) => {
@@ -319,9 +339,27 @@ class Owner extends Individual {
     })
 
 
+    static create = (session, body, params) => classStatic.create(this, session, body, params, {
+        async split(body) {
+            const { ssn, dob } = body
+
+            let person
+            if (ssn) person = await Individual.fetch(session, { ssn })
+            if (person?.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
+
+            if (!person) ({ person } = await Individual.create(session, body))
+
+            body = { main: { personId: person.id } }
+
+            return body
+        },
+    })
+
+
     static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Owner.defSorts, mode }) => classStatic.fetch(this, session, filter, {
         hideRawId, hideSensitive, sorts, mode,
     }, {
+        removeFullGroupBy: true,
         batch: [
             {
                 table: query.company_owner.main.table,
@@ -392,7 +430,6 @@ class Owner extends Individual {
 
             return { single, batch }
         },
-        removeFullGroupBy: true,
     })
 
 

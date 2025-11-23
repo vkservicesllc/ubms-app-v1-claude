@@ -138,6 +138,7 @@ class User extends Person {
         const join = [ 'userId', 'id' ]
 
         return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, mode }, {
+            removeFullGroupBy: true,
             batch: [
                 {
                     table: query.user.main.table,
@@ -211,7 +212,6 @@ class User extends Person {
 
                 return { single, batch }
             },
-            removeFullGroupBy: true,
         })
     }
 
