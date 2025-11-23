@@ -188,14 +188,14 @@ export const classInstance = {
     // },
 
 
-    log: async (inst, Cls, field = null, { target = 'main', fields, since } = {}) => {
+    log: async (inst, Cls, { field = null, target = 'main', since = null } = {}, fields) => {
         const { user: sessionUser } = inst.session || {}
         if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
 
         fields = fields ?? this.logFields
         let { idProp } = this.config
         if (target === 'main') idProp = 'id'
-        const match = { [idProp]: inst.id, since }
+        const match = { [idProp]: inst.id || Cls.matchIdHash(inst._id), since }
 
         const { query } = Cls.config()
         const log = (await mysql.execute(query[target].select(fields, { match })))[0][0]
@@ -263,14 +263,14 @@ export const classStatic = {
 
     fetch: async (Cls, { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
         { hideRawId = false, hideSensitive = true, sorts, mode = 'data', },
-        { batch, handleFilter, removeFullGroupBy = false }
+        { batch = [], prepare, removeFullGroupBy = false }
     ) => {
         const { enforceUser = true, db } = Cls.config()
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [FETCH]: Session user not supplied`)
-        if (!batch || !batch.length) throw new Error(`${Cls.name} Static Method Error [FETCH]: Batch not supplied`)
+        // if (!batch || !batch.length) throw new Error(`${Cls.name} Static Method Error [FETCH]: Batch not supplied`)
 
         let single = false
-        if (typeof handleFilter === 'function') ({ batch, single = false } = handleFilter(batch, filter))
+        if (typeof prepare === 'function') ({ batch, single = false } = prepare(batch, filter))
 
         if (!single && Array.isArray(sorts))
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })

@@ -96,11 +96,14 @@ class Company {
         this.fax = data.fax
         this.email = data.email
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.log = params => classInstance.log(this, new.target, params)
         }
     }
 
@@ -143,7 +146,7 @@ class Company {
     ) => {
         const join = [ 'companyId', 'id', { max: 'since' } ]
 
-        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter,  { hideRawId, hideSensitive, sorts, mode }, {
+        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, mode }, {
             batch: [
                 {
                     table: query.company.main.table,
@@ -217,7 +220,7 @@ class Company {
                     join,
                 },
             ],
-            handleFilter(batch, filter) {
+            prepare(batch, filter) {
                 const {
                     id, _id, ein, duns, busName, coType, alias, route,
                     ids, _ids, ownerId, _ownerId, category, global, lastLogo,
@@ -323,6 +326,9 @@ class Owner extends Individual {
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.log = params => classInstance.log(this, new.target, params)
         }
     }
 
@@ -356,7 +362,7 @@ class Owner extends Individual {
     })
 
 
-    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Owner.defSorts, mode }) => classStatic.fetch(this, session, filter, {
+    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Owner.config().defSorts, mode }) => classStatic.fetch(this, session, filter, {
         hideRawId, hideSensitive, sorts, mode,
     }, {
         removeFullGroupBy: true,
@@ -400,7 +406,7 @@ class Owner extends Individual {
                 join: [ 'id', 'companyId', 4 ],
             },
         ],
-        handleFilter(batch, filter) {
+        prepare(batch, filter) {
             const categories = Company.list.category
             for (const category in categories)
                 batch[5].fields.push({

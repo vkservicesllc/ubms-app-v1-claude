@@ -81,6 +81,9 @@ class User extends Person {
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.log = params => classInstance.log(this, new.target, params, [ ...classInstance.logFields, 'deletedBy', 'deletedAt' ])
         }
     }
 
@@ -174,7 +177,7 @@ class User extends Person {
                     join: [ 'userId', 'id', { max: [ 'lastLogin', { branch, siteId } ] } ],
                 },
             ],
-            handleFilter(batch, filter) {
+            prepare(batch, filter) {
                 if (branch)
                     batch.push()
 
@@ -576,6 +579,9 @@ class Role {
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.log = params => classInstance.log(this, new.target, params)
         }
     }
 
@@ -613,7 +619,7 @@ class Role {
                 fields: [ 'id', Role.hashId(), 'category', 'location', 'name', 'permissions' ],
             },
         ],
-        handleFilter(batch, filter,) {
+        prepare(batch, filter,) {
             const {
                 id, _id,
                 ids, _ids, category, name, location,

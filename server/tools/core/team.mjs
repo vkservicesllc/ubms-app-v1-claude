@@ -55,6 +55,9 @@ class Team {
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.log = params => classInstance.log(this, new.target, params)
         }
     }
 
@@ -117,7 +120,7 @@ class Team {
                     join: ['id', 'userId', { table: query.jx.users_teams.table }],
                 },
             ],
-            handleFilter(batch, filter) {
+            prepare(batch, filter) {
                 const {
                     id, _id, name,
                     ids, _ids,

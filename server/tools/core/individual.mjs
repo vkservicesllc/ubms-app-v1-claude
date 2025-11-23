@@ -55,11 +55,14 @@ class Individual extends Person {
 
         reSuper(this, props, { legal, phone, email, marital, address, identification, count })
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.log = params => classInstance.log(this, new.target, params)
         }
     }
 
@@ -107,7 +110,7 @@ class Individual extends Person {
     })
 
 
-    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Individual.defSorts, mode = 'data' }) => {
+    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Individual.config().defSorts, mode = 'data' }) => {
         const join = [ 'personId', 'id', { max: 'since' } ]
 
         return classStatic.fetch(this, session, filter, {
@@ -184,7 +187,7 @@ class Individual extends Person {
                     join: [ 'driverId', 'id', query.driver.main.table ],
                 },
             ],
-            handleFilter(batch, filter) {
+            prepare(batch, filter) {
                 const {
                     id, _id, ssn,
                     ids, _ids, sex, firstName, lastName
