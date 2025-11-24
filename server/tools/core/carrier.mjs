@@ -93,7 +93,7 @@ class Carrier extends Company {
         { hideRawId = false, sorts = Company.config().defSorts, mode } = {}
     ) => classStatic.fetch(this, session, filter, { hideRawId, hideSensitive, sorts, mode }, {
         prepare(batch, filter) {
-            const batch = Company.fetch(session, {}, { mode: 'batch' })
+            batch = Company.fetch(session, {}, { mode: 'batch' })
 
             const join = [ 'carrierId', 'id', 'carriers' ]
             const stateTaxFields = []

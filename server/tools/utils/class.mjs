@@ -267,10 +267,9 @@ export const classStatic = {
     ) => {
         const { enforceUser = true, db } = Cls.config()
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [FETCH]: Session user not supplied`)
-        // if (!batch || !batch.length) throw new Error(`${Cls.name} Static Method Error [FETCH]: Batch not supplied`)
 
-        let single = false
-        if (typeof prepare === 'function') ({ batch, single = false } = prepare(batch, filter))
+        let single = false, custom = {}
+        if (typeof prepare === 'function') ({ batch, single = false, custom = {} } = prepare(batch, filter))
 
         if (!single && Array.isArray(sorts))
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
@@ -284,7 +283,7 @@ export const classStatic = {
         const list = (await mysql.execute(queryStr))[0]
 
         const session = setSession(sessionUser, branch, siteId)
-        list.forEach((data, i, arr) => arr[i] = new Cls(data, { single, session, hideRawId, hideSensitive }))
+        list.forEach((data, i, arr) => arr[i] = new Cls(data, { single, session, hideRawId, hideSensitive, custom }))
 
         return single ? list[0] : list
     }

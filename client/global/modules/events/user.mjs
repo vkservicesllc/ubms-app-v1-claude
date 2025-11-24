@@ -139,12 +139,8 @@ export const loginEvent = (callback = {}) => {
                         else $form.unbind().submit()
                     },
                     error(err) {
-                        const { error } = err.responseJSON
-console.error(error)
-                        // if (error) {
-                        //     alert(error)
-                        //     location.reload()
-                        // }
+                        console.error(err)
+                        alert(JSON.stringify(err.responseJSON, null, 2))
                     },
                 })
             }, 500)

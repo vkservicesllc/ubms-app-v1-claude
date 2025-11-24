@@ -14,6 +14,7 @@ module.exports = {
     server: (req, res, error) => {
         let message = error?.message ? `${error.name}: ${error.message}` : 'Server Internal Error'
         res.status(500)
+        console.error(error)
 
         if (recognizeApi(req)) {
             let xhr = { message }

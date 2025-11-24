@@ -1,41 +1,120 @@
-// ==== IMPORT ==== //
-
 const router = require('express').Router()
 const sendError = require('../tools/utils/error')
 
+/* Tools */
+import User from '../tools/core/user.mjs'
+import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
-// ==== SETUP ==== //
+/* Middleware */
+import login from './admin/mw/login.mjs'
 
 
-//! This kinda setup is in User.mw.verify
+
 router.use((req, res, next) => {
-    res.session.user = {
-        id: 1,
-        status: 'D',
-        location: 'US',
+    res.hbs.docAttrs = ''
+
+    const theme = req.cookies['document.theme']
+
+    if (!theme) res.cookie('document.theme', '', { maxAge: 1000 * 60 * 60 * 24 * 365 })
+    else res.hbs.docAttrs = ` data-theme="${theme}"`
+
+    if (req.session.user) {
+        const active = ' class="is-active"'
+        const inactive = ''
+
+        res.hbs.nav = {
+            active,
+
+            'dash': inactive,
+            'charts': inactive,
+            'companies': inactive,
+            'owners': inactive,
+            'branches': inactive,
+            'sites': inactive,
+            'users': inactive,
+            'teams': inactive,
+
+            'devData': inactive,
+            'devLogs': inactive,
+        }
     }
-    res.session.user.DS = res.session.user.status === 'D' || res.session.user.status == 'S'
-    res.session.user.DSA = res.session.user.status !== 'U'
-    if (res.session.user.DS) res.session.user.location = 'US'
 
-    const { user } = res.session
+    res.hbs.set = function(key, params = {}) {
+        let { inclKey, navKey, titlePfx } = params
 
-    const status = ['D', 'S', 'A', 'U'].indexOf(user.status)
-    const DS = +user.DS
-    const DSA = +user.DSA
-    const location = +(user.location === 'US')
+        const includer = require('../includes/src')
+        const includes = require('../includes/admin')
 
-    res.session.client = '' + status + DS + DSA + location
+        const { user } = res.session
+        const hbs = { ...this }
+        const { nav } = hbs
+
+        if (!inclKey) inclKey = key
+        if (!titlePfx) titlePfx = capitalizeEach(key.replace(/\-/g, ' '))
+
+        hbs.title = `${titlePfx} - ${hbs.title}`
+        hbs.includes = includer.render(includes[inclKey])
+
+        if (nav) {
+            if (!navKey) navKey = key
+            const { active } = nav
+
+            nav[navKey] = active
+        }
+        if (user) {
+            const { _id, username, avaSrc, status, DS, DSA } = user
+            hbs.user = { _id, name: user.fullName('AL'), username, avaSrc, status: status[1], DS, DSA }
+            hbs.user.D = user.status[0] == 'D'
+        }
+
+        return hbs
+    }
 
     next()
 })
 
 
-
-// ==== ROUTES ==== //
-
+// router.get('/init', User.initialize)
 
 
-// ==== EXPORT ==== //
+router.get('/', login, User.mw.verify, async (req, res) => {
+    try {
+        const key = 'dash'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        res.render(key, hbs)
+    } catch (err) {
+        sendError.server(res, err)
+    }
+})
+
+
+router.get('/charts', User.mw.verify, (req, res) => {
+    try {
+        const key = 'charts'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        res.render(key, hbs)
+    } catch (err) {
+        sendError.server(res, err)
+    }
+})
+
+
+router.get('/settings', User.mw.verify, (req, res) => {
+    try {
+        const key = 'settings'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        res.render(key, hbs)
+    } catch (err) {
+        sendError.server(res, err)
+    }
+})
+
+
 
 export default router
