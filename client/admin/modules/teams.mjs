@@ -206,7 +206,7 @@ const displayTeams = () => {
     $('.team-edit, .team-relationship, .team-profile, .team-settings').off('click')
 
     $.ajax({
-        url: '/api/teams',
+        url: '/api/list/teams',
         method: 'POST',
         success(response) {
             // const data = sortArrayByObjectKey(response.data, 'name')

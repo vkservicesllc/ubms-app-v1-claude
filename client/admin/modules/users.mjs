@@ -202,7 +202,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
     const table = new DataTable('#users-table', {
 
         ajax: {
-            url: '/api/users',
+            url: '/api/list/users',
             dataSrc(response) { console.log(response.data)
                 return response.data
             },

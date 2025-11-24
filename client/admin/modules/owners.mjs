@@ -155,7 +155,7 @@ columns.push({
 const table = $('#owners-table').DataTable({
 
     ajax: {
-        url: '/api/company-owners',
+        url: '/api/list/company-owners',
         dataSrc(response) {
             const { data } = response
             return data

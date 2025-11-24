@@ -16,7 +16,7 @@ $.when(statusReq).done(statusRes => {
     const table = new DataTable('#companies-table', {
 
         ajax: {
-            url: '/api/companies',
+            url: '/api/list/companies',
             dataSrc(response) {
                 const { data: companies } = response
                 let owners = []
