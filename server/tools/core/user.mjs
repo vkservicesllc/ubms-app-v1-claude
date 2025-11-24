@@ -35,7 +35,7 @@ class User extends Person {
 
         super(data)
 
-        const { login } = custom
+        const { login, auth } = custom
         const props = { _id: data._id, _simpleId: data._simpleId }
         if (!hideRawId) props.id = data.id
 
@@ -60,7 +60,7 @@ class User extends Person {
             props.lastUrl = data.lastUrl
         }
 
-        if (login) {
+        if (login && auth) {
             props.fails = data.fails
             props._hash = data._hash
         }
@@ -332,9 +332,13 @@ class User extends Person {
 
 
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
-        { hideRawId = false, hideSensitive = true, combined = false, login = false, sorts = User.config().defSorts, mode } = {}
+        { hideRawId = false, hideSensitive = true, combined = false, login = false, auth = false, sorts = User.config().defSorts, mode } = {}
     ) => {
-        if (!login && !sessionUser?.id) throw new Error('User Static Method Error [FETCH]: Session user not supplied')
+        if (!login) {
+            if (!login && !sessionUser?.id) throw new Error('User Static Method Error [FETCH]: Session user not supplied')
+            auth = false
+        }
+
         const join = [ 'userId', 'id' ]
 
         return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, mode }, {
@@ -402,7 +406,7 @@ class User extends Person {
                 }
 
                 if (login) {
-                    batch[0].fields.push([ '_passKey', '_hash' ])
+                    if (auth) batch[0].fields.push([ '_passKey', '_hash' ])
                     batch[4].fields.push({ ip: 'clientIp' })
 
                     if (branch === 'admin') batch[0].match.status = [ 'D', 'S', 'A' ]
@@ -410,7 +414,7 @@ class User extends Person {
 
                 if (!single) batch[4].join[2].max = 'lastLogin'
 
-                return { single, batch, custom: { login } }
+                return { single, batch, custom: { login, auth } }
             },
         })
     }
@@ -479,7 +483,7 @@ class User extends Person {
 
                 const { branch, siteId } = res.session
                 const { username, password } = req.body
-                let user = await User.fetch(res.session, { username }, { login: true, hideSensitive: false })
+                let user = await User.fetch(res.session, { username }, { login: true, auth: true, hideSensitive: false })
 
                 // Interrupt if User not found
                 if (!user) {
