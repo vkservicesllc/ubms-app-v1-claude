@@ -59,14 +59,31 @@ router.post('/list/individuals', User.mw.verify, User.mw.developerOnly, async (r
 })
 
 
-router.post('/list/:src', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+router.post('/list/roles/:category?', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { client } = res.session
-        const { src } = req.params
-        const Src = { roles: Role, teams: Team, 'company-owners': Owner }[src]
-        if (!Src) throw new Error('Invalid source')
+        let { category = null } = req.params
+        const catList = Company.list.category
 
-        res.json({ client, data: await Src.fetch(res.session, {}, { hideRawId }) })
+        if (category)
+            for (const key in catList) {
+                if (category !== catList[key].path[1]) continue
+                category = key
+                break
+            }
+
+        res.json({ client, data: await Role.fetch(res.session, { category }, { hideRawId }) })
+    } catch(err) {
+        sendError.server(req, res, err)
+    }  
+})
+
+
+router.post('/list/teams', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { client } = res.session
+
+        res.json({ client, data: await Team.fetch(res.session, {}, { hideRawId }) })
     } catch(err) {
         sendError.server(req, res, err)
     }

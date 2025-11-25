@@ -24,7 +24,7 @@ export const query = {
         passReset: new Query(db.online, 'user_passreset'),
     },
     role: {
-        main: new Query(db.online, 'user_roles'),
+        main: new Query(db.online, 'roles'),
     },
     session: {
         main: new Query(db.online, 'sessions'),

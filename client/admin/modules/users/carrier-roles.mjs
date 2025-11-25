@@ -68,7 +68,7 @@ roleNameEvent(ajaxData, {
 roleLocationEvent(ajaxData, { onChange, onAjax })
 
 
-$.ajax('/api/roles/carrier', {
+$.ajax('/api/list/roles/carrier', {
     method: 'POST',
     success(response) {
         const { error } = response

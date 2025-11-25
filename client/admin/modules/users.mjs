@@ -203,7 +203,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
         ajax: {
             url: '/api/list/users',
-            dataSrc(response) { console.log(response.data)
+            dataSrc(response) {
                 return response.data
             },
         },
