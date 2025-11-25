@@ -511,7 +511,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         $('.modify-user-condition').click(function() {
             const _id = $(this).data('id')
 
-            $.ajax(`/api/user/${_id}`, {
+            $.ajax(`/api/data/user/${_id}`, {
                 method: 'POST',
                 success(response) {
                     const { error, data } = response
@@ -538,7 +538,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         $('.reset-user-security').click(function() {
             const _id = $(this).data('id')
 
-            $.ajax(`/api/user/${_id}`, {
+            $.ajax(`/api/data/user/${_id}`, {
                 method: 'POST',
                 success(response) {
                     const { data: user } = response
@@ -563,7 +563,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             const src = $(this).hasClass('edit-user') ? 'edit' : 'delete'
             const _id = $(this).data('id')
 
-            $.ajax(`/api/user/${_id}`, {
+            $.ajax(`/api/data/user/${_id}`, {
                 method: 'POST',
                 success(response) {
                     const { error, data } = response

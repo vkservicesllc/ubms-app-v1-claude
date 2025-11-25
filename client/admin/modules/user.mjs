@@ -4,7 +4,7 @@ const _id = $(selector.id.hidden.id).val()
 
 if (_id) {
     const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
-    const relationships = $.ajax(`/api/user/${_id}/relationships`, { async: false, method: 'POST' }).responseJSON.data
+    const relationships = $.ajax(`/api/data/user/${_id}/relationship`, { async: false, method: 'POST' }).responseJSON.data
 
     const defOpts = { available: '', applied: '' }
     const optgroup = '<optgroup><option value=""></option></optgroup>'
@@ -85,7 +85,7 @@ if (_id) {
         $unscoped.on('change', function() {
             const unscoped = $(this).prop('checked')
 
-            $.ajax(`/api/user/${_id}/toggle-unscoped`, {
+            $.ajax(`/api/data/user/${_id}/toggle-unscoped`, {
                 method: 'POST',
                 data: { unscoped },
                 success(response) {

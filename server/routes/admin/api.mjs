@@ -96,15 +96,16 @@ router.post('/list/:src', User.mw.verify, User.mw.superAdminOnly, async (req, re
 
 // ---- DATA ROUTES ---- //
 
-//! UNFINISHED
-router.post('/data/user/:id/:target?', async (req, res) => {
+
+router.post('/data/user/:_id/:target?', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser, client } = res.session
-        const { id, target } = req.params
+        const { _id, target } = req.params
         const relationship = target === 'relationship'
-        if (target && !relationship) throw new Error('Invalid user target')
+        const toggleUnscoped = target === 'toggle-unscoped'
+        if (target && !relationship && !toggleUnscoped) throw new Error('Invalid user target')
 
-        const user = await User.fetch(res.session, { id }, { hideRawId })
+        const user = await User.fetch(res.session, { _id }, { hideRawId })
         if (!user) throw new Error('User not found')
 
         if (relationship) {
@@ -131,13 +132,18 @@ router.post('/data/user/:id/:target?', async (req, res) => {
             return res.json({ client, data })
         }
 
+        if (toggleUnscoped) {
+            let { unscoped = 'true' } = req.body
+            //! await user.update()
+        }
+
         res.json({ client, data: user })
     } catch(err) {
         sendError.server(req, res, err)
     }
 })
 
-//! UNFINISHED (Not tested)
+
 router.post('/data/company-owner/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { client } = res.session
