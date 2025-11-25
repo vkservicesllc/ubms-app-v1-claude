@@ -84,7 +84,7 @@
                                 {{/if}}
                             </header>
                             <section class="modal-card-body">
-                                <form class="content" id="user-form" action="/resource/user" method="POST" autocomplete="off">
+                                <form class="content" id="user-form" action="/resource/upsert/user" method="POST" autocomplete="off">
                                     {{{form.id.hidden.input}}}
                                     {{{form.hiddenUsername.hidden.input}}}
                                     <h5 class="has-text-info">Properties</h5>
@@ -208,7 +208,7 @@
                                 <button class="delete"></button>
                             </header>
                             <section class="modal-card-body">
-                                <form id="user-condition-form" action="/resource/user/modify/condition" method="POST" autocomplete="off">
+                                <form id="user-condition-form" action="/resource/update/user?condition" method="POST" autocomplete="off">
                                     {{{form.modifyId.hidden.input}}}
                                     <div class="radios">
                                         <label class="radio">
@@ -243,7 +243,7 @@
                             </header>
                             <section class="modal-card-body" id="user-security-modal-body"></section>
                             <footer class="modal-card-foot">
-                                <form action="/resource/user/reset" method="POST">
+                                <form action="/resource/reset/user" method="POST">
                                     {{{form.resetId.hidden.input}}}
                                     <button type="submit" class="button is-secondary">Reset Password</button>
                                 </form>
@@ -259,7 +259,7 @@
                                 <button class="delete"></button>
                             </header>
                             <section class="modal-card-body">
-                                <form id="user-delete-form" action="/resource/user/delete" method="POST" autocomplete="off">
+                                <form id="user-delete-form" action="/resource/delete/user" method="POST" autocomplete="off">
                                     {{{form.deleteId.hidden.input}}}
                                     <p class="has-text-danger">
                                         <b>Warning:</b><br/>

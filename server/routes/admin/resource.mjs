@@ -4,7 +4,9 @@ const router = require('express').Router()
 const sendError = require('../../tools/utils/error')
 
 /* Tools */
-import User from '../../tools/core/user.mjs'
+import User, { Role } from '../../tools/core/user.mjs'
+import Team from '../../tools/core/team.mjs'
+import Company, { Owner } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 
 /* Validators */
@@ -58,20 +60,115 @@ Object.keys(Carrier.list.permit).forEach(prop => carrierFields.push(`${prop}Perm
 carrierFields.map(prop => validateCarrier.push(CarrierForm[prop].validate()))
 
 
-const url = {
-    users: '/online/users',
+const source = {
+    'user': [ User, '/online/users' ],
+    'role': [ Role, '/online/users' ],
+    'team': [ Team, '/online/teams' ],
+    'company': [ Company, '/business/companies' ],
+    'company-owner': [ Owner, '/business/company-owners' ],
+
+    ext(src, inst) {
+        let ext = ''
+
+        switch (src) {
+            case 'role':
+                ext = `?role=${inst.category}`
+                break
+        }
+
+        return ext
+    },
+
 }
 
 
 
-// ==== ROUTES ==== //
+// ==== UPSERT ROUTES ==== //
 
 
-router.post('/add/user', User.mw.verify, validateUser, validationCheck, async (req, res) => {
+router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
+    const { user: sessionUser } = res.session
+    const { status, location } = req.body
+
+    switch (true) {
+        case status === 'D' && sessionStatus !== 'D':
+        case status === 'S' && !sessionUser.DS:
+            throw new Error('Illegal User Status')
+            break
+        case status === 'S' && body.location !== 'US':
+        case sessionLocation !== 'US' && body.location !== sessionLocation:
+            throw new Error('Illegal User Location')
+            break
+        case body.firstName === body.alias:
+            throw new Error('Illegal User Alias')
+            break
+    }
+
+    if (location !== 'US') delete req.body.phone
+
+    next()
+}, validateUser, validationCheck, async (req, res) => {
     try {
-        const { created, user } = await User.create(res.session, req.body)
+        const { _id } = req.body
+        delete req.body._id
 
-        res.redirect(url.users)
+        if (_id) {
+            const user = await User.fetch(res.session, { _id })
+            if (!user) throw new Error('User not found')
+
+            if (user.DS) {
+                if (user.status === 'D') req.body.status = 'D'
+                req.body.location = 'US'
+            } else if (!location) req.body.location = user.location
+
+            await user.update(req.body)
+        } else await User.create(res.session, req.body)
+
+        res.redirect(source.user[1])
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
+// ==== UPDATE ROUTES ==== //
+
+
+router.post('/update/user/condition', User.mw.verify, [ UserForm.condition.validate() ], validationCheck, async (req, res) => {
+    try {
+        const { _id } = req.body
+        const user = await User.fetch(res.session, { _id })
+        if (!user) throw new Error('User not found')
+
+        let { condition } = req.body
+        if (condition === 'L') condition = 'I'
+
+        await user.update({ condition })
+
+        res.redirect(source.user[1])
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
+// ==== DELETE ROUTES ==== //
+
+
+router.post('/delete/:src', User.mw.verify, async (req, res) => {
+    try {
+        const { src } = req.params
+        const { _id } = req.body
+        const [ Src, redirUrl ] = source[src]
+
+        const inst = await Src.fetch(res.session, { _id })
+        if (!inst) throw new Error(`${Src.name} not found`)
+
+        await inst.delete()
+
+        res.redirect(redirUrl + source.ext(src, inst))
     } catch (err) {
         sendError.server(req, res, err)
     }
