@@ -56,6 +56,62 @@ router.get('/session/keep-alive', User.mw.verify, (req, res) => {
 router.post('/session/:prop', User.mw.verify, sessionDetails)
 
 
+router.post('/source/:source/:_id?', User.mw.verify, async (req, res) => {
+    const { filter, self, call } = req.query
+    const { source } = req.params
+    let { _id } = req.params
+    let Src, result
+
+    switch (source) {
+
+        case 'user':
+            Src = User
+            result = {
+                statuses: User.list.status,
+                locations: User.list.location,
+            }
+            if (self === 'true') _id = req.session.user
+            break
+
+        case 'company':
+            Src = Company
+            result = {
+                categories: Company.list.category,
+                types: Company.list.type,
+            }
+            break
+
+        case 'driver':
+            Src = Driver
+            result = {
+                positions: Driver.list.position,
+            }
+            break
+
+        case 'driver-application':
+            Src = DriverApplication
+            result = {
+                violations: Citation.list.violation,
+                accidents: Accident.list.accident,
+            }
+            break
+
+    }
+
+    if (filter) {
+        if (_id && Src) {
+            const instance = await Src.data(res.session, { _id })
+            result = call === 'true'
+                ? await instance[filter](res.session)
+                : instance[filter]
+        } else
+            result = result[filter]
+    }
+
+    res.send(result)
+})
+
+
 
 // ==== EXPORT ==== //
 

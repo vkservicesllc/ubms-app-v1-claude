@@ -62,12 +62,12 @@ class Carrier extends Company {
     static matchIdHash = value => matchHash(value, Carrier.#algorithm)
 
     static config = () => ({
-        db: db.carrier,
+        db: db.business,
         query: query.carrier,
         idProp: 'carrierId',
     })
-    
-    
+
+
     static create = (session, body, params) => classStatic.create(this, session, body, params, {
         async find(body, hideRawId) {
             const { mc, usdot } = body
@@ -90,10 +90,10 @@ class Carrier extends Company {
 
 
     static fetch = (session, filter,
-        { hideRawId = false, sorts = Company.config().defSorts, mode } = {}
+        { hideRawId = false, hideSensitive = true, sorts = Company.config().defSorts, mode } = {}
     ) => classStatic.fetch(this, session, filter, { hideRawId, hideSensitive, sorts, mode }, {
-        prepare(batch, filter) {
-            batch = Company.fetch(session, {}, { mode: 'batch' })
+        async prepare(batch, filter) {
+            batch = await Company.fetch(session, {}, { mode: 'batch' })
 
             const join = [ 'carrierId', 'id', 'carriers' ]
             const stateTaxFields = []
@@ -101,7 +101,7 @@ class Carrier extends Company {
 
             batch.push({
                 db: db.carrier,
-                table: query.main.table,
+                table: query.carrier.main.table,
                 fields: [
                     [ 'id', 'carrierId' ], [ Carrier.hashId(), 'carrierId' ],
                     'mc', 'usdot', 'scac', 'irp',
@@ -110,12 +110,12 @@ class Carrier extends Company {
                 join: [ 'companyId', 'id' ],
             }, {
                 db: db.carrier,
-                table: query.ifta.table,
+                table: query.carrier.ifta.table,
                 fields: [ [ 'number', 'ifta' ], [ 'jurisdiction', 'iftaJur' ] ],
                 join,
             }, {
                 db: db.carrier,
-                table: query.stateTax.table,
+                table: query.carrier.stateTax.table,
                 fields: stateTaxFields,
                 join,
             })

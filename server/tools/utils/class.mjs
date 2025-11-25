@@ -269,7 +269,7 @@ export const classStatic = {
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [FETCH]: Session user not supplied`)
 
         let single = false, custom = {}
-        if (typeof prepare === 'function') ({ batch, single = false, custom = {} } = prepare(batch, filter))
+        if (typeof prepare === 'function') ({ batch, single = false, custom = {} } = await prepare(batch, filter))
 
         if (!single && Array.isArray(sorts))
             sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })

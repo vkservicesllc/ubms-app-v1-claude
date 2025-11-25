@@ -12,6 +12,7 @@ const sendError = require('../../tools/utils/error')
 // ==== SETUP ==== //
 
 const hideRawId = true
+const hideSensitive = false
 
 
 
@@ -26,7 +27,7 @@ router.post('/list/users', User.mw.verify, async (req, res) => {
         const filter = {}
         if (location !== 'US') filter.location = location
 
-        res.json({ client, data: await User.fetch(res.session, filter, { hideRawId, hideSensitive: false }) })
+        res.json({ client, data: await User.fetch(res.session, filter, { hideRawId, hideSensitive }) })
     } catch(err) {
         sendError.server(req, res, err)
     }
@@ -79,11 +80,13 @@ router.post('/list/roles/:category?', User.mw.verify, User.mw.superAdminOnly, as
 })
 
 
-router.post('/list/teams', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+router.post('/list/:src', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { client } = res.session
+        const { src } = req.params
+        const Src = { teams: Team, 'company-owners': Owner }[src]
 
-        res.json({ client, data: await Team.fetch(res.session, {}, { hideRawId }) })
+        res.json({ client, data: await Src.fetch(res.session, {}, { hideRawId }) })
     } catch(err) {
         sendError.server(req, res, err)
     }
@@ -135,26 +138,26 @@ router.post('/data/user/:id/:target?', async (req, res) => {
 })
 
 //! UNFINISHED (Not tested)
-router.post('/data/company-owner/:id', async (req, res) => {
+router.post('/data/company-owner/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { client } = res.session
-        const { id } = req.params
+        const { _id } = req.params
 
-        res.json({ client, data: await Owner.fetch(res.session, {}, { hideRawId, hideSensitive }) })
+        res.json({ client, data: await Owner.fetch(res.session, { _id }, { hideRawId, hideSensitive }) })
     } catch(err) {
         sendError.server(req, res, err)
     }
 })
 
-//! UNFINISHED (Not tested on company yet)
-router.post('/data/:src/:id/:target?', async (req, res) => {
+
+router.post('/data/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { client } = res.session
-        const { src, id, target } = req.params
+        const { src, _id, target } = req.params
         const [ PriSrc ] = { role: [ Role ], team: [ Team ], company: [ Company ] }[src]
         if (!PriSrc) throw new Error('Invalid data requested')
 
-        const inst = await PriSrc.fetch(res.session, { id }, { hideRawId })
+        const inst = await PriSrc.fetch(res.session, { _id }, { hideRawId })
         if (!inst) throw new Error(`${PriSrc.name} not found`)
 
         if (target) {
@@ -171,8 +174,8 @@ router.post('/data/:src/:id/:target?', async (req, res) => {
                     break
             }
 
-            data.all = await Src.fetch(res.session, filter, { hideRawId, sorts })
-            data.applied = await inst.fetch(`jx.${target}`, { hideRawId })
+            data.all = await Src.fetch(res.session, filter, { hideRawId, hideSensitive, sorts })
+            data.applied = await inst.fetch(`jx.${target}`, { hideRawId, hideSensitive })
             data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
 
             return res.json({ client, data })

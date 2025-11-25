@@ -36,7 +36,7 @@ if ($content.users.length) {
         applied: $('#current-users'),
     }
 
-    $.ajax(`/api/company/${_id}/users?sensitive=1`, {
+    $.ajax(`/api/data/company/${_id}/users`, {
         method: 'POST',
         success(response) {
             const { data: users } = response

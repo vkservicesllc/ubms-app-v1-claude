@@ -280,7 +280,7 @@ const displayTeams = () => {
                 if ($(this).hasClass('team-settings')) target = 'settings'
 
                 $.ajax({
-                    url: `/api/team/${_id}`,
+                    url: `/api/data/team/${_id}`,
                     method: 'POST',
                     success(response) {
                         const { _id,
@@ -388,7 +388,7 @@ const displayTeams = () => {
                 $('.modify-team-relationship').off('change')
 
                 $.ajax({
-                    url: `/api/team/${_id}/${relType}`,
+                    url: `/api/data/team/${_id}/${relType}`,
                     method: 'POST',
                     success(response) {
                         const { team, data } = response.data

@@ -18,7 +18,7 @@ export default class {
         try {
             const { _companyId } = req.params
             const carrier = await Carrier.data(res.session, { _companyId })
-            if (!carrier) return sendError.server(res, errMsg)
+            if (!carrier) return sendError.server(req, res, errMsg)
 
             let error
 
@@ -28,11 +28,11 @@ export default class {
                 ({ error } = await carrier.modify(res.session, req.body))
             }
 
-            if (error) return sendError.server(res, error)
+            if (error) return sendError.server(req, res, error)
 
             res.redirect(url.company + _companyId)
         } catch (err) {
-            sendError.server(res, err)
+            sendError.server(req, res, err)
         }
     }
 

@@ -80,9 +80,10 @@ $trigger.option.click(() => {
     const _id = $(id).val()
 
     if (_id)
-        $.ajax(`/api/company-owner/${_id}`, {
+        $.ajax(`/api/data/company-owner/${_id}`, {
             method: 'POST',
-            success(data) {
+            success(response) {
+                const { data } = response
                 const { dob } = data
 
                 if ($option.edit.is(':checked')) {
@@ -153,9 +154,11 @@ export const openAddModal = () => {
 export const openModifyModal = _id => {
     if (!_id) return
 
-    $.ajax(`/api/company-owner/${_id}`, {
+    $.ajax(`/api/data/company-owner/${_id}`, {
         method: 'POST',
-        success(data) {
+        success(response) {
+            const { data } = response
+
             $title.form
                 .html(`<small class="has-text-grey is-size-6">Modify Owner</small> <strong>${escapeHTML(new Person(data).fullName())}</strong>`)
             $(id).val(_id)
@@ -171,9 +174,11 @@ export const openModifyModal = _id => {
 export const openModifyPhoneModal = _id => {
     if (!_id) return
 
-    $.ajax(`/api/company-owner/${_id}`, {
+    $.ajax(`/api/data/company-owner/${_id}`, {
         method: 'POST',
-        success(data) {
+        success(response) {
+            const { data } = response
+
             $title.phone
                 .html(`<small class="has-text-grey is-size-6">Modify Phone for Owner</small> <strong>${escapeHTML(new Person(data).fullName())}</strong>`)
             $(modifyId).val(_id)
@@ -186,9 +191,11 @@ export const openModifyPhoneModal = _id => {
 export const openDeleteModal = _id => {
     if (!_id) return
 
-    $.ajax(`/api/company-owner/${_id}`, {
+    $.ajax(`/api/data/company-owner/${_id}`, {
         method: 'POST',
-        success(data) {
+        success(response) {
+            const { data } = response
+
             $title.delete
                 .html(`<small class="has-text-danger is-size-6">Delete Owner</small> <strong>${escapeHTML(new Person(data).fullName())}</strong>`)
             $(deleteId).val(_id)

@@ -44,7 +44,7 @@
         <div class="tabs">
             <ul>
                 <li class="company-card-tabs is-active" data-section="company"><a>Business Info</a></li>
-                {{#if (eq data.catId 'crr')}}
+                {{#if (eq data.category 'crr')}}
                 <li class="company-card-tabs" data-section="carrier"><a>Carrier Info</a></li>
                 {{/if}}
                 {{#if (eq data.confirmed 1)}}
@@ -129,7 +129,7 @@
                 </div>
             </div>
         </section>
-        {{#if (eq data.catId 'crr')}}
+        {{#if (eq data.category 'crr')}}
 
         <section class="company-card-content" id="carrier-card-content" style="display: none;">
             <div class="columns">
