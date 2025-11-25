@@ -7,7 +7,7 @@ const sendError = require('../tools/utils/error')
 import Individual from '../tools/core/individual.mjs'
 import User, { Role } from '../tools/core/user.mjs'
 import Team from '../tools/core/team.mjs'
-import Company, { Owner } from '../tools/core/company.mjs'
+import Company, { Owner as CompanyOwner } from '../tools/core/company.mjs'
 import Carrier from '../tools/core/carrier.mjs'
 import Driver, { Application as DriverApplication, Citation, Accident } from '../tools/core/driver.mjs'
 import { capitalizeFirst } from '../../client/global/modules/tools/utils/string.mjs'
@@ -109,6 +109,30 @@ router.post('/source/:source/:_id?', User.mw.verify, async (req, res) => {
     }
 
     res.send(result)
+})
+
+
+router.post('/unique/:src', User.mw.verify, async (req, res) => {
+    try {
+        const { src } = req.params
+        const Src = {
+            'user': User,
+            //? 'role': Role,
+            'team': Team,
+            'individual': Individual,
+            'company': Company,
+            'company-owner': CompanyOwner,
+            'carrier': Carrier,
+        }[src]
+        const response = { unique: true }
+
+        const inst = await Src.fetch(res.session, req.body)
+        response.unique = !inst
+
+        res.send(response)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
 })
 
 

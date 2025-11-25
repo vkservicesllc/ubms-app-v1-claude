@@ -87,6 +87,7 @@
                                 <form class="content" id="user-form" action="/resource/upsert/user" method="POST" autocomplete="off">
                                     {{{form.id.hidden.input}}}
                                     {{{form.hiddenUsername.hidden.input}}}
+                                    {{{form.hiddenEmail.hidden.input}}}
                                     <h5 class="has-text-info">Properties</h5>
                                     <div class="columns">
                                         <div class="column is-one-third">
@@ -208,7 +209,7 @@
                                 <button class="delete"></button>
                             </header>
                             <section class="modal-card-body">
-                                <form id="user-condition-form" action="/resource/update/user?condition" method="POST" autocomplete="off">
+                                <form id="user-condition-form" action="/resource/update/user/condition" method="POST" autocomplete="off">
                                     {{{form.modifyId.hidden.input}}}
                                     <div class="radios">
                                         <label class="radio">

@@ -105,7 +105,7 @@ router.post('/data/user/:_id/:target?', User.mw.verify, async (req, res) => {
         const toggleUnscoped = target === 'toggle-unscoped'
         if (target && !relationship && !toggleUnscoped) throw new Error('Invalid user target')
 
-        const user = await User.fetch(res.session, { _id }, { hideRawId })
+        const user = await User.fetch(res.session, { _id }, { hideRawId, hideSensitive })
         if (!user) throw new Error('User not found')
 
         if (relationship) {

@@ -152,6 +152,13 @@ class UserForm {
         type: 'hidden',
     })
 
+
+    static hiddenEmail = createForm({
+        selector,
+        target: 'email',
+        type: 'hidden',
+    })
+
     static status = createPropsForm('status')
     static location = createPropsForm('location')
     static condition = createPropsForm('condition')

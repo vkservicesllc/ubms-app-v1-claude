@@ -32,6 +32,7 @@ const selector = {
         hidden: {
             id: 'id',
             username: 'username',
+            email: 'email',
             modifyId: 'modify-id',
             deleteId: 'delete-id',
             resetId: 'reset-id',

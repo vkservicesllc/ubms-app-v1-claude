@@ -84,7 +84,15 @@ class User extends Person {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
+            this.update = body => {
+                if (!this.session.user.id) throw new Error('User Constructor Method Error [UPDATE]: Session user not supplied')
+
+                return classInstance.update(this, new.target, 'main', body)
+            }
+
+
             this.invite = formId => {
+                if (!this.session.user.id) throw new Error('User Constructor Method Error [INVITE]: Session user not supplied')
                 if (!formId) throw new Error('User Invitation Error: Form ID not supplied')
 
                 const url = `${addrBook.user}/register/${this._id}?form=${formId}`
@@ -316,19 +324,23 @@ class User extends Person {
     static #resetId = async () => await User.#idStr('resetId', inputLength.user.resetId.max, query.user.passReset)
 
 
-    static create = ({ user: sessionUser = {}, branch, siteId = null }, body, params) => classStatic.create(this, { user: sessionUser, branch, siteId }, body, params, {
-        async final(user, userId) {
-            const formId = await User.#formId()
+    static create = ({ user: sessionUser = {}, branch, siteId = null }, body, params) => {
+        if (!sessionUser.id) throw new Error('User Static Method Error [CREATE]: Session user not supplied')
 
-            const [ result ] = await mysql.execute(query.user.registration.insert({
-                formId, userId,
-                invitedBy: sessionUser.id,
-            }))
-            if (!result.affectedRows) throw new Error('DB Error: Failed to register user')
+        return classStatic.create(this, { user: sessionUser, branch, siteId }, body, params, {
+            async final(user, userId) {
+                const formId = await User.#formId()
 
-            user.invite(formId)
-        },
-    })
+                const [ result ] = await mysql.execute(query.user.registration.insert({
+                    formId, userId,
+                    invitedBy: sessionUser.id,
+                }))
+                if (!result.affectedRows) throw new Error('DB Error: Failed to register user')
+
+                user.invite(formId)
+            },
+        })
+    }
 
 
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
@@ -807,7 +819,7 @@ class Role {
 
             return { found: !!data, data }
         },
-        stringify: [ 'permissions' ],
+        // stringify: [ 'permissions' ],
     })
 
 

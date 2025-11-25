@@ -19,6 +19,7 @@ const $status = $(selector.id.select.status)
 const $location = $(selector.id.select.location)
 const $email = $(selector.id.text.email)
 const $hiddenUsername = $(selector.id.hidden.username)
+const $hiddenEmail = $(selector.id.hidden.email)
 const $phone = $(phoneId)
 const $firstName = $(firstNameId)
 const $lastName = $(lastNameId)
@@ -146,6 +147,7 @@ emailEvent(emailId, {
         const $button = $submit.user
         const _id = $(selector.id.hidden.id).val()
         const username = $hiddenUsername.val()
+        const currentEmail = $hiddenEmail.val()
 
         $tip.hide().removeClass('is-danger is-success').html(null)
         if (!$help.name.html()) $button.prop('disabled', false)
@@ -174,7 +176,7 @@ emailEvent(emailId, {
 
                             if (_id && !username)
                                 message.buildInvite()
-                        } else {
+                        } else if (currentEmail !== email) {
                             $tip
                                 .addClass('is-danger')
                                 .html(message.email.failed)
@@ -256,8 +258,6 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 searchable: false,
                 orderable: false,
                 render(data, type, row) {
-                    if (row.decliner) return '<strong>DECLINED</strong>'
-
                     data = row.expansion.status
                     if (adminLocation === 'US') data += ` <small class="has-text-grey">(${row.location})</small>`
                     if (row.unscoped) data += ` <sup><i class="far fa-star has-text-success" style="font-size: .75em;"></i></sup>`
@@ -314,6 +314,12 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 orderable: false,
                 className: 'has-text-left',
                 render(data, type, row) {
+                    if (!row.username) {
+                        if (row.decliner) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
+                        return '<span class="has-text-danger-60">Registration pending...</span>'
+                    }
+                        
+
                     if (!data) return ''
 
                     const { lastBranch } = row
@@ -380,9 +386,10 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         ],
 
         createdRow(tr, data) {
-            const [ condition ] = data.condition
+            const { condition, decliner } = data
 
-            if (condition != 'A' || data.passReset) $(tr).addClass('is-warning')
+            if (decliner) $(tr).addClass('is-danger')
+            else if (condition != 'A' || data.passReset) $(tr).addClass('is-warning')
         },
 
         lengthMenu,
@@ -419,6 +426,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 $phone.prop('readonly', false)
                 for (const key in $help)
                     $help[key].hide().removeClass('is-danger is-success').html(null)
+                $hiddenUsername.val(null)
+                $hiddenEmail.val(null)
 
                 $('#user-update-log-modal-list').html(null)
                 $('#user-security-modal-body').html(null)
@@ -514,14 +523,9 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             $.ajax(`/api/data/user/${_id}`, {
                 method: 'POST',
                 success(response) {
-                    const { error, data } = response
+                    const { data } = response
 
-                    if (error) {
-                        alert(error)
-                        return
-                    }
-
-                    const { _id, name, condition } = data
+                    const { _id, condition } = data
 
                     $id.val(_id)
                     if (condition == 'L') $lockedCondition.prop('disabled', false)
@@ -531,6 +535,9 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
                     $title.userCondition.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
                     $('#user-condition-modal').addClass('is-active')
+                },
+                error(err) {
+                    alert(err.responseJSON.message)
                 },
             })
         })
@@ -566,8 +573,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             $.ajax(`/api/data/user/${_id}`, {
                 method: 'POST',
                 success(response) {
-                    const { error, data } = response
-                    if (error) return alert(error)
+                    const { data } = response
 
                     const { _id } = data
                     $id.val(_id)
@@ -588,7 +594,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
                     $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
                     $hiddenUsername.val(username)
-                    // $emailHidden.val(email)
+                    $hiddenEmail.val(email)
                     if (status === 'D') {
                         disabled = true
                         $status.prop('disabled', disabled)
@@ -615,6 +621,9 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     }
 
                     $('#user-modal').addClass('is-active')
+                },
+                error(err) {
+                    alert(err.responseJSON.message)
                 },
             })
         })

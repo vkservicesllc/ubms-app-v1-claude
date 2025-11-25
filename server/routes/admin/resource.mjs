@@ -88,22 +88,22 @@ const source = {
 
 router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
     const { user: sessionUser } = res.session
-    const { status, location } = req.body
+    const { status, location, firstName, alias } = req.body
 
     switch (true) {
         case status === 'D' && sessionStatus !== 'D':
         case status === 'S' && !sessionUser.DS:
             throw new Error('Illegal User Status')
             break
-        case status === 'S' && body.location !== 'US':
-        case sessionLocation !== 'US' && body.location !== sessionLocation:
+        case sessionUser.location !== 'US' && location !== sessionUser.location:
             throw new Error('Illegal User Location')
             break
-        case body.firstName === body.alias:
+        case firstName === alias:
             throw new Error('Illegal User Alias')
             break
     }
 
+    if ((status === 'D' || status === 'S') && location !== 'US') req.body.location = 'US'
     if (location !== 'US') delete req.body.phone
 
     next()
@@ -119,7 +119,7 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
             if (user.DS) {
                 if (user.status === 'D') req.body.status = 'D'
                 req.body.location = 'US'
-            } else if (!location) req.body.location = user.location
+            } else if (!req.body.location) req.body.location = user.location
 
             await user.update(req.body)
         } else await User.create(res.session, req.body)

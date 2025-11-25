@@ -44,7 +44,7 @@ export const classInstance = {
 
             const [ result ] = await mysql.execute(jxQuery.insert(data))
 
-            return result.affectedRows > 0 // Boolean
+            return { added: result.affectedRows > 0 }
         }
 
         let body = bodyOrIds || {}
@@ -64,7 +64,7 @@ export const classInstance = {
 
         const [ result ] = await mysql.execute(query[target].insert(body))
 
-        return result.affectedRows > 0 // Boolean
+        return { added: result.affectedRows > 0 }
     },
 
 
@@ -118,12 +118,41 @@ export const classInstance = {
     },
 
 
-    update: async (inst, Cls, targetOrBody, body) => {
-        const { enforceUser = true } = Cls.config()
-        const { user: sessionUser } = inst.session || {}
+    update: async (inst, Cls, targetOrBody, body, { stringify = [], currentData } = {}) => {
+        const { enforceUser = true, enforceLocation = false } = Cls.config()
+        const { user: sessionUser, branch, siteId } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session user not supplied`)
 
-        //! not finished...
+        let target = 'main'
+        if (typeof target === 'string') target = targetOrBody
+        else body = targetOrBody
+
+        let { match = {} } = body
+        if (target === 'main') match = {}
+        delete body.match
+
+        const config = Cls.config()
+        const idProp = target === 'main' ? 'id' : config.idProp
+
+        const options = { modifiedBy: sessionUser.id }
+        if (enforceLocation) {
+            options.branch = branch
+            options.siteId = siteId
+        }
+
+        options.currentData = inst
+        options.currentUpdateLog = await inst.log({ target, field: 'updateLog' })
+
+        if (target !== 'main' && typeof currentData === 'function')
+            options.currentData = currentData(target)
+
+        body = processData(body, options)
+
+        const [ result ] = await mysql.execute(config.query[target].update(body, {
+            [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
+        }))
+
+        return { updated: result.affectedRows > 0 }
     },
 
 
@@ -147,14 +176,14 @@ export const classInstance = {
             const [ jxQuery, jxIdProp ] = jxTargets[target]
             const [ result ] = await mysql.execute(jxQuery.delete({ [idProp]: inst.id, [jxIdProp]: ids }))
 
-            return result.affectedRows > 0 // Boolean
+            return { deleted: result.affectedRows > 0 }
         } else if (target) {
             const since = sinceOrIds
 
             const { query } = Cls.config()
             const [ result ] = await mysql.execute(query[target].delete({ [idProp]: inst.id, since }))
 
-            return result.affectedRows > 0 // Boolean
+            return { deleted: result.affectedRows > 0 }
         }
 
         if (typeof handle === 'function') {
@@ -168,7 +197,7 @@ export const classInstance = {
         const log = logDeleted && logFile ? await inst.log() : null
 
         const [ result ] = await mysql.execute(query.main.delete({ id }))
-        if (!result.affectedRows) return false
+        if (!result.affectedRows) return { deleted: false }
 
         if (log) {
             for (const prop in log) inst[prop] = log[prop]
@@ -176,7 +205,7 @@ export const classInstance = {
             await logDeletion(inst.session, logFile, inst, { id })
         }
 
-        return true
+        return { deleted: true }
     },
 
 
@@ -188,17 +217,17 @@ export const classInstance = {
     // },
 
 
-    log: async (inst, Cls, { field = null, target = 'main', since = null } = {}, fields) => {
+    log: async (inst, Cls, { field = null, target = 'main', since } = {}, fields) => {
         const { user: sessionUser } = inst.session || {}
         if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
 
         fields = fields ?? this.logFields
-        let { idProp } = this.config
-        if (target === 'main') idProp = 'id'
+
+        const config = Cls.config()
+        const idProp = target === 'main' ? 'id' : config.idProp
         const match = { [idProp]: inst.id || Cls.matchIdHash(inst._id), since }
 
-        const { query } = Cls.config()
-        const log = (await mysql.execute(query[target].select(fields, { match })))[0][0]
+        const log = (await mysql.execute(config.query[target].select(fields, { match })))[0][0]
 
         return fields.includes(field) ? log[field] : log
     }
@@ -222,7 +251,8 @@ export const classStatic = {
         if (found) return { created: false, data }
 
         body = processData(body)
-        stringify.map(field => body[field] = JSON.stringify(field))
+        //! stringify.map(field => body[field] = JSON.stringify(field))
+//! CONSIDER REMOVING stringify
 
         if (body?.ssn) body.ssn = { aes: [ ssn, secret.ssn ] }
         if (body?.ein) body.ein = { aes: [ ein, secret.ein ] }

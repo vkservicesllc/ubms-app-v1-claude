@@ -32,24 +32,30 @@ export function processData(data = {}, options = {}) {
     }
 
     for (const field in data) {
+        const value = data[field]
+
+        if (value !== null && typeof value === 'object') {
+            data[field] = JSON.stringify(data[field])
+            continue
+        }
+
         if (data[field] === undefined) {
             delete data[field]
             continue
         }
 
-        const encData = [ 'ssn', 'ein' ].includes(field)
+        const encData = ['ssn', 'ein'].includes(field)
         const currentValue = currentData[field]
-        const value = data[field]
 
         if (updateLog && field in currentData) {
-            if (currentValue !== value) {
+            if (currentValue != value) { //* Loose comparison: skip when "0" == 0 and "1" == 1
                 updateLog[0].data[field] = value && encData ? encrypt(value) : processValue(value)
-                updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : processValue(value)
+                updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : processValue(currentValue)
             }
         }
 
-        if (
-            (update && value === currentValue) ||
+        if ( //* Loose comparison
+            (update && value == currentValue) ||
             (!update && !value && value !== false && value !== 0)
         )
             delete data[field]
@@ -106,5 +112,5 @@ function processValue(value) {
         else value = value.replace(/"/g, '\\"')
     }
 
-    return
+    return value
 }
