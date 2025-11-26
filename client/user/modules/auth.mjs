@@ -34,10 +34,14 @@ $('#resend').click(() => {
                     </p>
                     <span class="ui red text">
                         <i class="icon attention"></i>
-                        If you still haven’t received the token after trying again, there may be an issue with our mail system.
+                        If you still haven't received the token after trying again, there may be an issue with our mail system.
                         In such case, please contact technical support.
                     </span>
                 `)
+        },
+        error(err) {
+            console.error(err)
+            alert(err.responseJSON)
         },
     })
 })

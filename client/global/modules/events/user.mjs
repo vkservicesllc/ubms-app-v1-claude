@@ -56,6 +56,7 @@ export const passwordEvent = (flag, callback = {}) => {
 
     inputEvent(selector.id.text[key], {
         onInput(password, $password) {
+            $password.val(password.replace(/\s+/g, ''))
             if (onInput) onInput($password)
         },
         onChange(password, $password) {

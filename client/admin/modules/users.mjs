@@ -220,7 +220,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 render(data, type, row) {
                     data = data[0]
                     if (row.status == 'D' || (adminStatus == 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
-                    if (row.decliner) return '<i class="fas fa-user-lock has-text-grey"></i>'
+                    if (row.log.declinedAt) return '<i class="fas fa-user-lock has-text-grey"></i>'
                     if (!row.username || row.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
 
                     const condition = { fa: 'user-check', style: 'success' }
@@ -260,7 +260,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 render(data, type, row) {
                     data = row.expansion.status
                     if (adminLocation === 'US') data += ` <small class="has-text-grey">(${row.location})</small>`
-                    if (row.unscoped) data += ` <sup><i class="far fa-star has-text-success" style="font-size: .75em;"></i></sup>`
+                    if (row.unscoped) data += ` <sup><i class="far fa-star has-text-success-40" style="font-size: .75em;"></i></sup>`
 
                     return data
                 },
@@ -277,20 +277,6 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 },
             },
 
-            // {
-            //     data: 'username',
-            //     title: 'Username',
-            //     defaultContent: '<small class="has-text-danger">...pending</small>',
-            //     render(data, type, row) {
-            //         if (row.decliner) return '<small class="has-text-danger">N/A</small>'
-
-            //         if (row.passReset)
-            //             return data + ' <sup><i class="fas fa-clock-rotate-left has-text-grey"></i></sup>'
-
-            //         return escapeHTML(data)
-            //     },
-            // },
-
             {
                 data: 'email',
                 title: 'Email',
@@ -302,7 +288,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 title: 'US Cell Phone',
                 orderable: false,
                 defaultContent: '<small class="has-text-danger">N/A</small>',
-                render(data) {
+                render(data, type, row) {
+                    if (!data && row.log.declinedAt) return '<small>N/A</small>'
                     return formatTel(data)
                 },
             },
@@ -315,7 +302,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 className: 'has-text-left',
                 render(data, type, row) {
                     if (!row.username) {
-                        if (row.decliner) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
+                        if (row.log.declinedAt) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
                         return '<span class="has-text-danger-60">Registration pending...</span>'
                     }
                         
@@ -366,14 +353,14 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
                     if (['D', 'S'].includes(adminStatus) || (adminStatus == 'A' && !row.DS)) {
                         if (row.status != 'D') {
-                            cell += `<a class="has-text-danger delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
-                            if (!row.decliner) {
+                            cell += `<a class="has-text-${row.log.declinedAt ? 'dark' : 'danger'} delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
+                            if (!row.log.declinedAt) {
                                 cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
                                 cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
                             }
                         }
                         if (row.status != 'D' || adminStatus == 'D')
-                            if (!row.decliner)
+                            if (!row.log.declinedAt)
                                 cell += `<a class="has-text-success-45 edit-user" data-id="${row._id}" title="Edit"><i class="fas fa-user-pen"></i></a>`
                     }
 
@@ -386,9 +373,9 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         ],
 
         createdRow(tr, data) {
-            const { condition, decliner } = data
+            const { condition, log } = data
 
-            if (decliner) $(tr).addClass('is-danger')
+            if (log.declinedAt) $(tr).addClass('is-danger')
             else if (condition != 'A' || data.passReset) $(tr).addClass('is-warning')
         },
 

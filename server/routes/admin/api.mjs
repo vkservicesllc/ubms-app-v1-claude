@@ -27,7 +27,7 @@ router.post('/list/users', User.mw.verify, async (req, res) => {
         const filter = {}
         if (location !== 'US') filter.location = location
 
-        res.json({ client, data: await User.fetch(res.session, filter, { hideRawId, hideSensitive }) })
+        res.json({ client, data: await User.fetch(res.session, filter, { hideRawId, hideSensitive, hideTimeLog: false }) })
     } catch(err) {
         sendError.server(req, res, err)
     }
@@ -133,8 +133,10 @@ router.post('/data/user/:_id/:target?', User.mw.verify, async (req, res) => {
         }
 
         if (toggleUnscoped) {
-            let { unscoped = 'true' } = req.body
-            //! await user.update()
+            let { unscoped } = req.body
+            unscoped = unscoped === 'true'
+
+            await user.update({ unscoped })
         }
 
         res.json({ client, data: user })

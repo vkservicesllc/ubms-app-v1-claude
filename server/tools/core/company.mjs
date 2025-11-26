@@ -235,7 +235,7 @@ class Company {
                 }
                 if (!id) {
                     if (ids) match.main.id = ids
-                    match.main.id = Company.matchIdHash(_id || _ids)
+                    else match.main.id = Company.matchIdHash(_id || _ids)
                 }
                 if (ein) match.main.ein = { aes: [ ein, secret.ein ] }
                 if (busName && coType) {

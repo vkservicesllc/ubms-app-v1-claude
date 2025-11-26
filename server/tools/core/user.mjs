@@ -35,7 +35,7 @@ class User extends Person {
 
         super(data)
 
-        const { login, auth } = custom
+        const { offline, auth, hideTimeLog } = custom
         const props = { _id: data._id, _simpleId: data._simpleId }
         if (!hideRawId) props.id = data.id
 
@@ -52,7 +52,6 @@ class User extends Person {
         props.avaSrc = `/images/icons/gender/${this.gender}.png`
 
         if (!hideSensitive) {
-            props.decliner = !!data.decliner
             props.passReset = data.passReset
             props.lastLogin = data.lastLogin
             props.lastBranch = data.lastBranch
@@ -60,7 +59,7 @@ class User extends Person {
             props.lastUrl = data.lastUrl
         }
 
-        if (login && auth) {
+        if (offline && auth) {
             props.fails = data.fails
             props._hash = data._hash
         }
@@ -75,10 +74,17 @@ class User extends Person {
         this.expansion.condition = User.list.condition[data.condition]
         this.expansion.location = User.list.location[data.location]
 
+        if (!hideTimeLog) {
+            this.log = {
+                declinedAt: data.declinedAt,
+            }
+        }
+
         reSuper(this, props)
 
         if (single) {
-            this.session = session
+            this.session = session || {}
+            this.session.offline = offline
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
@@ -88,6 +94,32 @@ class User extends Person {
                 if (!this.session.user.id) throw new Error('User Constructor Method Error [UPDATE]: Session user not supplied')
 
                 return classInstance.update(this, new.target, 'main', body)
+            }
+
+
+            this.delete = (target, ids = []) => {
+                if (!this.session.user.id) throw new Error('User Constructor Method Error [DELETE]: Session user not supplied')
+
+                return classInstance.delete(this, new.target, target, ids, async () => {
+                    const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
+                        modifiedBy: this.session.user.id,
+                        currentData: this,
+                        currentUpdateLog: await this.log({ field: 'updateLog' }),
+                    })
+                    update._passKey = null
+                    update.deletedBy = this.session.user.id
+                    update.deletedAt = Query.timeStamp
+
+                    const [ result ] = await mysql.execute(query.user.main.update(update, { id: this.id || User.matchIdHash(this._id) }))
+                    if (!result.affectedRows) throw new Error('Failed to delete the user')
+
+                    const match = { userId: this.id || User.matchIdHash(this._id) }
+                    await mysql.execute(query.user.registration.delete(match))
+                    await mysql.execute(query.user.passReset.delete(match))
+                    await mysql.execute(query.session.token.delete(match))
+
+                    return true
+                })
             }
 
 
@@ -102,7 +134,7 @@ class User extends Person {
                     to: this.email,
                     subject: 'User Registration',
                     html: `<div style="font-family: Arial, Helvetica, sans-serif;">
-                        Dear ${this.name},<br/>
+                        Dear ${this.fullName('AL')},<br/>
                         Welcome to ${config.site.name}!<br/><br/>
                         We are thrilled to have you join our team and look forward to your contributions.
                         To get started, we need you to complete a few simple steps to finalize your registration.<br/><br/>
@@ -118,11 +150,13 @@ class User extends Person {
             }
 
 
-            this.inviter = async session => {
-                let id = await this.log('createdBy')
+            this.inviter = async () => {
+                let id = await this.log({ field: 'createdBy' })
                 if (!id) return { name: appName, email: null }
 
-                const user = await User.fetch(session, { id })
+                const { offline } = this.session
+
+                const user = await User.fetch(this.session, { id }, { offline })
                 const { name, email } = user
 
                 return { name, email }
@@ -287,7 +321,10 @@ class User extends Person {
             }
 
 
-            this.log = params => classInstance.log(this, new.target, params, [ ...classInstance.logFields, 'deletedBy', 'deletedAt' ])
+            this.log = params => classInstance.log(this, new.target, params, [
+                ...classInstance.logFields,
+                'deletedBy', 'deletedAt', 'declinedAt',
+            ])
         }
     }
 
@@ -344,10 +381,10 @@ class User extends Person {
 
 
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
-        { hideRawId = false, hideSensitive = true, combined = false, login = false, auth = false, sorts = User.config().defSorts, mode } = {}
+        { hideRawId = false, hideSensitive = true, combined = false, offline = false, auth = false, hideTimeLog = true, sorts = User.config().defSorts, mode } = {}
     ) => {
-        if (!login) {
-            if (!login && !sessionUser?.id) throw new Error('User Static Method Error [FETCH]: Session user not supplied')
+        if (!offline) {
+            if (!offline && !sessionUser?.id) throw new Error('User Static Method Error [FETCH]: Session user not supplied')
             auth = false
         }
 
@@ -363,7 +400,7 @@ class User extends Person {
                         'username', 'email', 'phone',
                         'firstName', 'lastName', 'alias', 'sex',
                         'status', 'condition', 'location',
-                        'passReset', 'unscoped', 'decliner', 'fails',
+                        'passReset', 'unscoped', 'fails', 'declinedAt',
                         { compare: [ 'id', 'self', { eq: sessionUser.id } ] },
                     ],
                     group: 'id',
@@ -396,19 +433,23 @@ class User extends Person {
 
                 const {
                     id, _id, _simpleId, username, email,
-                    ids, _ids, firstName, lastName, alias, sex, status, location, condition, decliner, deleted,
+                    ids, _ids, firstName, lastName, alias, sex, status, location, condition, declined, deleted,
                 } = filter
 
                 const single = !!id || !!_id || !!_simpleId || !!username || !!email
 
-                let deletedBy
-                if (!combined)  deletedBy = deleted ? { null: false } : null
+                let deletedAt, declinedAt
+                if (!combined) {
+                    deletedAt = deleted ? { null: false } : null
+                    if (typeof deleted === 'boolean') deletedAt = { null: !declined }
+                    if (typeof declined === 'boolean') declinedAt = { null: !declined }
+                }
 
                 batch[0].match = {
-                    deletedBy,
+                    deletedAt, declinedAt,
                     id, username, email,
                     firstName, lastName, alias, sex,
-                    status, location, condition, decliner,
+                    status, location, condition,
                 }
 
                 if (!id) {
@@ -417,7 +458,7 @@ class User extends Person {
                     else batch[0].match.id = User.matchIdHash(_id || _ids)
                 }
 
-                if (login) {
+                if (offline) {
                     if (auth) batch[0].fields.push([ '_passKey', '_hash' ])
                     batch[4].fields.push({ ip: 'clientIp' })
 
@@ -426,7 +467,7 @@ class User extends Person {
 
                 if (!single) batch[4].join[2].max = 'lastLogin'
 
-                return { single, batch, custom: { login, auth } }
+                return { single, batch, custom: { offline, auth, hideTimeLog } }
             },
         })
     }
@@ -495,7 +536,7 @@ class User extends Person {
 
                 const { branch, siteId } = res.session
                 const { username, password } = req.body
-                let user = await User.fetch(res.session, { username }, { login: true, auth: true, hideSensitive: false })
+                let user = await User.fetch(res.session, { username }, { offline: true, auth: true, hideSensitive: false })
 
                 // Interrupt if User not found
                 if (!user) {
@@ -532,7 +573,7 @@ class User extends Person {
                                 user = await User.fetch(res.session, { id }, { hideSensitive: false })
 
                                 const currentData = { ...user }
-                                const currentUpdateLog = await user.log('updateLog')
+                                const currentUpdateLog = await user.log({ field: 'updateLog' })
                                 currentData.condition = user.condition
 
                                 const options = { currentData, currentUpdateLog, modifiedBy: 0, modifiedIn: { branch } }
@@ -595,7 +636,7 @@ class User extends Person {
                 const { branch, siteId, defUrl } = res.session
                 const { user: _id, token: providedToken } = req.body
 
-                const user = await User.fetch(res.session, { _id }, { hideSensitive: false, login: true })
+                const user = await User.fetch(res.session, { _id }, { hideSensitive: false, offline: true })
                 if (!user) throw new Error('Session Error: User not found')
 
                 const { id: userId } = user
@@ -675,7 +716,7 @@ class User extends Person {
 
                 if (!_id) return await reject('Authentication check failed: Not authenticated')
 
-                const user = await User.fetch(res.session, { _id }, { login: true, hideSensitive: false })
+                const user = await User.fetch(res.session, { _id }, { offline: true, hideSensitive: false })
 
                 if (!user) {
                     User.mw.logout(req, res)
@@ -897,7 +938,7 @@ class Token {
             const { tokenAge } = config.session
             const tokenExpiration = `${tokenAge} minute${tokenAge > 1 ? 's' : ''}`
 
-            const user = await UserSrc.fetch({}, { id: userId }, { login: true })
+            const user = await UserSrc.fetch({}, { id: userId }, { offline: true })
             if (!user) throw new Error('Token Delivery Error: User not found')
 
             const mailOpts = {

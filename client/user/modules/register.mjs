@@ -275,6 +275,10 @@ $button.confirmDecline.click(function() {
                 $segment.declined.show()
             }
         },
+        error(err) {
+            console.error(err)
+            alert(err.responseJSON)
+        },
     })
 })
 

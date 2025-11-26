@@ -51,7 +51,7 @@ export const classInstance = {
         const { query, logLocation = false } = Cls.config()
 
         body = processData(body)
-        if (typeof bodyCB === 'function') body = bodyCB(body)
+        if (typeof bodyCB === 'function') body = await bodyCB(body)
         body.createdBy = createdBy
 
         if (logLocation) {
@@ -118,7 +118,7 @@ export const classInstance = {
     },
 
 
-    update: async (inst, Cls, targetOrBody, body, { stringify = [], currentData } = {}) => {
+    update: async (inst, Cls, targetOrBody, body, { currentData } = {}) => {
         const { enforceUser = true, enforceLocation = false } = Cls.config()
         const { user: sessionUser, branch, siteId } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session user not supplied`)
@@ -144,7 +144,7 @@ export const classInstance = {
         options.currentUpdateLog = await inst.log({ target, field: 'updateLog' })
 
         if (target !== 'main' && typeof currentData === 'function')
-            options.currentData = currentData(target)
+            options.currentData = await currentData(target)
 
         body = processData(body, options)
 
@@ -187,8 +187,7 @@ export const classInstance = {
         }
 
         if (typeof handle === 'function') {
-            const handled = handle()
-
+            const handled = await handle()
             if (handled === true) return true
         }
 
@@ -201,7 +200,6 @@ export const classInstance = {
 
         if (log) {
             for (const prop in log) inst[prop] = log[prop]
-
             await logDeletion(inst.session, logFile, inst, { id })
         }
 
@@ -218,8 +216,9 @@ export const classInstance = {
 
 
     log: async (inst, Cls, { field = null, target = 'main', since } = {}, fields) => {
+        const { enforceUser = true } = Cls.config()
         const { user: sessionUser } = inst.session || {}
-        if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
+        if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
 
         fields = fields ?? this.logFields
 
@@ -240,24 +239,22 @@ export const classStatic = {
 
 
     create: async (Cls, { user: sessionUser = {}, branch, siteId = null }, body = {}, { hideRawId = false } = {}, {
-        find, stringify = [], split, final,
+        find, split, final,
     } = {}) => {
         const { enforceUser = true, enforceLocation = false, query, idProp } = Cls.config()
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [CREATE]: Session user not supplied`)
 
         let found = false, data
-        if (typeof find === 'function') ({ found, data } = find(body, hideRawId))
+        if (typeof find === 'function') ({ found, data } = await find(body, hideRawId))
 
         if (found) return { created: false, data }
 
         body = processData(body)
-        //! stringify.map(field => body[field] = JSON.stringify(field))
-//! CONSIDER REMOVING stringify
 
         if (body?.ssn) body.ssn = { aes: [ ssn, secret.ssn ] }
         if (body?.ein) body.ein = { aes: [ ein, secret.ein ] }
 
-        if (typeof split === 'function') body = split(body)
+        if (typeof split === 'function') body = await split(body)
         else body = { main: body }
 
         let createdIn = { branch }
@@ -285,7 +282,7 @@ export const classStatic = {
 
         data = await Cls.fetch({ user: sessionUser, branch, siteId }, { id }, { hideRawId })
 
-        if (typeof final === 'function') final(data, id)
+        if (typeof final === 'function') await final(data, id)
 
         return { created: true, data }
     },

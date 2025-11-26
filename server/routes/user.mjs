@@ -107,7 +107,7 @@ router.get('/', async (req, res) => {
 
         res.redirect('/login')
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -134,7 +134,7 @@ router.get('/login', async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -158,7 +158,7 @@ router.get('/profile', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -185,7 +185,7 @@ router.get('/account', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -206,7 +206,7 @@ router.get('/security', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -221,7 +221,7 @@ router.get('/apps', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -238,7 +238,7 @@ router.get('/authenticate', async (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key, { titlePfx: 'User Authentication' })
 
-        const user = await User.fetch(res.session, { _id }, { login: true })
+        const user = await User.fetch(res.session, { _id }, { offline: true })
         const site = await new Site(branch, siteId)
 
         if (!user || !site) return respond404(res)
@@ -269,7 +269,7 @@ router.get('/authenticate', async (req, res) => {
 
         return res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -287,14 +287,14 @@ router.get('/register/:_id', async (req, res) => {
         hbs.validForm = true
         hbs.expiredForm = false
 
-        const user = await User.fetch(res.session, { _id })
+        const user = await User.fetch(res.session, { _id }, { offline: true, hideTimeLog: false })
         if (!user) return respond404(res)
 
         if (user.username) hbs.userRegistered = true
-        else if (!formId || user.decliner) hbs.validForm = false
+        else if (!formId || user.log.declinedAt) hbs.validForm = false
 
         else {
-            const userId = await user.id()
+            const userId = user.id
             const [ rows ] = await mysql.execute(query.user.registration.select('invitedAt', {
                 match: { formId, userId },
             }))
@@ -334,7 +334,7 @@ router.get('/register/:_id', async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -344,11 +344,11 @@ router.get('/pass-reset/:_id', async (req, res) => {
         const { _id } = req.params
         const { form: resetId } = req.query
 
-        const user = await User.fetch(res.session, { _id })
+        const user = await User.fetch(res.session, { _id }, { offline: true })
         if (!user || !resetId) return respond404(res)
 
         const [ result ] = await mysql.execute(query.user.passReset.select('userId', {
-            userId: await user.id(), resetId,
+            userId: user.id, resetId,
         }))
         if (!result.length) return respond404(res)
 
@@ -372,7 +372,7 @@ router.get('/pass-reset/:_id', async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
