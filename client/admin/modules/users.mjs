@@ -303,7 +303,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 render(data, type, row) {
                     if (!row.username) {
                         if (row.log.declinedAt) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
-                        return '<span class="has-text-danger-60">Registration pending...</span>'
+                        return `<span class="has-text-danger-60">Registration pending... &nbsp;<i class="fa fa-envelope-open-text has-text-info-55"></i></span>`
                     }
                         
 
@@ -355,7 +355,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                         if (row.status != 'D') {
                             cell += `<a class="has-text-${row.log.declinedAt ? 'dark' : 'danger'} delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
                             if (!row.log.declinedAt) {
-                                cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
+                                if (row.username) cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
                                 cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
                             }
                         }

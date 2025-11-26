@@ -344,7 +344,7 @@ router.get('/pass-reset/:_id', async (req, res) => {
     try {
         const { _id } = req.params
         const { form: resetId } = req.query
-console.log({ resetId })
+
         const user = await User.fetch(res.session, { _id }, { offline: true })
         if (!user || !resetId) return respond404(res)
 
