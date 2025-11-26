@@ -376,10 +376,10 @@ router.get('/register/:_id', async (req, res) => {
 })
 
 
-// router.post('/register', [
-//     UserForm.newUsername.validate(),
-//     UserForm.createPassword.validate(),
-// ], validationCheck, User.register)
+router.post('/register', [
+    UserForm.newUsername.validate(),
+    UserForm.createPassword.validate(),
+], validationCheck, User.register)
 
 
 router.get('/pass-reset/:_id', async (req, res) => {

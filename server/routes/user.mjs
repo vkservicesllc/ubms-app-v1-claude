@@ -84,6 +84,7 @@ router.use((req, res, next) => {
                 'DS',
                 'DSA',
                 'avaSrc',
+                'expansion',
             ]
             for (const prop of props)
                 hbs.user[prop] = user[prop]
@@ -181,7 +182,7 @@ router.get('/account', User.mw.verify, (req, res) => {
             email: UserForm.email.text.input({ value: email }),
             phone: UserForm.phone.text.input({ value: phone }),
         }
-        hbs.nonUS = location[0] !== 'US'
+        hbs.nonUS = location !== 'US'
 
         res.render(key, hbs)
     } catch (err) {
@@ -343,12 +344,12 @@ router.get('/pass-reset/:_id', async (req, res) => {
     try {
         const { _id } = req.params
         const { form: resetId } = req.query
-
+console.log({ resetId })
         const user = await User.fetch(res.session, { _id }, { offline: true })
         if (!user || !resetId) return respond404(res)
 
         const [ result ] = await mysql.execute(query.user.passReset.select('userId', {
-            userId: user.id, resetId,
+            match: { userId: user.id, resetId },
         }))
         if (!result.length) return respond404(res)
 
@@ -379,6 +380,17 @@ router.get('/pass-reset/:_id', async (req, res) => {
 
 
 // ==== POST ROUTES ==== //
+
+
+router.post('/register', [
+    UserForm.newUsername.validate(),
+    UserForm.createPassword.validate(),
+], validationCheck, User.mw.register)
+
+
+router.post('/pass-reset', [
+    UserForm.createPassword.validate(),
+], validationCheck, User.mw.reset)
 
 
 

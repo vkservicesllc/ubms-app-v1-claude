@@ -176,6 +176,26 @@ router.post('/delete/:src', User.mw.verify, async (req, res) => {
 
 
 
+// ==== MISC ROUTES ==== //
+
+
+router.post('/reset/user', User.mw.verify, async (req, res) => {
+    try {
+        const { _id } = req.body
+    
+        const user = await User.fetch(res.session, { _id })
+        if (!user) throw new Error('User not found')
+
+        await user.reset()
+
+        res.redirect(source.user[1])
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
 // ==== EXPORT ==== //
 
 export default router

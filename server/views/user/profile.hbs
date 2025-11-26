@@ -12,7 +12,7 @@
     <div style="{{{style.page}}}">
         {{> user/nav}}
         <div class="ui segment">
-            <h4 class="ui dividing header">{{idx user.status 1}} in {{idx user.location 1}}</h4>
+            <h4 class="ui dividing header">{{user.expansion.status}} in {{user.expansion.location}}</h4>
             <img class="ui small circular image" id="avatar" src="{{{user.avaSrc}}}" alt="Avatar" />
             <form class="ui form" id="user-profile-form" action="/profile" method="POST" autocomplete="off">
                 <div class="field">

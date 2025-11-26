@@ -123,6 +123,45 @@ class User extends Person {
             }
 
 
+            this.reset = async () => {
+                if (!this.session.user.id) throw new Error('User Constructor Method Error [RESET]: Session user not supplied')
+
+                const userId = this.id
+                const resetId = await User.#resetId()
+                const createdBy = this.session.user.id
+                
+                await mysql.execute(query.user.passReset.delete({ userId }))
+                let [ result ] = await mysql.execute(query.user.passReset.insert({ resetId, userId, createdBy }))
+                if (!result.affectedRows) {
+                    throw new Error('Failed to register reset credentials')
+                }
+
+                [ result ] = await mysql.execute(query.user.main.update({ _passKey: null, passReset: true }, { id: userId }))
+                if (!result.affectedRows) throw new Error('Failed to reset user')
+
+                const { email } = this
+
+                const url = `${addrBook.user}/pass-reset/${this._id}?form=${resetId}`
+                const mailOpts = {
+                    from: sender,
+                    to: email,
+                    subject: 'Password Reset',
+                    html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                        Dear ${this.fullName('AL')},<br/>
+                        Your request to reset the password has been received.
+                        A secure link has been generated for you to create a new password. Please click the link below to proceed:<br/><br/>
+                        <a href="${url}" target="_blank">Reset Password</a><br/><br/>
+                        Best ragards,<br/>
+                        ${config.site.name} Administration
+                    </div>`,
+                }
+
+                transporter.sendMail(mailOpts, error => {
+                    if (error) console.error(error)
+                })
+            }
+
+
             this.invite = formId => {
                 if (!this.session.user.id) throw new Error('User Constructor Method Error [INVITE]: Session user not supplied')
                 if (!formId) throw new Error('User Invitation Error: Form ID not supplied')
@@ -801,6 +840,77 @@ class User extends Person {
                 res.redirect('/')
             })
         },
+
+
+        register: async (req, res) => {
+            try {
+                const { _id, username, password } = req.body
+                
+                const [ result ] = await mysql.execute(query.user.main.update({
+                    username, _passKey: await Bun.password.hash(password),
+                }, { id: User.matchIdHash(_id) }))
+
+                if (!result.affectedRows) throw new Error('Failed to register credentials')
+
+                await mysql.execute(query.user.registration.delete({ userId: User.matchIdHash(_id) }))
+
+                const user = await User.fetch(res.session, { _id }, { offline: true })
+                const { email } = user
+                let branchUrls = ''
+
+                for (const branch in userApps) {
+                    if (branch === 'admin' && !user.DSA) continue
+
+                    const { address, name } = userApps[branch]
+
+                    branchUrls += `<li><a href="${address}" target="_blank">`
+                    branchUrls += `${name}</a></li>`
+                }
+
+                const mailOpts = {
+                    from: sender,
+                    to: email,
+                    subject: 'Successful User Registration',
+                    html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                        Dear ${this.fullName('AL')},<br/>
+                        ${config.site.name} welcomes you aboard! Your registration has been successfully completed, and your account is now active.<br/><br/>
+                        You can sign in to any of the available branches:<br/>
+                        <ul>
+                            ${branchUrls}
+                        </ul><br/>
+                        Best regards,<br/>
+                        ${config.site.name} Automated Support
+                    </div>`,
+                }
+
+                transporter.sendMail(mailOpts, error => {
+                    if (error) console.error(error)
+                })
+
+                res.redirect(addrBook.default)
+            } catch (err) {
+                sendError.server(req, res, err)
+            }
+        },
+
+
+        reset: async (req, res) => {
+            try {
+                const { _id, password } = req.body
+
+                const [ result ] = await mysql.execute(query.user.main.update({
+                    _passKey: await Bun.password.hash(password),
+                    passReset: false,
+                }, { id: User.matchIdHash(_id) }))
+                if (!result.affectedRows) throw new Error('Failed to reset credentials')
+
+                await mysql.execute(query.user.passReset.delete({ userId: User.matchIdHash(_id) }))
+
+                res.redirect(addrBook.default)
+            } catch (err) {
+                sendError.server(req, res, err)
+            }
+        }
 
 
     }
