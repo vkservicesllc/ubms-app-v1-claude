@@ -201,6 +201,13 @@ router.post('/data/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, 
 
 
 
+// ---- MISC ROUTES ---- //
+
+
+router.post('/invite/user/:_id', User.mw.verify, User.mw.invite)
+
+
+
 
 // ==== EXPORT ==== //
 

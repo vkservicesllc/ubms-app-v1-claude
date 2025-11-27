@@ -910,7 +910,28 @@ class User extends Person {
             } catch (err) {
                 sendError.server(req, res, err)
             }
-        }
+        },
+
+
+        invite: async (req, res) => {
+            try {
+                const { _id } = req.params
+                const user = await User.fetch(res.session, { _id })
+                if (!user) throw new Error('User not found')
+
+                const [ rows ] = await mysql.execute(query.user.registration.select('formId', {
+                    match: { userId: user.id },
+                }))
+                if (rows.length !== 1) throw new Error('Registration Form ID could not be located')
+
+                const { formId } = rows[0]
+                await user.invite(formId)
+
+                res.send('OK')
+            } catch (err) {
+                sendError.server(req, res, err)
+            }
+        },
 
 
     }

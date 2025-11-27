@@ -80,10 +80,10 @@ $lockedCondition.prop('disabled', true)
 $status.on('change', function() {
     const status = $(this).val()
 
-    if (status == 'S') {
+    if (status === 'S') {
         const location = $location.val()
 
-        if (location && location != 'US')
+        if (location && location !== 'US')
             $location.val('US')
 
         $location.find('option:not([value=US])').prop('disabled', true)
@@ -95,7 +95,7 @@ $location.on('change', function() {
     const location = $(this).val()
     let readonly = false
 
-    if (location && location != 'US') {
+    if (location && location !== 'US') {
         $phone.val(null)
         readonly = true
     }
@@ -112,7 +112,7 @@ const removeNameErrMsg = () => {
 }
 
 const checkNameMatch = (firstName, alias) => {
-    if (firstName && firstName == alias) {
+    if (firstName && firstName === alias) {
         $help.name
             .addClass('is-danger')
             .html(message.name.failed)
@@ -219,7 +219,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 width: '30px',
                 render(data, type, row) {
                     data = data[0]
-                    if (row.status == 'D' || (adminStatus == 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
+                    if (row.status === 'D' || (adminStatus === 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
                     if (row.log.declinedAt) return '<i class="fas fa-user-lock has-text-grey"></i>'
                     if (!row.username || row.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
 
@@ -281,6 +281,10 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 data: 'email',
                 title: 'Email',
                 orderable: false,
+                render(data, type, row) {
+                    if (!row.username) return `<span class="user-email">${data}</span>&nbsp;&nbsp;<a class="has-text-info-55 resend-invitation" data-id="${row._id}" title="Resend Invitation"><i class="fa fa-envelope-open-text"></i></a>`
+                    return data
+                },
             },
 
             {
@@ -303,14 +307,13 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 render(data, type, row) {
                     if (!row.username) {
                         if (row.log.declinedAt) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
-                        return `<span class="has-text-danger-60">Registration pending... &nbsp;<i class="fa fa-envelope-open-text has-text-info-55"></i></span>`
+                        return '<small class="has-text-danger-60">Registration pending</small>'
                     }
-                        
 
-                    if (!data) return ''
+                    if (!data) return '<small class="has-text-grey"><i>Never logged in</i></small>'
 
                     const { lastBranch } = row
-                    return type == 'display'
+                    return type === 'display'
                         ? momentUTC2ET(data, 'llll')
                             + ` <small class="has-text-grey">(${capitalizeFirst(lastBranch)})</small>`
                         : data
@@ -351,15 +354,15 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     const { username, _id } = row
                     let cell = '<div class="dt-action">'
 
-                    if (['D', 'S'].includes(adminStatus) || (adminStatus == 'A' && !row.DS)) {
-                        if (row.status != 'D') {
+                    if (['D', 'S'].includes(adminStatus) || (adminStatus === 'A' && !row.DS)) {
+                        if (row.status !== 'D') {
                             cell += `<a class="has-text-${row.log.declinedAt ? 'dark' : 'danger'} delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
                             if (!row.log.declinedAt) {
                                 if (row.username) cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
                                 cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
                             }
                         }
-                        if (row.status != 'D' || adminStatus == 'D')
+                        if (row.status !== 'D' || adminStatus === 'D')
                             if (!row.log.declinedAt)
                                 cell += `<a class="has-text-success-45 edit-user" data-id="${row._id}" title="Edit"><i class="fas fa-user-pen"></i></a>`
                     }
@@ -376,7 +379,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             const { condition, log } = data
 
             if (log.declinedAt) $(tr).addClass('is-danger')
-            else if (condition != 'A' || data.passReset) $(tr).addClass('is-warning')
+            else if (condition !== 'A' || data.passReset) $(tr).addClass('is-warning')
         },
 
         lengthMenu,
@@ -408,7 +411,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 $submit.deleteUser.prop('disabled', true)
                 $trigger.userLog.hide()
                 $field.status.show()
-                $location.prop('disabled', false).val(adminLocation != 'US' ? adminLocation : null)
+                $location.prop('disabled', false).val(adminLocation !== 'US' ? adminLocation : null)
                 $location.find('option').prop('disabled', false)
                 $phone.prop('readonly', false)
                 for (const key in $help)
@@ -439,7 +442,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 $submit.deleteUser.prop('disabled', disabled)
             })
 
-            if (adminStatus != 'A')
+            if (adminStatus !== 'A')
                 $trigger.userLog.click(function() {
                     const _id = $id.val()
                     closeModals()
@@ -473,13 +476,13 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                                         let value = data[key]
                                         let oldValue = oldData[key]
 
-                                        if (key == 'phone') {
+                                        if (key === 'phone') {
                                             if (value) value = formatTel(value)
                                             if (oldValue) oldValue = formatTel(oldValue)
                                         }
 
-                                        if (typeof value == 'string') value = `"${value}"`
-                                        if (typeof oldValue == 'string') oldValue = `"${oldValue}"`
+                                        if (typeof value === 'string') value = `"${value}"`
+                                        if (typeof oldValue === 'string') oldValue = `"${oldValue}"`
 
                                         let update = `<span class="has-text-info">${labels[key]}:</span> `
                                         update += `<span class="has-text-danger">${oldValue}</span>`
@@ -515,9 +518,9 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     const { _id, condition } = data
 
                     $id.val(_id)
-                    if (condition == 'L') $lockedCondition.prop('disabled', false)
+                    if (condition === 'L') $lockedCondition.prop('disabled', false)
                     $condition.filter(function() {
-                        return $(this).val() == condition
+                        return $(this).val() === condition
                     }).prop('checked', true)
 
                     $title.userCondition.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
@@ -611,6 +614,23 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 },
                 error(err) {
                     alert(err.responseJSON.message)
+                },
+            })
+        })
+
+        $('.resend-invitation').click(function() {
+            const _id = $(this).data('id')
+            const email = $(this).parent().find('.user-email').text()
+
+            $.ajax(`/api/invite/user/${_id}`, {
+                method: 'POST',
+                success(response) {
+                    if (response === 'OK')
+                        alert(`The invitation has been resent to ${email}`)
+                },
+                error(err) {
+                    console.error(err)
+                    alert(err.responseJSON)
                 },
             })
         })
