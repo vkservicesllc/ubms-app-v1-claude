@@ -131,6 +131,28 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
 })
 
 
+//! COMBINE and use category in hidden input so it is in the body, not query
+router.post('/upsert/role', User.mw.verify, User.mw.superAdminOnly, validateRole, validationCheck, async (req, res) => {
+    try {
+        let { category } = req.params
+        const { _id } = req.body
+        delete req.body._id
+
+        let role
+        if (_id) {
+            role = await Role.fetch(res.session, { _id })
+            if (!role) throw new Error('Role not found')
+
+            await role.update(req.body)
+        } else role = (await Role.create(res.session, req.body)).data
+
+        res.redirect(source.user[1] + source.ext('role', role))
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/update/user/condition', User.mw.verify, [ UserForm.condition.validate() ], validationCheck, async (req, res) => {
     try {
         const { _id } = req.body
@@ -156,6 +178,9 @@ router.post('/update/user/condition', User.mw.verify, [ UserForm.condition.valid
 router.post('/delete/:src', User.mw.verify, async (req, res) => {
     try {
         const { src } = req.params
+        if (src !== 'user' && res.session.user.status === 'A')
+            throw new Error('Access to this path is granted to Super Admin only<br><a href="/">Home</a>')
+
         const { _id } = req.body
         const [ Src, redirUrl ] = source[src]
 
@@ -178,6 +203,9 @@ router.post('/delete/:src', User.mw.verify, async (req, res) => {
 router.post('/jx/:src/:_id/:action/:target', User.mw.verify, async (req, res) => {
     try {
         const { src, _id, action, target } = req.params
+        if (src !== 'user' && res.session.user.status === 'A')
+            throw new Error('Access to this path is granted to Super Admin only<br><a href="/">Home</a>')
+
         let { _ids } = req.body
         if (!Array.isArray(_ids)) _ids = [ _ids ]
         const [ Src, redirUrl ] = source[src]

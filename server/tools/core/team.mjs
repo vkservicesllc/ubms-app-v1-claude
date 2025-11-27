@@ -86,7 +86,7 @@ class Team {
 
 
     static fetch = (session, filter, { hideRawId = false, sorts = Team.config().defSorts, mode } = {}) => {
-        const join = ['teamId', 'id']
+        const join = [ 'teamId', 'id' ]
 
         return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
             batch: [
@@ -107,18 +107,24 @@ class Team {
                 },
                 {
                     table: query.jx.users_teams.table,
-                    fields: [ { countDist: ['userId', 'userCount', {
-                        case: {
-                            table: query.user.main.table,
-                            match: { deletedBy: null },
-                        },
-                    }] } ],
+                    fields: { countDist: [ 'userId', 'userCount' ] },
                     join,
                 },
-                {
-                    table: query.user.main.table,
-                    join: ['id', 'userId', { table: query.jx.users_teams.table }],
-                },
+                //! No need to use case based counter since jx relationships get deleted if user deleted or upgraded to super admin
+                // {
+                //     table: query.jx.users_teams.table,
+                //     fields: [ { countDist: ['userId', 'userCount', {
+                //         case: {
+                //             table: query.user.main.table,
+                //             match: { deletedBy: null },
+                //         },
+                //     }] } ],
+                //     join,
+                // },
+                // {
+                //     table: query.user.main.table,
+                //     join: ['id', 'userId', { table: query.jx.users_teams.table }],
+                // },
             ],
             prepare(batch, filter) {
                 const {

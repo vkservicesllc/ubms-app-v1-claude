@@ -473,18 +473,18 @@ class User extends Person {
                 },
                 {
                     table: query.jx.users_roles.table,
-                    fields: [ { countDist: [ 'roleId', 'roleCount' ] } ],
+                    fields: { countDist: [ 'roleId', 'roleCount' ] },
                     join,
                 },
                 {
                     table: query.jx.users_teams.table,
-                    fields: [ { countDist: [ 'teamId', 'teamCount' ] } ],
+                    fields: { countDist: [ 'teamId', 'teamCount' ] },
                     join,
                 },
                 {
                     db: db.business,
                     table: query.jx.users_companies.table,
-                    fields: [ { countDist: [ 'companyId', 'companyCount' ] } ],
+                    fields: { countDist: [ 'companyId', 'companyCount' ] },
                     join,
                 },
                 {
@@ -838,7 +838,7 @@ class User extends Person {
             if (res.session.branch !== 'admin' || res.session.user.status === 'A') {
                 const api = recognizeApi(req)
         
-                return sendError.auth(req, res, 'Error: Access to this path is granted to Super Admin only<br><a href="/">Home</a>')
+                return sendError.auth(req, res, 'Access to this path is granted to Super Admin only<br><a href="/">Home</a>')
             }
             next()
         },
@@ -848,7 +848,7 @@ class User extends Person {
             if (res.session.branch !== 'admin' || res.session.user.status === 'D') {
                 const api = recognizeApi(req)
         
-                return sendError.auth(req, res, 'Error: Access to this path is granted to Developer only<br><a href="/">Home</a>')
+                return sendError.auth(req, res, 'Access to this path is granted to Developer only<br><a href="/">Home</a>')
             }
             next()
         },
@@ -980,6 +980,10 @@ class Role {
         this.name = data.name
         this.permissions = data.permissions
 
+        this.count = {
+            users: data.userCount,
+        }
+
         this.expansion = {
             location: data.location ? User.list.location[data.location] : null,
             category: data.category ? Company.list.category[data.category].item[1] : null,
@@ -1033,18 +1037,23 @@ class Role {
             },
             {
                 table: query.jx.users_roles.table,
-                fields: [ { countDist: ['userId', 'userCount', {
-                    case: {
-                        table: query.user.main.table,
-                        match: { deletedBy: null },
-                    },
-                }] } ],
-                join: ['roleId', 'id'],
+                fields: { countDist: [ 'userId', 'userCount' ] },
+                join: [ 'roleId', 'id' ],
             },
-            {
-                table: query.user.main.table,
-                join: ['id', 'userId', { table: query.jx.users_roles.table }],
-            },
+            // {
+            //     table: query.jx.users_roles.table,
+            //     fields: [ { countDist: ['userId', 'userCount', {
+            //         case: {
+            //             table: query.user.main.table,
+            //             match: { deletedBy: null },
+            //         },
+            //     }] } ],
+            //     join: ['roleId', 'id'],
+            // },
+            // {
+            //     table: query.user.main.table,
+            //     join: ['id', 'userId', { table: query.jx.users_roles.table }],
+            // },
         ],
         prepare(batch, filter,) {
             const {
