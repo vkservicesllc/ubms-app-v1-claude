@@ -121,9 +121,10 @@ router.post('/data/user/:_id/:target?', User.mw.verify, async (req, res) => {
                 data[target].applied = await user.fetch(`jx.${target}`, { hideRawId })
 
                 if (!sessionUser.DS) {
-                    const sessData = await sessionUser.fetch(target)
+                    const sessData = await sessionUser.fetch(`jx.${target}`)
 
-                    //! reduce data.all and data.applied to whatever session user has
+                    data[target].all = data[target].all.filter(row => sessData.some(sessRow => sessRow._id === row._id))
+                    data[target].applied = data[target].applied.filter(row => sessData.some(sessRow => sessRow._id === row._id))
                 }
 
                 data[target].available = data[target].all.filter(row => !data[target].applied.some(appliedRow => appliedRow._id === row._id))

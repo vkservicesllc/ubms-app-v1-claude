@@ -72,9 +72,6 @@
                                 (eq data.DS false)
                                 (eq self false)
                         )}}
-                        {{#if (eq sessionUser.status 'A')}}
-                        <p class="has-text-danger-70 mt-4">Temporarily unavailable for regular admins... Work in progress...</p>
-                        {{else}}
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
@@ -148,14 +145,11 @@
                             </div>
                         </div>
                         {{/if}}
-                        {{/if}}
                     </div>
                     {{#if (
                         and
                             (eq data.DS false)
                             (eq self false)
-
-                            (ne sessionUser.status 'A')
                     )}}
                     <div class="column">
                         <div class="box">
