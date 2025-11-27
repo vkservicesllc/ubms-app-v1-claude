@@ -100,7 +100,20 @@ class User extends Person {
             this.update = body => {
                 if (!this.session.user.id) throw new Error('User Constructor Method Error [UPDATE]: Session user not supplied')
 
-                return classInstance.update(this, new.target, 'main', body)
+                return classInstance.update(this, new.target, 'main', body, {
+                    async final(user, body) {
+                        const { status } = body
+                        if (!['S', 'D'].includes(status)) return
+
+                        const { jxTargets } = User.config()
+                        for (const target in jxTargets) {
+                            const [ jxQuery ] = jxTargets[target]
+
+                            await mysql.execute(jxQuery.delete({ userId: user.id }))
+                        }
+                        await user.update({ unscoped: true })
+                    },
+                })
             }
 
 

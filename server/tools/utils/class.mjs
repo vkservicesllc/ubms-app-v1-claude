@@ -121,7 +121,7 @@ export const classInstance = {
     },
 
 
-    update: async (inst, Cls, targetOrBody, body, { currentData } = {}) => {
+    update: async (inst, Cls, targetOrBody, body, { currentData, final } = {}) => {
         const { enforceUser = true, enforceLocation = false } = Cls.config()
         const { user: sessionUser, branch, siteId } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session user not supplied`)
@@ -154,6 +154,8 @@ export const classInstance = {
         const [ result ] = await mysql.execute(config.query[target].update(body, {
             [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
         }))
+
+        if (typeof final === 'function') await final(inst, body)
 
         return { updated: result.affectedRows > 0 }
     },
