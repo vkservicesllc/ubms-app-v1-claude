@@ -33,13 +33,16 @@ export const classInstance = {
             const { jxTargets, idProp: refIdProp } = Cls.config()
             if (!jxTargets) throw new Error(`${Cls.name} Constructor Method Error [ADD]: Junction targets not found`)
 
-            const ids = bodyOrIds || []
-            if (!Array.isArray(ids)) throw new Error(`${Cls.name} Constructor Method Error [ADD]: Invalid ids supplied`)
+            if (!Array.isArray(bodyOrIds) || !bodyOrIds.length) throw new Error(`${Cls.name} Constructor Method Error [ADD]: Invalid ids supplied`)
 
             const [ jxQuery, idProp, Src ] = jxTargets[target]
             const data = []
+            let ids, _ids
+            if (typeof bodyOrIds[0] === 'number') ids = bodyOrIds
+            if (typeof bodyOrIds[0] === 'string') _ids = bodyOrIds
+            if (!ids && !_ids) throw new Error(`${Cls.name} Constructor Method Error [ADD]: Invalid id types supplied`)
 
-            const list = await Src.fetch(inst.session, { ids })
+            const list = await Src.fetch(inst.session, { ids, _ids })
             list.map(item => data.push({ [refIdProp]: inst.id, [idProp]: item.id, createdBy }))
 
             const [ result ] = await mysql.execute(jxQuery.insert(data))
@@ -170,10 +173,20 @@ export const classInstance = {
             const { jxTargets } = Cls.config()
             if (!jxTargets) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Junction targets not found`)
 
-            const ids = sinceOrIds || []
-            if (!Array.isArray(ids)) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Invalid ids supplied`)
+            if (!Array.isArray(sinceOrIds) || !sinceOrIds.length) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Invalid ids supplied`)
 
-            const [ jxQuery, jxIdProp ] = jxTargets[target]
+            const [ jxQuery, jxIdProp, Src ] = jxTargets[target]
+            let ids, _ids
+            if (typeof sinceOrIds[0] === 'number') ids = sinceOrIds
+            if (typeof sinceOrIds[0] === 'string') _ids = sinceOrIds
+            if (!ids && !_ids) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Invalid id types supplied`)
+
+            if (!ids) {
+                ids = []
+                const list = await Src.fetch(inst.session, { _ids })
+                list.map(item => ids.push(item.id))
+            }
+
             const [ result ] = await mysql.execute(jxQuery.delete({ [idProp]: inst.id, [jxIdProp]: ids }))
 
             return { deleted: result.affectedRows > 0 }

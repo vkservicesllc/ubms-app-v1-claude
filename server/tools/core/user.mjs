@@ -87,6 +87,13 @@ class User extends Person {
             this.session.offline = offline
 
 
+            this.add = (target, ids = []) => {
+                if (!this.session.user.id) throw new Error('User Constructor Method Error [ADD]: Session user not supplied')
+
+                return classInstance.add(this, new.target, target, ids)
+            }
+
+
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 

@@ -83,7 +83,7 @@ const source = {
 
 
 
-// ==== UPSERT ROUTES ==== //
+// ==== INSERT/UPDATE ROUTES ==== //
 
 
 router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
@@ -131,10 +131,6 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
 })
 
 
-
-// ==== UPDATE ROUTES ==== //
-
-
 router.post('/update/user/condition', User.mw.verify, [ UserForm.condition.validate() ], validationCheck, async (req, res) => {
     try {
         const { _id } = req.body
@@ -169,6 +165,29 @@ router.post('/delete/:src', User.mw.verify, async (req, res) => {
         await inst.delete()
 
         res.redirect(redirUrl + source.ext(src, inst))
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
+// ==== JX ROUTES ==== //
+
+
+router.post('/jx/:src/:_id/:action/:target', User.mw.verify, async (req, res) => {
+    try {
+        const { src, _id, action, target } = req.params
+        let { _ids } = req.body
+        if (!Array.isArray(_ids)) _ids = [ _ids ]
+        const [ Src, redirUrl ] = source[src]
+
+        const inst = await Src.fetch(res.session, { _id })
+        if (!inst) throw new Error(`${Src.name} not found`)
+
+        await inst[action](`jx.${target}`, _ids)
+
+        res.redirect(req.get('referer') || redirUrl)
     } catch (err) {
         sendError.server(req, res, err)
     }

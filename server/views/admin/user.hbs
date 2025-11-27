@@ -75,11 +75,10 @@
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-roles-add-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
-                                        <input type="hidden" name="action" value="+" />
+                                    <form id="user-roles-add-form" action="/resource/jx/user/{{{data._id}}}/add/roles" method="POST">
                                         <label class="label">Available Roles</label>
                                         <div class="select is-multiple is-short is-fullwidth">
-                                            <select id="available-roles" name="roles" multiple>
+                                            <select id="available-roles" name="_ids" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
                                         </div>
@@ -94,11 +93,10 @@
                                     </button>
                                 </div>
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-roles-delete-form" action="/resource/user/{{{data._id}}}/roles" method="POST">
-                                        <input type="hidden" name="action" value="-" />
+                                    <form id="user-roles-delete-form" action="/resource/jx/user/{{{data._id}}}/delete/roles" method="POST">
                                         <label class="label">User's Roles</label>
                                         <div class="select is-multiple is-short is-fullwidth">
-                                            <select id="user-roles" name="roles" multiple>
+                                            <select id="user-roles" name="_ids" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
                                         </div>
@@ -109,11 +107,10 @@
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-teams-add-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
-                                        <input type="hidden" name="action" value="+" />
+                                    <form id="user-teams-add-form" action="/resource/jx/user/{{{data._id}}}/add/teams" method="POST">
                                         <label class="label">Available Teams</label>
                                         <div class="select is-multiple is-short is-fullwidth">
-                                            <select class="scoped" id="available-teams" name="teams" multiple>
+                                            <select class="scoped" id="available-teams" name="_ids" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
                                         </div>
@@ -132,11 +129,10 @@
                                     </button>
                                 </div>
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-teams-delete-form" action="/resource/user/{{{data._id}}}/teams" method="POST">
-                                        <input type="hidden" name="action" value="-" />
+                                    <form id="user-teams-delete-form" action="/resource/jx/user/{{{data._id}}}/delete/teams" method="POST">
                                         <label class="label">User's Teams</label>
                                         <div class="select is-multiple is-short is-fullwidth">
-                                            <select class="scoped" id="user-teams" name="teams" multiple>
+                                            <select class="scoped" id="user-teams" name="_ids" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
                                         </div>
@@ -155,11 +151,10 @@
                         <div class="box">
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-companies-add-form" action="/resource/user/{{{data._id}}}/companies" method="POST">
-                                        <input type="hidden" name="action" value="+" />
+                                    <form id="user-companies-add-form" action="/resource/jx/user/{{{data._id}}}/add/companies" method="POST">
                                         <label class="label">Available Companies</label>
                                         <div class="select is-multiple is-long is-fullwidth">
-                                            <select id="available-companies" name="companies" multiple>
+                                            <select id="available-companies" name="_ids" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
                                         </div>
@@ -174,11 +169,10 @@
                                     </button>
                                 </div>
                                 <div class="column is-two-fifths is-width-fixed">
-                                    <form id="user-companies-delete-form" action="/resource/user/{{{data._id}}}/companies" method="POST">
-                                        <input type="hidden" name="action" value="-" />
+                                    <form id="user-companies-delete-form" action="/resource/jx/user/{{{data._id}}}/delete/companies" method="POST">
                                         <label class="label">User's Companies</label>
                                         <div class="select is-multiple is-long is-fullwidth">
-                                            <select id="user-companies" name="companies" multiple>
+                                            <select id="user-companies" name="_ids" multiple>
                                                 <optgroup><option value=""></option></optgroup>
                                             </select>
                                         </div>
