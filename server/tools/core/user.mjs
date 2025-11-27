@@ -138,6 +138,13 @@ class User extends Person {
                     await mysql.execute(query.user.passReset.delete(match))
                     await mysql.execute(query.session.token.delete(match))
 
+                    const { jxTargets } = User.config()
+                    for (const target in jxTargets) {
+                        const [ jxQuery ] = jxTargets[target]
+
+                        await mysql.execute(jxQuery.delete(match))
+                    }
+
                     return true
                 })
             }
@@ -1022,6 +1029,21 @@ class Role {
             {
                 table: query.role.main.table,
                 fields: [ 'id', Role.hashId(), 'category', 'location', 'name', 'permissions' ],
+                group: 'id',
+            },
+            {
+                table: query.jx.users_roles.table,
+                fields: [ { countDist: ['userId', 'userCount', {
+                    case: {
+                        table: query.user.main.table,
+                        match: { deletedBy: null },
+                    },
+                }] } ],
+                join: ['roleId', 'id'],
+            },
+            {
+                table: query.user.main.table,
+                join: ['id', 'userId', { table: query.jx.users_roles.table }],
             },
         ],
         prepare(batch, filter,) {
