@@ -171,13 +171,13 @@ class Company {
                 {
                     table: query.company_owner.main.table,
                     fields: [ [ 'id', 'ownerId' ], [ Owner.hashId(), 'ownerId' ], 'personId', Individual.hashId('personId') ],
-                    join: [ 'id', 'ownerId', 'company_ownerships' ],
+                    join: [ 'id', 'ownerId', query.company.ownership.table ],
                 },
                 {
                     db: db.person,
                     table: query.person.main.table,
                     fields: [ 'dob', 'sex', { aes: [ 'ssn', secret.ssn ] } ],
-                    join: [ 'id', 'personId', 'company_owners' ],
+                    join: [ 'id', 'personId', query.company_owner.main.table ],
                 },
                 {
                     db: db.person,

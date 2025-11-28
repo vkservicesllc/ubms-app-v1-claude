@@ -63,7 +63,7 @@ export const query = {
         //! ...Add more if needed
     },
     company_owner: {
-        main: new Query(db.business, 'company_owners'),
+        main: new Query(db.business, 'owners'),
     },
 
     carrier: {

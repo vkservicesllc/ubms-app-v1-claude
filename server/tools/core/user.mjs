@@ -1,5 +1,13 @@
 require('dotenv').config({ path: '../../.env' })
-const { DB__MYSQL_AES_SESSION_TOKEN: tokenSecret } = process.env
+const {
+    SITE__DEV_USER: initUser,
+    SITE__DEV_PASS: initPass,
+    SITE__DEV_FNAME: initFname,
+    SITE__DEV_LNAME: initLname,
+    SITE__DEV_ALIAS: initAlias,
+    SITE__DEV_EMAIL: initEmail,
+    DB__MYSQL_AES_SESSION_TOKEN: tokenSecret,
+} = process.env
 
 
 /* Registry */
@@ -218,7 +226,7 @@ class User extends Person {
 
             this.inviter = async () => {
                 let id = await this.log({ field: 'createdBy' })
-                if (!id) return { name: appName, email: null }
+                if (!id) return { name: config.site.name, email: null }
 
                 const { offline } = this.session
 
@@ -347,12 +355,12 @@ class User extends Person {
                         names[id] = users[i].name
                     }
 
-                log.createdBy = names[createdBy] || appName
+                log.createdBy = names[createdBy] || config.site.name
                 if (deletedBy) log.deletedBy = names[deletedBy]
 
                 if (updateLog)
                     for (let i = 0; i < updateLog.length; i++) {
-                        log.updateLog[i].modifiedBy = names[updateLog[i].modifiedBy] || appName
+                        log.updateLog[i].modifiedBy = names[updateLog[i].modifiedBy] || config.site.name
 
                         for (const prop in updateLog[i].data) {
                             switch (prop) {
@@ -958,6 +966,24 @@ class User extends Person {
             } catch (err) {
                 sendError.server(req, res, err)
             }
+        },
+
+
+        initialize: async (req, res) => {
+            const [ rows ] = await mysql.execute(query.user.main.select('id', { id: 1 }))
+
+            if (!rows.length) await mysql.execute(query.user.main.insert({
+                username: initUser,
+                _passKey: await Bun.password.hash(initPass),
+                firstName: initFname,
+                lastName: initLname,
+                alias: initAlias || null,
+                email: initEmail,
+                status: 'D',
+                location: 'US',
+            }))
+
+            res.redirect('/')
         },
 
 

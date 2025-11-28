@@ -74,7 +74,7 @@ router.use((req, res, next) => {
 })
 
 
-// router.get('/init', User.initialize)
+router.get('/init', User.mw.initialize)
 
 
 router.get('/', login, User.mw.verify, async (req, res) => {
