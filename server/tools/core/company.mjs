@@ -264,6 +264,13 @@ class Company {
             'shp': {  branch: 'shop',          item: [ 'Shops', 'Shop' ],            group: 'Shops',         path: [ 'shops', 'shop' ]            },
             'scl': {  branch: 'school',        item: [ 'Schools', 'School' ],        group: 'CDL Training',  path: [ 'schools', 'school' ]        },
             'cst': {  branch: 'construction',  item: [ 'Builders', 'Builder' ],      group: 'Construction',  path: [ 'builders', 'builder' ]      },
+            key(category, prop = 'branch', idx = null) {
+                for (const key in this) {
+                    let value = this[key][prop]
+                    if (idx !== null) value = value[idx]
+                    if (value === category) return key
+                }
+            },
         },
 
         type: {

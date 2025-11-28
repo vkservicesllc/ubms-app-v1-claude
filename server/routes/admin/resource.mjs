@@ -72,7 +72,7 @@ const source = {
 
         switch (src) {
             case 'role':
-                ext = `?role=${inst.category}`
+                ext = `?role=${inst.category || 'def'}`
                 break
         }
 
@@ -134,9 +134,12 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
 //! COMBINE and use category in hidden input so it is in the body, not query
 router.post('/upsert/role', User.mw.verify, User.mw.superAdminOnly, validateRole, validationCheck, async (req, res) => {
     try {
-        let { category } = req.params
+        let { category = null } = req.query
         const { _id } = req.body
         delete req.body._id
+
+        if (category) category = Company.list.category.key(category)
+        req.body.category = category
 
         let role
         if (_id) {

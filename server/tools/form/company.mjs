@@ -27,9 +27,11 @@ const required = true, disabled = true
 
 
 const createCategoryForm = (selector, props = {}) => {
-    const data = {}
-    for (const key in Company.list.category)
-        data[key] = Company.list.category[key].item[1]
+    const data = {}, list = Company.list.category
+    for (const key in list) {
+        if (typeof list[key] === 'function') continue
+        data[key] = list[key].item[1]
+    }
 
     //! Temporary
     let { options } = props

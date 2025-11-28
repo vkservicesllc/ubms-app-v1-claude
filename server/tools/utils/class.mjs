@@ -235,7 +235,7 @@ export const classInstance = {
         const { user: sessionUser } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
 
-        fields = fields ?? this.logFields
+        fields = fields ?? classInstance.logFields
 
         const config = Cls.config()
         const idProp = target === 'main' ? 'id' : config.idProp
@@ -262,7 +262,10 @@ export const classStatic = {
         let found = false, data
         if (typeof find === 'function') ({ found, data } = await find(body, hideRawId))
 
-        if (found) return { created: false, data }
+        if (found) {
+            if (Array.isArray(data)) data = data[0]
+            return { created: false, data }
+        }
 
         body = processData(body)
 

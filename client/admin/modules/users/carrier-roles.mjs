@@ -43,7 +43,7 @@ const unset = () => {
 }
 
 const ajaxData = {
-    catId: 'crr',
+    category: 'crr',
     $id,
     $name,
     $location,
@@ -81,12 +81,11 @@ $.ajax('/api/list/roles/carrier', {
 
             data.forEach(role => {
                 const { _id, name } = role
-                let { location } = role
-                if (location) location = location[1]
+                const { location } = role
 
                 list += `<a class="panel-block carrier-role" data-id="${_id}">`
                 list += name
-                if (location) list += `&nbsp; <span class="tag has-text-weight-normal">${location} only</span>`
+                if (location) list += `&nbsp; <span class="tag has-text-weight-normal">${role.expansion.location} only</span>`
                 list += '</a>'
             })
 
@@ -129,7 +128,7 @@ $.ajax('/api/list/roles/carrier', {
                 removeHighlight()
                 $(this).addClass(highlight.block).find('.tag').addClass(highlight.tag)
 
-                $.ajax(`/api/role/${_id}`, {
+                $.ajax(`/api/data/role/${_id}`, {
                     method: 'POST',
                     success(response) {
                         const { _id, name, location, permissions } = response.data

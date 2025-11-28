@@ -7,17 +7,13 @@ export default {
     'd:drv': {
         title: 'Drivers',
         groups: {
-            'lds': {
-                name: 'Pre-Applications',
-                privileges: "*",
-            },
+            // 'lds': {
+            //     name: 'Pre-Applications',
+            //     privileges: "*",
+            // },
             'apl': {
                 name: 'Applications',
                 privileges: [ 0, 1, 2, 3, 5 ],
-            },
-            'drv': {
-                name: 'Hired Contractors',
-                privileges: [ 0, 1, 2, 3, 4 ],
             },
             'emp': {
                 name: 'Previous Employments',
@@ -26,6 +22,10 @@ export default {
             'agr': {
                 name: 'Pay Agreements',
                 privileges: [ 0, 2, 3, 4, 5 ],
+            },
+            'drv': {
+                name: 'Hired Contractors',
+                privileges: [ 0, 1, 2, 3, 4 ],
             },
             'lvn': {
                 name: 'Leaving Process',

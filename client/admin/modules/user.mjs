@@ -20,9 +20,9 @@ if (_id) {
         const options = { ...defOpts }, optgroups = {}
 
         for (const prop of keys) {
-            optgroups[prop] = roles[prop].reduce((cat, { _id, name, location, category}) => {
+            optgroups[prop] = roles[prop].reduce((cat, { _id, name, location, category, expansion }) => {
                 if (!cat[category]) cat[category] = []
-                cat[category].push({ _id, name, location })
+                cat[category].push({ _id, name, location, expansion })
     
                 return cat
             }, {})
@@ -31,8 +31,9 @@ if (_id) {
                 options[prop] += `<optgroup label="${categories[category].item[1]}">`
                 for (const role of optgroups[prop][category]) {
                     const { _id, location } = role
+
                     let { name } = role
-                    if (location) name = `${name} (${location})`
+                    if (location) name = `${name} (${role.expansion.location})`
 
                     options[prop] += `<option value="${_id}">${name}</option>`
                 }

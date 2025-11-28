@@ -198,7 +198,7 @@ export const registerEvent = onSubmit => {
 
 
 export const roleNameEvent = (ajaxData = {}, options = {}) => {
-    const { catId, $id, $location } = ajaxData
+    const { category, $id, $location } = ajaxData
     const { onInput, onChange, onAjax, onFocus, onBlur, value } = options
 
     inputEvent(selector.class.text.roleName, {
@@ -215,16 +215,15 @@ export const roleNameEvent = (ajaxData = {}, options = {}) => {
         onChange(name, $name) {
             if (onChange) onChange(name, $name)
 
-            if (name && catId) {
+            if (name && category) {
                 const _id = $id.val()
                 const location = $location.val()
 
-                $.ajax('/api/unique/original/role', {
+                $.ajax('/api/unique/role', {
                     method: 'POST',
-                    data: { _id, catId, name, location },
+                    data: { _id, category, name, location },
                     success(response) {
-                        const { unique, original, error } = response
-                        if (error) alert(error)
+                        const { unique, original } = response
 
                         if (onAjax) onAjax({ unique, original }, name, $name)
                     },
@@ -238,7 +237,7 @@ export const roleNameEvent = (ajaxData = {}, options = {}) => {
 
 
 export const roleLocationEvent = (ajaxData = {}, options = {}) => {
-    const { catId, $id, $name } = ajaxData
+    const { category, $id, $name } = ajaxData
     const { onChange, onAjax, onFocus, onBlur, value } = options
 
     selectEvent(selector.class.select.roleLocation, {
@@ -247,15 +246,14 @@ export const roleLocationEvent = (ajaxData = {}, options = {}) => {
             if (onChange) onChange(location, $location)
 
             const name = $name.val()
-            if (name && catId) {
+            if (name && category) {
                 const _id = $id.val()
 
-                $.ajax('/api/unique/original/role', {
+                $.ajax('/api/unique/role', {
                     method: 'POST',
-                    data: { _id, catId, name, location },
+                    data: { _id, category, name, location },
                     success(response) {
-                        const { unique, original, error } = response
-                        if (error) alert(error)
+                        const { unique, original } = response
 
                         if (onAjax) onAjax({ unique, original }, location, $location)
                     },

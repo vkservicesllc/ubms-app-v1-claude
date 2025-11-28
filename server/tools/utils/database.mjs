@@ -79,7 +79,7 @@ export async function logDeletion(session, target, instance, ids = {}) {
     const dirPath = `${directory}/log/deleted/`
     const filePath = path.join(dirPath, `${target}.json`).replace(/\\/g, '/')
     const { name: signature } = user
-    const deletedBy = await user.id()
+    const deletedBy = user.id
     const deletedAt = utcTimeStamp()
     let deletedIn = null
 

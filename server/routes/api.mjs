@@ -33,7 +33,7 @@ export const sessionDetails = (req, res) => {
 
         }
 
-        res.send(data)
+        res.json(data)
     } catch (err) {
         sendError.server(res, err, true)
     }
@@ -108,7 +108,7 @@ router.post('/source/:source/:_id?', User.mw.verify, async (req, res) => {
             result = result[filter]
     }
 
-    res.send(result)
+    res.json(result)
 })
 
 
@@ -117,7 +117,7 @@ router.post('/unique/:src', User.mw.verify, async (req, res) => {
         const { src } = req.params
         const Src = {
             'user': User,
-            //? 'role': Role,
+            'role': Role,
             'team': Team,
             'individual': Individual,
             'company': Company,
@@ -126,10 +126,21 @@ router.post('/unique/:src', User.mw.verify, async (req, res) => {
         }[src]
         const response = { unique: true }
 
-        const inst = await Src.fetch(res.session, req.body)
-        response.unique = !inst
+        const { _id } = req.body
+        delete req.body._id
 
-        res.send(response)
+        if (_id) {
+            const inst = await Src.fetch(res.session, { _id })
+            if (!inst || !inst.unique) throw new Error('Invalid instance')
+
+            return res.json(await inst.unique(req.body))
+        }
+
+        let data = await Src.fetch(res.session, req.body)
+        if (Array.isArray(data)) data = data[0]
+        response.unique = !data
+
+        res.json(response)
     } catch (err) {
         sendError.server(req, res, err)
     }

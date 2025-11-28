@@ -96,7 +96,7 @@ class User extends Person {
 
 
             this.add = (target, ids = []) => {
-                if (!this.session.user.id) throw new Error('User Constructor Method Error [ADD]: Session user not supplied')
+                if (!this.session?.user?.id) throw new Error('User Constructor Method Error [ADD]: Session user not supplied')
 
                 return classInstance.add(this, new.target, target, ids)
             }
@@ -133,7 +133,7 @@ class User extends Person {
 
 
             this.delete = (target, ids = []) => {
-                if (!this.session.user.id) throw new Error('User Constructor Method Error [DELETE]: Session user not supplied')
+                if (!this.session?.user?.id) throw new Error('User Constructor Method Error [DELETE]: Session user not supplied')
 
                 return classInstance.delete(this, new.target, target, ids, async () => {
                     const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
@@ -166,7 +166,7 @@ class User extends Person {
 
 
             this.reset = async () => {
-                if (!this.session.user.id) throw new Error('User Constructor Method Error [RESET]: Session user not supplied')
+                if (!this.session?.user?.id) throw new Error('User Constructor Method Error [RESET]: Session user not supplied')
 
                 const userId = this.id
                 const resetId = await User.#resetId()
@@ -205,7 +205,7 @@ class User extends Person {
 
 
             this.invite = async () => {
-                if (!this.session.user.id) throw new Error('User Constructor Method Error [INVITE]: Session user not supplied')
+                if (!this.session?.user?.id) throw new Error('User Constructor Method Error [INVITE]: Session user not supplied')
 
                 const [ rows ] = await mysql.execute(query.user.registration.select('formId', { match: { userId: this.id } }))
                 if (rows.length !== 1) throw new Error('Registration Form ID could not be located')
@@ -1029,6 +1029,29 @@ class Role {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
+            this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids)
+
+
+            this.unique = async body => {
+                if (!this.session?.user?.id) throw new Error('User Constructor Method Error [UNIQUE]: Session user not supplied')
+
+                let unique = false, original = true
+                const { name, category, location } = body
+                if (
+                    (name !== this.name) ||
+                    (name === this.name && category !== this.category) ||
+                    (name === this.name && category === this.category && location !== this.location)
+                ) {
+                    original = false
+                    const role = (await Role.fetch(this.session, { name, category, location }))[0]
+
+                    unique = !role
+                }
+
+                return { unique, original }
+            }
+
+
             this.log = params => classInstance.log(this, new.target, params)
         }
     }
@@ -1052,9 +1075,8 @@ class Role {
             const { name, category, location } = body
             const data = await Role.fetch(session, { name, category, location }, { hideRawId })
 
-            return { found: !!data, data }
+            return { found: data.length > 0, data }
         },
-        // stringify: [ 'permissions' ],
     })
 
 

@@ -64,14 +64,7 @@ router.post('/list/roles/:category?', User.mw.verify, User.mw.superAdminOnly, as
     try {
         const { client } = res.session
         let { category = null } = req.params
-        const catList = Company.list.category
-
-        if (category)
-            for (const key in catList) {
-                if (category !== catList[key].path[1]) continue
-                category = key
-                break
-            }
+        if (category) category = Company.list.category.key(category)
 
         res.json({ client, data: await Role.fetch(res.session, { category }, { hideRawId }) })
     } catch(err) {
@@ -115,9 +108,12 @@ router.post('/data/user/:_id/:target?', User.mw.verify, async (req, res) => {
             for (const target in targets) {
                 const Src = targets[target][2]
                 const sorts = Src.config().sorts
+                const filter = {}
                 data[target] = {}
 
-                data[target].all = await Src.fetch(res.session, {}, { hideRawId, sorts })
+                if (target === 'roles') filter.location = [ user.location, null ]
+
+                data[target].all = await Src.fetch(res.session, filter, { hideRawId, sorts })
                 data[target].applied = await user.fetch(`jx.${target}`, { hideRawId })
 
                 if (!sessionUser.DS) {

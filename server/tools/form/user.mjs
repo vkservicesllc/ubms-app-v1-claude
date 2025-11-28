@@ -111,11 +111,9 @@ const createRoleNameForm = target => createForm({
     maxLength: length.user.roleName.max,
     required,
     label: 'Role Name',
-    validator: target === 'roleName'
-        ? {
-            sanitizer: value => value.replace('&amp;', '&').replace('&#x27;', "'"),
-        }
-        : false,
+    validator: {
+        sanitizer: value => value.replace('&amp;', '&').replace('&#x27;', "'"),
+    },
 })
 
 const createRoleLocationForm = target => {
@@ -128,8 +126,11 @@ const createRoleLocationForm = target => {
         data: propsData.location,
         emptyOpt: 'All',
         label: 'Location',
+        validator: {
+            sanitizer: value => value || null,
+        },
     }
-    if (target !== 'roleLocation') props.validator = false
+    // if (target !== 'roleLocation') props.validator = false
 
     return createForm(props)
 }
