@@ -106,11 +106,18 @@ class User extends Person {
 
 
             this.update = body => {
-                if (!this.session.user.id) throw new Error('User Constructor Method Error [UPDATE]: Session user not supplied')
+                const { session } = this
+                if (!session?.user?.id) throw new Error('User Constructor Method Error [UPDATE]: Session user not supplied')
 
                 return classInstance.update(this, new.target, 'main', body, {
                     async final(user, body) {
-                        const { status } = body
+                        const { status, email } = body
+
+                        if (email && user.email !== email && !user.username && !user.log.declinedAt) {
+                            user = await User.fetch(session, { id: user.id })
+                            await user.invite()
+                        }
+
                         if (!['S', 'D'].includes(status)) return
 
                         const { jxTargets } = User.config()
@@ -197,10 +204,13 @@ class User extends Person {
             }
 
 
-            this.invite = formId => {
+            this.invite = async () => {
                 if (!this.session.user.id) throw new Error('User Constructor Method Error [INVITE]: Session user not supplied')
-                if (!formId) throw new Error('User Invitation Error: Form ID not supplied')
 
+                const [ rows ] = await mysql.execute(query.user.registration.select('formId', { match: { userId: this.id } }))
+                if (rows.length !== 1) throw new Error('Registration Form ID could not be located')
+
+                const { formId } = rows[0]
                 const url = `${addrBook.user}/register/${this._id}?form=${formId}`
 
                 const mailOpts = {
@@ -231,7 +241,8 @@ class User extends Person {
                 const { offline } = this.session
 
                 const user = await User.fetch(this.session, { id }, { offline })
-                const { name, email } = user
+                const { email } = user
+                const name = user.fullName('AL')
 
                 return { name, email }
             }
@@ -414,6 +425,7 @@ class User extends Person {
         query: query.user,
         idProp: 'userId',
         jxTargets: jxTargets('user'),
+        defSorts: [ [ 'firstName', 'alias', 'lastName', 'status' ] ],
         logDeleted: false,
     })
 
@@ -448,7 +460,7 @@ class User extends Person {
                 }))
                 if (!result.affectedRows) throw new Error('DB Error: Failed to register user')
 
-                user.invite(formId)
+                await user.invite()
             },
         })
     }
@@ -907,7 +919,7 @@ class User extends Person {
                     to: email,
                     subject: 'Successful User Registration',
                     html: `<div style="font-family: Arial, Helvetica, sans-serif;">
-                        Dear ${this.fullName('AL')},<br/>
+                        Dear ${user.fullName('AL')},<br/>
                         ${config.site.name} welcomes you aboard! Your registration has been successfully completed, and your account is now active.<br/><br/>
                         You can sign in to any of the available branches:<br/>
                         <ul>
@@ -954,13 +966,7 @@ class User extends Person {
                 const user = await User.fetch(res.session, { _id })
                 if (!user) throw new Error('User not found')
 
-                const [ rows ] = await mysql.execute(query.user.registration.select('formId', {
-                    match: { userId: user.id },
-                }))
-                if (rows.length !== 1) throw new Error('Registration Form ID could not be located')
-
-                const { formId } = rows[0]
-                await user.invite(formId)
+                await user.invite()
 
                 res.send('OK')
             } catch (err) {

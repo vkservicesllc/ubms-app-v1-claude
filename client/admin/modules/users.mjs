@@ -220,7 +220,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 render(data, type, row) {
                     data = data[0]
                     if (row.status === 'D' || (adminStatus === 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
-                    if (row.log.declinedAt) return '<i class="fas fa-user-lock has-text-grey"></i>'
+                    if (row.log.declinedAt) return '<i class="fas fa-user-times has-text-dark"></i>'
                     if (!row.username || row.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
 
                     const condition = { fa: 'user-check', style: 'success' }
@@ -258,6 +258,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 searchable: false,
                 orderable: false,
                 render(data, type, row) {
+                    if (row.log.declinedAt) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
+
                     data = row.expansion.status
                     if (adminLocation === 'US') data += ` <small class="has-text-grey">(${row.location})</small>`
                     if (row.unscoped) data += ` <sup><i class="far fa-star has-text-success-40" style="font-size: .75em;"></i></sup>`
@@ -282,7 +284,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 title: 'Email',
                 orderable: false,
                 render(data, type, row) {
-                    if (!row.username) return `<span class="user-email">${data}</span>&nbsp;&nbsp;<a class="has-text-info-55 resend-invitation" data-id="${row._id}" title="Resend Invitation"><i class="fa fa-envelope-open-text"></i></a>`
+                    if (!row.username && !row.log.declinedAt) return `<span class="user-email">${data}</span>&nbsp;&nbsp;<a class="has-text-info-55 resend-invitation" data-id="${row._id}" title="Resend Invitation"><i class="fa fa-envelope-open-text"></i></a>`
                     return data
                 },
             },
@@ -305,11 +307,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 orderable: false,
                 className: 'has-text-left',
                 render(data, type, row) {
-                    if (!row.username) {
-                        if (row.log.declinedAt) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
-                        return '<small class="has-text-danger-60">Registration pending</small>'
-                    }
-
+                    if (row.log.declinedAt) return ''
+                    if (!row.username) return '<small class="has-text-danger-60">Registration pending</small>'
                     if (!data) return '<small class="has-text-grey"><i>Never logged in</i></small>'
 
                     const { lastBranch } = row
@@ -378,13 +377,13 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         createdRow(tr, data) {
             const { condition, log } = data
 
-            if (log.declinedAt) $(tr).addClass('is-danger')
+            if (log.declinedAt) $(tr).addClass('is-danger').find('td').css('border-bottom', '1px solid grey')
             else if (condition !== 'A' || data.passReset) $(tr).addClass('is-warning')
         },
 
         lengthMenu,
 
-        order: [ [ 3, 'asc' ] ],
+        // order: [ [ 3, 'asc' ], [ 2, 'asc' ] ],
 
     })
 

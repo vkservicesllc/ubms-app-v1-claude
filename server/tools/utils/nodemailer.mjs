@@ -11,6 +11,7 @@ const nodemailer = require('nodemailer')
 export default nodemailer.createTransport({
     service: 'gmail',
     auth: { user, pass },
+    pool: true,
 })
 
 export const sender = `"${name}" <${user}>`

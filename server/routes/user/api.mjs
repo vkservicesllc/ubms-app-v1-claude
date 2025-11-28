@@ -51,7 +51,7 @@ router.post('/user/decline/:_id', async (req, res) => {
             to: inviter.email,
             subject: 'User Declined Terms and Conditions',
             html: `<div style="font-family: Arial, Helvetica, sans-serif;">
-                <p>Dear ${inviter.fullName('AL')},</p>
+                <p>Dear ${inviter.name},</p>
                 <p>
                     We would like to inform you that the user ${userName} has declined the terms and conditions.<br/>
                     Please review this matter and take any necessary actions in accordance with our policies.
