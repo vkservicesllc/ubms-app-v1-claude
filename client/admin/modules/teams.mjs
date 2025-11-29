@@ -288,7 +288,8 @@ const displayTeams = () => {
                     success(response) {
                         const { _id,
                             // catId: category,
-                        name, settings } = response.data
+                        name, config } = response.data
+                        const { settings } = config
 
                         if (target == 'edit') {
                             const { description, count } = response.data

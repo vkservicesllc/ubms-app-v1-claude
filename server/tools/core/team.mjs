@@ -27,7 +27,10 @@ class Team {
 
         this.name = data.name
         this.description = data.description
-        this.settings = data.settings
+        this.config = {
+            settings: data.settings,
+        }
+        //! this.settings = data.settings // using as method
 
         if (data.busName && data.coType)
             this.profile = {
@@ -83,6 +86,26 @@ class Team {
 
 
             this.delete = (target, sinceOrIds) => classInstance.delete(this, new.target, target, sinceOrIds)
+
+
+            this.settings = async body => {
+                if (!this.session?.user?.id) throw new Error('Team Constructor Method Error [SETTINGS]: Session user not supplied')
+
+                let { settings = {} } = (await mysql.execute(query.team.main.select('settings', { match: { id: this.id } })))[0]
+
+                if (body && typeof body === 'object') {
+                    if (!settings.carrier) settings.carrier = {}
+                    if (!settings.carrier.application) settings.carrier.application = {}
+                    //? More to be added...
+
+                    settings.carrier.application.cdl = Number(body?.carrier?.application?.cdl === 'on')
+                    //? More to be added...
+
+                    await this.update({ settings })
+                }
+
+                return settings
+            }
 
 
             this.log = params => classInstance.log(this, new.target, params)

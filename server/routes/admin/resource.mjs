@@ -214,6 +214,23 @@ router.post('/update/team/profile', User.mw.verify, User.mw.superAdminOnly, vali
 })
 
 
+router.post('/update/team/settings', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { _id, settings } = req.body
+        delete req.body._id
+
+        const team = await Team.fetch(res.session, { _id })
+        if (!team) throw new Error('Team not found')
+
+        await team.settings(req.body)
+
+        res.redirect(source.team[1])
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== DELETE ROUTES ==== //
 
