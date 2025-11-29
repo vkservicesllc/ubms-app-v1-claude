@@ -1026,7 +1026,13 @@ class Role {
             this.session = session
 
 
+            this.add = (target, ids = []) => classInstance.add(this, new.target, target, ids)
+
+
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.update = body => classInstance.update(this, new.target, 'main', body)
 
 
             this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids)

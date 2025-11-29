@@ -80,24 +80,26 @@ $.ajax('/api/list/roles/carrier', {
             data = sortArrayByObjectKey(data, 'name')
 
             data.forEach(role => {
-                const { _id, name } = role
-                const { location } = role
+                const { _id, name, location, count } = role
+                const { users } = count
+                const userStyle = `is-${users ? 'primary' : 'danger'}`
 
-                list += `<a class="panel-block carrier-role" data-id="${_id}">`
+                list += `<span class="panel-block is-flex is-justify-content-space-between"><a class="carrier-role" data-id="${_id}">`
                 list += name
                 if (location) list += `&nbsp; <span class="tag has-text-weight-normal">${role.expansion.location} only</span>`
-                list += '</a>'
+                list += `</a><div class="tags has-addons"><span class="tag">Users</span><a class="tag ${userStyle}">${users}</a></div>`
+                list += '</span>'
             })
 
             $list.html(list)
 
             const $role = $('.carrier-role')
             const highlight = {
-                block: 'has-text-weight-bold has-background-dark has-text-light',
+                block: 'has-background-dark has-text-light',
                 tag: 'is-dark',
             }
             const removeHighlight = () => {
-                $role.removeClass(highlight.block).find('.tag').removeClass(highlight.tag)
+                $role.parent().removeClass(highlight.block).find('.tag').removeClass(highlight.tag)
             }
 
             $button.add.click(() => {
@@ -126,7 +128,7 @@ $.ajax('/api/list/roles/carrier', {
                 const _id = $(this).data('id')
 
                 removeHighlight()
-                $(this).addClass(highlight.block).find('.tag').addClass(highlight.tag)
+                $(this).parent().addClass(highlight.block).find('.tag').addClass(highlight.tag)
 
                 $.ajax(`/api/data/role/${_id}`, {
                     method: 'POST',

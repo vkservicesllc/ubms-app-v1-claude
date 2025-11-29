@@ -131,23 +131,27 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
 })
 
 
-//! COMBINE and use category in hidden input so it is in the body, not query
+
 router.post('/upsert/role', User.mw.verify, User.mw.superAdminOnly, validateRole, validationCheck, async (req, res) => {
     try {
-        let { category = null } = req.query
         const { _id } = req.body
         delete req.body._id
 
-        if (category) category = Company.list.category.key(category)
-        req.body.category = category
-
         let role
+
         if (_id) {
             role = await Role.fetch(res.session, { _id })
             if (!role) throw new Error('Role not found')
 
             await role.update(req.body)
-        } else role = (await Role.create(res.session, req.body)).data
+        } else {
+            let { category = null } = req.query
+
+            if (category) category = Company.list.category.key(category)
+            req.body.category = category
+
+            role = (await Role.create(res.session, req.body)).data
+        }
 
         res.redirect(source.user[1] + source.ext('role', role))
     } catch (err) {
