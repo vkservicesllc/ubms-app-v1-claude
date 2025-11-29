@@ -220,8 +220,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 render(data, type, row) {
                     data = data[0]
                     if (row.status === 'D' || (adminStatus === 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
-                    if (row.log.declinedAt) return '<i class="fas fa-user-times has-text-dark"></i>'
-                    if (!row.username || row.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
+                    if (row.events.declinedAt) return '<i class="fas fa-user-times has-text-dark"></i>'
+                    if (!row.username || row.events.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
 
                     const condition = { fa: 'user-check', style: 'success' }
 
@@ -258,7 +258,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 searchable: false,
                 orderable: false,
                 render(data, type, row) {
-                    if (row.log.declinedAt) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
+                    if (row.events.declinedAt) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
 
                     data = row.expansion.status
                     if (adminLocation === 'US') data += ` <small class="has-text-grey">(${row.location})</small>`
@@ -284,7 +284,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 title: 'Email',
                 orderable: false,
                 render(data, type, row) {
-                    if (!row.username && !row.log.declinedAt) return `<span class="user-email">${data}</span>&nbsp;&nbsp;<a class="has-text-info-55 resend-invitation" data-id="${row._id}" title="Resend Invitation"><i class="fa fa-envelope-open-text"></i></a>`
+                    if (!row.username && !row.events.declinedAt) return `<span class="user-email">${data}</span>&nbsp;&nbsp;<a class="has-text-info-55 resend-invitation" data-id="${row._id}" title="Resend Invitation"><i class="fa fa-envelope-open-text"></i></a>`
                     return data
                 },
             },
@@ -295,27 +295,28 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 orderable: false,
                 defaultContent: '<small class="has-text-danger">N/A</small>',
                 render(data, type, row) {
-                    if (!data && row.log.declinedAt) return '<small>N/A</small>'
+                    if (!data && row.events.declinedAt) return '<small>N/A</small>'
                     return formatTel(data)
                 },
             },
 
             {
-                data: 'lastLogin',
+                data: null,
                 title: 'Last Login <small style="font-weight: normal;">(Eastern Time)</small>',
                 searchable: false,
                 orderable: false,
                 className: 'has-text-left',
                 render(data, type, row) {
-                    if (row.log.declinedAt) return ''
+                    if (row.events.declinedAt) return ''
                     if (!row.username) return '<small class="has-text-danger-60">Registration pending</small>'
-                    if (!data) return '<small class="has-text-grey"><i>Never logged in</i></small>'
 
-                    const { lastBranch } = row
+                    const { lastLogin, lastBranch } = row.events
+                    if (!lastLogin) return '<small class="has-text-grey"><i>Never logged in</i></small>'
+
                     return type === 'display'
-                        ? momentUTC2ET(data, 'llll')
+                        ? momentUTC2ET(lastLogin, 'llll')
                             + ` <small class="has-text-grey">(${capitalizeFirst(lastBranch)})</small>`
-                        : data
+                        : lastLogin
                 },
             },
 
@@ -355,14 +356,14 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
                     if (['D', 'S'].includes(adminStatus) || (adminStatus === 'A' && !row.DS)) {
                         if (row.status !== 'D') {
-                            cell += `<a class="has-text-${row.log.declinedAt ? 'dark' : 'danger'} delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
-                            if (!row.log.declinedAt) {
+                            cell += `<a class="has-text-${row.events.declinedAt ? 'dark' : 'danger'} delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
+                            if (!row.events.declinedAt) {
                                 if (row.username) cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
                                 cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
                             }
                         }
                         if (row.status !== 'D' || adminStatus === 'D')
-                            if (!row.log.declinedAt)
+                            if (!row.events.declinedAt)
                                 cell += `<a class="has-text-success-45 edit-user" data-id="${row._id}" title="Edit"><i class="fas fa-user-pen"></i></a>`
                     }
 
@@ -375,10 +376,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         ],
 
         createdRow(tr, data) {
-            const { condition, log } = data
-
-            if (log.declinedAt) $(tr).addClass('is-danger').find('td').css('border-bottom', '1px solid grey')
-            else if (condition !== 'A' || data.passReset) $(tr).addClass('is-warning')
+            if (data.events.declinedAt) $(tr).addClass('is-danger').find('td').css('border-bottom', '1px solid grey')
+            else if (data.condition !== 'A' || data.events.passReset) $(tr).addClass('is-warning')
         },
 
         lengthMenu,
@@ -526,6 +525,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     $('#user-condition-modal').addClass('is-active')
                 },
                 error(err) {
+                    console.error(err)
                     alert(err.responseJSON.message)
                 },
             })
@@ -612,6 +612,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     $('#user-modal').addClass('is-active')
                 },
                 error(err) {
+                    console.error(err)
                     alert(err.responseJSON.message)
                 },
             })
@@ -629,7 +630,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 },
                 error(err) {
                     console.error(err)
-                    alert(err.responseJSON)
+                    alert(err.responseJSON.message)
                 },
             })
         })

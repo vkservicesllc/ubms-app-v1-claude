@@ -27,7 +27,7 @@ router.post('/list/users', User.mw.verify, async (req, res) => {
         const filter = {}
         if (location !== 'US') filter.location = location
 
-        res.json({ client, data: await User.fetch(res.session, filter, { hideRawId, hideSensitive, hideTimeLog: false }) })
+        res.json({ client, data: await User.fetch(res.session, filter, { hideRawId, hideSensitive, hideEvents: false }) })
     } catch(err) {
         sendError.server(req, res, err)
     }

@@ -110,9 +110,13 @@ class User extends Person {
                     async final(user, body) {
                         const { status, email } = body
 
-                        if (email && user.email !== email && !user.username && !user.log.declinedAt) {
-                            user = await User.fetch(session, { id: user.id })
-                            await user.invite()
+                        if (email && user.email !== email && !user.username) {
+                            if (user.events === undefined) throw new Error('Failed to reinvite user due to missing event property')
+                            
+                            if (!user.events.declinedAt) {
+                                user = await User.fetch(session, { id: user.id })
+                                await user.invite()
+                            }
                         }
 
                         if (!['S', 'D'].includes(status)) return
@@ -270,7 +274,8 @@ class User extends Person {
                 const { branch, siteId } = this.session || {}
                 if (!branch) throw new Error('User URL Error: Session branch not supplied')
 
-                const { id: userId, lastLogin } = this
+                const { id: userId } = this
+                const { lastLogin } = this.events
 
                 await mysql.execute(query.session.main.update(
                     { lastUrl },
@@ -464,7 +469,7 @@ class User extends Person {
 
 
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
-        { hideRawId = false, hideSensitive = true, combined = false, offline = false, auth = false, hideTimeLog = true, sorts = User.config().defSorts, mode } = {}
+        { hideRawId = false, hideSensitive = true, combined = false, offline = false, auth = false, hideEvents = true, sorts = User.config().defSorts, mode } = {}
     ) => {
         if (!offline) {
             if (!offline && !sessionUser?.id) throw new Error('User Static Method Error [FETCH]: Session user not supplied')
@@ -550,7 +555,7 @@ class User extends Person {
 
                 if (!single) batch[4].join[2].max = 'lastLogin'
 
-                return { single, batch, custom: { offline, auth, hideTimeLog } }
+                return { single, batch, custom: { offline, auth, hideEvents } }
             },
         })
     }
@@ -719,7 +724,7 @@ class User extends Person {
                 const { branch, siteId, defUrl } = res.session
                 const { user: _id, token: providedToken } = req.body
 
-                const user = await User.fetch(res.session, { _id }, { hideSensitive: false, offline: true })
+                const user = await User.fetch(res.session, { _id }, { offline: true, hideSensitive: false, hideEvents: false })
                 if (!user) throw new Error('Session Error: User not found')
 
                 const { id: userId } = user
@@ -737,7 +742,7 @@ class User extends Person {
                 }
 
                 const settings = await user.settings()
-                let { lastUrl } = user
+                let { lastUrl } = user.events
                 let url = lastUrl || '/'
                 if (settings?.[branch]?.lastUrl === 0) url = defUrl
 
@@ -787,7 +792,7 @@ class User extends Person {
                         const { logoutUrl } = config.session
 
                         if (refer) {
-                            const user = await User.fetch(session, { _id: refer }, { hideSensitive: false })
+                            const user = await User.fetch(session, { _id: refer }, { hideSensitive: false, hideEvents: false })
                             if (method !== 'POST' && !excUrl.includes(originalUrl))
                                 await user.url(stripUrl(originalUrl, query, 'refer'))
                         }
@@ -799,7 +804,7 @@ class User extends Person {
 
                 if (!_id) return await reject('Authentication check failed: Not authenticated')
 
-                const user = await User.fetch(res.session, { _id }, { offline: true, hideSensitive: false })
+                const user = await User.fetch(res.session, { _id }, { offline: true, hideSensitive: false, hideEvents: false })
 
                 if (!user) {
                     User.mw.logout(req, res)

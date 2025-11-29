@@ -113,7 +113,7 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
         delete req.body._id
 
         if (_id) {
-            const user = await User.fetch(res.session, { _id })
+            const user = await User.fetch(res.session, { _id }, { hideEvents: false })
             if (!user) throw new Error('User not found')
 
             if (user.DS) {
