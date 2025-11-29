@@ -11,9 +11,9 @@
                             <button class="delete"></button>
                         </header>
                         <section class="modal-card-body">
-                            <form id="team-upsert-form" action="/resource/team" method="POST" autocomplete="off">
+                            <form id="team-upsert-form" action="/resource/upsert/team" method="POST" autocomplete="off">
                                 {{{form.id.hidden.input}}}
-                                {{{form.currentName.hidden.input}}}
+                                {{{form.hiddenTeamName.hidden.input}}}
                                 <div class="columns">
                                     <div class="column">
                                         <div class="field">
@@ -102,7 +102,7 @@
                             <button class="delete"></button>
                         </header>
                         <section class="modal-card-body" id="team-profile">
-                            <form id="team-profile-form" action="/resource/team/profile" method="POST" autocomplete="off">
+                            <form id="team-profile-form" action="/resource/update/team/profile" method="POST" autocomplete="off">
                                 {{{form.profileId.hidden.input}}}
                                 <div class="columns">
                                     <div class="column is-two-fifths">
@@ -214,7 +214,7 @@
                             <button class="delete"></button>
                         </header>
                         <section class="modal-card-body">
-                            <form id="team-settings-form" action="/resource/team/settings" method="POST" autocomplete="off">
+                            <form id="team-settings-form" action="/resource/update/team/settings" method="POST" autocomplete="off">
                                 {{{form.settingsId.hidden.input}}}
                                 <div id="team-settings"></div>
                             </form>

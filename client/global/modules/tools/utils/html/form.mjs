@@ -24,6 +24,7 @@ export const formInput = (props = {}) => {
         id,
         name,
         value,
+        pattern,
         placeholder,
         maxLength,
         min,
@@ -44,6 +45,7 @@ export const formInput = (props = {}) => {
     const idAttr = initializeAttr('id', id)
     const nameAttr = initializeAttr('name', name)
     const valueAttr = initializeAttr('value', value)
+    const patternAttr = initializeAttr('pattern', pattern)
     const placeholderAttr = initializeAttr('placeholder', placeholder)
     const maxLengthAttr = initializeAttr('maxlength', maxLength)
     const minAttr = initializeAttr('min', min)
@@ -60,6 +62,7 @@ export const formInput = (props = {}) => {
         + idAttr
         + nameAttr
         + valueAttr
+        + patternAttr
         + placeholderAttr
         + maxLengthAttr
         + minAttr

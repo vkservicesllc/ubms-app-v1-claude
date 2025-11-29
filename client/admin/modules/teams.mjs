@@ -32,6 +32,8 @@ const zipId = id.text.addrZip
 const cityId = id.text.addrCity
 const stateId = id.select.addrState
 
+const $currentName = $(selector.id.hidden.name)
+
 // const crrDeptClass = selector.class.radio.crrDept
 
 
@@ -113,17 +115,17 @@ teamNameEvent({
     onChange(name) {
         let action = name ? 'passed' : 'default'
         const _id = $id.main.val()
+        const currentName = $currentName.val()
 
         if (name)
             $.ajax('/api/unique/team', {
                 method: 'POST',
-                data: { name, exclude: { _id } },
+                data: { name },
                 success(response) {
-                    const { unique, error } = response
-                    if (error) alert(error)
+                    const { unique } = response
 
                     let disabled = false
-                    if (name && !unique) {
+                    if (name && name !== currentName && !unique) {
                         action = 'failed'
                         disabled = true
                     }
@@ -189,6 +191,7 @@ const closeUpsert = () => {
 
     $modal.all.removeClass('is-active')
     $(selector.class.global).val(null)
+    $currentName.val(null)
     setTip.default('name')
     $button.delete.hide()
     $button.upsert.html(null).removeClass('is-link is-success').prop('disabled', false)
@@ -294,6 +297,7 @@ const displayTeams = () => {
 
                             $id.main.val(_id)
                             $(`${HS.name}, ${nameId}`).val(name)
+                            $currentName.val(name)
                             // $catId.val(category).find('option[value=""]').remove()
                             // if (companies) $catId.attr('disabled', true)
                             // $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)

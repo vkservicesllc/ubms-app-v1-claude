@@ -1032,7 +1032,7 @@ class Role {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
-            this.update = body => classInstance.update(this, new.target, 'main', body)
+            this.update = body => classInstance.update(this, new.target, body)
 
 
             this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids)

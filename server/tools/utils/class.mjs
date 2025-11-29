@@ -25,12 +25,13 @@ export const classInstance = {
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [ADD]: Session user not supplied`)
         if (!target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [ADD]: Target not supplied`)
 
+        const config = Cls.config()
         const createdBy = sessionUser?.id || null
         const jx = target.slice(0, 3) === 'jx.'
         if (jx) target = target.slice(3)
 
         if (jx) {
-            const { jxTargets, idProp: refIdProp } = Cls.config()
+            const { jxTargets, idProp: refIdProp } = config
             if (!jxTargets) throw new Error(`${Cls.name} Constructor Method Error [ADD]: Junction targets not found`)
 
             if (!Array.isArray(bodyOrIds) || !bodyOrIds.length) throw new Error(`${Cls.name} Constructor Method Error [ADD]: Invalid ids supplied`)
@@ -51,9 +52,11 @@ export const classInstance = {
         }
 
         let body = bodyOrIds || {}
-        const { query, logLocation = false } = Cls.config()
+        const { query, idProp, logLocation = false } = config
 
         body = processData(body)
+        body[idProp] = inst.id
+
         if (typeof bodyCB === 'function') body = await bodyCB(body)
         body.createdBy = createdBy
 
@@ -127,7 +130,7 @@ export const classInstance = {
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session user not supplied`)
 
         let target = 'main'
-        if (typeof target === 'string') target = targetOrBody
+        if (typeof targetOrBody === 'string') target = targetOrBody
         else body = targetOrBody
 
         let { match = {} } = body

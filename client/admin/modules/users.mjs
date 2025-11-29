@@ -164,7 +164,7 @@ emailEvent(emailId, {
             } else
                 $.ajax('/api/unique/user', {
                     method: 'POST',
-                    data: { email, exclude: { _id } },
+                    data: { email },
                     success(response) {
                         const { unique } = response
 

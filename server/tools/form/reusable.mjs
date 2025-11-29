@@ -230,8 +230,9 @@ export const createWebsiteForm = (props = {}) => createForm({
     name: 'website',
     label: 'Website',
     ...props,
-    type: 'url',
+    // type: 'url',
     mode: 'url',
+    pattern: 'https?://.+|.+\..+',
     maxLength: length.web.url.max,
     validator: {
         rule: 'url',

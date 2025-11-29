@@ -54,7 +54,35 @@ class Team {
             this.session = session
 
 
+            this.add = (target, bodyOrIds) => classInstance.add(this, new.target, target, bodyOrIds)
+
+
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.update = (targetOrBody, body) => {
+                const team = this
+
+                return classInstance.update(this, new.target, targetOrBody, body, {
+                    currentData(target) {
+                        let data
+                        switch (target) {
+                            case 'profile':
+                                const { profile } = team
+                                const { address } = profile
+                                delete profile.address
+
+                                data = { ...profile, ...address }
+                                console.log(data)
+                                break
+                        }
+                        return data
+                    }
+                })
+            }
+
+
+            this.delete = (target, sinceOrIds) => classInstance.delete(this, new.target, target, sinceOrIds)
 
 
             this.log = params => classInstance.log(this, new.target, params)

@@ -134,10 +134,9 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
 
 router.post('/upsert/role', User.mw.verify, User.mw.superAdminOnly, validateRole, validationCheck, async (req, res) => {
     try {
+        let role
         const { _id } = req.body
         delete req.body._id
-
-        let role
 
         if (_id) {
             role = await Role.fetch(res.session, { _id })
@@ -160,6 +159,26 @@ router.post('/upsert/role', User.mw.verify, User.mw.superAdminOnly, validateRole
 })
 
 
+router.post('/upsert/team', User.mw.verify, User.mw.superAdminOnly, validateTeam, validationCheck, async (req, res) => {
+    try {
+        let team
+        const { _id } = req.body
+        delete req.body._id
+
+        if (_id) {
+            team = await Team.fetch(res.session, { _id })
+            if (!team) throw new Error('Team not found')
+
+            await team.update(req.body)
+        } else team = (await Team.create(res.session, req.body)).data
+
+        res.redirect(source.team[1])
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/update/user/condition', User.mw.verify, [ UserForm.condition.validate() ], validationCheck, async (req, res) => {
     try {
         const { _id } = req.body
@@ -172,6 +191,23 @@ router.post('/update/user/condition', User.mw.verify, [ UserForm.condition.valid
         await user.update({ condition })
 
         res.redirect(source.user[1])
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/update/team/profile', User.mw.verify, User.mw.superAdminOnly, validateTeamProfile, validationCheck, async (req, res) => {
+    try {
+        const { _id } = req.body
+        delete req.body._id
+
+        const team = await Team.fetch(res.session, { _id })
+        if (!team) throw new Error('Team not found')
+
+        await team[team.profile ? 'update' : 'add']('profile', req.body)
+
+        res.redirect(source.team[1])
     } catch (err) {
         sendError.server(req, res, err)
     }

@@ -34,6 +34,12 @@ class TeamForm {
     static settingsId = createIdForm({ selector, target: 'settingsId' })
     // static category = createCategoryForm(selector)
 
+    static hiddenTeamName = createForm({
+        selector,
+        target: 'name',
+        type: 'hidden',
+    })
+
     // static crrDept = createForm({
     //     selector,
     //     target: 'crrDept',
