@@ -138,7 +138,7 @@ class Team {
             batch: [
                 {
                     table: query.team.main.table,
-                    fields: [ 'id', Team.hashId(), 'name', 'description', 'settings' ],
+                    fields: [ 'id', Team.hashId(), 'name', 'description' ],
                     group: 'id',
                 },
                 {
