@@ -27,10 +27,6 @@ class Team {
 
         this.name = data.name
         this.description = data.description
-        this.config = {
-            settings: data.settings,
-        }
-        //! this.settings = data.settings // using as method
 
         if (data.busName && data.coType)
             this.profile = {
@@ -76,7 +72,6 @@ class Team {
                                 delete profile.address
 
                                 data = { ...profile, ...address }
-                                console.log(data)
                                 break
                         }
                         return data
@@ -91,7 +86,7 @@ class Team {
             this.settings = async body => {
                 if (!this.session?.user?.id) throw new Error('Team Constructor Method Error [SETTINGS]: Session user not supplied')
 
-                let { settings = {} } = (await mysql.execute(query.team.main.select('settings', { match: { id: this.id } })))[0]
+                const { settings = {} } = (await mysql.execute(query.team.main.select('settings', { match: { id: this.id || Team.matchIdHash(this._id) } })))[0][0]
 
                 if (body && typeof body === 'object') {
                     if (!settings.carrier) settings.carrier = {}

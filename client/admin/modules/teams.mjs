@@ -288,8 +288,7 @@ const displayTeams = () => {
                     success(response) {
                         const { _id,
                             // catId: category,
-                        name, config } = response.data
-                        const { settings } = config
+                        name } = response.data
 
                         if (target == 'edit') {
                             const { description, count } = response.data
@@ -342,6 +341,7 @@ const displayTeams = () => {
                             $title.profile.html(`<strong>${escapeHTML(name)}</strong> <small>Profile</small>`)
                             $modal.profile.addClass('is-active')
                         } else if (target == 'settings') {
+                            const { settings } = response
                             $(HS.settingsId).val(_id)
 
                             // const applied = {

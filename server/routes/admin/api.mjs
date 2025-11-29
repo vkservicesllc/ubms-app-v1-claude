@@ -186,7 +186,10 @@ router.post('/data/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, 
             return res.json({ client, data })
         }
 
-        res.json({ client, data: inst })
+        let settings
+        if (typeof inst.settings === 'function') settings = await inst.settings()
+
+        res.json({ client, data: inst, settings })
     } catch(err) {
         sendError.server(req, res, err)
     }
