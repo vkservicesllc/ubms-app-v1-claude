@@ -43,7 +43,7 @@ class User extends Person {
 
         super(data)
 
-        const { offline, auth, hideTimeLog } = custom
+        const { offline = false, auth = false, hideEvents = true } = custom
         const props = { _id: data._id, _simpleId: data._simpleId }
         if (!hideRawId) props.id = data.id
 
@@ -58,14 +58,6 @@ class User extends Person {
         props.unscoped = props.DS || !!data.unscoped
         props.self = !!data.self
         props.avaSrc = `/images/icons/gender/${this.gender}.png`
-
-        if (!hideSensitive) {
-            props.passReset = data.passReset
-            props.lastLogin = data.lastLogin
-            props.lastBranch = data.lastBranch
-            props.lastSiteId = data.lastSiteId
-            props.lastUrl = data.lastUrl
-        }
 
         if (offline && auth) {
             props.fails = data.fails
@@ -82,8 +74,13 @@ class User extends Person {
         this.expansion.condition = User.list.condition[data.condition]
         this.expansion.location = User.list.location[data.location]
 
-        if (!hideTimeLog) {
-            this.log = {
+        if (!hideEvents) {
+            this.events = {
+                passReset: data.passReset,
+                lastLogin: data.lastLogin,
+                lastBranch: data.lastBranch,
+                lastSiteId: data.lastSiteId,
+                lastUrl: data.lastUrl,
                 declinedAt: data.declinedAt,
             }
         }
