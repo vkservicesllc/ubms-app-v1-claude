@@ -30,6 +30,7 @@ class TeamForm {
     }
 
     static id = createIdForm({ selector })
+    static deleteId = createIdForm({ selector, target: 'deleteId' })
     static profileId = createIdForm({ selector, target: 'profileId' })
     static settingsId = createIdForm({ selector, target: 'settingsId' })
     // static category = createCategoryForm(selector)

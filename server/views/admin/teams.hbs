@@ -66,6 +66,9 @@
                             </form>
                         </section>
                         <footer class="modal-card-foot">
+                            <form id="team-delete-form" action="/resource/delete/team" method="POST">
+                                {{{form.deleteId.hidden.input}}}
+                            </form>
                             <div class="buttons">
                                 <button type="submit" form="team-upsert-form" class="button" id="team-upsert-button"></button>
                                 <button class="button is-danger" id="team-delete-button" style="display: none;">Delete</button>

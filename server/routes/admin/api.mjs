@@ -126,7 +126,7 @@ router.post('/data/user/:_id/:target?', User.mw.verify, async (req, res) => {
                 data[target].available = data[target].all.filter(row => !data[target].applied.some(appliedRow => appliedRow._id === row._id))
             }
 
-            return res.json({ client, data })
+            return res.json({ client, data, source: user })
         }
 
         if (toggleUnscoped) {
@@ -183,7 +183,7 @@ router.post('/data/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, 
             data.applied = await inst.fetch(`jx.${target}`, { hideRawId, hideSensitive })
             data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
 
-            return res.json({ client, data })
+            return res.json({ client, data, source: inst })
         }
 
         let settings

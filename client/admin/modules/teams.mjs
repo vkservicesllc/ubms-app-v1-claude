@@ -1,4 +1,5 @@
 import Tip from './tools/tip.mjs'
+import Person from '/modules/tools/core/person.mjs'
 import { teamNameEvent, teamDescEvent } from '/modules/events/team.mjs'
 import { categoryEvent, busNameEvent, coTypeEvent } from '/modules/events/company.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
@@ -275,7 +276,7 @@ const displayTeams = () => {
             }
 
             $('#team-list').html(html)
-            
+
             $('.team-edit, .team-profile, .team-settings').on('click', function() {
                 const _id = $(this).data('team-id')
                 let target = 'edit'
@@ -296,6 +297,7 @@ const displayTeams = () => {
                             // const $catId = $(catId)
 
                             $id.main.val(_id)
+                            $(`${HS.deleteId}`).val(_id)
                             $(`${HS.name}, ${nameId}`).val(name)
                             $currentName.val(name)
                             // $catId.val(category).find('option[value=""]').remove()
@@ -392,23 +394,23 @@ const displayTeams = () => {
                 const _id = $(this).data('team-id')
                 $('.modify-team-relationship').off('change')
 
-                $.ajax({
+                $.ajax({ //! NEED TO REWORK THE ENTIRE THING
                     url: `/api/data/team/${_id}/${relType}`,
                     method: 'POST',
                     success(response) {
-                        const { team, data } = response.data
+                        const { data, source: team } = response
                         const { _id, name } = team
-
+// console.log(data)
                         $title.relationship.html(`<small>Assign ${capitalizeFirst(relType)} to</small> <strong>${escapeHTML(name)}</strong>`)
 
                         let list = '<div class="checkboxes">'
-                        data[relType].all.forEach(item => {
+                        data.all.forEach(item => {
                             let attr = ` data-type="${relType}" data-id="${item._id}"`
                             if (item.applied) attr += ' checked'
-
+console.log(item)
                             list += '<p><label class="checkbox">'
-                            list += `<input type="checkbox" class="modify-team-relationship"${attr} />&nbsp; ${escapeHTML(item.name)}`
-                            if (item.desc) list += ` <small><i>(${escapeHTML(item.desc)})</i></small>`
+                            list += `<input type="checkbox" class="modify-team-relationship"${attr} />&nbsp; ${new Person(item).fullName('AL')}`
+                            // if (item.desc) list += ` <small><i>(${escapeHTML(item.desc)})</i></small>`
                             list += '</label></p>'
                         })
                         list += '</div>'
@@ -460,24 +462,9 @@ $button.add.click(() => {
     // $(catId).val('crr')
 })
 
-//! TEST VERSION: Deleting via API
 $button.delete.click(function() {
     const name = $(HS.name).val()
-
-    if (confirm(`Confirm deletion: Are you sure you want to delete "${name}"!`)) {
-        const _id = $id.main.val()
-
-        $.ajax({
-            url: `/api/team/${_id}`,
-            method: 'DELETE',
-            success(response) {
-                if (response.deleted) { //? location.reload()
-                    displayTeams()
-                    closeUpsert()
-                }
-            },
-        })
-    }
+    if (confirm(`Confirm deletion: Are you sure you want to delete "${name}"!`)) $('#team-delete-form').submit()
 })
 
 $button.closeRel.click(() => {
