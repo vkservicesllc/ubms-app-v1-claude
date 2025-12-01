@@ -569,20 +569,38 @@ class Query {
 
                 else if ('sha2' in value) {
                     value = value.sha2
+                    if (empty(value)) continue
 
-                    if (Array.isArray(value)) {
-                        let length, secondLength
-                        [ value, length, secondLength ] = value
+                    let { length } = value
+                    if (length) {
+                        let secondLength
+                        if (Array.isArray(length))
+                            [ length, secondLength] = length
                         field = [ field, length, secondLength ]
                     }
-
-                    if (empty(value)) continue
 
                     if (Array.isArray(value))
                         [ value, operator, extension ] = combine(value)
                     else value = Query.#value(value)
                     field = { sha2: field }
                 }
+
+                // else if ('sha2' in value) {
+                //    value = value.sha2
+
+                //    if (Array.isArray(value)) {
+                //        let length, secondLength
+                //        [ value, length, secondLength ] = value
+                //        field = [ field, length, secondLength ]
+                //    }
+
+                //    if (empty(value)) continue
+
+                //    if (Array.isArray(value))
+                //        [ value, operator, extension ] = combine(value)
+                //    else value = Query.#value(value)
+                //    field = { sha2: field }
+                // }
 
             }
 
@@ -603,7 +621,7 @@ class Query {
 
 
         function empty(value) {
-            return value === undefined || typeof value === 'undefined'
+            return value === undefined || typeof value === 'undefined' || (Array.isArray(value) && value[0] === undefined)
         }
 
         function combine(originalValues, eq = true) {
@@ -706,8 +724,19 @@ export const matchHash = (value, algorithm = 'MD5') => {
     if (!Object.keys(algorithms).includes(algorithm)) return value
 
     const [ prop, length, secondLength ] = algorithms[algorithm]
-    value = { [prop]: length ? [ value, length ] : value }
-    if (secondLength) value[prop].push(secondLength)
+    value = { [prop]: value }
+    if (length) value.length = length
+    if (secondLength) value.length = [ length, secondLength ]
 
     return value
 }
+
+// export const matchHash = (value, algorithm = 'MD5') => {
+//    if (!Object.keys(algorithms).includes(algorithm)) return value
+
+//    const [ prop, length, secondLength ] = algorithms[algorithm]
+//    value = { [prop]: length ? [ value, length ] : value }
+//    if (secondLength) value[prop].push(secondLength)
+
+//    return value
+// }
