@@ -521,7 +521,7 @@ class User extends Person {
 
                 const {
                     id, _id, _simpleId, username, email,
-                    ids, _ids, firstName, lastName, alias, sex, status, location, condition, declined, deleted,
+                    ids, _ids, firstName, lastName, alias, sex, status, location, condition, declined, deleted, unscoped,
                 } = filter
 
                 const single = !!id || !!_id || !!_simpleId || !!username || !!email
@@ -534,7 +534,7 @@ class User extends Person {
                 }
 
                 batch[0].match = {
-                    deletedAt, declinedAt,
+                    deletedAt, declinedAt, unscoped,
                     id, username, email,
                     firstName, lastName, alias, sex,
                     status, location, condition,

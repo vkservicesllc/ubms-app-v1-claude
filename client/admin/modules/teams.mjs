@@ -394,24 +394,29 @@ const displayTeams = () => {
                 const _id = $(this).data('team-id')
                 $('.modify-team-relationship').off('change')
 
-                $.ajax({ //! NEED TO REWORK THE ENTIRE THING
+                $.ajax({
                     url: `/api/data/team/${_id}/${relType}`,
                     method: 'POST',
                     success(response) {
                         const { data, source: team } = response
                         const { _id, name } = team
-// console.log(data)
+
+                        const appliedIds = data.applied.map(item => item._id)
+                        data.all.map(item => {
+                            item.name = new Person(item).fullName('AL') + ` <small>(${item.email})</small>`
+                            item.applied = appliedIds.includes(item._id)
+                        })
+                        data.all = sortArrayByObjectKey(data.all, 'name')
+
                         $title.relationship.html(`<small>Assign ${capitalizeFirst(relType)} to</small> <strong>${escapeHTML(name)}</strong>`)
 
-                        let list = '<div class="checkboxes">'
+                        let list = '<div class="field">'
                         data.all.forEach(item => {
-                            let attr = ` data-type="${relType}" data-id="${item._id}"`
+                            let attr = ` data-type="${relType}" data-id="${item._id}" disabled`
                             if (item.applied) attr += ' checked'
-console.log(item)
-                            list += '<p><label class="checkbox">'
-                            list += `<input type="checkbox" class="modify-team-relationship"${attr} />&nbsp; ${new Person(item).fullName('AL')}`
-                            // if (item.desc) list += ` <small><i>(${escapeHTML(item.desc)})</i></small>`
-                            list += '</label></p>'
+                            list += '<div class="control"><label class="checkbox">'
+                            list += `<input type="checkbox" class="modify-team-relationship"${attr} />&nbsp; ${item.name}`
+                            list += '</label></div>'
                         })
                         list += '</div>'
 
@@ -422,19 +427,17 @@ console.log(item)
                             const relType = $checkbox.data('type')
                             const _relId = $checkbox.data('id')
                             const checked = $checkbox.prop('checked')
-                            const action = checked ? '+' : '-'
+                            const action = checked ? 'add' : 'delete'
 
-                            $.ajax(`/api/team/${_id}/${relType}/${_relId}`, {
+                            $.ajax(`/api/update/team/${_id}/${action}/${relType}/${_relId}`, {
                                 method: 'POST',
-                                data: { action },
                                 success(response) {
-                                    const { modified, error } = response
-
-                                    if (error || !modified) {
-                                        if (error) alert(error)
-
-                                            $checkbox.prop('checked', !checked)
-                                    }
+                                    const { done } = response
+                                    alert(done) //! TEMP
+                                },
+                                error(err) {
+                                    console.error(err)
+                                    alert(err.responseJSON.message)
                                 },
                             })
                         })

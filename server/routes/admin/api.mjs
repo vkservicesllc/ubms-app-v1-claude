@@ -176,6 +176,7 @@ router.post('/data/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, 
             switch (target) {
                 case 'users':
                     filter.status = ['U', 'A']
+                    filter.unscoped = false
                     break
             }
 
@@ -202,6 +203,23 @@ router.post('/data/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, 
 
 
 // ---- MISC ROUTES ---- //
+
+
+router.post('/update/:src/:_id/:action/:target/:_relId', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { src, _id, action, target, _relId } = req.params
+        const Src = { team: Team, role: Role }[src]
+
+        const inst = await Src.fetch(res.session, { _id })
+        if (!inst) throw new Error(`${Src.name} not found`)
+//! HUGE PROBLEM WHEN ALGORYTHM IS NOT MD5 or SHA-1 AND _ids IS ARRAYS
+        const { added, deleted } = await inst[action](`jx.${target}`, [ _relId ])
+
+        res.json({ done: action === 'add' ? added : deleted })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
 
 
 router.post('/invite/user/:_id', User.mw.verify, User.mw.invite)
