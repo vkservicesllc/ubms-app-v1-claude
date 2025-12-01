@@ -176,7 +176,6 @@ router.post('/data/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, 
             switch (target) {
                 case 'users':
                     filter.status = ['U', 'A']
-                    filter.unscoped = false
                     break
             }
 

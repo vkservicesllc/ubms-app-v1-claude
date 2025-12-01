@@ -402,6 +402,7 @@ const displayTeams = () => {
                         const { _id, name } = team
 
                         const appliedIds = data.applied.map(item => item._id)
+                        data.all = data.all.filter(item => !item.unscoped)
                         data.all.map(item => {
                             item.name = new Person(item).fullName('AL') + ` <small>(${item.email})</small>`
                             item.applied = appliedIds.includes(item._id)
