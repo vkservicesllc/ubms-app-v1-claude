@@ -37,7 +37,7 @@ router.get('/domains', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -47,6 +47,8 @@ router.get('/users', User.mw.verify, (req, res) => {
         const key = 'users'
         let { hbs } = res
         hbs = hbs.set(key)
+        const { user: sessionUser } = res.session
+        const nonUsAdmin = sessionUser.status === 'A' && sessionUser.location !== 'US'
 
         const instr = { labelClass, labelClassRequired, textClass: 'input' }
         const fields = {
@@ -60,10 +62,22 @@ router.get('/users', User.mw.verify, (req, res) => {
                 'carrierRoleName', 'carrierRoleLocation',
             ],
         }
+
+        const statusList = { ...User.list.status }
+        delete statusList['D']
+        if (!sessionUser.DS) delete statusList['S']
+
+        let locationList = { ...User.list.location }
+        if (nonUsAdmin) locationList = { [sessionUser.location]: sessionUser.expansion.location }
+
         const options = {
-            user: updateFormOptions({}, UserForm, fields.user, { ...instr, tabs: 13 }),
+            user: updateFormOptions({}, UserForm, fields.user, { ...instr, tabs: 14 }),
             role: updateFormOptions({}, RoleForm, fields.role, { ...instr, tabs: 10 }),
         }
+
+        options.user.status.select.input.data = statusList
+        options.user.location.select.input.data = locationList
+        if (nonUsAdmin) options.user.location.select.input.emptyOpt = false
 
         hbs.form = {
             ...new UserForm(options.user),
@@ -77,7 +91,7 @@ router.get('/users', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -132,7 +146,7 @@ router.get('/user/:identifier', User.mw.verify, async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -168,7 +182,7 @@ router.get('/teams', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 

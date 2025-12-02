@@ -395,7 +395,6 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         if (!refreshed) {
             const closeModals = () => {
                 $('.modal').removeClass('is-active')
-
                 $title.all.html(null)
                 message.removeInvite()
                 $(`input:not(${genderClass}):not(${conditionClass}):not([type=search]), select:not('.dt-input')`).val(null)
