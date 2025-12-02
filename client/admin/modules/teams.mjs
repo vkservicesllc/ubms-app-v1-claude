@@ -213,7 +213,6 @@ const displayTeams = () => {
         url: '/api/list/teams',
         method: 'POST',
         success(response) {
-            // const data = sortArrayByObjectKey(response.data, 'name')
             const { data } = response
             let i = 0, html = ''
 
@@ -415,7 +414,6 @@ const displayTeams = () => {
                             item.applied = appliedIds.includes(item._id)
                         })
                         data.all = sortArrayByObjectKey(data.all, 'name')
-
 
                         let list = '<div class="field">'
                         data.all.forEach(item => {

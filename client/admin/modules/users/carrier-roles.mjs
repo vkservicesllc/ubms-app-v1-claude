@@ -1,6 +1,6 @@
 import selector from '/modules/registry/selectors/user-role.mjs'
 import { roleNameEvent, roleLocationEvent } from '/modules/events/user.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+import roleRelationshipEvent from './relationships.mjs'
 
 
 const $section = $('#carrier-roles-form-section')
@@ -73,7 +73,6 @@ $.ajax('/api/list/roles/carrier', {
     success(response) {
         let list = ''
         let { data } = response
-        // data = sortArrayByObjectKey(data, 'name')
 
         data.forEach(role => {
             const { _id, name, location, count } = role
@@ -83,7 +82,7 @@ $.ajax('/api/list/roles/carrier', {
             list += `<span class="panel-block is-flex is-justify-content-space-between"><a class="carrier-role" data-id="${_id}">`
             list += name
             if (location) list += `&nbsp; <span class="tag has-text-weight-normal">${role.expansion.location} only</span>`
-            list += `</a><div class="tags has-addons"><span class="tag">Users</span><a class="tag ${userStyle} role-relationship" data-role-id="${_id}">${users}</a></div>`
+            list += `</a><div class="tags has-addons"><span class="tag">Users</span><a class="tag ${userStyle} carrier-role-relationship" data-role-id="${_id}">${users}</a></div>`
             list += '</span>'
         })
 
@@ -151,6 +150,7 @@ $.ajax('/api/list/roles/carrier', {
             })
         })
 
+        roleRelationshipEvent('carrier')
     },
 })
 
