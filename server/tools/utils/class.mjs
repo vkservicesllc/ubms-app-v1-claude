@@ -310,8 +310,8 @@ export const classStatic = {
 
 
     fetch: async (Cls, { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
-        { hideRawId = false, hideSensitive = true, sorts, mode = 'data', },
-        { batch = [], prepare, removeFullGroupBy = false }
+        { hideRawId = false, hideSensitive = true, sorts, mode = 'data' } = {},
+        { batch = [], prepare, removeFullGroupBy = false } = {}
     ) => {
         const { enforceUser = true, db } = Cls.config()
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [FETCH]: Session user not supplied`)

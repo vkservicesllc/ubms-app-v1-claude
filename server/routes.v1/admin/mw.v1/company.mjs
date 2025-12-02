@@ -31,8 +31,371 @@ const url = {
     companies: '/business/companies',
     owners: '/business/company-owners',
 }
+const errMsg = {
+    company: `Server Internal Error: Company not found<br/><a href="${url.companies}">Back to Companies</a>`,
+    owner: `Server Internal Error: Company Owner not found<br/><a href="${url.owners}">Back to Company Owners</a>`,
+}
 
 const permits = Carrier.list.permit
+
+
+
+export default class {
+
+
+    static add = async (req, res) => {
+        try {
+            const company = await Company.create(res.session, req.body)
+
+            res.redirect(url.company + company._id)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static modify = async (req, res) => {
+        try {
+            const { _id } = req.params
+
+            const company = await Company.fetch(res.session, { _id })
+            if (!company) return sendError.server(res, errMsg.company)
+
+            const { category, since, ein, duns, website, busName, coType, alias } = req.body
+            let error
+
+            ({ error } = await company.modify(res.session, 'companies', { category, since, ein, duns, website }))
+            if (!error)
+               ({ error } = await company.modify(res.session, 'names', { busName, coType, alias }))
+            if (error) return sendError.server(res, error)
+
+            res.redirect(url.company + company._id)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static update = async (req, res) => { // name
+        try {} catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static delete = async (req, res) => {
+        try {
+            const { _id } = req.params
+            const { alias } = req.body
+
+            const company = await Company.fetch(res.session, { _id })
+            if (!company) return sendError.server(res, errMsg.company)
+
+            if (alias !== company.alias)
+                return sendError.server(res, `Request Error: Incorrect confirmation alias<br/><a href="${url.companies}">Back to Companies</a>`)
+
+            const { error } = await company.delete(res.session)
+            if (error) return sendError.server(res, error + `<a href="${url.companies}">Back to Companies</a>`)
+
+            res.redirect(url.companies)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static confirm = async (req, res) => {
+        try {
+            const { _id } = req.params
+
+            const company = await Company.fetch(res.session, { _id })
+            if (!company) return sendError.server(res, errMsg.company)
+
+            const { confirmed, error } = await company.confirm(res.session)
+            if (error) return sendError.server(res, error)
+
+            let redirectUrl = url.company + company._id
+            if (confirmed) {
+                const { category, route } = company
+
+                redirectUrl = `/business/${Company.list.category[category].path[1]}/${route}`
+            }
+
+            res.redirect(redirectUrl)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static upsertOwnership = async (req, res) => {
+        try {
+            const { _id } = req.params
+            const { _ownerId, since } = req.body //* if `since` is undefined, company `since` will be used
+
+            const company = await Company.fetch(res.session, { _id })
+            if (!company) return sendError.server(res, errMsg.company)
+
+            const owner = await Owner.fetch(res.session, { _id: _ownerId })
+            if (!owner) return sendError.server(res, errMsg.owner)
+
+            const { error } = await company.delete(res.session, 'ownerships', { since })
+            if (error) return sendError.server(res, error)
+            else {
+                const { error } = await company.update(res.session, 'ownerships', {
+                    ownerId: await owner.id(),
+                    since,
+                })
+                if (error) return sendError.server(res, error)
+            }
+
+            res.redirect(url.company + _id)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static updateOwnership = async (req, res) => {
+        try {} catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static upsertAddress = async (req, res) => {
+        try {
+            const { _id } = req.params
+            const company = await Company.fetch(res.session, { _id })
+            if (!company) return sendError.server(res, errMsg.company)
+
+            const { body } = req
+            const { address } = company
+            const action = { physical: null, mail: null }
+            const errors = []
+
+            if (!address.physical.address1) {
+                action.physical = 'update'
+                if (body.mail?.address1) action.mail = 'update'
+            } else {
+                action.physical = 'modify'
+                if (!address.mail.address1) {
+                    if (body.mail?.address1) action.mail = 'update'
+                } else {
+                    if (body.mail?.address1) action.mail = 'modify'
+                    else action.mail = 'delete'
+                }
+            }
+
+            if (action.physical) {
+                const { error } = await company[action.physical](res.session, 'addresses', body.physical)
+                if (error) errors.push(error)
+            }
+            if (action.mail) {
+                const { error } = await company[action.mail](res.session, 'mail', body.mail)
+                if (error) errors.push(error)
+            }
+
+            if (errors.length) return sendError.server(res, errors.join(' / '))
+
+            res.redirect(url.company + _id)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static updateAddress = async (req, res) => {
+        try {
+            const { _id, type } = req.params
+
+            //!..
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static upsertContacts = async (req, res) => {
+        try {
+            const { _id } = req.params
+            const company = await Company.fetch(res.session, { _id })
+            if (!company) return sendError.server(res, errMsg.company)
+
+            const { body } = req
+            const action = { phone: null, fax: null, email: null }
+            const errors = []
+
+            if (!company.phone) {
+                action.phone = 'update'
+                if (body.fax) action.fax = 'update'
+                if (body.email) action.email = 'update'
+            } else {
+                if (body.phone !== company.phone) action.phone = 'modify'
+                if (!body.fax && company.fax) action.fax = 'delete'
+                else if (body.fax && !company.fax) action.fax = 'update'
+                else if (body.fax && company.fax && body.fax !== company.fax)
+                    action.fax = 'modify'
+                if (!body.email && company.email) action.email = 'delete'
+                else if (body.email && !company.email) action.email = 'update'
+                else if (body.email && company.email && body.email !== company.email)
+                    action.email = 'modify'
+            }
+
+            if (action.phone) {
+                const { phone: number } = body
+                const { error } = await company[action.phone](res.session, 'phones', { number })
+                if (error) errors.push(error)
+            }
+            if (action.fax) {
+                const { fax: number } = body
+                const { error } = await company[action.fax](res.session, 'faxes', { number })
+                if (error) errors.push(error)
+            }
+            if (action.email) {
+                const { email } = body
+                const { error } = await company[action.email](res.session, 'emails', { email })
+                if (error) errors.push(error)
+            }
+
+            if (errors.length) return sendError.server(res, errors.join(' / '))
+
+            res.redirect(url.company + _id)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static updateContact = async (req, res) => {
+        try {
+            const { _id, type } = req.params
+
+            //!..
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static updateUsers = async (req, res) => {
+        try {
+            const { _id } = req.params
+            const { action, users: _userIds } = req.body
+            const company = await Company.fetch(res.session, { _id })
+
+            const { error } = await company.relationship(res.session, 'users', action, _userIds)
+            if (error) return sendError.server(res, null, error)
+
+            res.redirect(`/business/${Company.list.category[company.category].path[1]}/${company.route}?users`)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    // static updateTeams = async (req, res) => {
+    //     try {
+    //         const { _id } = req.params
+    //         const { action, teams: _teamIds } = req.body
+    //         const company = await Company.fetch(res.session, { _id })
+
+    //         const { error } = await company.relationship(res.session, 'teams', action, _teamIds)
+    //         if (error) return sendError.server(res, null, error)
+
+    //         res.redirect(`/business/${Company.list.category[company.category].path[1]}/${company.route}?teams`)
+    //     } catch (err) {
+    //         sendError.server(res, err)
+    //     }
+    // }
+
+
+    static upsertOwner = async (req, res) => {
+        try {
+            const { company: _companyId, since } = req.query
+            const { _id } = req.body
+            delete req.body._id
+
+            if (!_id) {
+                const { error, data: owner } = await Owner.create(res.session, req.body)
+                if (error) return sendError.server(res, error)
+
+                if (_companyId) {
+                    const company = await Company.fetch(res.session, { _id: _companyId })
+
+                    const { error } = await company.delete(res.session, 'ownerships', { since })
+                    if (error) return sendError.server(res, error)
+                    else {
+                        const { error } = await company.update(res.session, 'ownerships', { ownerId: await owner.id(), since })
+                        if (error) return sendError.server(res, error)
+                    }
+                    //* `since` is undefined if owner is added at company registration
+                    //* `since` must be requested via url query if owner is added at ownership update
+                }
+            } else {
+                const owner = await Owner.fetch(res.session, { _id })
+
+                const { error } = await owner.modify(res.session, req.body)
+                if (error) return sendError.server(res, error)
+            }
+
+            res.redirect(_companyId ? url.company + _companyId : url.owners)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static updateOwner = async (req, res) => {
+        try {
+            const { company: _companyId } = req.query
+            const { _id } = req.body
+            delete req.body._id
+
+            const owner = await Owner.fetch(res.session, { _id })
+
+            const { error } = await owner.update(res.session, req.body)
+            if (error) return sendError.server(res, error)
+
+            res.redirect(_companyId ? url.company + _companyId : url.owners)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static deleteOwner = async (req, res) => {
+        try {
+            const { _id } = req.body
+
+            const owner = await Owner.fetch(res.session, { _id })
+            if (!owner) return sendError.server(res, errMsg.owner)
+
+            const { error } = await owner.delete(res.session)
+            if (error) return sendError.server(res, error + `<a href="${url.owners}">Back to Company Owners</a>`)
+
+            res.redirect(url.owners)
+        } catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static upsertOwnerPhone = async (req, res) => {
+        try {} catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+    static updateOwnerPhone = async (req, res) => {
+        try {} catch (err) {
+            sendError.server(res, err)
+        }
+    }
+
+
+}
 
 
 const display = (data, ein) => {
@@ -100,7 +463,6 @@ const display = (data, ein) => {
 }
 
 
-
 export const companyById = async (req, res) => {
     try {
         const key = 'company'
@@ -151,13 +513,8 @@ export const companyById = async (req, res) => {
         const submitProps = {}
         const submitButton = (id, content, style) => formButton({ type: 'submit', class: `button is-fullwidth ${style}`, id, content, disabled: true })
         const actionUrl = {
-            dir: {
-                record: 'insert/company',
-            },
             param: {
-                ownership: 'add',
-                address: 'add',
-                contact: 'add',
+                record: '/add',
             },
             query: {},
         }
@@ -197,7 +554,7 @@ export const companyById = async (req, res) => {
             steps.ownership = activeStep
             visibility.record = hidden
             visibility.ownership = ''
-            actionUrl.dir.record = `update/company/${_id}`
+            actionUrl.param.record = `/${_id}/modify`
             actionUrl.query.owner = `?company=${_id}`
             if (catIdIcon) icon.select.category = catIdIcon
             submitProps.record = saveSubmit
@@ -218,7 +575,6 @@ export const companyById = async (req, res) => {
                 if (addrState) addrState = addrState[0]
                 if (mailAddrState) mailAddrState = mailAddrState[0]
 
-                actionUrl.param.ownership = 'update'
                 steps.ownership = completedStep
                 steps.address = activeStep
                 visibility.ownership = hidden
@@ -230,7 +586,6 @@ export const companyById = async (req, res) => {
                 if (addrZip) {
                     const { phone, fax, email } = data
 
-                    actionUrl.param.address = 'update'
                     steps.address = completedStep
                     steps.contacts = activeStep
                     visibility.address = hidden
@@ -239,7 +594,6 @@ export const companyById = async (req, res) => {
 
 
                     if (phone) {
-                        actionUrl.param.contact = 'update'
                         steps.contacts = completedStep
                         visibility.contacts = hidden
                         submitProps.contacts = saveSubmit
@@ -260,12 +614,10 @@ export const companyById = async (req, res) => {
                                     efs, fleetOne, transflo,
                                 } = data
 
-                                actionUrl.dir.credentials = 'add'
                                 steps.credentials = activeStep
                                 visibility.credentials = ''
 
                                 if (mc && usdot) {
-                                    actionUrl.param.credentials = 'update'
                                     steps.credentials = completedStep
                                     steps.confirmation = activeStep
                                     visibility.credentials = hidden
@@ -412,7 +764,7 @@ export const companyById = async (req, res) => {
         res.render(key, hbs)
 
     } catch (err) {
-        sendError.server(req, res, err)
+        sendError.server(res, err)
     }
 }
 
@@ -503,6 +855,6 @@ export const companyByCategoryAndRoute = async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(req, res, err)
+        sendError.server(res, err)
     }
 }

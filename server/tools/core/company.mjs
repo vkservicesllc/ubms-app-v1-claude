@@ -129,12 +129,13 @@ class Company {
             return { found: !!data, data }
         },
         split(body) {
-            const { category, ein, duns, since, busName, coType, alias } = body
+            const { category, ein, duns, since, busName, coType, alias, website } = body
 
             body = {
-                main: { category, ein, duns, since },
+                main: { category, since, duns, website },
                 name: { since, busName, coType, alias },
             }
+            if (ein) body.main.ein = ein
 
             return body
         },
@@ -224,7 +225,7 @@ class Company {
                 const {
                     id, _id, ein, duns, busName, coType, alias, route,
                     ids, _ids, ownerId, _ownerId, category, global, lastLogo,
-                    closed = false, confirmed = true, active, // Combined when undefined
+                    closed, confirmed, active, // Combined when undefined
                 } = filter
                 const single = !!id || !!_id || !!ein || !!duns || !!(busName && coType) || !!alias || !!route
 
@@ -369,7 +370,7 @@ class Owner extends Individual {
     })
 
 
-    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Owner.config().defSorts, mode }) => classStatic.fetch(this, session, filter, {
+    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Owner.config().defSorts, mode } = {}) => classStatic.fetch(this, session, filter, {
         hideRawId, hideSensitive, sorts, mode,
     }, {
         removeFullGroupBy: true,

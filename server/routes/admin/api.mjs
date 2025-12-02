@@ -37,12 +37,11 @@ router.post('/list/users', User.mw.verify, async (req, res) => {
 router.post('/list/companies', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser, client } = res.session
-        let closed, confirmed // combine active/closed & confirmed/unconfirmed
 
         if (!sessionUser.DS)
-            return res.json({ client, data: await sessionUser.fetch('jx.companies', { hideRawId, filter: { closed } }) })
+            return res.json({ client, data: await sessionUser.fetch('jx.companies', { hideRawId, filter: { closed: false, confirmed: true } }) })
 
-        res.json({ client, data: await Company.fetch(res.session, { closed, confirmed }, { hideRawId }) })
+        res.json({ client, data: await Company.fetch(res.session, {}, { hideRawId }) })
     } catch(err) {
         sendError.server(req, res, err)
     }

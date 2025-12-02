@@ -64,7 +64,7 @@ const source = {
     'user': [ User, '/online/users' ],
     'role': [ Role, '/online/users' ],
     'team': [ Team, '/online/teams' ],
-    'company': [ Company, '/business/companies' ],
+    'company': [ Company, '/business/companies', '/business/company/' ],
     'company-owner': [ Owner, '/business/company-owners' ],
 
     ext(src, inst) {
@@ -84,6 +84,18 @@ const source = {
 
 
 // ==== INSERT/UPDATE ROUTES ==== //
+
+
+router.post('/insert/company', User.mw.verify, User.mw.superAdminOnly, validateCompany, validationCheck, async (req, res) => {
+    try {
+        const { data: company } = await Company.create(res.session, req.body)
+        if (!company) throw new Error('Failed to register company')
+
+        res.redirect(source .company[2] + company._id)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
 
 
 router.post('/upsert/user', User.mw.verify, async (req, res, next) => {

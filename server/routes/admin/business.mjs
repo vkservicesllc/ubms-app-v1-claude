@@ -33,7 +33,7 @@ router.get('/companies', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -66,7 +66,7 @@ router.get('/company-owners', User.mw.verify, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -79,7 +79,7 @@ router.get('/branches', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
