@@ -84,7 +84,7 @@
                             <p class="mt-3 mb-2">
                                 Enter the company's Alias Code:
                             </p>
-                            <form id="company-delete-form" action="/resource/company/{{{_id}}}/delete" method="POST" autocomplete="off">
+                            <form id="company-delete-form" action="/resource/delete/company/{{{_id}}}" method="POST" autocomplete="off">
                                 {{{form.confirmAlias.text.input}}}
                                 <script type="module">
                                     import selector from '/modules/registry/selectors/company.mjs'

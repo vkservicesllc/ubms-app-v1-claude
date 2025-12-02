@@ -250,13 +250,16 @@ router.post('/update/team/settings', User.mw.verify, User.mw.superAdminOnly, asy
 // ==== DELETE ROUTES ==== //
 
 
-router.post('/delete/:src', User.mw.verify, async (req, res) => {
+router.post('/delete/:src/:_id?', User.mw.verify, async (req, res) => {
     try {
         const { src } = req.params
         if (src !== 'user' && res.session.user.status === 'A')
             throw new Error('Access to this path is granted to Super Admin only<br><a href="/">Home</a>')
 
-        const { _id } = req.body
+        let { _id } = req.params
+        if (!_id) ({ _id } = req.body)
+        if (!_id) throw new Error('Identifier not supplied')
+
         const [ Src, redirUrl ] = source[src]
 
         const inst = await Src.fetch(res.session, { _id })
