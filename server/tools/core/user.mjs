@@ -29,6 +29,7 @@ import { generateRandomString } from '../utils/string.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
+import { utcTimeStamp } from '../utils/date.mjs'
 
 const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
@@ -967,6 +968,11 @@ class User extends Person {
                 const { _id } = req.params
                 const user = await User.fetch(res.session, { _id })
                 if (!user) throw new Error('User not found')
+
+                const [ result ] = await mysql.execute(query.user.registration.update({
+                    invitedAt: utcTimeStamp(),
+                }, { userId: user.id }))
+                if (!result.affectedRows) throw new Error('Failed to update invitation time')
 
                 await user.invite()
 

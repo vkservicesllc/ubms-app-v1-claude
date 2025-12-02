@@ -57,7 +57,9 @@ export const calculateYearAge = (date, asOf = null) => {
 
 
 export const calculateHourAge = date => {
+console.log('supplied date: ', date, typeof date)
     if (typeof date == 'string') date = getDateFromString(date)
+console.log('date: ', date)
     if (!date) return
 
     const today = new Date

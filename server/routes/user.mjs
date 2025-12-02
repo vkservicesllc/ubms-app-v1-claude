@@ -12,6 +12,7 @@ import { query } from '../settings/mysql.mjs'
 import length from '../../client/global/modules/registry/length.mjs'
 
 /* Tools */
+import moment from 'moment'
 import Site from '../tools/core/site.mjs'
 import User, { Token } from '../tools/core/user.mjs'
 import { respond404 } from '../tools/utils/response.mjs'
@@ -288,11 +289,11 @@ router.get('/register/:_id', async (req, res) => {
         hbs.validForm = true
         hbs.expiredForm = false
 
-        const user = await User.fetch(res.session, { _id }, { offline: true, hideTimeLog: false })
+        const user = await User.fetch(res.session, { _id }, { offline: true, hideEvents: false })
         if (!user) return respond404(res)
 
         if (user.username) hbs.userRegistered = true
-        else if (!formId || user.log.declinedAt) hbs.validForm = false
+        else if (!formId || user.events.declinedAt) hbs.validForm = false
 
         else {
             const userId = user.id
@@ -303,12 +304,14 @@ router.get('/register/:_id', async (req, res) => {
             if (!rows.length) hbs.validForm = false
             else {
                 const { invitedAt } = rows[0]
+
                 const weekDay = new Date(invitedAt).getDay()
                 let limit = 24
                 if (weekDay === 4) limit = 72
                 if (weekDay === 5) limit = 48
+                const difference = moment().diff(moment(invitedAt, 'YYYY-MM-DD HH:mm:ss'), 'hours')
 
-                if (calculateHourAge(invitedAt) > limit) hbs.expiredForm = true
+                if (difference > limit) hbs.expiredForm = true
                 else {
                     hbs.user = {}
 
