@@ -415,10 +415,12 @@ class Owner extends Individual {
         ],
         prepare(batch, filter) {
             const categories = Company.list.category
-            for (const category in categories)
+            for (const category in categories) {
+                if (typeof categories[category] === 'function') continue
                 batch[5].fields.push({
                     countCase: [ { category }, `${categories[category].path[0]}Count` ],
                 })
+            }
 
             const {
                 id, _id, ssn,

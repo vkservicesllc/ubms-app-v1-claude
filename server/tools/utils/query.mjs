@@ -568,10 +568,10 @@ class Query {
                 }
 
                 else if ('sha2' in value) {
+                    let { length } = value
                     value = value.sha2
                     if (empty(value)) continue
 
-                    let { length } = value
                     if (length) {
                         let secondLength
                         if (Array.isArray(length))
