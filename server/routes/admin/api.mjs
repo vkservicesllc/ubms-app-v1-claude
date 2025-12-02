@@ -211,7 +211,7 @@ router.post('/update/:src/:_id/:action/:target/:_relId', User.mw.verify, User.mw
 
         const inst = await Src.fetch(res.session, { _id })
         if (!inst) throw new Error(`${Src.name} not found`)
-//! HUGE PROBLEM WHEN ALGORYTHM IS NOT MD5 or SHA-1 AND _ids IS ARRAYS
+
         const { added, deleted } = await inst[action](`jx.${target}`, [ _relId ])
 
         res.json({ done: action === 'add' ? added : deleted })

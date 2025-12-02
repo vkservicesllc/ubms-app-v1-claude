@@ -561,9 +561,10 @@ class Query {
                     value = value[prop]
                     if (empty(value)) continue
 
-                    if (Array.isArray(value))
-                        [ value, operator, extension ] = combine(value)
-                    else value = Query.#value(value)
+                    if (Array.isArray(value)) {
+                        if (value.length) [ value, operator, extension ] = combine(value)
+                        else value = Query.#value(null)
+                    } else value = Query.#value(value)
                     field = { [prop]: field }
                 }
 
@@ -579,9 +580,10 @@ class Query {
                         field = [ field, length, secondLength ]
                     }
 
-                    if (Array.isArray(value))
-                        [ value, operator, extension ] = combine(value)
-                    else value = Query.#value(value)
+                    if (Array.isArray(value)) {
+                        if (value.length) [ value, operator, extension ] = combine(value)
+                        else value = Query.#value(null)
+                    } else value = Query.#value(value)
                     field = { sha2: field }
                 }
 
@@ -621,7 +623,7 @@ class Query {
 
 
         function empty(value) {
-            return value === undefined || typeof value === 'undefined' || (Array.isArray(value) && value[0] === undefined)
+            return value === undefined || typeof value === 'undefined'
         }
 
         function combine(originalValues, eq = true) {

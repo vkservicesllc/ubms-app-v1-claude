@@ -413,7 +413,7 @@ const displayTeams = () => {
 
                         let list = '<div class="field">'
                         data.all.forEach(item => {
-                            let attr = ` data-type="${relType}" data-id="${item._id}" disabled`
+                            let attr = ` data-type="${relType}" data-id="${item._id}"`
                             if (item.applied) attr += ' checked'
                             list += '<div class="control"><label class="checkbox">'
                             list += `<input type="checkbox" class="modify-team-relationship"${attr} />&nbsp; ${item.name}`
@@ -434,7 +434,7 @@ const displayTeams = () => {
                                 method: 'POST',
                                 success(response) {
                                     const { done } = response
-                                    alert(done) //! TEMP
+                                    if (!done) alert('Oops! Something went wrong!')
                                 },
                                 error(err) {
                                     console.error(err)
