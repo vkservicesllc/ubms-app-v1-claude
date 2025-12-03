@@ -62,6 +62,15 @@ class Individual extends Person {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
+            this.delete = (target, sinceOrIds) => classInstance.delete(this, new.target, target, sinceOrIds, {
+                extendLog(person, log) {
+                    //! REMOVE REDUNDANT
+                    //! ATTACH HISTORY
+                    return person
+                },
+            })
+
+
             this.log = params => classInstance.log(this, new.target, params)
         }
     }

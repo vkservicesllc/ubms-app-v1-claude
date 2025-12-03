@@ -136,6 +136,7 @@ export const classInstance = {
         let { match = {} } = body
         if (target === 'main') match = {}
         delete body.match
+        //! const { since } = match
 
         const config = Cls.config()
         const idProp = target === 'main' ? 'id' : config.idProp
@@ -206,18 +207,22 @@ export const classInstance = {
 
         if (typeof handle === 'function') {
             const handled = await handle()
-            if (handled === true) return true
-        }
+            if (handled === true) return { deleted: true }
+        } else if (!handle) handle = {}
+
+        const { extendLog } = handle
 
         const { query, logDeleted = true, logFile } = Cls.config()
         const { id } = inst
-        const log = logDeleted && logFile ? await inst.log() : null
+        let log = logDeleted && logFile ? await inst.log() : null
 
         const [ result ] = await mysql.execute(query.main.delete({ id }))
         if (!result.affectedRows) return { deleted: false }
 
         if (log) {
             for (const prop in log) inst[prop] = log[prop]
+            if (typeof extendLog === 'function') inst = await extendLog(inst, log)
+
             await logDeletion(inst.session, logFile, inst, { id })
         }
 

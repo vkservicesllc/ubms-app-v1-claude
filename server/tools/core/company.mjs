@@ -103,6 +103,28 @@ class Company {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
+            this.update = (targetOrBody, body) => classInstance.update(this, new.target, targetOrBody, body, {
+                currentData(target) {
+                    let currentData = {}
+
+                    switch (target) {
+                        //
+                    }
+
+                    return currentData = {}
+                },
+            })
+
+
+            this.delete = (target, sinceOrIds) => classInstance.delete(this, new.target, target, sinceOrIds, {
+                extendLog(company, log) {
+                    //! REMOVE REDUNDANT
+                    //! ATTACH HISTORY
+                    return company
+                },
+            })
+
+
             this.log = params => classInstance.log(this, new.target, params)
         }
     }
@@ -334,6 +356,29 @@ class Owner extends Individual {
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.delete = () => classInstance.delete(this, new.target, null, null, {
+                extendLog(owner, log) {
+                    const reduntant = [
+                        'gender',
+                        'prefix',
+                        'firstName',
+                        'middleName',
+                        'lastName',
+                        'suffix',
+                        'alias',
+                        'age',
+                        'count',
+                    ]
+
+                    for (const prop of reduntant) delete owner[prop]
+
+                    //! ATTACH HISTORY
+
+                    return owner
+                },
+            })
 
 
             this.log = params => classInstance.log(this, new.target, params)
