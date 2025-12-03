@@ -182,6 +182,11 @@ export const companyById = async (req, res) => {
             data = await Company.fetch(res.session, { _id })
             if (!data) return respond404(res)
 
+            if (data.confirmed) {
+                let url = `/business/${Company.list.category[data.category].path[1]}/${data.route}`
+                return res.redirect(url)
+            }
+
             {({ _id, category, since, ein, duns, busName, coType, alias, website } = data)}
 
             const { name, owner } = data

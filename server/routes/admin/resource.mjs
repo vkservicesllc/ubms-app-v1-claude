@@ -246,6 +246,48 @@ router.post('/update/team/settings', User.mw.verify, User.mw.superAdminOnly, asy
 })
 
 
+router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, validateCompany, validationCheck, async (req, res) => {
+    try {
+        const { _id } = req.params
+        const company = await Company.fetch(res.session, { _id })
+        if (!company) throw new Error('Company not found')
+
+        await company.update(req.body)
+
+        res.redirect(source .company[2] + company._id)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/update/company/:_id/:action/:target', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { _id, action, target } = req.params
+        const company = await Company.fetch(res.session, { _id })
+        if (!company) throw new Error('Company not found')
+
+        switch (target) {
+
+            case 'ownership':
+                //! not decided
+                break
+
+            case 'address':
+                break
+
+            case 'contacts':
+                break
+
+        }
+
+        res.redirect(source .company[2] + company._id)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== DELETE ROUTES ==== //
 

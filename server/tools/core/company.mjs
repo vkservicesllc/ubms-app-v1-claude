@@ -42,9 +42,9 @@ class Company {
         this.duns = data.duns
         this.website = data.website
         this.route = data.route
-        this.active = data.active
-        this.confirmed = data.confirmed
-        this.global = data.global
+        this.active = !!data.active
+        this.confirmed = !!data.confirmed
+        this.global = !!data.global
         this.name = data.name
         this.busName = data.busName
         this.coType = data.coType
