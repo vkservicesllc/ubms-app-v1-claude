@@ -111,7 +111,7 @@ const source = {
 
 router.post('/insert/company', User.mw.verify, User.mw.superAdminOnly, validateCompany, validationCheck, async (req, res) => {
     try {
-        delete req.body.match
+        delete req.body._match
 
         const { data: company } = await Company.create(res.session, req.body)
         if (!company) throw new Error('Failed to register company')
@@ -277,7 +277,7 @@ router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, vali
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
-        const { since, ein, duns, busName, coType, alias, website, match } = req.body
+        const { since, ein, duns, busName, coType, alias, website, _match: match } = req.body
 
         await company.update({ since, ein, duns, website })
         await company.update('name', { since, busName, coType, alias }, match)
@@ -295,17 +295,20 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
-        if (action === 'add' && !req.body.since)
-            req.body.since = company.since
-        if (action === 'update' && !match.since)
+        const { _match: match } = req.body
+        delete req.body._match
 
         switch (step) {
 
             case 'ownership':
-                if (action === 'add') await company.add(step, req.body)
-                if (action === 'update') {
-                    //
-                }
+                const { _ownerId: _id, since = company.since } = req.body
+                const owner = await Owner.fetch(res.session, { _id })
+                if (!owner) throw new Error('Company owner not found')
+
+                const ownerId = owner.id
+
+                if (action === 'update') await company.delete(step, match)
+                await company.add(step, { ownerId, since })
                 break
 
             case 'address':

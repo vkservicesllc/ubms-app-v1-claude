@@ -160,7 +160,7 @@ export const classInstance = {
     },
 
 
-    delete: async (inst, Cls, target = null, sinceOrIds, handle) => {
+    delete: async (inst, Cls, target = null, matchOrIds, handle) => {
         const { user: sessionUser } = inst.session || {}
         if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Session user not supplied`)
 
@@ -174,12 +174,12 @@ export const classInstance = {
             const { jxTargets } = Cls.config()
             if (!jxTargets) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Junction targets not found`)
 
-            if (!Array.isArray(sinceOrIds) || !sinceOrIds.length) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Invalid ids supplied`)
+            if (!Array.isArray(matchOrIds) || !matchOrIds.length) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Invalid ids supplied`)
 
             const [ jxQuery, jxIdProp, Src ] = jxTargets[target]
             let ids, _ids
-            if (typeof sinceOrIds[0] === 'number') ids = sinceOrIds
-            if (typeof sinceOrIds[0] === 'string') _ids = sinceOrIds
+            if (typeof matchOrIds[0] === 'number') ids = matchOrIds
+            if (typeof matchOrIds[0] === 'string') _ids = matchOrIds
             if (!ids && !_ids) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Invalid id types supplied`)
 
             if (!ids) {
@@ -192,10 +192,10 @@ export const classInstance = {
 
             return { deleted: result.affectedRows > 0 }
         } else if (target) {
-            const since = sinceOrIds
+            const match = matchOrIds || {}
 
             const { query } = Cls.config()
-            const [ result ] = await mysql.execute(query[target].delete({ [idProp]: inst.id, since }))
+            const [ result ] = await mysql.execute(query[target].delete({ [idProp]: inst.id, ...match }))
 
             return { deleted: result.affectedRows > 0 }
         }
