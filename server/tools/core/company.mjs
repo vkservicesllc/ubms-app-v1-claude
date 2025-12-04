@@ -100,10 +100,13 @@ class Company {
             this.session = session
 
 
+            this.add = (target, bodyOrIds) => classInstance.add(this, new.target, target, bodyOrIds)
+
+
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
-            this.update = (targetOrBody, body) => classInstance.update(this, new.target, targetOrBody, body, {
+            this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
                 currentData(target) {
                     let currentData = {}
 

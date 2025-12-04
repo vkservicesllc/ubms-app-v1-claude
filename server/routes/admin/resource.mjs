@@ -59,6 +59,29 @@ const carrierFields = ['mc', 'usdot', 'ifta', 'scac', 'irp', 'efs', 'fleetOne', 
 Object.keys(Carrier.list.permit).forEach(prop => carrierFields.push(`${prop}Permit`))
 carrierFields.map(prop => validateCarrier.push(CarrierForm[prop].validate()))
 
+const dynamicValidator = {
+    companies: (req, res, next) => {
+        const { step } = req.params
+        let validators
+
+        switch (step) {
+            case 'ownership':
+                validators = []
+                break
+            case 'address':
+                validators = []
+                break
+            case 'contacts':
+                validators = []
+                break
+        }
+
+        Promise.all(validators.map(validator => validator.run(req)))
+            .then(() => next())
+            .catch(next)
+    },
+}
+
 
 const source = {
     'user': [ User, '/online/users' ],
@@ -88,6 +111,8 @@ const source = {
 
 router.post('/insert/company', User.mw.verify, User.mw.superAdminOnly, validateCompany, validationCheck, async (req, res) => {
     try {
+        delete req.body.match
+
         const { data: company } = await Company.create(res.session, req.body)
         if (!company) throw new Error('Failed to register company')
 
@@ -252,7 +277,10 @@ router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, vali
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
-        await company.update(req.body)
+        const { since, ein, duns, busName, coType, alias, website, match } = req.body
+
+        await company.update({ since, ein, duns, website })
+        await company.update('name', { since, busName, coType, alias }, match)
 
         res.redirect(source .company[2] + company._id)
     } catch (err) {
@@ -261,22 +289,45 @@ router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, vali
 })
 
 
-router.post('/update/company/:_id/:action/:target', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.applications, validationCheck, async (req, res) => {
     try {
-        const { _id, action, target } = req.params
+        const { _id, action, step } = req.params
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
-        switch (target) {
+        if (action === 'add' && !req.body.since)
+            req.body.since = company.since
+        if (action === 'update' && !match.since)
+
+        switch (step) {
 
             case 'ownership':
-                //! not decided
+                if (action === 'add') await company.add(step, req.body)
+                if (action === 'update') {
+                    //
+                }
                 break
 
             case 'address':
+                if (action === 'add') {
+                    // add physical addr
+                    // add mail addr if supplied
+                } else {
+                    // update physical addr
+                    // add/delete or update mail addr
+                }
                 break
 
             case 'contacts':
+                if (action === 'add') {
+                    // add phone
+                    // add fax if supplied
+                    // add email if supplied
+                } else {
+                    // update phone
+                    // add/update/delete fax
+                    // add/update/delete email
+                }
                 break
 
         }

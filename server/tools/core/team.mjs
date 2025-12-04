@@ -62,7 +62,7 @@ class Team {
             this.update = (targetOrBody, body) => {
                 const team = this
 
-                return classInstance.update(this, new.target, targetOrBody, body, {
+                return classInstance.update(this, new.target, targetOrBody, body, {}, {
                     currentData(target) {
                         let data
                         switch (target) {

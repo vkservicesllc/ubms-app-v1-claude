@@ -124,7 +124,7 @@ export const classInstance = {
     },
 
 
-    update: async (inst, Cls, targetOrBody, body, { currentData, final } = {}) => {
+    update: async (inst, Cls, targetOrBody, body, match = {}, { currentData, final } = {}) => {
         const { enforceUser = true, enforceLocation = false } = Cls.config()
         const { user: sessionUser, branch, siteId } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session user not supplied`)
@@ -132,11 +132,6 @@ export const classInstance = {
         let target = 'main'
         if (typeof targetOrBody === 'string') target = targetOrBody
         else body = targetOrBody
-
-        let { match = {} } = body
-        if (target === 'main') match = {}
-        delete body.match
-        //! const { since } = match
 
         const config = Cls.config()
         const idProp = target === 'main' ? 'id' : config.idProp
