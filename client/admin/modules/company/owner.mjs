@@ -88,15 +88,13 @@ $trigger.option.click(() => {
                 const { dob } = data
 
                 if ($option.edit.is(':checked')) {
-                    const { firstName, middleName, lastName, suffix, ssn } = data
-                    let { gender } = data
-                    if (gender) [ gender ] = gender
+                    const { firstName, middleName, lastName, suffix, gender, ssn } = data
 
                     $(firstNameId).val(firstName)
                     $(middleNameId).val(middleName)
                     $(lastNameId).val(lastName)
                     $(suffixId).val(suffix)
-                    $(genderId).val(gender)
+                    if (gender !== 'X') $(genderId).val(gender).find('option[value=""]').remove()
                     $(dobId).val(reformatDateString(dob, 'us'))
                     if (ssn) $(ssnId).val(formatSsn(ssn))
 
