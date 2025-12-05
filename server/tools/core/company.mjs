@@ -348,6 +348,7 @@ class Owner extends Individual {
 
         const categories = Company.list.category
         for (const category in categories) {
+            if (typeof categories[category] === 'function') continue
             const path = categories[category].path[0]
             props2.count[path] = data[`${path}Count`]
         }
@@ -407,9 +408,9 @@ class Owner extends Individual {
 
             let person
             if (ssn) person = await Individual.fetch(session, { ssn })
-            if (person?.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
+            if (person && person.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
 
-            if (!person) ({ person } = await Individual.create(session, body))
+            if (!person) person = (await Individual.create(session, body)).data
 
             body = { main: { personId: person.id } }
 

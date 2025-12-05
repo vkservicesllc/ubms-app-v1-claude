@@ -294,7 +294,7 @@ export const classStatic = {
             for (const target in body) {
                 body[target][idProp] = id
                 if (sessionUser?.id) body[target].createdBy = sessionUser.id
-                if (enforceLocation) body[main].createdIn = createdIn
+                if (enforceLocation) body[target].createdIn = createdIn
 
                 const [ result ] = await mysql.execute(query[target].insert(body[target]))
                 if (!result.affectedRows) throw new Error(`Failed to create ${Cls.name.toLowerCase()}'s ${target}`)

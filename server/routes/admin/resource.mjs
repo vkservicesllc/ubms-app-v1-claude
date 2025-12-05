@@ -221,7 +221,7 @@ router.post('/upsert/team', User.mw.verify, User.mw.superAdminOnly, validateTeam
 
 router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, validateOwner, validationCheck, async (req, res) => {
     try {
-        const { company: _companyId, since } = req.query
+        const { company: _companyId } = req.query
         const { _id } = req.body
         delete req.body._id
 
@@ -232,6 +232,8 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, val
             if (_companyId) {
                 const company = await Company.fetch(res.session, { _id: _companyId })
                 if (!company) throw new Error('Company not found')
+
+                const { since = company.since } = req.query
 
                 await company.delete('ownership', { since })
                 await company.add('ownership', { ownerId: owner.id, since })
@@ -319,7 +321,7 @@ router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, vali
 })
 
 
-router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.applications, validationCheck, async (req, res) => {
+router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.companies, validationCheck, async (req, res) => {
     try {
         const { _id, action, step } = req.params
         const company = await Company.fetch(res.session, { _id })

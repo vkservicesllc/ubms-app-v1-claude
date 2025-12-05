@@ -110,9 +110,10 @@ class Individual extends Person {
             } = body
 
             body = {
-                main: { dob, sex, ssn },
-                name: { prefix, firstName, middleName, lastName, suffix, alias, },
+                main: { dob, sex },
+                name: { since: dob, prefix, firstName, middleName, lastName, suffix, alias, },
             }
+            if (ssn) body.main.ssn = ssn
 
             return body
         },
@@ -129,7 +130,7 @@ class Individual extends Person {
             batch: [
                 {
                     table: query.person.main.table,
-                    fields: [ Individual.hashId(), 'dob', 'sex', { aes: [ 'ssn', secret ] } ],
+                    fields: [ 'id', Individual.hashId(), 'dob', 'sex', { aes: [ 'ssn', secret ] } ],
                     group: 'id',
                 },
                 {

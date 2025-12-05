@@ -14,14 +14,14 @@
                 {{#if (
                     or
                         (eq data._id 'new')
-                        (eq data.confirmed 0)
+                        (eq data.confirmed false)
                 )}}
                 {{> admin/company/steps}}
                 <h1 class="subtitle has-text-centered">{{{contentTitle}}}</h1>
 
                 {{> admin/company/record}}
                 {{/if}}
-                {{#if (eq data.confirmed 0)}}
+                {{#if (eq data.confirmed false)}}
                 {{#if (
                     or
                         (hv data._id)
@@ -33,7 +33,7 @@
                 {{/if}}
                 {{#if (
                     and
-                        (eq data.confirmed 0)
+                        (eq data.confirmed false)
                         (hv data.owner._id)
                 )}}
 
@@ -41,7 +41,7 @@
                 {{/if}}
                 {{#if (
                     and
-                        (eq data.confirmed 0)
+                        (eq data.confirmed false)
                         (hv data.address.physical.zip)
                 )}}
 
@@ -49,7 +49,7 @@
                 {{/if}}
                 {{#if (
                     and
-                        (eq data.confirmed 0)
+                        (eq data.confirmed false)
                         (hv data.phone)
                 )}}
                 {{#if (eq data.catId 'crr')}}
@@ -60,7 +60,7 @@
                 {{#if (
                     or
                         (eq data.confirmed 1)
-                        ( and (eq data.confirmed 0) (eq data.catId 'crr') (hv data.mc) (hv data.usdot) )
+                        ( and (eq data.confirmed false) (eq data.catId 'crr') (hv data.mc) (hv data.usdot) )
                 )}}
                 {{> admin/company/card}}
                 {{/if}}
