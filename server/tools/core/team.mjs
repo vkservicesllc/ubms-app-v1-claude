@@ -63,8 +63,7 @@ class Team {
                 const team = this
 
                 return classInstance.update(this, new.target, targetOrBody, body, {}, {
-                    currentData(target) {
-                        let data
+                    currentData(target, data) {
                         switch (target) {
                             case 'profile':
                                 const { profile } = team
@@ -74,6 +73,7 @@ class Team {
                                 data = { ...profile, ...address }
                                 break
                         }
+
                         return data
                     }
                 })

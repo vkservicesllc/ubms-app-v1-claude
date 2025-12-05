@@ -222,8 +222,9 @@ router.post('/upsert/team', User.mw.verify, User.mw.superAdminOnly, validateTeam
 router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, validateOwner, validationCheck, async (req, res) => {
     try {
         const { company: _companyId } = req.query
-        const { _id } = req.body
+        const { _id, _match: match = {} } = req.body
         delete req.body._id
+        delete req.body._match
 
         if (!_id) {
             const { data: owner } = await Owner.create(res.session, req.body)
@@ -240,7 +241,7 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, val
             }
         } else {
             const owner = await Owner.fetch(res.session, { _id })
-            await owner.update(req.body)
+            await owner.update(req.body, match)
         }
 
         res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][1])

@@ -62,6 +62,28 @@ class Individual extends Person {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
+            this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
+                currentData(target, data) {
+                    switch (target) {
+                        //
+                    }
+
+                    return data
+                },
+                async final(person, body) {
+                    if (!body.dob || body.dob === person.dob) return
+
+                    let keys = Object.keys(query.person)
+                    keys = keys.filter(key => !['main', 'identification'].includes(key))
+
+                    for (const target of keys)
+                        await mysql.execute(query.person[target].update({ since: body.dob }, {
+                            personId: person.id, since: person.dob,
+                        }))
+                },
+            })
+
+
             this.delete = (target, sinceOrIds) => classInstance.delete(this, new.target, target, sinceOrIds, {
                 extendLog(person, log) {
                     //! REMOVE REDUNDANT
@@ -71,7 +93,10 @@ class Individual extends Person {
             })
 
 
-            this.log = params => classInstance.log(this, new.target, params)
+            this.log = params => classInstance.log(this, new.target, params, [
+                ...classInstance.logFields,
+                'createdIn',
+            ])
         }
     }
 
@@ -108,7 +133,7 @@ class Individual extends Person {
                 dob, sex, ssn,
                 prefix, firstName, middleName, lastName, suffix, alias,
             } = body
-console.log({ ssn })
+
             body = {
                 main: { dob, sex },
                 name: { since: dob, prefix, firstName, middleName, lastName, suffix, alias, },

@@ -145,13 +145,11 @@ export const classInstance = {
         options.currentData = inst
         options.currentUpdateLog = await inst.log({ target, field: 'updateLog' })
 
-        if (target !== 'main' && typeof currentData === 'function')
-            options.currentData = await currentData(target)
+        if (typeof currentData === 'function') options.currentData = await currentData(target, options.currentData)
 
         body = processData(body, options)
         if (body?.ssn !== undefined) body.ssn = { aes: [ body.ssn, secret.ssn ] }
         if (body?.ein !== undefined) body.ein = { aes: [ body.ein, secret.ein ] }
-
 
         const [ result ] = await mysql.execute(config.query[target].update(body, {
             [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
@@ -246,7 +244,6 @@ export const classInstance = {
         const config = Cls.config()
         const idProp = target === 'main' ? 'id' : config.idProp
         const match = { [idProp]: inst.id || Cls.matchIdHash(inst._id), since }
-
         const log = (await mysql.execute(config.query[target].select(fields, { match })))[0][0]
 
         return fields.includes(field) ? log[field] : log

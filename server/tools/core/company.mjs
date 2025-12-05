@@ -108,14 +108,12 @@ class Company {
 
 
             this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
-                currentData(target) {
-                    let currentData = {}
-
+                currentData(target, data) {
                     switch (target) {
                         //
                     }
 
-                    return currentData = {}
+                    return data
                 },
             })
 
@@ -360,22 +358,33 @@ class Owner extends Individual {
             this.session = session
 
 
+            //? NOT SURE HOW IT IS TO BE USED
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
-            this.update = async (body) => {
+            this.update = async (body, { since } = {}) => {
                 if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
 
-                const person = Individual.fetch(this.session, { id: this.personId })
+                const { signature } = body
+                if (typeof signature === 'boolean') {
+                    const [ result ] = await mysql.execute(query.company_owner.main.update({ signature }, { id: this.id }))
+                    return { updated: result.affectedRows > 0 }
+                }
+
+                const person = await Individual.fetch(this.session, { id: this.personId }, { hideSensitive: false })
                 if (!person) throw new Error('Person not identified')
 
-                console.log(body)
-                const { dob, sex, ssn, firstName, middleName, lastName, suffix, since } = body
-                await person.update({ dob, sex, ssn })
-                await person.update('name', { firstName, middleName, lastName, suffix }, { since: since || dob })
+                const { dob, sex, ssn, firstName, middleName, lastName, suffix, phone } = body
+
+                const { updated } = await person.update({ dob, sex, ssn })
+                const { updated: nameUpdated } = await person.update('name', { firstName, middleName, lastName, suffix }, { since: since || dob })
+                const { updated: phoneUpdated } = person.phone ? await person.update('phone', { phone }, { since: since || dob }) : { updated: false }
+
+                return { updated: updated || nameUpdated || phoneUpdated }
             }
 
 
+            //? NOT SURE HOW IT IS TO BE USED EXCEPT DELETING THE OWNER
             this.delete = () => classInstance.delete(this, new.target, null, null, {
                 extendLog(owner, log) {
                     const reduntant = [
@@ -437,23 +446,6 @@ class Owner extends Individual {
 
         return { created: true, data: await Owner.fetch(session, { id } )}
     }
-
-
-    static createOLD = (session, body, params) => classStatic.create(this, session, body, params, {
-        async split(body) {
-            const { ssn, dob } = body
-
-            let person
-            if (ssn) person = await Individual.fetch(session, { ssn })
-            if (person && person.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
-
-            if (!person) person = (await Individual.create(session, body)).data
-
-            body = { main: { personId: person.id } }
-
-            return body
-        },
-    })
 
 
     static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Owner.config().defSorts, mode } = {}) => classStatic.fetch(this, session, filter, {
