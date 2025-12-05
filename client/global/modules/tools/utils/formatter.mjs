@@ -1,10 +1,10 @@
 export default numStr => numStr ? numStr.replace(/[\s+\(\)\-]/g, '') : null
 
 
-export const tel = numStr => numStr ? `(${numStr.substr(0, 3)}) ${numStr.substr(3, 3)}-${numStr.substr(6, 4)}` : null
+export const tel = numStr => numStr ? `(${numStr.substr(0, 3)}) ${numStr.substr(3, 3)}-${numStr.substr(6, 4)}` : undefined
 
 export const ssn = (numStr, mask = null) => {
-    if (!numStr) return null
+    if (!numStr) return
 
     const chunks = [
         numStr.substring(0, 3),
@@ -20,6 +20,6 @@ export const ssn = (numStr, mask = null) => {
     return chunks.join('-')
 }
 
-export const ein = numStr => numStr ? `${numStr.substring(0, 2)}-${numStr.substring(2, 9)}` : null
+export const ein = numStr => numStr ? `${numStr.substring(0, 2)}-${numStr.substring(2, 9)}` : undefined
 
-export const duns = numStr => numStr ? `${numStr.substring(0, 2)}-${numStr.substring(2, 4)}-${numStr.substring(4, 9)}` : null
+export const duns = numStr => numStr ? `${numStr.substring(0, 2)}-${numStr.substring(2, 4)}-${numStr.substring(4, 9)}` : undefined

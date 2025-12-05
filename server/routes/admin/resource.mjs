@@ -306,7 +306,7 @@ router.post('/update/team/settings', User.mw.verify, User.mw.superAdminOnly, asy
 router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, validateCompany, validationCheck, async (req, res) => {
     try {
         const { _id } = req.params
-        const company = await Company.fetch(res.session, { _id })
+        const company = await Company.fetch(res.session, { _id }, { hideSensitive: false })
         if (!company) throw new Error('Company not found')
 
         const { since, ein, duns, busName, coType, alias, website, _match: match } = req.body

@@ -149,6 +149,9 @@ export const classInstance = {
             options.currentData = await currentData(target)
 
         body = processData(body, options)
+        if (body?.ssn !== undefined) body.ssn = { aes: [ body.ssn, secret.ssn ] }
+        if (body?.ein !== undefined) body.ein = { aes: [ body.ein, secret.ein ] }
+
 
         const [ result ] = await mysql.execute(config.query[target].update(body, {
             [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
@@ -272,8 +275,8 @@ export const classStatic = {
 
         body = processData(body)
 
-        if (body?.ssn) body.ssn = { aes: [ ssn, secret.ssn ] }
-        if (body?.ein) body.ein = { aes: [ ein, secret.ein ] }
+        if (body?.ssn) body.ssn = { aes: [ body.ssn, secret.ssn ] }
+        if (body?.ein) body.ein = { aes: [ body.ein, secret.ein ] }
 
         if (typeof split === 'function') body = await split(body)
         else body = { main: body }

@@ -179,7 +179,7 @@ export const companyById = async (req, res) => {
 
         /* Current Company */
         if (_id !== 'new') {
-            data = await Company.fetch(res.session, { _id })
+            data = await Company.fetch(res.session, { _id }, { hideSensitive: false })
             if (!data) return respond404(res)
 
             if (data.confirmed) {
