@@ -386,10 +386,34 @@ class Owner extends Individual {
                 if (!person) throw new Error('Person not identified')
 
                 const { dob, sex, ssn, firstName, middleName, lastName, suffix, phone } = body
+                body = {
+                    person: { dob, sex, ssn },
+                    name: { firstName, middleName, lastName, suffix },
+                    phone: { phone },
+                }
 
-                const { updated } = await person.update({ dob, sex, ssn })
-                const { updated: nameUpdated } = await person.update('name', { firstName, middleName, lastName, suffix }, { since: since || dob })
-                const { updated: phoneUpdated } = person.phone ? await person.update('phone', { phone }, { since: since || dob }) : { updated: false }
+                if (ssn && person.ssn && ssn !== ssn) {
+                    const person2 = await Individual.fetch(this.session, { ssn })
+
+                    if (person2) {
+                        if (person.dob !== person2.dob) throw new Error('Submitted SSN belongs to someone else with a different DOB')
+
+                        Object.keys(body).map(key => body[key] = {})
+
+                        body.main = processData({ personId: person2.id }, {
+                            currentData: this,
+                            currentUpdateLog: await this.log({ field: 'updateLog' }),
+                            modifiedBy: this.session.user.id,
+                        })
+
+                        const [ result ] = await mysql.execute(query.company_owner.main.update(body.main, { id: this.id }))
+                        return { updated: result.affectedRows > 0 }
+                    }
+                }
+
+                const { updated } = await person.update(body.main)
+                const { updated: nameUpdated } = await person.update('name', body.name, { since: since || dob })
+                const { updated: phoneUpdated } = person.phone ? await person.update('phone', body.phone, { since: since || dob }) : { updated: false }
 
                 return { updated: updated || nameUpdated || phoneUpdated }
             }
