@@ -243,7 +243,7 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, val
             await owner.update(req.body)
         }
 
-        res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][2])
+        res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][1])
     } catch (err) {
         sendError.server(req, res, err)
     }

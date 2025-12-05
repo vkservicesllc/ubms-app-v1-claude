@@ -26,11 +26,11 @@ import { addrBook } from '../../../../config.mjs'
 
 const sendError = require('../../../tools/utils/error')
 
-const url = {
-    company: '/business/company/',
-    companies: '/business/companies',
-    owners: '/business/company-owners',
-}
+// const url = {
+//     company: '/business/company/',
+//     companies: '/business/companies',
+//     owners: '/business/company-owners',
+// }
 
 const permits = Carrier.list.permit
 
@@ -173,7 +173,7 @@ export const companyById = async (req, res) => {
             steps[block] = step
             visibility[block] = hidden
         }
-        let category, since, ein, duns, busName, coType, alias, website
+        let category, since, ein, duns, busName, coType, alias, website, locked
         const checked = { mailAddress: '' }
 
 
@@ -187,7 +187,7 @@ export const companyById = async (req, res) => {
                 return res.redirect(url)
             }
 
-            {({ _id, category, since, ein, duns, busName, coType, alias, website } = data)}
+            {({ _id, category, since, ein, duns, busName, coType, alias, website, locked } = data)}
 
             const { name, owner } = data
             const { _id: _ownerId } = owner
@@ -380,6 +380,7 @@ export const companyById = async (req, res) => {
             if (since) since = moment(since).format('MM/DD/YYYY')
             const values = { category, since, ein, duns, busName, coType, alias, website }
             options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 6 })
+            options.category.select.input.disabled = locked
 
             const { content, style } = submitProps.record
             button.submit.record = submitButton('record-submit', content, style)

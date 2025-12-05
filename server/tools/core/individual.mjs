@@ -98,7 +98,7 @@ class Individual extends Person {
             if (ssn) {
                 data = await Individual.fetch(session, { ssn }, { hideRawId })
 
-                if (data.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
+                if (data && data.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
             }
 
             return { found: !!data, data }
@@ -108,7 +108,7 @@ class Individual extends Person {
                 dob, sex, ssn,
                 prefix, firstName, middleName, lastName, suffix, alias,
             } = body
-
+console.log({ ssn })
             body = {
                 main: { dob, sex },
                 name: { since: dob, prefix, firstName, middleName, lastName, suffix, alias, },

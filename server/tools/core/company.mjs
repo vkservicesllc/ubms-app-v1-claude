@@ -44,6 +44,7 @@ class Company {
         this.route = data.route
         this.active = !!data.active
         this.confirmed = !!data.confirmed
+        this.locked = !!data.locked
         this.global = !!data.global
         this.name = data.name
         this.busName = data.busName
@@ -178,7 +179,7 @@ class Company {
                     table: query.company.main.table,
                     fields: [
                         'id', Company.hashId(), 'category', { aes: [ 'ein', secret.ein ] }, 'duns', 'website',
-                        'since', 'until', 'global', 'active', 'confirmed', 'lastLogo', 'style',
+                        'since', 'until', 'global', 'active', 'confirmed', 'locked', 'lastLogo', 'style',
                     ],
                 },
                 {
@@ -362,6 +363,19 @@ class Owner extends Individual {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
+            this.update = async (body) => {
+                if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
+
+                const person = Individual.fetch(this.session, { id: this.personId })
+                if (!person) throw new Error('Person not identified')
+
+                console.log(body)
+                const { dob, sex, ssn, firstName, middleName, lastName, suffix, since } = body
+                await person.update({ dob, sex, ssn })
+                await person.update('name', { firstName, middleName, lastName, suffix }, { since: since || dob })
+            }
+
+
             this.delete = () => classInstance.delete(this, new.target, null, null, {
                 extendLog(owner, log) {
                     const reduntant = [
@@ -402,7 +416,30 @@ class Owner extends Individual {
     })
 
 
-    static create = (session, body, params) => classStatic.create(this, session, body, params, {
+    static create = async (session, body, params) => {
+        if (!session?.user?.id) throw new Error('Owner Static Method Error [CREATE]: Session user not supplied')
+
+        const { ssn, dob } = body
+
+        let person
+        if (ssn) person = await Individual.fetch(session, { ssn })
+        if (person && person.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
+
+        if (!person) person = (await Individual.create(session, body)).data
+
+        const [ result ] = await mysql.execute(query.company_owner.main.insert({
+            personId: person.id,
+            createdBy: session.user.id,
+        }))
+        const id = result.insertId
+
+        if (!id) throw new Error('Failed to create owner')
+
+        return { created: true, data: await Owner.fetch(session, { id } )}
+    }
+
+
+    static createOLD = (session, body, params) => classStatic.create(this, session, body, params, {
         async split(body) {
             const { ssn, dob } = body
 
