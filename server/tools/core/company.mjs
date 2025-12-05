@@ -115,6 +115,17 @@ class Company {
 
                     return data
                 },
+                async final(company, body, target) {
+                    if (target === 'main' || !body.since || body.since === company.since) return
+
+                    let keys = Object.keys(query.company)
+                    keys = keys.filter(key => !['main'].includes(key))
+
+                    for (const target of keys)
+                        await mysql.execute(query.company[target].update({ since: body.since }, {
+                            companyId: company.id, since: company.dob,
+                        }))
+                },
             })
 
 

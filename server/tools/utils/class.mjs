@@ -155,7 +155,7 @@ export const classInstance = {
             [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
         }))
 
-        if (typeof final === 'function') await final(inst, body)
+        if (typeof final === 'function') await final(inst, body, target)
 
         return { updated: result.affectedRows > 0 }
     },
