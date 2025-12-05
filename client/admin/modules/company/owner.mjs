@@ -49,7 +49,7 @@ const $form = {
 const action = {
     default: $form.owner.attr('action'),
 }
-action.update = action.default.replace('/company-owner', '/company-owner/update')
+action.update = action.default.replace('/upsert/company-owner', '/update/company-owner/add/name')
 const $field = {
     update: $('.owner-update-field'),
     upsert: $('.owner-upsert-field'),

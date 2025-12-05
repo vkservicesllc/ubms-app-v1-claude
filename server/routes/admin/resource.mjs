@@ -116,11 +116,12 @@ router.post('/insert/company', User.mw.verify, User.mw.superAdminOnly, validateC
         const { data: company } = await Company.create(res.session, req.body)
         if (!company) throw new Error('Failed to register company')
 
-        res.redirect(source .company[2] + company._id)
+        res.redirect(source.company[2] + company._id)
     } catch (err) {
         sendError.server(req, res, err)
     }
 })
+
 
 
 router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
@@ -171,7 +172,6 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
 })
 
 
-
 router.post('/upsert/role', User.mw.verify, User.mw.superAdminOnly, validateRole, validationCheck, async (req, res) => {
     try {
         let role
@@ -217,6 +217,36 @@ router.post('/upsert/team', User.mw.verify, User.mw.superAdminOnly, validateTeam
         sendError.server(req, res, err)
     }
 })
+
+
+router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, validateOwner, validationCheck, async (req, res) => {
+    try {
+        const { company: _companyId, since } = req.query
+        const { _id } = req.body
+        delete req.body._id
+
+        if (!_id) {
+            const { data: owner } = await Owner.create(res.session, req.body)
+            if (!owner) throw new Error('Failed to create owner')
+
+            if (_companyId) {
+                const company = await Company.fetch(res.session, { _id: _companyId })
+                if (!company) throw new Error('Company not found')
+
+                await company.delete('ownership', { since })
+                await company.add('ownership', { ownerId: owner.id, since })
+            }
+        } else {
+            const owner = await Owner.fetch(res.session, { _id })
+            await owner.update(req.body)
+        }
+
+        res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][2])
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
 
 
 router.post('/update/user/condition', User.mw.verify, [ UserForm.condition.validate() ], validationCheck, async (req, res) => {
@@ -336,6 +366,24 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
         }
 
         res.redirect(source .company[2] + company._id)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/update/company-owner/add/name', User.mw.verify, User.mw.superAdminOnly, validateOwnerName, validationCheck, async (req, res) => {
+    try {
+        const { company: _companyId } = req.query
+        const { _id } = req.body
+        delete req.body._id
+
+        const owner = await Owner.fetch(res.session, { _id })
+        if (!owner) throw new Error('Owner not found')
+
+        await owner.add('name', req.body)
+
+        res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][2])
     } catch (err) {
         sendError.server(req, res, err)
     }
