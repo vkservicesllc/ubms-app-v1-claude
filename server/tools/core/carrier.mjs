@@ -76,12 +76,13 @@ class Carrier extends Company {
             return { found: !!data, data }
         },
         split(body) {
-            const { companyId, since, mc, usdot, scac, irp, efs, fleetOne, transflo, ifta } = body
+            const { companyId, since, mc, usdot, scac, irp, efs, fleetOne, transflo, ifta, stateTax } = body
             const { number, jurisdiction } = ifta
 
             body = {
                 main: { companyId, mc, usdot, scac, irp, efs, fleetOne, transflo },
                 ifta: { since, number, jurisdiction },
+                permit: stateTax,
             }
 
             return body

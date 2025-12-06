@@ -255,6 +255,31 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, val
 })
 
 
+router.post('/upsert/carrier/:_companyId', User.mw.verify, User.mw.superAdminOnly, validateCarrier, validationCheck, async (req, res) => {
+    try {
+        const { _companyId } = req.params
+        let carrier = await Carrier.fetch(res.session, { _companyId })
+
+        if (!carrier) {
+            const company = await Company.fetch(res.session, { _id: _companyId })
+            if (!company) throw new Error('Company not found')
+
+            req.body.companyId = company.id
+            req.body.since = company.since
+            ({ data: carrier } = await Carrier.create(res.session, req.body))
+        } else {
+            // update carrier
+            // update carrier ifta
+            // update carrier permits
+        }
+
+        res.redirect(source .company[2] + carrier._companyId)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 router.post('/update/user/condition', User.mw.verify, [ UserForm.condition.validate() ], validationCheck, async (req, res) => {
     try {

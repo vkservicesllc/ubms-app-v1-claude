@@ -263,12 +263,10 @@ export const companyById = async (req, res) => {
                                     efs, fleetOne, transflo,
                                 } = data
 
-                                actionUrl.dir.credentials = 'add'
                                 steps.credentials = activeStep
                                 visibility.credentials = ''
 
                                 if (mc && usdot) {
-                                    actionUrl.param.credentials = 'update'
                                     steps.credentials = completedStep
                                     steps.confirmation = activeStep
                                     visibility.credentials = hidden
