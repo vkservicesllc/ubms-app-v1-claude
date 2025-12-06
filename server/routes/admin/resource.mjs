@@ -333,13 +333,13 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
-        const { _match: match = { since: company.since } } = req.body
+        const { since = company.since, _match: match = { since: company.since } } = req.body
         delete req.body._match
 
         switch (step) {
 
             case 'ownership':
-                const { _ownerId: _id, since = company.since } = req.body
+                const { _ownerId: _id } = req.body
                 const owner = await Owner.fetch(res.session, { _id })
                 if (!owner) throw new Error('Company owner not found')
 
@@ -356,7 +356,7 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
                     if (req.body?.mail?.zip) {
                         req.body.physical.mail = false
 
-                        if (!req.body.mail.since) req.body.mail.since = company.since
+                        if (!req.body.mail.since) req.body.mail.since = company.since //? may be just use since constant
                         await company.add('mail', req.body.mail)
                     }
                     await company.add('address', req.body.physical)
@@ -376,15 +376,21 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
                 break
 
             case 'contacts':
-                return res.send(req.body)
+                const { phone, fax, email } = req.body
                 if (action === 'add') {
-                    // add phone
-                    // add fax if supplied
-                    // add email if supplied
+                    await company.add('phone', { phone, since })
+                    if (fax) await company.add('fax', { fax, since })
+                    if (email) await company.add('email', { email, since })
                 } else {
-                    // update phone
-                    // add/update/delete fax
-                    // add/update/delete email
+                    await company.update('phone', { phone }, match)
+
+                    if (!fax) await company.delete('fax', match)
+                    else if (!company.fax) await company.add('fax', { fax, since })
+                    else await company.update('fax', { fax }, match)
+
+                    if (!email) await company.delete('email', match)
+                    else if (!company.email) await company.add('email', { email, since })
+                    else await company.update('email', { email }, match)
                 }
                 break
 
