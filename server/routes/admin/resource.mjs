@@ -54,6 +54,10 @@ ownerFields.push('gender', 'dob', 'ssn')
 ownerFields.map(prop => validateOwner.push(OwnerForm[prop].validate()))
 ownerNameFields.map(prop => validateOwnerName.push(OwnerForm[prop].validate()))
 
+const validateCompanyContacts = []
+const companyContactsFields = ['phone', 'fax', 'email']
+companyContactsFields.map(prop => validateCompanyContacts.push(CompanyForm[prop].validate()))
+
 const validateCarrier = []
 const carrierFields = ['mc', 'usdot', 'ifta', 'scac', 'irp', 'efs', 'fleetOne', 'transflo']
 Object.keys(Carrier.list.permit).forEach(prop => carrierFields.push(`${prop}Permit`))
@@ -72,7 +76,7 @@ const dynamicValidator = {
                 validators = []
                 break
             case 'contacts':
-                validators = []
+                validators = validateCompanyContacts
                 break
         }
 
@@ -323,12 +327,13 @@ router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, vali
 
 
 router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.companies, validationCheck, async (req, res) => {
+    //! THIS MAY ONLY WORK WITH INITIAL VALUES
     try {
         const { _id, action, step } = req.params
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
-        const { _match: match } = req.body
+        const { _match: match = { since: company.since } } = req.body
         delete req.body._match
 
         switch (step) {
@@ -356,12 +361,22 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
                     }
                     await company.add('address', req.body.physical)
                 } else {
-                    // update physical addr
-                    // add/delete or update mail addr
+                    if (!req.body?.mail?.zip) {
+                        req.body.physical.mail = true
+                        await company.delete('mail', match)
+                    } else if (!company.address?.mail?.zip) {
+                        req.body.physical.mail = false
+
+                        if (!req.body.mail.since) req.body.mail.since = company.since
+                        await company.add('mail', req.body.mail)
+                    } else await company.update('mail', req.body.mail, match)
+
+                    await company.update('address', req.body.physical, match)
                 }
                 break
 
             case 'contacts':
+                return res.send(req.body)
                 if (action === 'add') {
                     // add phone
                     // add fax if supplied
