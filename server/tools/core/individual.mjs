@@ -84,7 +84,7 @@ class Individual extends Person {
             })
 
 
-            this.delete = (target, sinceOrIds) => classInstance.delete(this, new.target, target, sinceOrIds, {
+            this.delete = (target, matchOrIds) => classInstance.delete(this, new.target, target, matchOrIds, {
                 extendLog(person, log) {
                     //! REMOVE REDUNDANT
                     //! ATTACH HISTORY

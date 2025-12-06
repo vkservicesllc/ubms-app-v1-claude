@@ -1,4 +1,4 @@
-{{#if (eq data.confirmed 1)}}
+{{#if (eq data.confirmed true)}}
 <nav class="breadcrumb has-arrow-separator">
     <ul>
         <li class="is-active"><a class="has-text-grey">Business</a></li>
@@ -17,7 +17,7 @@
             color: darkslategray;
         }
     </style>
-    {{#if (eq data.confirmed 1)}}
+    {{#if (eq data.confirmed true)}}
     <header class="card-header">
         <p class="card-header-title">{{{cardTitle}}}</p>
         <div class="dropdown is-hoverable is-right">
@@ -47,7 +47,7 @@
                 {{#if (eq data.category 'crr')}}
                 <li class="company-card-tabs" data-section="carrier"><a>Carrier Info</a></li>
                 {{/if}}
-                {{#if (eq data.confirmed 1)}}
+                {{#if (eq data.confirmed true)}}
                 <li class="company-card-tabs" data-section="logo"><a>Logo</a></li>
                 {{!-- <li class="company-card-tabs" data-section="teams"><a>Teams</a></li> --}}
                 <li class="company-card-tabs" data-section="users"><a>Users</a></li>
@@ -58,7 +58,7 @@
         <section class="company-card-content" id="company-card-content">
             <div class="columns">
                 <div class="column is-one-half px-5">
-                    {{#if (eq data.confirmed 1)}}
+                    {{#if (eq data.confirmed true)}}
                     <div class="is-flex is-justify-content-space-between">
                         <small>Status:</small>
                         <strong class="has-text-right">{{{display.status}}}</strong>
@@ -228,7 +228,7 @@
             </div>
         </section>
         {{/if}}
-        {{#if (eq data.confirmed 1)}}
+        {{#if (eq data.confirmed true)}}
 
         <section class="company-card-content" id="logo-card-content" style="display: none;">
             <div class="is-flex is-justify-content-center is-align-items-center">
@@ -348,7 +348,7 @@
         {{/if}}
 
     </div>
-    {{#if (eq data.confirmed 0)}}
+    {{#if (eq data.confirmed false)}}
     <form action="/resource/company/{{{_id}}}/confirm" id="company-confirm-form" method="POST"></form>
     <footer class="card-footer">
         <button class="card-footer-item" id="highlight-company-trigger">Highlight</button>

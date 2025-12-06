@@ -129,7 +129,7 @@ class Company {
             })
 
 
-            this.delete = (target, sinceOrIds) => classInstance.delete(this, new.target, target, sinceOrIds, {
+            this.delete = (target, matchOrIds) => classInstance.delete(this, new.target, target, matchOrIds, {
                 extendLog(company, log) {
                     //! REMOVE REDUNDANT
                     //! ATTACH HISTORY
@@ -367,6 +367,9 @@ class Owner extends Individual {
 
         if (single) {
             this.session = session
+
+
+            this.add = () => {} //?
 
 
             //? NOT SURE HOW IT IS TO BE USED

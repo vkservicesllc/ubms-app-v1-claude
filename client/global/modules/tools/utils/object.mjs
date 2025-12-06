@@ -7,6 +7,9 @@ export const resetProto = (currentObj = {}, beforeObj = {}, afterObj = {}) => {
 
 
 export const reSuper = (currentObj = {}, beforeObj = {}, afterObj = {}) => {
+    for (const key of Object.keys(beforeObj))
+        if (key in currentObj) delete currentObj[key]
+
     const reorderedObj = { ...beforeObj, ...currentObj, ...afterObj }
 
     Object.keys(currentObj).forEach(key => delete currentObj[key])

@@ -260,13 +260,15 @@ router.post('/upsert/carrier/:_companyId', User.mw.verify, User.mw.superAdminOnl
         const { _companyId } = req.params
         let carrier = await Carrier.fetch(res.session, { _companyId })
 
-        if (!carrier) {
+        if (!carrier.id) {
             const company = await Company.fetch(res.session, { _id: _companyId })
             if (!company) throw new Error('Company not found')
 
             req.body.companyId = company.id
             req.body.since = company.since
-            ({ data: carrier } = await Carrier.create(res.session, req.body))
+
+            const { data } = await Carrier.create(res.session, req.body)
+            carrier = data
         } else {
             // update carrier
             // update carrier ifta

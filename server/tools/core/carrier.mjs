@@ -24,10 +24,10 @@ class Carrier extends Company {
 
         super(data, { single, hideRawId, hideSensitive })
 
-        const props = { _id: data._id, _companyId: data._companyId }
+        const props = { _id: data._carrierId, _companyId: data._id }
         if (!hideRawId) {
-            props.id = data.id
-            props.companyId = data.companyId
+            props.id = data.carrierId
+            props.companyId = data.id
         }
 
         const props2 = {
@@ -50,14 +50,20 @@ class Carrier extends Company {
             this.session = session
 
 
+            this.add = (target, body) => classInstance.add(this, new.target, target, body)
+
+
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.delete = (target, match) => classInstance.delete(this, new.target, target, match)
 
 
             this.log = params => classInstance.log(this, new.target, params)
         }
     }
 
-    static #algorithm = 'SHA-512/224'
+    static #algorithm = 'SHA-224'
     static hashId = (field = 'id') => hash(field, Carrier.#algorithm)
     static matchIdHash = value => matchHash(value, Carrier.#algorithm)
 
@@ -76,13 +82,17 @@ class Carrier extends Company {
             return { found: !!data, data }
         },
         split(body) {
-            const { companyId, since, mc, usdot, scac, irp, efs, fleetOne, transflo, ifta, stateTax } = body
+            const { companyId, since, mc, usdot, scac, irp, efs, fleetOne, transflo } = body
+            let { ifta, stateTax } = body
+            ifta = JSON.parse(ifta)
+            stateTax = JSON.parse(stateTax)
+
             const { number, jurisdiction } = ifta
 
             body = {
                 main: { companyId, mc, usdot, scac, irp, efs, fleetOne, transflo },
                 ifta: { since, number, jurisdiction },
-                permit: stateTax,
+                stateTax,
             }
 
             return body
@@ -132,13 +142,15 @@ class Carrier extends Company {
 
             const idx = batch.length - 3
             batch[idx].match = { usdot, mc }
+
+
             if (id || _id || ids || _ids) {
-                batch[idx].match.id = { id }
-                if (!id) {
-                    if (ids) batch[idx].match.id = ids
-                    else batch[idx].match.id = Carrier.matchIdHash(_id || _ids)
-                }
+                if (id) batch[idx].match.id = id
+                else if (ids) batch[idx].match.id = ids
+                else if (_id || _ids) batch[idx].match.id = Carrier.matchIdHash(_id || _ids)
             }
+
+
             if (companyId || _companyId || companyIds || _companyIds)
                 batch[0].match.id = companyId || companyIds || Company.matchIdHash(_companyId || _companyIds)
 

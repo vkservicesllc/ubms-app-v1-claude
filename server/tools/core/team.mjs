@@ -80,7 +80,7 @@ class Team {
             }
 
 
-            this.delete = (target, sinceOrIds) => classInstance.delete(this, new.target, target, sinceOrIds)
+            this.delete = (target, matchOrIds) => classInstance.delete(this, new.target, target, matchOrIds)
 
 
             this.settings = async body => {
