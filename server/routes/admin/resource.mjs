@@ -259,20 +259,22 @@ router.post('/upsert/carrier/:_companyId', User.mw.verify, User.mw.superAdminOnl
     try {
         const { _companyId } = req.params
         let carrier = await Carrier.fetch(res.session, { _companyId })
+        const company = await Company.fetch(res.session, { _id: _companyId })
+        if (!company) throw new Error('Company not found')
+
+        const { since } = company
 
         if (!carrier.id) {
-            const company = await Company.fetch(res.session, { _id: _companyId })
-            if (!company) throw new Error('Company not found')
-
             req.body.companyId = company.id
-            req.body.since = company.since
+            req.body.since = since
 
             const { data } = await Carrier.create(res.session, req.body)
             carrier = data
         } else {
-            // update carrier
-            // update carrier ifta
-            // update carrier permits
+            const { mc, usdot, scac, irp, efs, fleetOne, transflo, ifta, stateTax } = req.body
+            await carrier.update({ mc, usdot, scac, irp, efs, fleetOne, transflo })
+            await carrier.update('ifta', ifta, { since })
+            await carrier.update('stateTax', stateTax)
         }
 
         res.redirect(source .company[2] + carrier._companyId)
