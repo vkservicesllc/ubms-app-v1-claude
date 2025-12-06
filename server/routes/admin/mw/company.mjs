@@ -220,8 +220,6 @@ export const companyById = async (req, res) => {
                 } = address.mail
                 let { state: addrState } = address.physical
                 let { state: mailAddrState } = address.mail
-                if (addrState) addrState = addrState[0]
-                if (mailAddrState) mailAddrState = mailAddrState[0]
 
                 actionUrl.param.ownership = 'update'
                 steps.ownership = completedStep

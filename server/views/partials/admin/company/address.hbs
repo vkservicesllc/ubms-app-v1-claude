@@ -1,5 +1,6 @@
 <form class="box px-5 form-container" id="address-form" action="/resource/update/company/{{_id}}/{{actionUrl.param.address}}/address" method="POST" autocomplete="off"{{{visibility.address}}}>
-    <article class="message is-warning" id="initaddr-msg" style="display: none;">
+    {{#if (nhv data.address.physical.zip)}}
+    <article class="message is-warning" id="initaddr-msg">
         <div class="message-header">
             <p>
                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -10,13 +11,13 @@
         <div class="message-body">
             The <em>initial address</em> refers to the address the company had at the time it was originally created.<br/>
             Please ensure you list the address as it was <strong>at the time of formation</strong>, even if you are registering the company years later.<br/>
-            If the company's address has changed since then, you must still enter the original address during registration.<br/>
-            You may update the current address after the registration is complete.
+            You may update the address after the registration is complete.
         </div>
     </article>
     <script>
         $('#initaddr-msg-close').click(() => { $('#initaddr-msg').remove() })
     </script>
+    {{/if}}
     <div class="field">
         <h5 class="subtitle has-text-primary-35">Initial Physical Address</h5>
         <div class="columns">

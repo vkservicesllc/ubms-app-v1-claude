@@ -52,7 +52,7 @@
                         (eq data.confirmed false)
                         (hv data.phone)
                 )}}
-                {{#if (eq data.catId 'crr')}}
+                {{#if (eq data.category 'crr')}}
 
                 {{> admin/company/carrier}}
                 {{/if}}
@@ -60,7 +60,7 @@
                 {{#if (
                     or
                         (eq data.confirmed 1)
-                        ( and (eq data.confirmed false) (eq data.catId 'crr') (hv data.mc) (hv data.usdot) )
+                        ( and (eq data.confirmed false) (eq data.category 'crr') (hv data.mc) (hv data.usdot) )
                 )}}
                 {{> admin/company/card}}
                 {{/if}}

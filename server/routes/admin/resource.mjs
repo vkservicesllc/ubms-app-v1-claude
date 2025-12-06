@@ -346,8 +346,15 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
 
             case 'address':
                 if (action === 'add') {
-                    // add physical addr
-                    // add mail addr if supplied
+                    if (!req.body.physical.since) req.body.physical.since = company.since
+
+                    if (req.body?.mail?.zip) {
+                        req.body.physical.mail = false
+
+                        if (!req.body.mail.since) req.body.mail.since = company.since
+                        await company.add('mail', req.body.mail)
+                    }
+                    await company.add('address', req.body.physical)
                 } else {
                     // update physical addr
                     // add/delete or update mail addr
