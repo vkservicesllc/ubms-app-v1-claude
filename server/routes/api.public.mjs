@@ -9,6 +9,7 @@ import db from '../settings/mysql.mjs'
 
 /* Tools */
 import Query from '../tools/utils/query.mjs'
+import User from '../tools/core/user.mjs'
 import Company from '../tools/core/company.mjs'
 import Driver, { Application as DriverApplication, Citation, Accident } from '../tools/core/driver.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
@@ -71,6 +72,18 @@ router.post('/source/:source', (req, res) => {
         res.send(result)
     } catch (err) {
         sendError.server(res, err, true)
+    }
+})
+
+
+router.post('/unique/user', async (req, res) => {
+    try {
+        const { username } = req.body
+        const user = await User.fetch(res.session, { username }, { offline: true })
+
+        res.json({ unique: !user })
+    } catch (err) {
+        sendError.server(req, res, err)
     }
 })
 

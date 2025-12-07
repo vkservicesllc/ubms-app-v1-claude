@@ -32,7 +32,7 @@ export const usernameEvent = (options = {}) => {
             if (onAjax && username) {
                 let url = '/api/unique/user'
                 const formMode = $('#form-mode')?.val()
-                if (formMode == 'reg') url += '/new/username'
+                if (formMode == 'reg') url = '/api/public/unique/user'
 
                 $.ajax(url, {
                     method: 'POST',
