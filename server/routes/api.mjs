@@ -128,7 +128,8 @@ router.post('/unique/:src', User.mw.verify, async (req, res) => {
         const { _id } = req.body
         delete req.body._id
 
-        const searchedInst = await Src.fetch(res.session, req.body)
+        let searchedInst = await Src.fetch(res.session, req.body)
+        if (Array.isArray(searchedInst)) [ searchedInst ] = searchedInst
         if (!searchedInst) return res.json({ unique: true, original: false })
 
         if (!_id) return res.json({ unique: false, original: false })

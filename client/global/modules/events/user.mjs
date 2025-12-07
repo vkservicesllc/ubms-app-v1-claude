@@ -223,9 +223,7 @@ export const roleNameEvent = (ajaxData = {}, options = {}) => {
                     method: 'POST',
                     data: { _id, category, name, location },
                     success(response) {
-                        const { unique, original } = response
-
-                        if (onAjax) onAjax({ unique, original }, name, $name)
+                        if (onAjax) onAjax(response, name, $name)
                     },
                 })
             }
@@ -253,9 +251,7 @@ export const roleLocationEvent = (ajaxData = {}, options = {}) => {
                     method: 'POST',
                     data: { _id, category, name, location },
                     success(response) {
-                        const { unique, original } = response
-
-                        if (onAjax) onAjax({ unique, original }, location, $location)
+                        if (onAjax) onAjax(response, location, $location)
                     },
                 })
             }
