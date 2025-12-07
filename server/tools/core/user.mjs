@@ -1046,24 +1046,24 @@ class Role {
             this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids)
 
 
-            this.unique = async body => {
-                if (!this.session?.user?.id) throw new Error('User Constructor Method Error [UNIQUE]: Session user not supplied')
+            // this.unique = async body => {
+            //     if (!this.session?.user?.id) throw new Error('User Constructor Method Error [UNIQUE]: Session user not supplied')
 
-                let unique = false, original = true
-                const { name, category, location } = body
-                if (
-                    (name !== this.name) ||
-                    (name === this.name && category !== this.category) ||
-                    (name === this.name && category === this.category && location !== this.location)
-                ) {
-                    original = false
-                    const role = (await Role.fetch(this.session, { name, category, location }))[0]
+            //     let unique = false, original = true
+            //     const { name, category, location } = body
+            //     if (
+            //         (name !== this.name) ||
+            //         (name === this.name && category !== this.category) ||
+            //         (name === this.name && category === this.category && location !== this.location)
+            //     ) {
+            //         original = false
+            //         const role = (await Role.fetch(this.session, { name, category, location }))[0]
 
-                    unique = !role
-                }
+            //         unique = !role
+            //     }
 
-                return { unique, original }
-            }
+            //     return { unique, original }
+            // }
 
 
             this.log = params => classInstance.log(this, new.target, params)
