@@ -45,13 +45,7 @@ if ($content.users.length) {
             const option = '<option value=""></option>'
 
             for (const prop of ['available', 'applied']) {
-                users[prop].map(user => {
-                    const name = new Person(user).fullName('AL')
-                    const option = `${name} (${user.location} ${user.expansion.status})`
-
-                    user.option = `${name} (${user.location} ${user.expansion.status})`
-                })
-
+                users[prop].map(user => user.option = `${new Person(user).fullName('AL')} (${user.location} ${user.expansion.status})` )
                 users[prop] = sortArrayByObjectKey(users[prop], 'option')
                 users[prop].forEach(user => options[prop] += `<option value="${user._id}">${user.option}</option>`)
             }
