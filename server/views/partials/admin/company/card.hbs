@@ -281,11 +281,10 @@
                 <div class="column is-half">
                     <div class="columns is-vcentered">
                         <div class="column is-two-fifths is-width-fixed">
-                            <form id="company-users-add-form" action="/resource/company/{{{_id}}}/users" method="POST">
-                                <input type="hidden" name="action" value="+" />
+                            <form id="company-users-add-form" action="/resource/jx/company/{{{_id}}}/add/users" method="POST">
                                 <label class="label">Available Users</label>
                                 <div class="select is-multiple is-fullwidth">
-                                    <select id="available-users" name="users" multiple size="8"><option value=""></option></select>
+                                    <select id="available-users" name="_ids" multiple size="8"><option value=""></option></select>
                                 </div>
                             </form>
                         </div>
@@ -298,11 +297,10 @@
                             </button>
                         </div>
                         <div class="column is-two-fifths is-width-fixed">
-                            <form id="company-users-delete-form" action="/resource/company/{{{_id}}}/users" method="POST">
-                                <input type="hidden" name="action" value="-" />
+                            <form id="company-users-delete-form" action="/resource/jx/company/{{{_id}}}/delete/users" method="POST">
                                 <label class="label">Current Users</label>
                                 <div class="select is-multiple is-fullwidth">
-                                    <select id="current-users" name="users" multiple size="8"><option value=""></option></select>
+                                    <select id="current-users" name="_ids" multiple size="8"><option value=""></option></select>
                                 </div>
                             </form>
                         </div>

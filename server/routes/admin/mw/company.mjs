@@ -461,7 +461,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs.nav.companies = active
 
         if (company.lastLogo) {
-            const id = await company.id()
+            const id = company.id
             const files = await getFiles(`${dir}/uploads/business/company/logo/${id}`, false)
 
             files.forEach((filename, i) => {
@@ -481,7 +481,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs._id = _companyId
         hbs.cardTitle = cardTitle
         hbs.data = company
-console.log(hbs.data)
+
         hbs.display = display(company, ein)
         hbs.css = css
         hbs.logoList = logoList
