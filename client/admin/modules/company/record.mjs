@@ -62,7 +62,6 @@ $submit.prop('disabled', false)
 const handleChange = (props = {}) => {
     let input = true, action = 'passed'
     const { data, key } = props
-    const exclude = _id && _id !== 'new' ? { _id } : null
 
     for (const prop in data)
         if (!data[prop]) {
@@ -71,20 +70,48 @@ const handleChange = (props = {}) => {
         }
     if (!input) action = 'default'
 
+    data._id = _id
+
     $.ajax('/api/unique/company', {
         method: 'POST',
-        data: { ...data, exclude },
+        data,
         success(response) {
-            const { unique, error } = response
+            const { unique, original } = response
 
-            if (input && error) alert(error)
-            if (input && !unique) action = 'failed'
+            if (input && !unique && !original)
+                action = 'failed'
 
             setTip[action](key)
             if (formValid()) $tip.form.html(null)
         },
     })
 }
+// const handleChange = (props = {}) => {
+//     let input = true, action = 'passed'
+//     const { data, key } = props
+//     const exclude = _id && _id !== 'new' ? { _id } : null
+
+//     for (const prop in data)
+//         if (!data[prop]) {
+//             input = false
+//             break
+//         }
+//     if (!input) action = 'default'
+
+//     $.ajax('/api/unique/company', {
+//         method: 'POST',
+//         data: { ...data, exclude },
+//         success(response) {
+//             const { unique, error } = response
+
+//             if (input && error) alert(error)
+//             if (input && !unique) action = 'failed'
+
+//             setTip[action](key)
+//             if (formValid()) $tip.form.html(null)
+//         },
+//     })
+// }
 
 
 categoryEvent(catId, 'business-category-select-icon')

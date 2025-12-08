@@ -107,7 +107,7 @@ class User extends Person {
                 const { session } = this
                 if (!session?.user?.id) throw new Error('User Constructor Method Error [UPDATE]: Session user not supplied')
 
-                return classInstance.update(this, new.target, 'main', body, {
+                return classInstance.update(this, new.target, 'main', body, {}, {
                     async final(user, body) {
                         const { status, email } = body
 
