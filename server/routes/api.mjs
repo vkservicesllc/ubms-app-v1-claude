@@ -144,41 +144,6 @@ router.post('/unique/:src', User.mw.verify, async (req, res) => {
 })
 
 
-// router.post('/unique/:src', User.mw.verify, async (req, res) => {
-//     try {
-//         const { src } = req.params
-//         const Src = {
-//             'user': User,
-//             'role': Role,
-//             'team': Team,
-//             'individual': Individual,
-//             'company': Company,
-//             'company-owner': CompanyOwner,
-//             'carrier': Carrier,
-//         }[src]
-//         const response = { unique: true }
-
-//         const { _id } = req.body
-//         delete req.body._id
-
-//         if (_id) {
-//             const inst = await Src.fetch(res.session, { _id })
-//             if (!inst || !inst.unique) throw new Error('Invalid instance')
-
-//             return res.json(await inst.unique(req.body))
-//         }
-
-//         let data = await Src.fetch(res.session, req.body)
-//         if (Array.isArray(data)) data = data[0]
-//         response.unique = !data
-
-//         res.json(response)
-//     } catch (err) {
-//         sendError.server(req, res, err)
-//     }
-// })
-
-
 
 // ==== EXPORT ==== //
 

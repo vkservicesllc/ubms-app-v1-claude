@@ -275,6 +275,7 @@ export const companyById = async (req, res) => {
 
                                 {
                                     const values = {
+                                        id: data._id,
                                         mc, usdot, scac, irp,
                                         ifta, iftaJur: iftaJur || addrState,
                                         efs, fleetOne, transflo,

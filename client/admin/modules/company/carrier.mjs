@@ -7,7 +7,8 @@ const $submit = $('#credentials-submit')
 const $form = $('#credentials-form')
 const $formTip = $('#carrier-form-tip')
 
-const _id = getIdFromUrl()
+const _companyId = getIdFromUrl()
+const _id = $(selector.id.hidden.id).val()
 const tip = {
     success: '<i class="fa fa-check"></i> ID is unique',
     failed: '<i class="fa fa-close"></i> ID is taken',
@@ -58,16 +59,11 @@ inputEvent(credClass, {
 
             $.ajax('/api/unique/carrier', {
                 method: 'POST',
-                data: { [name]: number, exclude: { _id } },
-                success(response) { console.log(response)
-                    const { unique, error } = response
+                data: { [name]: number, _id },
+                success(response) {
+                    const { unique, original } = response
 
-                    if (error) {
-                        $number.val(null)
-                        return alert(error)
-                    }
-
-                    if (unique) {
+                    if (unique || original) {
                         $tip
                             .addClass('is-success')
                             .html(tip.success)

@@ -135,13 +135,18 @@ class Carrier extends Company {
             batch[0].match.category = 'crr'
 
             const {
-                id, _id, companyId,  _companyId, ein, duns, busName, coType, alias, route, mc, usdot,
+                id, _id, companyId,  _companyId, ein, duns, busName, coType, alias, route,
+                mc, usdot, scac, irp, efs, fleetOne, transflo, ifta, stateTax = {},
                 ids, _ids, companyIds, _companyIds,
             } = filter
             const single = !!id || !!_id || !!companyId || !!_companyId || !!ein || !!duns || !!(busName && coType) || !!alias || !!route || !!mc || !!usdot
 
             const idx = batch.length - 3
-            batch[idx].match = { usdot, mc }
+            batch[idx].match = { usdot, mc, scac, irp, efs, fleetOne, transflo }
+            
+            //! IFTA match will probably match only if final ifta number checked, not previous
+            batch[idx + 1].match = { number: ifta?.number }
+            Object.keys(stateTax).forEach(state => batch[idx + 2].match = { [state]: stateTax[state] })
 
 
             if (id || _id || ids || _ids) {
