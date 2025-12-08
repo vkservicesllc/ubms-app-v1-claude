@@ -226,6 +226,7 @@ class OwnerForm {
     static ssn = createSsnForm({
         selector: ownerSelector,
         required: false,
+        disabled, //! TEMPORARILY DISABLED
         label: 'SSN <small>(optional but highly recommended)</small>',
     })
 
