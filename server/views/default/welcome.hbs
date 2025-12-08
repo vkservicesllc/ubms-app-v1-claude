@@ -1,0 +1,29 @@
+{{> head}}
+
+    <style>
+        li {
+            margin-top: 5px;
+        }
+        .card-panel {
+            font-weight: 500;
+        }
+        .card-panel ul {
+            font-weight: 400;
+        }
+        .btn {
+            width: 320px;
+        }
+    </style>
+    <div class="valign-wrapper grey lighten-4" style="height: 100vh;">
+        <div class="container center-align">
+            <div class="card-panel grey lighten-3" style="width: 720px;  margin:0 auto;">
+                Dear {{{user.name}}}, welcome aboard!<br/>
+                Your registration has been successfully completed, and your account is now active.<br/><br/>
+                You can sign in to any of the available branches:
+                <ul>{{{branchList}}}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+{{> foot}}

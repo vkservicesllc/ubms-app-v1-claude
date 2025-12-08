@@ -39,4 +39,13 @@ module.exports = {
         },
     },
 
+    'welcome': {
+        external: [ ...offline.external ],
+        internal: {
+            css: [ ...offline.internal.css ],
+            js: [ ...offline.internal.js ],
+            mjs: [ ...offline.internal.mjs ],
+        },
+    },
+
 }

@@ -937,7 +937,7 @@ class User extends Person {
                     if (error) console.error(error)
                 })
 
-                res.redirect(addrBook.default)
+                res.redirect(`${addrBook.default}/welcome?user=${_id}`)
             } catch (err) {
                 sendError.server(req, res, err)
             }
