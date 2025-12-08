@@ -59,7 +59,7 @@
                 {{/if}}
                 {{#if (
                     or
-                        (eq data.confirmed 1)
+                        (eq data.confirmed true)
                         ( and (eq data.confirmed false) (eq data.category 'crr') (hv data.mc) (hv data.usdot) )
                 )}}
                 {{> admin/company/card}}

@@ -349,13 +349,14 @@
 
     </div>
     {{#if (eq data.confirmed false)}}
-    <form action="/resource/company/{{{_id}}}/confirm" id="company-confirm-form" method="POST"></form>
+    <form action="/resource/confirm/company/{{{_id}}}" id="company-confirm-form" method="POST"></form>
     <footer class="card-footer">
         <button class="card-footer-item" id="highlight-company-trigger">Highlight</button>
         <button type="submit" class="card-footer-item has-text-link" form="company-confirm-form">Confirm</button>
     </footer>
     {{/if}}
 </div>
+{{#if (eq data.confirmed true)}}
 
 <div class="modal" id="company-logo-modal">
     <div class="modal-background"></div>
@@ -395,6 +396,7 @@
         </footer>
     </div>
 </div>
+{{/if}}
 
 <div class="modal" id="company-highlight-modal">
     <div class="modal-background"></div>
@@ -411,4 +413,6 @@
 </div>
 
 <script type="module" src="/modules/company/card.mjs"></script>
+{{#if (eq data.confirmed true)}}
 <script type="module" src="/modules/company/logo.mjs"></script>
+{{/if}}

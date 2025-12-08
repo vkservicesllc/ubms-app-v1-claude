@@ -481,6 +481,7 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs._id = _companyId
         hbs.cardTitle = cardTitle
         hbs.data = company
+console.log(hbs.data)
         hbs.display = display(company, ein)
         hbs.css = css
         hbs.logoList = logoList

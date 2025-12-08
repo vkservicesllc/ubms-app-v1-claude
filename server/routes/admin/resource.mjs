@@ -270,6 +270,8 @@ router.post('/upsert/carrier/:_companyId', User.mw.verify, User.mw.superAdminOnl
 
             const { data } = await Carrier.create(res.session, req.body)
             carrier = data
+
+            if (carrier) await company.update({ locked: true })
         } else {
             const { mc, usdot, scac, irp, efs, fleetOne, transflo, ifta, stateTax } = req.body
             await carrier.update({ mc, usdot, scac, irp, efs, fleetOne, transflo })
@@ -518,6 +520,21 @@ router.post('/reset/user', User.mw.verify, async (req, res) => {
         await user.reset()
 
         res.redirect(source.user[1])
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/confirm/company/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { _id } = req.params
+        const company = await Company.fetch(res.session, { _id })
+        if (!company) throw new Error('Company not found')
+
+        await company.update({ confirmed: true })
+
+        res.redirect(source.company[2] + company._id)
     } catch (err) {
         sendError.server(req, res, err)
     }
