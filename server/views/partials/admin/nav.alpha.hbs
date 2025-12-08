@@ -45,30 +45,28 @@
         <aside class="menu p-5">
             <p class="menu-label mt-2">General</p>
             <ul class="menu-list">
-                <li><a{{{nav.dash}}} href="/">Dashboard <i class="fas fa-circle-exclamation has-text-danger"></i></a></li>
+                <li><a{{{nav.dash}}} href="/">Dashboard</a></li>
                 <li><a{{{nav.charts}}} href="/charts">Charts <i class="fas fa-circle-exclamation has-text-danger"></i></a></li>
             </ul>
             <p class="menu-label mt-5">Administration</p>
             <ul class="menu-list">
+                <li>
+                    <span class="menu-item">Online</span>
+                    <ul>
+                        <li><a{{{nav.users}}} href="/online/users">Users</a></li>
+                        {{#if (eq user.DS true)}}
+                        <li><a{{{nav.teams}}} href="/online/teams">Teams</a></li>
+                        <li><a{{{nav.sites}}} href="/online/domains">Domains <i class="fas fa-circle-question has-text-danger"></i></a></li>
+                        {{/if}}
+                    </ul>
+                </li>
                 <li>
                     <span class="menu-item">Business</span>
                     <ul>
                         <li><a{{{nav.companies}}} href="/business/companies">Companies</a></li>
                         {{#if (eq user.DS true)}}
                         <li><a{{{nav.owners}}} href="/business/company-owners">Owners</a></li>
-                        <li><a{{{nav.branches}}} href="/business/branches">Branches  <i class="fas fa-circle-question has-text-danger"></i></a></li>
-                        {{/if}}
-                    </ul>
-                </li>
-                <li>
-                    <span class="menu-item">Online</span>
-                    <ul>
-                        {{#if (eq user.DS true)}}
-                        <li><a{{{nav.sites}}} href="/online/domains">Domains <i class="fas fa-circle-question has-text-danger"></i></a></li>
-                        {{/if}}
-                        <li><a{{{nav.users}}} href="/online/users">Users</a></li>
-                        {{#if (eq user.DS true)}}
-                        <li><a{{{nav.teams}}} href="/online/teams">Teams</a></li>
+                        {{!-- <li><a{{{nav.branches}}} href="/business/branches">Branches  <i class="fas fa-circle-question has-text-danger"></i></a></li> --}}
                         {{/if}}
                     </ul>
                 </li>

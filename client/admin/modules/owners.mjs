@@ -58,10 +58,12 @@ const columns = [
         data: 'age',
         title: 'Age',
         searchable: false,
+        orderable: false,
         type: 'string',
     },
 
     {
+        orderable: false,
         data(row) {
             return formatTel(row.phone || null)
         },

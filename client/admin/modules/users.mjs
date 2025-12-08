@@ -213,19 +213,18 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         columns: [
 
             {
-                data: 'condition',
+                data: null,
                 searchable: false,
                 orderable: false,
                 width: '30px',
                 render(data, type, row) {
-                    data = data[0]
                     if (row.status === 'D' || (adminStatus === 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
                     if (row.events.declinedAt) return '<i class="fas fa-user-times has-text-dark"></i>'
                     if (!row.username || row.events.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
 
                     const condition = { fa: 'user-check', style: 'success' }
 
-                    switch (data) {
+                    switch (row.condition) {
                         case 'L':
                             condition.fa = 'user-lock'
                             condition.style = 'danger'
@@ -382,7 +381,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
         lengthMenu,
 
-        // order: [ [ 3, 'asc' ], [ 2, 'asc' ] ],
+        order: [],
 
     })
 

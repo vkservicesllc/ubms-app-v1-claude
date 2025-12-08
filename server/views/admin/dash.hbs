@@ -1,4 +1,46 @@
 {{> admin/nav.alpha}}
-                <span class="subtitle is-5">Dashboard</span>
-                <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future</i></p>
+
+                <style>
+                    .cell {
+                        flex: 1 1 480px;
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    .cell .box {
+                        flex: 1;
+                    }
+                </style>
+                <div class="grid" style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                    <div class="cell">
+                        <div class="box">
+                            <div class="content">
+                                <h4 class="px-4">Online Administration</h4>
+                                <div class="buttons">
+                                    <a class="button is-ghost" href="/online/users">Users</a>
+                                    {{#if (eq user.DS true)}}
+                                    <a class="button is-ghost" href="/online/teams">Teams</a>
+                                    <a class="button is-ghost" href="/online/domains">
+                                        Domains
+                                        &nbsp;<small><i class="fas fa-circle-question has-text-danger"></i></small>
+                                    </a>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <div class="box">
+                            <div class="content">
+                                <h4  class="px-4">Business Administration</h4>
+                                <div class="buttons">
+                                    <a class="button is-ghost" href="/business/companies">Companies</a>
+                                    {{#if (eq user.DS true)}}
+                                    <a class="button is-ghost" href="/business/company-owners">Company Owners</a>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 {{> admin/nav.omega}}
