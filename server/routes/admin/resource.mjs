@@ -487,6 +487,7 @@ router.post('/delete/:src/:_id?', User.mw.verify, async (req, res) => {
 router.post('/jx/:src/:_id/:action/:target', User.mw.verify, async (req, res) => {
     try {
         const { src, _id, action, target } = req.params
+        const { tab } = req.query
         if (src !== 'user' && res.session.user.status === 'A')
             throw new Error('Access to this path is granted to Super Admin only<br><a href="/">Home</a>')
 
@@ -499,7 +500,7 @@ router.post('/jx/:src/:_id/:action/:target', User.mw.verify, async (req, res) =>
 
         await inst[action](`jx.${target}`, _ids)
 
-        res.redirect(req.get('referer') || redirUrl)
+        res.redirect(req.get('referer') + (tab ? `?${tab}` : '') || redirUrl)
     } catch (err) {
         sendError.server(req, res, err)
     }

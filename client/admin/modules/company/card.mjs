@@ -1,4 +1,5 @@
 import Person from '/modules/tools/core/person.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import selector from '/modules/registry/selectors/company.mjs'
 
 const $tabs = $('.company-card-tabs')
@@ -43,18 +44,17 @@ if ($content.users.length) {
             const options = { available: '', applied: '' }
             const option = '<option value=""></option>'
 
-            const optionItem = (user, prop) => {
-                const name = new Person(user).fullName('AL')
-                const { username } = user
-                let option = name
-                if (username) option += ` (${username})`
-                else option += ' (pending...)'
+            for (const prop of ['available', 'applied']) {
+                users[prop].map(user => {
+                    const name = new Person(user).fullName('AL')
+                    const option = `${name} (${user.location} ${user.expansion.status})`
 
-                options[prop] += `<option value="${user._id}">${option}</option>`
+                    user.option = `${name} (${user.location} ${user.expansion.status})`
+                })
+
+                users[prop] = sortArrayByObjectKey(users[prop], 'option')
+                users[prop].forEach(user => options[prop] += `<option value="${user._id}">${user.option}</option>`)
             }
-
-            users.available.forEach(user => optionItem(user, 'available'))
-            users.applied.forEach(user => optionItem(user, 'applied'))
 
             $users.available.html(options.available || option)
             $users.applied.html(options.applied || option)
