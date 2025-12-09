@@ -52,7 +52,6 @@ router.use((req, res, next) => {
 
             const props = [
                 '_id',
-                'name',
                 'username',
                 'firstName',
                 'lastName',
@@ -68,6 +67,7 @@ router.use((req, res, next) => {
             ]
             for (const prop of props)
                 hbs.user[prop] = user[prop]
+            hbs.user.name = user.fullName('AL')
 
             const permissions = await user.permissions(res.session)
             const { DS } = user
@@ -159,7 +159,7 @@ router.get('/', async (req, res, next) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 }, User.mw.verify, async (req, res) => {
     try {
@@ -170,7 +170,7 @@ router.get('/', async (req, res, next) => {
             const settings = await user.settings()
             let url = user.events.lastUrl
 
-            if (settings?.carrier?.lastUrl == '0') url = '/dashboard'
+            if ([0, '0', undefined].includes(settings?.carrier?.lastUrl)) url = '/dashboard'
 
             return res.redirect(url)
         }
@@ -196,7 +196,7 @@ router.get('/', async (req, res, next) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -229,7 +229,7 @@ router.get('/dashboard', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 
@@ -242,7 +242,7 @@ router.get('/settings', User.mw.verify, Team.mw.verify, async (req, res) => {
 
         res.render(`app/${key}`, hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 

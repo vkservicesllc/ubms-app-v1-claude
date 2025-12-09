@@ -251,10 +251,8 @@ class User extends Person {
 
 
             this.settings = async (action = 'fetch', data = {}) => {
-                if (!this.self) return
-
                 const match = { id: this.id || User.matchIdHash(this._id) }
-                let settings = (await mysql.execute(query.user.main.select('settings', { match })))[0] || {}
+                let settings = (await mysql.execute(query.user.main.select('settings', { match })))[0][0].settings
 
                 if (action === 'fetch') return settings
 
@@ -304,7 +302,7 @@ class User extends Person {
 
                 const batch = [
                     {
-                        table: query.jx.roles.table,
+                        table: query.jx.users_roles.table,
                         match: { userId: this.id || User.matchIdHash(this._id) },
                     },
                     {

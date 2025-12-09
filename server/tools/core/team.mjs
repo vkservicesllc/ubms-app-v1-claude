@@ -203,7 +203,7 @@ class Team {
                 const { user } = res.session
                 if (!user) return sendError.auth(req, res)
 
-                if (user.unscoped) {
+                if (user.unscoped || user.DS) {
                     delete req.session.team
 
                     return next()
