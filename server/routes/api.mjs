@@ -100,9 +100,9 @@ router.post('/source/:source/:_id?', User.mw.verify, async (req, res) => {
 
     if (filter) {
         if (_id && Src) {
-            const instance = await Src.data(res.session, { _id })
+            const instance = await Src.fetch(res.session, { _id })
             result = call === 'true'
-                ? await instance[filter](res.session)
+                ? await instance[filter]()
                 : instance[filter]
         } else
             result = result[filter]

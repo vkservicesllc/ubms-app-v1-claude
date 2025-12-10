@@ -252,7 +252,7 @@ class User extends Person {
 
             this.settings = async (action = 'fetch', data = {}) => {
                 const match = { id: this.id || User.matchIdHash(this._id) }
-                let settings = (await mysql.execute(query.user.main.select('settings', { match })))[0][0].settings
+                let settings = (await mysql.execute(query.user.main.select('settings', { match })))[0][0].settings || {}
 
                 if (action === 'fetch') return settings
 

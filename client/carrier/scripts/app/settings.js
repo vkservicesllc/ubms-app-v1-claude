@@ -39,6 +39,7 @@ $button.submit.click(() => {
 $.ajax('/api/source/user?filter=settings&self=true&call=true', {
     method: 'POST',
     success(response) {
+console.log(response) //! TEMP
         resetDefaults()
 
         if (response?.carrier) {
