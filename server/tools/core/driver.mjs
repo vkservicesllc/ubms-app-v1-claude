@@ -330,6 +330,17 @@ class Application {
     })
 
 
+    static assigned = async session => {
+        if (!session.user.id) throw new Error('Application Static Method Error [ASSIGNED]: Session user not supplied')
+        const { team } = session
+        const teamId = team?.id || null
+
+        //! need to understand, do i need to see all users or by team
+
+        return { users: [], teams: {}, carriers: [] }
+    }
+
+
     static list = {
 
         step: [
@@ -428,9 +439,8 @@ class Application {
 
                 if (!DS && !('d:drv/apl' in permissions)) return sendError.auth(req, res)
 
-                const { draw, start, length, columns, search, filter } = req.body  //!REDUNDANT: , order
+                const { draw, start, length, columns, search, filter } = req.body
                 const { archived } = req.params
-                const settings = await sessionUser.settings()
 
                 let team, teamId
 
@@ -438,8 +448,6 @@ class Application {
                     team = await Team.fetch(res.session, { _id: req.session.team })
                     teamId = team.id
                 }
-                //! Team are no longer tied to companies
-                const { teamCompanies } = settings?.carrier || {} //? May want to consider another name for the variable
 
 
                 /* STEP 1: Set up Select, Join and Count Default States */
@@ -553,15 +561,15 @@ class Application {
                     },
                 }
 
-                if (filter?.companies) {
-                    filter.companies = filter.companies.split(',')
+                if (filter?.carriers) {
+                    filter.carriers = filter.carriers.split(',')
 
-                    if (filter.companies.length && !filter.companies.includes('null')) {
+                    if (filter.carriers.length && !filter.carriers.includes('null')) {
                         filterParams.company.nullable = false
                         filterParams.company.whereCond = 'where'
                     }
 
-                    await Promise.all(filter.companies.map(async (_id) => {
+                    await Promise.all(filter.carriers.map(async (_id) => {
                         if (_id !== 'null') {
                             const carrier = await Carrier.data(res.session, { _id })
                             const id = await carrier.id()
@@ -587,21 +595,15 @@ class Application {
                     const { nullable, whereCond, carrierIds } = filterParams.company
 
                     if (nullable) this.whereNull('carrierId')
-                    if (!filter?.companies || carrierIds.length)
+                    if (!filter?.carriers || carrierIds.length)
                         this[whereCond](function() {
                             this.where('cmp.confirmed', true)
-
-                            //! team are no longer tied to companies
-                            // if (!teamCompanies || !teamCompanies.includes('i')) this.where('cmp.active', true)
-                            // if (!teamCompanies || !teamCompanies.includes('c')) this.where('cmp.until', null)
-                            // if ((!teamCompanies || !teamCompanies.includes('e')) && !DS) this.whereIn('cmp.id', companyIds)
-
                             if (carrierIds.length) this.whereIn('apl.carrierId', carrierIds)
                         })
                 }
 
                 baseQuery.where(companyStateFilter)
-                // countQuery.where(companyStateFilter)
+                countQuery.where(companyStateFilter)
 
                 if (filter?.conditions) {
                     filter.conditions = filter.conditions.split(',')

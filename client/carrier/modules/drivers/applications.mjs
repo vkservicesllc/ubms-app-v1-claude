@@ -26,7 +26,7 @@ const table = $('#driver-apl-table').DataTable({
             search.filter = {
                 conditions: $('#condition-filter').val(),
                 positions: $('#position-filter').val(),
-                companies: $('#company-filter').val(),
+                carriers: $('#carrier-filter').val(),
                 user: $('#user-filter').val(),
             }
         },
@@ -338,11 +338,11 @@ const table = $('#driver-apl-table').DataTable({
         const dropdown = {
             condition: filterDropdown('condition-filter', 'Status', { multiple: true, clearable: true, element: 'div', short: true }),
             position: filterDropdown('position-filter', 'Position', { multiple: true, clearable: true, element: 'div', short: true }),
-            company: filterDropdown('company-filter', 'Company', { multiple: true, clearable: true, element: 'div' }),
+            carrier: filterDropdown('carrier-filter', 'Carrier', { multiple: true, clearable: true, element: 'div' }),
             user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
         }
 
-        dropdown.company.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='red text handshake slash icon'></i>"><span class="ui red text">Unassigned</span></div>`)
+        dropdown.carrier.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='red text handshake slash icon'></i>"><span class="ui red text">Unassigned</span></div>`)
         dropdown.user.find('.menu').append(`<div class="item" data-value="null" data-text="<span class='ui red text'><i>Not assigned to User</span>"><span class="ui red text">Unassigned</span></div>`)
 
         for (const value in conditions) {
@@ -357,48 +357,44 @@ const table = $('#driver-apl-table').DataTable({
             dropdown.position.find('.menu').append(`<div class="item" data-value="${value}" data-text="${value}">${option}</div>`)
         }
 
-        $.ajax('/api/drivers/filters/applications', {
+        $.ajax('/api/lists?filter=driver-applications', {
             method: 'POST',
-            success(filters) {
-                const { companies, users } = filters
+            success(lists) {
+                const { carriers = [], users = [] } = lists
 
-                if (companies) {
-                    companies.forEach(company => {
-                        const { _carrierId, active, until, alias } = company
-                        let { name } = company
-                        let color = 'green'
+                carriers.forEach(carrier => {
+                    const { _carrierId, active, until, alias } = carrier
+                    let { name } = carrier
+                    let color = 'green'
 
-                        if (until) color = 'red'
-                        else if (!active) color = 'blue'
+                    if (until) color = 'red'
+                    else if (!active) color = 'blue'
 
-                        dropdown.company.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
-                    })
-                }
+                    dropdown.carrier.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
+                })
 
-                if (users) {
-                    users.forEach(user => {
-                        const { firstName, lastName, alias } = user
-                        const person = new Person({ firstName, lastName, alias })
+                users.forEach(user => {
+                    const { firstName, lastName, alias } = user
+                    const person = new Person({ firstName, lastName, alias })
 
-                        user.name = person.fullName('AL')
-                        user.shortName = person.fullName('Al')
-                    })
+                    user.name = person.fullName('AL')
+                    user.shortName = person.fullName('Al')
+                })
 
-                    const self = users.filter(user => user.self === true)[0]
-                    const others = sortArrayByObjectKey(users.filter(user => user.self === false), 'name')
+                const self = users.filter(user => user.self === true)[0]
+                const others = sortArrayByObjectKey(users.filter(user => user.self === false), 'name')
 
-                    if (self)
-                        dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="<span class='ui dark blue text'><i><b>My Applicants</b></i></span>">${self.name} <small>(self)</small></div>`)
-                    others.forEach(user => {
-                        const { _id, name, shortName } = user
+                if (self)
+                    dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="<span class='ui dark blue text'><i><b>My Applicants</b></i></span>">${self.name} <small>(self)</small></div>`)
+                others.forEach(user => {
+                    const { _id, name, shortName } = user
 
-                        dropdown.user.find('.menu').append(`<div class="item" data-value="${_id}" data-text="<small>Assigned to</small> <b>${shortName}</b>">${name}</div>`)
-                    })
-                }
+                    dropdown.user.find('.menu').append(`<div class="item" data-value="${_id}" data-text="<small>Assigned to</small> <b>${shortName}</b>">${name}</div>`)
+                })
 
                 toolbar.append(dropdown.condition)
                 toolbar.append(dropdown.position)
-                toolbar.append(dropdown.company)
+                toolbar.append(dropdown.carrier)
                 toolbar.append(dropdown.user)
                 toolbar.append('<button class="ui button" id="other-filters"><i class="filter icon"></i></button>')
 
