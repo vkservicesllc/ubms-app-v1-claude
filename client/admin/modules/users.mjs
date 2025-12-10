@@ -218,7 +218,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 orderable: false,
                 width: '30px',
                 render(data, type, row) {
-                    if (row.status === 'D' || (adminStatus === 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
+                    if (row.self || row.status === 'D' || (adminStatus === 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
                     if (row.events.declinedAt) return '<i class="fas fa-user-times has-text-dark"></i>'
                     if (!row.username || row.events.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
 
@@ -355,9 +355,9 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
 
                     if (['D', 'S'].includes(adminStatus) || (adminStatus === 'A' && !row.DS)) {
                         if (row.status !== 'D') {
-                            cell += `<a class="has-text-${row.events.declinedAt ? 'dark' : 'danger'} delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
+                            if (!row.self) cell += `<a class="has-text-${row.events.declinedAt ? 'dark' : 'danger'} delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
                             if (!row.events.declinedAt) {
-                                if (row.username) cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
+                                if (row.username && !row.self) cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
                                 cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
                             }
                         }
