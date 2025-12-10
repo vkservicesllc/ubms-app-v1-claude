@@ -69,7 +69,7 @@ router.use((req, res, next) => {
                 hbs.user[prop] = user[prop]
             hbs.user.name = user.fullName('AL')
 
-            const permissions = await user.permissions(res.session)
+            const permissions = await user.permissions()
             const { DS } = user
             hbs.PG = {
                 vhl: inPGroup('d:vhl', permissions, DS),
