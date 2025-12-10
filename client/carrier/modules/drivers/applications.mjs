@@ -21,7 +21,7 @@ const defaultContent = '<i style="color: pink; font-size: .9em;">Unassigned</i>'
 const table = $('#driver-apl-table').DataTable({
 
     ajax: {
-        url: '/api/drivers/applications',
+        url: '/api/drivers/dt-list/applications',
         data(search) {
             search.filter = {
                 conditions: $('#condition-filter').val(),
@@ -357,7 +357,7 @@ const table = $('#driver-apl-table').DataTable({
             dropdown.position.find('.menu').append(`<div class="item" data-value="${value}" data-text="${value}">${option}</div>`)
         }
 
-        $.ajax('/api/drivers/applications/filters', {
+        $.ajax('/api/drivers/filters/applications', {
             method: 'POST',
             success(filters) {
                 const { companies, users } = filters

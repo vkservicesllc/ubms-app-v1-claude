@@ -56,6 +56,25 @@ router.post('/login/validation', async (req, res) => {
 })
 
 
+// ==== DRIVERS ROUTES ==== //
+
+
+router.post('/drivers/dt-list/applications/:archived?', User.mw.verify, Team.mw.verify, Application.mw.dtList)
+
+
+router.post('/drivers/filters/applications', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const filter = { companies: {}, users: {} }
+        const response = { companies: [], users: [] }
+
+        //
+
+        res.json(response)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
 
 // ==== EXPORT ==== //
 

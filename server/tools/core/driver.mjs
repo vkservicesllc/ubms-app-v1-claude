@@ -31,7 +31,7 @@ import { tel as formatTel } from '../../../client/global/modules/tools/utils/for
 
 const mysql = require('../utils/mysql')
 const knex = require('../utils/knex')
-const throwErr = require('../utils/error')
+const sendError = require('../utils/error')
 
 
 const subQuery = (db, table, maxField, groupId) => knex
@@ -414,6 +414,291 @@ class Application {
             '3': 'In 3 weeks',
             '4': 'In 4 weeks',
         },
+    }
+
+
+    static mw = {
+
+
+        dtList: async (req, res) => {
+            try {
+                const sessionUser = res.session.user
+                const { DS, unscoped } = sessionUser
+                const permissions = await sessionUser.permissions() || {}
+
+                if (!DS && !('d:drv/apl' in permissions)) return sendError.auth(req, res)
+
+                const { draw, start, length, columns, search, filter } = req.body  //!REDUNDANT: , order
+                const { archived } = req.params
+                const settings = await sessionUser.settings()
+
+                const { companyIds } = res.session
+                let team, teamId
+
+                if (req.session.team) {
+                    team = await Team.fetch(res.session, { _id: req.session.team })
+                    teamId = team.id
+                }
+                const { teamCompanies } = settings?.carrier || {} //? May want to consider another name for the variable
+
+
+                /* STEP 1: Set up Select, Join and Count Default States */
+
+                const applyJoins = query => {
+
+                    const nameSubQuery = subQuery(db.person, 'names', 'since', 'personId')
+                    const companySubQuery = subQuery(db.business, 'company_names', 'since', 'companyId')
+
+                    query
+                        .leftJoin(`${db.carrier}.drivers AS drv`, 'drv.id', 'apl.driverId')
+                        .leftJoin(`${db.person}.individuals AS psn`, 'psn.id', 'drv.personId')
+                        .leftJoin(
+                            knex.raw('? AS nms', [ nameSubQuery ]),
+                            'nms.personId',
+                            'psn.id'
+                        )
+                        .leftJoin(`${db.carrier}.application_DLs AS dl`, 'dl.aplId', 'apl.id')
+                        .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.aplId', 'apl.id')
+                        .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
+                        .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
+                        .leftJoin(
+                            knex.raw('? AS cnm', [ companySubQuery ]),
+                            'cnm.companyId',
+                            'cmp.id'
+                        )
+                        .leftJoin(knex.raw(`${db.online}.users AS usr ON apl.userId = usr.id`))
+                        .leftJoin(knex.raw(`${db.online}.teams AS env ON apl.teamId = env.id`))
+                }
+
+                const baseQuery = knex(`${db.carrier}.applications AS apl`)
+                    .select(
+                        knex.raw(Query.hashField(Application.hashId(), 'apl')),
+                        knex.raw(Query.hashField(Driver.hashId('driverId'))),
+                        knex.raw(Query.hashField(Team.hashId('teamId'))),
+                        knex.raw(Query.hashField(User.hashId('userId'))),
+                        knex.raw(Query.hashField(Carrier.hashId('carrierId'))),
+                        'apl.formId',
+                        'apl.condition',
+                        'apl.createdAt', //! will return ISO 8601 UTC timestamp (YYYY-MM-DDTHH:mm:ss.sssZ)
+                        'apl.finishedAt',
+                        'apl.position',
+                        'apl.step',
+                        'apl.firstName',
+                        'apl.middleName',
+                        'apl.lastName',
+                        'apl.suffix',
+                        'apl.dob',
+                        'apl.sex',
+                        'apl.email',
+                        'apl.phone',
+                        'apl.state',
+                        'apl.marital',
+                        'apl.medCard',
+                        'apl.dui',
+                        'apl.criminal',
+                        'apl.dotDat',
+                        'apl.citations',
+                        'apl.accidents',
+                        'apl.activeBusiness',
+                        'psn.dob AS originalDob',
+                        'psn.sex AS originalSex',
+                        'nms.firstName AS originalFirstName',
+                        'nms.middleName AS originalMiddleName',
+                        'nms.lastName AS originalLastName',
+                        'nms.suffix AS originalSuffix',
+                        'dl.commercial AS dlCommercial',
+                        'dl.state AS dlState',
+                        'benef.relation AS benefRelation',
+                        'benef.otherRel AS benefOtherRel',
+                        'cnm.busName',
+                        'cnm.coType',
+                        'cnm.alias AS companyAlias',
+                        'usr.firstName AS userFirstName',
+                        'usr.lastName AS userLastName',
+                        'usr.alias AS userAlias',
+                        'usr.condition AS userCondition',
+                        'usr.location AS userLocation',
+                        'usr.deletedAt AS userDeletedAt',
+                        'env.name AS teamName',
+                    )
+
+                const countQuery = knex(`${db.carrier}.applications AS apl`).count('* AS count')
+                const totalCountQuery = countQuery.clone()
+
+                applyJoins(baseQuery)
+                applyJoins(countQuery)
+
+                if (teamId) {
+                    baseQuery.where({ teamId })
+                    countQuery.where({ teamId })
+                    totalCountQuery.where({ teamId })
+                }
+
+                const archiveWhere = archived === 'archived'
+                    ? 'whereNotNull'
+                    : 'whereNull'
+
+                baseQuery[archiveWhere]('archivedAt')
+                countQuery[archiveWhere]('archivedAt')
+                totalCountQuery[archiveWhere]('archivedAt')
+
+
+                /* STEP 2: Prepare Filters */
+
+                const filterParams = {
+                    company: {
+                        nullable: true,
+                        whereCond: 'orWhere',
+                        carrierIds: [],
+                    },
+                }
+
+                if (filter?.companies) {
+                    filter.companies = filter.companies.split(',')
+
+                    if (filter.companies.length && !filter.companies.includes('null')) {
+                        filterParams.company.nullable = false
+                        filterParams.company.whereCond = 'where'
+                    }
+
+                    await Promise.all(filter.companies.map(async (_id) => {
+                        if (_id !== 'null') {
+                            const carrier = await Carrier.data(res.session, { _id })
+                            const id = await carrier.id()
+
+                            filterParams.company.carrierIds.push(id)
+                        }
+                    }))
+                }
+
+                if (filter?.user) {
+                    if (filter.user === 'null') {
+                        baseQuery.whereNull('userId')
+                        countQuery.whereNull('userId')
+                    } else {
+                        const userId = await (await User.data(res.session, { _id: filter.user, allowDeleted: true })).id()
+
+                        baseQuery.where('userId', userId)
+                        countQuery.where('userId', userId)
+                    }
+                }
+
+                function companyStateFilter() {
+                    const { nullable, whereCond, carrierIds } = filterParams.company
+
+                    if (nullable) this.whereNull('carrierId')
+                    if (!filter?.companies || carrierIds.length)
+                        this[whereCond](function() {
+                            this.where('cmp.confirmed', true)
+
+                            if (!teamCompanies || !teamCompanies.includes('i')) this.where('cmp.active', true)
+                            if (!teamCompanies || !teamCompanies.includes('c')) this.where('cmp.until', null)
+                            if ((!teamCompanies || !teamCompanies.includes('e')) && !DS) this.whereIn('cmp.id', companyIds)
+
+                            if (carrierIds.length) this.whereIn('apl.carrierId', carrierIds)
+                        })
+                }
+
+                // baseQuery.where(companyStateFilter)
+                // countQuery.where(companyStateFilter)
+
+                if (filter?.conditions) {
+                    filter.conditions = filter.conditions.split(',')
+
+                    baseQuery.whereIn('apl.condition', filter.conditions)
+                    countQuery.whereIn('apl.condition', filter.conditions)
+                }
+
+                if (filter?.positions) {
+                    filter.positions = filter.positions.split(',')
+                    let nullable = false
+
+                    if (filter.positions.includes('null')) {
+                        nullable = true
+                        filter.positions = filter.positions.filter(value => value !== 'null')
+                    }
+
+                    if (filter.positions.length) {
+                        function positionFilter() {
+                            this.whereIn('position', filter.positions)
+                            if (nullable) this.orWhereNull('position')
+                        }
+
+                        baseQuery.where(positionFilter)
+                        countQuery.where(positionFilter)
+                    } else {
+                        baseQuery.whereNull('position')
+                        countQuery.whereNull('position')
+                    }
+                }
+
+
+                /* STEP 3: Prepare Search */
+
+                const searchableColumns = columns
+                    .filter(column => column.data && column.data !== 'function' && column.searchable === 'true')
+                    .map(column => column.data)
+
+                if (search && search.value && searchableColumns.length) {
+                    function searchFilter() {
+                        searchableColumns.forEach((field, i) => {
+                            if (i === 0) this.where(`apl.${field}`, 'like', `%${search.value}%`)
+                            else this.orWhere(`apl.${field}`, 'like', `%${search.value}%`)
+                        })
+                    }
+
+                    baseQuery.where(searchFilter)
+                    countQuery.where(searchFilter)
+                }
+
+
+                /* STEP 4: Prepare Orders and Limits */
+
+                baseQuery
+                    .orderBy([
+                        { column: 'createdAt', order: 'desc' },
+                        { column: 'lastName', order: 'asc' },
+                        { column: 'firstName', order: 'asc' },
+                    ])
+                    .limit(length).offset(start)
+
+                /* Obtain Data and Counts */
+                const [
+                    data,
+                    [{ count: recordsFiltered }],
+                    [{ count: recordsTotal }],
+                ] = await Promise.all([
+                    baseQuery,
+                    countQuery,
+                    totalCountQuery,
+                ])
+
+                res.json({
+                    draw,
+                    recordsTotal,
+                    recordsFiltered,
+                    data,
+                    actions: {
+                        data: {
+                            comment: DS || permissions?.['d:drv/apl'].includes('1'),
+                            create: DS || permissions?.['d:drv/apl'].includes('2'),
+                            modify: DS || permissions?.['d:drv/apl'].includes('3'),
+                            delete: DS || permissions?.['d:drv/apl'].includes('5'),
+                        },
+                        file: {
+                            access: Object.keys(permissions).some(key => key.startsWith('f:drv')),
+                        },
+                    },
+                    aplAddress: `${res.hbs.addrBook.driver}/application/`,
+                    unscoped,
+                    stepLen: Application.list.step.length,
+                })
+            } catch (err) {
+                sendError.server(req, res, err)
+            }
+        }
+
+
     }
 
 
