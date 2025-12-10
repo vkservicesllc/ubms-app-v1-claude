@@ -91,6 +91,7 @@ export const classInstance = {
             const { jxTargets } = Cls.config()
             if (!jxTargets) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Junction targets not found`)
 
+            const offline = inst.session?.offline || false
             const ids = []
             const [ jxQuery, jxIdProp, Src ] = jxTargets[target]
             if (!sorts) sorts = Src.config().defSorts || null
@@ -100,7 +101,7 @@ export const classInstance = {
             }))
             rows.map(row => ids.push(row[jxIdProp]))
 
-            return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, sorts })
+            return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, offline, sorts })
         }
 
         const { query, redFields = {} } = Cls.config()

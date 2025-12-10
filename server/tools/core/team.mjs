@@ -19,9 +19,10 @@ const sendError = require('../utils/error')
 
 
 class Team {
-    constructor(data = {}, { single = true, session, hideRawId = false } = {}) {
+    constructor(data = {}, { single = true, session, hideRawId = false, custom = {} } = {}) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Team Data')
 
+        const { offline = false } = custom
         this._id = data._id
         if (!hideRawId) this.id = data.id
 
@@ -50,7 +51,8 @@ class Team {
         }
 
         if (single) {
-            this.session = session
+            this.session = session || {}
+            this.session.offline = offline
 
 
             this.add = (target, bodyOrIds) => classInstance.add(this, new.target, target, bodyOrIds)
@@ -131,7 +133,7 @@ class Team {
     })
 
 
-    static fetch = (session, filter, { hideRawId = false, sorts = Team.config().defSorts, mode } = {}) => {
+    static fetch = (session, filter, { hideRawId = false, offline = false, sorts = Team.config().defSorts, mode } = {}) => {
         const join = [ 'teamId', 'id' ]
 
         return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
@@ -187,7 +189,7 @@ class Team {
 
                 batch[0].match = match
 
-                return { single, batch }
+                return { single, batch, custom: { offline } }
             },
         })
     }

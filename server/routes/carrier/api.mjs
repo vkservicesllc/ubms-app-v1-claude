@@ -44,9 +44,8 @@ router.post('/login/validation', async (req, res) => {
         if (!user) throw new Error('User not found')
 
         if (user.unscoped) validated = true
-
-        if (!user.DS) {
-            const teams = await user.fetch('jx.teams')
+        else if (!user.DS) {
+            const teams = await user.fetch('jx.teams') //! SESSION USER NOT SUPPLIED
             validated = teams.length > 0
         }
 

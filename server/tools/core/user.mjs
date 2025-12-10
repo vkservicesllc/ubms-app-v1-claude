@@ -471,7 +471,7 @@ class User extends Person {
         { hideRawId = false, hideSensitive = true, combined = false, offline = false, auth = false, hideEvents = true, sorts = User.config().defSorts, mode } = {}
     ) => {
         if (!offline) {
-            if (!offline && !sessionUser?.id) throw new Error('User Static Method Error [FETCH]: Session user not supplied')
+            if (!sessionUser?.id) throw new Error('User Static Method Error [FETCH]: Session user not supplied')
             auth = false
         }
 
@@ -782,7 +782,7 @@ class User extends Person {
             try {
                 const { method, originalUrl, query } = req
                 const { user: _id, clientIp } = req.session
-                const { excUrl, branch, siteId, teams, companies, userApp } = res.session //! RECONSIDER
+                const { excUrl, branch, siteId } = res.session
 
                 const reject = async apiErrMsg => {
                     if (api) sendError.auth(req, res, apiErrMsg)
