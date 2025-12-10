@@ -432,13 +432,13 @@ class Application {
                 const { archived } = req.params
                 const settings = await sessionUser.settings()
 
-                const { companyIds } = res.session
                 let team, teamId
 
                 if (req.session.team) {
                     team = await Team.fetch(res.session, { _id: req.session.team })
                     teamId = team.id
                 }
+                //! Team are no longer tied to companies
                 const { teamCompanies } = settings?.carrier || {} //? May want to consider another name for the variable
 
 
@@ -591,15 +591,16 @@ class Application {
                         this[whereCond](function() {
                             this.where('cmp.confirmed', true)
 
-                            if (!teamCompanies || !teamCompanies.includes('i')) this.where('cmp.active', true)
-                            if (!teamCompanies || !teamCompanies.includes('c')) this.where('cmp.until', null)
-                            if ((!teamCompanies || !teamCompanies.includes('e')) && !DS) this.whereIn('cmp.id', companyIds)
+                            //! team are no longer tied to companies
+                            // if (!teamCompanies || !teamCompanies.includes('i')) this.where('cmp.active', true)
+                            // if (!teamCompanies || !teamCompanies.includes('c')) this.where('cmp.until', null)
+                            // if ((!teamCompanies || !teamCompanies.includes('e')) && !DS) this.whereIn('cmp.id', companyIds)
 
                             if (carrierIds.length) this.whereIn('apl.carrierId', carrierIds)
                         })
                 }
 
-                // baseQuery.where(companyStateFilter)
+                baseQuery.where(companyStateFilter)
                 // countQuery.where(companyStateFilter)
 
                 if (filter?.conditions) {
