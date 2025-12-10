@@ -55,7 +55,11 @@ class Team {
             this.session.offline = offline
 
 
-            this.add = (target, bodyOrIds) => classInstance.add(this, new.target, target, bodyOrIds)
+            this.add = (target, bodyOrIds) => {
+                if (!this.session?.user?.id) throw new Error('Team Constructor Method Error [ADD]: Session user not supplied')
+
+                return classInstance.add(this, new.target, target, bodyOrIds)
+            }
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
@@ -63,6 +67,7 @@ class Team {
 
             this.update = (targetOrBody, body) => {
                 const team = this
+                if (!session?.user?.id) throw new Error('Team Constructor Method Error [UPDATE]: Session user not supplied')
 
                 return classInstance.update(this, new.target, targetOrBody, body, {}, {
                     currentData(target, data) {
@@ -82,7 +87,11 @@ class Team {
             }
 
 
-            this.delete = (target, matchOrIds) => classInstance.delete(this, new.target, target, matchOrIds)
+            this.delete = (target, matchOrIds) => {
+                if (!this.session?.user?.id) throw new Error('Team Constructor Method Error [DELETE]: Session user not supplied')
+
+                return classInstance.delete(this, new.target, target, matchOrIds)
+            }
 
 
             this.settings = async body => {
@@ -114,6 +123,7 @@ class Team {
     static matchIdHash = value => matchHash(value, Team.#algorithm)
             
     static config = () => ({
+        enforceUser: false,
         db: db.online,
         query: query.team,
         idProp: 'teamId',
@@ -123,17 +133,22 @@ class Team {
     })
 
 
-    static create = (session, body, params) => classStatic.create(this, session, body, params, {
-        async find(body, hideRawId) {
-            const { name } = body
-            const data = await Team.fetch(session, { name }, { hideRawId })
+    static create = (session, body, params) => {
+        if (!session?.user?.id) throw new Error('Team Static Method Error [CREATE]: Session user not supplied')
 
-            return { found: !!data, data }
-        },
-    })
+        return classStatic.create(this, session, body, params, {
+            async find(body, hideRawId) {
+                const { name } = body
+                const data = await Team.fetch(session, { name }, { hideRawId })
+
+                return { found: !!data, data }
+            },
+        })
+    }
 
 
     static fetch = (session, filter, { hideRawId = false, offline = false, sorts = Team.config().defSorts, mode } = {}) => {
+        if (!offline && !session?.user?.id) throw new Error('Team Static Method Error [FETCH]: Session user not supplied')
         const join = [ 'teamId', 'id' ]
 
         return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {

@@ -96,8 +96,9 @@ router.use((req, res, next) => {
                     hbs.team[prop] = team[prop]
 
                 const settings = await user.settings()
-                const { teams } = res.session
-                if (teams.length === 1) hbs.teamNav = false
+                const teams = await user.fetch('jx.teams')
+
+                if (teams.length <= 1) hbs.teamNav = false
 
                 if (settings?.carrier?.teamSelect == '1') {
                     const t = `\t`.repeat(2)
@@ -175,7 +176,7 @@ router.get('/', async (req, res, next) => {
             return res.redirect(url)
         }
 
-        const { applied: teams } = await user.fetch('jx.teams')
+        const teams = await user.fetch('jx.teams')
         if (teams.length === 1) {
             req.session.team = teams[0]._id
             return res.redirect('/')
