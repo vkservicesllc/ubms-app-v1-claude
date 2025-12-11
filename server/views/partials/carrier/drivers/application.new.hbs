@@ -7,7 +7,7 @@
             <a id="apl-url" href="{{applicationUrl}}" target="_blank">{{applicationUrl}}</a>
             <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup>
         </p>
-        <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/driver/application/new" method="POST" autocomplete="off" style="margin-top: 5px;">
+        <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/driver/pre-application" method="POST" autocomplete="off" style="margin-top: 5px;">
             <input type="hidden" id="recruiter-id" value="{{userSimpleId}}" />
             <div class="five wide column">
                 <div class="ui form">
@@ -69,7 +69,6 @@
                     </div>
                 </div>
             </div>
-            <div class="ui vertical divider"></div>
             <div class="eleven wide column">
                 <div class="ui form">
                     <h5 class="ui horizontal divider grey header">
@@ -91,79 +90,68 @@
                     <h5 class="ui horizontal divider grey header">
                         <i class="id card icon"></i>New Lead
                     </h5>
-                    <div class="ui form" style="margin-bottom: 30px;">
                     <div class="field">
                         <div class="ui toggle checkbox">
                             <input type="checkbox" id="register-new-apl" />
                             <label><strong>Pre-Application</strong></label>
                         </div>
                     </div>
-                    <div class="disabled fields applicant-field" style="margin-top: 10px;">
-                        <div class="five wide field">
-                            {{{form.firstName.text.label}}}
-                            {{{form.firstName.text.input}}}
+                    <div class="ui two column relaxed divided grid" style="margin-top: 10px;">
+                        <div class="eleven wide column">
+                            <div class="disabled fields applicant-field">
+                                <div class="eight wide field">
+                                    {{{form.firstName.text.label}}}
+                                    {{{form.firstName.text.input}}}
+                                </div>
+                                <div class="eight wide field">
+                                    {{{form.middleName.text.label}}}
+                                    {{{form.middleName.text.input}}}
+                                </div>
+                            </div>
+                            <div class="disabled fields applicant-field">
+                                <div class="eight wide field">
+                                    {{{form.lastName.text.label}}}
+                                    {{{form.lastName.text.input}}}
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.suffix.select.label}}}
+                                    <div class="ui fluid clearable selection dropdown" id="suffix-dropdown">
+                                        {{{form.suffix.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.suffix}}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide field">
+                                    {{{form.gender.select.label}}}
+                                    <div class="ui fluid selection required dropdown" id="gender-dropdown">
+                                        {{{form.gender.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.gender}}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="four wide field">
-                            {{{form.middleName.text.label}}}
-                            {{{form.middleName.text.input}}}
-                        </div>
-                        <div class="five wide field">
-                            {{{form.lastName.text.label}}}
-                            {{{form.lastName.text.input}}}
-                        </div>
-                        <div class="two wide field">
-                            {{{form.suffix.select.label}}}
-                            <div class="ui fluid clearable selection dropdown" id="suffix-dropdown">
-                                {{{form.suffix.hidden.input}}}
-                                <i class="dropdown icon"></i>
-                                <div class="default text"></div>
-                                <div class="menu">{{{dropdown.suffix}}}
+                        <div class="five wide column">
+                            <div class="disabled field applicant-field">
+                                {{{form.phone.text.label}}}
+                                {{{form.phone.text.input}}}
+                            </div>
+                            <div class="disabled field applicant-field">
+                                {{{form.position_.select.label}}}
+                                <div class="ui fluid clearable selection dropdown" id="position-dropdown">
+                                    {{{form.position_.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.position_}}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="disabled fields applicant-field">
-                        <div class="four wide field">
-                            {{{form.gender.select.label}}}
-                            <div class="ui fluid clearable selection required dropdown" id="gender-dropdown">
-                                {{{form.gender.hidden.input}}}
-                                <i class="dropdown icon"></i>
-                                <div class="default text"></div>
-                                <div class="menu">{{{dropdown.gender}}}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="four wide field">
-                            {{{form.dob_.text.label}}}
-                            <div class="ui calendar" id="dob-calendar">
-                                <div class="ui fluid input left icon">
-                                    {{{form.dob_.text.input}}}
-                                    <i class="calendar icon"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="four wide field">
-                            {{{form.ssn_.text.label}}}
-                            {{{form.ssn_.text.input}}}
-                        </div>
-                    </div>
-                    <div class="disabled fields applicant-field">
-                        <div class="four wide field">
-                            {{{form.phone.text.label}}}
-                            {{{form.phone.text.input}}}
-                        </div>
-                        <div class="four wide field">
-                            {{{form.position_.select.label}}}
-                            <div class="ui fluid clearable selection dropdown" id="position-dropdown">
-                                {{{form.position_.hidden.input}}}
-                                <i class="dropdown icon"></i>
-                                <div class="default text"></div>
-                                <div class="menu">{{{dropdown.position_}}}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 </div>
             </div>
         </form>
