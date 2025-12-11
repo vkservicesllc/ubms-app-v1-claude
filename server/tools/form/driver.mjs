@@ -233,7 +233,8 @@ class ApplicationForm {
         requiredLabel: false,
     })
 
-    static position = createPositionForm({ target: 'position', group: 'position'})
+    static position = createPositionForm({ target: 'position', group: 'position' })
+    static position_ = createPositionForm({ target: 'position', group: 'position', required: false })
 
     static condition = createForm({ /* aka Status */
         selector: appSelector,
@@ -283,7 +284,9 @@ class ApplicationForm {
     static lastName = createPersonNameForm('last', { selector: appSelector, group: 'name' })
     static suffix = createPersonNameForm('suffix', { selector: appSelector, group: 'name' })
     static dob = createDobForm({ selector: appSelector, target: 'dob' })
+    static dob_ = createDobForm({ selector: appSelector, target: 'dob', required: false })
     static ssn = createSsnForm({ selector: appSelector, target: 'ssn' })
+    static ssn_ = createSsnForm({ selector: appSelector, target: 'ssn', required: false })
     static gender = createGenderForm({ selector: appSelector, target: 'gender', group: 'gender', required })
 
     static marital = createMaritalStatus({ selector: appSelector, required })

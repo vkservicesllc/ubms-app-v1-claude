@@ -8,7 +8,7 @@ import moment from 'moment'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Geography from '../../../client/global/modules/tools/core/geography.mjs'
-import { Relationship } from '../../tools/core/individual.mjs'
+import Individual, { Relationship } from '../../tools/core/individual.mjs'
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
@@ -128,20 +128,20 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
             if (true)
                 hbs.applicationUrl += `&rec=${user._simpleId}`
 
-            const driverPositions = Driver.positionList
+            const driverPositions = Driver.list.position
             let suffixItems = '', genderItems = '', maritalItems = '', positionItems = '', addrStateItems = ''
-            const t = `\t`.repeat(11)
+            const t = `\t`.repeat(9)
 
-            for (const sfx in Person.suffixList)
+            for (const sfx in Individual.list.suffix)
                 suffixItems += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
-            for (const sex in Person.genderList)
-                genderItems += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
-            for (const stat in Person.maritalList)
-                maritalItems += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
+            for (const sex in Individual.list.gender)
+                genderItems += `\n${t}<div class="item" data-value="${sex}">${Individual.list.gender[sex]}</div>`
+            // for (const stat in Individual.list.marital)
+            //     maritalItems += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
             for (const pos in driverPositions)
                 positionItems += `\n${t}<div class="item" data-value="${pos}" data-text="${pos}">${driverPositions[pos]}</div>`
-            for (const state in Address.stateList)
-                addrStateItems += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+            // for (const state in Address.stateList)
+            //     addrStateItems += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
 
             const statusClass = 'new-apl-eligibility new-apl-legal-status'
 
@@ -158,8 +158,9 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
 
             const fields = [
                 'firstName', 'middleName', 'lastName', 'suffix',
-                'dob', 'gender', 'ssn', 'marital', 'phone',
-                'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
+                'phone', 'gender', 'dob_', 'ssn_',
+                // 'dob', 'gender', 'ssn', 'marital', 'phone',
+                // 'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             ]
             options = updateFormOptions(options, ApplicationForm, fields, { disabled: true })
 
@@ -167,15 +168,15 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
             hbs.dropdown = {
                 suffix: suffixItems,
                 gender: genderItems,
-                marital: maritalItems,
-                position: positionItems,
-                addrState: addrStateItems,
+                position_: positionItems,
+                // marital: maritalItems,
+                // addrState: addrStateItems,
             }
         }
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
-        sendError.server(res, err)
+        sendError.server(req, res, err)
     }
 })
 

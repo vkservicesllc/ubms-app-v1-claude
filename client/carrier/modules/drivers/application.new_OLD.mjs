@@ -37,14 +37,14 @@ const $dropdown = {
     team: $('#new-apl-team-dropdown'),
     suffix: $('#suffix-dropdown'),
     gender: $('#gender-dropdown'),
-    // marital: $('#marital-dropdown'),
-    // addrState: $('#addr-state-dropdown'),
+    marital: $('#marital-dropdown'),
+    addrState: $('#addr-state-dropdown'),
     position: $('#position-dropdown'),
 }
 const $field = {
     applicant: $('.applicant-field'),
-    // status: $('#applicant-legal-status-field'),
-    // expiration: $('#applicant-legal-status-expiration-field'),
+    status: $('#applicant-legal-status-field'),
+    expiration: $('#applicant-legal-status-expiration-field'),
 }
 
 
@@ -102,14 +102,14 @@ $('#dob-calendar').calendar({
     ...calSettings,
     maxDate: moment().subtract(18, 'years').toDate(),
 })
-// $('#addr-since-calendar').calendar({
-//     ...calSettings,
-//     maxDate: moment().toDate(),
-// })
-// $('#status-exp-calendar').calendar({
-//     ...calSettings,
-//     minDate: moment().add(1, 'months').toDate(),
-// })
+$('#addr-since-calendar').calendar({
+    ...calSettings,
+    maxDate: moment().toDate(),
+})
+$('#status-exp-calendar').calendar({
+    ...calSettings,
+    minDate: moment().add(1, 'months').toDate(),
+})
 
 
 const enableApplicant = () => {
@@ -123,13 +123,13 @@ const disableApplicant = () => {
     $(`${selector.class.global}:not([type=hidden])`).val(null)
     $dropdown.suffix.dropdown('clear')
     $dropdown.gender.dropdown('clear')
-    // $dropdown.marital.dropdown('clear')
-    // $dropdown.addrState.dropdown('clear')
+    $dropdown.marital.dropdown('clear')
+    $dropdown.addrState.dropdown('clear')
     $dropdown.position.dropdown('clear')
-    // $('.new-apl-eligibility, .new-apl-legal-status').prop('checked', false).prop('disabled', true)
-    // $expiration.val(null)
-    // $field.status.addClass('disabled')
-    // $field.expiration.addClass('disabled')
+    $('.new-apl-eligibility, .new-apl-legal-status').prop('checked', false).prop('disabled', true)
+    $expiration.val(null)
+    $field.status.addClass('disabled')
+    $field.expiration.addClass('disabled')
     // $('#self-assign-field').addClass('disabled').find('input').prop('disabled', true).prop('checked', true)
     $submit.text('Invite')
 }
@@ -141,8 +141,8 @@ $registerApl.on('change', function() {
 
 $dropdown.suffix.dropdown()
 $dropdown.gender.dropdown()
-// $dropdown.marital.dropdown()
-// $dropdown.addrState.dropdown()
+$dropdown.marital.dropdown()
+$dropdown.addrState.dropdown()
 $dropdown.position.dropdown()
 
 
@@ -161,37 +161,37 @@ ssnEvent(TS.ssn)
 
 telEvent(TS.phone)
 
-// addr1Event(addr1Id, { addr2Id })
+addr1Event(addr1Id, { addr2Id })
 
-// addr2Event(addr2Id)
+addr2Event(addr2Id)
 
-// zipEvent(zipId, {
-//     cityId,
-//     onChange(zip, $zip, city, state) {
-//         if (state) $dropdown.addrState.dropdown('set selected', state)
-//     },
-// })
+zipEvent(zipId, {
+    cityId,
+    onChange(zip, $zip, city, state) {
+        if (state) $dropdown.addrState.dropdown('set selected', state)
+    },
+})
 
-// cityEvent(cityId)
+cityEvent(cityId)
 
 
-// $('#qualification-check').on('change', function() {
-//     if ($(this).prop('checked')) $field.status.removeClass('disabled').find('input').prop('disabled', false)
-//     else {
-//         $('.new-apl-legal-status').prop('checked', false)
-//         $expiration.val(null).prop('disabled', true)
-//         $field.status.addClass('disabled').find('input').prop('disabled', true)
-//         $field.expiration.addClass('disabled').find('input')
-//     }
-// })
+$('#qualification-check').on('change', function() {
+    if ($(this).prop('checked')) $field.status.removeClass('disabled').find('input').prop('disabled', false)
+    else {
+        $('.new-apl-legal-status').prop('checked', false)
+        $expiration.val(null).prop('disabled', true)
+        $field.status.addClass('disabled').find('input').prop('disabled', true)
+        $field.expiration.addClass('disabled').find('input')
+    }
+})
 
-// $('.new-apl-legal-status').on('change', function() {
-//     if ($(this).val() == 2) $field.expiration.removeClass('disabled').find('input').prop('disabled', false)
-//     else {
-//         $expiration.val(null).prop('disabled', true)
-//         $field.expiration.addClass('disabled')
-//     }
-// })
+$('.new-apl-legal-status').on('change', function() {
+    if ($(this).val() == 2) $field.expiration.removeClass('disabled').find('input').prop('disabled', false)
+    else {
+        $expiration.val(null).prop('disabled', true)
+        $field.expiration.addClass('disabled')
+    }
+})
 
 
 table.on('draw', function() {
@@ -271,6 +271,73 @@ table.on('draw', function() {
                     }
                 }
             })
+
+            // $.ajax('/api/carriers', {
+            //     method: 'POST',
+            //     success(companies) {
+            //         let items = ''
+
+            //         companies.forEach(company => {
+            //             const { _id, route, name } = company
+            //             items += `<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
+            //         })
+            //         $dropdown.company.find('.menu').html(items)
+
+            //         $dropdown.company.dropdown().on('change', function() {
+            //             const route = $(this).dropdown('get value')
+            //             let [ base ] = aplUrl.split('?')
+            //             let query = $aplUrl.attr('href').split('?')[1]
+
+            //             if (route) base += `/${route}`
+
+            //             const url = base + '?' + query
+            //             $aplUrl.text(url).attr('href', url)
+            //             $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''))
+            //         })
+
+            //         $modal.modal({
+            //             autofocus: false,
+            //             closable: false,
+            //             onHidden() {
+            //                 $aplUrl.text(aplUrl).attr('href', aplUrl)
+            //                 $pdfLink.attr('href', pdfUrl)
+            //                 $dropdown.company.dropdown('clear')
+            //                 $email.val(null)
+            //                 $message.email.html(message.email)
+            //                 $registerApl.prop('checked', false)
+            //                 $selfAssign.prop('checked', true)
+            //                 disableApplicant()
+            //                 $posRole.prop('checked', false)
+            //                 if ($dropdown.team.length) $dropdown.team.dropdown('clear')
+            //             },
+            //         }).modal('show')
+
+            //         if ($dropdown.team.length)
+            //             $.ajax('/api/teams', {
+            //                 method: 'POST',
+            //                 success(teams) {
+            //                     let items = ''
+
+            //                     teams.forEach(team => {
+            //                         const { _id, name } = team
+            //                         items += `<div class="item" data-id="${_id}" data-value="${_id}">${name}</div>`
+            //                     })
+            //                     $dropdown.team.find('.menu').html(items)
+
+            //                     $dropdown.team.dropdown().on('change', function() {
+            //                         const _id = $(this).dropdown('get value') || 'global'
+            //                         let [ base, query ] = aplUrl.split('?')
+            //                         query = query.split('&')
+
+            //                         query[0] = `env=${_id}`
+
+            //                         const url = `${base}?${query.join('&')}`
+            //                         $aplUrl.text(url).attr('href', url)
+            //                     })
+            //                 },
+            //             })
+            //     }
+            // })
         })
     }
 })
@@ -304,11 +371,11 @@ $form.submit(function(evt) {
         if (!$dropdown.gender.dropdown('get value'))
             return alert("Applicant's gender is required")
 
-        // if (!$dropdown.marital.dropdown('get value'))
-        //     return alert("Applicant's marital status is required")
+        if (!$dropdown.marital.dropdown('get value'))
+            return alert("Applicant's marital status is required")
 
-        // if (!$dropdown.addrState.dropdown('get value'))
-        //     return alert("Applicant's address state is required")
+        if (!$dropdown.addrState.dropdown('get value'))
+            return alert("Applicant's address state is required")
 
         if (!$dropdown.position.dropdown('get value'))
             return alert("Applicant's position is required")

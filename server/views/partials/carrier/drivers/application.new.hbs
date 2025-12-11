@@ -1,0 +1,175 @@
+<div class="ui large modal" id="new-apl-modal">
+    <i class="close icon"></i>
+    <div class="header">New Application</div>
+    <div class="content">
+        <p>
+            <a href="/drivers/files/application" id="pdf-link" target="_blank"><i class="pdf file icon"></i></a>
+            <a id="apl-url" href="{{applicationUrl}}" target="_blank">{{applicationUrl}}</a>
+            <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup>
+        </p>
+        <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/driver/application/new" method="POST" autocomplete="off" style="margin-top: 5px;">
+            <input type="hidden" id="recruiter-id" value="{{userSimpleId}}" />
+            <div class="five wide column">
+                <div class="ui form">
+                    <h5 class="ui horizontal divider grey header">
+                        <i class="horizontal sliders icon"></i>Properties
+                    </h5>
+                    <div class="ui icon message">
+                        <i class="truck moving icon"></i>
+                        <div class="content">
+                            <div class="header">Carrier</div>
+                            <p>
+                                If you know which carrier is hiring the applicant, please select it below.<br/>
+                                A cover sheet will be added to the PDF blank.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui input">
+                            <div class="ui fluid clearable selection dropdown" id="new-apl-carrier-dropdown">
+                                <input type="hidden" name="carrier" />
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Hiring Carrier</div>
+                                <div class="menu"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {{#if (eq unscoped true)}}
+                    <div class="field">
+                        <div class="ui input">
+                            <div class="ui fluid clearable selection dropdown" id="new-apl-team-dropdown">
+                                <input type="hidden" name="_teamId" />
+                                <i class="dropdown icon"></i>
+                                <div class="default text">Hiring Team</div>
+                                <div class="menu"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/if}}
+                    <div class="inline fields">
+                        <label>Position Role:</label>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" class="position-role" id="position-role-cdl-yes" name="cdlRole" value="1" />
+                                <label for="position-role-cdl-yes">CDL</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" class="position-role" id="position-role-cdl-no" name="cdlRole" value="0" />
+                                <label for="position-role-cdl-no">Non-CDL</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field" id="self-assign-field">
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="selfAssign" id="self-assign" checked />
+                            <label for="self-assign">Self-assign to Application</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui vertical divider"></div>
+            <div class="eleven wide column">
+                <div class="ui form">
+                    <h5 class="ui horizontal divider grey header">
+                        <i class="envelope icon"></i>Invitation
+                    </h5>
+                    <div class="fields">
+                        <div class="nine wide field">
+                            <div class="ui left labeled input">
+                                {{{form.email.text.input}}}
+                                <div class="ui corner label">
+                                    <i class="asterisk icon"></i>
+                                </div>
+                            </div>
+                            <p class="help" id="email-help">
+                                <span class="ui grey text">Please enter valid email address</span>
+                            </p>
+                        </div>
+                    </div>
+                    <h5 class="ui horizontal divider grey header">
+                        <i class="id card icon"></i>New Lead
+                    </h5>
+                    <div class="ui form" style="margin-bottom: 30px;">
+                    <div class="field">
+                        <div class="ui toggle checkbox">
+                            <input type="checkbox" id="register-new-apl" />
+                            <label><strong>Pre-Application</strong></label>
+                        </div>
+                    </div>
+                    <div class="disabled fields applicant-field" style="margin-top: 10px;">
+                        <div class="five wide field">
+                            {{{form.firstName.text.label}}}
+                            {{{form.firstName.text.input}}}
+                        </div>
+                        <div class="four wide field">
+                            {{{form.middleName.text.label}}}
+                            {{{form.middleName.text.input}}}
+                        </div>
+                        <div class="five wide field">
+                            {{{form.lastName.text.label}}}
+                            {{{form.lastName.text.input}}}
+                        </div>
+                        <div class="two wide field">
+                            {{{form.suffix.select.label}}}
+                            <div class="ui fluid clearable selection dropdown" id="suffix-dropdown">
+                                {{{form.suffix.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.suffix}}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="disabled fields applicant-field">
+                        <div class="four wide field">
+                            {{{form.gender.select.label}}}
+                            <div class="ui fluid clearable selection required dropdown" id="gender-dropdown">
+                                {{{form.gender.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.gender}}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="four wide field">
+                            {{{form.dob_.text.label}}}
+                            <div class="ui calendar" id="dob-calendar">
+                                <div class="ui fluid input left icon">
+                                    {{{form.dob_.text.input}}}
+                                    <i class="calendar icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="four wide field">
+                            {{{form.ssn_.text.label}}}
+                            {{{form.ssn_.text.input}}}
+                        </div>
+                    </div>
+                    <div class="disabled fields applicant-field">
+                        <div class="four wide field">
+                            {{{form.phone.text.label}}}
+                            {{{form.phone.text.input}}}
+                        </div>
+                        <div class="four wide field">
+                            {{{form.position_.select.label}}}
+                            <div class="ui fluid clearable selection dropdown" id="position-dropdown">
+                                {{{form.position_.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.position_}}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <button type="submit" form="new-apl-form" class="ui primary button" id="new-apl-submit">Invite</button>
+    </div>
+    <script type="module" src="/modules/drivers/application.new.mjs"></script>
+</div>
