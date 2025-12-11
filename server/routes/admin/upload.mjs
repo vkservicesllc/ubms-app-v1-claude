@@ -1,5 +1,8 @@
 // ==== IMPORT ==== //
 
+require('dotenv').config({ path: '../../../.env' })
+const { DIR__PATH: dir } = process.env
+
 const router = require('express').Router()
 const sendError = require('../../tools/utils/error')
 
@@ -8,13 +11,14 @@ import moment from 'moment'
 import User from '../../tools/core/user.mjs'
 import Company from '../../tools/core/company.mjs'
 import uploader from '../../tools/utils/multer.mjs'
+import { getFiles } from '../../tools/utils/fs.mjs'
 
 
 // ==== SETUP ==== //
 
 const upload = {
     company: {
-        logo: uploader('/business/company/logo'),
+        logo: uploader('/business/company/{id}/logo'),
     },
 }
 
@@ -24,18 +28,20 @@ const upload = {
 
 
 
-router.post('/business/company/logo/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res, next) => {
+router.post('/business/company/:_id/logo', User.mw.verify, User.mw.superAdminOnly, async (req, res, next) => {
     const { _id } = req.params
+    const company = await Company.fetch(res.session, { _id })
+    if (!company) throw new Error('Company not found')
+
     const { since } = req.query
 
-    const company = await Company.fetch(res.session, { _id })
     const { id } = company
     let filename = company.since
 
     if (since) filename = since
 
     req.upload = {
-        dir: id,
+        id,
         filename,
     }
     req.data = { company, filename }
@@ -44,7 +50,12 @@ router.post('/business/company/logo/:_id', User.mw.verify, User.mw.superAdminOnl
 }, upload.company.logo.single('companyLogo'), async (req, res) => {
     try {
         //* Runs when upload is successfull
-        await req.data.company.update({ lastLogo: req.data.filename })
+        const { company } = req.data
+        let lastLogo = null
+        const files = await getFiles(`${dir}/uploads/business/company/${company.id}/logo/`, false)
+        if (files.length) lastLogo = files[0].split('.')[0]
+
+        await company.update({ lastLogo })
 
         res.send({ status: 'success' })
     } catch (err) {

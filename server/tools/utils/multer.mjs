@@ -10,11 +10,11 @@ const path = require('path')
 export default subdir => multer({
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
-            let path = `${dir + subdir}/`
-            if (req?.upload?.dir) path += `${req.upload.dir}/`
+            let dest = `${dir + subdir}/`
+            if (req?.upload?.id) dest = dest.replace('{id}', req.upload.id)
 
-            fs.mkdirSync(path, { recursive: true })
-            cb(null, path)
+            fs.mkdirSync(dest, { recursive: true })
+            cb(null, dest)
         },
         filename: (req, file, cb) => {
             let name = file.originalname

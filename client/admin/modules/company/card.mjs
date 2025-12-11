@@ -5,12 +5,13 @@ import selector from '/modules/registry/selectors/company.mjs'
 const $tabs = $('.company-card-tabs')
 const $sections = $('.company-card-content')
 const $content = {
+    logo: $('#logo-card-content'),
     users: $('#users-card-content'),
 }
+const urlParams = new URLSearchParams(window.location.search)
+const timeout = 250
 
 $tabs.click(function() {
-    const timeout = 250
-
     $tabs.removeClass('is-active')
     $sections.fadeOut(timeout)
     $(this).addClass('is-active')
@@ -23,8 +24,18 @@ $tabs.click(function() {
 })
 
 
+if ($content.logo.length) {
+    if (urlParams.has('logo')) {
+        $tabs.removeClass('is-active')
+        $sections.hide()
+        history.replaceState(null, '', window.location.href.split('?')[0])
+        $('[data-section=logo]').addClass('is-active')
+        $content.logo.fadeIn(timeout)
+    }
+}
+
+
 if ($content.users.length) {
-    const urlParams = new URLSearchParams(window.location.search)
     if (urlParams.has('users')) {
         $tabs.removeClass('is-active')
         $sections.hide()
@@ -55,7 +66,7 @@ if ($content.users.length) {
 
             if (urlParams.has('users')) {
                 $('[data-section=users]').addClass('is-active')
-                $content.users.show()
+                $content.users.fadeIn(timeout)
             }
         },
     })

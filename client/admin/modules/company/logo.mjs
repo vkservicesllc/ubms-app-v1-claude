@@ -1,7 +1,7 @@
 import { inputEvent } from '../events/form.mjs'
 
 let cropper
-const id = $('#company-logo-id').val()
+const _id = $('#company-logo-id').val()
 const $modal = $('#company-logo-modal')
 const $area = $('#company-log-droparea')
 const $container = $('#company-logo-cropper')
@@ -44,7 +44,7 @@ $input.on('change', function(evt) {
 
 if ($since.length)
     inputEvent('#company-logo-since', {
-        datepicker: { maxDate: 0, minDate: defSince, dateFormat: 'yy-mm-dd' },
+        datepicker: { maxDate: 0, minDate: moment(defSince).format('MM/DD/YYYY'), dateFormat: 'mm/dd/yy' },
     })
 
 
@@ -56,7 +56,7 @@ $form.on('submit', function(evt) {
         const formData = new FormData()
         formData.append('companyLogo', blob, 'cropped-company-logo.png')
 
-        let url = `/upload/business/company/logo/${id}`
+        let url = `/upload/business/company/${_id}/logo`
         if ($since.length) {
             const since = moment($since.val(), 'MM/DD/YYYY').format('YYYY-MM-DD')
             url += `?since=${since}`
@@ -69,7 +69,7 @@ $form.on('submit', function(evt) {
             processData: false,
             contentType: false,
             success(response) {
-                window.location.reload()
+                reloadPage()
             },
             error(err) {
                 console.error(err)
@@ -101,6 +101,23 @@ function handleFile(file) {
 $('.delete-company-logo').click(function() {
     if (confirm('Confirm deletion: Are you sure you want to delete the current logo?')) {
         const filename = $(this).data('filename')
-console.log(filename)
+
+        $.ajax(`/file/delete/business/company/${_id}/logo`, {
+            method: 'POST',
+            data: { filename },
+            success(response) {
+                reloadPage()
+            },
+            error(err) {
+                console.error(err)
+            },
+        })
     }
 })
+
+
+function reloadPage() {
+    const url = new URL(window.location.href)
+    url.searchParams.set('logo', '')
+    window.location.href = url.toString()
+}

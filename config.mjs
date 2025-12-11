@@ -74,6 +74,7 @@ import adminApiRoute from './server/routes/admin/api.mjs'
 import adminImageRoute from './server/routes/admin/image.mjs'
 import adminResourceRoute from './server/routes/admin/resource.mjs'
 import adminUploadRoute from './server/routes/admin/upload.mjs'
+import adminFileRoute from './server/routes/admin/file.mjs'
 
 import userRoute from './server/routes/user.mjs'
 import userApiRoute from './server/routes/user/api.mjs'
@@ -121,6 +122,7 @@ const apps = {
             { url: '/image', router: adminImageRoute },
             { url: '/resource', router: adminResourceRoute },
             { url: '/upload', router: adminUploadRoute },
+            { url: '/file', router: adminFileRoute },
         ],
         session: {
             userApp: 'adm',
