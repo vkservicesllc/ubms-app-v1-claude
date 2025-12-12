@@ -324,7 +324,7 @@ class Application {
         enforceLocation: true,
         db: db.carrier,
         query: query.driver_application,
-        idProp: 'aplId',
+        idProp: 'appId',
         defSorts: null,
         logFile: 'driver-applications',
     })
@@ -455,6 +455,7 @@ class Application {
                 const applyJoins = query => {
 
                     const nameSubQuery = subQuery(db.person, 'names', 'since', 'personId')
+                    const addressSubQuery = subQuery(db.carrier, 'application_addresses', 'since', 'appId')
                     const companySubQuery = subQuery(db.business, 'company_names', 'since', 'companyId')
 
                     query
@@ -465,8 +466,13 @@ class Application {
                             'nms.personId',
                             'psn.id'
                         )
-                        .leftJoin(`${db.carrier}.application_DLs AS dl`, 'dl.aplId', 'apl.id')
-                        .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.aplId', 'apl.id')
+                        .leftJoin(
+                            knex.raw('? AS addr', [ addressSubQuery ]),
+                            'addr.appId',
+                            'apl.id'
+                        )
+                        .leftJoin(`${db.carrier}.application_DLs AS dl`, 'dl.appId', 'apl.id')
+                        .leftJoin(`${db.carrier}.application_beneficiaries AS benef`, 'benef.appId', 'apl.id')
                         .leftJoin(`${db.carrier}.carriers AS crr`, 'apl.carrierId',' crr.id')
                         .leftJoin(`${db.business}.companies AS cmp`, 'crr.companyId', 'cmp.id')
                         .leftJoin(
@@ -499,7 +505,6 @@ class Application {
                         'apl.sex',
                         'apl.email',
                         'apl.phone',
-                        'apl.state',
                         'apl.marital',
                         'apl.medCard',
                         'apl.dui',
@@ -514,6 +519,7 @@ class Application {
                         'nms.middleName AS originalMiddleName',
                         'nms.lastName AS originalLastName',
                         'nms.suffix AS originalSuffix',
+                        'addr.state',
                         'dl.commercial AS dlCommercial',
                         'dl.state AS dlState',
                         'benef.relation AS benefRelation',
