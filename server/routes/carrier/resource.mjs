@@ -79,7 +79,7 @@ router.post('/drivers/invite/applicant', User.mw.verify, Team.mw.verify, validat
 
 router.post('/drivers/insert/applicant', User.mw.verify, Team.mw.verify, validateApplicant, validationCheck, async (req, res) => {
     try {
-        return res.send(req.body)
+        // return res.send(req.body)
 
         await Application.create(res.session, req.body)
         res.redirect('/drivers/applications')

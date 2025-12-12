@@ -304,7 +304,7 @@ export const classStatic = {
 
         data = await Cls.fetch({ user: sessionUser, branch, siteId }, { id }, { hideRawId })
 
-        if (typeof final === 'function') await final(data, id)
+        if (typeof final === 'function') await final(data, id, body)
 
         return { created: true, data }
     },

@@ -347,6 +347,7 @@ class Application {
 
         if (_carrierId) {
             const carrier = await Carrier.fetch(session, { _id: _carrierId })
+            if (!carrier) throw new Error('Carrier not found')
 
             if (carrier) {
                 companyName = carrier.name
@@ -397,7 +398,64 @@ class Application {
 
     static create = (session, body, params) => classStatic.create(this, session, body, params, {
         async split(body) {
-            //! need to have fetch function
+            let found = true
+            do {
+                const formId = generateRandomString(12, 'ud')
+                const application = await Application.fetch(session, { formId })
+                if (!application) {
+                    found = false
+                    body.formId = formId
+                }
+            } while (found)
+
+            const { _carrierId, _teamId, selfAssign, ssn, dob, sex } = body
+            delete body._carrierId
+            delete body._teamId
+            delete body.selfAssign
+
+            if (_carrierId) {
+                const carrier = await Carrier.fetch(session, { _id: _carrierId })
+                if (!carrier) throw new Error('Carrier not found')
+
+                body.carrierId = carrier.id
+            }
+
+            let { team, user } = session
+
+            if (!team && _teamId) team = await Team.fetch(res.session, { _id: _teamId })
+            if (team) body.teamId = team.id
+
+            if (ssn) {
+                let person = await Individual.fetch(session, { ssn })
+
+                if (person) {
+                    if (person.dob === dob) { // Individual confirmed via SSN and DOB
+                        if (person.sex === null && sex !== null && sex !== undefined)
+                            await person.update({ sex })
+                    }
+                } else {
+                    person = await Individual.create(session, body)
+                    if (!person) throw new Error('Failed to create person')
+                }
+
+                let driver = await Driver.fetch(session, { personId: person.id })
+                if (!driver) driver = await Driver.created(session, { personId: person.id })
+                if (!driver) throw new Error('Failed to fetch or create driver')
+
+                body.driverId = driver.id
+                body.ssn = { aes: [ ssn, ssnSecret ] }
+            } else body.step = 0
+
+            if (user && selfAssign) body.userId = user.id
+
+            body = { main: body }
+
+            return body
+        },
+        async final(application, id, body) {
+            console.log(application.formId)
+            console.log(body)
+            // await Application.invite(session, body.main, application.formId)
         },
     })
 
@@ -635,7 +693,19 @@ class Application {
                 join: [ 'id', 'teamId' ],
             },
         ],
-        prepare(batch, filter) {},
+        prepare(batch, filter) {
+            const {
+                id, _id, formId,
+            } = filter
+            const single = !!id || !!_id || !!formId
+
+            const match = { id, formId }
+            if (!id) match.id = Application.matchIdHash(_id)
+
+            batch[0].match = match
+
+            return { single, batch }
+        },
     })
 
 

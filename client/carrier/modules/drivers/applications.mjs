@@ -60,6 +60,9 @@ const table = $('#driver-apl-table').DataTable({
 
                 let data = `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`
 
+                if (!row._driverId)
+                    return data + ' <div class="ui inverted grey label">Pre-Application</div>'
+
                 if (row.dob !== row.originalDob || row.sex !== row.originalSex)
                     data += `<span title="Identity Error: False DOB or Gender"><i class="ui red exclamation triangle icon"></i></span>`
 
@@ -131,7 +134,7 @@ const table = $('#driver-apl-table').DataTable({
                 data = escapeHTML(new Person(row).fullLastName())
 
                 const { originalLastName, originalSuffix } = row
-                if (row.lastName !== originalLastName || row.suffix !== originalSuffix) {
+                if (originalLastName && (row.lastName !== originalLastName || row.suffix !== originalSuffix)) {
                     const original = new Person({ ...row, lastName: originalLastName, suffix: originalSuffix })
 
                     data += ` <small><span class="ui orange text">(${escapeHTML(original.fullLastName())})</span></small>`
@@ -149,7 +152,7 @@ const table = $('#driver-apl-table').DataTable({
                 data = escapeHTML(new Person(row).fullFirstName())
 
                 const { originalFirstName, originalMiddleName } = row
-                if (row.firstName !== originalFirstName || row.middleName !== originalMiddleName) {
+                if (originalFirstName && (row.firstName !== originalFirstName || row.middleName !== originalMiddleName)) {
                     const original = new Person({ ...row, firstName: originalFirstName, middleName: originalMiddleName })
 
                     data += ` <small><span class="ui orange text">(${escapeHTML(original.fullFirstName())})</span></small>`
@@ -210,8 +213,10 @@ const table = $('#driver-apl-table').DataTable({
             title: 'Applied on',
             searchable: false,
             orderable: false,
+            defaultContent: '<i style="color: pink; font-size: .9em;">...pending</i>',
             type: 'string',
-            render(data, type) {
+            render(data, type, row) {
+                if (!row._driverId) return
                 return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
         },
@@ -269,7 +274,10 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             className: 'right aligned',
             width: '120px',
+            defaultContent: '',
             render(data, type, row) {
+                if (!row._driverId) return
+
                 const { _id, condition, formId } = row
                 const { comment, modify, delete: remove } = row.actions.data
                 const { access } = row.actions.file
