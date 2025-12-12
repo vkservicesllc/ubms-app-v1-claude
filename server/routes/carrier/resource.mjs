@@ -67,10 +67,10 @@ applicantInvitationFields.forEach(prop => validateApplicantInvitation.push(Appli
 applicantFields.forEach(prop => validateApplicant.push(ApplicationForm[prop].validate()))
 
 
-
 router.post('/drivers/invite/applicant', User.mw.verify, Team.mw.verify, validateApplicantInvitation, validationCheck, async (req, res) => {
     try {
-        res.send(req.body)
+        await Application.invite(res.session, req.body)
+        res.redirect('/drivers/applications')
     } catch (err) {
         sendError.server(req, res, err)
     }
@@ -79,7 +79,10 @@ router.post('/drivers/invite/applicant', User.mw.verify, Team.mw.verify, validat
 
 router.post('/drivers/insert/applicant', User.mw.verify, Team.mw.verify, validateApplicant, validationCheck, async (req, res) => {
     try {
-        res.send(req.body)
+        return res.send(req.body)
+
+        await Application.create(res.session, req.body)
+        res.redirect('/drivers/applications')
     } catch (err) {
         sendError.server(req, res, err)
     }

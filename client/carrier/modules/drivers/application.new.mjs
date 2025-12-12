@@ -249,9 +249,6 @@ $form.submit(function(evt) {
     if ($registerApl.prop('checked')) {
         if (!$dropdown.gender.dropdown('get value'))
             return alert("Applicant's gender is required")
-
-        if (!$dropdown.position.dropdown('get value'))
-            return alert("Applicant's position is required")
     }
 
     this.submit()

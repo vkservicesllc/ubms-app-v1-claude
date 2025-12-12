@@ -9,9 +9,10 @@ export default class Address {
         this.city = data.city
         this.state = data.state
         this.zip = data.zip
-        this.expansion = {
-            state: Address.list.state[data.state],
-        }
+        if (data.state)
+            this.expansion = {
+                state: Address.list.state[data.state],
+            }
     }
 
 

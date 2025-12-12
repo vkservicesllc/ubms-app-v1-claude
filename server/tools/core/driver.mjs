@@ -154,10 +154,12 @@ class Application {
         this.email = data.email
         this.phone = data.phone
         this.address = new Address(data)
-        this.address.since = data.addrSince
-        this.address.enough = !!data.addrEnough
-        this.address.livedAbroad = bool(data.livedAbroad)
-        this.address.country = data.country
+        if (this?.address?.zip) {
+            this.address.since = data.addrSince
+            this.address.enough = !!data.addrEnough
+            this.address.livedAbroad = bool(data.livedAbroad)
+            this.address.country = data.prevCountry
+        }
 
         this.team = {
             name: data.teamName,
@@ -331,18 +333,309 @@ class Application {
     })
 
 
-    static invite = (session, body) => {
+    static invite = async (session, body, formId) => {
         if (!session.user.id) throw new Error('Application Static Method Error [INVITE]: Session user not supplied')
 
-        // create url and email it to the email provided
+        const { _carrierId, _teamId, cdlRole, selfAssign } = body
+        let { email } = body
+
+        let { team, user } = session
+        let { from } = senderParams
+        let companyName, phone, url = '/application'
+
+        if (!team && _teamId) team = await Team.fetch(session, { _id: _teamId })
+
+        if (_carrierId) {
+            const carrier = await Carrier.fetch(session, { _id: _carrierId })
+
+            if (carrier) {
+                companyName = carrier.name
+                phone = carrier.phone
+                url += `/${carrier.route}`
+            }
+        } else if (team?.profile) {
+            companyName = team.profile.company
+            phone = team.profile.phone
+        }
+
+        if (companyName) from = `"${companyName}" <${senderParams.email}>`
+        url += `?env=${team ? team._id : 'global'}`
+        url += `&cdl=${cdlRole}`
+        if (selfAssign) url += `&rec=${user._simpleId}`
+        if (formId) url += `&form=${formId}`
+
+        if (email.split('@')[1] === 'bogus.xyz') email = senderParams.email
+
+        const mailOpts = {
+            from,
+            to: email,
+            replyTo: user.email,
+            subject: 'Invitation to Apply – Professional Driver Position',
+            html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                Dear Friend,<br/>
+                ${
+                    companyName
+                        ? `${companyName} invites you`
+                        : 'You are invited'
+                } to apply for a Professional Driver position!
+                We are looking for dedicated and skilled drivers to join our team and would love for you to be part of it.<br/><br/>
+                To learn more and submit your application, please visit the link below:<br/>
+                <a href="${addrBook.driver + url}" target="_blank">APPLY TODAY</a><br/><br/>
+                If you have any questions, feel free to reach out. We look forward to your application!<br/><br/>
+                Best regards,<br/>
+                ${user.fullName('AL')}<br/>
+                Professional Driver Recruiter<br/>
+                ${companyName && phone ? `${companyName}<br/>${formatTel(phone)}` : `<a href="mailto:${user.email}">${user.email}</a>`}
+            </div>`,
+        }
+
+        transporter.sendMail(mailOpts, error => {
+            if (error) console.error(error)
+        })
     }
 
 
     static create = (session, body, params) => classStatic.create(this, session, body, params, {
         async split(body) {
-            const { selfAssign, ssn } = body
-            delete data.selfAssign
+            //! need to have fetch function
         },
+    })
+
+
+    static fetch = (session, filter,
+        { hideRawId = false, sorts = Application.config().defSorts, mode } = {}
+    ) => classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
+        batch: [
+            {
+                table: query.driver_application.main.table,
+                fields: [
+                    'id',
+                    'driverId',
+                    'teamId',
+                    'userId',
+                    'carrierId',
+                    Application.hashId(),
+                    Driver.hashId('driverId'),
+                    Team.hashId('teamId'),
+                    User.hashId('userId'),
+                    Carrier.hashId('carrierId'),
+                    'formId',
+                    'cdlRole',
+                    'condition',
+                    'step',
+                    'matched',
+                    'createdBy',
+                    'createdAt',
+                    'finishedAt',
+                    'legalStatus',
+                    'legalExpiration',
+                    'position',
+                    'firstName',
+                    'middleName',
+                    'lastName',
+                    'suffix',
+                    'dob',
+                    { aes: [ 'ssn', ssnSecret ] },
+                    'sex',
+                    'marital',
+                    'email',
+                    'phone',
+                    'prevCountry',
+                    'medCard',
+                    'underMeds',
+                    'medList',
+                    'dui',
+                    'duiInDecade',
+                    'criminal',
+                    'criminalExpl',
+                    'dotDat',
+                    'citations',
+                    'accidents',
+                    'experience',
+                    'cdlSchool',
+                    'prevEmployed',
+                    'activeBusiness',
+                ],
+            },
+            {
+                table: query.driver_application.checklist.table,
+                fields: [
+                    'dlScn', 'dlScnId', 'dlVrfId',
+                    'mecScn', 'mecScnId', 'mecVrfId',
+                    'docScn', 'docScnId', 'docVrfId',
+                    'mvrUplId', 'pspUplId',
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver.main.table,
+                fields: [ 'personId', Individual.hashId('personId') ],
+                join: [ 'id', 'driverId' ],
+            },
+            {
+                table: query.driver_application.address.table,
+                fields: [
+                    [ 'enough', 'addrEnough' ],
+                    [ 'since', 'addrSince' ],
+                    'address1',
+                    'address2',
+                    'city',
+                    'state',
+                    'zip',
+                    'livedAbroad',
+                ],
+                join: [ 'appId', 'id', { max: 'since' } ],
+            },
+            {
+                table: query.driver_application.license.table,
+                fields: [
+                    [ 'commercial', 'dlCommercial' ],
+                    [ 'number', 'dlNumber' ],
+                    [ 'class', 'dlClass' ],
+                    [ 'state', 'dlState' ],
+                    [ 'issuedOn', 'dlIssuedOn' ],
+                    [ 'expiresOn', 'dlExpiresOn' ],
+                    [ 'endorsement', 'dlEndors' ],
+                    [ 'restriction', 'dlRestr' ],
+                    [ 'denied', 'dlDenied' ],
+                    [ 'deniedExpl', 'dlDeniedExpl' ],
+                    [ 'revoked', 'dlRevoked' ],
+                    [ 'revokedExpl', 'dlRevokedExpl' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.medical.table,
+                fields: [
+                    'nrcme',
+                    [ 'issuedOn', 'mecIssuedOn' ],
+                    [ 'expiresOn', 'mecExpiresOn' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.experience.table,
+                fields: [
+                    [ 'cmv', 'cmvExp' ],
+                    [ 'vehicles', 'expVehicles' ],
+                    [ 'firstDate', 'expFirstDate' ],
+                    [ 'lastDate', 'expLastDate' ],
+                    [ 'mileage', 'expMileage' ],
+                    [ 'hours', 'expHours' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.school.table,
+                fields: [
+                    [ 'name', 'schName' ],
+                    [ 'phone', 'schPhone' ],
+                    [ 'state', 'schState' ],
+                    [ 'endDate', 'schEndDate' ],
+                    [ 'duration', 'schDuration' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.preference.table,
+                fields: [
+                    'operType',
+                    [ 'teamName', 'partnerName' ],
+                    [ 'teamPhone', 'partnerPhone' ],
+                    'haulRegion',
+                    [ 'equipment', 'equipmentType' ],
+                    'startPref',
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.business.table,
+                fields: [
+                    [ 'busName', 'ownBusName' ],
+                    [ 'state', 'busState' ],
+                    [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.vehicle.table,
+                fields: [
+                    [ 'mmt', 'vhlMmt' ],
+                    [ 'make', 'vhlMake' ],
+                    [ 'model', 'vhlModel' ],
+                    [ 'year', 'vhlYear' ],
+                    [ 'type', 'vhlType' ],
+                    [ 'length', 'vhlLength' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.beneficiary.table,
+                fields: [
+                    [ 'firstName', 'benefFirstName' ],
+                    [ 'middleName', 'benefMiddleName' ],
+                    [ 'lastName', 'benefLastName' ],
+                    [ 'suffix', 'benefSuffix' ],
+                    [ 'relation', 'benefRelation' ],
+                    [ 'otherRel', 'benefOtherRel' ],
+                    [ { aes: [ 'ssn', ssnSecret ] }, 'benefSsn' ],
+                    [ 'phone', 'benefPhone' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.emergency.table,
+                fields: [
+                    [ 'phone', 'emergPhone' ],
+                    [ 'name', 'emergName' ],
+                    [ 'relation', 'emergRelation' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.decision.table,
+                fields: [
+                    [ 'experience', 'decExperience' ],
+                    [ 'position', 'decPosition' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.carrier.main.table,
+                join: [ 'id', 'carrierId' ],
+            },
+            {
+                db: db.business,
+                table: query.company.main.table,
+                join: [ 'id', 'companyId', query.carrier.main.table ],
+            },
+            {
+                db: db.business,
+                table: query.company.name.table,
+                fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
+                join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
+            },
+            {
+                db: db.online,
+                table: query.user.main.table,
+                fields: [
+                    [ 'firstName', 'userFirstName' ],
+                    [ 'lastName', 'userLastName' ],
+                    [ 'alias', 'userAlias' ],
+                    [ 'condition', 'userCondition' ],
+                    [ 'location', 'userLocation' ],
+                    [ 'deletedAt', 'userDeletedAt' ],
+                ],
+                join: [ 'id', 'userId' ],
+            },
+            {
+                db: db.online,
+                table: query.team.main.table,
+                fields: [ [ 'name', 'teamName' ] ],
+                join: [ 'id', 'teamId' ],
+            },
+        ],
+        prepare(batch, filter) {},
     })
 
 
