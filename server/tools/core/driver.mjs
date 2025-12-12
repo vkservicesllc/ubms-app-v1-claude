@@ -336,17 +336,17 @@ class Application {
     static invite = async (session, body, formId) => {
         if (!session.user.id) throw new Error('Application Static Method Error [INVITE]: Session user not supplied')
 
-        const { _carrierId, _teamId, cdlRole, selfAssign } = body
+        const { _carrierId, carrierId, _teamId, teamId, cdlRole, selfAssign } = body
         let { email } = body
 
         let { team, user } = session
         let { from } = senderParams
         let companyName, phone, url = '/application'
 
-        if (!team && _teamId) team = await Team.fetch(session, { _id: _teamId })
+        if (!team && (_teamId || teamId)) team = await Team.fetch(session, { _id: _teamId, id: teamId })
 
-        if (_carrierId) {
-            const carrier = await Carrier.fetch(session, { _id: _carrierId })
+        if (_carrierId || carrierId) {
+            const carrier = await Carrier.fetch(session, { _id: _carrierId, id: carrierId })
             if (!carrier) throw new Error('Carrier not found')
 
             if (carrier) {
@@ -453,9 +453,7 @@ class Application {
             return body
         },
         async final(application, id, body) {
-            console.log(application.formId)
-            console.log(body)
-            // await Application.invite(session, body.main, application.formId)
+            await Application.invite(session, body.main, application.formId)
         },
     })
 

@@ -290,9 +290,10 @@ export const classStatic = {
         const id = result.insertId
         if (!id) throw new Error(`Failed to create ${Cls.name.toLowerCase()}`)
 
-        delete body.main
-        if (Object.keys(body).length) {
+        if (Object.keys(body).length)
             for (const target in body) {
+                if (target === 'main') continue
+
                 body[target][idProp] = id
                 if (sessionUser?.id) body[target].createdBy = sessionUser.id
                 if (enforceLocation) body[target].createdIn = createdIn
@@ -300,7 +301,6 @@ export const classStatic = {
                 const [ result ] = await mysql.execute(query[target].insert(body[target]))
                 if (!result.affectedRows) throw new Error(`Failed to create ${Cls.name.toLowerCase()}'s ${target}`)
             }
-        }
 
         data = await Cls.fetch({ user: sessionUser, branch, siteId }, { id }, { hideRawId })
 
