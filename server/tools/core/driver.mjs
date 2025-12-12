@@ -19,6 +19,7 @@ import User from './user.mjs'
 import Company from './company.mjs'
 import Carrier from './carrier.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
+import { classInstance, classStatic } from '../utils/class.mjs'
 import transporter, { senderParams } from '../utils/nodemailer.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { generateRandomString } from '../utils/string.mjs'
@@ -330,6 +331,21 @@ class Application {
     })
 
 
+    static invite = (session, body) => {
+        if (!session.user.id) throw new Error('Application Static Method Error [INVITE]: Session user not supplied')
+
+        // create url and email it to the email provided
+    }
+
+
+    static create = (session, body, params) => classStatic.create(this, session, body, params, {
+        async split(body) {
+            const { selfAssign, ssn } = body
+            delete data.selfAssign
+        },
+    })
+
+
     static assigned = async session => {
         if (!session.user.id) throw new Error('Application Static Method Error [ASSIGNED]: Session user not supplied')
         const { team } = session
@@ -337,7 +353,7 @@ class Application {
 
         //! need to understand, do i need to see all users or by team
 
-        return { users: [], teams: {}, carriers: [] }
+        return { users: [], teams: [], carriers: [] }
     }
 
 

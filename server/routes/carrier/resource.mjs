@@ -14,7 +14,7 @@ import { inPEnvironment, withPrivileges } from '../../tools/core/user/permission
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
-import { validateApplicant, dynamicValidator as dynamicApplicantValidator } from '../driver/resource.mjs'
+import { dynamicValidator as dynamicApplicantValidator } from '../driver/resource.mjs'
 
 
 // ==== SETUP ==== //
@@ -46,6 +46,40 @@ router.post('/user/:_id/app/settings', User.mw.verify, async (req, res) => {
         await user.settings('update', req.body)
 
         res.redirect('/settings')
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
+// ==== DRIVERS ROUTES ==== //
+
+
+const validateApplicantInvitation = [], validateApplicant = []
+const applicantInvitationFields = ['carrier', 'team', 'email']
+const applicantFields = [
+    ...applicantInvitationFields,
+    'firstName', 'middleName', 'lastName', 'suffix',
+    'gender', 'phone', 'position_',
+]
+applicantInvitationFields.forEach(prop => validateApplicantInvitation.push(ApplicationForm[prop].validate()))
+applicantFields.forEach(prop => validateApplicant.push(ApplicationForm[prop].validate()))
+
+
+
+router.post('/drivers/invite/applicant', User.mw.verify, Team.mw.verify, validateApplicantInvitation, validationCheck, async (req, res) => {
+    try {
+        res.send(req.body)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/drivers/insert/applicant', User.mw.verify, Team.mw.verify, validateApplicant, validationCheck, async (req, res) => {
+    try {
+        res.send(req.body)
     } catch (err) {
         sendError.server(req, res, err)
     }

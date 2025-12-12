@@ -7,7 +7,7 @@
             <a id="apl-url" href="{{applicationUrl}}" target="_blank">{{applicationUrl}}</a>
             <sup><a href="" id="copy-apl-url"><i class="copy icon"></i></a></sup>
         </p>
-        <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/driver/pre-application" method="POST" autocomplete="off" style="margin-top: 5px;">
+        <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/drivers/invite/applicant" method="POST" autocomplete="off" style="margin-top: 5px;">
             <input type="hidden" id="recruiter-id" value="{{userSimpleId}}" />
             <div class="five wide column">
                 <div class="ui form">
@@ -27,7 +27,7 @@
                     <div class="field">
                         <div class="ui input">
                             <div class="ui fluid clearable selection dropdown" id="new-apl-carrier-dropdown">
-                                <input type="hidden" name="carrier" />
+                                {{{form.carrier.hidden.input}}}
                                 <i class="dropdown icon"></i>
                                 <div class="default text">Hiring Carrier</div>
                                 <div class="menu"></div>
@@ -38,7 +38,7 @@
                     <div class="field">
                         <div class="ui input">
                             <div class="ui fluid clearable selection dropdown" id="new-apl-team-dropdown">
-                                <input type="hidden" name="_teamId" />
+                                {{{form.team.hidden.input}}}
                                 <i class="dropdown icon"></i>
                                 <div class="default text">Hiring Team</div>
                                 <div class="menu"></div>

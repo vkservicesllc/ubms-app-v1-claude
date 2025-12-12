@@ -158,7 +158,7 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
 
             const fields = [
                 'firstName', 'middleName', 'lastName', 'suffix',
-                'phone', 'gender', 'dob_', 'ssn_',
+                'phone', 'gender', 'dob_', 'ssn_', 'position_',
                 // 'dob', 'gender', 'ssn', 'marital', 'phone',
                 // 'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             ]

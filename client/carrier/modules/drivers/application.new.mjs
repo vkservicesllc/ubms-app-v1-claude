@@ -6,10 +6,6 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text
 const emailId = TS.email
-const addr1Id = TS.address1
-const addr2Id = TS.address2
-const zipId = TS.addrZip
-const cityId = TS.addrCity
 
 const modalId = '#new-apl-modal'
 const $modal = $(modalId)
@@ -27,24 +23,20 @@ const message = {
 const $submit = $('#new-apl-submit')
 const $form = $('#new-apl-form')
 const $email = $(emailId)
-const $expiration = $(TS.statusExp)
 const $registerApl = $('#register-new-apl')
 const $selfAssign = $('#self-assign')
 const $posRole = $('.position-role')
+const formAction = $form.attr('action')
 
 const $dropdown = {
     carrier: $('#new-apl-carrier-dropdown'),
     team: $('#new-apl-team-dropdown'),
     suffix: $('#suffix-dropdown'),
     gender: $('#gender-dropdown'),
-    // marital: $('#marital-dropdown'),
-    // addrState: $('#addr-state-dropdown'),
     position: $('#position-dropdown'),
 }
 const $field = {
     applicant: $('.applicant-field'),
-    // status: $('#applicant-legal-status-field'),
-    // expiration: $('#applicant-legal-status-expiration-field'),
 }
 
 
@@ -102,18 +94,11 @@ $('#dob-calendar').calendar({
     ...calSettings,
     maxDate: moment().subtract(18, 'years').toDate(),
 })
-// $('#addr-since-calendar').calendar({
-//     ...calSettings,
-//     maxDate: moment().toDate(),
-// })
-// $('#status-exp-calendar').calendar({
-//     ...calSettings,
-//     minDate: moment().add(1, 'months').toDate(),
-// })
 
 
 const enableApplicant = () => {
     $field.applicant.removeClass('disabled').find('input').prop('disabled', false)
+    $form.attr('action', formAction.replace('/invite/', '/insert/'))
     // $('#self-assign-field').removeClass('disabled').find('input').prop('disabled', false)
     $submit.text('Register & Invite')
 }
@@ -123,14 +108,9 @@ const disableApplicant = () => {
     $(`${selector.class.global}:not([type=hidden])`).val(null)
     $dropdown.suffix.dropdown('clear')
     $dropdown.gender.dropdown('clear')
-    // $dropdown.marital.dropdown('clear')
-    // $dropdown.addrState.dropdown('clear')
     $dropdown.position.dropdown('clear')
-    // $('.new-apl-eligibility, .new-apl-legal-status').prop('checked', false).prop('disabled', true)
-    // $expiration.val(null)
-    // $field.status.addClass('disabled')
-    // $field.expiration.addClass('disabled')
     // $('#self-assign-field').addClass('disabled').find('input').prop('disabled', true).prop('checked', true)
+    $form.attr('action', formAction)
     $submit.text('Invite')
 }
 
@@ -141,8 +121,6 @@ $registerApl.on('change', function() {
 
 $dropdown.suffix.dropdown()
 $dropdown.gender.dropdown()
-// $dropdown.marital.dropdown()
-// $dropdown.addrState.dropdown()
 $dropdown.position.dropdown()
 
 
@@ -160,38 +138,6 @@ nameEvent(TS.lastName, {
 ssnEvent(TS.ssn)
 
 telEvent(TS.phone)
-
-// addr1Event(addr1Id, { addr2Id })
-
-// addr2Event(addr2Id)
-
-// zipEvent(zipId, {
-//     cityId,
-//     onChange(zip, $zip, city, state) {
-//         if (state) $dropdown.addrState.dropdown('set selected', state)
-//     },
-// })
-
-// cityEvent(cityId)
-
-
-// $('#qualification-check').on('change', function() {
-//     if ($(this).prop('checked')) $field.status.removeClass('disabled').find('input').prop('disabled', false)
-//     else {
-//         $('.new-apl-legal-status').prop('checked', false)
-//         $expiration.val(null).prop('disabled', true)
-//         $field.status.addClass('disabled').find('input').prop('disabled', true)
-//         $field.expiration.addClass('disabled').find('input')
-//     }
-// })
-
-// $('.new-apl-legal-status').on('change', function() {
-//     if ($(this).val() == 2) $field.expiration.removeClass('disabled').find('input').prop('disabled', false)
-//     else {
-//         $expiration.val(null).prop('disabled', true)
-//         $field.expiration.addClass('disabled')
-//     }
-// })
 
 
 table.on('draw', function() {
@@ -303,12 +249,6 @@ $form.submit(function(evt) {
     if ($registerApl.prop('checked')) {
         if (!$dropdown.gender.dropdown('get value'))
             return alert("Applicant's gender is required")
-
-        // if (!$dropdown.marital.dropdown('get value'))
-        //     return alert("Applicant's marital status is required")
-
-        // if (!$dropdown.addrState.dropdown('get value'))
-        //     return alert("Applicant's address state is required")
 
         if (!$dropdown.position.dropdown('get value'))
             return alert("Applicant's position is required")

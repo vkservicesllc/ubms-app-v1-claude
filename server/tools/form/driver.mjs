@@ -234,7 +234,14 @@ class ApplicationForm {
     })
 
     static position = createPositionForm({ target: 'position', group: 'position' })
-    static position_ = createPositionForm({ target: 'position', group: 'position', required: false })
+    static position_ = createPositionForm({
+        target: 'position',
+        group: 'position',
+        required: false,
+        validator: {
+            sanitizer: value => value || null,
+        },
+    })
 
     static condition = createForm({ /* aka Status */
         selector: appSelector,
