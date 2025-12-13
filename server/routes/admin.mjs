@@ -6,7 +6,7 @@ import User from '../tools/core/user.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
 /* Middleware */
-import login from './admin/mw/login.mjs'
+import login, { initialize } from './admin/mw/login.mjs'
 
 
 
@@ -74,10 +74,10 @@ router.use((req, res, next) => {
 })
 
 
-router.get('/init', User.mw.initialize)
+router.post('/init', User.mw.initialize)
 
 
-router.get('/', login, User.mw.verify, async (req, res) => {
+router.get('/', initialize, login, User.mw.verify, async (req, res) => {
     try {
         const key = 'dash'
         let { hbs } = res

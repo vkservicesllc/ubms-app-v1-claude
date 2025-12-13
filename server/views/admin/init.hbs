@@ -1,5 +1,6 @@
 {{> head}}
 
+
     <section class="hero is-fullheight" style="display: none !important;">
         <div class="hero-body">
             <div class="container login-container">
@@ -7,8 +8,29 @@
                     <div class="is-pulled-right mb-5">
                         {{> admin/theme}}
                     </div>
-                    <h1 class="title is-4 has-text-centered">{{appName}}</h1>
-                    <form id="login-form" action="{{loginUrl}}" method="POST" autocomplete="off">
+                    <h1 class="title is-4 has-text-centered">{{appName}}<br/>Core User</h1>
+                    <form id="init-form" action="/init" method="POST" autocomplete="off">
+                        <div class="field">
+                            {{{label.firstName}}}
+                            <div class="control">
+                                {{{input.firstName}}}
+                            </div>
+                        </div>
+                        <div class="field">
+                            {{{label.lastName}}}
+                            <div class="control">
+                                {{{input.lastName}}}
+                            </div>
+                        </div>
+                        <div class="field">
+                            {{{label.email}}}
+                            <div class="control has-icons-left">
+                                {{{input.email}}}
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                            </div>
+                        </div>
                         <div class="field">
                             {{{label.username}}}
                             <div class="control has-icons-left">
@@ -17,7 +39,6 @@
                                     <i class="fas fa-user"></i>
                                 </span>
                             </div>
-                            <p class="help is-danger has-text-centered error-message" id="username-error"></p>
                         </div>
                         <div class="field">
                             {{{label.password}}}
@@ -27,11 +48,10 @@
                                     <i class="fas fa-lock"></i>
                                 </span>
                             </div>
-                            <p class="help is-danger has-text-centered error-message" id="password-error"></p>
                         </div>
                         <div class="field my-5">
                             <div class="control">
-                                <button type="submit" class="button is-fullwidth is-primary" disabled>Sign in</button>
+                                <button type="submit" class="button is-fullwidth is-primary" disabled>Initialize</button>
                             </div>
                         </div>
                         <div class="field has-text-centered has-text-grey is-size-7">
@@ -42,5 +62,6 @@
             </div>
         </div>
     </section>
+
 
 {{> foot}}

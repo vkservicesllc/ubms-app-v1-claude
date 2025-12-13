@@ -30,6 +30,15 @@ const online = {
 
 module.exports = {
 
+    'init': {
+        external: [ ...offline.external ],
+        internal: {
+            css: [ ...offline.internal.css, 'login' ],
+            js: [ ...offline.internal.js ],
+            mjs: [ ...offline.internal.mjs, 'theme.login', '^login', '^init' ],
+        },
+    },
+
     'login': {
         external: [ ...offline.external ],
         internal: {

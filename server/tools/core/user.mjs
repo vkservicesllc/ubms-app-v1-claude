@@ -1,11 +1,11 @@
 require('dotenv').config({ path: '../../.env' })
 const {
-    SITE__DEV_USER: initUser,
-    SITE__DEV_PASS: initPass,
-    SITE__DEV_FNAME: initFname,
-    SITE__DEV_LNAME: initLname,
-    SITE__DEV_ALIAS: initAlias,
-    SITE__DEV_EMAIL: initEmail,
+    // SITE__DEV_USER: initUser,
+    // SITE__DEV_PASS: initPass,
+    // SITE__DEV_FNAME: initFname,
+    // SITE__DEV_LNAME: initLname,
+    // SITE__DEV_ALIAS: initAlias,
+    // SITE__DEV_EMAIL: initEmail,
     DB__MYSQL_AES_SESSION_TOKEN: tokenSecret,
 } = process.env
 
@@ -984,16 +984,17 @@ class User extends Person {
         initialize: async (req, res) => {
             const [ rows ] = await mysql.execute(query.user.main.select('id', { id: 1 }))
 
-            if (!rows.length) await mysql.execute(query.user.main.insert({
-                username: initUser,
-                _passKey: await Bun.password.hash(initPass),
-                firstName: initFname,
-                lastName: initLname,
-                alias: initAlias || null,
-                email: initEmail,
-                status: 'D',
-                location: 'US',
-            }))
+            if (!rows.length) {
+                const { body } = req
+                const { password } = body
+                delete body.password
+
+                body.status = 'D'
+                body.location = 'US'
+                body._passKey = await Bun.password.hash(password)
+
+                await mysql.execute(query.user.main.insert(body))
+            }
 
             res.redirect('/')
         },
