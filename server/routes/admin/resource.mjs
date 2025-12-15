@@ -169,7 +169,7 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
         
         const { data: user } = await User.create(res.session, req.body)
 
-        res.redirect(`/online/user/${user._id}`)
+        res.redirect(!user.DS ? `/online/user/${user._id}` : '/online/users')
     } catch (err) {
         sendError.server(req, res, err)
     }

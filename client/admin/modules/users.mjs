@@ -83,8 +83,10 @@ $status.on('change', function() {
     if (status === 'S') {
         const location = $location.val()
 
-        if (location && location !== 'US')
+        if (location && location !== 'US') {
             $location.val('US')
+            $phone.prop('readonly', false)
+        }
 
         $location.find('option:not([value=US])').prop('disabled', true)
     } else

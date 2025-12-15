@@ -410,7 +410,7 @@ const displayTeams = () => {
                         }
 
                         data.all.map(item => {
-                            item.name = new Person(item).fullName('AL') + ` <small>(${item.email})</small>`
+                            item.name = new Person(item).fullName('AL') + ` <small>(${item.email}) - ${item.expansion.status} in ${item.expansion.location}</small>`
                             item.applied = appliedIds.includes(item._id)
                         })
                         data.all = sortArrayByObjectKey(data.all, 'name')
