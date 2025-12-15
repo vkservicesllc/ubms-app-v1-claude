@@ -44,6 +44,20 @@ router.get('/company/:_id', User.mw.verify, User.mw.superAdminOnly, companyById)
 router.get('/:category/:route', User.mw.verify, User.mw.superAdminOnly, companyByCategoryAndRoute)
 
 
+//! TEMP
+router.get('/:category/:route/manage', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+                //! SKETCH
+                const key = 'company-management'
+                let { hbs } = res
+                hbs = hbs.set(key)
+
+                const { active } = hbs.nav
+                hbs.nav.companies = active
+
+                res.render(key, hbs)
+})
+
+
 router.get('/company-owners', User.mw.verify, (req, res) => {
     try {
         const key = 'owners'

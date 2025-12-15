@@ -93,6 +93,15 @@ module.exports = {
         },
     },
 
+    'company-management': {
+        external: [ ...online.external ],
+        internal: {
+            css: [ ...online.internal.css, 'form' ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
     'owners': {
         external: [ ...online.external, 'jquery.masked-input', 'bulma.checkradio', 'datatables.bulma', 'moment' ],
         internal: {
