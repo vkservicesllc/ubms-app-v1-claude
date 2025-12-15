@@ -20,6 +20,7 @@
     {{#if (eq data.confirmed true)}}
     <header class="card-header">
         <p class="card-header-title">{{{cardTitle}}}</p>
+        {{#if (nhv data.until)}}
         <div class="dropdown is-hoverable is-right">
             <div class="dropdown-trigger">
                 <button class="card-header-icon" aria-controls="summary-dropdown">
@@ -38,6 +39,7 @@
                 </div>
             </div>
         </div>
+        {{/if}}
     </header>
     {{/if}}
     <div class="card-content">
@@ -231,11 +233,13 @@
         {{#if (eq data.confirmed true)}}
 
         <section class="company-card-content" id="logo-card-content" style="display: none;">
+            {{#if (nhv data.until)}}
             <div class="is-flex is-justify-content-center is-align-items-center">
                 <button class="button is-ghost is-large" id="add-company-logo">
                     <i class="fa fa-plus"></i>
                 </button>
             </div>
+            {{/if}}
             {{#if (hv data.lastLogo)}}
             <style>
                 figure.image {
@@ -262,6 +266,10 @@
                 }
             </style>
             <div class="is-flex is-gap-1 is-align-items-flex-start" id="company-logo-list" style="background: white; padding: 15px; border-radius: 5px; flex-wrap: wrap;">{{{logoList}}}
+            </div>
+            {{else}}
+            <div class="is-flex is-justify-content-center is-align-items-center">
+                <i class="has-text-danger-55">No logo at this time</i>
             </div>
             {{/if}}
         </section>

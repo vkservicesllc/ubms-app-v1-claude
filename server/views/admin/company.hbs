@@ -90,15 +90,15 @@
                                     import selector from '/modules/registry/selectors/company.mjs'
                                     import { aliasEvent } from '/modules/events/company.mjs'
 
-                                    const $module = $('#company-delete-modal')
+                                    const $modal = $('#company-delete-modal')
                                     const aliasId = selector.id.text.confirmAlias
 
                                     aliasEvent(aliasId)
                                     $('#delete-company-trigger').click(() => {
-                                        $module.addClass('is-active')
+                                        $modal.addClass('is-active')
                                     })
                                     $('#close-company-delete-modal').click(() => {
-                                        $module.removeClass('is-active')
+                                        $modal.removeClass('is-active')
                                         $(aliasId).val(null)
                                     })
                                 </script>
@@ -113,6 +113,64 @@
                         </footer>
                     </div>
                 </div>
+                {{/if}}
+                {{#if (eq data.confirmed true)}}
+                
+                <div class="modal" id="company-close-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">
+                                <small class="is-size-6">Close</small>
+                                <span class="has-text-weight-semibold">{{data.name}}</span>
+                            </p>
+                            <button class="delete" id="close-company-close-modal"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <p class="has-text-danger-50 mt-3">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                This action will permanently close the company and cannot be undone.<br/>
+                                To temporarily place the company on hold, use the <b>Deactivate</b> feature instead.
+                            </p>
+                            <form id="company-close-form" action="/resource/close/company/{{{_id}}}" method="POST"></form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button type="submit" class="button" form="company-close-form">Close Permanently</button>
+                        </footer>
+                    </div>
+                </div>
+                <div class="modal" id="company-condition-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">
+                                <small class="is-size-6">{{display.statusTrigger}}</small>
+                                <span class="has-text-weight-semibold">{{data.name}}</span>
+                            </p>
+                            <button class="delete" id="close-company-condition-modal"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <p class="has-text-warning-40">
+                                <i class="fa-solid fa-circle-info"></i>
+                                This action will {{display.statusMessage}}.
+                            </p>
+                            <form id="company-condition-form" action="/resource/toggle/company/{{{_id}}}/condition" method="POST"></form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button type="submit" class="button" form="company-condition-form">{{display.statusTrigger}}</button>
+                        </footer>
+                    </div>
+                </div>
+                <script type="module">
+                    const $modal = {
+                        close: $('#company-close-modal'),
+                        condition: $('#company-condition-modal'),
+                    }
+                    $('#close-company-trigger').click(() => $modal.close.addClass('is-active'))
+                    $('#close-company-close-modal').click(() => $modal.close.removeClass('is-active'))
+                    $('#company-condition-trigger').click(() => $modal.condition.addClass('is-active'))
+                    $('#close-company-condition-modal').click(() => $modal.condition.removeClass('is-active'))
+                </script>
                 {{/if}}
 
 {{> admin/nav.omega}}

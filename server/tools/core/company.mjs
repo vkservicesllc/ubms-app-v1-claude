@@ -25,6 +25,7 @@ import { numeric } from '../../../client/global/modules/tools/utils/number.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import strip, { ein as formatEin, ssn as formatSsn } from '../../../client/global/modules/tools/utils/formatter.mjs'
 import { sortArrayByObjectKey, sortObjectByValue } from '../../../client/global/modules/tools/utils/sorter.mjs'
+import { utcTimeStamp } from '../utils/date.mjs'
 
 const mysql = require('../utils/mysql')
 
@@ -136,6 +137,12 @@ class Company {
                     return company
                 },
             })
+
+
+            this.close = async () => {
+                await this.update({ until: utcTimeStamp() })
+                return { closed: true }
+            }
 
 
             this.log = params => classInstance.log(this, new.target, params)

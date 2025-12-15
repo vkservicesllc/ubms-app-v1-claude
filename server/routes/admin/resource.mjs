@@ -542,6 +542,37 @@ router.post('/confirm/company/:_id', User.mw.verify, User.mw.superAdminOnly, asy
 })
 
 
+router.post('/toggle/company/:_id/condition', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { _id } = req.params
+        const company = await Company.fetch(res.session, { _id })
+        if (!company) throw new Error('Company not found')
+
+        const active = !company.active
+        await company.update({ active })
+
+        res.redirect(source.company[2] + company._id)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/close/company/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { _id } = req.params
+        const company = await Company.fetch(res.session, { _id })
+        if (!company) throw new Error('Company not found')
+
+        await company.close()
+
+        res.redirect(source.company[2] + company._id)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== EXPORT ==== //
 

@@ -503,7 +503,9 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs.display.status = company.active
             ? '<span class="has-text-success-45">Active</span>'
             : '<i class="has-text-danger">Inactive</i>'
+        if (company.until) hbs.display.status = '<span class="has-text-danger">Permanently Closed</span>'
         hbs.display.statusTrigger = company.active ? 'Deactivate' : 'Activate'
+        hbs.display.statusMessage = company.active ? 'place the company on hold' : 'release the company from hold'
 
         res.render(key, hbs)
     } catch (err) {

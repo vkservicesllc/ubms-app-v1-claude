@@ -80,7 +80,8 @@ $.when(statusReq).done(statusRes => {
                 orderable: false,
                 width: '120px',
                 render(data, type, row) {
-                    if (!row.confirmed) return `<i class="fa fa-hourglass-half has-text-primary"></i>`
+                    if (row.until) return '<small class="has-text-danger-55">Closed</small>'
+                    if (!row.confirmed) return '<i class="fa fa-hourglass-half has-text-primary"></i>'
                     let txt = data ? 'success-dark">Active' : 'danger-dark">Inactive'
 
                     return `<small class="has-text-${txt}</small>`
@@ -211,7 +212,8 @@ $.when(statusReq).done(statusRes => {
         ],
 
         createdRow(tr, data) {
-            if (!data.active) $(tr).addClass('is-warning')
+            if (data.until) $(tr).find('td').css('color', 'grey')
+            else if (!data.active) $(tr).addClass('is-warning')
         },
 
         language: {
