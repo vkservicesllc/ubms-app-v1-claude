@@ -325,7 +325,7 @@ class User extends Person {
             }
 
 
-            this.report = async session => {
+            this.report = async () => {
                 const result = { user: this }
                 const log = await this.log()
 
@@ -335,14 +335,14 @@ class User extends Person {
                     if it is set up with UTC tz
                 */
 
-                let id = [ createdBy ]
-                if (deletedBy) id.push(deletedBy)
+                let ids = [ createdBy ]
+                if (deletedBy) ids.push(deletedBy)
 
                 if (updateLog)
                     updateLog.forEach(log => {
-                        id.push(log.modifiedBy)
+                        ids.push(log.modifiedBy)
                     })
-                id = [ ...new Set(id) ]
+                ids = [ ...new Set(ids) ]
 
                 const labelList = {
                     username: 'Username',
@@ -359,11 +359,11 @@ class User extends Person {
                 }
                 const labels = {}
                 const names = {}
-                const users = await User.list(session, { id })
+                const users = await User.fetch(this.session, { ids })
 
                 if (users)
                     for (let i = 0; i < users.length; i++) {
-                        const id = await users[i].id()
+                        const { id } = users[i]
                         names[id] = users[i].name
                     }
 
@@ -422,6 +422,7 @@ class User extends Person {
 
     static config = () => ({
         enforceUser: false,
+        enforceLocation: true,
         db: db.online,
         query: query.user,
         idProp: 'userId',

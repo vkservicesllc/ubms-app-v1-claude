@@ -196,7 +196,7 @@ router.post('/data/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, 
 
 
 
-// ---- HISTORY ROUTES ---- //
+// ---- MISC ROUTES ---- //
 
 
 
@@ -221,6 +221,27 @@ router.post('/update/:src/:_id/:action/:target/:_relId', User.mw.verify, User.mw
 
 
 router.post('/invite/user/:_id', User.mw.verify, User.mw.invite)
+
+
+router.post('/log/:env/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { env, _id } = req.params
+        let log
+
+        switch (env) {
+
+            case 'user':
+                const user = await User.fetch(res.session, { _id })
+                log = await user.report(res.session)
+                break
+
+        }
+
+        res.send(log)
+    } catch (err) {
+        sendError.server(res, err, true)
+    }
+})
 
 
 
