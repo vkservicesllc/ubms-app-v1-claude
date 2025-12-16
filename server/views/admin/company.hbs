@@ -132,7 +132,19 @@
                                 This action will permanently close the company and cannot be undone.<br/>
                                 To temporarily place the company on hold, use the <b>Deactivate</b> feature instead.
                             </p>
-                            <form id="company-close-form" action="/resource/close/company/{{{_id}}}" method="POST"></form>
+                            <form id="company-close-form" action="/resource/close/company/{{{_id}}}" method="POST">
+                                <div class="columns">
+                                    <div class="column is-3">
+                {{{form.until.text.label}}}
+                <div class="control has-icons-left">
+                    {{{form.until.text.input}}}
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-calendar-days"></i>
+                    </span>
+                </div>
+            </div>
+                                </div>
+                            </form>
                         </section>
                         <footer class="modal-card-foot">
                             <button type="submit" class="button" form="company-close-form">Close Permanently</button>
