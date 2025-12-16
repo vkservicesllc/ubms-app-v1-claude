@@ -272,6 +272,15 @@ export const createSinceForm = (props = {}) => createDateForm({
 })
 
 
+export const createUntilForm = (props = {}) => createDateForm({
+    target: 'until',
+    name: 'until',
+    label: 'Termination Date',
+    required,
+    ...props,
+})
+
+
 export const createSsnForm = (props = {}) => createForm({
     target: 'ssn',
     mode: 'numeric',
