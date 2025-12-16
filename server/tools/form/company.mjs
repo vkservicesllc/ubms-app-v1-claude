@@ -3,6 +3,7 @@ import {
     emptyOpt,
     createIdForm,
     createSinceForm,
+    createUntilForm,
     createWebsiteForm,
     createAddressForm,
     createAddrZipForm,
@@ -119,6 +120,7 @@ class CompanyForm {
         selector: companySelector,
         label: 'Launch Date',
     })
+    static until = createUntilForm({ selector: companySelector })
 
     static busName = createBusNameForm(companySelector)
     static coType = createCoTypeForm(companySelector)
