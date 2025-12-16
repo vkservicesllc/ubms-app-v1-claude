@@ -558,13 +558,13 @@ router.post('/toggle/company/:_id/condition', User.mw.verify, User.mw.superAdmin
 })
 
 
-router.post('/close/company/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+router.post('/close/company/:_id', User.mw.verify, User.mw.superAdminOnly, [ CompanyForm.until.validate() ], validationCheck, async (req, res) => {
     try {
         const { _id } = req.params
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
-        await company.close()
+        await company.close(req.body.until)
 
         res.redirect(source.company[2] + company._id)
     } catch (err) {

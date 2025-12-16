@@ -112,9 +112,9 @@ if (_id) {
         const options = { ...defOpts }, optgroups = {}
 
         for (const prop of keys) {
-            optgroups[prop] = companies[prop].reduce((cat, { _id, name, category}) => {
+            optgroups[prop] = companies[prop].reduce((cat, { _id, name, category, active, until }) => {
                 if (!cat[category]) cat[category] = []
-                cat[category].push({ _id, name })
+                cat[category].push({ _id, name, active, until })
     
                 return cat
             }, {})
@@ -122,8 +122,11 @@ if (_id) {
             for (const category in optgroups[prop]) {
                 options[prop] += `<optgroup label="${categories[category].item[1]}">`
                 for (const company of optgroups[prop][category]) {
-                    const { _id, name } = company
-                    options[prop] += `<option value="${_id}">${name}</option>`
+                    const { _id, name, active, until } = company
+                    let style = ''
+                    if (until) style = ' style="text-decoration: line-through; color: grey;"'
+                    else if (!active) style = ' style="color: grey;"'
+                    options[prop] += `<option value="${_id}"${style}>${name}</option>`
                 }
                 options[prop] += '</optgroup>'
             }

@@ -133,16 +133,16 @@
                                 To temporarily place the company on hold, use the <b>Deactivate</b> feature instead.
                             </p>
                             <form id="company-close-form" action="/resource/close/company/{{{_id}}}" method="POST">
-                                <div class="columns">
-                                    <div class="column is-3">
-                {{{form.until.text.label}}}
-                <div class="control has-icons-left">
-                    {{{form.until.text.input}}}
-                    <span class="icon is-small is-left">
-                        <i class="fas fa-calendar-days"></i>
-                    </span>
-                </div>
-            </div>
+                                <div class="columns mt-4">
+                                    <div class="column is-4">
+                                        {{{form.until.text.label}}}
+                                        <div class="control has-icons-left">
+                                            {{{form.until.text.input}}}
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-calendar-days"></i>
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
                         </section>
@@ -174,12 +174,21 @@
                     </div>
                 </div>
                 <script type="module">
+                    import { inputEvent } from '/modules/events/form.mjs'
+                    import selector from '/modules/registry/selectors/company.mjs'
+                    const untilId = selector.id.text.until
+                    const $until = $(untilId)
+                    const today = moment().format('MM/DD/YYYY')
                     const $modal = {
                         close: $('#company-close-modal'),
                         condition: $('#company-condition-modal'),
                     }
+                    inputEvent(untilId, { datepicker: { maxDate: 0 }, value: today })
                     $('#close-company-trigger').click(() => $modal.close.addClass('is-active'))
-                    $('#close-company-close-modal').click(() => $modal.close.removeClass('is-active'))
+                    $('#close-company-close-modal').click(() => {
+                        $modal.close.removeClass('is-active')
+                        $until.val(today)
+                    })
                     $('#company-condition-trigger').click(() => $modal.condition.addClass('is-active'))
                     $('#close-company-condition-modal').click(() => $modal.condition.removeClass('is-active'))
                 </script>
