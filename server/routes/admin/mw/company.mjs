@@ -499,6 +499,12 @@ export const companyByCategoryAndRoute = async (req, res) => {
                     input: CompanyForm.confirmAlias.text.input({ class: 'input' }),
                 },
             },
+            until: {
+                text: {
+                    label: CompanyForm.until.text.label({ class: labelClassRequired }),
+                    input: CompanyForm.until.text.input({ class: 'input' }),
+                },
+            },
         }
         hbs.display.status = company.active
             ? '<span class="has-text-success-45">Active</span>'
