@@ -2,3 +2,6 @@
     content: ' *' !important;
     color: red;
 }
+.ui.buttons .or::before {
+    font-size: .75em;
+}

@@ -52,6 +52,13 @@ emailEvent(emailId, {
     },
 })
 
+const $firstName = $(firstNameId)
+const $middleName = $(middleNameId)
+const $lastName = $(lastNameId)
+const $phone = $(phoneId)
+const $email = $(emailId)
+const $deleteBtn = $('#delete-lead-button')
+
 
 table.on('draw', function() {
     const { actions } = table.ajax.json()
@@ -61,11 +68,7 @@ table.on('draw', function() {
         $('.reinvite-apl').on('click', function(evt) {
             evt.preventDefault()
             const _id = $(this).data('id')
-            const $firstName = $(firstNameId)
-            const $middleName = $(middleNameId)
-            const $lastName = $(lastNameId)
-            const $phone = $(phoneId)
-            const $email = $(emailId)
+            const assigned = +$(this).data('assigned')
 
             $.ajax(`/api/data/drivers/application/${_id}`, {
                 method: 'POST',
@@ -79,8 +82,8 @@ table.on('draw', function() {
                     $email.val(email)
                     $dropdown.suffix.dropdown('set selected', suffix)
                     $dropdown.gender.dropdown('set selected', gender)
-                    console.log({ position })
                     if (position) $modal.find(`[type="radio"][value="${position}"]`).prop('checked', true)
+                    if (assigned) $deleteBtn.show()
 
                     $modal.modal({
                         autofocus: false,
@@ -94,8 +97,8 @@ table.on('draw', function() {
                             $message.email.html(null)
                             $dropdown.suffix.dropdown('clear')
                             $dropdown.gender.dropdown('clear')
-                            $dropdown.position.dropdown('clear')
                             $modal.find('[type="radio"]').prop('checked', false)
+                            $deleteBtn.hide()
                         },
                     }).modal('show')
                 },

@@ -285,7 +285,7 @@ const table = $('#driver-apl-table').DataTable({
                     const { _userId, _sessionUserId } = row
 
                     if (modify && (!_userId || _userId === _sessionUserId))
-                        return panel += `<a class="reinvite-apl" data-id="${_id}" href=""><i class="dark green edit outline icon"></i></a>`
+                        return panel += `<a class="reinvite-apl" data-id="${_id}" data-assigned="${_userId === _sessionUserId ? 1 : 0}" href=""><i class="dark green edit outline icon"></i></a>`
 
                     return
                 }
