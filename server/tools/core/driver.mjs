@@ -1078,7 +1078,11 @@ class Application {
                     aplAddress: `${res.hbs.addrBook.driver}/application/`,
                     unscoped,
                     stepLen: Application.list.step.length,
-                    _sessionUserId: res.session.user._id,
+                    sessionUser: {
+                        _id: sessionUser._id,
+                        DS: sessionUser.DS,
+                    },
+                    // _sessionUserId: res.session.user._id,
                 })
             } catch (err) {
                 sendError.server(req, res, err)

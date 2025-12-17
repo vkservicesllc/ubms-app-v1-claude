@@ -31,7 +31,7 @@ const table = $('#driver-apl-table').DataTable({
             }
         },
         dataSrc(response) {
-            const { data, actions, aplAddress, unscoped, stepLen, _sessionUserId } = response
+            const { data, actions, aplAddress, unscoped, stepLen, sessionUser } = response
 
             table?.column(12).visible(unscoped)
 
@@ -40,7 +40,7 @@ const table = $('#driver-apl-table').DataTable({
                 row.stepLen = stepLen
                 if (row.condition == 'p')
                     row.aplAddress = aplAddress + row.formId
-                row._sessionUserId = _sessionUserId
+                row.sessionUser = sessionUser
             })
 
             return data
@@ -282,10 +282,11 @@ const table = $('#driver-apl-table').DataTable({
                 let panel = ''
 
                 if (!row._driverId) {
-                    const { _userId, _sessionUserId } = row
+                    const { _userId, sessionUser } = row
+                    const assigned = !_userId || _userId === sessionUser._id || sessionUser.DS
 
-                    if (modify && (!_userId || _userId === _sessionUserId))
-                        return panel += `<a class="reinvite-apl" data-id="${_id}" data-assigned="${_userId === _sessionUserId ? 1 : 0}" href=""><i class="dark green edit outline icon"></i></a>`
+                    if (modify && assigned)
+                        return panel += `<a class="reinvite-apl" data-id="${_id}" data-assigned="${assigned ? 1 : 0}" href=""><i class="dark green edit outline icon"></i></a>`
 
                     return
                 }
