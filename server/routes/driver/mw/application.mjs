@@ -80,7 +80,7 @@ export const applicationStart = async (req, res, next) => {
         }
         if (cdl === '1') hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
 
-        const positionList = Driver.positionList
+        const positionList = Driver.list.position
 
         let options = {}
         const fields = [

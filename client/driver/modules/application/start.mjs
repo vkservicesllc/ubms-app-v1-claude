@@ -54,6 +54,36 @@ $(selector.class.global).val(null)
 $('.form-check-input').prop('checked', false)
 $expiration.prop('disabled', true)
 
+
+const params = new URLSearchParams(window.location.search)
+if (params.has('form')) {
+    const formId = params.get('form')
+
+    const response = $.ajax(`/api/data/application/${formId}`, {
+        method: 'POST',
+        async: false,
+    }).responseJSON
+
+    const { firstName, middleName, lastName, suffix, gender, phone, email, position } = response.data || {}
+
+    const ids = [
+        [ firstNameId, firstName ],
+        [ middleNameId, middleName ],
+        [ lastNameId, lastName ],
+        [ suffixId, suffix ],
+        [ genderId, gender ],
+        [ phoneId, phone ],
+        [ emailId, email ],
+        [ positionId, position ],
+    ]
+
+    ids.map(([ id, dataValue ]) => {
+        const value = sessionStorage.getItem(id.replace('#', ''))
+        if (!value && value !== '' && dataValue) sessionStorage.setItem(id.replace('#', ''), dataValue)
+    })
+}
+
+
 const aplStatus = sessionStorage.getItem('aplStatus')
 if (aplStatus === 'started') {
     $('#intro-card').hide()
