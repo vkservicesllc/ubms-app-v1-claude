@@ -31,7 +31,7 @@ const table = $('#driver-apl-table').DataTable({
             }
         },
         dataSrc(response) {
-            const { data, actions, aplAddress, unscoped, stepLen } = response
+            const { data, actions, aplAddress, unscoped, stepLen, _sessionUserId } = response
 
             table?.column(12).visible(unscoped)
 
@@ -40,6 +40,7 @@ const table = $('#driver-apl-table').DataTable({
                 row.stepLen = stepLen
                 if (row.condition == 'p')
                     row.aplAddress = aplAddress + row.formId
+                row._sessionUserId = _sessionUserId
             })
 
             return data
@@ -276,24 +277,31 @@ const table = $('#driver-apl-table').DataTable({
             width: '120px',
             defaultContent: '',
             render(data, type, row) {
-                if (!row._driverId) return
-
                 const { _id, condition, formId } = row
                 const { comment, modify, delete: remove } = row.actions.data
-                const { access } = row.actions.file
-
                 let panel = ''
+
+                if (!row._driverId) {
+                    const { _userId, _sessionUserId } = row
+
+                    if (modify && (!_userId || _userId === _sessionUserId))
+                        return panel += `<a class="reinvite-apl" data-id="${_id}" href=""><i class="dark green edit outline icon"></i></a>`
+
+                    return
+                }
+
+                const { access } = row.actions.file
 
                 if (condition != 'p') {
                     if (modify) {
-                        panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form"><i class="dark green text edit outline icon"></i></a>`
+                        panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form"><i class="dark green edit outline icon"></i></a>`
                         // panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`
                     }
-                    if (condition != 'c' && access) panel += `<a class="apl-files"><i class="black text folder outline icon"></i></a>`
-                    if (comment) panel += `<a class="comment-apl"><i class="purple text comment outline icon"></i></a>`
+                    if (condition != 'c' && access) panel += `<a class="apl-files" data-id="${_id}" href=""><i class="black folder outline icon"></i></a>`
+                    if (comment) panel += `<a class="comment-apl"><i class="purple comment outline icon"></i></a>`
                 } else {
                     if (modify) {
-                        panel += `<a class="apl-id-card" data-id="${_id}" href=""><i class="dark green text id card outline icon"></i></a>`
+                        panel += `<a class="apl-id-card" data-id="${_id}" href=""><i class="dark green id card outline icon"></i></a>`
                         panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank"><i class="blue external alternate icon"></i></a>`
                     }
                 }

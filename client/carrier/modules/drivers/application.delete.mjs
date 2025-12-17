@@ -32,7 +32,7 @@ table.on('draw', function() {
 
         const _id = $(this).data('id')
 
-        $.ajax(`/api/drivers/application/${_id}`, {
+        $.ajax(`/api/data/drivers/application/${_id}`, {
             method: 'POST',
             success(response) {
                 const { application, identity, log } = response.data

@@ -21,6 +21,88 @@
         {{> carrier/drivers/application.new}}
         {{/if}}
         {{#if (eq permissions.modify true)}}
+        <div class="ui tiny modal" id="apl-lead-card-modal">
+            <div class="ui header">Pre-Application</div>
+            <div class="content">
+                <form class="ui form" id="lead-form" action="/resource/drivers/update/pre-app" method="POST" autocomplete="off">
+                    <div class="fields">
+                        <div class="eight wide field">
+                            {{{form.leadFirstName.text.label}}}
+                            {{{form.leadFirstName.text.input}}}
+                        </div>
+                        <div class="eight wide field">
+                            {{{form.leadMiddleName.text.label}}}
+                            {{{form.leadMiddleName.text.input}}}
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="eight wide field">
+                            {{{form.leadLastName.text.label}}}
+                            {{{form.leadLastName.text.input}}}
+                        </div>
+                        <div class="four wide field">
+                            {{{form.leadSuffix.select.label}}}
+                            <div class="ui fluid clearable selection dropdown" id="lead-suffix-dropdown">
+                                {{{form.leadSuffix.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.suffix}}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="four wide field">
+                            {{{form.leadGender.select.label}}}
+                            <div class="ui fluid selection required dropdown" id="lead-gender-dropdown">
+                                {{{form.leadGender.hidden.input}}}
+                                <i class="dropdown icon"></i>
+                                <div class="default text"></div>
+                                <div class="menu">{{{dropdown.gender}}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fields">
+                        <div class="five wide field">
+                            {{{form.leadPhone.text.label}}}
+                            {{{form.leadPhone.text.input}}}
+                        </div>
+                        <div class="eleven wide field">
+                            {{{form.leadEmail.text.label}}}
+                            {{{form.leadEmail.text.input}}}
+                            <p class="help" id="lead-email-help"></p>
+                        </div>
+                    </div>
+                    <div class="inline fields">
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                {{{form.leadPosition.radio.CD.input}}}
+                                {{{form.leadPosition.radio.CD.label}}}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                {{{form.leadPosition.radio.LP.input}}}
+                                {{{form.leadPosition.radio.LP.label}}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="inline fields">
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                {{{form.leadPosition.radio.OO.input}}}
+                                {{{form.leadPosition.radio.OO.label}}}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                {{{form.leadPosition.radio.OD.input}}}
+                                {{{form.leadPosition.radio.OD.label}}}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <script type="module" src="/modules/drivers/application.lead.mjs"></script>
+        </div>
         <div class="ui tiny modal" id="apl-id-card-modal">
             <div class="ui header" id="apl-id-card-header">Applicant's Login Info</div>
             <div class="content">

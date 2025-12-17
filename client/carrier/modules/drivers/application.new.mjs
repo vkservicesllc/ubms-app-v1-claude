@@ -1,7 +1,6 @@
 import table from './applications.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
-import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text
@@ -56,16 +55,16 @@ emailEvent(emailId, {
     },
 })
 
-const calSettings = {
-    type: 'date',
-    formatter: {
-        date(date) {
-            if (!date) return ''
+// const calSettings = {
+//     type: 'date',
+//     formatter: {
+//         date(date) {
+//             if (!date) return ''
 
-            return moment(date).format('MMM D, YYYY')
-        },
-    },
-}
+//             return moment(date).format('MMM D, YYYY')
+//         },
+//     },
+// }
 
 $posRole.on('change', function() {
     const cdl = $(this).val()
@@ -90,10 +89,10 @@ $selfAssign.click(function() {
     $aplUrl.text(url).attr('href', url)
 })
 
-$('#dob-calendar').calendar({
-    ...calSettings,
-    maxDate: moment().subtract(18, 'years').toDate(),
-})
+// $('#dob-calendar').calendar({
+//     ...calSettings,
+//     maxDate: moment().subtract(18, 'years').toDate(),
+// })
 
 
 const enableApplicant = () => {
@@ -135,7 +134,7 @@ nameEvent(TS.lastName, {
     },
 })
 
-ssnEvent(TS.ssn)
+// ssnEvent(TS.ssn)
 
 telEvent(TS.phone)
 

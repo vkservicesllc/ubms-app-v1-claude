@@ -35,6 +35,7 @@ const createPositionForm = (props = {}) => createForm({
     selector: appSelector,
     type: 'select/radio',
     name: 'position',
+    data: Driver.list.position,
     emptyOpt,
     required,
     label: 'Position',
@@ -291,15 +292,28 @@ class ApplicationForm {
     static lastName = createPersonNameForm('last', { selector: appSelector, group: 'name' })
     static suffix = createPersonNameForm('suffix', { selector: appSelector, group: 'name' })
     static dob = createDobForm({ selector: appSelector, target: 'dob' })
-    static dob_ = createDobForm({ selector: appSelector, target: 'dob', required: false })
+    // static dob_ = createDobForm({ selector: appSelector, target: 'dob', required: false })
     static ssn = createSsnForm({ selector: appSelector, target: 'ssn' })
     static ssn_ = createSsnForm({ selector: appSelector, target: 'ssn', required: false })
     static gender = createGenderForm({ selector: appSelector, target: 'gender', group: 'gender', required })
 
-    static marital = createMaritalStatus({ selector: appSelector, required })
-
     static phone = createPhoneForm({ selector: appSelector, target: 'phone', required })
     static email = createEmailForm({ selector: appSelector, target: 'email', required })
+
+    static leadFirstName = createPersonNameForm('first', { selector: appSelector, target: 'leadFirstName', group: 'name' })
+    static leadMiddleName = createPersonNameForm('middle', { selector: appSelector, target: 'leadMiddleName', group: 'name' })
+    static leadLastName = createPersonNameForm('last', { selector: appSelector, target: 'leadLastName', group: 'name' })
+    static leadSuffix = createPersonNameForm('suffix', { selector: appSelector, target: 'leadSuffix', group: 'name' })
+    static leadGender = createGenderForm({ selector: appSelector, target: 'leadGender', group: 'gender', required })
+    static leadPhone = createPhoneForm({ selector: appSelector, target: 'leadPhone', required })
+    static leadEmail = createEmailForm({ selector: appSelector, target: 'leadEmail', required })
+    static leadPosition = createPositionForm({
+        target: 'leadPosition',
+        group: 'position',
+        required: false,
+    })
+
+    static marital = createMaritalStatus({ selector: appSelector, required })
 
     static addrEnough = createForm({
         selector: appSelector,

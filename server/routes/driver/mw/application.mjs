@@ -91,7 +91,7 @@ export const applicationStart = async (req, res, next) => {
         ]
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
         options.position.select.label.content = 'Desired Position'
-        options.position.select.input.data = positionList
+        // options.position.select.input.data = positionList
 
         options.phone.text.label.content = 'U.S. Phone'
         options.addrState.select.input.options = { valOpt: true }

@@ -130,35 +130,41 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
 
             const driverPositions = Driver.list.position
             let suffixItems = '', genderItems = '', maritalItems = '', positionItems = '', addrStateItems = ''
-            const t = `\t`.repeat(9)
 
             for (const sfx in Individual.list.suffix)
-                suffixItems += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
+                suffixItems += `<div class="item" data-value="${sfx}">${sfx}</div>`
             for (const sex in Individual.list.gender)
-                genderItems += `\n${t}<div class="item" data-value="${sex}">${Individual.list.gender[sex]}</div>`
+                genderItems += `<div class="item" data-value="${sex}">${Individual.list.gender[sex]}</div>`
             // for (const stat in Individual.list.marital)
-            //     maritalItems += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
+            //     maritalItems += `<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
             for (const pos in driverPositions)
-                positionItems += `\n${t}<div class="item" data-value="${pos}" data-text="${pos}">${driverPositions[pos]}</div>`
+                positionItems += `<div class="item" data-value="${pos}" data-text="${pos}">${driverPositions[pos]}</div>`
             // for (const state in Address.stateList)
-            //     addrStateItems += `\n${t}<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+            //     addrStateItems += `<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
 
             const statusClass = 'new-apl-eligibility new-apl-legal-status'
 
             let options = {
                 email: { text: { input: { placeholder: "Applicant's Email" } } },
-                status: {
-                    radio: {
-                        citizen: { input: { class: statusClass } },
-                        resident: { input: { class: statusClass } },
-                        authorized: { input: { class: statusClass } },
-                    },
-                },
+                // leadPosition: {
+                //     radio: {
+                //         input: {
+                //             data: driverPositions,
+                //         },
+                //     },
+                // },
+                // status: {
+                //     radio: {
+                //         citizen: { input: { class: statusClass } },
+                //         resident: { input: { class: statusClass } },
+                //         authorized: { input: { class: statusClass } },
+                //     },
+                // },
             }
 
             const fields = [
                 'firstName', 'middleName', 'lastName', 'suffix',
-                'phone', 'gender', 'dob_', 'ssn_', 'position_',
+                'phone', 'gender', 'ssn_', 'position_',
                 // 'dob', 'gender', 'ssn', 'marital', 'phone',
                 // 'addrSince', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             ]
