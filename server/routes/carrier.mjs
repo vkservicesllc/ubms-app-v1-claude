@@ -171,7 +171,7 @@ router.get('/', async (req, res, next) => {
             const settings = await user.settings()
             let url = user.events.lastUrl
 
-            if ([0, '0', undefined].includes(settings?.carrier?.lastUrl)) url = '/dashboard'
+            if ([0, '0'].includes(settings?.carrier?.lastUrl)) url = '/dashboard'
 
             return res.redirect(url)
         }

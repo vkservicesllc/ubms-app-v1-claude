@@ -34,7 +34,7 @@ const navItems = (permissions, DS, activeIdx) => {
     const items = []
 
     const params = {
-        // 'd:drv/lds': [ '/drivers/pre-applications', 'Pre-Applications' ],
+        //! 'd:drv/lds': [ '/drivers/pre-applications', 'Pre-Applications' ],
         'd:drv/apl': [ '/drivers/applications', 'Applications' ],
         'd:drv/emp': [ '/drivers/previous-employments', 'Previous Employments' ],
         'd:drv/drv': [ '/drivers/hired', 'Hired Contractors' ],
@@ -108,7 +108,7 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
         const { active } = hbs.nav
         hbs.nav.left.drivers = active
 
-        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 0))
 
         const privs = ['create', 'modify', 'delete']
         hbs.permissions = {}

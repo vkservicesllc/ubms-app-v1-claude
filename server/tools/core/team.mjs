@@ -214,8 +214,6 @@ class Team {
 
 
         verify: async (req, res, next) => {
-            const api = recognizeApi(req)
-
             try {
                 const { user } = res.session
                 if (!user) return sendError.auth(req, res)
@@ -227,6 +225,7 @@ class Team {
                 }
 
                 const { team: _id } = req.session
+
                 if (!_id) return res.redirect('/')
     
                 const team = await Team.fetch(res.session, { _id })
@@ -236,7 +235,7 @@ class Team {
                 const found = (await mysql.execute(query.jx.users_teams.select('teamId', {
                     match: { userId, teamId },
                 })))[0].length === 1
-    
+
                 if ((!user.DS && !found) || !team) {
                     delete req.session.team
 

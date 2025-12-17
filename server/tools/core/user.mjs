@@ -743,8 +743,10 @@ class User extends Person {
 
                 const settings = await user.settings()
                 let { lastUrl } = user.events
+
                 let url = lastUrl || '/'
-                if (settings?.[branch]?.lastUrl === 0) url = defUrl
+
+                if (settings?.[branch]?.lastUrl == 0) url = defUrl
 
                 const body = { userId, siteId, branch, clientIp: { ip: clientIp } }
                 if (lastUrl) body.lastUrl = lastUrl
@@ -849,6 +851,7 @@ class User extends Person {
 
                     res.session.client = '' + status + DS + DSA + location
                 }
+
                 next()
             } catch (err) {
                 sendError.server(req, res, err)
