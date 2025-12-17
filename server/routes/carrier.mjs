@@ -164,14 +164,14 @@ router.get('/', async (req, res, next) => {
     }
 }, User.mw.verify, async (req, res) => {
     try {
-        const { user } = res.session
+        const { user, defUrl } = res.session
         const { team } = req.session
 
         if (team || user.unscoped) {
             const settings = await user.settings()
             let url = user.events.lastUrl
 
-            if ([0, '0'].includes(settings?.carrier?.lastUrl)) url = '/dashboard'
+            if (settings?.carrier?.lastUrl == 0 || url === '/') url = defUrl
 
             return res.redirect(url)
         }
