@@ -285,8 +285,10 @@ const table = $('#driver-apl-table').DataTable({
                     const { _userId, sessionUser } = row
                     const assigned = !_userId || _userId === sessionUser._id || sessionUser.DS
 
-                    if (modify && assigned)
-                        return panel += `<a class="reinvite-apl" data-id="${_id}" data-assigned="${assigned ? 1 : 0}" href=""><i class="dark green edit outline icon"></i></a>`
+                    if (modify && assigned) {
+                        panel += `<a class="reinvite-apl" data-id="${_id}" href="" title="Invite again"><i class="blue envelope outline icon"></i></a>`
+                        return panel += `<a class="modify-preapl" data-id="${_id}" data-assigned="${assigned ? 1 : 0}" href="" title="Modify Pre-Application"><i class="dark green edit outline icon"></i></a>`
+                    }
 
                     return
                 }
@@ -295,19 +297,19 @@ const table = $('#driver-apl-table').DataTable({
 
                 if (condition != 'p') {
                     if (modify) {
-                        panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form"><i class="dark green edit outline icon"></i></a>`
+                        panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form" title="Manage Application"><i class="dark green edit outline icon"></i></a>`
                         // panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`
                     }
                     if (condition != 'c' && access) panel += `<a class="apl-files" data-id="${_id}" href=""><i class="black folder outline icon"></i></a>`
-                    if (comment) panel += `<a class="comment-apl"><i class="purple comment outline icon"></i></a>`
+                    if (comment) panel += `<a class="comment-apl" title="Comment"><i class="purple comment outline icon"></i></a>`
                 } else {
                     if (modify) {
-                        panel += `<a class="apl-id-card" data-id="${_id}" href=""><i class="dark green id card outline icon"></i></a>`
-                        panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank"><i class="blue external alternate icon"></i></a>`
+                        panel += `<a class="apl-id-card" data-id="${_id}" href="" title="Login Credentials"><i class="dark green id card outline icon"></i></a>`
+                        panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank" title="External Form"><i class="blue external alternate icon"></i></a>`
                     }
                 }
                 if (remove && ['p', 'c'].includes(condition))
-                    panel += `<a class="delete-apl" data-id="${_id}" href=""><i class="red trash alternate outline icon"></i></a>`
+                    panel += `<a class="delete-apl" data-id="${_id}" href="" title="Delete Application"><i class="red trash alternate outline icon"></i></a>`
 
                 return panel
             },

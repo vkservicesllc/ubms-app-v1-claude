@@ -21,6 +21,17 @@
         {{> carrier/drivers/application.new}}
         {{/if}}
         {{#if (eq permissions.modify true)}}
+        <div class="ui small modal" id="apl-reinvite-card-modal">
+            <div class="ui header">Reinvitation</div>
+            <div class="content">
+                <form id="reinvite-form" action="/resource/drivers/reinvite/pre-app" method="POST"></form>
+                <p>This action will reinvite <b id="reinvite-name"></b> at <b id="reinvite-email"></b></p>
+            </div>
+            <div class="actions">
+                <div class="ui cancel button">Cancel</div>
+                <button type="submit" form="reinvite-form" class="ui blue button" id="reinvite-submit">Reinvite</button>
+            </div>
+        </div>
         <div class="ui tiny modal" id="apl-lead-card-modal">
             <div class="ui header">Pre-Application</div>
             <div class="content">
@@ -104,7 +115,7 @@
             <div class="actions">
                 <button class="ui dark red left floated button" id="delete-lead-button" style="display: none;">Delete</button>
                 <div class="ui cancel button">Cancel</div>
-                <button type="submit" form="lead-form" class="ui dark green button" id="new-apl-submit">Save</button>
+                <button type="submit" form="lead-form" class="ui dark green button" id="lead-submit">Save</button>
             </div>
             <script type="module" src="/modules/drivers/application.lead.mjs"></script>
         </div>
