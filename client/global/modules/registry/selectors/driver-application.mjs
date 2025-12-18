@@ -83,6 +83,7 @@ const selector = {
     id: {
         hidden: {
             id: 'id',
+            leadId: 'lead-id',
             deleteId: 'delete-id',
             appliedOn: 'applied-on',
             addrEnough: 'address-enough',

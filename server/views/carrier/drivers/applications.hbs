@@ -24,7 +24,7 @@
         <div class="ui small modal" id="apl-reinvite-card-modal">
             <div class="ui header">Reinvitation</div>
             <div class="content">
-                <form id="reinvite-form" action="/resource/drivers/reinvite/pre-app" method="POST"></form>
+                <form id="reinvite-form" action="/resource/drivers/reinvite/applicant" method="POST"></form>
                 <p>This action will reinvite <b id="reinvite-name"></b> at <b id="reinvite-email"></b></p>
             </div>
             <div class="actions">
@@ -35,7 +35,8 @@
         <div class="ui tiny modal" id="apl-lead-card-modal">
             <div class="ui header">Pre-Application</div>
             <div class="content">
-                <form class="ui form" id="lead-form" action="/resource/drivers/update/pre-app" method="POST" autocomplete="off">
+                <form class="ui form" id="lead-form" action="/resource/drivers/update/applicant" method="POST" autocomplete="off">
+                    {{{form.leadId.hidden.input}}}
                     <div class="fields">
                         <div class="eight wide field">
                             {{{form.leadFirstName.text.label}}}

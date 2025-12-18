@@ -59,6 +59,7 @@ emailEvent(emailId, {
     },
 })
 
+const $id = $(selector.id.hidden.leadId)
 const $firstName = $(firstNameId)
 const $middleName = $(middleNameId)
 const $lastName = $(lastNameId)
@@ -105,6 +106,7 @@ table.on('draw', function() {
                         }).modal('show')
                     }
 
+                    $id.val(_id)
                     $firstName.val(firstName)
                     $middleName.val(middleName)
                     $lastName.val(lastName)
@@ -119,6 +121,7 @@ table.on('draw', function() {
                         autofocus: false,
                         closable: false,
                         onHidden() {
+                            $id.val(null)
                             $firstName.val(null)
                             $middleName.val(null)
                             $lastName.val(null)

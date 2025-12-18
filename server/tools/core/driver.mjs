@@ -315,6 +315,23 @@ class Application {
 
         if (single && !hideRawId) {
             this.session = session
+
+
+            this.update = (targetOrBody, body) => classInstance.update(this, new.target, targetOrBody, body, {}, {
+                currentData(target, data) {
+                    switch (target) {
+                        //! to be added
+                    }
+
+                    return data
+                },
+            })
+
+
+            this.log = params => classInstance.log(this, new.target, params, [
+                ...classInstance.logFields,
+                'createdIn', 'finishedAt', 'reviewedBy', 'reviewedAt', 'archivedBy', 'archivedAt',
+            ])
         }
     }
 
@@ -336,7 +353,7 @@ class Application {
     static invite = async (session, body, formId) => {
         if (!session.user.id) throw new Error('Application Static Method Error [INVITE]: Session user not supplied')
 
-        const { _carrierId, carrierId, _teamId, teamId, cdlRole, selfAssign } = body
+        const { _carrierId, carrierId, _teamId, teamId, _userSimpleId, cdlRole, selfAssign } = body
         let { email } = body
 
         let { team, user } = session
@@ -362,7 +379,8 @@ class Application {
         if (companyName) from = `"${companyName}" <${senderParams.email}>`
         url += `?env=${team ? team._id : 'global'}`
         url += `&cdl=${cdlRole}`
-        if (selfAssign) url += `&rec=${user._simpleId}`
+        if (_userSimpleId) url += `&rec=${_userSimpleId}`
+        else if (selfAssign) url += `&rec=${user._simpleId}`
         if (formId) url += `&form=${formId}`
 
         if (email.split('@')[1] === 'bogus.xyz') email = senderParams.email
