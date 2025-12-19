@@ -114,7 +114,7 @@ export const addressPredictions = ($addr1, input, success) => {
                     method: 'POST',
                     data: { placeId },
                     success(responseData) {
-                        const { address_components, formatted_address } = responseData
+                        const { address_components } = responseData
                         let address1 = null, address2 = null, zip = null, city = null, state = null
 
                         address_components.map(component => {

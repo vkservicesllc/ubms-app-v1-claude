@@ -113,16 +113,17 @@ router.post('/google-api/places/autocomplete', async (req, res) => {
 
 router.post('/google-api/places/details', async (req, res) => {
     try {
-        const { placeId } = req.body
+        const { placeId, sessionToken } = req.body
 
-        const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+        const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
             params: {
                 place_id: placeId,
                 key: config.apiKeys.google,
+                sessionToken,
             },
         })
 
-        res.json(response.data.results[0])
+        res.json(response.data.result)
     } catch (err) {
         sendError.server(req, res, err)
     }
