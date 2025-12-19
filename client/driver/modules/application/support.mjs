@@ -134,6 +134,7 @@ export const addressPredictions = ($addr1, input, success) => {
                                 case 'sublocality_level_1':
                                 case 'sublocality':
                                 case 'neighborhood':
+                                case 'administrative_area_level_3':
                                     city = component.short_name || null
                                     break
                                 case 'administrative_area_level_1':
