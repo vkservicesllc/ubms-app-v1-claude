@@ -6,11 +6,51 @@ label.input-required::after {
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
 input[type=number] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.autocomplete {
+    position: relative;
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    margin: .25rem 0 0;
+    padding: 0;
+    list-style: none;
+
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    border: 1px solid var(--bs-border-color);
+    border-radius: .375rem;
+
+    max-height: 240px;
+    overflow-y: auto;
+
+    box-shadow: var(--bs-box-shadow);
+    z-index: 1055; /* above modals */
+}
+
+.autocomplete-list:empty {
+    display: none;
+}
+
+.autocomplete-list li {
+    padding: .5rem .75rem;
+    cursor: pointer;
+}
+
+.autocomplete-list li:hover,
+.autocomplete-list li.active {
+    background-color: var(--bs-secondary-bg);
 }

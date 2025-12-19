@@ -1,3 +1,6 @@
+import { capitalizeEach } from "/modules/tools/utils/string.mjs"
+
+
 export default function(offset = 1) {
     const { href } = window.location
     const x = href.split('/')
@@ -70,4 +73,100 @@ export const onYesNoRadioChange = (id, explSelector, depth = 1) => {
         $expl.prop('disabled', disabled)
         $parent[action]()
     })
+}
+
+
+const sessionToken = generateSessionToken()
+
+export const addressPredictions = ($addr1, input, success) => {
+    $('.address-selected').off('click')
+
+    const $row1 = $addr1.parent().parent()
+    const $row2 = $row1.next()
+    const $datalist = $row1.find('.address-predictions')
+
+    const $addr2 = $row1.find('[name="address2"], [name="address2[]"]')
+    const $zip = $row1.find('[name="zip"], [name="zip[]"]')
+    const $city = $row2.find('[name="city"], [name="city[]"]')
+    const $state = $row2.find('[name="state"], [name="state[]"]')
+
+    $datalist.html(null)
+
+    $.ajax('/api/public/google-api/places/autocomplete', {
+        method: 'POST',
+        data: { input, sessionToken },
+        success(responseData) {
+            const { predictions } = responseData
+
+            let options = []
+            predictions.forEach(prediction => {
+                const { place_id, description } = prediction
+                options.push(`<li class="address-selected" place-id="${place_id}">${description}</li>`)
+            })
+
+            $datalist.html(options.join(''))
+
+            $('.address-selected').on('click', function() {
+                $datalist.html(null)
+                const placeId = $(this).attr('place-id')
+
+                $.ajax('/api/public/google-api/places/details', {
+                    method: 'POST',
+                    data: { placeId },
+                    success(responseData) {
+                        const { address_components, formatted_address } = responseData
+                        let address1 = null, address2 = null, zip = null, city = null, state = null
+
+                        address_components.map(component => {
+                            switch (component.types[0]) {
+                                case 'street_number':
+                                    address1 = component.short_name || null
+                                    break
+                                case 'route':
+                                    if (address1 && component.short_name)
+                                        address1 += ` ${component.short_name}`
+                                    break
+                                case 'subpremise':
+                                    address2 = component.short_name || null
+                                    if (address2) address2 = capitalizeEach(address2)
+                                    break
+                                case 'locality':
+                                case 'sublocality_level_1':
+                                case 'sublocality':
+                                case 'neighborhood':
+                                    city = component.short_name || null
+                                    break
+                                case 'administrative_area_level_1':
+                                    state = component.short_name || null
+                                    break
+                                case 'postal_code':
+                                    zip = component.short_name || null
+                                    break
+                            }
+                        })
+
+                        $addr1.val(address1).trigger('change')
+                        if (address2) $addr2.val(address2).trigger('change')
+                        $zip.val(zip).addClass('is-valid') //* If trigger change, extra us-zip API will be called and data can be overwritten
+                        $city.val(city).trigger('change')
+                        $state.val(state).trigger('change')
+
+                        if (typeof success === 'function') success()
+                    },
+                })
+            })
+        },
+    })
+}
+
+
+function generateSessionToken(length = 32) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+    let token = ''
+    for (let i = 0; i < length; i++) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+
+    return token
 }

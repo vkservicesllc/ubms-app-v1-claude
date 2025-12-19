@@ -7,6 +7,9 @@ const name = env.SITE__APP_NAME
 const alias = env.SITE__APP_ALIAS || env.SITE__APP_NAME
 const description = env.SITE__APP_DESC || null
 const author = env.SITE__APP_AUTHOR
+const apiKeys = {
+    google: env.API__GOOGLE_KEY,
+}
 
 
 const config = {
@@ -55,6 +58,7 @@ const config = {
             authToken: !!domain,
         },
     },
+    apiKeys,
 }
 
 const addrBook = {}, userApps = {}

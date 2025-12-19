@@ -4,7 +4,7 @@ import { nameEvent } from '/modules/events/person.mjs'
 import { emailEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import { check, onInput, onAccept } from './support.mjs'
+import { check, onInput, onAccept, addressPredictions } from './support.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
 const firstNameId = TS.firstName
@@ -275,12 +275,25 @@ emailEvent(emailId, {
     },
 })
 
+let timer
+
 addr1Event(addr1Id, {
     addr2Id,
-    onInput,
+    onInput(addr1, $addr1) {
+        clearTimeout(timer)
+        timer = setTimeout(() => addressPredictions($addr1, addr1, () => {
+            const zip = $(zipId).val()
+            sessionStorage.setItem(zipId.replace('#', ''), zip || '')
+        }), 500)
+
+        onInput(addr1, $addr1)
+    },
     onChange(addr1, $addr1, addr2, $addr2) {
         onChange(addr1, $addr1)
         onChange(addr2, $addr2)
+    },
+    onBlur(addr1, $addr1) {
+        setTimeout(() => $addr1.parent().find('.address-predictions').html(null), 500)
     },
 })
 

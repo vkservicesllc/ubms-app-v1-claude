@@ -169,9 +169,10 @@
                             </div>
                             <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Current / Most Recent Address in the U.S.</h6>
                             <div class="row g-3 my-1">
-                                <div class="col-md-6">
+                                <div class="col-md-6 autocomplete">
                                     {{{form.address1.text.label}}}
                                     {{{form.address1.text.input}}}
+                                    <ul class="autocomplete-list address-predictions"></ul>
                                 </div>
                                 <div class="col-md-3">
                                     {{{form.address2.text.label}}}

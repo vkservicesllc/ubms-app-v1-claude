@@ -24,15 +24,15 @@ export const addr1Event = (id, options = {}) => {
             const poBox = /\bPO Box\b/gi.test(addr1)
             let addr2, $addr2
 
-            if (!mail && poBox) addr1 = null
+            if (!mail && poBox) addr1 = ''
             else if (addr2Id) {
                 $addr2 = $(addr2Id)
-                if (poBox) $addr2.val(null)
+                if (poBox) $addr2.val('')
                 else {
                     const addr2Patt = patterns.match.addr2
                     addr2 = addr2Patt.test(addr1)
                         ? addr2Patt.exec(addr1)[0].toUpperCase()
-                        : null
+                        : ''
                     addr1 = addr1.replace(addr2Patt, '').trim()
                     if (addr2) addr2 = patterns.replace(addr2, 'addr2')
 
@@ -92,7 +92,7 @@ export const zipEvent = (id, options = {}) => {
         onChange(zip, $zip) {
             const { length } = zip
             const maxLength = $zip.attr('maxlength')
-            if (length < maxLength) zip = null
+            if (length < maxLength) zip = ''
 
             $zip.val(zip)
             if (zip)
