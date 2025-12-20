@@ -317,6 +317,12 @@ class Application {
             this.session = session
 
 
+            this.add = (target, body) => classInstance.add(this, new.target, target, body)
+
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
             this.update = (targetOrBody, body) => classInstance.update(this, new.target, targetOrBody, body, {}, {
                 currentData(target, data) {
                     switch (target) {
@@ -328,12 +334,31 @@ class Application {
                 async final(inst, body, target) {
                     if (target !== 'main' || !body.ssn || inst.ssn) return
 
-                    const { ssn } = body
+                    const { ssn, dob } = body
                     let person = await Individual.fetch(session, { ssn })
 
                     //! repeat the same logic as in create
+                    if (person) {
+                        if (person.dob === dob) { // Individual confirmed via SSN and DOB
+                            if (person.sex === null) await person.update({ sex: inst.sex })
+                        }
+                    } else {
+                        person = await Individual.create(session, body)
+                        if (!person) throw new Error('Failed to create person')
+                    }
+
+                    let driver = await Driver.fetch(session, { personId: person.id })
+                    if (!driver) driver = await Driver.created(session, { personId: person.id })
+                    if (!driver) throw new Error('Failed to fetch or create driver')
+
+                    const driverId = driver.id
+                    await inst.update({ driverId })
+                    //! NOT TESTED
                 },
             })
+
+
+            this.delete = (target, match = {}) => classInstance.delete(this, new.target, target, match)
 
 
             this.log = params => classInstance.log(this, new.target, params, [

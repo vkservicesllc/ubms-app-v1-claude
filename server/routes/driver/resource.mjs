@@ -189,53 +189,62 @@ const dynamicValidator = {
 
 router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, validationCheck, async (req, res) => {
     try {
-        const { form: formId } = req.query
-
-        if (formId) {
-            const application = await Application.fetch(res.session, { formId })
-
-            //? const result = await application.update(req.body)
-            //? res.session.application = result.data
-            // create redirect url
+        let { form: formId } = req.query
+        const { address: addrBody } = req.body
+        delete req.body.address
 return res.send({
     body: req.body,
-    application,
-}) //! TEMP
+    addrBody,
+}) //!TEMP
+
+        let application
+
+        if (formId) {
+            application = await Application.fetch(res.session, { formId })
+            if (!application) throw new Error('Application not found')
+
+            await application.update(req.body)
+        } else {
+            const { _teamId, _carrierId } = req.params
+            const { cdl: cdlRole, rec: _userId } = req.query
+
+            req.body.cdlRole = +cdlRole
+
+            let team
+            if (_teamId !== 'global') {
+                team = await Team.fetch(res.session, { _id: _teamId }, { offline: true })
+                if (!team) throw new Error('Team not found')
+
+                res.session.team = team
+                req.body.teamId = team.id
+            }
+
+            if (_carrierId) {
+                const carrier = await Carrier.fetch(session, { _id: _carrierId })
+                if (!carrier) throw new Error('Carrier not found')
+
+                req.body.carrierId = carrier.id
+            }
+
+            if (_userId) {
+                const user = await User.fetch(res.session, { _id: _userId }, { offline: true })
+                if (!user) throw new Error('User not found')
+
+                req.body.userId = user.id
+            }
+
+            const result = await Application.create(res.session, req.body)
+            application = result.data
+            if (!application) throw new Error('Failed to create application')
         }
 
-        const { _teamId, _carrierId } = req.params
-        const { cdl: cdlRole, rec: _userId } = req.query
+        await application.add('address', addrBody)
 
-        req.body.cdlRole = +cdlRole
-
-        let team
-        if (_teamId !== 'global') {
-            team = await Team.fetch(res.session, { _id: _teamId }, { offline: true })
-            if (!team) throw new Error('Team not found')
-
-            res.session.team = team
-            req.body.teamId = team.id
-        }
-
-        if (_carrierId) {
-            const carrier = await Carrier.fetch(session, { _id: _carrierId })
-            if (!carrier) throw new Error('Carrier not found')
-
-            req.body.carrierId = carrier.id
-        }
-
-        if (_userId) {
-            const user = await User.fetch(res.session, { _id: _userId }, { offline: true })
-            if (!user) throw new Error('User not found')
-
-            req.body.userId = user.id
-        }
-
-        //? const { data: application } = await Application.create(res.session, req.body)
-        //? res.session.application = application
+        res.session.application = application
         // create redirect url
+        let url = '/' //!TEMP
 
-res.send(req.body) //! TEMP
+        res.send(url)
     } catch (err) {
         sendError.server(req, res, err)
     }
