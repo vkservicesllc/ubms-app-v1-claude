@@ -320,17 +320,36 @@ class ApplicationForm {
         selector: appSelector,
         target: 'addrEnough',
         type: 'hidden',
-        name: 'addrEnough',
+        name: 'address[enough]',
         validator: {
             rule: 'boolean',
             sanitizer: value => value === '1',
         },
     })
-    static addrSince = createSinceForm({ selector: appSelector, target: 'addrSince', name: 'addrSince', label: 'Living since' })
-    static address1 = createAddressForm({ selector: appSelector, target: 'address1' })
-    static address2 = createAddressForm({ selector: appSelector, target: 'address2' }, { idx: 2 })
+
+    static addrSince = createSinceForm({
+        selector: appSelector,
+        target: 'addrSince',
+        name: 'address[since]',
+        label: 'Living since',
+    })
+
+    static address1 = createAddressForm({
+        selector: appSelector,
+        target: 'address1',
+        name: 'address[address1]',
+    })
+
+    static address2 = createAddressForm({
+        selector: appSelector,
+        target: 'address2',
+        name: 'address[address2],
+    }, { idx: 2 })
+
     static addrZip = createAddrZipForm({ selector: appSelector, target: 'addrZip' })
+
     static addrCity = createAddrCityForm({ selector: appSelector, target: 'addrCity' })
+
     static addrState = createAddrStateForm({ selector: appSelector, target: 'addrState' })
 
     static livedAbroad = createYesNoForm({
