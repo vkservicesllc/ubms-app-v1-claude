@@ -343,20 +343,32 @@ class ApplicationForm {
     static address2 = createAddressForm({
         selector: appSelector,
         target: 'address2',
-        name: 'address[address2],
+        name: 'address[address2]',
     }, { idx: 2 })
 
-    static addrZip = createAddrZipForm({ selector: appSelector, target: 'addrZip' })
+    static addrZip = createAddrZipForm({
+        selector: appSelector,
+        target: 'addrZip',
+        name: 'address[zip]',
+    })
 
-    static addrCity = createAddrCityForm({ selector: appSelector, target: 'addrCity' })
+    static addrCity = createAddrCityForm({
+        selector: appSelector,
+        target: 'addrCity',
+        name: 'address[city]',
+    })
 
-    static addrState = createAddrStateForm({ selector: appSelector, target: 'addrState' })
+    static addrState = createAddrStateForm({
+        selector: appSelector,
+        target: 'addrState',
+        name: 'address[state]',
+    })
 
     static livedAbroad = createYesNoForm({
         selector: appSelector,
         target: 'livedAbroad1',
         group: 'livedAbroad',
-        name: 'livedAbroad',
+        name: 'address[livedAbroad]',
         required,
         disabled,
         label: 'Lived Abroad',
@@ -365,7 +377,7 @@ class ApplicationForm {
         selector: appSelector,
         target: 'livedAbroad1',
         type: 'checkbox',
-        name: 'livedAbroad',
+        name: 'address[livedAbroad]',
         label: 'Lived abroad before this date',
     })
 
