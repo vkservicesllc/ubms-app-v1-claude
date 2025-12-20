@@ -130,7 +130,7 @@ export const applicationStart = async (req, res, next) => {
 
         hbs.form = new ApplicationForm(options)
 
-        hbs.formUrl = '/resource/application'
+        hbs.formUrl = '/resource/application/start'
         hbs.formUrl += team ? `/${team._id}` : '/global'
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
         hbs.formUrl += `?cdl=${cdl}`
