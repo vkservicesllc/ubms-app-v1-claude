@@ -325,6 +325,14 @@ class Application {
 
                     return data
                 },
+                async final(inst, body, target) {
+                    if (target !== 'main' || !body.ssn || inst.ssn) return
+
+                    const { ssn } = body
+                    let person = await Individual.fetch(session, { ssn })
+
+                    //! repeat the same logic as in create
+                },
             })
 
 
