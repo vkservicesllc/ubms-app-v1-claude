@@ -85,10 +85,10 @@ export const addressPredictions = ($addr1, input, success) => {
     const $row2 = $row1.next()
     const $datalist = $row1.find('.address-predictions')
 
-    const $addr2 = $row1.find('[name="address2"], [name="address2[]"]')
-    const $zip = $row1.find('[name="zip"], [name="zip[]"]')
-    const $city = $row2.find('[name="city"], [name="city[]"]')
-    const $state = $row2.find('[name="state"], [name="state[]"]')
+    const $addr2 = $row1.find('[name="address[address2]"], [name="addresses[address2][]"]')
+    const $zip = $row1.find('[name="address[zip]"], [name="addresses[zip][]"]')
+    const $city = $row2.find('[name="address[city]"], [name="addresses[city][]"]')
+    const $state = $row2.find('[name="address[state]"], [name="addresses[state][]"]')
 
     $datalist.html(null)
 
