@@ -70,7 +70,7 @@ router.post('/data/application/:formId', async (req, res) => {
     try {
         const { formId } = req.params
 
-        const application = await Application.fetch(res.session, { formId })
+        const application = await Application.fetch(res.session, { formId }, { hideRawId: true })
         if (!application) throw new Error('Application not found')
 
         res.send({ data: application })
@@ -88,7 +88,7 @@ router.post('/data/application/:formId/:target', (req, res, next) => {
     try {
         const { formId, target } = req.params
 
-        const application = await Application.fetch(res.session, { formId })
+        const application = await Application.fetch(res.session, { formId }, { hideRawId: true })
         if (!application) throw new Error('Application not found')
 
         res.send({ data: await application.data(target) })

@@ -35,7 +35,7 @@ const checkProps = {
 
 export const applicationStart = async (req, res, next) => {
     try {
-        const { env, cdl, rec: _userId } = req.query
+        const { env, cdl, rec: _userId, form: formId } = req.query
         if (!env || !cdl) return next()
 
         const { session } = res
@@ -135,6 +135,7 @@ export const applicationStart = async (req, res, next) => {
         if (_carrierId) hbs.formUrl += `/${_carrierId}`
         hbs.formUrl += `?cdl=${cdl}`
         if (_userId) hbs.formUrl += `&rec=${_userId}`
+        if (formId) hbs.formUrl += `&form=${formId}`
 
         res.render('application/registration', hbs)
     } catch (err) {

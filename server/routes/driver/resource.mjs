@@ -187,6 +187,61 @@ const dynamicValidator = {
 // ==== ROUTES ==== //
 
 
+router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, validationCheck, async (req, res) => {
+    try {
+        const { form: formId } = req.query
+
+        if (formId) {
+            const application = await Application.fetch(res.session, { formId })
+
+            //? const result = await application.update(req.body)
+            //? res.session.application = result.data
+            // create redirect url
+return res.send({
+    body: req.body,
+    application,
+}) //! TEMP
+        }
+
+        const { _teamId, _carrierId } = req.params
+        const { cdl: cdlRole, rec: _userId } = req.query
+
+        req.body.cdlRole = +cdlRole
+
+        let team
+        if (_teamId !== 'global') {
+            team = await Team.fetch(res.session, { _id: _teamId }, { offline: true })
+            if (!team) throw new Error('Team not found')
+
+            res.session.team = team
+            req.body.teamId = team.id
+        }
+
+        if (_carrierId) {
+            const carrier = await Carrier.fetch(session, { _id: _carrierId })
+            if (!carrier) throw new Error('Carrier not found')
+
+            req.body.carrierId = carrier.id
+        }
+
+        if (_userId) {
+            const user = await User.fetch(res.session, { _id: _userId }, { offline: true })
+            if (!user) throw new Error('User not found')
+
+            req.body.userId = user.id
+        }
+
+        //? const { data: application } = await Application.create(res.session, req.body)
+        //? res.session.application = application
+        // create redirect url
+
+res.send(req.body) //! TEMP
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== EXPORT ==== //
 
