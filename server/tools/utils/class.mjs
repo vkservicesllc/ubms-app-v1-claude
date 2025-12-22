@@ -138,7 +138,7 @@ export const classInstance = {
         const idProp = target === 'main' ? 'id' : config.idProp
 
         const options = { modifiedBy: sessionUser.id }
-        if (enforceLocation) {
+        if (enforceLocation === 'update' || enforceLocation === true) {
             options.branch = branch
             options.siteId = siteId
         }
@@ -284,7 +284,7 @@ export const classStatic = {
         createdIn = JSON.stringify(createdIn)
 
         if (sessionUser?.id) body.main.createdBy = sessionUser.id
-        if (enforceLocation) body.main.createdIn = createdIn
+        if (enforceLocation === 'create' || enforceLocation === true) body.main.createdIn = createdIn
 
         const [ result ] = await mysql.execute(query.main.insert(body.main))
         const id = result.insertId
@@ -296,7 +296,7 @@ export const classStatic = {
 
                 body[target][idProp] = id
                 if (sessionUser?.id) body[target].createdBy = sessionUser.id
-                if (enforceLocation) body[target].createdIn = createdIn
+                if (enforceLocation === 'create' || enforceLocation === true) body[target].createdIn = createdIn
 
                 const [ result ] = await mysql.execute(query[target].insert(body[target]))
                 if (!result.affectedRows) throw new Error(`Failed to create ${Cls.name.toLowerCase()}'s ${target}`)

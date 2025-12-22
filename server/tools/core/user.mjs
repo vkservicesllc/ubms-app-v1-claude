@@ -422,7 +422,7 @@ class User extends Person {
 
     static config = () => ({
         enforceUser: false,
-        enforceLocation: true,
+        enforceLocation: 'update',
         db: db.online,
         query: query.user,
         idProp: 'userId',

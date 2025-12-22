@@ -62,6 +62,7 @@ if (params.has('form')) {
     const response = $.ajax(`/api/data/application/${formId}`, {
         method: 'POST',
         async: false,
+        error(err) { console.error(err.responseJSON) },
     }).responseJSON
 
     const { firstName, middleName, lastName, suffix, gender, phone, email, position } = response.data || {}
