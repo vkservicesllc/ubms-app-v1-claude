@@ -133,6 +133,10 @@ router.post('/data/user/:_id/:target?', User.mw.verify, async (req, res) => {
             unscoped = unscoped === 'true'
 
             await user.update({ unscoped })
+            if (unscoped) {
+                const teamIds = await user.fetch('jx.teams', { idsOnly: true })
+                await user.delete('jx.teams', teamIds)
+            }
         }
 
         res.json({ client, data: user })

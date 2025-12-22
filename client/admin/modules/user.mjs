@@ -90,13 +90,13 @@ if (_id) {
                 method: 'POST',
                 data: { unscoped },
                 success(response) {
-                    const { error } = response
-                    if (error) {
-                        $unscoped.prop('checked', !unscoped)
-                        return alert('Could not toggle "unscoped" state')
-                    }
-
                     $scoped.prop('disabled', unscoped)
+                    location.reload()
+                },
+                error(err) {
+                    $unscoped.prop('checked', !unscoped)
+                    console.error(err.responseJSON)
+                    alert('Error occured')
                 },
             })
         })
