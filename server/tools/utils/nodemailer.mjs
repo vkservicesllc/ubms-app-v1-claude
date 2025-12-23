@@ -1,9 +1,8 @@
-require('dotenv').config({ path: '../../../.env' })
 const {
     EMAIL__SENDER: name,
     SMTP__AUTH_USER: user,
     SMTP__AUTH_PASS: pass,
-} = process.env
+} = Bun.env
 
 const nodemailer = require('nodemailer')
 

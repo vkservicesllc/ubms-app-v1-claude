@@ -1,9 +1,8 @@
-require('dotenv').config({ path: '../../../.env' })
 const {
     DB__MYSQL_HOST: host,
     DB__MYSQL_USER: user,
     DB__MYSQL_PASS: password,
-} = process.env
+} = Bun.env
 
 
 const knex = require('knex')({

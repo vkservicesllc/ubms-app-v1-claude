@@ -1,7 +1,6 @@
 // ==== IMPORT ==== //
 
-require('dotenv').config({ path: '../../../.env' })
-const { DIR__PATH: dir } = process.env
+const { DIR__PATH: dir } = Bun.env
 
 const router = require('express').Router()
 const fs = require('fs')

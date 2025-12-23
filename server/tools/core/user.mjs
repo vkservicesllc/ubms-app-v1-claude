@@ -1,13 +1,4 @@
-require('dotenv').config({ path: '../../.env' })
-const {
-    // SITE__DEV_USER: initUser,
-    // SITE__DEV_PASS: initPass,
-    // SITE__DEV_FNAME: initFname,
-    // SITE__DEV_LNAME: initLname,
-    // SITE__DEV_ALIAS: initAlias,
-    // SITE__DEV_EMAIL: initEmail,
-    DB__MYSQL_AES_SESSION_TOKEN: tokenSecret,
-} = process.env
+const { DB__MYSQL_AES_SESSION_TOKEN: tokenSecret } = Bun.env
 
 
 /* Registry */

@@ -1,8 +1,4 @@
-import dotenv from 'dotenv'
 import { randomBytes, createCipheriv, createDecipheriv } from 'crypto'
-
-dotenv.config({ path: '../../../.env' })
-
 
 const key = Buffer.from(process.env.ENCRYPTION_KEY, 'hex')
 

@@ -1,5 +1,4 @@
-require('dotenv').config({ path: '../../../.env' })
-const { DIR__PATH: directory } = process.env
+const { DIR__PATH: directory } = Bun.env
 
 import { mkdirSync, existsSync } from 'fs'
 import path from 'path'

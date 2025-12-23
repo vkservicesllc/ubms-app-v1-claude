@@ -1,5 +1,4 @@
-require('dotenv').config({ path: '../../../.env' })
-let { DIR__PATH: dir } = process.env
+let { DIR__PATH: dir } = Bun.env
 dir += '/uploads'
 
 const multer = require('multer')

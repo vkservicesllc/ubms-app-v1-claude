@@ -1,5 +1,4 @@
-require('dotenv').config({ path: '../../.env' })
-const { DB__MYSQL_AES_SSN: secret } = process.env
+const { DB__MYSQL_AES_SSN: secret } = Bun.env
 
 /* Settings */
 import db, { query } from '../../settings/mysql.mjs'

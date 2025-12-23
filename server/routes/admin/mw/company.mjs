@@ -1,5 +1,4 @@
-require('dotenv').config({ path: '../../../.env' })
-const { DIR__PATH: dir } = process.env
+const { DIR__PATH: dir } = Bun.env
 
 
 import moment from 'moment'

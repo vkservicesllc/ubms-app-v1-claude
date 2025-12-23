@@ -1,5 +1,4 @@
-require('dotenv').config({ path: '../../.env' })
-const { DB__MYSQL_AES_EIN, DB__MYSQL_AES_SSN } = process.env
+const { DB__MYSQL_AES_EIN, DB__MYSQL_AES_SSN } = Bun.env
 const secret = {
     ein: DB__MYSQL_AES_EIN,
     ssn: DB__MYSQL_AES_SSN,

@@ -1,5 +1,4 @@
-require('dotenv').config()
-const { env } = process
+const { env } = Bun
 
 
 const domain = env.SERVER__DOMAIN || null
