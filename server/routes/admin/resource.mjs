@@ -208,6 +208,7 @@ router.post('/upsert/team', User.mw.verify, User.mw.superAdminOnly, validateTeam
         let team
         const { _id } = req.body
         delete req.body._id
+        req.body.scoped = req.body.scoped === 'on'
 
         if (_id) {
             team = await Team.fetch(res.session, { _id })

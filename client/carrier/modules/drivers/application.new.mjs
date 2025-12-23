@@ -118,9 +118,43 @@ $registerApl.on('change', function() {
     else disableApplicant()
 })
 
+$dropdown.carrier.dropdown().on('change', function() {
+    const route = $(this).dropdown('get value')
+    let [ base ] = aplUrl.split('?')
+    let query = $aplUrl.attr('href').split('?')[1]
+
+    if (route) base += `/${route}`
+
+    const url = base + '?' + query
+    $aplUrl.text(url).attr('href', url)
+    $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''))
+})
 $dropdown.suffix.dropdown()
 $dropdown.gender.dropdown()
 $dropdown.position.dropdown()
+
+if ($dropdown.team.length) {
+    // const { teams } = response
+    // let items = ''
+
+    // teams.forEach(team => {
+    //     const { _id, name } = team
+    //     items += `<div class="item" data-id="${_id}" data-value="${_id}">${name}</div>`
+    // })
+    // $dropdown.team.find('.menu').html(items)
+
+    $dropdown.team.dropdown().on('change', function() {
+        const _id = $(this).dropdown('get value') || 'global'
+        let [ base, query ] = aplUrl.split('?')
+        query = query.split('&')
+
+        query[0] = `env=${_id}`
+
+        const url = `${base}?${query.join('&')}`
+        $aplUrl.text(url).attr('href', url)
+    })
+
+}
 
 
 nameEvent(TS.firstName)
@@ -151,71 +185,88 @@ table.on('draw', function() {
             const cdl = aplUrl.split('?')[1].split('&')[1].split('=')[1]
             $(`.position-role[value="${cdl}"]`).prop('checked', true)
 
-            $.ajax('/api/lists', {
-                method: 'POST',
-                success(response) {
-                    const { carriers } = response
-                    let items = ''
+            $modal.modal({
+                autofocus: false,
+                closable: false,
+                onHidden() {
+                    $aplUrl.text(aplUrl).attr('href', aplUrl)
+                    $pdfLink.attr('href', pdfUrl)
+                    $dropdown.carrier.dropdown('clear')
+                    $email.val(null)
+                    $message.email.html(message.email)
+                    $registerApl.prop('checked', false)
+                    $selfAssign.prop('checked', true)
+                    disableApplicant()
+                    $posRole.prop('checked', false)
+                    if ($dropdown.team.length) $dropdown.team.dropdown('clear')
+                },
+            }).modal('show')
 
-                    carriers.forEach(carrier => {
-                        const { _id, route, name } = carrier
-                        items += `<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
-                    })
-                    $dropdown.carrier.find('.menu').html(items)
+            // $.ajax('/api/lists', {
+            //     method: 'POST',
+            //     success(response) {
+            //         const { carriers } = response
+            //         let items = ''
 
-                    $dropdown.carrier.dropdown().on('change', function() {
-                        const route = $(this).dropdown('get value')
-                        let [ base ] = aplUrl.split('?')
-                        let query = $aplUrl.attr('href').split('?')[1]
+            //         carriers.forEach(carrier => {
+            //             const { _id, route, name } = carrier
+            //             items += `<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
+            //         })
+            //         $dropdown.carrier.find('.menu').html(items)
 
-                        if (route) base += `/${route}`
+            //         $dropdown.carrier.dropdown().on('change', function() {
+            //             const route = $(this).dropdown('get value')
+            //             let [ base ] = aplUrl.split('?')
+            //             let query = $aplUrl.attr('href').split('?')[1]
 
-                        const url = base + '?' + query
-                        $aplUrl.text(url).attr('href', url)
-                        $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''))
-                    })
+            //             if (route) base += `/${route}`
 
-                    $modal.modal({
-                        autofocus: false,
-                        closable: false,
-                        onHidden() {
-                            $aplUrl.text(aplUrl).attr('href', aplUrl)
-                            $pdfLink.attr('href', pdfUrl)
-                            $dropdown.carrier.dropdown('clear')
-                            $email.val(null)
-                            $message.email.html(message.email)
-                            $registerApl.prop('checked', false)
-                            $selfAssign.prop('checked', true)
-                            disableApplicant()
-                            $posRole.prop('checked', false)
-                            if ($dropdown.team.length) $dropdown.team.dropdown('clear')
-                        },
-                    }).modal('show')
+            //             const url = base + '?' + query
+            //             $aplUrl.text(url).attr('href', url)
+            //             $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''))
+            //         })
 
-                    if ($dropdown.team.length) {
-                        const { teams } = response
-                        let items = ''
+            //         $modal.modal({
+            //             autofocus: false,
+            //             closable: false,
+            //             onHidden() {
+            //                 $aplUrl.text(aplUrl).attr('href', aplUrl)
+            //                 $pdfLink.attr('href', pdfUrl)
+            //                 $dropdown.carrier.dropdown('clear')
+            //                 $email.val(null)
+            //                 $message.email.html(message.email)
+            //                 $registerApl.prop('checked', false)
+            //                 $selfAssign.prop('checked', true)
+            //                 disableApplicant()
+            //                 $posRole.prop('checked', false)
+            //                 if ($dropdown.team.length) $dropdown.team.dropdown('clear')
+            //             },
+            //         }).modal('show')
 
-                        teams.forEach(team => {
-                            const { _id, name } = team
-                            items += `<div class="item" data-id="${_id}" data-value="${_id}">${name}</div>`
-                        })
-                        $dropdown.team.find('.menu').html(items)
+            //         if ($dropdown.team.length) {
+            //             const { teams } = response
+            //             let items = ''
 
-                        $dropdown.team.dropdown().on('change', function() {
-                            const _id = $(this).dropdown('get value') || 'global'
-                            let [ base, query ] = aplUrl.split('?')
-                            query = query.split('&')
+            //             teams.forEach(team => {
+            //                 const { _id, name } = team
+            //                 items += `<div class="item" data-id="${_id}" data-value="${_id}">${name}</div>`
+            //             })
+            //             $dropdown.team.find('.menu').html(items)
 
-                            query[0] = `env=${_id}`
+            //             $dropdown.team.dropdown().on('change', function() {
+            //                 const _id = $(this).dropdown('get value') || 'global'
+            //                 let [ base, query ] = aplUrl.split('?')
+            //                 query = query.split('&')
 
-                            const url = `${base}?${query.join('&')}`
-                            $aplUrl.text(url).attr('href', url)
-                        })
+            //                 query[0] = `env=${_id}`
 
-                    }
-                }
-            })
+            //                 const url = `${base}?${query.join('&')}`
+            //                 $aplUrl.text(url).attr('href', url)
+            //             })
+
+            //         }
+            //     }
+            // })
         })
     }
 })

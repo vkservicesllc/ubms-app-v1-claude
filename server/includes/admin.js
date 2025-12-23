@@ -148,7 +148,7 @@ module.exports = {
     },
 
     'teams': {
-        external: [ ...online.external, 'jquery.masked-input' ],
+        external: [ ...online.external, 'jquery.masked-input', 'bulma.switch' ],
         internal: {
             css: [ ...online.internal.css, 'form' ],
             js: [ ...online.internal.js ],

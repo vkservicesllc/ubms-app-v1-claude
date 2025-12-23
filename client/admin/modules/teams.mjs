@@ -34,6 +34,7 @@ const cityId = id.text.addrCity
 const stateId = id.select.addrState
 
 const $currentName = $(selector.id.hidden.name)
+const $scoped = $('#scoped')
 
 // const crrDeptClass = selector.class.radio.crrDept
 
@@ -197,6 +198,7 @@ const closeUpsert = () => {
     $button.delete.hide()
     $button.upsert.html(null).removeClass('is-link is-success').prop('disabled', false)
     $title.upsert.html(null)
+    $scoped.prop('checked', false)
     // $catId.attr('disabled', false)
     // $radio.allDepts.prop('checked', false).prop('disabled', true)
     // if (!$catId.find('option[value=""]').length)
@@ -217,7 +219,7 @@ const displayTeams = () => {
             let i = 0, html = ''
 
             for (const [ idx, row ] of data.entries()) {
-                const { _id, name, description,
+                const { _id, scoped, name, description,
                     // catId, depts,
                     count, settings } = row
                 const { companies, users } = count
@@ -232,7 +234,9 @@ const displayTeams = () => {
                 html += '<div class="card" style="min-height: 150px;">'
                 html += '<div class="card-content">'
 
-                html += `<p class="title mb-2"><a class="team-edit" data-team-id="${_id}" style="font-size: .85em;">${escapeHTML(name)}</a></p>`
+                html += `<p class="title mb-2"><a class="team-edit" data-team-id="${_id}" style="font-size: .85em;">${escapeHTML(name)}</a>`
+                if (scoped) html += '<sup style="margin-left: 5px; font-size: .4em;"><i class="fas fa-star has-text-warning-45" title="Scoped users only"></i></sup>'
+                html += '</p>'
                 if (description) html += `<p class="subtitle has-text-primary-30 mb-3" style="font-size: .95em;">${escapeHTML(description)}</p>`
 
                 // switch (catId) {
@@ -291,7 +295,7 @@ const displayTeams = () => {
                         name } = response.data
 
                         if (target == 'edit') {
-                            const { description, count } = response.data
+                            const { scoped, description, count } = response.data
                             const { companies, users } = count
                             // const $catId = $(catId)
 
@@ -299,6 +303,7 @@ const displayTeams = () => {
                             $(`${HS.deleteId}`).val(_id)
                             $(`${HS.name}, ${nameId}`).val(name)
                             $currentName.val(name)
+                            $scoped.prop('checked', scoped)
                             // $catId.val(category).find('option[value=""]').remove()
                             // if (companies) $catId.attr('disabled', true)
                             // $(`#${ids.catIdIcon}`).html(categories[category].icon || defaults.catIdIcon)

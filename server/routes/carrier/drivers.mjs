@@ -129,7 +129,22 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
                 hbs.applicationUrl += `&rec=${user._simpleId}`
 
             const driverPositions = Driver.list.position
-            let suffixItems = '', genderItems = '', maritalItems = '', positionItems = '', addrStateItems = ''
+            let carrierItems = '', teamItems = '', suffixItems = '', genderItems = '', maritalItems = '', positionItems = '', addrStateItems = ''
+            let t = `\t`.repeat(9)
+
+            const carriers = await user.fetch('jx.companies', { filter: { category: 'crr' } })
+            carriers.forEach(carrier => {
+                const { route, name } = carrier
+                carrierItems += `\n${t}<div class="item" data-value="${route}">${name}</div>`
+            })
+
+            if (user.unscoped) {
+                const teams = await Team.fetch(res.session, { scoped: false })
+                teams.forEach(team => {
+                    const { _id, name } = team
+                    teamItems += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+                })
+            }
 
             for (const sfx in Individual.list.suffix)
                 suffixItems += `<div class="item" data-value="${sfx}">${sfx}</div>`
@@ -172,6 +187,8 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
 
             hbs.form = new ApplicationForm(options)
             hbs.dropdown = {
+                carrier: carrierItems,
+                team: teamItems,
                 suffix: suffixItems,
                 gender: genderItems,
                 position_: positionItems,

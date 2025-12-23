@@ -25,6 +25,7 @@ class Team {
         const { offline = false } = custom
         this._id = data._id
         if (!hideRawId) this.id = data.id
+        this.scoped = !!data.scoped
 
         this.name = data.name
         this.description = data.description
@@ -155,7 +156,7 @@ class Team {
             batch: [
                 {
                     table: query.team.main.table,
-                    fields: [ 'id', Team.hashId(), 'name', 'description' ],
+                    fields: [ 'id', Team.hashId(), 'scoped', 'name', 'description' ],
                     group: 'id',
                 },
                 {
@@ -192,11 +193,11 @@ class Team {
             prepare(batch, filter) {
                 const {
                     id, _id, name,
-                    ids, _ids,
+                    ids, _ids, scoped,
                 } = filter
                 const single = !!id || !!_id || !!name
 
-                const match = { id, name }
+                const match = { id, name, scoped }
                 if (!id) {
                     if (ids) match.id = ids
                     else match.id = Team.matchIdHash(_id || _ids)
