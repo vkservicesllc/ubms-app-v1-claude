@@ -949,7 +949,7 @@ class User extends Person {
 
                 await mysql.execute(query.user.passReset.delete({ userId: User.matchIdHash(_id) }))
 
-                res.redirect(addrBook.default)
+                res.redirect(`${addrBook.default}/welcome?user=${_id}&reset=success`)
             } catch (err) {
                 sendError.server(req, res, err)
             }

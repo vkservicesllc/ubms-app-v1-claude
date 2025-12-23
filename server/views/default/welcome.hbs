@@ -17,8 +17,13 @@
     <div class="valign-wrapper grey lighten-4" style="height: 100vh;">
         <div class="container center-align">
             <div class="card-panel grey lighten-3" style="width: 720px;  margin:0 auto;">
+                {{#if (eq reset 'success')}}
+                Dear {{{user.name}}}!<br/>
+                Your password was successfully reset!<br/><br/>
+                {{else}}
                 Dear {{{user.name}}}, welcome aboard!<br/>
                 Your registration has been successfully completed, and your account is now active.<br/><br/>
+                {{/if}}
                 You can sign in to any of the available branches:
                 <ul>{{{branchList}}}
                 </ul>

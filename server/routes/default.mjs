@@ -61,7 +61,7 @@ router.get('/', (req, res) => {
             },
         }
 
-        hbs.refreshToUrl = apps.carrier.address
+        // hbs.refreshToUrl = apps.carrier.address
 
         res.render(key, hbs)
     } catch (err) {
@@ -72,13 +72,13 @@ router.get('/', (req, res) => {
 
 router.get('/welcome', async (req, res) => {
     try {
+        const { user: _id, reset } = req.query
+        if (!_id) return res.redirect('/')
+
         const key = 'welcome'
         let { hbs } = res
         const { title } = hbs
-        hbs = hbs.set(key, { title: title + ' - Welcome aboard!' })
-
-        const { user: _id } = req.query
-        if (!_id) return res.redirect('/')
+        hbs = hbs.set(key, { title: title + (reset === 'success' ? ' - Password Reset' : ' - Welcome aboard!') })
 
         const user = await User.fetch(res.session, { _id }, { offline: true })
         if (!user) return res.redirect('/')
@@ -95,6 +95,7 @@ router.get('/welcome', async (req, res) => {
             branchList += `${name}</a></li>`
         }
 
+        hbs.reset = reset
         hbs.user = user
         hbs.user.name = user.fullName('AL')
         hbs.branchList = branchList
