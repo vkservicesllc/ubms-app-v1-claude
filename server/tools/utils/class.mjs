@@ -272,8 +272,8 @@ export const classStatic = {
 
         body = processData(body)
 
-        if (body?.ssn) body.ssn = { aes: [ body.ssn, secret.ssn ] }
-        if (body?.ein) body.ein = { aes: [ body.ein, secret.ein ] }
+        if (body?.ssn && typeof body.ssn !== 'object') body.ssn = { aes: [ body.ssn, secret.ssn ] }
+        if (body?.ein && typeof body.ein !== 'object') body.ein = { aes: [ body.ein, secret.ein ] }
 
         if (typeof split === 'function') body = await split(body)
         else body = { main: body }

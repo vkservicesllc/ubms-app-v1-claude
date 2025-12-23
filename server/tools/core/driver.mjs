@@ -62,12 +62,81 @@ class Driver extends Individual {
     static hashId = (field = 'id') => hash(field, Driver.#algorithm)
     static matchIdHash = value => matchHash(value, Driver.#algorithm)
 
-    static config = {
+    static config = () => ({
+        enforceUser: false,
+        enforceLocation: true,
         db: db.carrier,
         query: query.driver,
         idProp: 'driverId',
         defSorts: null,
-    }
+        logFile: 'drivers',
+    })
+
+
+    static create = (session, body, params) => classStatic.create(this, session, body, params, {})
+
+
+    static fetch = (session, filter,
+        { hideRawId = false, sorts = Driver.config().defSorts, mode } = {}
+    ) => classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
+        batch: [
+            {
+                table: query.driver.main.table,
+                fields: [
+                    'id',
+                    'personId',
+                    Driver.hashId(),
+                    Individual.hashId('personId'),
+                    'blackListed',
+                ],
+            },
+            {
+                db: db.person,
+                table: query.person.main.table,
+                fields: [ 'dob', 'sex', { aes: [ 'ssn', ssnSecret ] } ],
+                join: [ 'id', 'personId' ],
+            },
+            {
+                db: db.person,
+                table: query.person.name.table,
+                fields: [
+                    'firstName',
+                    'middleName',
+                    'lastName',
+                    'suffix',
+                ],
+                join: [ 'personId', 'id', {
+                    table: query.person.main.table,
+                    max: 'since',
+                } ],
+            },
+            {
+                db: db.person,
+                table: query.person.phone.table,
+                fields: 'phone',
+                join: [ 'personId', 'id', {
+                    table: query.person.main.table,
+                    max: 'since',
+                } ],
+            },
+            //! continue with driver licenses and other props
+        ],
+        prepare(batch, filter) {
+            const {
+                id, _id, personId, _personId,
+                blackListed,
+            } = filter
+            const single = !!id || !!_id || !!personId || !!_personId
+
+            const match = { id, personId, blackListed }
+            if (!id && _id) match.id = Driver.matchIdHash(_id)
+            if (!personId && _personId) match.personId = Individual.matchIdHash(_personId)
+
+            batch[0].match = match
+
+            return { single, batch }
+        },
+    })
 
 
     static list = {
@@ -383,7 +452,7 @@ class Application {
 
 
     static invite = async (session, body, formId) => {
-        if (!session.user.id) throw new Error('Application Static Method Error [INVITE]: Session user not supplied')
+        if (!session?.user?.id) return
 
         const { _carrierId, carrierId, _teamId, teamId, _userSimpleId, cdlRole, selfAssign } = body
         let { email } = body
@@ -458,7 +527,8 @@ class Application {
                 }
             } while (found)
 
-            const { _carrierId, _teamId, selfAssign, ssn, dob, sex } = body
+            const { _carrierId, _teamId, selfAssign, dob, sex } = body
+            let { ssn } = body
             delete body._carrierId
             delete body._teamId
             delete body.selfAssign
@@ -476,6 +546,11 @@ class Application {
             if (team) body.teamId = team.id
 
             if (ssn) {
+                if (typeof ssn === 'object') {
+                    ssn = ssn.aes[0]
+                    body.ssn = ssn
+                }
+
                 let person = await Individual.fetch(session, { ssn })
 
                 if (person) {
@@ -484,12 +559,12 @@ class Application {
                             await person.update({ sex })
                     }
                 } else {
-                    person = await Individual.create(session, body)
+                    person = (await Individual.create(session, body)).data
                     if (!person) throw new Error('Failed to create person')
                 }
 
                 let driver = await Driver.fetch(session, { personId: person.id })
-                if (!driver) driver = await Driver.created(session, { personId: person.id })
+                if (!driver) driver = (await Driver.create(session, { personId: person.id })).data
                 if (!driver) throw new Error('Failed to fetch or create driver')
 
                 body.driverId = driver.id

@@ -192,10 +192,10 @@ router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, valid
         let { form: formId } = req.query
         const { address: addrBody } = req.body
         delete req.body.address
-return res.send({
-    body: req.body,
-    addrBody,
-}) //!TEMP
+// return res.send({
+//     body: req.body,
+//     addrBody,
+// }) //!TEMP
 
         let application
 
@@ -220,14 +220,14 @@ return res.send({
             }
 
             if (_carrierId) {
-                const carrier = await Carrier.fetch(session, { _id: _carrierId })
+                const carrier = await Carrier.fetch({ ...res.session, user: { id: 1 } }, { _id: _carrierId })
                 if (!carrier) throw new Error('Carrier not found')
 
                 req.body.carrierId = carrier.id
             }
 
             if (_userId) {
-                const user = await User.fetch(res.session, { _id: _userId }, { offline: true })
+                const user = await User.fetch(res.session, { _simpleId: _userId }, { offline: true })
                 if (!user) throw new Error('User not found')
 
                 req.body.userId = user.id
@@ -236,15 +236,14 @@ return res.send({
             const result = await Application.create(res.session, req.body)
             application = result.data
             if (!application) throw new Error('Failed to create application')
+
+            formId = application.formId
         }
 
         await application.add('address', addrBody)
 
         res.session.application = application
-        // create redirect url
-        let url = '/' //!TEMP
-
-        res.send(url)
+        res.redirect(`/application/${formId}`)
     } catch (err) {
         sendError.server(req, res, err)
     }
