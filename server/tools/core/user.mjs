@@ -427,7 +427,7 @@ class User extends Person {
         query: query.user,
         idProp: 'userId',
         jxTargets: jxTargets('user'),
-        defSorts: [ [ 'firstName', 'alias', 'lastName', 'status' ] ],
+        defSorts: [ [ 'firstName', 'alias', 'lastName', 'status', 'location' ] ],
         logDeleted: false,
     })
 
