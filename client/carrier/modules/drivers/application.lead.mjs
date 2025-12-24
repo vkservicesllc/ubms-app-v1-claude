@@ -65,7 +65,32 @@ const $middleName = $(middleNameId)
 const $lastName = $(lastNameId)
 const $phone = $(phoneId)
 const $email = $(emailId)
-const $deleteBtn = $('#delete-lead-button')
+const $redundant = $('#lead-redundant')
+const $button = {
+    delete: $('#delete-lead-button'),
+}
+
+$redundant.on('click', function() {
+    $button.delete[$(this).prop('checked') ? 'show' : 'hide']()
+})
+
+$button.delete.click(function() {
+    const _id = $id.val()
+
+    $.ajax({
+        method: 'DELETE',
+        url: `/api/data/drivers/application/${_id}`,
+        success(response) {
+            const { deleted } = response
+            if (!deleted) return alert('Something went wrong! Applicant could not be deleted!')
+
+            location.reload()
+        },
+        error(err) {
+            console.error(err.responseJSON)
+        },
+    })
+})
 
 
 table.on('draw', function() {
@@ -115,7 +140,7 @@ table.on('draw', function() {
                     $dropdown.suffix.dropdown('set selected', suffix)
                     $dropdown.gender.dropdown('set selected', gender)
                     if (position) $modal.modify.find(`[type="radio"][value="${position}"]`).prop('checked', true)
-                    if (+assigned) $deleteBtn.show()
+                    if (+assigned) $redundant.parent().show()
 
                     $modal.modify.modal({
                         autofocus: false,
@@ -131,7 +156,7 @@ table.on('draw', function() {
                             $dropdown.suffix.dropdown('clear')
                             $dropdown.gender.dropdown('clear')
                             $modal.modify.find('[type="radio"]').prop('checked', false)
-                            $deleteBtn.hide()
+                            $redundant.prop('checked', false).parent().hide()
                         },
                     }).modal('show')
                 },

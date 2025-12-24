@@ -192,17 +192,17 @@ router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, valid
         let { form: formId } = req.query
         const { address: addrBody } = req.body
         delete req.body.address
-// return res.send({
-//     body: req.body,
-//     addrBody,
-// }) //!TEMP
+return res.send({
+    body: req.body,
+    addrBody,
+}) //!TEMP
 
         let application
 
         if (formId) {
             application = await Application.fetch(res.session, { formId })
             if (!application) throw new Error('Application not found')
-
+console.log(application)
             await application.update(req.body)
         } else {
             const { _teamId, _carrierId } = req.params

@@ -150,6 +150,21 @@ router.post('/data/drivers/application/:_id/:target?', User.mw.verify, Team.mw.v
 })
 
 
+router.delete('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { _id } = req.params
+        const application = await Application.fetch(res.session, { _id })
+        if (!application) throw new Error('Application not found')
+
+        const { deleted } = await application.delete()
+
+        res.json({ deleted })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 // ==== EXPORT ==== //
 
 export default router
