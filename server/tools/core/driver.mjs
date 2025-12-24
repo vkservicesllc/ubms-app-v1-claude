@@ -228,9 +228,10 @@ class Application {
             this.address.country = data.prevCountry
         }
 
-        this.team = {
-            name: data.teamName,
-        }
+        if (data.teamName)
+            this.team = {
+                name: data.teamName,
+            }
 
         if (data.userLastName) {
             const {
@@ -434,6 +435,24 @@ class Application {
 
 
             this.delete = (target, match = {}) => classInstance.delete(this, new.target, target, match)
+
+
+            this.identity = async () => {
+                if (!this._personId) return
+
+                const individual = await Individual.fetch(this.session, { _id: this._personId })
+                if (!individual) throw new Error('Identity could not be determined')
+
+                const mismatch = {}
+
+                let props = ['dob', 'sex', 'firstName', 'middleName', 'lastName', 'suffix']
+                props.forEach(prop => mismatch[prop] = this[prop] !== individual[prop])
+
+                props = ['phone', 'email', 'marital']
+                props.forEach(prop => mismatch[prop] = !!individual[prop] && this[prop] !== individual[prop])
+
+                return { individual, mismatch }
+            }
 
 
             this.log = params => classInstance.log(this, new.target, params, [

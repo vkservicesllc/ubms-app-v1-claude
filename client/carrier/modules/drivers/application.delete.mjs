@@ -36,7 +36,7 @@ table.on('draw', function() {
             method: 'POST',
             success(response) {
                 const { application, identity, log } = response.data
-                const { position, dob, ssn, gender, phone, address, carrier, user } = application
+                const { position, dob, ssn, gender, phone, address, carrier, user, expansion } = application
                 const { createdAt, finishedAt } = log
                 const na = '<span class="ui dark red text"><small><i>N/A</i></small></span>'
 
@@ -45,9 +45,9 @@ table.on('draw', function() {
                 application.dob = moment(dob).format('ll')
                 application.ssn = formatSsn(ssn)
                 application.phone = formatTel(phone)
-                application.residence = `${address.city}, ${address.state[1]}`
+                application.residence = `${address.city}, ${address.expansion.state}`
                 if (carrier) application.company = carrier.name
-                if (position) application.position = position[1]
+                if (position) application.position = expansion.position
                 if (user) application.user = user.name
 
                 const items = [

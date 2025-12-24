@@ -110,7 +110,10 @@ router.post('/data/drivers/application/:_id/:target?', User.mw.verify, Team.mw.v
             return res.json({})
         }
 
-        res.json({ data: { application } })
+        const identity = await application.identity()
+        const log = await application.log()
+
+        res.json({ data: { application, identity, log } })
 
         // if (!target) {
         //     const driver = await Driver.fetch(res.session, { _id: application._driverId })
