@@ -242,6 +242,8 @@ router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, valid
 
         await application.add('address', addrBody)
 
+        if (!addrBody.enough) await application.update({ step: 0 })
+
         req.session.application = application._id
 
         res.redirect(`/application/${formId}`)

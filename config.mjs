@@ -89,6 +89,7 @@ import carrierApiRoute from './server/routes/carrier/api.mjs'
 import carrierResourceRoute from './server/routes/carrier/resource.mjs'
 
 import driverRoute from './server/routes/driver.mjs'
+import driverApplicationRoute from './server/routes/driver/application.mjs'
 import driverApiRoute from './server/routes/driver/api.mjs'
 import driverResourceRoute from './server/routes/driver/resource.mjs'
 import driverUploadRoute from './server/routes/driver/upload.mjs'
@@ -179,6 +180,7 @@ const apps = {
         active: true,
         route: driverRoute,
         routes: [
+            { url: '/application', router: driverApplicationRoute },
             { url: '/api', router: driverApiRoute },
             { url: '/resource', router: driverResourceRoute },
             { url: '/upload', router: driverUploadRoute },

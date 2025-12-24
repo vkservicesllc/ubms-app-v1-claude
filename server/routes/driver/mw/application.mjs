@@ -36,6 +36,9 @@ const checkProps = {
 export const applicationStart = async (req, res, next) => {
     try {
         const { env, cdl, rec: _userId, form: formId } = req.query
+        const application = await Application.fetch(res.session, { formId })
+        if (application._driverId) return res.redirect(`/application/${formId}`)
+
         if (!env || !cdl) return next()
 
         const { session } = res
@@ -295,14 +298,14 @@ export const applicationProgress = async (req, res) => {
             const { address1, address2, zip: addrZip, city: addrCity } = application.address
             const values = {
                 firstName, middleName, lastName, suffix,
-                gender: application.gender[0],
+                gender: application.gender,
                 dob: moment(application.dob).format('MM/DD/YYYY'),
                 ssn: formatSsn(application.ssn),
                 marital: application.marital,
                 phone: formatTel(application.phone),
-                email, position: application.position?.[0],
+                email, position: application.position,
                 address1, address2, addrZip, addrCity,
-                addrState: application.address.state[0],
+                addrState: application.address.state,
                 addrSince: moment(application.address.since).format('MM/DD/YYYY'),
                 addrEnough: application.address.enough ? '1' : '0',
             }
@@ -738,7 +741,7 @@ export const applicationProgress = async (req, res) => {
         }
 
         if (step >= 8) { /* BUSINESS / OWNERSHIP */
-            if (application.position[0] === 'OO') steps[8] = 'Business / Ownership'
+            if (application.position === 'OO') steps[8] = 'Business / Ownership'
             hbs.button.seven = buttonProps.save
             hbs.accordion.seven = accordionProps.finished
             hbs.llcDetailsDisplay = ' style="display: none;"'
@@ -784,7 +787,7 @@ export const applicationProgress = async (req, res) => {
                 // options.llcAssistance.radio.no.input.disabled = false
             }
 
-            if (application.position[0] === 'OO') {
+            if (application.position === 'OO') {
                 const values = {
                     currentVhlType: application?.vehicle?.type,
                 }
@@ -843,7 +846,7 @@ export const applicationProgress = async (req, res) => {
                 // benefDob: application?.beneficiary?.dob
                 //     ? moment(application.beneficiary.dob).format('MM/DD/YYYY')
                 //     : null,
-                // benefGender: application?.beneficiary?.gender?.[0],
+                // benefGender: application?.beneficiary?.gender,
                 benefPhone: application?.beneficiary?.phone,
                 // benefAddress1: application?.beneficiary?.address1,
                 // benefAddress2: application?.beneficiary?.address2,
@@ -866,8 +869,8 @@ export const applicationProgress = async (req, res) => {
                 case 'm':
                     delete relationData['Other']['Fiancé(e)']
                     delete relationData['Other']['Domestic Partner']
-                    if (application.gender[0] === 'M') delete relationData['Spouse']['Husband']
-                    if (application.gender[0] === 'F') delete relationData['Spouse']['Wife']
+                    if (application.gender === 'M') delete relationData['Spouse']['Husband']
+                    if (application.gender === 'F') delete relationData['Spouse']['Wife']
                     break
                 default:
                     delete relationData['Spouse']
@@ -910,8 +913,8 @@ export const applicationProgress = async (req, res) => {
         hbs.formId = formId
         hbs.cdlRole = cdlRole
         hbs.applicantName = application.fullName
-        hbs.applicantPosition = application.position[1]
-        hbs.position = application.position[0]
+        hbs.applicantPosition = application.expansion.position
+        hbs.position = application.position
         hbs.addrEnough = application.address.enough
         hbs.cdl = application?.dl?.commercial === true
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET' //! Test time accuracy on live server

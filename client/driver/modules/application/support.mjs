@@ -109,6 +109,7 @@ export const addressPredictions = ($addr1, input, success) => {
             $('.address-selected').on('click', function() {
                 $datalist.html(null)
                 const placeId = $(this).attr('place-id')
+                const description = $(this).text()
 
                 $.ajax('/api/public/google-api/places/details', {
                     method: 'POST',
@@ -123,8 +124,10 @@ export const addressPredictions = ($addr1, input, success) => {
                                     address1 = component.short_name || null
                                     break
                                 case 'route':
-                                    if (address1 && component.short_name)
+                                    if (!address1) address1 = description.match(/^\d+/)?.[0] || ''
+                                    if (component.short_name)
                                         address1 += ` ${component.short_name}`
+                                    address1 = address1.trim()
                                     break
                                 case 'subpremise':
                                     address2 = component.short_name || null

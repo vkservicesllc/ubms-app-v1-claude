@@ -6,12 +6,6 @@ const sendError = require('../tools/utils/error')
 /* Tools */
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
-/* Middleware */
-import {
-    applicationStart, applicationLogin, applicationProgress,
-    applicationSummary, applicationDocuments, applicationAgreement,
-} from './driver/mw/application.mjs'
-
 
 // ==== SETUP ==== //
 
@@ -40,15 +34,6 @@ router.use((req, res, next) => {
 
 
 // ==== ROUTES ==== //
-
-
-router.get('/application/:param?', applicationStart, applicationLogin, applicationProgress)
-
-router.get('/application/:formId/summary', applicationSummary)
-
-router.get('/application/:formId/documents', applicationDocuments)
-
-router.get('/application/:formId/agreement', applicationAgreement)
 
 
 
