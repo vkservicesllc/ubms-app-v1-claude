@@ -129,12 +129,12 @@ class Individual extends Person {
         },
         split(body) {
             const {
-                dob, sex, ssn,
+                dob, gender, ssn,
                 prefix, firstName, middleName, lastName, suffix, alias,
             } = body
 
             body = {
-                main: { dob, sex },
+                main: { dob, gender },
                 name: { since: dob, prefix, firstName, middleName, lastName, suffix, alias, },
             }
             if (ssn) body.main.ssn = ssn
@@ -154,7 +154,7 @@ class Individual extends Person {
             batch: [
                 {
                     table: query.person.main.table,
-                    fields: [ 'id', Individual.hashId(), 'dob', 'sex', { aes: [ 'ssn', secret ] } ],
+                    fields: [ 'id', Individual.hashId(), 'dob', 'gender', { aes: [ 'ssn', secret ] } ],
                     group: 'id',
                 },
                 {
@@ -224,12 +224,12 @@ class Individual extends Person {
             prepare(batch, filter) {
                 const {
                     id, _id, ssn,
-                    ids, _ids, sex, firstName, lastName
+                    ids, _ids, gender, firstName, lastName
                 } = filter
                 const single = !!id || !!_id || !!ssn
 
                 const match = {
-                    main: { id, sex },
+                    main: { id, gender },
                     names: { firstName, lastName },
                 }
                 if (!id) {

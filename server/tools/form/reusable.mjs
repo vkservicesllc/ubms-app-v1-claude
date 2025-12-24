@@ -86,16 +86,12 @@ export const createGenderForm = (props = {}) => createForm({
     target: 'gender',
     group: 'gender',
     type: 'select/radio',
-    name: 'sex',
+    name: 'gender',
     label: 'Gender',
     ...props,
     data: Individual.list.gender,
     keys: ['male', 'female'],
     emptyOpt,
-    validator: {
-        rule: 'boolean',
-        sanitizer: value => value === 'M',
-    },
 })
 
 

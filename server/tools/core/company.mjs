@@ -72,7 +72,7 @@ class Company {
                 middleName: data.middleName,
                 lastName: data.lastName,
                 suffix: data.suffix,
-                sex: data.sex,
+                gender: data.gender,
                 dob: data.dob,
                 ssn: data.ssn,
             }, { hideRawId, hideSensitive })
@@ -217,7 +217,7 @@ class Company {
                 {
                     db: db.person,
                     table: query.person.main.table,
-                    fields: [ 'dob', 'sex', { aes: [ 'ssn', secret.ssn ] } ],
+                    fields: [ 'dob', 'gender', { aes: [ 'ssn', secret.ssn ] } ],
                     join: [ 'id', 'personId', query.company_owner.main.table ],
                 },
                 {
@@ -393,9 +393,9 @@ class Owner extends Individual {
                 const person = await Individual.fetch(this.session, { id: this.personId }, { hideSensitive: false })
                 if (!person) throw new Error('Person not identified')
 
-                const { dob, sex, ssn, firstName, middleName, lastName, suffix, phone } = body
+                const { dob, gender, ssn, firstName, middleName, lastName, suffix, phone } = body
                 body = {
-                    person: { dob, sex, ssn },
+                    person: { dob, gender, ssn },
                     name: { firstName, middleName, lastName, suffix },
                     phone: { phone },
                 }
@@ -504,7 +504,7 @@ class Owner extends Individual {
             {
                 db: db.person,
                 table: query.person.main.table,
-                fields: [ 'dob', 'sex', { aes: [ 'ssn', secret.ssn ] } ],
+                fields: [ 'dob', 'gender', { aes: [ 'ssn', secret.ssn ] } ],
                 join: [ 'id', 'personId' ],
             },
             {
@@ -546,13 +546,13 @@ class Owner extends Individual {
 
             const {
                 id, _id, ssn,
-                ids, _ids, sex, firstName, lastName,
+                ids, _ids, gender, firstName, lastName,
             } = filter
             const single = !!id || !!_id || !!ssn
 
             const match = {
                 main: { id },
-                individuals: { sex },
+                individuals: { gender },
                 names: { firstName, lastName },
             }
             if (!id) {

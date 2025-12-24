@@ -7,8 +7,6 @@ class Person {
     constructor(data) {
         if (!data?.firstName || !data?.lastName) throw new Error('Invalid Person Data')
 
-        const sexInt = [0, 1].includes(data.sex)
-
         this.prefix = data.prefix || data.pfx || null
         this.firstName = data.firstName || data.fname
         this.middleName = data.middleName || data.mname || null
@@ -17,10 +15,9 @@ class Person {
         this.alias = data.alias || null
         this.dob = data.dob || null
         this.age = this.dob ? calculateYearAge(this.dob) : null
-        this.sex = sexInt ? data.sex : null
-        this.gender = sexInt ? ['F', 'M'][data.sex] : 'X'
+        this.gender = data.gender || 'X'
         this.expansion = {
-            gender: sexInt ? ['Female', 'Male'][data.sex] : null,
+            gender: data.gender ? { 'M': 'Male', 'F': 'Female' }[data.gender] : null,
         }
     }
 

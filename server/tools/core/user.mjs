@@ -12,6 +12,7 @@ import db, { query } from '../../settings/mysql.mjs'
 import Team from './team.mjs'
 import Company from './company.mjs'
 //! Add more classes and query instances when more categories are available
+import Individual from './individual.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import { classInstance, classStatic } from '../utils/class.mjs'
@@ -346,7 +347,7 @@ class User extends Person {
                     firstName: 'First Name',
                     lastName: 'Last Name',
                     alias: 'Alias',
-                    sex: 'Gender',
+                    gender: 'Gender',
                 }
                 const labels = {}
                 const names = {}
@@ -379,12 +380,9 @@ class User extends Person {
                                     log.updateLog[i].data.condition = User.list.condition[updateLog[i].data.condition]
                                     log.updateLog[i].oldData.condition = User.list.condition[updateLog[i].oldData.condition]
                                     break
-                                case 'sex':
-                                    const genders = { '0': 'Female', '1': 'Male' }
-                                    const { sex } = updateLog[i].data
-                                    const { sex: oldSex } = updateLog[i].oldData
-                                    if ([0, 1].includes(sex)) log.updateLog[i].data.sex = genders[sex]
-                                    if ([0, 1].includes(oldSex)) log.updateLog[i].oldData.sex = genders[oldSex]
+                                case 'gender':
+                                    log.updateLog[i].data.gender = Individual.list.gender[updateLog[i].data.gender]
+                                    log.updateLog[i].oldData.gender = Individual.list.gender[updateLog[i].oldData.gender]
                             }
 
                             if (!(prop in labels)) labels[prop] = labelList[prop]
@@ -477,7 +475,7 @@ class User extends Person {
                     fields: [
                         'id', User.hashId(), [ User.hashSimpleId(), 'simpleId' ],
                         'username', 'email', 'phone',
-                        'firstName', 'lastName', 'alias', 'sex',
+                        'firstName', 'lastName', 'alias', 'gender',
                         'status', 'condition', 'location',
                         'passReset', 'unscoped', 'fails', 'declinedAt',
                         { compare: [ 'id', 'self', { eq: sessionUser.id } ] },
@@ -512,7 +510,7 @@ class User extends Person {
 
                 const {
                     id, _id, _simpleId, username, email,
-                    ids, _ids, firstName, lastName, alias, sex, status, location, condition, declined, deleted, unscoped,
+                    ids, _ids, firstName, lastName, alias, gender, status, location, condition, declined, deleted, unscoped,
                 } = filter
 
                 const single = !!id || !!_id || !!_simpleId || !!username || !!email
@@ -527,7 +525,7 @@ class User extends Person {
                 batch[0].match = {
                     deletedAt, declinedAt, unscoped,
                     id, username, email,
-                    firstName, lastName, alias, sex,
+                    firstName, lastName, alias, gender,
                     status, location, condition,
                 }
 

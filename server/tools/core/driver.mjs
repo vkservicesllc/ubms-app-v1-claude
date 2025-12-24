@@ -93,7 +93,7 @@ class Driver extends Individual {
             {
                 db: db.person,
                 table: query.person.main.table,
-                fields: [ 'dob', 'sex', { aes: [ 'ssn', ssnSecret ] } ],
+                fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
                 join: [ 'id', 'personId' ],
             },
             {
@@ -214,7 +214,6 @@ class Application {
         this.name = person.fullName()
         this.fullName = person.fullName('FMLs')
         this.dob = person.dob
-        this.sex = person.sex
         this.gender = person.gender
         if (!hideSensitive) this.ssn = data.ssn ? stringifyBuffer(data.ssn) : null
 
@@ -410,17 +409,14 @@ class Application {
 
                     let person = await Individual.fetch(session, { ssn })
 
-                    if (person) {
-                        if (person.dob === body.dob) { // Individual confirmed via SSN and DOB
-                            if (person.sex === null) await person.update({ sex: inst.sex })
-                        }
-                    } else {
+                    if (!person) {
                         if (!body.firstName || !body.lastName) {
                             body.firstName = inst.firstName
                             body.middleName = inst.middleName
                             body.lastName = inst.lastName
                         }
                         if (!body.dob) body.dob = inst.dob
+                        if (!body.gender) body.gender = inst.gender
 
                         person = (await Individual.create(session, body)).data
                         if (!person) throw new Error('Failed to create person')
@@ -537,7 +533,7 @@ class Application {
                 }
             } while (found)
 
-            const { _carrierId, _teamId, selfAssign, dob, sex } = body
+            const { _carrierId, _teamId, selfAssign } = body
             let { ssn } = body
             delete body._carrierId
             delete body._teamId
@@ -563,12 +559,7 @@ class Application {
 
                 let person = await Individual.fetch(session, { ssn })
 
-                if (person) {
-                    if (person.dob === dob) { // Individual confirmed via SSN and DOB
-                        if (person.sex === null && sex !== null && sex !== undefined)
-                            await person.update({ sex })
-                    }
-                } else {
+                if (!person) {
                     person = (await Individual.create(session, body)).data
                     if (!person) throw new Error('Failed to create person')
                 }
@@ -627,7 +618,7 @@ class Application {
                     'suffix',
                     'dob',
                     { aes: [ 'ssn', ssnSecret ] },
-                    'sex',
+                    'gender',
                     'marital',
                     'email',
                     'phone',
@@ -1014,7 +1005,7 @@ class Application {
                         'apl.lastName',
                         'apl.suffix',
                         'apl.dob',
-                        'apl.sex',
+                        'apl.gender',
                         'apl.email',
                         'apl.phone',
                         'apl.marital',
@@ -1026,7 +1017,7 @@ class Application {
                         'apl.accidents',
                         'apl.activeBusiness',
                         'psn.dob AS originalDob',
-                        'psn.sex AS originalSex',
+                        'psn.gender AS originalGender',
                         'nms.firstName AS originalFirstName',
                         'nms.middleName AS originalMiddleName',
                         'nms.lastName AS originalLastName',
