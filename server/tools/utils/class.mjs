@@ -19,8 +19,8 @@ export const classInstance = {
 
 
     add: async (inst, Cls, target, bodyOrIds, bodyCB = null) => {
-        const { enforceUser = true } = Cls.config()
-        const { user: sessionUser } = inst.session || {}
+        const { enforceUser = true, enforceLocation = false } = Cls.config()
+        const { user: sessionUser, branch, siteId } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [ADD]: Session user not supplied`)
         if (!target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [ADD]: Target not supplied`)
 
@@ -58,6 +58,11 @@ export const classInstance = {
 
         if (typeof bodyCB === 'function') body = await bodyCB(body)
         body.createdBy = createdBy
+
+        let createdIn = { branch }
+        if (siteId) createdIn.siteId = siteId
+        createdIn = JSON.stringify(createdIn)
+        if ((typeof enforceLocation === 'string' && enforceLocation.includes('add')) || enforceLocation === true) body.createdIn = createdIn
 
         if (logLocation) {
             const { branch, siteId } = inst.session
@@ -137,7 +142,7 @@ export const classInstance = {
         const idProp = target === 'main' ? 'id' : config.idProp
 
         const options = { modifiedBy: sessionUser.id }
-        if (enforceLocation === 'update' || enforceLocation === true) {
+        if ((typeof enforceLocation === 'string' && enforceLocation.includes('update')) || enforceLocation === true) {
             options.branch = branch
             options.siteId = siteId
         }
@@ -283,7 +288,7 @@ export const classStatic = {
         createdIn = JSON.stringify(createdIn)
 
         if (sessionUser?.id) body.main.createdBy = sessionUser.id
-        if (enforceLocation === 'create' || enforceLocation === true) body.main.createdIn = createdIn
+        if ((typeof enforceLocation === 'string' && enforceLocation.includes('create')) || enforceLocation === true) body.main.createdIn = createdIn
 
         const [ result ] = await mysql.execute(query.main.insert(body.main))
         const id = result.insertId

@@ -426,8 +426,9 @@ class Application {
                     if (!driver) driver = (await Driver.create(session, { personId: person.id })).data
                     if (!driver) throw new Error('Failed to fetch or create driver')
 
-                    const driverId = driver.id
-                    await inst.update({ driverId })
+                    const updateBody = { driverId: driver.id }
+                    if (inst.step === 0) updateBody.step = 1
+                    await inst.update(updateBody)
                 },
             })
 
@@ -585,8 +586,8 @@ class Application {
 
 
     static fetch = (session, filter,
-        { hideRawId = false, sorts = Application.config().defSorts, mode } = {}
-    ) => classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
+        { hideRawId = false, hideSensitive = true, sorts = Application.config().defSorts, mode } = {}
+    ) => classStatic.fetch(this, session, filter, { hideRawId, hideSensitive, sorts, mode }, {
         batch: [
             {
                 table: query.driver_application.main.table,

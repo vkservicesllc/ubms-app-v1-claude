@@ -139,7 +139,7 @@ export const applicationStart = async (req, res, next) => {
 
         res.render('application/registration', hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(req, res, err)
     }
 }
 
@@ -148,8 +148,8 @@ export const applicationLogin = async (req, res, next) => {
     try {
         const { param: formId } = req.params
 
-        const application = await Application.fetch(res.session, { formId })
-        if (!application) return respond404(res)
+        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
+        if (!application || !application._driverId) return respond404(res)
 
         res.session.application = application
         if (req.session.application) return next()
@@ -186,7 +186,7 @@ export const applicationLogin = async (req, res, next) => {
 
         return res.render('application/login', hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(req, res, err)
     }
 }
 
@@ -208,10 +208,10 @@ export const applicationProgress = async (req, res) => {
         }
 
         const driver = await Driver.fetch(session, { _id: application._driverId })
-        if (!driver) return throwErr.server(res, 'Internal Server Error: Unidentified Driver')
+        if (!driver) return sendError.server(req, res, new Error('Unidentified Driver'))
 
         const team = _teamId ? await Team.fetch(session, { _id: _teamId }) : null
-        if (_teamId && !team) return throwErr.server(res, 'Internal Server Error: Unidentified Environment')
+        if (_teamId && !team) return sendError.server(req, res, new Error('Unidentified Environment'))
 
         // const depts = team ? team.depts.join(', ') : ''
         let agency = team?.profile?.company
@@ -224,7 +224,7 @@ export const applicationProgress = async (req, res) => {
 
         // const settings = team?.settings || null
         // const { settings } = team
-        const steps = [ ...Application.stepList ]
+        const steps = [ ...Application.list.step ]
         const key = 'application'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
@@ -290,7 +290,7 @@ export const applicationProgress = async (req, res) => {
         }
 
         {
-            const count = (await driver.applications(session)).count
+            //! const count = (await driver.applications(session)).count
             const { firstName, middleName, lastName, suffix, email } = application
             const { address1, address2, zip: addrZip, city: addrCity } = application.address
             const values = {
@@ -309,7 +309,7 @@ export const applicationProgress = async (req, res) => {
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
             options.addrState.select.input.options = { valOpt: true }
-            if (count.matched) options.ssn.text.input.readOnly = true
+            //! if (count.matched) options.ssn.text.input.readOnly = true
         }
 
         if (step >= 0) { /* PRIOR RESIDENCE */
@@ -918,7 +918,7 @@ export const applicationProgress = async (req, res) => {
 
         res.render(key, hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(req, res, err)
     }
 }
 
@@ -1095,7 +1095,7 @@ export const applicationSummary = async (req, res) => {
 
         res.render('application/summary', hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(req, res, err)
     }
 }
 
@@ -1136,7 +1136,7 @@ export const applicationDocuments = async (req, res) => {
 
         res.render('application/documents', hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(req, res, err)
     }
 }
 
@@ -1174,6 +1174,6 @@ export const applicationAgreement = async (req, res) => {
 
         res.render('application/agreement', hbs)
     } catch (err) {
-        throwErr.server(res, null, err)
+        sendError.server(req, res, err)
     }
 }

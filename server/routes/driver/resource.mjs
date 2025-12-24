@@ -192,10 +192,10 @@ router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, valid
         let { form: formId } = req.query
         const { address: addrBody } = req.body
         delete req.body.address
-return res.send({
-    body: req.body,
-    addrBody,
-}) //!TEMP
+// return res.send({
+//     body: req.body,
+//     addrBody,
+// }) //!TEMP
 
         let application
 
@@ -242,7 +242,8 @@ return res.send({
 
         await application.add('address', addrBody)
 
-        res.session.application = application
+        req.session.application = application._id
+
         res.redirect(`/application/${formId}`)
     } catch (err) {
         sendError.server(req, res, err)
