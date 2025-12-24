@@ -400,28 +400,38 @@ class Application {
                     return data
                 },
                 async final(inst, body, target) {
-                    if (target !== 'main' || !body.ssn || inst.ssn) return
+                    if (target !== 'main' || !body.ssn) return
 
-                    const { ssn, dob } = body
+                    let { ssn } = body
+                    if (typeof ssn === 'object') {
+                        ssn = ssn.aes[0]
+                        body.ssn = ssn
+                    }
+
                     let person = await Individual.fetch(session, { ssn })
 
-                    //! repeat the same logic as in create
                     if (person) {
-                        if (person.dob === dob) { // Individual confirmed via SSN and DOB
+                        if (person.dob === body.dob) { // Individual confirmed via SSN and DOB
                             if (person.sex === null) await person.update({ sex: inst.sex })
                         }
                     } else {
-                        person = await Individual.create(session, body)
+                        if (!body.firstName || !body.lastName) {
+                            body.firstName = inst.firstName
+                            body.middleName = inst.middleName
+                            body.lastName = inst.lastName
+                        }
+                        if (!body.dob) body.dob = inst.dob
+
+                        person = (await Individual.create(session, body)).data
                         if (!person) throw new Error('Failed to create person')
                     }
 
                     let driver = await Driver.fetch(session, { personId: person.id })
-                    if (!driver) driver = await Driver.created(session, { personId: person.id })
+                    if (!driver) driver = (await Driver.create(session, { personId: person.id })).data
                     if (!driver) throw new Error('Failed to fetch or create driver')
 
                     const driverId = driver.id
                     await inst.update({ driverId })
-                    //! NOT TESTED
                 },
             })
 

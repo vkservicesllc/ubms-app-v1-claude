@@ -202,7 +202,7 @@ return res.send({
         if (formId) {
             application = await Application.fetch(res.session, { formId })
             if (!application) throw new Error('Application not found')
-console.log(application)
+
             await application.update(req.body)
         } else {
             const { _teamId, _carrierId } = req.params
