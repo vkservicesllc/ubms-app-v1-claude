@@ -296,7 +296,7 @@ class ApplicationForm {
     // static dob_ = createDobForm({ selector: appSelector, target: 'dob', required: false })
     static ssn = createSsnForm({ selector: appSelector, target: 'ssn' })
     static ssn_ = createSsnForm({ selector: appSelector, target: 'ssn', required: false })
-    static gender = createGenderForm({ selector: appSelector, target: 'gender', group: 'gender', required })
+    static gender = createGenderForm({ selector: appSelector, target: 'gender', group: 'gender' })
 
     static phone = createPhoneForm({ selector: appSelector, target: 'phone', required })
     static email = createEmailForm({ selector: appSelector, target: 'email', required })
@@ -305,7 +305,7 @@ class ApplicationForm {
     static leadMiddleName = createPersonNameForm('middle', { selector: appSelector, target: 'leadMiddleName', group: 'name' })
     static leadLastName = createPersonNameForm('last', { selector: appSelector, target: 'leadLastName', group: 'name' })
     static leadSuffix = createPersonNameForm('suffix', { selector: appSelector, target: 'leadSuffix', group: 'name' })
-    static leadGender = createGenderForm({ selector: appSelector, target: 'leadGender', group: 'gender', required })
+    static leadGender = createGenderForm({ selector: appSelector, target: 'leadGender', group: 'gender' })
     static leadPhone = createPhoneForm({ selector: appSelector, target: 'leadPhone', required })
     static leadEmail = createEmailForm({ selector: appSelector, target: 'leadEmail', required })
     static leadPosition = createPositionForm({
@@ -1431,7 +1431,7 @@ class ApplicationForm {
     static benefLastName = createPersonNameForm('last', { selector: appSelector, target: 'benefLastName' })
     static benefSuffix = createPersonNameForm('suffix', { selector: appSelector, target: 'benefSuffix' })
     // static benefDob = createDobForm({ selector: appSelector, target: 'benefDob' })
-    // static benefGender = createGenderForm({ selector: appSelector, target: 'benefGender', required })
+    // static benefGender = createGenderForm({ selector: appSelector, target: 'benefGender' })
     static benefSsn = createSsnForm({ selector: appSelector, target: 'benefSsn', required: false })
 
     static benefPhone = createPhoneForm({ selector: appSelector, target: 'benefPhone', required })

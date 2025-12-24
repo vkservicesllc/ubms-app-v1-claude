@@ -188,7 +188,7 @@ class UserForm {
     static firstName = createPersonNameForm('first', { selector, group: 'name', label: 'Real First Name' })
     static lastName = createPersonNameForm('last', { selector, group: 'name' })
     static alias = createPersonNameForm('alias', { selector, group: 'name' })
-    static gender = createGenderForm({ selector })
+    static gender = createGenderForm({ selector, required: false })
 
     static email = createEmailForm({ selector, required })
     static phone = createPhoneForm({ selector, label: 'US Cell Phone' })

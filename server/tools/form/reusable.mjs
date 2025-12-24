@@ -88,6 +88,7 @@ export const createGenderForm = (props = {}) => createForm({
     type: 'select/radio',
     name: 'gender',
     label: 'Gender',
+    required,
     ...props,
     data: Individual.list.gender,
     keys: ['male', 'female'],
