@@ -50,7 +50,7 @@ class User extends Person {
         props.location = data.location
         props.unscoped = props.DS || !!data.unscoped
         props.self = !!data.self
-        props.avaSrc = `/images/icons/gender/${this.gender}.png`
+        props.avaSrc = `/images/icons/gender/${this.gender || 'X'}.png`
 
         if (offline && auth) {
             props.fails = data.fails
@@ -381,8 +381,8 @@ class User extends Person {
                                     log.updateLog[i].oldData.condition = User.list.condition[updateLog[i].oldData.condition]
                                     break
                                 case 'gender':
-                                    log.updateLog[i].data.gender = Individual.list.gender[updateLog[i].data.gender]
-                                    log.updateLog[i].oldData.gender = Individual.list.gender[updateLog[i].oldData.gender]
+                                    log.updateLog[i].data.gender = Individual.list.gender[updateLog[i].data.gender] || null
+                                    log.updateLog[i].oldData.gender = Individual.list.gender[updateLog[i].oldData.gender] || null
                             }
 
                             if (!(prop in labels)) labels[prop] = labelList[prop]

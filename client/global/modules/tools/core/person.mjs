@@ -15,7 +15,7 @@ class Person {
         this.alias = data.alias || null
         this.dob = data.dob || null
         this.age = this.dob ? calculateYearAge(this.dob) : null
-        this.gender = data.gender || 'X'
+        this.gender = data.gender || null
         this.expansion = {
             gender: data.gender ? { 'M': 'Male', 'F': 'Female' }[data.gender] : null,
         }

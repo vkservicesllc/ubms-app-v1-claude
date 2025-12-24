@@ -573,12 +573,12 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                         return $('#user-delete-modal').addClass('is-active')
                     }
 
-                    const { username, status, location, email, phone, firstName, lastName, alias, sex, count } = data
+                    const { username, status, location, email, phone, firstName, lastName, alias, gender, count } = data
 
-                    const $sex = [
-                        $(selector.id.radio.gender.female),
-                        $(selector.id.radio.gender.male),
-                    ]
+                    const $gender = {
+                        'M': $(selector.id.radio.gender.male),
+                        'F': $(selector.id.radio.gender.female),
+                    }
                     let disabled = false
 
                     $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
@@ -600,7 +600,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     $firstName.val(firstName)
                     $lastName.val(lastName)
                     $alias.val(alias)
-                    if (sex !== null) $sex[sex].prop('checked', true)
+                    if (gender !== null) $gender[gender].prop('checked', true)
                     $submit.user.addClass('is-success').text('Update')
                     $trigger.userLog.show()
 

@@ -70,7 +70,7 @@ const handleChange = (props = {}) => {
         }
     if (!input) action = 'default'
 
-    data._id = _id
+    if (_id !== 'new') data._id = _id
 
     $.ajax('/api/unique/company', {
         method: 'POST',
