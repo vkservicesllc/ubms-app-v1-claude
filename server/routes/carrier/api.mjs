@@ -102,8 +102,11 @@ router.post('/drivers/dt-list/applications/:archived?', User.mw.verify, Team.mw.
 router.post('/data/drivers/application/:_id/:target?', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { _id, target } = req.params
+        const { sensitive = 'false' } = req.query
+        const params = {}
+        if (sensitive === 'true') params.hideSensitive = false
 
-        const application = await Application.fetch(res.session, { _id })
+        const application = await Application.fetch(res.session, { _id }, params)
         if (!application) throw new Error('Application not found')
 
         if (target) {
