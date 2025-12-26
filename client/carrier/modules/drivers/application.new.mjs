@@ -121,37 +121,33 @@ $registerApl.on('change', function() {
 $dropdown.carrier.dropdown().on('change', function() {
     const _carrierId = $(this).dropdown('get value')
     const route = $dropdown.carrier.find(`.item[data-value="${_carrierId}"]`).data('route')
-    let [ base ] = aplUrl.split('?')
-    let query = $aplUrl.attr('href').split('?')[1]
 
+    let [ base ] = aplUrl.split('?')
     if (route) base += `/${route}`
+
+    const currentUrl = $aplUrl.attr('href')
+    const query = currentUrl.split('?')[1]
 
     const url = base + '?' + query
     $aplUrl.text(url).attr('href', url)
     $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''))
 })
+
 $dropdown.suffix.dropdown()
 $dropdown.gender.dropdown()
 $dropdown.position.dropdown()
 
 if ($dropdown.team.length) {
-    // const { teams } = response
-    // let items = ''
-
-    // teams.forEach(team => {
-    //     const { _id, name } = team
-    //     items += `<div class="item" data-id="${_id}" data-value="${_id}">${name}</div>`
-    // })
-    // $dropdown.team.find('.menu').html(items)
-
     $dropdown.team.dropdown().on('change', function() {
         const _id = $(this).dropdown('get value') || 'global'
-        let [ base, query ] = aplUrl.split('?')
-        query = query.split('&')
 
+        const currentUrl = $aplUrl.attr('href')
+        let [ base, query ] = currentUrl.split('?')
+        query = query.split('&')
         query[0] = `env=${_id}`
 
         const url = `${base}?${query.join('&')}`
+
         $aplUrl.text(url).attr('href', url)
     })
 

@@ -437,6 +437,48 @@ class Application {
             this.delete = (target, match = {}) => classInstance.delete(this, new.target, target, match)
 
 
+            this.welcome = async () => {
+                if (!this._driverId) return
+
+                const { fullName, formId, carrier, team, _teamId } = this
+                let { email } = this
+                let { from } = senderParams
+                const url = `/application/${formId}`
+                let companyName
+
+                if (carrier?.name) companyName = carrier.name
+                else if (team?.name) {
+                    const team = await Team.fetch(this.session, { _id: _teamId }, { offline: true })
+                    if (team?.profile?.company) companyName = team.profile.company
+                }
+
+                if (companyName) from = `"${companyName}" <${senderParams.email}>`
+                if (email.split('@')[1] === 'bogus.xyz') email = senderParams.email
+
+                const mailOpts = {
+                    from,
+                    to: email,
+                    subject: 'Professional Driver Application',
+                    html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                        Dear ${fullName},<br/>
+                        ${
+                            companyName
+                                ? `Thank you for your interest in joining ${companyName} as a professional driver.`
+                                : 'Welcome aboard! Thank you for your interest in joining our professional driver team!'
+                        }<br/><br/>
+                        Your application has been successfully registered. If you interrupted the process, you can continue from where you left off.<br/>
+                        To log in and proceed, use the requested credentials — your PIN is the last four digits of your Social Security number.<br/>
+                        <a href="${addrBook.driver + url}" target="_blank">Continue Your Application</a><br/><br/>
+                        We look forward to your completed application!
+                    </div>`,
+                }
+
+                transporter.sendMail(mailOpts, error => {
+                    if (error) console.error(error)
+                })
+            }
+
+
             this.identity = async () => {
                 if (!this._personId) return
 
@@ -568,7 +610,7 @@ class Application {
 
             let { team, user } = session
 
-            if (!team && _teamId) team = await Team.fetch(res.session, { _id: _teamId })
+            if (!team && _teamId) team = await Team.fetch(session, { _id: _teamId }, { offline: true })
             if (team) body.teamId = team.id
 
             if (ssn) {
