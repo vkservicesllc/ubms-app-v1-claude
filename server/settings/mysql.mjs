@@ -101,3 +101,8 @@ export const query = {
     },
 
 }
+
+
+export const algorithm = {
+    carrier: 'SHA-224',
+}

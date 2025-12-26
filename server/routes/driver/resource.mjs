@@ -192,10 +192,6 @@ router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, valid
         let { form: formId } = req.query
         const { address: addrBody } = req.body
         delete req.body.address
-// return res.send({
-//     body: req.body,
-//     addrBody,
-// }) //!TEMP
 
         let application
 
@@ -247,6 +243,28 @@ router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, valid
         req.session.application = application._id
 
         res.redirect(`/application/${formId}`)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/application/login/:formId', validateApplicantLogin, validationCheck, async (req, res) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
+        if (!application) throw new Error('Application not found')
+
+        const { phone, dob, pin } = req.body
+
+        if (phone == application.phone && dob == application.dob && pin == application.ssn.slice(-4)) {
+            const referer = req.headers.referer || req.headers.referrer
+            req.session.application = application._id
+
+            return res.redirect(referer)
+        }
+
+        sendError.auth(req, res, 'Auth Error: Incorrect credentials used')
     } catch (err) {
         sendError.server(req, res, err)
     }

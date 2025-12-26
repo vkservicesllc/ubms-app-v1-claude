@@ -132,10 +132,11 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
             let carrierItems = '', teamItems = '', suffixItems = '', genderItems = '', maritalItems = '', positionItems = '', addrStateItems = ''
             let t = `\t`.repeat(9)
 
-            const carriers = await user.fetch('jx.companies', { filter: { category: 'crr' } })
+            const carriers = await user.fetch('jx.companies', { filter: { category: 'crr', confirmed: true } })
+
             carriers.forEach(carrier => {
-                const { route, name } = carrier
-                carrierItems += `\n${t}<div class="item" data-value="${route}">${name}</div>`
+                const { externalId, route, name } = carrier
+                carrierItems += `\n${t}<div class="item" data-value="${externalId._carrierId}" data-route="${route}">${name}</div>`
             })
 
             if (user.unscoped) {

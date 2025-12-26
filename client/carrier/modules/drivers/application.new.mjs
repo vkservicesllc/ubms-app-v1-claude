@@ -119,7 +119,8 @@ $registerApl.on('change', function() {
 })
 
 $dropdown.carrier.dropdown().on('change', function() {
-    const route = $(this).dropdown('get value')
+    const _carrierId = $(this).dropdown('get value')
+    const route = $dropdown.carrier.find(`.item[data-value="${_carrierId}"]`).data('route')
     let [ base ] = aplUrl.split('?')
     let query = $aplUrl.attr('href').split('?')[1]
 

@@ -111,6 +111,7 @@ router.post('/data/user/:_id/:target?', User.mw.verify, async (req, res) => {
                 data[target] = {}
 
                 if (target === 'roles') filter.location = [ user.location, null ]
+                if (target === 'companies') filter.confirmed = true
 
                 data[target].all = await Src.fetch(res.session, filter, { hideRawId, sorts })
                 data[target].applied = await user.fetch(`jx.${target}`, { hideRawId })

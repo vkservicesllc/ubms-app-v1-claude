@@ -1,5 +1,5 @@
 /* Settings */
-import db, { query } from '../../settings/mysql.mjs'
+import db, { query, algorithm } from '../../settings/mysql.mjs'
 
 /* Registry */
 import inputLength from '../../../client/global/modules/registry/length.mjs'
@@ -23,6 +23,7 @@ class Carrier extends Company {
         if (!data?._id) throw new Error('Constructor Error: Invalid Carrier Data')
 
         super(data, { single, hideRawId, hideSensitive })
+        this.externalId = undefined
 
         const props = { _id: data._carrierId, _companyId: data._id }
         if (!hideRawId) {
@@ -63,7 +64,7 @@ class Carrier extends Company {
         }
     }
 
-    static #algorithm = 'SHA-224'
+    static #algorithm = algorithm.carrier
     static hashId = (field = 'id') => hash(field, Carrier.#algorithm)
     static matchIdHash = value => matchHash(value, Carrier.#algorithm)
 
@@ -105,6 +106,9 @@ class Carrier extends Company {
     ) => classStatic.fetch(this, session, filter, { hideRawId, hideSensitive, sorts, mode }, {
         async prepare(batch, filter) {
             batch = await Company.fetch(session, {}, { mode: 'batch' })
+
+            //! IMPORTANT
+            batch = batch.filter(item => item.table !== query.carrier.main.table && item.db !== db.carrier)
 
             const join = [ 'carrierId', 'id', 'carriers' ]
             const stateTaxFields = []

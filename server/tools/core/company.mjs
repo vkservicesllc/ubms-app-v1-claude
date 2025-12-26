@@ -5,7 +5,7 @@ const secret = {
 }
 
 /* Settings */
-import db, { query } from '../../settings/mysql.mjs'
+import db, { query, algorithm } from '../../settings/mysql.mjs'
 
 /* Tools */
 import moment from 'moment'
@@ -16,6 +16,7 @@ import User from './user.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 // import { sessionError } from './user.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
+//! import more algorithms for other categories
 import { classInstance, classStatic } from '../utils/class.mjs'
 import { processData, logDeletion } from '../utils/database.mjs'
 import { encrypt } from '../utils/crypto.mjs'
@@ -35,6 +36,12 @@ class Company {
 
         this._id = data._id
         if (!hideRawId) this.id = data.id
+
+        this.externalId = {}
+        if (data._carrierId) {
+            if (!hideRawId) this.externalId.carrierId = data.carrierId
+            this.externalId._carrierId = data._carrierId
+        }
 
         this.category = data.category
         if (!hideSensitive) this.ein = stringifyBuffer(data.ein)
@@ -260,6 +267,15 @@ class Company {
                     fields: 'email',
                     join,
                 },
+                //* External IDs based on category
+                //! IMPORTANT: Filter this batch in external Category Class to avoid db/table coincidence in query
+                {
+                    db: db.carrier,
+                    table: query.carrier.main.table,
+                    fields: [ [ 'id', 'carrierId' ], [ hash('id', algorithm.carrier), '_carrierId' ] ],
+                    join: [ 'companyId', 'id' ],
+                },
+                //! more to be added
             ],
             prepare(batch, filter) {
                 const {

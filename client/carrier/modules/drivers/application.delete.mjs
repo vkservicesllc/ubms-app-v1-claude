@@ -46,7 +46,7 @@ table.on('draw', function() {
                 application.ssn = formatSsn(ssn)
                 application.phone = formatTel(phone)
                 application.residence = `${address.city}, ${address.expansion.state}`
-                if (carrier) application.company = carrier.name
+                if (carrier) application.carrier = carrier.name
                 if (position) application.position = expansion.position
                 if (user) application.user = user.name
 
@@ -54,7 +54,7 @@ table.on('draw', function() {
                     'formId', 'appliedOn',
                     'fullName', 'gender', 'dob','ssn',
                     'phone', 'email', 'residence',
-                    'company', 'position', 'user',
+                    'carrier', 'position', 'user',
                 ]
 
                 items.forEach(item => {

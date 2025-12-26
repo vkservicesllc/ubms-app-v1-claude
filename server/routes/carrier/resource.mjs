@@ -130,6 +130,25 @@ router.post('/drivers/update/applicant', User.mw.verify, Team.mw.verify, validat
 })
 
 
+router.post('/drivers/delete/application', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { user } = res.session
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('d:drv/apl', 'delete', permissions, user.DS)) return sendError.auth(req, res)
+
+        const { _id } = req.body
+        const application = await Application.fetch(res.session, { _id })
+        if (!application) throw new Error('Application not found')
+
+        await application.delete()
+
+        res.redirect('/drivers/applications')
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== EXPORT ==== //
 
