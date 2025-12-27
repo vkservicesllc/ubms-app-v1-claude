@@ -1,7 +1,7 @@
 import { selectEvent } from '/modules/events/form.mjs'
 import { dateMask } from '/modules/events/imask.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
-import { check, onInput, onChange, onSubmit } from './support.mjs'
+import { check, onInput, onChange, onSubmit, addressPredictions } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text, SS = selector.id.select, TR = selector.id.radio
@@ -24,9 +24,15 @@ const $submit = $('#address-submit')
 const $form = $('#address-form')
 
 
+let timer
+
 addr1Event(addr1Id, {
     addr2Id,
-    onInput,
+    onInput(addr1, $addr1) {'onInput', console.log({ addr1 })
+        clearTimeout(timer)
+        timer = setTimeout(() => addressPredictions($addr1, addr1), 500)
+        onInput(addr1, $addr1)
+    },
     onChange(addr1, $addr1, addr2, $addr2) {
         onChange(addr1, $addr1)
         onChange(addr2, $addr2)
