@@ -9,7 +9,7 @@ import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application, Citation, Accident } from '../../tools/core/driver.mjs'
 
 /* Validators */
-import { validateApplicantLogin } from './resource.mjs'
+import { validateApplicantLogin } from './application.mjs'
 
 /* API */
 import { sessionDetails } from '../api.mjs'
@@ -50,7 +50,7 @@ router.post('/local-source/:source', (req, res) => {
 router.post('/login/application/:formId', validateApplicantLogin, async (req, res) => {
     try {
         const { formId } = req.params
-        const application = await Application.fetch({ ...res.session, user: true }, { formId })
+        const application = await Application.fetch({ ...res.session, user: true }, { formId }, { hideSensitive: false })
         if (!application) throw new Error('Application not found')
 
         const { phone, dob, pin } = req.body

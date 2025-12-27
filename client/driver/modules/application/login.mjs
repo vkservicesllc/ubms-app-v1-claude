@@ -66,8 +66,7 @@ $form.submit(function(evt) {
         method: 'POST',
         data: { phone, dob, pin },
         success(response) {
-            const { error, passed } = response
-            if (error) return alert(error)
+            const { passed } = response
 
             if (!passed) {
                 $submit.prop('disabled', false).html('Continue Application')

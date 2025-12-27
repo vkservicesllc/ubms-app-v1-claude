@@ -185,7 +185,7 @@ export const applicationLogin = async (req, res, next) => {
 
         hbs.firstName = application.firstName
         hbs.form = new ApplicationForm(options)
-        hbs.formUrl = `/resource/application/login/${formId}`
+        hbs.formUrl = `/application/auth/login/${formId}`
 
         return res.render('application/login', hbs)
     } catch (err) {
