@@ -54,10 +54,7 @@ router.post('/login/application/:formId', validateApplicantLogin, async (req, re
         if (!application) throw new Error('Application not found')
 
         const { phone, dob, pin } = req.body
-        let passed = false
-
-        if (phone === application.phone && dob === application.dob && pin === application.ssn.slice(-4))
-            passed = true
+        const passed = phone === application.phone && dob === application.dob && pin === application.ssn.slice(-4)
 
         res.send({ passed })
     } catch (err) {

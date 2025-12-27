@@ -56,13 +56,14 @@ $form.submit(function(evt) {
 
     if (!phone && !dob && !pin) return
 
-    const url = $(this).attr('action').replace('resource', 'api')
+    const action = $(this).attr('action').split('/')
+    const formId = action[action.length - 1]
 
     $submit
         .prop('disabled', true)
         .html('<span class="spinner-border spinner-border-sm"></span> Signing in...')
 
-    $.ajax(url, {
+    $.ajax(`/api/login/application/${formId}`, {
         method: 'POST',
         data: { phone, dob, pin },
         success(response) {
