@@ -28,7 +28,7 @@ let timer
 
 addr1Event(addr1Id, {
     addr2Id,
-    onInput(addr1, $addr1) {'onInput', console.log({ addr1 })
+    onInput(addr1, $addr1) {
         clearTimeout(timer)
         timer = setTimeout(() => addressPredictions($addr1, addr1), 500)
         onInput(addr1, $addr1)
