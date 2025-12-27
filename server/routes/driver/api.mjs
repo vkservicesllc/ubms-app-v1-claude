@@ -43,7 +43,7 @@ router.post('/local-source/:source', (req, res) => {
 
     if (filter) result = result[filter]
 
-    res.send(result)
+    res.json(result)
 })
 
 
@@ -56,7 +56,7 @@ router.post('/login/application/:formId', validateApplicantLogin, async (req, re
         const { phone, dob, pin } = req.body
         const passed = phone === application.phone && dob === application.dob && pin === application.ssn.slice(-4)
 
-        res.send({ passed })
+        res.json({ passed })
     } catch (err) {
         sendError.server(req, res, err)
     }
@@ -70,7 +70,7 @@ router.post('/data/application/:formId', async (req, res) => {
         const application = await Application.fetch(res.session, { formId }, { hideRawId: true })
         if (!application) throw new Error('Application not found')
 
-        res.send({ data: application })
+        res.json({ data: application })
     } catch (err) {
         sendError.server(req, res, err)
     }
@@ -88,7 +88,23 @@ router.post('/data/application/:formId/:target', (req, res, next) => {
         const application = await Application.fetch(res.session, { formId }, { hideRawId: true })
         if (!application) throw new Error('Application not found')
 
-        res.send({ data: await application.data(target) })
+        res.json({ data: await application.data(target) })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/list/application/:formId/addresses', async (req, res) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.fetch(res.session, { formId })
+        if (!application) throw new Error('Application not found')
+
+            let addresses = []
+        //! const addresses = await application.fetch('addresses.history')
+
+        res.json({ data: addresses })
     } catch (err) {
         sendError.server(req, res, err)
     }
