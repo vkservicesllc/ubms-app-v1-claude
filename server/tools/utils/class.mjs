@@ -111,7 +111,7 @@ export const classInstance = {
         const { query, redFields = {} } = Cls.config()
 //! POSSIBLE Problem with redFields
 
-        if (!redFields[target]) redFields[target] = this.redFields
+        if (!redFields[target]) redFields[target] = classInstance.redFields
 
         const options = {
             match: { [idProp]: inst.id || Cls.matchIdHash(inst._id), since },
