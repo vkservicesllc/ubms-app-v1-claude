@@ -101,8 +101,8 @@ router.post('/list/application/:formId/addresses', async (req, res) => {
         const application = await Application.fetch(res.session, { formId })
         if (!application) throw new Error('Application not found')
 
-        const addresses = await application.fetch('address.history')
-console.log(addresses)
+        const addresses = await application.fetch('address.history', { filter: { match: { since: { not: application.address.since } } } })
+
         res.json({ data: addresses })
     } catch (err) {
         sendError.server(req, res, err)

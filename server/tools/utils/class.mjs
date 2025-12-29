@@ -14,7 +14,7 @@ const { sqlMode } = Query
 export const classInstance = {
 
 
-    redFields: ['createdBy', 'createdAt', 'updateLog', 'deletedBy', 'deletedAt', 'deletedIn'],
+    redFields: ['createdBy', 'createdAt', 'createdIn', 'updateLog', 'deletedBy', 'deletedAt', 'deletedIn'],
     logFields: ['createdBy', 'createdAt', 'updateLog'],
 
 
@@ -109,7 +109,6 @@ export const classInstance = {
         }
 
         const { query, redFields = {} } = Cls.config()
-//! POSSIBLE Problem with redFields
 
         if (!redFields[target]) redFields[target] = classInstance.redFields
 
@@ -120,10 +119,13 @@ export const classInstance = {
         if (history) {
             delete options.match.since
             options.sort = { desc: 'since' }
+            if (filter.match)
+                for (const prop in filter.match)
+                    options.match[prop] = filter.match[prop]
         }
 
         const [ rows ] = await mysql.execute(query[target].select('*', options))
-        rows.map(row => { redFields.map(redField => delete row[redField]) })
+        rows.map(row => { redFields[target].map(redField => delete row[redField]) })
 
         return since ? rows[0] : rows
     },
