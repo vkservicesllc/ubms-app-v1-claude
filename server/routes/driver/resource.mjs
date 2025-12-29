@@ -246,6 +246,22 @@ router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, valid
 })
 
 
+router.post('/application/progress/:formId/:step', dynamicValidator.applications, validationCheck, async (req, res) => {
+    try {
+        const { formId, step } = req.params
+        const application = await Application.fetch(res.session, { formId })
+        if (!application) throw new Error('Application not found')
+
+        //!... stuff
+        //? modify by steps, use add/update/delete in each step
+
+        res.redirect(`/application/${formId}`)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== EXPORT ==== //
 

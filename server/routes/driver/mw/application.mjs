@@ -233,7 +233,7 @@ export const applicationProgress = async (req, res) => {
         hbs = hbs.set(key, { title: 'Driver Application' })
         hbs.bodyAttrs = ' data-bs-theme="dark"'
 
-        const recUrl = `/resource/application/form/${formId}`
+        const recUrl = `/resource/application/progress/${formId}`
 
         const buttonProps = {
             next: { class: 'primary bg-primary-subtle', text: 'Next' },
