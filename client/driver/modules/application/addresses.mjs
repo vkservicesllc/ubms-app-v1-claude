@@ -203,8 +203,8 @@ function resetEvents() {
                     $help.text('* Invalid date')
                 } else {
                     const maxDate = idx
-                        ? moment($(`${selector.id.text.prevAddrSince}-${idx - 1}`).val() , 'MM/DD/YYYY').format('YYYY-MM-DD')
-                        : moment($(addrSinceId).val(), 'MM/DD/YYYY').format('YYYY-MM-DD')
+                        ? moment($(`${selector.id.text.prevAddrSince}-${idx - 1}`).val() , 'MM/DD/YYYY')
+                        : moment($(addrSinceId).val(), 'MM/DD/YYYY')
 
                     if (since.isSameOrAfter(maxDate)) {
                         let msg = '* Date overlap'
