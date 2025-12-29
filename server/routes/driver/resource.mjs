@@ -252,8 +252,7 @@ router.post('/application/progress/:formId/:step', dynamicValidator.applications
         const application = await Application.fetch(res.session, { formId })
         if (!application) throw new Error('Application not found')
 
-        //!... stuff
-        //? modify by steps, use add/update/delete in each step
+        await application.progress(step)
 
         res.redirect(`/application/${formId}`)
     } catch (err) {

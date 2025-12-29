@@ -437,6 +437,11 @@ class Application {
             this.delete = (target, match = {}) => classInstance.delete(this, new.target, target, match)
 
 
+            this.progress = async step => {
+                //? use progress based on session?
+            }
+
+
             this.welcome = async () => {
                 if (!this._driverId) return
 
