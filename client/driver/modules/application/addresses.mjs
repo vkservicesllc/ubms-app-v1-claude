@@ -141,8 +141,13 @@ function drawAddressForms() {
 
 function resetEvents() {
 
+    let timer
     addr1Event(TS.prevAddress1, {
-        onInput,
+        onInput(addr1, $addr1) {
+            clearTimeout(timer)
+            timer = setTimeout(() => addressPredictions($addr1, addr1), 500)
+            onInput(addr1, $addr1)
+        },
         onChange(addr1, $addr1) {
             const $addr2 = $addr1.parent().next().find(TS.prevAddress2)
             const addr2Patt = patterns.match.addr2

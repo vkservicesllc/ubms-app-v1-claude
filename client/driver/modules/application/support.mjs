@@ -1,4 +1,7 @@
+import selector from "/modules/registry/selectors/driver-application.mjs"
 import { capitalizeEach } from "/modules/tools/utils/string.mjs"
+
+const TS = selector.class.text, SS = selector.class.select
 
 
 export default function(offset = 1) {
@@ -85,10 +88,10 @@ export const addressPredictions = ($addr1, input, success) => {
     const $row2 = $row1.next()
     const $datalist = $row1.find('.address-predictions')
 
-    const $addr2 = $row1.find('[name="address[address2]"], [name="addresses[address2][]"]')
-    const $zip = $row1.find('[name="address[zip]"], [name="addresses[zip][]"]')
-    const $city = $row2.find('[name="address[city]"], [name="addresses[city][]"]')
-    const $state = $row2.find('[name="address[state]"], [name="addresses[state][]"]')
+    const $addr2 = $row1.find('[name="address[address2]"], ' + TS.prevAddress2)
+    const $zip = $row1.find('[name="address[zip]"], ' + TS.prevAddrZip)
+    const $city = $row2.find('[name="address[city]"], ' + TS.prevAddrCity)
+    const $state = $row2.find('[name="address[state]"], ' + SS.prevAddrState)
 
     $datalist.html(null)
 

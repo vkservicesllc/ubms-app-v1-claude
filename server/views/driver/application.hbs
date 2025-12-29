@@ -225,9 +225,10 @@
                                         <div class="border-top mt-4">
                                             {{{form._addrEnough.hidden.input}}}
                                             <div class="row g-3 my-1">
-                                                <div class="col-md-6">
+                                                <div class="col-md-6 autocomplete">
                                                     {{{form._address1.text.label}}}
                                                     {{{form._address1.text.input}}}
+                                                    <ul class="autocomplete-list address-predictions"></ul>
                                                 </div>
                                                 <div class="col-md-3">
                                                     {{{form._address2.text.label}}}
