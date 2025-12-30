@@ -437,8 +437,22 @@ class Application {
             this.delete = (target, match = {}) => classInstance.delete(this, new.target, target, match)
 
 
-            this.progress = async step => {
+            this.progress = async (step, body) => {
                 //? use progress based on session?
+                const { branch, siteId } = this.session
+                const modifiedBy = this.session?.user?.id || null
+
+                switch (step) {
+
+
+                    case 'profile':
+                        {
+                            //
+                        }
+                        break
+
+
+                }
             }
 
 
