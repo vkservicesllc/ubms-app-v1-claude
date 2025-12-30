@@ -446,9 +446,12 @@ class Application {
 
 
                     case 'profile':
-                        {
-                            //
-                        }
+                        await this.update(body)
+                        break
+
+
+                    case 'residence':
+                        {}
                         break
 
 
