@@ -495,6 +495,28 @@ class Application {
                         break
 
 
+                    case 'driver-license':
+                        {
+                            if (!body.denied) body.deniedExpl = null
+                            if (!body.revoked) body.revokedExpl = null
+
+                            if (!this.dl) {
+                                await this.add('license', body)
+                                await this.update({ step: 2 })
+                            } else await this.update('license', body)
+                        }
+                        break
+
+
+                    case 'medical-card':
+                        {
+                            if (!body.underMeds) data.medList = null
+
+                            //!
+                        }
+                        break
+
+
                 }
             }
 
