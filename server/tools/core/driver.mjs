@@ -222,6 +222,7 @@ class Application {
         this.phone = data.phone
         this.address = new Address(data)
         if (this?.address?.zip) {
+            this.address.complete = !!data.addrComplete
             this.address.since = data.addrSince
             this.address.enough = !!data.addrEnough
             this.address.livedAbroad = bool(data.livedAbroad)
@@ -451,7 +452,39 @@ class Application {
 
 
                     case 'residence':
-                        {}
+                        {
+                            const { address, addresses } = body
+                            delete body.address
+                            delete body.addresses
+
+                            address.appId = this.id
+
+                            const addrBody = [ address ]
+                            if (addresses) {
+                                const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
+                                const count = zip.length
+
+                                for (let i = 0; i < count; i++) {
+                                    addrBody.push({
+                                        aplId: this.id,
+                                        address1: address1[i],
+                                        address2: address2[i],
+                                        zip: zip[i],
+                                        city: city[i],
+                                        state: state[i],
+                                        since: since[i],
+                                        enough: enough[i],
+                                        livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
+                                    })
+                                }
+                            }
+
+                            if (!body.country) body.country = null
+
+                            //? delete all addresses by id
+                            //? insert all addresses
+                            //? update country and addrComplete
+                        }
                         break
 
 
@@ -635,7 +668,7 @@ class Application {
             if (!team && _teamId) team = await Team.fetch(session, { _id: _teamId }, { offline: true })
             if (team) body.teamId = team.id
 
-            if (ssn) {
+            if (ssn) { //* This means that the form is submitted from driver branch
                 if (typeof ssn === 'object') {
                     ssn = ssn.aes[0]
                     body.ssn = ssn
@@ -706,6 +739,7 @@ class Application {
                     'marital',
                     'email',
                     'phone',
+                    'addrComplete',
                     'prevCountry',
                     'medCard',
                     'underMeds',

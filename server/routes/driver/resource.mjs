@@ -236,6 +236,7 @@ router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, valid
         await application.welcome()
 
         if (!addrBody.enough) await application.update({ step: 0 })
+        await application.update({ addrComplete: !!addrBody.enough })
 
         req.session.application = application._id
 
