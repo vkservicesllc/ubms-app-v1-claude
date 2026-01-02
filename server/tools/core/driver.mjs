@@ -439,9 +439,11 @@ class Application {
 
 
             this.progress = async (step, body) => {
-                //? use progress based on session?
                 const { branch, siteId } = this.session
                 const modifiedBy = this.session?.user?.id || null
+                let createdIn = { branch }
+                if (siteId) createdIn.siteId = siteId
+                createdIn = JSON.stringify(createdIn)
 
                 switch (step) {
 
@@ -458,15 +460,17 @@ class Application {
                             delete body.addresses
 
                             address.appId = this.id
+                            address.createdIn = createdIn
 
                             const addrBody = [ address ]
+
                             if (addresses) {
                                 const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
                                 const count = zip.length
 
                                 for (let i = 0; i < count; i++) {
                                     addrBody.push({
-                                        aplId: this.id,
+                                        appId: this.id,
                                         address1: address1[i],
                                         address2: address2[i],
                                         zip: zip[i],
@@ -475,15 +479,18 @@ class Application {
                                         since: since[i],
                                         enough: enough[i],
                                         livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
+                                        createdIn,
                                     })
                                 }
                             }
 
                             if (!body.country) body.country = null
+                            body.addrComplete = true
+                            if (this.step === 0) body.step = 1
 
-                            //? delete all addresses by id
-                            //? insert all addresses
-                            //? update country and addrComplete
+                            await mysql.execute(query.driver_application.address.delete({ appId: this.id }))
+                            await mysql.execute(query.driver_application.address.insert(addrBody))
+                            await this.update(body)
                         }
                         break
 

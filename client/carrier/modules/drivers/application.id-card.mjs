@@ -3,6 +3,7 @@ import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 
 const $modal = $('#apl-id-card-modal')
 const $copyBtn = $('#copy-apl-login')
+const $copyIcon = $('.copy-apl-cred')
 const $copySuccess = $('#apl-copy-sucess')
 
 
@@ -39,6 +40,18 @@ table.on('draw', function() {
                 $modal.modal('show')
             },
         })
+    })
+
+    $copyIcon.on('click', function(evt) {
+        evt.preventDefault()
+
+        const text = $(this).parent().next().text()
+
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                $copySuccess.fadeIn()
+                setTimeout(() => $copySuccess.fadeOut(), 3500)
+            })
     })
 
     $copyBtn.on('click', () => {

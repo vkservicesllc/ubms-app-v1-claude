@@ -1,5 +1,6 @@
 import { formatDateToString } from '../../../client/global/modules/tools/utils/date.mjs'
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
+import { sortObjectByKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 
 
@@ -204,7 +205,8 @@ class Query {
         const fields = [], values = []
         let i = 0
 
-        for (const pairs of data) {
+        for (let pairs of data) {
+            pairs = sortObjectByKey(pairs)
             values[i] = []
 
             for (let field in pairs) {
