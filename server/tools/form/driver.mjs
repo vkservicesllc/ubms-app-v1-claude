@@ -166,6 +166,9 @@ const createMecNumberForm = (props = {}) => createForm({
         title: 'National Registry Number',
     },
     ...props,
+    validator: {
+        sanitizer: value => value || null,
+    },
 })
 
 

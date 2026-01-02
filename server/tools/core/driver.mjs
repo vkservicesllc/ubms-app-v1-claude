@@ -516,9 +516,17 @@ class Application {
 
                     case 'medical-card':
                         {
-                            if (!body.underMeds) data.medList = null
+                            const { expiresOn, issuedOn, nrcme, mecAbsent } = body
+                            delete body.expiresOn
+                            delete body.issuedOn
+                            delete body.nrcme
+                            delete body.mecAbsent
 
-                            //!
+                            
+                            if (!body.underMeds) body.medList = null
+                            if (mecAbsent) body.medCard = false
+
+                            //
                         }
                         break
 
