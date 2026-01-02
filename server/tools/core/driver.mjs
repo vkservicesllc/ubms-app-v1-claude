@@ -392,47 +392,53 @@ class Application {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
-            this.update = (targetOrBody, body) => classInstance.update(this, new.target, targetOrBody, body, {}, {
-                currentData(target, data) {
-                    switch (target) {
-                        //! to be added
-                    }
+            this.update = (targetOrBody, body) => {
+                const application = this
 
-                    return data
-                },
-                async final(inst, body, target) {
-                    if (target !== 'main' || !body.ssn) return
-
-                    let { ssn } = body
-                    if (typeof ssn === 'object') {
-                        ssn = ssn.aes[0]
-                        body.ssn = ssn
-                    }
-
-                    let person = await Individual.fetch(session, { ssn })
-
-                    if (!person) {
-                        if (!body.firstName || !body.lastName) {
-                            body.firstName = inst.firstName
-                            body.middleName = inst.middleName
-                            body.lastName = inst.lastName
+                return classInstance.update(this, new.target, targetOrBody, body, {}, {
+                    currentData(target, data) {
+                        switch (target) {
+                            case 'license':
+                                data = application.dl
+                                break
                         }
-                        if (!body.dob) body.dob = inst.dob
-                        if (!body.gender) body.gender = inst.gender
 
-                        person = (await Individual.create(session, body)).data
-                        if (!person) throw new Error('Failed to create person')
-                    }
+                        return data
+                    },
+                    async final(inst, body, target) {
+                        if (target !== 'main' || !body.ssn) return
 
-                    let driver = await Driver.fetch(session, { personId: person.id })
-                    if (!driver) driver = (await Driver.create(session, { personId: person.id })).data
-                    if (!driver) throw new Error('Failed to fetch or create driver')
+                        let { ssn } = body
+                        if (typeof ssn === 'object') {
+                            ssn = ssn.aes[0]
+                            body.ssn = ssn
+                        }
 
-                    const updateBody = { driverId: driver.id }
-                    if (inst.step === 0) updateBody.step = 1
-                    await inst.update(updateBody)
-                },
-            })
+                        let person = await Individual.fetch(session, { ssn })
+
+                        if (!person) {
+                            if (!body.firstName || !body.lastName) {
+                                body.firstName = inst.firstName
+                                body.middleName = inst.middleName
+                                body.lastName = inst.lastName
+                            }
+                            if (!body.dob) body.dob = inst.dob
+                            if (!body.gender) body.gender = inst.gender
+
+                            person = (await Individual.create(session, body)).data
+                            if (!person) throw new Error('Failed to create person')
+                        }
+
+                        let driver = await Driver.fetch(session, { personId: person.id })
+                        if (!driver) driver = (await Driver.create(session, { personId: person.id })).data
+                        if (!driver) throw new Error('Failed to fetch or create driver')
+
+                        const updateBody = { driverId: driver.id }
+                        if (inst.step === 0) updateBody.step = 1
+                        await inst.update(updateBody)
+                    },
+                })
+            }
 
 
             this.delete = (target, match = {}) => classInstance.delete(this, new.target, target, match)
@@ -600,6 +606,9 @@ class Application {
         idProp: 'appId',
         defSorts: null,
         logFile: 'driver-applications',
+        logFields: {
+            license: ['createdBy', 'createdAt', 'createdIn', 'updateLog'],
+        },
     })
 
 

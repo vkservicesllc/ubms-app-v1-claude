@@ -242,11 +242,11 @@ export const classInstance = {
 
 
     log: async (inst, Cls, { field = null, target = 'main', since } = {}, fields) => {
-        const { enforceUser = true } = Cls.config()
+        const { enforceUser = true, logFields = {} } = Cls.config()
         const { user: sessionUser } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
 
-        fields = fields ?? classInstance.logFields
+        fields = logFields[target] ?? fields ?? classInstance.logFields
 
         const config = Cls.config()
         const idProp = target === 'main' ? 'id' : config.idProp
