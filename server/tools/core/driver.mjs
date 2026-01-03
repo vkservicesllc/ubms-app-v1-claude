@@ -533,6 +533,46 @@ class Application {
                         break
 
 
+                    case 'legal-compliance':
+                        break
+
+
+                    case 'safety':
+                        break
+
+
+                    case 'experience':
+                        break
+
+
+                    case 'prev-employment':
+                        break
+
+
+                    case 'preference':
+                        break
+
+
+                    case 'business':
+                        break
+
+
+                    case 'beneficiary':
+                        break
+
+
+                    case 'misc':
+                        break
+
+
+                    case 'workflow': //* Carrier UI only
+                        break
+
+
+                    case 'assignment': //* Carrier UI only
+                        break
+
+
                 }
             }
 
@@ -618,6 +658,7 @@ class Application {
         logFile: 'driver-applications',
         logFields: {
             license: ['createdBy', 'createdAt', 'createdIn', 'updateLog'],
+            medical: ['createdBy', 'createdAt', 'createdIn', 'updateLog'],
         },
     })
 
