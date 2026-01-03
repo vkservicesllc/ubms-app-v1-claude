@@ -521,12 +521,14 @@ class Application {
                             delete body.issuedOn
                             delete body.nrcme
                             delete body.mecAbsent
-
                             
                             if (!body.underMeds) body.medList = null
-                            if (mecAbsent) body.medCard = false
+                            body.medCard = !mecAbsent
+                            if (this.step < 3) body.step = 3
 
-                            //
+                            if (expiresOn) await this[this.medCard ? 'update' : 'add']('medical', { expiresOn, issuedOn, nrcme })
+                            else await this.delete('medical')
+                            await this.update(body)
                         }
                         break
 
