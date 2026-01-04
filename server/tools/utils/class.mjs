@@ -169,8 +169,9 @@ export const classInstance = {
 
 
     delete: async (inst, Cls, target = null, matchOrIds, handle) => {
+        const { enforceUser = true } = Cls.config()
         const { user: sessionUser } = inst.session || {}
-        if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Session user not supplied`)
+        if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Session user not supplied`)
 
         if (target === 'main') target = null
 

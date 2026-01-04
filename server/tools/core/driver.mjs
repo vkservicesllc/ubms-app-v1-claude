@@ -401,6 +401,9 @@ class Application {
                             case 'license':
                                 data = application.dl
                                 break
+                            case 'medical':
+                                data = application.mec
+                                break
                         }
 
                         return data
@@ -525,7 +528,7 @@ class Application {
                             if (!body.underMeds) body.medList = null
                             body.medCard = !mecAbsent
                             if (this.step < 3) body.step = 3
-
+console.log({ expiresOn, medCard: this.medCard })
                             if (expiresOn) await this[this.medCard ? 'update' : 'add']('medical', { expiresOn, issuedOn, nrcme })
                             else await this.delete('medical')
                             await this.update(body)
