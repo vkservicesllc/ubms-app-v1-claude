@@ -591,12 +591,12 @@ export const applicationProgress = async (req, res) => {
             options.straightExp = { checkbox: { label: { class: labelClassRequired } } }
             options.semiExp = { checkbox: { label: { class: labelClassRequired } } }
 
-            for (const prop in Application.vehicleList.straight) {
+            for (const prop in Application.list.vehicle.straight) {
                 const checked = application?.experience?.vehicles?.straight?.includes(prop)
                 options.straightExp.checkbox[prop] = { input: { ...checkProps.input, checked, disabled }, label: { ...checkProps.label } }
             }
 
-            for (const prop in Application.vehicleList.semi) {
+            for (const prop in Application.list.vehicle.semi) {
                 const checked = application?.experience?.cmv === true && application?.experience?.vehicles?.semi?.includes(prop)
                 options.semiExp.checkbox[prop] = { input: { ...checkProps.input, checked, disabled }, label: { ...checkProps.label } }
             }
@@ -719,7 +719,7 @@ export const applicationProgress = async (req, res) => {
                 options.haulRegion.checkbox[prop] = { input: { ...checkProps.input, checked }, label: { ...checkProps.label } }
             }
 
-            for (const prop in Application.vehicleList.semi) {
+            for (const prop in Application.list.vehicle.semi) {
                 const checked = application?.preference?.equipmentType?.includes(prop)
                 options.equipmentType.checkbox[prop] = { input: { ...checkProps.input, checked }, label: { ...checkProps.label } }
             }
@@ -1027,7 +1027,7 @@ export const applicationSummary = async (req, res) => {
 
                 for (let group in vehicles) {
                     const array = vehicles[group], list = []
-                    const data = group !== 'misc' ? Application.vehicleList[group] : miscList
+                    const data = group !== 'misc' ? Application.list.vehicle[group] : miscList
                     const type = group === 'straight' ? ' Truck' : ''
 
                     if (html) html += '<br/>'
@@ -1066,7 +1066,7 @@ export const applicationSummary = async (req, res) => {
         }
         if (application.preference?.haulRegion) {
             const equipmentList = []
-            application.preference.equipmentType.forEach(type => equipmentList.push(Application.vehicleList.semi[type]))
+            application.preference.equipmentType.forEach(type => equipmentList.push(Application.list.vehicle.semi[type]))
             hbs.application.preference.equipmentList = equipmentList.join(', ')
         }
         hbs.application.preference.startPref = Application.startPrefList[application.preference.startPref]

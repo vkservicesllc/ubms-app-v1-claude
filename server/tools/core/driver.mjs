@@ -557,7 +557,7 @@ class Application {
 
                                 for (let i = 0; i < count; i++)
                                     citBody.push({
-                                        appId: id,
+                                        appId: this.id,
                                         violation: violation[i],
                                         other: violation[i] === 'other' ? otherViolation?.[i] : null,
                                         citedOn: citedOn[i],
@@ -587,7 +587,7 @@ class Application {
 
                                 for (let i = 0; i < count; i++)
                                     accBody.push({
-                                        appId: id,
+                                        appId: this.id,
                                         collision: collision[i],
                                         other: collision[i] === 'other' ? otherCollision?.[i] : null,
                                         date: accDate[i],
