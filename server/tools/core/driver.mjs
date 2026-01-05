@@ -605,6 +605,26 @@ class Application {
 
 
                     case 'experience':
+                        {
+                            const experience = body.noExp !== true
+                            let { cdlSchool } = body
+                            const { name, phone, state, endDate, duration } = body
+                            if (cdlSchool === undefined) cdlSchool = false
+                            delete body.noExp
+                            delete body.cdlSchool
+                            delete body.name
+                            delete body.phone
+                            delete body.state
+                            delete body.endDate
+                            delete body.duration
+
+                            body = { experience, cdlSchool }
+                            if (this.step < 6) body.step = 6
+
+                            //! progress
+
+                            await this.update(body)
+                        }
                         break
 
 
