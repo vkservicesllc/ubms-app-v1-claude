@@ -78,7 +78,7 @@ export const classInstance = {
     },
 
 
-    fetch: async (inst, Cls, target, { hideRawId = false, hideSensitive = true, idsOnly = false, filter = {}, sorts = null, since } = {}) => {
+    fetch: async (inst, Cls, target, { hideRawId = false, hideSensitive = true, idsOnly = false, filter = {}, sorts = null } = {}) => {
         const { enforceUser = true } = Cls.config()
         const { user: sessionUser } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Session user not supplied`)
@@ -108,17 +108,18 @@ export const classInstance = {
             return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, offline, sorts })
         }
 
-        const { query, redFields = {} } = Cls.config()
+        const { query, redFields = {}, histSort } = Cls.config()
 
         if (!redFields[target]) redFields[target] = classInstance.redFields
 
         const options = {
-            match: { [idProp]: inst.id || Cls.matchIdHash(inst._id), since },
+            match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
         }
 
         if (history) {
-            delete options.match.since
-            options.sort = { desc: 'since' }
+            const desc = histSort[target] || 'since'
+
+            options.sort = { desc }
             if (filter.match)
                 for (const prop in filter.match)
                     options.match[prop] = filter.match[prop]
@@ -127,7 +128,7 @@ export const classInstance = {
         const [ rows ] = await mysql.execute(query[target].select('*', options))
         rows.map(row => { redFields[target].map(redField => delete row[redField]) })
 
-        return since ? rows[0] : rows
+        return rows
     },
 
 

@@ -110,6 +110,25 @@ router.post('/list/application/:formId/addresses', async (req, res) => {
 })
 
 
+router.post('/list/application/:formId/:target', async (req, res) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.fetch(res.session, { formId })
+        if (!application) throw new Error('Application not found')
+
+        let { target } = req.params
+        target = { citations: 'citation', accidents: 'accident' }[target]
+        target += '.history'
+
+        const addresses = await application.fetch(target)
+
+        res.json({ data: addresses })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== EXPORT ==== //
 

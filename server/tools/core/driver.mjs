@@ -528,7 +528,7 @@ class Application {
                             if (!body.underMeds) body.medList = null
                             body.medCard = !mecAbsent
                             if (this.step < 3) body.step = 3
-console.log({ expiresOn, medCard: this.medCard })
+
                             if (expiresOn) await this[this.medCard ? 'update' : 'add']('medical', { expiresOn, issuedOn, nrcme })
                             else await this.delete('medical')
                             await this.update(body)
@@ -658,6 +658,10 @@ console.log({ expiresOn, medCard: this.medCard })
         query: query.driver_application,
         idProp: 'appId',
         defSorts: null,
+        histSort: {
+            citation: 'citedOn',
+            accident: 'date',
+        },
         logFile: 'driver-applications',
         logFields: {
             license: ['createdBy', 'createdAt', 'createdIn', 'updateLog'],
