@@ -537,10 +537,70 @@ class Application {
 
 
                     case 'legal-compliance':
+                        {
+                            if (!body.dui) body.duiInDecade = null
+                            if (!body.criminal) body.criminalExpl = null
+
+                            const { citations, violation, other: otherViolation, citedOn, state: citState } = body
+                            delete body.violation
+                            delete body.other
+                            delete body.citedOn
+                            delete body.state
+                            if (!violation && body.citations) body.citations = false
+
+                            if (this.step < 4) body.step = 4
+
+                            await mysql.execute(query.driver_application.citation.delete({ appId: this.id }))
+                            if (citations) {
+                                const count = violation.length
+                                const citBody = []
+
+                                for (let i = 0; i < count; i++)
+                                    citBody.push({
+                                        appId: id,
+                                        violation: violation[i],
+                                        other: violation[i] === 'other' ? otherViolation?.[i] : null,
+                                        citedOn: citedOn[i],
+                                        state: citState[i],
+                                    })
+
+                                await mysql.execute(query.driver_application.citation.insert(citBody))
+                            }
+
+                            await this.update(body)
+                        }
                         break
 
 
                     case 'safety':
+                        {
+                            const { accidents, collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = body
+                            body = { accidents }
+                            if (!collision && body.accidents) body.accidents = false
+
+                            if (this.step < 5) body.step = 5
+
+                            await mysql.execute(query.driver_application.accident.delete({ appId: this.id }))
+                            if (accidents) {
+                                const count = collision.length
+                                const accBody = []
+
+                                for (let i = 0; i < count; i++)
+                                    accBody.push({
+                                        appId: id,
+                                        collision: collision[i],
+                                        other: collision[i] === 'other' ? otherCollision?.[i] : null,
+                                        date: accDate[i],
+                                        state: accState[i],
+                                        injuries: injuries[i],
+                                        fatalities: fatalities[i],
+                                    })
+
+                                await mysql.execute(query.driver_application.accident.insert(accBody))
+                            }
+
+                            await this.update(body)
+                        }
                         break
 
 
