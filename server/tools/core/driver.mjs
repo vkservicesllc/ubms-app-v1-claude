@@ -608,20 +608,18 @@ class Application {
                         {
                             const experience = body.noExp !== true
                             let { cdlSchool } = body
+                            const { vehicles, cmv, firstDate, lastDate, hours } = body
                             const { name, phone, state, endDate, duration } = body
                             if (cdlSchool === undefined) cdlSchool = false
-                            delete body.noExp
-                            delete body.cdlSchool
-                            delete body.name
-                            delete body.phone
-                            delete body.state
-                            delete body.endDate
-                            delete body.duration
 
                             body = { experience, cdlSchool }
                             if (this.step < 6) body.step = 6
 
-                            //! progress
+                            if (experience) await this[this.experience ? 'update' : 'add']('experience', { vehicles, cmv, firstDate, lastDate, hours })
+                            else await this.delete('experience')
+
+                            if (cdlSchool) await this[this.cdlSchool ? 'update' : 'add']('school', { name, phone, state, endDate, duration })
+                            else await this.delete('school')
 
                             await this.update(body)
                         }
