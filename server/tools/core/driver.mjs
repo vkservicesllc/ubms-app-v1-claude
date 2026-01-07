@@ -507,6 +507,7 @@ class Application {
 
                             await mysql.execute(query.driver_application.address.delete({ appId: this.id }))
                             await mysql.execute(query.driver_application.address.insert(addrBody))
+
                             await this.update(body)
                         }
                         break
@@ -539,6 +540,7 @@ class Application {
 
                             if (expiresOn) await this[this.medCard ? 'update' : 'add']('medical', { expiresOn, issuedOn, nrcme })
                             else await this.delete('medical')
+
                             await this.update(body)
                         }
                         break
@@ -646,6 +648,45 @@ class Application {
 
 
                     case 'prev-employment':
+                        {
+                            const {
+                                prevEmployed,
+                                employer, phone, address1, address2, zip, city, state,
+                                startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
+                            } = body
+                            body = { prevEmployed }
+
+                            if (this.step < 7) body.step = 7
+
+                            await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
+                            if (prevEmployed) {
+                                const count = employer.length
+                                const emplBody = []
+
+                                for (let i = 0; i < count; i++)
+                                    emplBody.push({
+                                        appId: this.id,
+                                        employer: employer[i],
+                                        phone: phone[i],
+                                        address1: address1[i],
+                                        address2: address2[i],
+                                        city: city[i],
+                                        state: state[i],
+                                        zip: zip[i],
+                                        startedOn: startedOn[i],
+                                        position: position[i],
+                                        earnings: earnings[i],
+                                        fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
+                                        dotDat: dotDat[i],
+                                        rfl: rfl[i],
+                                        leftOn: leftOn[i],
+                                    })
+
+                                await mysql.execute(query.driver_application.employer.insert(emplBody))
+                            }
+
+                            await this.update(body)
+                        }
                         break
 
 
