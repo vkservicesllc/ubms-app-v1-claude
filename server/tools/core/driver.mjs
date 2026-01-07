@@ -33,6 +33,8 @@ const mysql = require('../utils/mysql')
 const knex = require('../utils/knex')
 const sendError = require('../utils/error')
 
+const relLogFields = ['createdBy', 'createdAt', 'createdIn', 'updateLog']
+
 
 const subQuery = (db, table, maxField, groupId) => knex
     .select('*')
@@ -397,12 +399,18 @@ class Application {
 
                 return classInstance.update(this, new.target, targetOrBody, body, {}, {
                     currentData(target, data) {
-                        switch (target) {
+                        switch (target) { //! SEEMS TO NOT WORK
                             case 'license':
                                 data = application.dl
                                 break
                             case 'medical':
                                 data = application.mec
+                                break
+                            case 'experience':
+                                data = application.experience
+                                break
+                            case 'school':
+                                data = application.cdlSchool
                                 break
                         }
 
@@ -608,14 +616,25 @@ class Application {
                         {
                             const experience = body.noExp !== true
                             let { cdlSchool } = body
-                            const { vehicles, cmv, firstDate, lastDate, hours } = body
+                            const { vehicles, cmv, firstDate, lastDate, mileage, hours } = body
                             const { name, phone, state, endDate, duration } = body
                             if (cdlSchool === undefined) cdlSchool = false
 
                             body = { experience, cdlSchool }
                             if (this.step < 6) body.step = 6
 
-                            if (experience) await this[this.experience ? 'update' : 'add']('experience', { vehicles, cmv, firstDate, lastDate, hours })
+                            let { misc } = vehicles
+                            if (misc) {
+                                if (!cmv) { //* VERY IMPORTANT! If other non-cmv types are added, they must be deleted also
+                                    delete misc.tandem
+                                }
+
+                                misc = Object.keys(misc)
+                                vehicles.misc = misc
+                            }
+                            if (!cmv) delete vehicles.semi
+
+                            if (experience) await this[this.experience ? 'update' : 'add']('experience', { vehicles, cmv, firstDate, lastDate, mileage, hours })
                             else await this.delete('experience')
 
                             if (cdlSchool) await this[this.cdlSchool ? 'update' : 'add']('school', { name, phone, state, endDate, duration })
@@ -742,8 +761,10 @@ class Application {
         },
         logFile: 'driver-applications',
         logFields: {
-            license: ['createdBy', 'createdAt', 'createdIn', 'updateLog'],
-            medical: ['createdBy', 'createdAt', 'createdIn', 'updateLog'],
+            license: relLogFields,
+            medical: relLogFields,
+            experience: relLogFields,
+            school: relLogFields,
         },
     })
 
