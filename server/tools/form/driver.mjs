@@ -1182,6 +1182,9 @@ class ApplicationForm {
         name: 'teamName',
         disabled,
         label: "Partner's Full Name",
+        validator: {
+            sanitizer: value => value || null,
+        },
     })
 
     static teamPhone = createPhoneForm({ selector: appSelector, target: 'teamPhone', group: 'teamPartner', name: 'teamPhone', disabled, label: "Partner's Phone" })

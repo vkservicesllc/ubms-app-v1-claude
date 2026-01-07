@@ -715,7 +715,7 @@ export const applicationProgress = async (req, res) => {
             options.haulRegion = { checkbox: {} }
             options.equipmentType = { checkbox: {} }
 
-            for (const prop in Application.haulRegionList) {
+            for (const prop in Application.list.haulRegion) {
                 const checked = application?.preference?.haulRegion?.includes(prop)
                 options.haulRegion.checkbox[prop] = { input: { ...checkProps.input, checked }, label: { ...checkProps.label } }
             }

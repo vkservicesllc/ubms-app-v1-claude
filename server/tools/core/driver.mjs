@@ -323,6 +323,7 @@ class Application {
             }
 
         this.prevEmployed = bool(data.prevEmployed)
+        this.prevEmplGaps = bool(data.prevEmplGaps)
 
         if (data.startPref !== null) {
             this.preference = {
@@ -709,10 +710,28 @@ class Application {
 
 
                     case 'preference':
+                        {
+                            body.appId = this.id
+                            if (body.operType === 's' || !this.cdlRole) {
+                                body.teamName = null
+                                body.teamPhone = null
+                            }
+
+                            if (!this.cdlRole) {
+                                body.haulRegion = null
+                                body.equipment = null
+                            }
+
+                            await this[this.preference ? 'update' : 'add']('preference', body)
+                            if (this.step < 8) await this.update({ step: 8 })
+                        }
                         break
 
 
                     case 'business':
+                        {
+                            //
+                        }
                         break
 
 
@@ -825,6 +844,7 @@ class Application {
             medical: relLogFields,
             experience: relLogFields,
             school: relLogFields,
+            preference: relLogFields,
         },
     })
 
@@ -1009,6 +1029,7 @@ class Application {
                     'experience',
                     'cdlSchool',
                     'prevEmployed',
+                    'prevEmplGaps',
                     'activeBusiness',
                 ],
             },
