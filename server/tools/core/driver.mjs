@@ -463,11 +463,55 @@ class Application {
                 if (siteId) createdIn.siteId = siteId
                 createdIn = JSON.stringify(createdIn)
 
+                const vehicleRecord = async (application, body) => {
+                    if (application.position !== 'OO') return await application.delete('vehicle')
+                    if (!body.type) return
+
+                    if (body.mmt) {
+                        if (body.mmt !== 'other') {
+                            body.type = null
+                            body.make = null
+                            body.model = null
+
+                            if (body.mmt.split(':')[0] !== 'straightBox') body.length = null
+                        } else {
+                            if (body.type !== 'straightBox') body.length = null
+                        }
+                    }
+
+                    await application[application.vehicle ? 'update' : 'add']('vehicle', body)
+                }
+
                 switch (step) {
+
+
+                    case 'workflow': //* Carrier UI only (no step)
+                        {
+                            //! to be continued...
+                        }
+                        break
 
 
                     case 'profile':
                         await this.update(body)
+                        break
+
+
+                    case 'legal-status': //* Carrier UI only (no step)
+                        {
+                            if (body.legalStatus < 2) body.legalExpiration = null
+                            await this.update(body)
+                        }
+                        break
+
+
+                    case 'position': //* Carrier UI only (no step)
+                        {
+                            const { position, mmt, type, make, model, year, length } = body
+
+                            await vehicleRecord(this, { mmt, type, make, model, year, length })
+                            await this.update({ position })
+                        }
                         break
 
 
@@ -730,7 +774,24 @@ class Application {
 
                     case 'business':
                         {
-                            //
+                            let { activeLLC } = body
+                            const {
+                                inactiveLLC, busName, state, ein,
+                                mmt, type, make, model, year, length,
+                            } = body
+                            if (inactiveLLC) activeLLC = false
+                            else if (activeLLC === undefined) activeLLC = true
+
+                            body = { activeBusiness: activeLLC }
+                            if (this.step < 9) body.step = 9
+
+                            if (activeLLC) await this[this.activeBusiness ? 'update' : 'add']('business', { busName, state, ein })
+                            else await this.delete('business')
+
+                            //* Driver Application only (when type if defined)
+                            await vehicleRecord(this, { mmt, type, make, model, year, length })
+
+                            await this.update(body)
                         }
                         break
 
@@ -845,6 +906,8 @@ class Application {
             experience: relLogFields,
             school: relLogFields,
             preference: relLogFields,
+            business: relLogFields,
+            vehicle: relLogFields,
         },
     })
 

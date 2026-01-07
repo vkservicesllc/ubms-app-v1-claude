@@ -52,12 +52,13 @@ export function processData(data = {}, options = {}) {
                 updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : processValue(currentValue)
             }
         }
-
+//! HUGE PROBLEM WITH THIS COMPARISON
         if ( //* Loose comparison
             (update && value == currentValue) ||
-            (!update && !value && value !== false && value !== 0)
+            (!update && !value && value !== false && value !== 0 && value !== null)
         )
             delete data[field]
+//! FIX IT
     }
 
     if (updateLog && Object.keys(updateLog[0].data).length) {

@@ -792,7 +792,7 @@ export const applicationProgress = async (req, res) => {
                 const values = {
                     currentVhlType: application?.vehicle?.type,
                 }
-                const vhlTypeData = Application.vhlTypeList[cdlRole]
+                const vhlTypeData = Application.list.vhlType[cdlRole]
 
                 if (!cdlRole) {
                     values.currentVhlMMT = application?.vehicle?.mmt
@@ -865,7 +865,7 @@ export const applicationProgress = async (req, res) => {
                 options.benefOtherRel.text.input.disabled = false
             }
 
-            const relationData = { ...Relationship.fetch() }
+            const relationData = { ...Relationship.data() }
             switch (application.marital) {
                 case 'm':
                     delete relationData['Other']['Fiancé(e)']

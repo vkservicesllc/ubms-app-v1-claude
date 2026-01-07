@@ -54,6 +54,10 @@ export const classInstance = {
         const { query, idProp, logLocation = false } = config
 
         body = processData(body)
+
+        if (body?.ssn && typeof body.ssn !== 'object') body.ssn = { aes: [ body.ssn, secret.ssn ] }
+        if (body?.ein && typeof body.ein !== 'object') body.ein = { aes: [ body.ein, secret.ein ] }
+
         body[idProp] = inst.id
 
         if (typeof bodyCB === 'function') body = await bodyCB(body)
@@ -156,6 +160,7 @@ export const classInstance = {
         if (typeof currentData === 'function') options.currentData = await currentData(target, options.currentData)
 
         body = processData(body, options)
+
         if (body?.ssn !== undefined) body.ssn = { aes: [ body.ssn, secret.ssn ] }
         if (body?.ein !== undefined) body.ein = { aes: [ body.ein, secret.ein ] }
 
