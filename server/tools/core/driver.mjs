@@ -572,6 +572,7 @@ class Application {
                                         other: violation[i] === 'other' ? otherViolation?.[i] : null,
                                         citedOn: citedOn[i],
                                         state: citState[i],
+                                        createdIn,
                                     })
 
                                 await mysql.execute(query.driver_application.citation.insert(citBody))
@@ -604,6 +605,7 @@ class Application {
                                         state: accState[i],
                                         injuries: injuries[i],
                                         fatalities: fatalities[i],
+                                        createdIn,
                                     })
 
                                 await mysql.execute(query.driver_application.accident.insert(accBody))
@@ -657,6 +659,7 @@ class Application {
                             body = { prevEmployed }
 
                             if (this.step < 7) body.step = 7
+                            body.prevEmplGaps = null
 
                             await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
                             if (prevEmployed) {
@@ -679,10 +682,25 @@ class Application {
                                         fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
                                         dotDat: dotDat[i],
                                         rfl: rfl[i],
-                                        leftOn: leftOn[i],
+                                        leftOn: leftOn?.[i] || null,
+                                        createdIn,
                                     })
 
                                 await mysql.execute(query.driver_application.employer.insert(emplBody))
+
+                                const employers = await this.fetch('employer.history')
+                                let prevDate = this.appliedOn
+                                body.prevEmplGaps = false
+
+                                for (const employer of employers) {
+                                    const { startedOn, leftOn } = employer
+                                    if (!leftOn) continue
+
+                                    body.prevEmplGaps = Math.abs(moment(startedOn).diff(moment(leftOn), 'days')) > 30
+                                    if (body.prevEmplGaps) break
+
+                                    prevDate = startedOn
+                                }
                             }
 
                             await this.update(body)

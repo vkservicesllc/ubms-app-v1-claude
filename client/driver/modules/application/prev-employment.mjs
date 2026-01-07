@@ -100,7 +100,7 @@ function cloneEmplForm(i = 0, data = null) {
     const tsi = `${Date.now()}-${i}`
     const $clone = $emplForm.clone().attr('id', `preempl-form-${tsi}`)
 
-    $clone.find('input, select, textarea').each(function() {
+    $clone.find('input:not(.still-employed), select, textarea').each(function() {
         const $field = $(this)
 
         const id = $field.attr('id')
@@ -131,6 +131,11 @@ function cloneEmplForm(i = 0, data = null) {
                     if ($field.is('select')) $field.find('option[value=""]').remove()
                     if ($field.parent().is(':hidden')) $field.parent().show()
                 }
+            }
+
+            if (name === 'leftOn' && !value) {
+                $clone.find('.still-employed').prop('checked', true)
+                $clone.find('.termination-date-field').hide().find('input').prop('disabled', true)
             }
         }
     })
@@ -209,6 +214,7 @@ function resetEvents() {
         })
         .parent()
         .attr('style', countEmplList() > 1 ? '' : 'display: none !important;')
+    $('.still-employed').off('click')
 
     busNameEvent(TS.prevEmployer, true, {
         onInput,
@@ -335,6 +341,16 @@ function resetEvents() {
         onChange,
     })
 
+    $('.still-employed').on('click', function() {
+        const $leftOnContainer = $(this).parent().parent().parent().next().find('.termination-date-field')
+        let disabled = false, action = 'show'
+        if ($(this).prop('checked')) {
+            disabled = true
+            action = 'hide'
+        }
+        $leftOnContainer[action]().find('input').prop('disabled', disabled)
+    })
+
     dateMask(TS.emplEndDate, {
         pattern: 'us',
         onAccept(mask, $date) {
@@ -342,8 +358,8 @@ function resetEvents() {
                 .removeClass('is-invalid')
                 .next()
                     .removeClass('text-danger')
-                    .addClass('text-info')
-                    .text('Blank if still employed')
+                    // .addClass('text-info')
+                    // .text('Blank if still employed')
         },
         onComplete(mask, $end) {
             let end = mask.value

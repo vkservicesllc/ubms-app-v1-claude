@@ -1153,9 +1153,10 @@ class ApplicationForm {
         target: 'emplEndDate',
         group: 'emplEndDate',
         name: 'leftOn[]',
+        required,
         disabled,
         label: 'Termination Date',
-    })
+    }, true)
 
 
 
