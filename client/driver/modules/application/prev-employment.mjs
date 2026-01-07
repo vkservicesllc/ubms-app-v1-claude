@@ -5,7 +5,7 @@ import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/add
 import patterns from '/modules/registry/patterns.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
-import formId, { check, onInput, onAccept, onChange, onComplete, onBlur, onSubmit } from './support.mjs'
+import formId, { check, onInput, onAccept, onChange, onComplete, onBlur, onSubmit, addressPredictions } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const RS = selector.id.radio
@@ -220,8 +220,13 @@ function resetEvents() {
 
     telMask(TS.emplPhone, { onAccept, onComplete })
 
+    let timer
     addr1Event(TS.emplAddress1, {
-        onInput,
+        onInput(addr1, $addr1) {
+            clearTimeout(timer)
+            timer = setTimeout(() => addressPredictions($addr1, addr1), 500)
+            onInput(addr1, $addr1)
+        },
         onChange(addr1, $addr1) {
             const $addr2 = $addr1.parent().next().find(TS.emplAddress2)
             const addr2Patt = patterns.match.addr2
