@@ -117,7 +117,7 @@ router.post('/list/application/:formId/:target', async (req, res) => {
         if (!application) throw new Error('Application not found')
 
         let { target } = req.params
-        target = { citations: 'citation', accidents: 'accident' }[target]
+        target = { citations: 'citation', accidents: 'accident', employers: 'employer' }[target]
         target += '.history'
 
         const addresses = await application.fetch(target)

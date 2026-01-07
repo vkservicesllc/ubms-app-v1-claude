@@ -758,6 +758,7 @@ class Application {
         histSort: {
             citation: 'citedOn',
             accident: 'date',
+            employer: 'startedOn',
         },
         logFile: 'driver-applications',
         logFields: {

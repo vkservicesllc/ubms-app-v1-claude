@@ -28,6 +28,7 @@ const $deleteTarget = $('#delete-preempl-target')
 const $deleteEmplDesc = $('#delete-preempl-desc')
 
 const appliedOn = $(selector.id.hidden.appliedOn).val()
+const emplExpStartDate = $('#empl-exp-start-date').val()
 
 const countEmplList = () => $emplList.children().length
 
@@ -139,7 +140,7 @@ function cloneEmplForm(i = 0, data = null) {
 
 
 function drawEmployerForms() {
-    $.ajax(`/api/application/${formId()}/employers`, {
+    $.ajax(`/api/list/application/${formId()}/employers`, {
         method: 'POST',
         success(response) {
             let { data, error } = response

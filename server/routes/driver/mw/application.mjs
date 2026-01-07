@@ -918,6 +918,7 @@ export const applicationProgress = async (req, res) => {
         hbs.addrEnough = application.address.enough
         hbs.cdl = application?.dl?.commercial === true
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET' //! Test time accuracy on live server
+        hbs.emplExpStartDate = application?.experience?.firstDate || ''
 
         res.render(key, hbs)
     } catch (err) {
