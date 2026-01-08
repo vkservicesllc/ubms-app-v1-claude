@@ -90,9 +90,6 @@ router.get('/', User.mw.verify, Team.mw.verify, async (req, res) => {
 })
 
 
-// ==== LIST ROUTES === //
-
-
 router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
@@ -199,6 +196,461 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
         }
 
         res.render(key.replace('.', '/'), hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const aplUrl = '/drivers/applications'
+        const { user, team } = res.session
+        const { DS, unscoped } = user
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('d:drv/apl', 'modify', permissions, DS))
+            return res.redirect(aplUrl)
+
+        const { formId } = req.params
+        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
+
+        if (!application || application.condition === 'h') return res.redirect(aplUrl)
+        if (team && application._teamId !== team._id) return res.redirect(aplUrl)
+
+        const identity = await application.identity(res.session)
+
+        const key = 'drivers.application.e-form'
+        let { hbs } = res
+        hbs = await hbs.set(key, { titlePfx: 'Driver Form ' + formId })
+
+        const { active } = hbs.nav
+        hbs.nav.left.drivers = active
+
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
+
+        const { _carrierId, _userId, cdlRole } = application
+
+        if (_carrierId) {
+            hbs.carrier = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch carrier</span>'
+
+            const carrier = await Carrier.data(res.session, { _id: _carrierId })
+            if (carrier) hbs.carrier = carrier.name
+        }
+
+        if (_userId) {
+            hbs.recruiter = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch recruiter</span>'
+
+            const user = await User.fetch(res.session, { _id: _userId })
+            if (user) hbs.recruiter = user.name
+        }
+
+        const url = `/drivers/application/${formId}/e-form`
+        const recUrl = `/resource/driver/application/${formId}/edit`
+        hbs.actionUrl = {
+            workflow: `${recUrl}/workflow`,
+            profile: `${recUrl}/profile`,
+            status: `${recUrl}/legal-status`,
+            position: `${recUrl}/position`,
+            residence: `${recUrl}/residence`,
+            dl: `${recUrl}/driver-license`,
+            mec: `${recUrl}/medical-card`,
+            legal: `${recUrl}/legal-compliance`,
+            safety: `${recUrl}/safety`,
+            experience: `${recUrl}/experience`,
+            prevEmployment: `${recUrl}/prev-employment`,
+            preference: `${recUrl}/preference`,
+            business: `${recUrl}/business`,
+            beneficiary: `${recUrl}/beneficiary`,
+            misc: `${recUrl}/misc`,
+        }
+        hbs.linkUrl = {
+            priorAddr: `${url}/prior-residence`,
+            citations: `${url}/citations`,
+            accidents: `${url}/accidents`,
+            prevEmployment: `${url}/prev-employers`,
+        }
+        hbs.length = {}
+        hbs.linkColor = {
+            // priorAddr: 'blue',
+            citations: 'blue',
+            accidents: 'blue',
+            prevEmployment: 'red',
+        }
+
+        hbs._id = application._id
+        hbs.formId = formId
+        hbs.cdlRole = cdlRole
+        hbs.position = application.expansion.position
+        hbs.positionRole = cdlRole ? 'CDL Only' : 'Non-CDL'
+        hbs.cdl = application.dl.commercial
+        hbs.applicant = `<strong style="font-size: 1.2em;">${new Person(application).fullName('FMLs')}</strong>`
+        hbs.applicant += ` <small>(${calculateYearAge(application.dob, application.finishedAt.split(' ')[0])} yo`
+        hbs.applicant += ` / ***-**-${application.ssn.slice(-4)})</small>`
+        // hbs.status = { '0': 'US Citizen', '1': 'Permanent Resident', '2': 'Work Authorization/Visa' }[application.legalStatus[0]]
+        hbs.appliedAt = moment(application.appliedAt).format('lll')
+        hbs.finishedAt = moment(application.finishedAt).format('lll')
+        hbs.steps = [ ...Application.list.step ]
+        hbs.steps[0][3] = 'Position' + (application.position[0] === 'OO' ? ' / Vehicle' : '')
+        hbs.steps[6] = 'Previous Employers'
+
+        const visibileRow = 'margin-top: 5px;'
+        const hiddenRow = 'margin-top: 5px; display: none;'
+        hbs.style = {
+            noMecRow: hiddenRow,
+            mecDetailsRow: visibileRow,
+            inactiveLlcRow: hiddenRow,
+            llcDetailsRow: visibileRow,
+        }
+
+        let complete = true
+        const checkMark = {
+            unchecked: 'red times',
+            halfChecked: 'orange check',
+            checked: 'green check',
+            doubleChecked: 'green double check',
+        }
+
+        const checkList = {
+            application: checkMark.checked,
+            legalDox: checkMark.unchecked,
+            ssc: checkMark.unchecked,
+            dl: checkMark.unchecked,
+            mec: checkMark.unchecked,
+            prevEmployers: checkMark.unchecked,
+        }
+
+        let options = {}, dropdown = {}, t = `\t`.repeat(11)
+
+        const legalStatuses = Application.legalStatusList
+        const legalDocs = [
+            'US Passport (Card)',
+            'Green Card',
+            'Valid Work Visa/Authorization',
+        ]
+        hbs.legalStatusDocDesc = legalDocs[application.legalStatus[0]]
+
+        const driverPositions = Driver.positionList
+        dropdown.apprPosition = ''
+        dropdown.position = ''
+
+        for (const pos in driverPositions) {
+            const option = `\n${t}<div class="item" data-value="${pos}">${driverPositions[pos]}</div>`
+            dropdown.apprPosition += option
+            dropdown.position += option
+        }
+
+        /* WORKFLOW */
+        {
+            dropdown.user = ''
+            dropdown.carrier = ''
+            dropdown.team = ''
+            dropdown.condition = ''
+            dropdown.experience = ''
+
+            const teamUsers = team ? (await team.fetch('jx.users')) : []
+            const allUsers = await User.fetch(res.session)
+            const users = []
+            const userId = []
+            const _ids = []
+
+            for (let user of teamUsers) {
+                user = await User.fetch(res.session, { _id: user._id })
+                _ids.push(user._id)
+                userId.push(await user.id())
+            }
+
+            const permissions = [] //! await Role.userPermissions(res.session, userId)
+            allUsers.forEach(user => {
+                const { _id, DS, name } = user
+
+                if (DS && _id === application._userId) users.push({ _id, name })
+                else if (_ids.includes(_id)) {
+                    /* Accesses Team Users */
+                    permissions.forEach(row => {
+                        const { permissions: perms } = row
+                        const permIdx = perms['d:drv/apl']
+
+                        if (permIdx && [3, 4, '3', '4'].some(val => perms['d:drv/apl'].includes(val)))
+                            users.push({ _id, name })
+                    })
+                }
+            })
+            users.forEach(user => {
+                const { _id, name } = user
+                dropdown.user += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+            })
+            if (application._userId)
+                options.user = { hidden: { input: { value: application._userId } } }
+
+            const carriers = (await user.fetch('jx.companies', { filter: { category: 'crr' } })) //! await team.data(res.session, 'carriers')
+
+            carriers.forEach(carrier => { //! This list will not include the current carrier if it was removed from the team
+                const { _carrierId: _id, name } = carrier
+                dropdown.carrier += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+            })
+            if (application._carrierId)
+                options.carrier = { hidden: { input: { value: application._carrierId } } }
+
+            if (unscoped) {
+                const teams = await Team.fetch(res.session)
+                for (const team of teams) {
+                    const { _id, name } = team
+                    dropdown.team += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+                }
+                if (application._teamId)
+                    options.team = { hidden: { input: { value: application._teamId } } }
+            }
+
+
+            const conditions = {
+                a: '<span class="ui dark green text"><i class="thumbs up icon"></i> Approved</span>',
+                r: '<span class="ui orange text"><i class="hourglass half icon"></i> Waiting List</span>',
+                b: '<span class="ui red text"><i class="thumbs down icon"></i> Disqualified</span>',
+            }
+            for (const c in conditions) {
+                const condition = conditions[c]
+                dropdown.condition += `\n${t}<div class="item" data-value="${c}">${condition}</div>`
+            }
+            if (!['p', 'c'].includes(application.condition))
+                options.condition = { hidden: { input: { value: application.condition } }}
+
+            const experiences = Application.experienceList
+            for (const e in experiences) {
+                const experience = experiences[e]
+                dropdown.experience += `\n${t}<div class="item" data-value="${e}">${experience}</div>`
+            }
+            if (application?.decision?.experience)
+                options.experience = { hidden: { input: { value: application.decision.experience } } }
+            if (application?.decision?.position)
+                options.apprPosition = { hidden: { input: { value: application.decision.position } } }
+        }
+
+        /* FILES */
+        {
+            hbs.fileTab = inPGroup('f:drv', permissions, DS)
+            hbs.filePerms = {
+                application: withPrivileges('f:drv/apl', 'view', permissions, DS),
+            }
+        }
+
+        /* PROFILE */
+        {
+            dropdown.suffix = ''
+            dropdown.gender = ''
+            dropdown.marital = ''
+
+            for (const sfx in Person.suffixList)
+                dropdown.suffix += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
+            for (const sex in Person.genderList)
+                dropdown.gender += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
+            for (const stat in Person.maritalList)
+                dropdown.marital += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
+
+            for (const prop in identity.mismatch) {
+                if (identity.mismatch[prop] === true) {
+                    checkList.application = checkMark.unchecked
+                    break
+                }
+            }
+        }
+
+        /* LEGAL STATUS */
+        {
+            dropdown.status = ''
+            options.status = { hidden: { input: { disabled: false } } }
+
+            for (const status in legalStatuses)
+                dropdown.status += `\n${t}<div class="item" data-value="${status}">${legalStatuses[status]}</div>`
+        }
+
+        /* POSITION */
+        {
+            dropdown.vehicleType = ''
+
+            const typeData = Application.list.vhlType[cdlRole]
+
+            for (const type in typeData)
+                dropdown.vehicleType += `\n${t}\t<div class="item" data-value="${type}">${typeData[type]}</div>`
+
+            if (!cdlRole) {
+                const mmtData = currentExpediteVhlMMTData()
+                const yearData = descYears()
+                const lenData = Application.vhlLengthList.straightBox
+                dropdown.vehicleMMT = ''
+                dropdown.vehicleYear = ''
+                dropdown.vehicleLength = ''
+
+                for (const group in mmtData) {
+                    dropdown.vehicleMMT += `\n${t}\t<div class="header"><span class="ui blue text">${group}:</span></div>`
+
+                    for (const mmt in mmtData[group])
+                        dropdown.vehicleMMT += `\n${t}\t<div class="item" data-value="${mmt}">${mmtData[group][mmt]}</div>`
+                }
+
+                for (const year in yearData)
+                    dropdown.vehicleYear += `\n${t}\t<div class="item" data-value="${year}">${yearData[year]}</div>`
+
+                for (const len in lenData) {
+                    const option = lenData[len].replace('(', '<small><span class="ui text grey">(').replace(')', ')</span></small>')
+                    dropdown.vehicleLength += `\n${t}\t<div class="item" data-value="${len}">${option}</div>`
+                }
+            }
+        }
+
+        /* RESIDENCE */
+        {
+            dropdown.addrState = ''
+            dropdown.country = ''
+            for (const country in Geography.countryList) {
+                dropdown.country += `\n${t}<div class="item" data-value="${country}">${Geography.countryList[country]}</div>`
+            }
+        }
+
+        /* DRIVER's LICENSE */
+        {
+            if (cdlRole) options.dlCommercial2 = { checkbox: { input: { disabled: true } } }
+            dropdown.dlState = ''
+            options.dlEndrs = { text: { input: { rows: 2 } } }
+            options.dlRestr = { text: { input: { rows: 2 } } }
+            options.dlDeniedExpl = { text: { input: { rows: 2, placeholder: ' ' }, label: { content: 'Details' } } }
+            options.dlRevokedExpl = { text: { input: { rows: 2, placeholder: ' ' }, label: { content: 'Details' } } }
+        }
+
+        /* MEDICAL CARD */
+        {
+            if (!application.medCard) {
+                checkList.application = checkMark.halfChecked
+                hbs.style.noMecRow = visibileRow
+                hbs.style.mecDetailsRow = hiddenRow
+            }
+            options.noMec = { checkbox: { label: {
+                content: '<span class="ui dark orange text"><i class="exclamation triangle icon"></i> Unavailable at the time of submission</span>',
+            } } }
+        }
+
+        /* LEGAL COMPLIANCE */
+        {
+            options.criminalExpl = { text: { input: { rows: 2, placeholder: ' ' }, label: { content: 'Details' } } }
+            hbs.length.citations = (await application.fetch('citation.history')).length
+            if (hbs.length.citations) hbs.linkColor.citations = 'red'
+        }
+
+        /* SAFETY */
+        {
+            hbs.length.accidents = (await application.fetch('accident.history')).length
+            if (hbs.length.accidents) hbs.linkColor.accidents = 'red'
+        }
+
+        /* EXPERIENCE */
+        {
+            dropdown.schState = ''
+            dropdown.schDuration = ''
+            for (const key in Application.schoolDurationList) {
+                const option = Application.schoolDurationList[key]
+                dropdown.schDuration += `\n${t}<div class="item" data-value="${key}">${option}</div>`
+            }
+
+            const appliedOn = moment(application.appliedOn)
+            let j = 8
+            for (let i = 0; i < 7; i++) {
+                const content = `${appliedOn.clone().subtract(--j, 'days').format('dddd/MMM D, YYYY')}`.replace('/', '<br/>')
+                options[`expHours${i + 1}`] = {
+                    text: {
+                        label: { content },
+                    },
+                }
+            }
+        }
+
+        /* PREVIOUS EMPLOYERS */
+        {
+            hbs.length.prevEmployment = (await application.fetch('employer.history')).length
+            if (hbs.length.prevEmployment) hbs.linkColor.prevEmployment = 'blue'
+        }
+
+        /* PREFERENCE */
+        {
+            // Desired Start Timeframe
+        }
+
+        /* BUSINESS */
+        {
+            if (!application.activeBusiness) {
+                checkList.application = checkMark.halfChecked
+                hbs.style.inactiveLlcRow = visibileRow
+                hbs.style.llcDetailsRow = hiddenRow
+            }
+            options.inactiveLLC = { checkbox: { label: {
+                content: '<span class="ui dark orange text"><i class="exclamation triangle icon"></i> No currently active LLC</span>',
+            } } }
+            options.llcState = { hidden: { input: { disabled: true } } }
+            dropdown.llcState = ''
+        }
+
+        /* BENEFICIARY */
+        {
+            dropdown.relationship = ''
+
+            const relationData = { ...Relationship.data() }
+            switch (application.marital) {
+                case 'm':
+                    delete relationData['Other']['Fiancé(e)']
+                    delete relationData['Other']['Domestic Partner']
+                    // if (application.gender[0] === 'M') delete relationData['Spouse']['Husband']
+                    // if (application.gender[0] === 'F') delete relationData['Spouse']['Wife']
+
+                    const { sex } = application
+                    let { relation, otherRel } = application.beneficiary
+                    relation = relation.toLowerCase().trim()
+                    if (otherRel) otherRel = otherRel.toLowerCase().trim()
+                    if (
+                        ((relation === 'husband' || otherRel === 'husband') && sex === 1) ||
+                        ((relation === 'wife' || otherRel === 'wife') && sex === 0)
+                    ) checkList.application = checkMark.unchecked
+                    break
+                default:
+                    delete relationData['Marital Partner']
+                    // delete relationData['Spouse']
+                    delete relationData['Immediate In-Law']
+            }
+
+            for (const group in relationData) {
+                dropdown.relationship += `\n${t}<div class="header"><span class="ui blue text">${group}:</span></div>`
+
+                for (const relation in relationData[group])
+                    dropdown.relationship += `\n${t}<div class="item" data-value="${relation}">${relation}</div>`
+            }
+        }
+
+        for (const prop of ['addrState', 'dlState', 'schState', 'llcState'])
+            for (const state in Address.stateList)
+                dropdown[prop] += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
+
+        if (complete) {
+            const { unchecked, halfChecked } = checkMark
+            for (const step in checkList) {
+                const check = checkList[step]
+
+                if (check !== unchecked && check !== halfChecked) continue
+                complete = false
+            }
+        }
+
+        hbs.form = new ApplicationForm(options)
+        hbs.dropdown = dropdown
+        hbs.fullName = application.fullName
+        hbs.originalFullName = identity.individual.fullName('FMLs')
+        hbs.nameMismatch = (
+            identity.mismatch.firstName ||
+            identity.mismatch.middleName ||
+            identity.mismatch.lastName ||
+            identity.mismatch.sufix
+        )
+        hbs.checkList = checkList
+        hbs.complete = complete
+        hbs.unscoped = unscoped
+
+        res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
         sendError.server(req, res, err)
     }
