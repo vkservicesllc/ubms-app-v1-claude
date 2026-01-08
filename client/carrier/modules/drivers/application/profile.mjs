@@ -21,7 +21,7 @@ import application, { identity, count, unmatchedIdx, dropdownEvent, errorMessage
     }
     const $dropdown = {
         suffix: [ $('#suffix-dropdown'), suffix ],
-        gender: [ $('#gender-dropdown'), gender[0] ],
+        gender: [ $('#gender-dropdown'), gender ],
         marital: [ $('#marital-dropdown'), marital ],
     }
     const $calendar = {
