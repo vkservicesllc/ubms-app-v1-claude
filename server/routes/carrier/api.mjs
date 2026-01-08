@@ -113,10 +113,18 @@ router.post('/data/drivers/application/:_id/:target?', User.mw.verify, Team.mw.v
             return res.json({})
         }
 
+        const driver = await Driver.fetch(res.session, { _id: application._driverId })
+        if (!driver) throw new Error('Driver not found')
+
+        const { formId } = application
         const identity = await application.identity()
         const log = await application.log()
 
-        res.json({ data: { application, identity, log } })
+        const applications = await driver.fetch('application.history')
+        const count = applications.length
+        const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
+
+        res.json({ data: { application, identity, count, unmatchedIdx, log } })
 
         // if (!target) {
         //     const driver = await Driver.fetch(res.session, { _id: application._driverId })
@@ -151,7 +159,7 @@ router.post('/data/drivers/application/:_id/:target?', User.mw.verify, Team.mw.v
         //     res.send({ data: await Src.list(res.session, { _aplId: application._id }) })
         // }
     } catch (err) {
-        sendError.server(res, err, true)
+        sendError.server(req, res, err)
     }
 })
 

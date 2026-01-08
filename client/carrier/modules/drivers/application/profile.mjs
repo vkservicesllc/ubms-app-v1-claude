@@ -69,38 +69,38 @@ import application, { identity, count, unmatchedIdx, dropdownEvent, errorMessage
         $form.find('.unsaved-changes').show()
     })
 
-    if (identity.mismatch.dob) $label.dob.prepend(errorIcon).parent().addClass('error')
-    else if (count.matched || unmatchedIdx !== 1) $calendar.dob.parent().addClass('disabled')
+    // if (identity.mismatch.dob) $label.dob.prepend(errorIcon).parent().addClass('error')
+    // else if (count.matched || unmatchedIdx !== 1) $calendar.dob.parent().addClass('disabled')
 
-    if (identity.mismatch.sex) $label.gender.prepend(errorIcon).parent().addClass('error')
-    else if (count.matched || unmatchedIdx !== 1) $dropdown.gender[0].parent().addClass('disabled')
+    // if (identity.mismatch.sex) $label.gender.prepend(errorIcon).parent().addClass('error')
+    // else if (count.matched || unmatchedIdx !== 1) $dropdown.gender[0].parent().addClass('disabled')
 
-    if (identity.mismatch.dob || identity.mismatch.sex) {
-        const message = 'The system identified the SSN, but the gender or DOB entered does not match'
-        const list = [
-            'Review the SSN for possible errors',
-            'Or revise the indicated fields accordingly',
-        ]
+    // if (identity.mismatch.dob || identity.mismatch.sex) {
+    //     const message = 'The system identified the SSN, but the gender or DOB entered does not match'
+    //     const list = [
+    //         'Review the SSN for possible errors',
+    //         'Or revise the indicated fields accordingly',
+    //     ]
 
-        $('.item[data-tab="profile"]').append(errorIcon)
-        $form.after(errorMessage('Identity Error', message, list))
-    }
+    //     $('.item[data-tab="profile"]').append(errorIcon)
+    //     $form.after(errorMessage('Identity Error', message, list))
+    // }
 
-    if (count.matched) $(TS.ssn).parent().addClass('disabled')
+    // if (count.matched) $(TS.ssn).parent().addClass('disabled')
 
-    if (marital === 'm') {
-        const locked = ['husband', 'wife', 'spouse']
-        let { relation, otherRel } = application.beneficiary
+    // if (marital === 'm') {
+    //     const locked = ['husband', 'wife', 'spouse']
+    //     let { relation, otherRel } = application.beneficiary
 
-        relation = relation.toLowerCase().trim()
-        if (otherRel) otherRel = otherRel.toLowerCase().trim()
+    //     relation = relation.toLowerCase().trim()
+    //     if (otherRel) otherRel = otherRel.toLowerCase().trim()
 
-        if (locked.includes(relation) || locked.includes(otherRel))
-            $dropdown.marital[0].parent().addClass('disabled')
-    }
+    //     if (locked.includes(relation) || locked.includes(otherRel))
+    //         $dropdown.marital[0].parent().addClass('disabled')
+    // }
 
-    if ($('#identity-name-mismatch').length) {
-        $('.item[data-tab="profile"]').append('<i class="ui dark orange id badge outline icon"></i>')
-        $('#identity-name-mismatch .nag').nag()
-    }
+    // if ($('#identity-name-mismatch').length) {
+    //     $('.item[data-tab="profile"]').append('<i class="ui dark orange id badge outline icon"></i>')
+    //     $('#identity-name-mismatch .nag').nag()
+    // }
 })()

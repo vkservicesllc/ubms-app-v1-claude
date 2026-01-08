@@ -14,7 +14,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const $dropdown = {
         position: [
             $('#position-dropdown'),
-            position[0],
+            position,
             value => {
                 let disabled = true, action = 'hide'
 

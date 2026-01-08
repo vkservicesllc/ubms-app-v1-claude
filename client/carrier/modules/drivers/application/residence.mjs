@@ -11,7 +11,7 @@ import application, { dropdownEvent } from './hub.mjs'
 
     const $form = $('#residence-form')
     const $dropdown = {
-        state: [ $('#addr-state-dropdown'), address.state[0] ],
+        state: [ $('#addr-state-dropdown'), address.state ],
         country: [ $('#addr-country-dropdown'), address.country ],
     }
     const $calendar = {

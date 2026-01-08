@@ -152,8 +152,8 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
             //     maritalItems += `<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
             for (const pos in driverPositions)
                 positionItems += `<div class="item" data-value="${pos}" data-text="${pos}">${driverPositions[pos]}</div>`
-            // for (const state in Address.stateList)
-            //     addrStateItems += `<div class="item" data-value="${state}" data-text="${state}">${Address.stateList[state]}</div>`
+            // for (const state in Address.list.state)
+            //     addrStateItems += `<div class="item" data-value="${state}" data-text="${state}">${Address.list.state[state]}</div>`
 
             const statusClass = 'new-apl-eligibility new-apl-legal-status'
 
@@ -321,7 +321,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         let options = {}, dropdown = {}, t = `\t`.repeat(11)
 
-        const legalStatuses = Application.legalStatusList
+        const legalStatuses = Application.list.legalStatus
         const legalDocs = [
             'US Passport (Card)',
             'Green Card',
@@ -329,7 +329,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         ]
         hbs.legalStatusDocDesc = legalDocs[application.legalStatus[0]]
 
-        const driverPositions = Driver.positionList
+        const driverPositions = Driver.list.position
         dropdown.apprPosition = ''
         dropdown.position = ''
 
@@ -414,7 +414,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             if (!['p', 'c'].includes(application.condition))
                 options.condition = { hidden: { input: { value: application.condition } }}
 
-            const experiences = Application.experienceList
+            const experiences = Application.list.experience
             for (const e in experiences) {
                 const experience = experiences[e]
                 dropdown.experience += `\n${t}<div class="item" data-value="${e}">${experience}</div>`
@@ -439,12 +439,12 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             dropdown.gender = ''
             dropdown.marital = ''
 
-            for (const sfx in Person.suffixList)
+            for (const sfx in Individual.list.suffix)
                 dropdown.suffix += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
-            for (const sex in Person.genderList)
-                dropdown.gender += `\n${t}<div class="item" data-value="${sex}">${Person.genderList[sex]}</div>`
-            for (const stat in Person.maritalList)
-                dropdown.marital += `\n${t}<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
+            for (const gender in Individual.list.gender)
+                dropdown.gender += `\n${t}<div class="item" data-value="${gender}">${Individual.list.gender[gender]}</div>`
+            for (const stat in Individual.list.marital)
+                dropdown.marital += `\n${t}<div class="item" data-value="${stat}">${Individual.list.marital[stat]}</div>`
 
             for (const prop in identity.mismatch) {
                 if (identity.mismatch[prop] === true) {
@@ -501,8 +501,8 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         {
             dropdown.addrState = ''
             dropdown.country = ''
-            for (const country in Geography.countryList) {
-                dropdown.country += `\n${t}<div class="item" data-value="${country}">${Geography.countryList[country]}</div>`
+            for (const country in Geography.list.country) {
+                dropdown.country += `\n${t}<div class="item" data-value="${country}">${Geography.list.country[country]}</div>`
             }
         }
 
@@ -545,8 +545,8 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         {
             dropdown.schState = ''
             dropdown.schDuration = ''
-            for (const key in Application.schoolDurationList) {
-                const option = Application.schoolDurationList[key]
+            for (const key in Application.list.schoolDuration) {
+                const option = Application.list.schoolDuration[key]
                 dropdown.schDuration += `\n${t}<div class="item" data-value="${key}">${option}</div>`
             }
 
@@ -623,8 +623,8 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         }
 
         for (const prop of ['addrState', 'dlState', 'schState', 'llcState'])
-            for (const state in Address.stateList)
-                dropdown[prop] += `\n${t}<div class="item" data-value="${state}">${Address.stateList[state]}</div>`
+            for (const state in Address.list.state)
+                dropdown[prop] += `\n${t}<div class="item" data-value="${state}">${Address.list.state[state]}</div>`
 
         if (complete) {
             const { unchecked, halfChecked } = checkMark

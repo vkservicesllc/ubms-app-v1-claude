@@ -84,14 +84,14 @@ module.exports = {
         },
     },
 
-    'drivers.pre-applications': {
-        external: [ ...online.external ],
-        internal: {
-            css: [ ...online.internal.css ],
-            js: [ ...online.internal.js ],
-            mjs: [ ...online.internal.mjs ],
-        },
-    },
+    // 'drivers.pre-applications': {
+    //     external: [ ...online.external ],
+    //     internal: {
+    //         css: [ ...online.internal.css ],
+    //         js: [ ...online.internal.js ],
+    //         mjs: [ ...online.internal.mjs ],
+    //     },
+    // },
 
     'drivers.applications': {
         external: [ ...online.external, 'jquery.masked-input', 'datatables.fomantic-ui', 'moment' ],

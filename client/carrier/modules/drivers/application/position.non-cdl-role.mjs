@@ -22,7 +22,7 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
     const $dropdown = {
         position: [
             $('#position-dropdown'),
-            position[0],
+            position,
             value => {
                 if (value !== 'OO') $vehicle.hide().find('input').prop('disabled', true)
                 else {

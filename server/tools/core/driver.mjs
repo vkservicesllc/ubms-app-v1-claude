@@ -57,6 +57,25 @@ class Driver extends Individual {
         const properties = {} //! add driver properties
 
         reSuper(this, { _id, _personId, blackListed }, properties)
+
+        if (single) {
+            this.session = session
+
+
+            this.add = () => {}
+
+
+            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.update = () => {}
+
+
+            this.delete = () => {}
+
+
+            this.log = () => {}
+        }
     }
 
 
@@ -71,6 +90,9 @@ class Driver extends Individual {
         query: query.driver,
         idProp: 'driverId',
         defSorts: null,
+        histSort: {
+            application: 'finishedAt',
+        },
         logFile: 'drivers',
     })
 
@@ -1353,6 +1375,8 @@ class Application {
             'Beneficiary',
             'Miscellaneous',
         ],
+
+        experience: { e: 'Experienced', i: 'Inexperienced', s: 'Student' },
 
         legalStatus: { '0': 'US Citizen', '1': 'Permanent Resident', '2': 'Work Authorization/Visa' },
 
