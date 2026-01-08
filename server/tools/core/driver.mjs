@@ -413,6 +413,21 @@ class Application {
                             case 'school':
                                 data = application.cdlSchool
                                 break
+                            case 'preference':
+                                data = application.preference
+                                break
+                            case 'business':
+                                data = application.business
+                                break
+                            case 'vehicle':
+                                data = application.vehicle
+                                break
+                            case 'beneficiary':
+                                data = application.beneficiary
+                                break
+                            case 'emergency':
+                                data = application.emergency
+                                break
                         }
 
                         return data
@@ -485,33 +500,8 @@ class Application {
                 switch (step) {
 
 
-                    case 'workflow': //* Carrier UI only (no step)
-                        {
-                            //! to be continued...
-                        }
-                        break
-
-
                     case 'profile':
                         await this.update(body)
-                        break
-
-
-                    case 'legal-status': //* Carrier UI only (no step)
-                        {
-                            if (body.legalStatus < 2) body.legalExpiration = null
-                            await this.update(body)
-                        }
-                        break
-
-
-                    case 'position': //* Carrier UI only (no step)
-                        {
-                            const { position, mmt, type, make, model, year, length } = body
-
-                            await vehicleRecord(this, { mmt, type, make, model, year, length })
-                            await this.update({ position })
-                        }
                         break
 
 
@@ -797,10 +787,42 @@ class Application {
 
 
                     case 'beneficiary':
+                        {
+                            if (body.relation !== 'Other') body.otherRel = null
+
+                            if (!this.beneficiary) {
+                                await this.add('beneficiary', body)
+                                await this.update({ step: 10 })
+                            } else await this.update('beneficiary', body)
+                        }
                         break
 
 
                     case 'misc':
+                        {
+                            if (!this.emergency) {
+                                await this.add('emergency', body)
+                                await this.update({ step: 11 })
+                            } else await this.update('emergency', body)
+                        }
+                        break
+
+
+                    case 'legal-status': //* Carrier UI only (no step)
+                        {
+                            if (body.legalStatus < 2) body.legalExpiration = null
+                            await this.update(body)
+                        }
+                        break
+
+
+                    case 'position': //* Carrier UI only (no step)
+                        {
+                            const { position, mmt, type, make, model, year, length } = body
+
+                            await vehicleRecord(this, { mmt, type, make, model, year, length })
+                            await this.update({ position })
+                        }
                         break
 
 
@@ -908,6 +930,8 @@ class Application {
             preference: relLogFields,
             business: relLogFields,
             vehicle: relLogFields,
+            beneficiary: relLogFields,
+            emergency: relLogFields,
         },
     })
 

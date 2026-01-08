@@ -6,9 +6,9 @@ import moment from 'moment'
 import User from '../../../tools/core/user.mjs'
 import Team from '../../../tools/core/team.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
+import Individual from '../../../tools/core/individual.mjs'
 import Driver, { Application } from '../../../tools/core/driver.mjs'
-import { Relationship } from '../../../tools/core/individual.mjs'
-import Person from '../../../../client/global/modules/tools/core/person.mjs'
+import Person, { Relationship } from '../../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
 import Geography from '../../../../client/global/modules/tools/core/geography.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
@@ -870,11 +870,12 @@ export const applicationProgress = async (req, res) => {
                 case 'm':
                     delete relationData['Other']['Fiancé(e)']
                     delete relationData['Other']['Domestic Partner']
-                    if (application.gender === 'M') delete relationData['Spouse']['Husband']
-                    if (application.gender === 'F') delete relationData['Spouse']['Wife']
+                    // if (application.gender === 'M') delete relationData['Spouse']['Husband']
+                    // if (application.gender === 'F') delete relationData['Spouse']['Wife']
                     break
                 default:
-                    delete relationData['Spouse']
+                    // delete relationData['Spouse']
+                    delete relationData['Marital Partner']
                     delete relationData['Immediate In-Law']
             }
             options.benefRelation.select.input.data = relationData
@@ -939,7 +940,7 @@ export const applicationSummary = async (req, res) => {
             return res.redirect(`/application/${formId}`)
         }
 
-        const application = await Application.fetch(res.session, { _id })
+        const application = await Application.fetch(res.session, { _id }, { hideSensitive: false })
         if (!application) return respond404(res)
 
         if (formId !== application.formId) {
@@ -974,7 +975,7 @@ export const applicationSummary = async (req, res) => {
 
         hbs.application.dob = moment(application.dob).format('ll')
         hbs.application.ssn = formatSsn(application.ssn)
-        hbs.application.maritalStatus = Person.maritalList[application.marital]
+        hbs.application.maritalStatus = Individual.list.marital[application.marital]
 
         hbs.application.phone = formatTel(application.phone)
         hbs.application.emergency.phone = formatTel(application.emergency.phone)
@@ -986,7 +987,7 @@ export const applicationSummary = async (req, res) => {
             hbs.application.address.country = Geography.countryList[application.address.country]
 
         hbs.application.dl.type = application.dl.commercial ? 'Commercial' : 'Non-Commercial'
-        hbs.application.dl.state = Address.stateList[application.dl.state]
+        hbs.application.dl.state = Address.list.state[application.dl.state]
         if (!application.dl.class) hbs.application.dl.class = na
         hbs.application.dl.issuedOn = moment(application.dl.issuedOn).format('ll')
         hbs.application.dl.expiresOn = moment(application.dl.expiresOn).format('ll')
@@ -1047,15 +1048,15 @@ export const applicationSummary = async (req, res) => {
                 hbs.application.experience.mileage = application.experience.mileage.toLocaleString()
             if (application.experience.hours) {
                 let total = 0
-                application.experience.hours.forEach(hours => total += hours)
+                application.experience.hours.forEach(hours => total += +hours)
                 hbs.application.experience.hourList = application.experience.hours.join(' + ') + ' = ' + total
             }
         }
 
         if (application.cdlSchool !== false) {
             hbs.application.cdlSchool.phone = formatTel(application.cdlSchool.phone)
-            hbs.application.cdlSchool.state = Address.stateList[application.cdlSchool.state]
-            hbs.application.cdlSchool.duration = Application.schoolDurationList[application.cdlSchool.duration]
+            hbs.application.cdlSchool.state = Address.list.state[application.cdlSchool.state]
+            hbs.application.cdlSchool.duration = Application.list.schoolDuration[application.cdlSchool.duration]
             hbs.application.cdlSchool.endDate = moment(application.cdlSchool.endDate).format('ll')
         } else hbs.application.cdlSchool = { name: 'Never attended' }
 
@@ -1063,7 +1064,7 @@ export const applicationSummary = async (req, res) => {
         if (application.preference.teamPhone) hbs.application.preference.teamPhone = formatTel(application.preference.teamPhone)
         if (application.preference?.haulRegion) {
             const haulRegionList = []
-            application.preference.haulRegion.forEach(region => haulRegionList.push(Application.haulRegionList[region]))
+            application.preference.haulRegion.forEach(region => haulRegionList.push(Application.list.haulRegion[region]))
             hbs.application.preference.haulRegionList = haulRegionList.join(', ')
         }
         if (application.preference?.haulRegion) {
@@ -1071,10 +1072,10 @@ export const applicationSummary = async (req, res) => {
             application.preference.equipmentType.forEach(type => equipmentList.push(Application.list.vehicle.semi[type]))
             hbs.application.preference.equipmentList = equipmentList.join(', ')
         }
-        hbs.application.preference.startPref = Application.startPrefList[application.preference.startPref]
+        hbs.application.preference.startPref = Application.list.startPref[application.preference.startPref]
 
         if (application.activeBusiness) {
-            hbs.application.business.state = Address.stateList[application.business.state]
+            hbs.application.business.state = Address.list.state[application.business.state]
             hbs.application.business.ein = formatEin(application.business.ein) || na('N/A')
         } // else {
         //     hbs.application.businessAssist = application.businessAssist

@@ -5,10 +5,10 @@ const sendError = require('../../tools/utils/error')
 
 /* Tools */
 import moment from 'moment'
-import Person from '../../../client/global/modules/tools/core/person.mjs'
+import Person, { Relationship } from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Geography from '../../../client/global/modules/tools/core/geography.mjs'
-import Individual, { Relationship } from '../../tools/core/individual.mjs'
+import Individual from '../../tools/core/individual.mjs'
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'

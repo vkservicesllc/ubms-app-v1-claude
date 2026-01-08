@@ -15,7 +15,7 @@ const relocate = href => {
 }
 
 
-$.ajax(`/api/application/${formId}/addresses`, {
+$.ajax(`/api/list/application/${formId}/addresses`, {
     method: 'POST',
     success(response) {
         let { data, error } = response
@@ -45,7 +45,7 @@ $.ajax(`/api/application/${formId}/addresses`, {
 })
 
 
-$.ajax(`/api/application/${formId}/citations`, {
+$.ajax(`/api/list/application/${formId}/citations`, {
     method: 'POST',
     success(response) {
         let { data, error } = response
@@ -83,7 +83,7 @@ $.ajax(`/api/application/${formId}/citations`, {
             html += '<tbody class="table-group-divider">'
             html += `<tr><th class="text-secondary">${label}:</th><td>${reason}</td></tr>`
             html += `<tr><th class="text-secondary">Date:</th><td>${moment(citedOn).format('ll')}</td></tr>`
-            html += `<tr><th class="text-secondary">State:</th><td>${Address.stateList[state]}</td></tr>`
+            html += `<tr><th class="text-secondary">State:</th><td>${Address.list.state[state]}</td></tr>`
             html += '</tbody>'
         })
 
@@ -92,7 +92,7 @@ $.ajax(`/api/application/${formId}/citations`, {
 })
 
 
-$.ajax(`/api/application/${formId}/accidents`, {
+$.ajax(`/api/list/application/${formId}/accidents`, {
     method: 'POST',
     success(response) {
         let { data, error } = response
@@ -133,7 +133,7 @@ $.ajax(`/api/application/${formId}/accidents`, {
             html += '<tbody class="table-group-divider">'
             html += `<tr><th class="text-secondary">${label}:</th><td>${type}</td></tr>`
             html += `<tr><th class="text-secondary">Date:</th><td>${moment(date).format('ll')}</td></tr>`
-            html += `<tr><th class="text-secondary">State:</th><td>${Address.stateList[state]}</td></tr>`
+            html += `<tr><th class="text-secondary">State:</th><td>${Address.list.state[state]}</td></tr>`
             html += `<tr><th class="text-secondary">Casualties:</th><td>${injuries}<br/>${fatalities}</td></tr>`
             html += '</tbody>'
         })
@@ -143,7 +143,7 @@ $.ajax(`/api/application/${formId}/accidents`, {
 })
 
 
-$.ajax(`/api/application/${formId}/employers`, {
+$.ajax(`/api/list/application/${formId}/employers`, {
     method: 'POST',
     success(response) {
         let { data, error } = response
