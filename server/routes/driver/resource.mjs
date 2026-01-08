@@ -170,6 +170,9 @@ const dynamicValidator = {
             case 'misc':
                 validators = validateApplicantEmergency
                 break
+            case 'certify':
+                validators = []
+                break
         }
 
         Promise.all(validators.map(validator => validator.run(req)))
@@ -250,7 +253,7 @@ router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, valid
 router.post('/application/progress/:formId/:step', dynamicValidator.applications, validationCheck, async (req, res) => {
     try {
         const { formId, step } = req.params
-        const application = await Application.fetch(res.session, { formId })
+        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
         if (!application) throw new Error('Application not found')
 // return res.send({
 //     step,
@@ -259,6 +262,21 @@ router.post('/application/progress/:formId/:step', dynamicValidator.applications
 //     id: application.id,
 // })
         await application.progress(step, req.body)
+
+        res.redirect(`/application/${formId}`)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/application/submit/:formId', async (req, res) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.fetch(res.session, { formId })
+        if (!application) throw new Error('Application not found')
+
+        await application.submit()
 
         res.redirect(`/application/${formId}`)
     } catch (err) {

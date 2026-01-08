@@ -964,7 +964,7 @@ export const applicationSummary = async (req, res) => {
             agreement: `/application/${formId}/agreement`,
         }
         hbs.actionUrl = {
-            certify: `/resource/application/certify/form/${formId}`,
+            certify: `/resource/application/progress/${formId}/certify`,
         }
 
         hbs.application = application
@@ -1137,7 +1137,7 @@ export const applicationDocuments = async (req, res) => {
             summary: `/application/${formId}/summary`,
         }
         hbs.actionUrl = {
-            certify: `/resource/application/certify/form/${formId}`,
+            certify: `/resource/application/progress/${formId}/certify`,
         }
 
         res.render('application/documents', hbs)
@@ -1175,7 +1175,7 @@ export const applicationAgreement = async (req, res) => {
         hbs.bodyAttrs = ' data-bs-theme="dark"'
 
         hbs.actionUrl = {
-            submit: `/resource/application/submit/form/${formId}`,
+            submit: `/resource/application/submit/${formId}`,
         }
 
         res.render('application/agreement', hbs)

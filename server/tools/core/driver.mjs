@@ -808,6 +808,13 @@ class Application {
                         break
 
 
+                    case 'certify':
+                        {
+                            if (this.step < 12) await this.update({ step: 12 })
+                        }
+                        break
+
+
                     case 'legal-status': //* Carrier UI only (no step)
                         {
                             if (body.legalStatus < 2) body.legalExpiration = null
@@ -835,6 +842,12 @@ class Application {
 
 
                 }
+            }
+
+
+            this.submit = async () => {
+                if (this.condition === 'p' && this.step === 12)
+                    await this.update({ condition: 'c', finishedAt: utcTimeStamp() })
             }
 
 
