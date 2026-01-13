@@ -146,8 +146,8 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
 
             for (const sfx in Individual.list.suffix)
                 suffixItems += `<div class="item" data-value="${sfx}">${sfx}</div>`
-            for (const sex in Individual.list.gender)
-                genderItems += `<div class="item" data-value="${sex}">${Individual.list.gender[sex]}</div>`
+            for (const gender in Individual.list.gender)
+                genderItems += `<div class="item" data-value="${gender}">${Individual.list.gender[gender]}</div>`
             // for (const stat in Individual.list.marital)
             //     maritalItems += `<div class="item" data-value="${stat}">${Person.maritalList[stat]}</div>`
             for (const pos in driverPositions)
@@ -594,23 +594,11 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             const relationData = { ...Relationship.data() }
             switch (application.marital) {
                 case 'm':
-                    delete relationData['Other']['Fiancé(e)']
-                    delete relationData['Other']['Domestic Partner']
-                    // if (application.gender[0] === 'M') delete relationData['Spouse']['Husband']
-                    // if (application.gender[0] === 'F') delete relationData['Spouse']['Wife']
-
-                    const { sex } = application
-                    let { relation, otherRel } = application.beneficiary
-                    relation = relation.toLowerCase().trim()
-                    if (otherRel) otherRel = otherRel.toLowerCase().trim()
-                    if (
-                        ((relation === 'husband' || otherRel === 'husband') && sex === 1) ||
-                        ((relation === 'wife' || otherRel === 'wife') && sex === 0)
-                    ) checkList.application = checkMark.unchecked
+                    delete relationData['Partner']['Fiancé(e)']
+                    delete relationData['Partner']['Domestic Partner']
                     break
                 default:
-                    delete relationData['Marital Partner']
-                    // delete relationData['Spouse']
+                    delete relationData['Marital Partner']['Spouse']
                     delete relationData['Immediate In-Law']
             }
 

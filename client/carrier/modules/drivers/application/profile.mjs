@@ -46,7 +46,7 @@ import application, { identity, count, unmatchedIdx, dropdownEvent, errorMessage
         value: lastName,
         onChange(lastName, $lastName, suffix) {
             if (suffix)
-                $dropdown.suffix.dropdown('set selected', suffix)
+                $dropdown.suffix[0].dropdown('set selected', suffix)
         },
     })
 

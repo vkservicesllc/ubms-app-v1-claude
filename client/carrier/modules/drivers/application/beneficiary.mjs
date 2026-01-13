@@ -49,7 +49,7 @@ import application, { dropdownEvent, errorMessage, errorIcon } from './hub.mjs'
         value: lastName,
         onChange(lastName, $lastName, suffix) {
             if (suffix)
-                $dropdown.suffix.dropdown('set selected', suffix)
+                $dropdown.suffix[0].dropdown('set selected', suffix)
         },
     })
 

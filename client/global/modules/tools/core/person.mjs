@@ -108,15 +108,14 @@ export default Person
 export class Relationship {
 
     static list = {
-        // 'Spouse': [['Husband', 'M'], ['Wife', 'F']],
-        'Marital Partner': ['Spouse'],
-        'Parent': [['Father', 'M'], ['Mother', 'F'], ['Stepfather', 'M'], ['Stepmother', 'F']],
+        'Partner': ['Spouse', 'Fiancé(e)', 'Domestic Partner'],
         'Child': [['Son', 'M'], ['Daughter', 'F'], ['Stepson', 'M'], ['Stepdaughter', 'F']],
+        'Parent': [['Father', 'M'], ['Mother', 'F'], ['Stepfather', 'M'], ['Stepmother', 'F']],
         'Sibling': [['Brother', 'M'],  ['Sister', 'F'], ['Stepbrother', 'M'], ['Stepsister', 'F']],
         'Grandparent': [['Grandfather', 'M'], ['Grandmother', 'F']],
         'Grandchild': [['Grandson', 'M'], ['Granddaughter', 'F']],
         'Immediate In-Law': [['Father-in-law', 'M'], ['Mother-in-law', 'F'], ['Son-in-law', 'M'], ['Daughter-in-law', 'F'], ['Brother-in-law', 'M'], ['Sister-in-law', 'F']],
-        'Other': [['Uncle', 'M'], ['Aunt', 'F'], ['Nephew', 'M'], ['Niece', 'F'], 'Cousin', 'Fiancé(e)', 'Domestic Partner', 'Friend', 'Other'],
+        'Other': [['Uncle', 'M'], ['Aunt', 'F'], ['Nephew', 'M'], ['Niece', 'F'], 'Cousin', 'Friend', 'Other'],
     }
 
     static data = () => {

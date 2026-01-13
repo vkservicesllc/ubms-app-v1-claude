@@ -868,14 +868,11 @@ export const applicationProgress = async (req, res) => {
             const relationData = { ...Relationship.data() }
             switch (application.marital) {
                 case 'm':
-                    delete relationData['Other']['Fiancé(e)']
-                    delete relationData['Other']['Domestic Partner']
-                    // if (application.gender === 'M') delete relationData['Spouse']['Husband']
-                    // if (application.gender === 'F') delete relationData['Spouse']['Wife']
+                    delete relationData['Partner']['Fiancé(e)']
+                    delete relationData['Partner']['Domestic Partner']
                     break
                 default:
-                    // delete relationData['Spouse']
-                    delete relationData['Marital Partner']
+                    delete relationData['Partner']['Spouse']
                     delete relationData['Immediate In-Law']
             }
             options.benefRelation.select.input.data = relationData
