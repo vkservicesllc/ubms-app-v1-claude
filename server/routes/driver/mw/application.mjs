@@ -865,16 +865,7 @@ export const applicationProgress = async (req, res) => {
                 options.benefOtherRel.text.input.disabled = false
             }
 
-            const relationData = { ...Relationship.data() }
-            switch (application.marital) {
-                case 'm':
-                    delete relationData['Partner']['Fiancé(e)']
-                    delete relationData['Partner']['Domestic Partner']
-                    break
-                default:
-                    delete relationData['Partner']['Spouse']
-                    delete relationData['Immediate In-Law']
-            }
+            const relationData = Relationship.data(application.marital)
             options.benefRelation.select.input.data = relationData
 
             if (!application.beneficiary) hbs.scrollPoint.beneficiary = scrollAttr

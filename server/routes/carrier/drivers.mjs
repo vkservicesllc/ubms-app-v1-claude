@@ -591,16 +591,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         {
             dropdown.relationship = ''
 
-            const relationData = { ...Relationship.data() }
-            switch (application.marital) {
-                case 'm':
-                    delete relationData['Partner']['Fiancé(e)']
-                    delete relationData['Partner']['Domestic Partner']
-                    break
-                default:
-                    delete relationData['Marital Partner']['Spouse']
-                    delete relationData['Immediate In-Law']
-            }
+            const relationData = Relationship.data(application.marital)
 
             for (const group in relationData) {
                 dropdown.relationship += `\n${t}<div class="header"><span class="ui blue text">${group}:</span></div>`

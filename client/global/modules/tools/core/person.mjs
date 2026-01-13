@@ -118,7 +118,7 @@ export class Relationship {
         'Other': [['Uncle', 'M'], ['Aunt', 'F'], ['Nephew', 'M'], ['Niece', 'F'], 'Cousin', 'Friend', 'Other'],
     }
 
-    static data = () => {
+    static data = marital => {
         const list = Relationship.list
         const data = {}
 
@@ -129,6 +129,16 @@ export class Relationship {
                 if (Array.isArray(relation)) relation = relation[0]
                 data[group][relation] = relation
             }
+        }
+
+        switch (marital) {
+            case 'm':
+                delete relationData['Partner']['Fiancé(e)']
+                delete relationData['Partner']['Domestic Partner']
+                break
+            default:
+                delete relationData['Partner']['Spouse']
+                delete relationData['Immediate In-Law']
         }
 
         return data
