@@ -1853,11 +1853,83 @@ class Employment {
     constructor(data = {}, { single = true, session, hideRawId = false }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Employer Data')
 
+        this._id = data._id
+        this._appId = data._appId
+        if (!hideRawId) {
+            this.id = data.id
+            this.appId = data.appId
+        }
+        this.status = data.status
+        this.employer = data.employer
+        this.phone = data.phone
+        this.address = new Address(data)
+        this.statedOn = data.startedOn
+        this.leftOn = data.leftOn
+        this.position = data.position
+        this.earnings = data.earnings
+        this.fmcsr = data.fmcsr
+        this.dotDat = data.dotDat
+        this.gapExpl = data.gapExpl
+
+        if (single && !hideRawId) {
+            this.session = session
+
+            this.update = body => classInstance.update(this, new.target, body)
+
+            this.delete = () => classInstance.delete(this, new.target)
+
+            this.log = params => classInstance.log(this, new.target, params)
+        }
     }
 
     static #algorithm = 'MD5'
     static hashId = (field = 'id') => hash(field, Employment.#algorithm)
     static matchIdHash = value => matchHash(value, Employment.#algorithm)
+
+
+    static fetch = (session, filter, { hideRawId = false, mode } = {}) => classStatic.fetch(this, session, filter, { hideRawId, mode }, {
+        batch: [
+            {
+                table: query.driver.application.employer.table,
+                fields: [
+                    'id',
+                    'appId',
+                    Employment.hashId(),
+                    Application.hashId('appId'),
+                    'status',
+                    'employer',
+                    'phone',
+                    'address1',
+                    'address2',
+                    'city',
+                    'state',
+                    'zip',
+                    'statedOn',
+                    'position',
+                    'earnings',
+                    'fmcsr',
+                    'dotDate',
+                    'rfl',
+                    'leftOn',
+                    'gapExpl',
+                ],
+            },
+        ],
+        prepare(batch, filter) {
+            const {
+                id, _id, appId, _appId,
+            } = filter
+            const single = !!id || !!_id
+
+            const match = { id, appId }
+            if (!id) match.id = Employment.matchIdHash(_id)
+            if (!appId) match.appId = Application.matchIdHash(_appId)
+
+            batch[0].match = match
+
+            return { single, batch }
+        },
+    })
 
 
 }
