@@ -718,47 +718,54 @@ class Application {
                             if (this.step < 7) body.step = 7
                             body.prevEmplGaps = null
 
-                            await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
-                            if (prevEmployed) {
-                                const count = employer.length
-                                const emplBody = []
-
-                                for (let i = 0; i < count; i++)
-                                    emplBody.push({
-                                        appId: this.id,
-                                        employer: employer[i],
-                                        phone: phone[i],
-                                        address1: address1[i],
-                                        address2: address2[i],
-                                        city: city[i],
-                                        state: state[i],
-                                        zip: zip[i],
-                                        startedOn: startedOn[i],
-                                        position: position[i],
-                                        earnings: earnings[i],
-                                        fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
-                                        dotDat: dotDat[i],
-                                        rfl: rfl[i],
-                                        leftOn: leftOn?.[i] || null,
-                                        createdIn,
-                                    })
-
-                                await mysql.execute(query.driver_application.employer.insert(emplBody))
-
-                                const employers = await this.fetch('employer.history')
-                                let prevDate = this.appliedOn
+                            if (!prevEmployed) await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
+                            else {
                                 body.prevEmplGaps = false
 
-                                for (const employer of employers) {
-                                    const { startedOn, leftOn } = employer
-                                    if (!leftOn) continue
-
-                                    body.prevEmplGaps = Math.abs(moment(startedOn).diff(moment(leftOn), 'days')) > 30
-                                    if (body.prevEmplGaps) break
-
-                                    prevDate = startedOn
-                                }
+                                const employments = await Employment.fetch(this.session, { appId: this.id })
                             }
+
+                            // await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
+                            // if (prevEmployed) {
+                            //     const count = employer.length
+                            //     const emplBody = []
+
+                            //     for (let i = 0; i < count; i++)
+                            //         emplBody.push({
+                            //             appId: this.id,
+                            //             employer: employer[i],
+                            //             phone: phone[i],
+                            //             address1: address1[i],
+                            //             address2: address2[i],
+                            //             city: city[i],
+                            //             state: state[i],
+                            //             zip: zip[i],
+                            //             startedOn: startedOn[i],
+                            //             position: position[i],
+                            //             earnings: earnings[i],
+                            //             fmcsr: fmcsr && typeof fmcsr[i] ? fmcsr[i] : null,
+                            //             dotDat: dotDat[i],
+                            //             rfl: rfl[i],
+                            //             leftOn: leftOn?.[i] || null,
+                            //             createdIn,
+                            //         })
+
+                            //     await mysql.execute(query.driver_application.employer.insert(emplBody))
+
+                            //     const employers = await this.fetch('employer.history')
+                            //     let prevDate = this.appliedOn
+                            //     body.prevEmplGaps = false
+
+                            //     for (const employer of employers) {
+                            //         const { startedOn, leftOn } = employer
+                            //         if (!leftOn) continue
+
+                            //         body.prevEmplGaps = Math.abs(moment(startedOn).diff(moment(leftOn), 'days')) > 30
+                            //         if (body.prevEmplGaps) break
+
+                            //         prevDate = startedOn
+                            //     }
+                            // }
 
                             await this.update(body)
                         }
@@ -1885,6 +1892,16 @@ class Employment {
     static #algorithm = 'MD5'
     static hashId = (field = 'id') => hash(field, Employment.#algorithm)
     static matchIdHash = value => matchHash(value, Employment.#algorithm)
+
+    static config = () => ({
+        enforceUser: false,
+        enforceLocation: true,
+        db: db.carrier,
+        query: query.driver_appemployer,
+    })
+
+
+    static create = (session, body, params) => classStatic.create(this, session, body, params)
 
 
     static fetch = (session, filter, { hideRawId = false, mode } = {}) => classStatic.fetch(this, session, filter, { hideRawId, mode }, {

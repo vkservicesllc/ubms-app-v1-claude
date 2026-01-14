@@ -17,6 +17,7 @@ export default db
 
 
 const driverAppQuery = new Query(db.carrier, 'applications')
+const driverAppEmplQuery = new Query(db.carrier, 'application_employments')
 
 
 export const query = {
@@ -88,7 +89,7 @@ export const query = {
         accident: new Query(db.carrier, 'application_accidents'),
         experience: new Query(db.carrier, 'application_experiences'),
         school: new Query(db.carrier, 'application_cdlschools'),
-        employer: new Query(db.carrier, 'application_employments'),
+        employer: driverAppEmplQuery,
         preference: new Query(db.carrier, 'application_preferences'),
         business: new Query(db.carrier, 'application_businesses'),
         vehicle: new Query(db.carrier, 'application_vehicles'),
@@ -96,6 +97,9 @@ export const query = {
         emergency: new Query(db.carrier, 'application_emergencies'),
         checklist: new Query(db.carrier, 'application_checklists'),
         decision: new Query(db.carrier, 'application_decisions'),
+    },
+    driver_appemployer: {
+        main: driverAppEmplQuery,
     },
 
     jx: {
