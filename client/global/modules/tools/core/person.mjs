@@ -133,12 +133,12 @@ export class Relationship {
 
         switch (marital) {
             case 'm':
-                delete relationData['Partner']['Fiancé(e)']
-                delete relationData['Partner']['Domestic Partner']
+                delete data['Partner']['Fiancé(e)']
+                delete data['Partner']['Domestic Partner']
                 break
             default:
-                delete relationData['Partner']['Spouse']
-                delete relationData['Immediate In-Law']
+                delete data['Partner']['Spouse']
+                delete data['Immediate In-Law']
         }
 
         return data
