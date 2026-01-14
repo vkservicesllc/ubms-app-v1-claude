@@ -6,7 +6,7 @@ const sendError = require('../../tools/utils/error')
 /* Tools */
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
-import Driver, { Application, Citation, Accident } from '../../tools/core/driver.mjs'
+import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
 
 /* Validators */
 import { validateApplicantLogin } from './application.mjs'
@@ -110,6 +110,21 @@ router.post('/list/application/:formId/addresses', async (req, res) => {
 })
 
 
+router.post('/list/application/:formId/employers', async (req, res) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.fetch(res.session, { formId })
+        if (!application) throw new Error('Application not found')
+
+        const data = await Employment.fetch(res.session, { _appId: application._id })
+
+        res.json({ data })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/list/application/:formId/:target', async (req, res) => {
     try {
         const { formId } = req.params
@@ -117,12 +132,12 @@ router.post('/list/application/:formId/:target', async (req, res) => {
         if (!application) throw new Error('Application not found')
 
         let { target } = req.params
-        target = { citations: 'citation', accidents: 'accident', employers: 'employer' }[target]
+        target = { citations: 'citation', accidents: 'accident' }[target]
         target += '.history'
 
-        const addresses = await application.fetch(target)
+        const data = await application.fetch(target)
 
-        res.json({ data: addresses })
+        res.json({ data })
     } catch (err) {
         sendError.server(req, res, err)
     }

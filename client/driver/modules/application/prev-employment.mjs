@@ -148,31 +148,10 @@ function drawEmployerForms() {
     $.ajax(`/api/list/application/${formId()}/employers`, {
         method: 'POST',
         success(response) {
-            let { data, error } = response
-            if (error) return alert(error)
+            let { data } = response
 
-            if (!data.length) {
-                const employer = {}
-                const fields = [
-                    'employer',
-                    'phone',
-                    'address1',
-                    'address2',
-                    'city',
-                    'state',
-                    'zip',
-                    'startedOn',
-                    'position',
-                    'earnings',
-                    'fmcsr',
-                    'dotDat',
-                    'leftOn',
-                    'rfl',
-                ]
-
-                fields.forEach(field => employer[field] = null)
-                data.push(employer)
-            } else {
+            if (!data.length) data = null
+            else {
                 data = sortArrayByObjectKey(data, 'startedOn', false)
 
                 data.forEach(row => {
@@ -183,7 +162,7 @@ function drawEmployerForms() {
                 })
             }
 
-            const count = data.length
+            const count = data?.length || 1
             for (let i = 0; i < count; i++) $emplList.append(cloneEmplForm(i, data))
 
             resetEvents()
@@ -419,7 +398,8 @@ function resetEvents() {
 function resetEmplIdx() {
     $emplList.find('.employer-form').each(function(i) {
         $(this).find('input, select').each(function() {
-            $(this).attr('name', $(this).attr('name').split('[')[0] + `[${i}]`)
+            if ($(this).attr('name'))
+                $(this).attr('name', $(this).attr('name').split('[')[0] + `[${i}]`)
         })
     })
 }

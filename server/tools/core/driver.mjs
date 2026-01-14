@@ -722,7 +722,9 @@ class Application {
                             else {
                                 body.prevEmplGaps = false
 
-                                const employments = await Employment.fetch(this.session, { appId: this.id })
+                                const employments = await Employment.fetch(this.session, { appId: this.id }, { hideRawId: false })
+                                const count = employer.length
+                                //! do comparisons
                             }
 
                             // await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
@@ -1907,7 +1909,7 @@ class Employment {
     static fetch = (session, filter, { hideRawId = false, mode } = {}) => classStatic.fetch(this, session, filter, { hideRawId, mode }, {
         batch: [
             {
-                table: query.driver.application.employer.table,
+                table: query.driver_appemployer.main.table,
                 fields: [
                     'id',
                     'appId',
@@ -1921,11 +1923,11 @@ class Employment {
                     'city',
                     'state',
                     'zip',
-                    'statedOn',
+                    'startedOn',
                     'position',
                     'earnings',
                     'fmcsr',
-                    'dotDate',
+                    'dotDat',
                     'rfl',
                     'leftOn',
                     'gapExpl',

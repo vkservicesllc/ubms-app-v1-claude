@@ -17,7 +17,6 @@ export default db
 
 
 const driverAppQuery = new Query(db.carrier, 'applications')
-const driverAppEmplQuery = new Query(db.carrier, 'application_employments')
 
 
 export const query = {
@@ -85,11 +84,10 @@ export const query = {
         address: new Query(db.carrier, 'application_addresses'),
         license: new Query(db.carrier, 'application_DLs'),
         medical: new Query(db.carrier, 'application_MECs'),
-        citation: new Query(db.carrier, 'application_citations'),
-        accident: new Query(db.carrier, 'application_accidents'),
+        citation: new Query(db.carrier, 'application_citations'), //! Create a separate entity
+        accident: new Query(db.carrier, 'application_accidents'), //! Create a separate entity
         experience: new Query(db.carrier, 'application_experiences'),
         school: new Query(db.carrier, 'application_cdlschools'),
-        employer: driverAppEmplQuery,
         preference: new Query(db.carrier, 'application_preferences'),
         business: new Query(db.carrier, 'application_businesses'),
         vehicle: new Query(db.carrier, 'application_vehicles'),
@@ -99,7 +97,7 @@ export const query = {
         decision: new Query(db.carrier, 'application_decisions'),
     },
     driver_appemployer: {
-        main: driverAppEmplQuery,
+        main: new Query(db.carrier, 'application_employments'),
     },
 
     jx: {
