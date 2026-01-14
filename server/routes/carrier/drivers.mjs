@@ -13,7 +13,7 @@ import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Company from '../../tools/core/company.mjs'
-import Driver, { Application } from '../../tools/core/driver.mjs'
+import Driver, { Application, Citation, Accident } from '../../tools/core/driver.mjs'
 // import createApplicationPdf from './mv/pdf/driver-application.mjs'
 import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 import { sortObjectByKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
@@ -628,6 +628,139 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         hbs.checkList = checkList
         hbs.complete = complete
         hbs.unscoped = unscoped
+
+        res.render(key.replaceAll('.', '/'), hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const aplUrl = '/drivers/applications'
+        const { user, team } = res.session
+        const { DS, unscoped } = user
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('d:drv/apl', 'modify', permissions, DS))
+            return res.redirect(aplUrl)
+
+        const { formId, target } = req.params
+        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
+
+        if (!application || application.condition === 'h') return res.redirect(aplUrl)
+        if (team && application._teamId !== team._id) return res.redirect(aplUrl)
+
+        const key = `drivers.application.e-form.${target}`
+        let { hbs } = res
+        hbs = await hbs.set(key, { titlePfx: 'Driver Form ' + formId })
+
+        const { active } = hbs.nav
+        hbs.nav.left.drivers = active
+
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
+
+        hbs._id = application._id
+        hbs.formId = formId
+        hbs.position = application.expansion.position
+        hbs.positionRole = application.cdlRole ? 'CDL Only' : 'Non-CDL'
+        hbs.cdl = application.dl.commercial
+        hbs.applicant = `<strong style="font-size: 1.2em;">${new Person(application).fullName('FMLs')}</strong>`
+        hbs.applicant += ` <small>(${calculateYearAge(application.dob, application.finishedAt.split(' ')[0])} yo`
+        hbs.applicant += ` / ***-**-${application.ssn.slice(-4)})</small>`
+        hbs.appliedAt = moment(application.appliedAt).format('lll')
+        hbs.finishedAt = moment(application.finishedAt).format('lll')
+
+        const backLinkQuery = {
+            'prior-residence': 'residence',
+            citations: 'legal-compliance',
+            accidents: 'safety',
+            'prev-employers': 'prev-employment',
+        }[target]
+        const backLinkName = {
+            'prior-residence': '<i class="angle double left icon"></i> Current Residence',
+            citations: '<i class="angle double left icon"></i> Legal Compliance',
+            accidents: '<i class="angle double left icon"></i> Safety',
+            'prev-employers': '<i class="angle double left icon"></i> Application',
+        }[target]
+        hbs.backLink = `<a href="/drivers/application/${formId}/e-form?${backLinkQuery}">${backLinkName}</a>`
+
+        let options = {}
+        const dropdown = { state: '' }, t = `\t`.repeat(10)
+
+        for (const state in Address.list.state)
+            dropdown.state += `\n${t}<div class="item" data-value="${state}">${Address.list.state[state]}</div>`
+
+        switch (target) {
+
+            case 'prior-residence':
+                if (application.address.enough) return respond404(res)
+                //! IMPORTANT
+                //? if not enough and country before current address (DO NOT ACCEPT) --- later
+
+                {
+                    const fields = ['_address1', '_address2', '_addrZip', '_addrCity', '_addrSince']
+                    fields.forEach(field => {
+                        options[field] = { text: { input: { disabled: false } } }
+                    })
+                    options._addrState = { hidden: { input: { disabled: false } } }
+                }
+                dropdown.country = ''
+                for (const country in Geography.list.country) {
+                    dropdown.country += `\n\t\t\t\t\t\t\t<div class="item" data-value="${country}">${Geography.list.country[country]}</div>`
+                }
+                break
+
+            case 'citations':
+                dropdown.violation = ''
+                for (const category in Citation.list.violation) {
+                    const items = Citation.list.violation[category]
+                    dropdown.violation += `\n${t}<div class="header"><span class="ui teal text">${category}</span></div>`
+
+                    for (const item in items)
+                        dropdown.violation += `\n${t}<div class="item" data-value="${item}">${items[item]}</div>`
+                }
+                options._citOtherReason = { text: { input: { id: null, disabled: true } } }
+                break
+
+            case 'accidents':
+                dropdown.accident = ''
+                for (const category in Accident.list.collision) {
+                    const items = Accident.list.collision[category]
+                    dropdown.accident += `\n${t}<div class="header"><span class="ui teal text">${category}</span></div>`
+
+                    for (const item in items)
+                        dropdown.accident += `\n${t}<div class="item" data-value="${item}">${items[item]}</div>`
+                }
+                options._accOtherType = { text: { input: { id: null, disabled: true } } }
+                break
+
+            case 'prev-employers':
+                dropdown.addrState = ''
+                for (const state in Address.list.state)
+                    dropdown.addrState += `\n${t}<div class="item" data-value="${state}">${Address.list.state[state]}</div>`
+                const fields = [
+                    '_prevEmployer', '_emplPhone', '_emplStartDate', '_emplEndDate',
+                    '_emplAddr1', '_emplAddr2', '_emplAddrZip', '_emplAddrCity', ['_emplAddrState', 'hidden'],
+                    '_emplPosition', '_emplEarnings', '_emplRFL',
+                ]
+                fields.forEach(field => {
+                    let prop = 'text'
+                    if (Array.isArray(field))
+                        [ field, prop ] = field
+
+                    options[field] = { [prop]: { input: { disabled: false } } }
+                })
+                options._emplEndDate.text.label = { content: 'Left on' }
+                options._emplRFL.text.input.rows = 2,
+                options._emplRFL.text.input.placeholder = ' '
+                hbs.cdl = application?.dl?.commercial === true
+                break
+
+        }
+
+        hbs.form = new ApplicationForm(options)
+        hbs.dropdown = dropdown
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
