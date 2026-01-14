@@ -411,19 +411,6 @@ export const applicationProgress = async (req, res) => {
                     options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === false
                 }
             }
-            //! Rework this logic
-            // if ((cdlRole && application?.dl?.commercial === undefined) || !application.medCard) {
-            //     options.dlCommercial.radio.yes.input.disabled = true
-            //     options.dlCommercial.radio.no.input.disabled = true
-            //     options.dlCommercial.radio[application.medCard ? 'yes' : 'no'].input.checked = true
-            // } else if (application?.experience?.cmv || application?.experience?.cdlSchool) {
-            //     options.dlCommercial.radio.yes.input.disabled = true
-            //     options.dlCommercial.radio.no.input.disabled = true
-            //     options.dlCommercial.radio.yes.input.checked = true
-            // } else {
-            //     options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === true
-            //     options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === false
-            // }
 
             if (options.dlCommercial.radio.yes.input.checked) options.dlEndrs.text.input.disabled = false
             options.dlDenied.radio.yes.input.checked = application?.dl?.denied === true
@@ -460,7 +447,7 @@ export const applicationProgress = async (req, res) => {
             options.medList.text.label.content = 'List medications <small>(names only)</small>'
 
             const fields = Object.keys(values).filter(key => !['medList'].includes(key))
-            if (hbs.medCard && !application.medCard) {
+            if (hbs.medCard && application.medCard === false) {
                 hbs.medCardDisplay = ' style="display: none;"'
 
                 fields.forEach(prop => {

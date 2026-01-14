@@ -304,7 +304,7 @@ class Application {
                 revokedExpl: data.dlRevokedExpl,
             }
 
-        this.medCard = !!data.medCard
+        this.medCard = bool(data.medCard)
         if (this.medCard && data.mecExpiresOn)
             this.mec = {
                 nrcme: data.nrcme,

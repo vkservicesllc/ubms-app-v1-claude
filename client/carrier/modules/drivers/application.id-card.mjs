@@ -25,7 +25,7 @@ table.on('draw', function() {
 
         $.ajax(`/api/data/drivers/application/${_id}?sensitive=true`, {
             method: 'POST',
-            success(response) {console.log(response)
+            success(response) {
                 const { application } = response.data
                 const { phone, dob, ssn } = application
 
