@@ -59,7 +59,7 @@ $template.removeAttr('id').find('[name="_aplId[]"]').remove()
         $modal.add.modal('show')
     })
 
-    $.ajax(`/api/drivers/application/${_id}/employments`, {
+    $.ajax(`/api/list/drivers/application/${_id}/employments`, {
         method: 'POST',
         success(response) {
             let { data } = response

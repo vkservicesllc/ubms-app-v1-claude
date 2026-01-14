@@ -33,7 +33,7 @@ const $form ={
 
     const $add = $('#add'), $cancel = $('#cancel')
 
-    $.ajax(`/api/drivers/application/${_id}/citations`, {
+    $.ajax(`/api/list/drivers/application/${_id}/citations`, {
         method: 'POST',
         success(response) {
             let { data } = response

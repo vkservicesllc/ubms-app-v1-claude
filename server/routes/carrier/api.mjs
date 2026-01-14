@@ -99,19 +99,15 @@ router.post('/lists', User.mw.verify, Team.mw.verify, async (req, res) => {
 router.post('/drivers/dt-list/applications/:archived?', User.mw.verify, Team.mw.verify, Application.mw.dtList)
 
 
-router.post('/data/drivers/application/:_id/:target?', User.mw.verify, Team.mw.verify, async (req, res) => {
+router.post('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
-        const { _id, target } = req.params
+        const { _id } = req.params
         const { sensitive = 'false' } = req.query
         const params = {}
         if (sensitive === 'true') params.hideSensitive = false
 
         const application = await Application.fetch(res.session, { _id }, params)
         if (!application) throw new Error('Application not found')
-
-        if (target) {
-            return res.json({})
-        }
 
         const driver = await Driver.fetch(res.session, { _id: application._driverId })
         if (!driver) throw new Error('Driver not found')
@@ -125,39 +121,6 @@ router.post('/data/drivers/application/:_id/:target?', User.mw.verify, Team.mw.v
         const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
 
         res.json({ data: { application, identity, count, unmatchedIdx, log } })
-
-        // if (!target) {
-        //     const driver = await Driver.fetch(res.session, { _id: application._driverId })
-        //     if (!driver) throw new Error('Applicant not found')
-
-        //     const { formId } = application
-        //     const { applications, count } = await driver.applications(res.session)
-        //     const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
-
-        //     const identity = await application.identity(res.session)
-        //     const log = await application.log()
-
-        //     res.send({ data: { application, identity, count, unmatchedIdx, log } })
-        // } else {
-        //     let Src
-
-        //     switch (target) {
-        //         case 'addresses':
-        //             return res.send(await application.data(target, res.session))
-        //             break
-        //         case 'citations':
-        //             Src = Citation
-        //             break
-        //         case 'accidents':
-        //             Src = Accident
-        //             break
-        //         case 'employments':
-        //             Src = Employment
-        //             break
-        //     }
-
-        //     res.send({ data: await Src.list(res.session, { _aplId: application._id }) })
-        // }
     } catch (err) {
         sendError.server(req, res, err)
     }
@@ -173,6 +136,37 @@ router.delete('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, 
         const { deleted } = await application.delete()
 
         res.json({ deleted })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/list/drivers/application/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        let { _id, target } = req.params
+
+        const application = await Application.fetch(res.session, { _id })
+        if (!application) throw new Error('Application not found')
+
+        const filter = {}
+        switch (target) {
+            case 'addresses':
+                target = 'address'
+                filter.since = { not: application.address.since }
+                break
+            case 'citations':
+                target = 'citation'
+                break
+            case 'accidents':
+                target = 'accident'
+                break
+            case 'employments':
+                target = 'employer'
+                break
+        }
+
+        res.json({ data: await application.fetch(`${target}.history`, { filter }) })
     } catch (err) {
         sendError.server(req, res, err)
     }
