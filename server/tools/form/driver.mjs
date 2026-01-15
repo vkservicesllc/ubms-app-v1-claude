@@ -1548,7 +1548,6 @@ class EmploymentForm {
         group: 'startDate',
         name: 'startedOn',
         required,
-        disabled,
         label: 'Started on',
     })
 

@@ -78,7 +78,7 @@ applicantExperienceFields.forEach(prop => validateApplicantExperience.push(Appli
 
 const validateApplicantPreemployment = []
 const applicantPreemploymentFields = [ 'prevEmployed' ]
-applicantPreemploymentFields.forEach(prop => validateApplicantPreemployment.push(ApplicationForm[prop].validat()))
+applicantPreemploymentFields.forEach(prop => validateApplicantPreemployment.push(ApplicationForm[prop].validate()))
 
 
 const validateApplicantEmployers = []

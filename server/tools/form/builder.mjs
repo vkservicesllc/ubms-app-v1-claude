@@ -60,7 +60,7 @@ const createForm = (input = {}) => {
                     lockedInput[type].id = selector.id[type][target]
             if (key) {
                 lockedInput[type][key].defaultClass = []
-                if (group && selector.class?.combo[group])
+                if (group && selector.class?.combo?.[group])
                     lockedInput[type][key].defaultClass.push(selector.class.combo[group])
                 if (group && selector.class?.[type]?.[group])
                     lockedInput[type][key].defaultClass.push(selector.class[type][group])

@@ -667,12 +667,12 @@ export const applicationProgress = async (req, res) => {
             hbs.accordion.five = accordionProps.finished
 
             options.prevEmployed = { radio: {} }
-            // options._emplFMCSR = { radio: {} }
-            // options._emplDotDat = { radio: {} }
+            emplOptions.FMCSR = { radio: {} }
+            emplOptions.dotDat = { radio: {} }
             for (const prop of ['yes', 'no']) {
                 options.prevEmployed.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                // options._emplFMCSR.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                // options._emplDotDat.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                emplOptions.FMCSR.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                emplOptions.dotDat.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
             options.prevEmployed.radio.yes.input.checked = application.prevEmployed === true
             options.prevEmployed.radio.no.input.checked = application.prevEmployed === false

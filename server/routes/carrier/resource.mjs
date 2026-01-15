@@ -9,7 +9,7 @@ import Team from '../../tools/core/team.mjs'
 import Company from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
-import { ApplicationForm } from '../../tools/form/driver.mjs'
+import { ApplicationForm, EmploymentForm } from '../../tools/form/driver.mjs'
 import { inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 
 /* Validators */
@@ -27,10 +27,10 @@ const url = {
 
 const validateApplicantEmployers = []
 const applicantEmployerFields = [
-    '_prevEmployer', '_emplPhone', '_emplAddr1', '_emplAddr2', '_emplAddrZip', '_emplAddrCity', '_emplAddrState',
-    '_emplStartDate', '_emplPosition', '_emplEarnings', '_emplFMCSR2', '_emplDotDat2', '_emplRFL', '_emplEndDate',
+    'employer', 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
+    'startDate', 'position', 'earnings', 'FMCSR', 'dotDat', 'RFL', 'endDate',
 ]
-applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(ApplicationForm[prop].validate()))
+applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(EmploymentForm[prop].validate()))
 
 
 

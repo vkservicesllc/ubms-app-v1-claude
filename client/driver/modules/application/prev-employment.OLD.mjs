@@ -18,7 +18,7 @@ const $submit = $('#preempl-submit')
 const $help = {
     form: $('#preempl-form-help'),
 }
-const $preEmployments = $('#pre-employments')
+const $section = $('#pre-employments')
 const $emplList = $('#preempl-list')
 const $emplForm = $('#preempl-form-template')
 const $addButton = $('#add-preempl-button')
@@ -52,7 +52,7 @@ inputEvent(employedId.no, {
     onChange(value, $el) {
         if (selected === true) {
             if (confirm('By confirming, you acknowledge that your pre-employment data will be erased!')) {
-                $preEmployments.hide()
+                $section.hide()
                 $emplList.html(null)
 
                 selected = false
@@ -166,7 +166,7 @@ function drawEmployerForms() {
             for (let i = 0; i < count; i++) $emplList.append(cloneEmplForm(i, data))
 
             resetEvents()
-            $preEmployments.show()
+            $section.show()
         },
     })
 }
