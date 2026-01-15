@@ -1,4 +1,5 @@
 import selector from "/modules/registry/selectors/driver-application.mjs"
+import emplSelector from "/modules/registry/selectors/driver-application-employment.mjs"
 import { capitalizeEach } from "/modules/tools/utils/string.mjs"
 
 const TS = selector.class.text, SS = selector.class.select
@@ -88,10 +89,10 @@ export const addressPredictions = ($addr1, input, success) => {
     const $row2 = $row1.next()
     const $datalist = $row1.find('.address-predictions')
 
-    const $addr2 = $row1.find('[name="address[address2]"], ' + TS.prevAddress2 + ', ' + selector.class.text.emplAddress2)
-    const $zip = $row1.find('[name="address[zip]"], ' + TS.prevAddrZip + ', ' + selector.class.text.emplAddrZip)
-    const $city = $row2.find('[name="address[city]"], ' + TS.prevAddrCity + ', ' + selector.class.text.emplAddrCity)
-    const $state = $row2.find('[name="address[state]"], ' + SS.prevAddrState + ', ' + selector.class.select.emplAddrState)
+    const $addr2 = $row1.find('[name="address[address2]"], ' + TS.prevAddress2 + ', ' + emplSelector.id.text.address2)
+    const $zip = $row1.find('[name="address[zip]"], ' + TS.prevAddrZip + ', ' + emplSelector.id.text.addrZip)
+    const $city = $row2.find('[name="address[city]"], ' + TS.prevAddrCity + ', ' + emplSelector.id.text.addrCity)
+    const $state = $row2.find('[name="address[state]"], ' + SS.prevAddrState + ', ' + emplSelector.id.select.addrState)
 
     $datalist.html(null)
 
