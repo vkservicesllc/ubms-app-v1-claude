@@ -15,7 +15,7 @@ import { respond404 } from '../../../tools/utils/response.mjs'
 import { tel as formatTel, ssn as formatSsn, ein as formatEin } from '../../../../client/global/modules/tools/utils/formatter.mjs'
 
 /* Forms */
-import { ApplicationForm } from '../../../tools/form/driver.mjs'
+import { ApplicationForm, EmploymentForm } from '../../../tools/form/driver.mjs'
 import { updateFormOptions } from '../../../tools/form/builder.mjs'
 
 const formInstr = {
@@ -265,6 +265,7 @@ export const applicationProgress = async (req, res) => {
             safety: `${recUrl}/safety`,
             experience: `${recUrl}/experience`,
             prevEmployment: `${recUrl}/prev-employment`,
+            prevEmployer: `${recUrl}/prev-employer`,
             preference: `${recUrl}/preference`,
             business: `${recUrl}/business`,
             beneficiary: `${recUrl}/beneficiary`,
@@ -291,6 +292,7 @@ export const applicationProgress = async (req, res) => {
                 },
             },
         }
+        let emplOptions = {}
 
         {
             //! const count = (await driver.applications(session)).count
@@ -657,35 +659,47 @@ export const applicationProgress = async (req, res) => {
             if (application.experience === null) hbs.scrollPoint.experience = scrollAttr
         }
 
+
+
+
         if (step >= 6) { /* PREVIOUS EMPLOYMENT */
             hbs.button.five = buttonProps.save
             hbs.accordion.five = accordionProps.finished
-            hbs.preemplDisplay = ' style="display: none;"'
 
             options.prevEmployed = { radio: {} }
-            options._emplFMCSR = { radio: {} }
-            options._emplDotDat = { radio: {} }
+            // options._emplFMCSR = { radio: {} }
+            // options._emplDotDat = { radio: {} }
             for (const prop of ['yes', 'no']) {
                 options.prevEmployed.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                options._emplFMCSR.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
-                options._emplDotDat.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                // options._emplFMCSR.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
+                // options._emplDotDat.radio[prop] = { input: { ...checkProps.input }, label: { ...checkProps.label } }
             }
             options.prevEmployed.radio.yes.input.checked = application.prevEmployed === true
             options.prevEmployed.radio.no.input.checked = application.prevEmployed === false
 
             const fields = [
-                '_prevEmployer', '_emplPhone',
-                '_emplAddr1', '_emplAddr2', '_emplAddrZip',
-                '_emplAddrCity', '_emplAddrState', '_emplStartDate',
-                '_emplPosition', '_emplEarnings',
-                '_emplEndDate', '_emplRFL',
+                'employer', 'startDate',
+                'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
+                'position', 'earnings', 'endDate', 'RFL', 'gapExpl',
             ]
-            options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
-            // options._emplAddr1.text.input.placeholder = 'Type full address...'
-            // options._emplAddrState.select.input.options = { valOpt: true }
+            emplOptions = updateFormOptions(emplOptions, EmploymentForm, fields, { ...formInstr, tabs: 7 })
+
+            // const fields = [
+            //     '_prevEmployer', '_emplPhone',
+            //     '_emplAddr1', '_emplAddr2', '_emplAddrZip',
+            //     '_emplAddrCity', '_emplAddrState', '_emplStartDate',
+            //     '_emplPosition', '_emplEarnings',
+            //     '_emplEndDate', '_emplRFL',
+            // ]
+            // options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 7 })
+            // // options._emplAddr1.text.input.placeholder = 'Type full address...'
+            // // options._emplAddrState.select.input.options = { valOpt: true }
 
             if (application.prevEmployed === null) hbs.scrollPoint.employment = scrollAttr
         }
+
+
+
 
         if (step >= 7) { /* DRIVING PREFERENCES */
             hbs.button.six = buttonProps.save
@@ -881,6 +895,7 @@ export const applicationProgress = async (req, res) => {
 
 
         hbs.form = new ApplicationForm(options)
+        hbs.emplForm = new EmploymentForm(emplOptions)
         hbs.agency = agency
         hbs.carrier = carrier
         hbs.progress = Math.round(step / steps.length * 100)

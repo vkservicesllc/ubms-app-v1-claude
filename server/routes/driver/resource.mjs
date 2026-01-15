@@ -12,7 +12,7 @@ import Driver, { Application } from '../../tools/core/driver.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
-import DriverForm, { ApplicationForm } from '../../tools/form/driver.mjs'
+import DriverForm, { ApplicationForm, EmploymentForm } from '../../tools/form/driver.mjs'
 
 
 // ==== SETUP ==== //
@@ -76,13 +76,17 @@ const applicantExperienceFields = [
 applicantExperienceFields.forEach(prop => validateApplicantExperience.push(ApplicationForm[prop].validate()))
 
 
+const validateApplicantPreemployment = []
+const applicantPreemploymentFields = [ 'prevEmployed' ]
+applicantPreemploymentFields.forEach(prop => validateApplicantPreemployment.push(ApplicationForm[prop].validat()))
+
+
 const validateApplicantEmployers = []
 const applicantEmployerFields = [
-    'prevEmployed',
-    '_prevEmployer', '_emplPhone', '_emplAddr1', '_emplAddr2', '_emplAddrZip', '_emplAddrCity', '_emplAddrState',
-    '_emplStartDate', '_emplPosition', '_emplEarnings', '_emplFMCSR', '_emplDotDat', '_emplRFL', '_emplEndDate',
+    'employer', 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
+    'startDate', 'position', 'earnings', 'FMCSR', 'dotDat', 'RFL', 'endDate',
 ]
-applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(ApplicationForm[prop].validate()))
+applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(EmploymentForm[prop].validate()))
 
 
 const validateApplicantPreference = []
@@ -156,6 +160,9 @@ const dynamicValidator = {
                 validators = validateApplicantExperience
                 break
             case 'prev-employment':
+                validators = validateApplicantPreemployment
+                break
+            case 'prev-employers':
                 validators = validateApplicantEmployers
                 break
             case 'preference':

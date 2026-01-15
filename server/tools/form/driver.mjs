@@ -22,6 +22,7 @@ import { createBusNameForm, createEinForm } from './company.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
+import appEmplSelector from '../../../client/global/modules/registry/selectors/driver-application-employment.mjs'
 import Driver, { Application, Citation, Accident } from '../core/driver.mjs'
 import { Truck, Van } from '../core/vehicle.mjs'
 import Geography from '../../../client/global/modules/tools/core/geography.mjs'
@@ -990,173 +991,173 @@ class ApplicationForm {
         label: 'Previously employed within the past 10 years',
     })
 
-    static _emplId = createForm({
-        selector: appSelector,
-        target: 'emplId',
-        type: 'hidden',
-        name: '_id[]',
-    })
+    // static _emplId = createForm({
+    //     selector: appSelector,
+    //     target: 'emplId',
+    //     type: 'hidden',
+    //     name: '_id[]',
+    // })
 
-    static _prevEmployer = createForm({
-        selector: appSelector,
-        target: 'prevEmployer',
-        group: 'prevEmployer',
-        name: 'employer[]',
-        maxLength: 40,
-        required,
-        disabled,
-        label: 'Company / Employer Name',
-    })
+    // static _prevEmployer = createForm({
+    //     selector: appSelector,
+    //     target: 'prevEmployer',
+    //     group: 'prevEmployer',
+    //     name: 'employer[]',
+    //     maxLength: 40,
+    //     required,
+    //     disabled,
+    //     label: 'Company / Employer Name',
+    // })
 
-    static _emplPhone = createPhoneForm({
-        selector: appSelector,
-        target: 'emplPhone',
-        group: 'emplPhone',
-        name: 'phone[]',
-        required,
-        disabled,
-        label: 'Phone',
-    })
+    // static _emplPhone = createPhoneForm({
+    //     selector: appSelector,
+    //     target: 'emplPhone',
+    //     group: 'emplPhone',
+    //     name: 'phone[]',
+    //     required,
+    //     disabled,
+    //     label: 'Phone',
+    // })
 
-    static _emplAddr1 = createAddressForm({
-        selector: appSelector,
-        target: 'emplAddress1',
-        group: 'emplAddress1',
-        name: 'address1[]',
-        disabled,
-    })
+    // static _emplAddr1 = createAddressForm({
+    //     selector: appSelector,
+    //     target: 'emplAddress1',
+    //     group: 'emplAddress1',
+    //     name: 'address1[]',
+    //     disabled,
+    // })
 
-    static _emplAddr2 = createAddressForm({
-        selector: appSelector,
-        target: 'emplAddress2',
-        group: 'emplAddress2',
-        name: 'address2[]',
-        disabled,
-    }, { idx: 2, business: true })
+    // static _emplAddr2 = createAddressForm({
+    //     selector: appSelector,
+    //     target: 'emplAddress2',
+    //     group: 'emplAddress2',
+    //     name: 'address2[]',
+    //     disabled,
+    // }, { idx: 2, business: true })
 
-    static _emplAddrZip = createAddrZipForm({
-        selector: appSelector,
-        target: 'emplAddrZip',
-        group: 'emplAddrZip',
-        name: 'zip[]',
-        disabled,
-    })
+    // static _emplAddrZip = createAddrZipForm({
+    //     selector: appSelector,
+    //     target: 'emplAddrZip',
+    //     group: 'emplAddrZip',
+    //     name: 'zip[]',
+    //     disabled,
+    // })
 
-    static _emplAddrCity = createAddrCityForm({
-        selector: appSelector,
-        target: 'emplAddrCity',
-        group: 'emplAddrCity',
-        name: 'city[]',
-        disabled,
-    })
+    // static _emplAddrCity = createAddrCityForm({
+    //     selector: appSelector,
+    //     target: 'emplAddrCity',
+    //     group: 'emplAddrCity',
+    //     name: 'city[]',
+    //     disabled,
+    // })
 
-    static _emplAddrState = createAddrStateForm({
-        selector: appSelector,
-        target: 'emplAddrState',
-        group: 'emplAddrState',
-        name: 'state[]',
-        disabled,
-    })
+    // static _emplAddrState = createAddrStateForm({
+    //     selector: appSelector,
+    //     target: 'emplAddrState',
+    //     group: 'emplAddrState',
+    //     name: 'state[]',
+    //     disabled,
+    // })
 
-    static _emplStartDate = createDateForm({
-        selector: appSelector,
-        target: 'emplStartDate',
-        group: 'emplStartDate',
-        name: 'startedOn[]',
-        required,
-        disabled,
-        label: 'Started on',
-    })
+    // static _emplStartDate = createDateForm({
+    //     selector: appSelector,
+    //     target: 'emplStartDate',
+    //     group: 'emplStartDate',
+    //     name: 'startedOn[]',
+    //     required,
+    //     disabled,
+    //     label: 'Started on',
+    // })
 
-    static _emplPosition = createForm({
-        selector: appSelector,
-        target: 'emplPosition',
-        group: 'emplPosition',
-        name: 'position[]',
-        required,
-        disabled,
-        label: 'Position/Title',
-    })
+    // static _emplPosition = createForm({
+    //     selector: appSelector,
+    //     target: 'emplPosition',
+    //     group: 'emplPosition',
+    //     name: 'position[]',
+    //     required,
+    //     disabled,
+    //     label: 'Position/Title',
+    // })
 
-    static _emplEarnings = createForm({
-        selector: appSelector,
-        target: 'emplEarnings',
-        group: 'emplEarnings',
-        mode: 'numeric',
-        name: 'earnings[]',
-        maxLength: 4,
-        required,
-        disabled,
-        label: 'Monthly Earnings/Salary',
-        validator: {
-            sanitizer: value => Number(value.replace(/,/g, '')),
-            rule: 'numeric',
-        },
-    })
+    // static _emplEarnings = createForm({
+    //     selector: appSelector,
+    //     target: 'emplEarnings',
+    //     group: 'emplEarnings',
+    //     mode: 'numeric',
+    //     name: 'earnings[]',
+    //     maxLength: 4,
+    //     required,
+    //     disabled,
+    //     label: 'Monthly Earnings/Salary',
+    //     validator: {
+    //         sanitizer: value => Number(value.replace(/,/g, '')),
+    //         rule: 'numeric',
+    //     },
+    // })
 
-    static _emplFMCSR = createYesNoForm({
-        selector: appSelector,
-        target: 'emplFmcsr',
-        group: 'emplFmcsr',
-        name: 'fmcsr[]',
-        disabled,
-        label: 'Subject to FMCSRs',
-    })
-    static _emplFMCSR2 = createForm({
-        selector: appSelector,
-        target: 'emplFmcsr',
-        group: 'emplFmcsr',
-        type: 'checkbox',
-        name: 'fmcsr[]',
-        label: 'Subject to FMCSRs',
-        validator: {
-            rule: 'boolean',
-            sanitizer: value => value === 'on',
-        },
-    })
+    // static _emplFMCSR = createYesNoForm({
+    //     selector: appSelector,
+    //     target: 'emplFmcsr',
+    //     group: 'emplFmcsr',
+    //     name: 'fmcsr[]',
+    //     disabled,
+    //     label: 'Subject to FMCSRs',
+    // })
+    // static _emplFMCSR2 = createForm({
+    //     selector: appSelector,
+    //     target: 'emplFmcsr',
+    //     group: 'emplFmcsr',
+    //     type: 'checkbox',
+    //     name: 'fmcsr[]',
+    //     label: 'Subject to FMCSRs',
+    //     validator: {
+    //         rule: 'boolean',
+    //         sanitizer: value => value === 'on',
+    //     },
+    // })
 
-    static _emplDotDat = createYesNoForm({
-        selector: appSelector,
-        target: 'emplDotDat',
-        group: 'emplDotDat',
-        name: 'dotDat[]',
-        disabled,
-        label: 'Subject to DOT Drug/Alcohol Testing',
-    })
-    static _emplDotDat2 = createForm({
-        selector: appSelector,
-        target: 'emplDotDat',
-        group: 'emplDotDat',
-        type: 'checkbox',
-        name: 'dotDat[]',
-        label: 'Subject to DOT Drug/Alcohol Testing',
-        validator: {
-            rule: 'boolean',
-            sanitizer: value => value === 'on',
-        },
-    })
+    // static _emplDotDat = createYesNoForm({
+    //     selector: appSelector,
+    //     target: 'emplDotDat',
+    //     group: 'emplDotDat',
+    //     name: 'dotDat[]',
+    //     disabled,
+    //     label: 'Subject to DOT Drug/Alcohol Testing',
+    // })
+    // static _emplDotDat2 = createForm({
+    //     selector: appSelector,
+    //     target: 'emplDotDat',
+    //     group: 'emplDotDat',
+    //     type: 'checkbox',
+    //     name: 'dotDat[]',
+    //     label: 'Subject to DOT Drug/Alcohol Testing',
+    //     validator: {
+    //         rule: 'boolean',
+    //         sanitizer: value => value === 'on',
+    //     },
+    // })
 
-    static _emplRFL = createForm({
-        selector: appSelector,
-        target: 'emplRfl',
-        group: 'emplRfl',
-        type: 'textarea',
-        name: 'rfl[]',
-        maxLength: 50,
-        required,
-        disabled,
-        label: 'Reason for Leaving',
-    })
+    // static _emplRFL = createForm({
+    //     selector: appSelector,
+    //     target: 'emplRfl',
+    //     group: 'emplRfl',
+    //     type: 'textarea',
+    //     name: 'rfl[]',
+    //     maxLength: 50,
+    //     required,
+    //     disabled,
+    //     label: 'Reason for Leaving',
+    // })
 
-    static _emplEndDate = createDateForm({
-        selector: appSelector,
-        target: 'emplEndDate',
-        group: 'emplEndDate',
-        name: 'leftOn[]',
-        required,
-        disabled,
-        label: 'Termination Date',
-    }, true)
+    // static _emplEndDate = createDateForm({
+    //     selector: appSelector,
+    //     target: 'emplEndDate',
+    //     group: 'emplEndDate',
+    //     name: 'leftOn[]',
+    //     required,
+    //     disabled,
+    //     label: 'Termination Date',
+    // }, true)
 
 
 
@@ -1479,6 +1480,178 @@ class ApplicationForm {
 }
 
 
+class EmploymentForm {
+    constructor(options = {}) {
+        getStaticProps(EmploymentForm)
+            .forEach(target => this[target] = constructForm(EmploymentForm, target, options))
+    }
+
+    static id = createIdForm({ selector: appEmplSelector })
+
+    static employer = createForm({
+        selector: appEmplSelector,
+        target: 'employer',
+        group: 'employer',
+        name: 'employer',
+        maxLength: 40,
+        required,
+        label: 'Company/Employer Name',
+    })
+
+    static phone = createPhoneForm({
+        selector: appEmplSelector,
+        target: 'phone',
+        group: 'phone',
+        name: 'phone',
+        required,
+        label: 'Phone',
+    })
+
+    static address1 = createAddressForm({
+        selector: appEmplSelector,
+        target: 'address1',
+        group: 'address1',
+        name: 'address1',
+    })
+
+    static address2 = createAddressForm({
+        selector: appEmplSelector,
+        target: 'address2',
+        group: 'address2',
+        name: 'address2',
+    }, { idx: 2, business: true })
+
+    static addrZip = createAddrZipForm({
+        selector: appEmplSelector,
+        target: 'addrZip',
+        group: 'addrZip',
+        name: 'zip',
+    })
+
+    static addrCity = createAddrCityForm({
+        selector: appEmplSelector,
+        target: 'addrCity',
+        group: 'addrCity',
+        name: 'city',
+    })
+
+    static addrState = createAddrStateForm({
+        selector: appEmplSelector,
+        target: 'addrState',
+        group: 'addrState',
+        name: 'state',
+    })
+
+    static startDate = createDateForm({
+        selector: appEmplSelector,
+        target: 'startDate',
+        group: 'startDate',
+        name: 'startedOn',
+        required,
+        disabled,
+        label: 'Started on',
+    })
+
+    static position = createForm({
+        selector: appEmplSelector,
+        target: 'position',
+        group: 'position',
+        name: 'position',
+        required,
+        label: 'Position/Title',
+    })
+
+    static earnings = createForm({
+        selector: appEmplSelector,
+        target: 'earnings',
+        group: 'earnings',
+        mode: 'numeric',
+        name: 'earnings',
+        maxLength: 4,
+        required,
+        label: 'Monthly Earnings/Salary',
+        validator: {
+            sanitizer: value => Number(value.replace(/,/g, '')),
+            rule: 'numeric',
+        },
+    })
+
+    static FMCSR = createYesNoForm({
+        selector: appEmplSelector,
+        target: 'fmcsr',
+        group: 'fmcsr',
+        name: 'fmcsr',
+        label: 'Subject to FMCSRs',
+    })
+    static FMCSR2 = createForm({
+        selector: appEmplSelector,
+        target: 'fmcsr',
+        group: 'fmcsr',
+        type: 'checkbox',
+        name: 'fmcsr',
+        label: 'Subject to FMCSRs',
+        validator: {
+            rule: 'boolean',
+            sanitizer: value => value === 'on',
+        },
+    })
+
+    static dotDat = createYesNoForm({
+        selector: appEmplSelector,
+        target: 'dotDat',
+        group: 'dotDat',
+        name: 'dotDat',
+        label: 'Subject to DOT Drug/Alcohol Testing',
+    })
+    static dotDat2 = createForm({
+        selector: appEmplSelector,
+        target: 'dotDat',
+        group: 'dotDat',
+        type: 'checkbox',
+        name: 'dotDat',
+        label: 'Subject to DOT Drug/Alcohol Testing',
+        validator: {
+            rule: 'boolean',
+            sanitizer: value => value === 'on',
+        },
+    })
+
+    static RFL = createForm({
+        selector: appEmplSelector,
+        target: 'rfl',
+        group: 'rfl',
+        type: 'textarea',
+        name: 'rfl',
+        maxLength: 50,
+        required,
+        label: 'Reason for Leaving',
+    })
+
+    static endDate = createDateForm({
+        selector: appEmplSelector,
+        target: 'endDate',
+        group: 'endDate',
+        name: 'leftOn',
+        required,
+        label: 'Termination Date',
+    }, true)
+
+    static gapExpl = createForm({
+        selector: appEmplSelector,
+        target: 'gapExpl',
+        group: 'gapExpl',
+        type: 'textarea',
+        name: 'gapExpl',
+        maxLength: 50,
+        required,
+        disabled,
+        label: 'Reason for Employment Gap',
+    })
+
+
+}
+
+
 for (let i = 0; i < 7; i++) {
     ApplicationForm[`expHours${i + 1}`] = createForm({
         selector: appSelector,
@@ -1500,7 +1673,7 @@ for (let i = 0; i < 7; i++) {
 
 
 export default DriverForm
-export { ApplicationForm }
+export { ApplicationForm, EmploymentForm }
 
 
 export function currentExpediteVhlMMTData() {

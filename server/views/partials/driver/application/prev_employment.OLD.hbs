@@ -8,11 +8,7 @@
     <div id="collapse-6" class="text-start accordion-collapse collapse{{accordion.six.body}}" data-bs-parent="#apl-accordion">
         <div class="accordion-body">
             <form id="preempl-form" action="{{actionUrl.prevEmployment}}" method="POST" autocomplete="off">
-
-                {{!-- NOT USED YET --}}
                 <input type="hidden" id="empl-exp-start-date" value="{{emplExpStartDate}}" />
-
-
                 <div class="row g-3 my-1">
                     <label class="form-label">
                         Are you currently employed, or have you been employed in the U.S. within the past 10 years?
@@ -28,7 +24,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="pre-employments" style="display: none;">
+                <div id="pre-employments"{{{preemplDisplay}}}>
                     <label class="form-label fw-normal text-danger mt-3 mb-0">
                         <small>
                             <i class="fas fa-circle-exclamation"></i>
@@ -38,87 +34,87 @@
                         </small>
                     </label>
                     <div class="border-bottom pb-4" id="preempl-list"></div>
-                    <div class="d-flex" style="display: none;">
+                    <div class="d-flex">
                         <div class="ms-auto pt-3">
                             <button type="button" class="btn btn-primary bg-primary-subtle btn-sm" id="add-preempl-button">
                                 {{!-- <i class="fas fa-plus"></i> --}}
-                                Add Another Employer
+                                Add Employer
                             </button>
                         </div>
                     </div>
                 </div>
-                {{!-- <p class="form-text text-danger mt-4" id="preempl-form-help" style="display: none;"></p> --}}
-                {{!-- <div class="row g-3 my-2">
+                <p class="form-text text-danger mt-4" id="preempl-form-help" style="display: none;"></p>
+                <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">
                             <button type="submit" class="btn btn-{{button.six.class}}" id="preempl-submit">{{button.six.text}}</button>
                         </div>
                     </div>
-                </div> --}}
+                </div>
             </form>
-            <form id="employment-form" action="{{actionUrl.prevEmployer}}" method="POST" autocomplete="off" style="display: none;">
+            <div class="employer-form" id="preempl-form-template" style="display: none;">
                 <div class="border-top mt-4">
-                    {{!-- <div class="d-flex">
+                    <div class="d-flex">
                         <div class="ms-auto pt-3" style="display: none !important;">
                             <button type="button" class="btn btn-danger bg-danger-subtle btn-sm delete-preempl-button" data-bs-toggle="modal" data-bs-target="#delete-preempl-modal">
                                 {{!-- <i class="fas fa-close"></i> --}}
                                 Delete Employer
                             </button>
                         </div>
-                    </div> --}}
-                    {{{emplForm.id.hidden.input}}}
+                    </div>
+                    {{{form._emplId.hidden.input}}}
                     <div class="row g-3 my-1">
                         <div class="col-md-8">
-                            {{{emplForm.employer.text.label}}}
-                            {{{emplForm.employer.text.input}}}
+                            {{{form._prevEmployer.text.label}}}
+                            {{{form._prevEmployer.text.input}}}
                         </div>
                         <div class="col-md-4">
-                            {{{emplForm.startDate.text.label}}}
-                            {{{emplForm.startDate.text.input}}}
+                            {{{form._emplStartDate.text.label}}}
+                            {{{form._emplStartDate.text.input}}}
                             <div class="form-text text-danger"></div>
                         </div>
                     </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-5">
-                            {{{emplForm.phone.text.label}}}
-                            {{{emplForm.phone.text.input}}}
+                            {{{form._emplPhone.text.label}}}
+                            {{{form._emplPhone.text.input}}}
                         </div>
                     </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-6 autocomplete">
-                            {{{emplForm.address1.text.label}}}
-                            {{{emplForm.address1.text.input}}}
+                            {{{form._emplAddr1.text.label}}}
+                            {{{form._emplAddr1.text.input}}}
                             <ul class="autocomplete-list address-predictions"></ul>
                         </div>
                         <div class="col-md-3">
-                            {{{emplForm.address2.text.label}}}
-                            {{{emplForm.address2.text.input}}}
+                            {{{form._emplAddr2.text.label}}}
+                            {{{form._emplAddr2.text.input}}}
                         </div>
                         <div class="col-md-3">
-                            {{{emplForm.addrZip.text.label}}}
-                            {{{emplForm.addrZip.text.input}}}
+                            {{{form._emplAddrZip.text.label}}}
+                            {{{form._emplAddrZip.text.input}}}
                         </div>
                     </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-6">
-                            {{{emplForm.addrCity.text.label}}}
-                            {{{emplForm.addrCity.text.input}}}
+                            {{{form._emplAddrCity.text.label}}}
+                            {{{form._emplAddrCity.text.input}}}
                         </div>
                         <div class="col-md-6">
-                            {{{emplForm.addrState.select.label}}}
-                            {{{emplForm.addrState.select.input}}}
+                            {{{form._emplAddrState.select.label}}}
+                            {{{form._emplAddrState.select.input}}}
                         </div>
                     </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-6">
-                            {{{emplForm.position.text.label}}}
-                            {{{emplForm.position.text.input}}}
+                            {{{form._emplPosition.text.label}}}
+                            {{{form._emplPosition.text.input}}}
                         </div>
                         <div class="col-md-6">
-                            {{{emplForm.earnings.text.label}}}
+                            {{{form._emplEarnings.text.label}}}
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
-                                {{{emplForm.earnings.text.input}}}
+                                {{{form._emplEarnings.text.input}}}
                             </div>
                         </div>
                     </div>
@@ -133,12 +129,12 @@
                             </label>
                             <div class="col-md-12 mt-0 mb-2">
                                 <div class="form-check form-check-inline">
-                                    {{{emplForm.FMCSR.radio.yes.input}}}
-                                    {{{emplForm.FMCSR.radio.yes.label}}}
+                                    {{{form._emplFMCSR.radio.yes.input}}}
+                                    {{{form._emplFMCSR.radio.yes.label}}}
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    {{{emplForm.FMCSR.radio.no.input}}}
-                                    {{{emplForm.FMCSR.radio.no.label}}}
+                                    {{{form._emplFMCSR.radio.no.input}}}
+                                    {{{form._emplFMCSR.radio.no.label}}}
                                 </div>
                             </div>
                         </div>
@@ -148,12 +144,12 @@
                             </label>
                             <div class="col-md-12 mt-0 mb-2">
                                 <div class="form-check form-check-inline">
-                                    {{{emplForm.dotDat.radio.yes.input}}}
-                                    {{{emplForm.dotDat.radio.yes.label}}}
+                                    {{{form._emplDotDat.radio.yes.input}}}
+                                    {{{form._emplDotDat.radio.yes.label}}}
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    {{{emplForm.dotDat.radio.no.input}}}
-                                    {{{emplForm.dotDat.radio.no.label}}}
+                                    {{{form._emplDotDat.radio.no.input}}}
+                                    {{{form._emplDotDat.radio.no.label}}}
                                 </div>
                             </div>
                         </div>
@@ -164,12 +160,12 @@
                             </label>
                             <div class="col-md-12 mt-0 mb-2">
                                 <div class="form-check form-check-inline">
-                                    {{{emplForm.dotDat.radio.yes.input}}}
-                                    {{{emplForm.dotDat.radio.yes.label}}}
+                                    {{{form._emplDotDat.radio.yes.input}}}
+                                    {{{form._emplDotDat.radio.yes.label}}}
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    {{{emplForm.dotDat.radio.no.input}}}
-                                    {{{emplForm.dotDat.radio.no.label}}}
+                                    {{{form._emplDotDat.radio.no.input}}}
+                                    {{{form._emplDotDat.radio.no.label}}}
                                 </div>
                             </div>
                         </div>
@@ -185,18 +181,18 @@
                     </div>
                     <div class="row g-3 my-1">
                         <div class="col-md-4 termination-date-field">
-                            {{{emplForm.endDate.text.label}}}
-                            {{{emplForm.endDate.text.input}}}
+                            {{{form._emplEndDate.text.label}}}
+                            {{{form._emplEndDate.text.input}}}
                             <div class="form-text"></div>
                             {{!-- <div class="form-text text-info">Blank if still employed</div> --}}
                         </div>
                         <div class="col-md-8">
-                            {{{emplForm.RFL.text.label}}}
-                            {{{emplForm.RFL.text.input}}}
+                            {{{form._emplRFL.text.label}}}
+                            {{{form._emplRFL.text.input}}}
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
             <div class="modal fade" id="delete-preempl-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">

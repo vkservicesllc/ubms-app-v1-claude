@@ -1,0 +1,1 @@
+import selector from '/modules/registry/selectors/driver-application.mjs'

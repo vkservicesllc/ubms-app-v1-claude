@@ -708,45 +708,54 @@ class Application {
 
                     case 'prev-employment':
                         {
-                            const {
-                                prevEmployed,
-                                _id, employer, phone, address1, address2, zip, city, state,
-                                startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
-                            } = body
-                            body = { prevEmployed }
+                            if (!body.prevEmployed) {
+                                if (this.step < 7) body.step = 7
+                                body.prevEmplGaps = null
 
-                            if (this.step < 7) body.step = 7
-                            body.prevEmplGaps = null
-
-                            if (!prevEmployed) await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
-                            else {
-                                body.prevEmplGaps = false
-
-                                const employments = await Employment.fetch(this.session, { appId: this.id }, { hideRawId: false })
-                                const emplBody = {
-                                    create: [],
-                                    update: [],
-                                }
-                                const emplDelIds = []
-                                const count = employer.length
-                                //! do comparisons
-
-                                for (let i = 0; i < count; i++) {
-                                    let prop = 'create'
-                                    if (_id[i]) {
-                                        const found = false //! check if employers have such id, if yes, prop = 'update'
-                                        if (found) prop = 'update'
-                                        else {
-                                            emplDelIds.push(_id[0])
-                                            continue
-                                        }
-                                    }
-
-                                    emplBody[prop].push({
-                                        //
-                                    })
-                                }
+                                await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
+                                await this.update(body)
                             }
+                        }
+                        {
+                            // const {
+                            //     prevEmployed,
+                            //     // _id, employer, phone, address1, address2, zip, city, state,
+                            //     // startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
+                            // } = body
+                            // body = { prevEmployed }
+
+                            // if (this.step < 7) body.step = 7
+                            // body.prevEmplGaps = null
+
+                            // if (!prevEmployed) await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
+                            // else {
+                            //     body.prevEmplGaps = false
+
+                            //     const employments = await Employment.fetch(this.session, { appId: this.id }, { hideRawId: false })
+                            //     const emplBody = {
+                            //         create: [],
+                            //         update: [],
+                            //     }
+                            //     const emplDelIds = []
+                            //     const count = employer.length
+                            //     //! do comparisons
+
+                            //     for (let i = 0; i < count; i++) {
+                            //         let prop = 'create'
+                            //         if (_id[i]) {
+                            //             const found = false //! check if employers have such id, if yes, prop = 'update'
+                            //             if (found) prop = 'update'
+                            //             else {
+                            //                 emplDelIds.push(_id[0])
+                            //                 continue
+                            //             }
+                            //         }
+
+                            //         emplBody[prop].push({
+                            //             //
+                            //         })
+                            //     }
+                            // }
 
                             // await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
                             // if (prevEmployed) {
@@ -791,6 +800,39 @@ class Application {
                             // }
 
                             await this.update(body)
+                        }
+                        break
+
+                    
+                    case 'prev-employer':
+                        {
+                            const { _id } = body
+                            delete body._id
+
+                            const appBody = { prevEmployed: true, prevEmplGaps: false }
+                            //! if (this.step < 7) appBody.step = 7
+
+                            if (_id) {
+                                const employment = await Employment.fetch(this.session, { _id }, { hideRawId: false })
+                                await employment.update(body)
+                            } else {
+                                body.appId = this.id
+                                await Employment.create(this.session, body)
+                            }
+
+                            const employers = await Employment.fetch(this.session, { appId: this.id })
+                            let prevDate = this.appliedOn
+                            for (const employer of employers) {
+                                const { startedOn, leftOn } = employer
+                                if (!leftOn) continue
+
+                                appBody.prevEmplGaps = Math.abs(moment(startedOn).diff(moment(leftOn), 'days')) > 30
+                                if (appBody.prevEmplGaps) break
+
+                                prevDate = startedOn
+                            }
+
+                            await this.update(appBody)
                         }
                         break
 
