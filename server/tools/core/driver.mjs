@@ -710,7 +710,7 @@ class Application {
                         {
                             const {
                                 prevEmployed,
-                                employer, phone, address1, address2, zip, city, state,
+                                _id, employer, phone, address1, address2, zip, city, state,
                                 startedOn, position, earnings, fmcsr, dotDat, rfl, leftOn,
                             } = body
                             body = { prevEmployed }
@@ -723,8 +723,29 @@ class Application {
                                 body.prevEmplGaps = false
 
                                 const employments = await Employment.fetch(this.session, { appId: this.id }, { hideRawId: false })
+                                const emplBody = {
+                                    create: [],
+                                    update: [],
+                                }
+                                const emplDelIds = []
                                 const count = employer.length
                                 //! do comparisons
+
+                                for (let i = 0; i < count; i++) {
+                                    let prop = 'create'
+                                    if (_id[i]) {
+                                        const found = false //! check if employers have such id, if yes, prop = 'update'
+                                        if (found) prop = 'update'
+                                        else {
+                                            emplDelIds.push(_id[0])
+                                            continue
+                                        }
+                                    }
+
+                                    emplBody[prop].push({
+                                        //
+                                    })
+                                }
                             }
 
                             // await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
