@@ -51,7 +51,11 @@ inputEvent(employedId.no, {
             if (confirm('By confirming, you acknowledge that your pre-employment data will be erased!')) {
                 $section.hide()
                 $emplList.html(null)
-                $form.employer.hide() //! empty all fields, enable & unhide term date // add empty op to state
+                $form.employer.hide()
+                    .find('input:not([type=radio]):not([type=checkbox]), select, textarea').val(null).removeClass('is-valid is-invalid')
+                $form.employer.find('[type=radio], [type=checkbox]').prop('checked', false)
+                $form.employer.find('.form-text').text(null)
+                $('#termination-date-field').show().find('input').prop('disabled', false)
 
                 selected = false
             } else {
@@ -105,7 +109,7 @@ dateMask(TS.startDate, {
             }
         }
 
-        if (check($form)) $help.form.hide().html(null)
+        if (check($form.employer)) $help.form.hide().html(null)
     },
 })
 
@@ -256,7 +260,7 @@ dateMask(TS.endDate, {
             }
         }
 
-        if (check($form)) $help.form.hide().html(null)
+        if (check($form.employer)) $help.form.hide().html(null)
     },
 })
 
