@@ -51,11 +51,7 @@ inputEvent(employedId.no, {
             if (confirm('By confirming, you acknowledge that your pre-employment data will be erased!')) {
                 $section.hide()
                 $emplList.html(null)
-                $form.employer.hide()
-                    .find('input:not([type=radio]):not([type=checkbox]), select, textarea').val(null).removeClass('is-valid is-invalid')
-                $form.employer.find('[type=radio], [type=checkbox]').prop('checked', false)
-                $form.employer.find('.form-text').text(null)
-                $('#termination-date-field').show().find('input').prop('disabled', false)
+                closeForm()
 
                 selected = false
             } else {
@@ -271,10 +267,28 @@ function drawEmployerList() {
         success(response) {
             const { data } = response
             
-            if (!data.length) {
-                $form.employer.show()
-                $submit.employer.addClass('btn-primary bg-primary-subtle').text('Add Employer')
-            }
+            if (!data.length) return openAddForm()
         },
     })
+}
+
+
+function openAddForm() {
+    $submit.employer.addClass('btn-primary bg-primary-subtle').text('Add Employer')
+    $form.employer.show()
+}
+
+function openUpdateForm(data) {
+    //! Populate form with fetched data
+    $submit.employer.addClass('btn-success bg-success-subtle').text('Update Employer')
+    $form.employer.show()
+}
+
+function closeForm() {
+    $form.employer.hide()
+    $form.employer.find('input:not([type=radio]):not([type=checkbox]), select, textarea').val(null).removeClass('is-valid is-invalid')
+    $form.employer.find('[type=radio], [type=checkbox]').prop('checked', false)
+    $form.employer.find('.form-text').text(null)
+    $('#termination-date-field').show().find('input').prop('disabled', false)
+    $submit.employer.removeClass('btn-primary bg-primary-subtle btn-success bg-success-subtle').text(null)
 }
