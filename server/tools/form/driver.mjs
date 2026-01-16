@@ -1580,6 +1580,7 @@ class EmploymentForm {
         target: 'fmcsr',
         group: 'fmcsr',
         name: 'fmcsr',
+        disabled,
         label: 'Subject to FMCSRs',
     })
     static FMCSR2 = createForm({
@@ -1588,6 +1589,7 @@ class EmploymentForm {
         group: 'fmcsr',
         type: 'checkbox',
         name: 'fmcsr',
+        disabled,
         label: 'Subject to FMCSRs',
         validator: {
             rule: 'boolean',

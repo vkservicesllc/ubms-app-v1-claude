@@ -146,6 +146,9 @@ addr1Event(TS.address1, {
 
         onChange(addr1, $addr1)
     },
+    onBlur(add1, $addr1) {
+        setTimeout(() => $addr1.parent().parent().find('.address-predictions').html(null), 250)
+    },
 })
 
 addr2Event(TS.address2, { onInput, onChange })
@@ -230,19 +233,13 @@ dateMask(TS.endDate, {
 
             if (!end.isValid()) {
                 $end.addClass('is-invalid')
-                $help
-                    .removeClass('text-info')
-                    .addClass('text-danger')
-                    .text('* Invalid date')
+                $help.text('* Invalid date')
             } else {
                 const today = moment(appliedOn)
 
                 if (end.isAfter(today)) {
                     $end.addClass('is-invalid')
-                    $help
-                        .removeClass('text-info')
-                        .addClass('text-danger')
-                        .text('* Future date forbidden')
+                    $help.text('* Future date forbidden')
                 } else {
                     const $start = $(TS.startDate)
                     let start = $start.val()
@@ -250,20 +247,14 @@ dateMask(TS.endDate, {
 
                     if (start && end.isBefore(start)) {
                         $end.addClass('is-invalid')
-                        $help
-                            .removeClass('text-info')
-                            .addClass('text-danger')
-                            .text('* Left before started')
+                        $help.text('* Left before started')
                     } else {
                         const limit = today.clone().subtract(10, 'years')
 
                         if (end.isBefore(limit)) {
                             $end.addClass('is-invalid')
-                            $help
-                                .removeClass('text-info')
-                                .addClass('text-danger')
-                                .text('* Over 10 years ago')
-                        }
+                            $help.text('* Over 10 years ago')
+                        } else $end.addClass('is-valid')
                     }
                 }
             }
@@ -281,6 +272,23 @@ function drawEmployerList() {
             const { data } = response
             
             if (!data.length) return openAddForm()
+
+            let list = '<ul class="list-group">'
+            data.map(employment => {
+                const { employer, startedOn, leftOn } = employment
+                let period = moment(startedOn).format('ll') + ' – '
+                period += leftOn ? moment(leftOn).format('ll') : 'Present Day'
+
+                list += '<li class="list-group-item"><div class="d-flex flex-row-reverse gap-2 my-2">'
+                list += '<button class="btn btn-success bg-success-subtle btn-sm">Edit</button>'
+                list += '<button class="btn btn-danger bg-danger-subtle btn-sm">Delete</button></div>'
+                list += `<div class="d-flex justify-content-between"><span>${employer}</span><span class="text-secondary" style="font-size: .8em;">${period}</span></div>`
+                list += '</li>'
+            })
+            list += '</ul>'
+
+            $emplList.html(list)
+            $section.show()
         },
     })
 }

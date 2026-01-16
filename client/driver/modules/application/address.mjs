@@ -37,6 +37,9 @@ addr1Event(addr1Id, {
         onChange(addr1, $addr1)
         onChange(addr2, $addr2)
     },
+    onBlur(add1, $addr1) {
+        setTimeout(() => $addr1.parent().parent().find('.address-predictions').html(null), 250)
+    },
 })
 
 addr2Event(addr2Id, { onInput, onChange })

@@ -162,6 +162,9 @@ function resetEvents() {
 
             onChange(addr1, $addr1)
         },
+        onBlur(add1, $addr1) {
+            setTimeout(() => $addr1.parent().parent().find('.address-predictions').html(null), 250)
+        },
     })
 
     addr2Event(TS.prevAddress2, { onInput, onChange })

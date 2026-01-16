@@ -162,7 +162,7 @@ const dynamicValidator = {
             case 'prev-employment':
                 validators = validateApplicantPreemployment
                 break
-            case 'prev-employers':
+            case 'prev-employer':
                 validators = validateApplicantEmployers
                 break
             case 'preference':

@@ -1935,7 +1935,7 @@ class Employment {
         this.employer = data.employer
         this.phone = data.phone
         this.address = new Address(data)
-        this.statedOn = data.startedOn
+        this.startedOn = data.startedOn
         this.leftOn = data.leftOn
         this.position = data.position
         this.earnings = data.earnings

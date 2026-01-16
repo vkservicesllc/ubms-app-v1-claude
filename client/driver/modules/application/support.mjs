@@ -121,7 +121,7 @@ export const addressPredictions = ($addr1, input, success) => {
                     success(responseData) {
                         const { address_components } = responseData
                         let address1 = null, address2 = null, zip = null, city = null, state = null
-console.log(address_components)
+
                         address_components.map(component => {
                             switch (component.types[0]) {
                                 case 'street_number':
