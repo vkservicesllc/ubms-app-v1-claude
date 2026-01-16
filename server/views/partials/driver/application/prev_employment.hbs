@@ -28,15 +28,15 @@
                         </div>
                     </div>
                 </div>
+                <label class="form-label fw-normal text-danger mt-3 mb-0" id="employment-message" style="display: none;">
+                    <small>
+                        <i class="fas fa-circle-exclamation"></i>
+                        List all jobs from the past 3 years
+                        and all commercial driving experience from the past 10 years,
+                        starting with the most recent
+                    </small>
+                </label>
                 <div id="prev-employments" style="display: none;">
-                    <label class="form-label fw-normal text-danger mt-3 mb-0">
-                        <small>
-                            <i class="fas fa-circle-exclamation"></i>
-                            List all jobs from the past 3 years
-                            and all commercial driving experience from the past 10 years,
-                            starting with the most recent
-                        </small>
-                    </label>
                     <div class="border-bottom pb-4" id="prevempl-list"></div>
                     <div class="d-flex" style="display: none;">
                         <div class="ms-auto pt-3">
@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <p class="form-text text-danger mt-4" id="prevempl-form-help" style="display: none;"></p>
-                <div class="row g-3 my-2" style="display: none;">
+                <div class="row g-3 my-2">
                     <div class="col-md-4">
                         <div class="d-grid">
                             <button type="submit" class="btn btn-{{button.six.class}}" id="prevempl-submit">{{button.six.text}}</button>
@@ -60,17 +60,17 @@
                 <div class="border-top mt-4">
                     {{{emplForm.id.hidden.input}}}
                     <div class="row g-3 my-1">
-                        <div class="col-md-8">
+                        <div class="col-md-9">
                             {{{emplForm.employer.text.label}}}
                             {{{emplForm.employer.text.input}}}
                         </div>
+                    </div>
+                    <div class="row g-3 my-1">
                         <div class="col-md-4">
                             {{{emplForm.startDate.text.label}}}
                             {{{emplForm.startDate.text.input}}}
                             <div class="form-text text-danger"></div>
                         </div>
-                    </div>
-                    <div class="row g-3 my-1">
                         <div class="col-md-5">
                             {{{emplForm.phone.text.label}}}
                             {{{emplForm.phone.text.input}}}
@@ -191,6 +191,11 @@
                         <div class="col-md-4">
                             <div class="d-grid">
                                 <button type="submit" class="btn" id="employer-submit"></button>
+                            </div>
+                        </div>
+                        <div class="col-md-4" style="display: none;">
+                            <div class="d-grid">
+                                <button class="btn btn-secondary bg-secondary-subtle" id="employer-cancel">Cancel</button>
                             </div>
                         </div>
                     </div>

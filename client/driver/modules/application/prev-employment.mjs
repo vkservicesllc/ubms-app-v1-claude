@@ -19,14 +19,22 @@ const $form = {
 }
 const $submit = {
     employment: $('#prevempl-submit'),
-    employer: $('#employer-submit')
+    employer: $('#employer-submit'),
+}
+const $button = {
+    cancel: $('#employer-cancel'),
 }
 const $help = {
     form: $('#prevempl-form-help'),
 }
 
 const $section = $('#prev-employments')
+const $message = $('#employment-message')
 const $emplList = $('#prevempl-list')
+const $btnContainer = {
+    employment: $submit.employment.parent().parent().parent(),
+    employerCancel: $button.cancel.parent().parent(),
+}
 
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
@@ -34,6 +42,7 @@ let selected = false
 
 if ($(employedId.yes).is(':checked')) {
     selected = true
+    $message.show()
     drawEmployerList()
 }
 
@@ -42,6 +51,7 @@ inputEvent(employedId.yes, {
         selected = true
 
         drawEmployerList()
+        $message.show()
     },
 })
 
@@ -51,6 +61,7 @@ inputEvent(employedId.no, {
             if (confirm('By confirming, you acknowledge that your pre-employment data will be erased!')) {
                 $section.hide()
                 $emplList.html(null)
+                $message.hide()
                 closeForm()
 
                 selected = false
@@ -61,6 +72,8 @@ inputEvent(employedId.no, {
         }
     },
 })
+
+$button.cancel.click(closeForm)
 
 
 busNameEvent(TS.employer, true, {
@@ -276,12 +289,15 @@ function drawEmployerList() {
 function openAddForm() {
     $submit.employer.addClass('btn-primary bg-primary-subtle').text('Add Employer')
     $form.employer.show()
+    $btnContainer.employment.hide()
 }
 
 function openUpdateForm(data) {
     //! Populate form with fetched data
     $submit.employer.addClass('btn-success bg-success-subtle').text('Update Employer')
     $form.employer.show()
+    $btnContainer.employment.hide()
+    $btnContainer.employerCancel.show()
 }
 
 function closeForm() {
@@ -291,4 +307,6 @@ function closeForm() {
     $form.employer.find('.form-text').text(null)
     $('#termination-date-field').show().find('input').prop('disabled', false)
     $submit.employer.removeClass('btn-primary bg-primary-subtle btn-success bg-success-subtle').text(null)
+    $btnContainer.employment.show()
+    $btnContainer.employerCancel.hide()
 }
