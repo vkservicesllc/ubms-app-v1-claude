@@ -23,6 +23,7 @@ const $submit = {
 }
 const $button = {
     cancel: $('#employer-cancel'),
+    add: $('#add-prevempl-button'),
 }
 const $help = {
     form: $('#prevempl-form-help'),
@@ -35,6 +36,7 @@ const $btnContainer = {
     employment: $submit.employment.parent().parent().parent(),
     employerCancel: $button.cancel.parent().parent(),
 }
+const $noAdditional = $('#no-additional-employers')
 
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
@@ -73,7 +75,26 @@ inputEvent(employedId.no, {
     },
 })
 
-$button.cancel.click(closeForm)
+$button.cancel.click(function() {
+    closeForm()
+    drawEmployerList()
+})
+
+$button.add.click(function() {
+    $section.hide()
+    $emplList.html(null)
+    openAddForm()
+})
+
+$noAdditional.click(function() {
+    let action1 = 'show', action2 = 'hide'
+    if ($(this).prop('checked')) {
+        action1 = 'hide'
+        action2 = 'show'
+    }
+    $button.add[action1]()
+    $btnContainer.employment[action2]()
+})
 
 
 busNameEvent(TS.employer, true, {
@@ -271,40 +292,47 @@ function drawEmployerList() {
         success(response) {
             const { data } = response
             
-            if (!data.length) return openAddForm()
+            if (!data.length) return openAddForm(false)
 
             let list = '<ul class="list-group">'
+            let x = data.length
             data.map(employment => {
                 const { employer, startedOn, leftOn } = employment
                 let period = moment(startedOn).format('ll') + ' – '
                 period += leftOn ? moment(leftOn).format('ll') : 'Present Day'
 
-                list += '<li class="list-group-item"><div class="d-flex flex-row-reverse gap-2 my-2">'
-                list += '<button class="btn btn-success bg-success-subtle btn-sm">Edit</button>'
-                list += '<button class="btn btn-danger bg-danger-subtle btn-sm">Delete</button></div>'
-                list += `<div class="d-flex justify-content-between"><span>${employer}</span><span class="text-secondary" style="font-size: .8em;">${period}</span></div>`
+                list += '<li class="list-group-item"><div class="d-flex justify-content-between">'
+                list += `<span class="text-secondary pt-2" style="font-size: .75em;">Employer ${x--}</span>`
+                list += '<div class="d-flex flex-row-reverse gap-2 my-2">'
+                list += '<button class="btn btn-danger bg-danger-subtle btn-sm"><i class="fa fa-trash"></i></button>'
+                list += '<button class="btn btn-success bg-success-subtle btn-sm"><i class="fa fa-pen"></i></button></div></div>'
+                list += `<div class="d-flex flex-column flex-md-row justify-content-between"><span>${employer}</span><span class="text-secondary" style="font-size: .8em;">${period}</span></div>`
                 list += '</li>'
             })
             list += '</ul>'
 
             $emplList.html(list)
+            $btnContainer.employment.hide()
+            $noAdditional.prop('checked', false)
+            $button.add.show()
             $section.show()
         },
     })
 }
 
 
-function openAddForm() {
+function openAddForm(cancel = true) {
     $submit.employer.addClass('btn-primary bg-primary-subtle').text('Add Employer')
     $form.employer.show()
-    $btnContainer.employment.hide()
+    // $btnContainer.employment.hide()
+    if (cancel) $btnContainer.employerCancel.show()
 }
 
 function openUpdateForm(data) {
     //! Populate form with fetched data
     $submit.employer.addClass('btn-success bg-success-subtle').text('Update Employer')
     $form.employer.show()
-    $btnContainer.employment.hide()
+    // $btnContainer.employment.hide()
     $btnContainer.employerCancel.show()
 }
 
@@ -315,6 +343,6 @@ function closeForm() {
     $form.employer.find('.form-text').text(null)
     $('#termination-date-field').show().find('input').prop('disabled', false)
     $submit.employer.removeClass('btn-primary bg-primary-subtle btn-success bg-success-subtle').text(null)
-    $btnContainer.employment.show()
+    // $btnContainer.employment.show()
     $btnContainer.employerCancel.hide()
 }

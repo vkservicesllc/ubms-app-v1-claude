@@ -38,12 +38,14 @@
                 </label>
                 <div id="prev-employments" style="display: none;">
                     <div class="border-bottom py-4" id="prevempl-list"></div>
-                    <div class="d-flex" style="display: none;">
-                        <div class="ms-auto pt-3">
-                            <button type="button" class="btn btn-primary bg-primary-subtle btn-sm" id="add-prevempl-button">
-                                Add Another Employer
-                            </button>
+                    <div class="d-flex flex-column flex-md-row justify-content-between pt-3" style="display: none;">
+                        <div class="form-check order-2 order-md-1">
+                            <input type="checkbox" class="form-check-input" id="no-additional-employers" />
+                            <label class="form-check-label">No additional employers to report</label>
                         </div>
+                        <button type="button" class="btn btn-primary bg-primary-subtle order-1 order-md-2 mb-3" id="add-prevempl-button">
+                            Add Employer
+                        </button>
                     </div>
                 </div>
                 <p class="form-text text-danger mt-4" id="prevempl-form-help" style="display: none;"></p>
