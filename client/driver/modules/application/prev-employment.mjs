@@ -336,27 +336,54 @@ function drawEmployerList() {
     $.ajax(`/api/list/application/${formId()}/employers`, {
         method: 'POST',
         success(response) {
-            const { data } = response
+            const { application, employers } = response.data
             
-            if (!data.length) {
+            if (!employers.length) {
                 $btnContainer.employment.hide()
                 return openAddForm(false)
             }
 
             let list = '<ul class="list-group">'
-            let x = data.length
-            data.map(employment => {
-                const { _id, employer, startedOn, leftOn } = employment
+            let x = employers.length
+            let prevDate = application.appliedOn
+
+            employers.map(employment => {
+                const { _id, employer, startedOn, leftOn, gapExpl } = employment
                 let period = moment(startedOn).format('ll') + ' – '
                 period += leftOn ? moment(leftOn).format('ll') : 'Present Day'
 
                 list += '<li class="list-group-item"><div class="d-flex justify-content-between">'
-                list += `<span class="text-secondary pt-2" style="font-size: .75em;">Employer ${x--}</span>`
+                list += `<span class="text-info pt-2" style="font-size: .8em;">Employer ${x--}</span>`
                 list += '<div class="d-flex flex-row-reverse gap-2 my-2">'
                 list += `<button class="btn btn-danger bg-danger-subtle btn-sm delete-employer" data-id="${_id}"><i class="fa fa-trash"></i></button>`
                 list += `<button class="btn btn-success bg-success-subtle btn-sm edit-employer" data-id="${_id}"><i class="fa fa-pen"></i></button></div></div>`
                 list += `<div class="d-flex flex-column flex-md-row justify-content-between"><span>${employer}</span><span class="text-secondary" style="font-size: .8em;">${period}</span></div>`
                 list += '</li>'
+
+                if (leftOn) {
+                    const date = {
+                        previous: moment(prevDate),
+                        current: moment(leftOn),
+                    }
+
+                    if (date.current.isSameOrBefore(date.previous)) {
+                        prevDate = startedOn
+
+                        const period = date.current.format('ll') + ' – ' + date.previous.format('ll')
+                        const difference = Math.abs(date.previous.diff(date.current, 'days'))
+
+                        if (difference > 30) {
+                            const fieldCls = gapExpl ? ' is-valid' : ''
+
+                            list += '<li class="list-group-item"><div class="d-flex flex-column flex-md-row justify-content-between">'
+                            list += `<span class="text-info pt-2" style="font-size: .8em;">Employment Gap <small>(${difference} Days)</small></span>`
+                            list += `<span class="text-secondary pt-2" style="font-size: .8em;">${period}</span></div>`
+                            list += `<div class="my-2"><input type="hidden" name="_emplId[]" value="${_id}" />`
+                            list += `<textarea class="form-control${fieldCls}" type="text" name="explGap[]" placeholder="Provide explanation here..." required>${gapExpl || ''}`
+                            list += '</textarea></div></li>'
+                        }
+                    }
+                }
             })
             list += '</ul>'
 

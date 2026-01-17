@@ -345,7 +345,7 @@ class Application {
             }
 
         this.prevEmployed = bool(data.prevEmployed)
-        this.prevEmplGaps = bool(data.prevEmplGaps)
+        // this.prevEmplGaps = bool(data.prevEmplGaps)
 
         if (data.startPref !== null) {
             this.preference = {
@@ -710,7 +710,7 @@ class Application {
                         {
                             if (!body.prevEmployed) {
                                 if (this.step < 7) body.step = 7
-                                body.prevEmplGaps = null
+                                // body.prevEmplGaps = null
 
                                 await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
                                 await this.update(body)
@@ -809,8 +809,7 @@ class Application {
                             const { _id } = body
                             delete body._id
 
-                            const appBody = { prevEmployed: true, prevEmplGaps: false }
-                            //! if (this.step < 7) appBody.step = 7
+                            const appBody = { prevEmployed: true }
 
                             if (_id) {
                                 const employment = await Employment.fetch(this.session, { _id }, { hideRawId: false })
@@ -818,18 +817,6 @@ class Application {
                             } else {
                                 body.appId = this.id
                                 await Employment.create(this.session, body)
-                            }
-
-                            const employers = await Employment.fetch(this.session, { appId: this.id })
-                            let prevDate = this.appliedOn
-                            for (const employer of employers) {
-                                const { startedOn, leftOn } = employer
-                                if (!leftOn) continue
-
-                                appBody.prevEmplGaps = Math.abs(moment(startedOn).diff(moment(leftOn), 'days')) > 30
-                                if (appBody.prevEmplGaps) break
-
-                                prevDate = startedOn
                             }
 
                             await this.update(appBody)
@@ -1223,7 +1210,7 @@ class Application {
                     'experience',
                     'cdlSchool',
                     'prevEmployed',
-                    'prevEmplGaps',
+                    // 'prevEmplGaps',
                     'activeBusiness',
                 ],
             },

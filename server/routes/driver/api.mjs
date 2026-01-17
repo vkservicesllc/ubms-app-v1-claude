@@ -130,9 +130,9 @@ router.post('/list/application/:formId/employers', async (req, res) => {
         const application = await Application.fetch(res.session, { formId })
         if (!application) throw new Error('Application not found')
 
-        const data = await Employment.fetch(res.session, { _appId: application._id })
+        const employers = await Employment.fetch(res.session, { _appId: application._id })
 
-        res.json({ data })
+        res.json({ data: { application, employers } })
     } catch (err) {
         sendError.server(req, res, err)
     }
