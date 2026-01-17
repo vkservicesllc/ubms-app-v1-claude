@@ -41,7 +41,7 @@
                     <div class="d-flex flex-column flex-md-row justify-content-between pt-3" style="display: none;">
                         <div class="form-check order-2 order-md-1">
                             <input type="checkbox" class="form-check-input" id="no-additional-employers" />
-                            <label class="form-check-label">No additional employers to report</label>
+                            <label class="form-check-label" for="no-additional-employers">No additional employers to report</label>
                         </div>
                         <button type="button" class="btn btn-primary bg-primary-subtle order-1 order-md-2 mb-3" id="add-prevempl-button">
                             Add Employer
@@ -171,8 +171,8 @@
                     <div class="row g-3 my-1">
                         <div class="col">
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input still-employed" />
-                                <label class="form-check-label">Check if you are still employed by this employer</label>
+                                <input type="checkbox" class="form-check-input" id="still-employed" />
+                                <label class="form-check-label" for="still-employed">Check if you are still employed by this employer</label>
                             </div>
                         </div>
                     </div>
@@ -211,11 +211,11 @@
                             <input type="hidden" id="delete-prevempl-target" />
                             <p class="my-1"><small>Are you sure you want to remove the following employer?</small></p>
                             <p class="my-1" id="delete-prevempl-desc"></p>
-                            <p class="my-1"><small>This change will take effect after you click the "{{button.six.text}}" button</small></p>
+                            {{!-- <p class="my-1"><small>This change will take effect after you click the "{{button.six.text}}" button</small></p> --}}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-danger" id="remove-prevempl-button">Remove</button>
+                            <button type="button" class="btn btn-secondary bg-secondary-subtle" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger bg-danger-subtle" id="remove-prevempl-button">Delete Employer</button>
                         </div>
                     </div>
                 </div>

@@ -9,7 +9,7 @@ import formId, { check, onInput, onAccept, onChange, onComplete, onBlur, onSubmi
 import selector from '/modules/registry/selectors/driver-application-employment.mjs'
 import appSelector from '/modules/registry/selectors/driver-application.mjs'
 
-const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
+const HS = selector.id.hidden, TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
 const employedId = appSelector.id.radio.prevEmployed
 
 const $card = $('#apl-card')
@@ -37,6 +37,10 @@ const $btnContainer = {
     employerCancel: $button.cancel.parent().parent(),
 }
 const $noAdditional = $('#no-additional-employers')
+
+const $deleteModal = $('#delete-prevempl-modal')
+const $deleteTarget = $('#delete-prevempl-target')
+const $deleteEmplDesc = $('#delete-prevempl-desc')
 
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
@@ -220,7 +224,7 @@ inputEvent(TS.earnings, {
     },
 })
 
-$('.still-employed').on('click', function() {
+$('#still-employed').on('click', function() {
     const $leftOnContainer = $('#termination-date-field')
     let disabled = false, action = 'show'
     if ($(this).prop('checked')) {
@@ -286,6 +290,15 @@ dateMask(TS.endDate, {
     },
 })
 
+$deleteModal
+    .on('hide.bs.modal', () => {
+        $('.btn').blur()
+    })
+    .on('hidden.bs.modal', () => {
+        $deleteTarget.val(null)
+        $deleteEmplDesc.html(null)
+    })
+
 
 function drawEmployerList() {
     $.ajax(`/api/list/application/${formId()}/employers`, {
@@ -305,7 +318,7 @@ function drawEmployerList() {
                 list += '<li class="list-group-item"><div class="d-flex justify-content-between">'
                 list += `<span class="text-secondary pt-2" style="font-size: .75em;">Employer ${x--}</span>`
                 list += '<div class="d-flex flex-row-reverse gap-2 my-2">'
-                list += '<button class="btn btn-danger bg-danger-subtle btn-sm"><i class="fa fa-trash"></i></button>'
+                list += `<button class="btn btn-danger bg-danger-subtle btn-sm delete-employer" data-id="${_id}"><i class="fa fa-trash"></i></button>`
                 list += `<button class="btn btn-success bg-success-subtle btn-sm edit-employer" data-id="${_id}"><i class="fa fa-pen"></i></button></div></div>`
                 list += `<div class="d-flex flex-column flex-md-row justify-content-between"><span>${employer}</span><span class="text-secondary" style="font-size: .8em;">${period}</span></div>`
                 list += '</li>'
@@ -332,9 +345,24 @@ function openAddForm(cancel = true) {
 }
 
 function openUpdateForm(data) {
-    const { employer, startedOn, phone, address1, address2, zip, city, state, position, earnings, fmcsr, dotDat, leftOn, rfl } = data
+    const { _id, employer, startedOn, phone, address, position, earnings, fmcsr, dotDat, leftOn, rfl } = data
+
+    $(HS.id).val(_id)
     $(TS.employer).val(employer).addClass('is-valid')
-    //! to be continued...
+    $(TS.startDate).val(moment(startedOn).format('MM/DD/YYYY')).addClass('is-valid')
+    $(TS.phone).val(formatTel(phone)).addClass('is-valid')
+    $(TS.address1).val(address.address1).addClass('is-valid')
+    $(TS.address2).val(address.address2)
+    $(TS.addrZip).val(address.zip).addClass('is-valid')
+    $(TS.addrCity).val(address.city).addClass('is-valid')
+    $(SS.addrState).val(address.state).addClass('is-valid')
+    $(TS.position).val(position).addClass('is-valid')
+    $(TS.earnings).val(earnings.toLocaleString()).addClass('is-valid')
+    $(RS.fmcsr[fmcsr ? 'yes' : 'no']).prop('checked', true)
+    $(RS.dotDat[dotDat ? 'yes' : 'no']).prop('checked', true)
+    $(TS.rfl).val(rfl).addClass('is-valid')
+    if (leftOn) $(TS.endDate).val(moment(leftOn).format('MM/DD/YYYY')).addClass('is-valid')
+    else $leftOnContainer.hide().find('input').prop('disabled', true)
 
     $submit.employer.addClass('btn-success bg-success-subtle').text('Update Employer')
     $form.employer.show()
@@ -354,18 +382,32 @@ function closeForm() {
 }
 
 function resetEvents() {
-    $('.edit-employer').off('click')
+    $('.edit-employer, .delete-employer').off('click')
 
-    $('.edit-employer').on('click', function(evt) {
+    $('.edit-employer, .delete-employer').on('click', function(evt) {
         evt.preventDefault()
         const _id = $(this).data('id')
+        const edit = $(this).hasClass('edit-employer')
 
         $.ajax(`/api/data/application/employer/${_id}`, {
             method: 'POST',
             success(response) {
-                $emplList.html(null)
-                $section.hide()
-                openUpdateForm(response.data)
+                const { data } = response
+
+                if (edit) {
+                    $emplList.html(null)
+                    $section.hide()
+                    return openUpdateForm(data)
+                }
+
+                const { _id, employer, startedOn, leftOn } = data
+                let desc = `<strong>${employer}</strong><br/><small>`
+                desc += moment(startedOn).format('ll') + ' – '
+                desc += (leftOn ? moment(leftOn).format('ll') : 'Present Day') + '</small>'
+
+                $deleteTarget.val(_id)
+                $deleteEmplDesc.html(desc)
+                $deleteModal.modal('show')
             },
         })
     })

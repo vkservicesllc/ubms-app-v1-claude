@@ -1941,6 +1941,7 @@ class Employment {
         this.earnings = data.earnings
         this.fmcsr = data.fmcsr
         this.dotDat = data.dotDat
+        this.rfl = data.rfl
         this.gapExpl = data.gapExpl
 
         if (single && !hideRawId) {
