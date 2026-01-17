@@ -36,11 +36,13 @@ const $btnContainer = {
     employment: $submit.employment.parent().parent().parent(),
     employerCancel: $button.cancel.parent().parent(),
 }
+const $stillEmployed = $('#still-employed')
 const $noAdditional = $('#no-additional-employers')
 
 const $deleteModal = $('#delete-prevempl-modal')
 const $deleteTarget = $('#delete-prevempl-target')
 const $deleteEmplDesc = $('#delete-prevempl-desc')
+const $leftOnContainer = $('#termination-date-field')
 
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
@@ -224,8 +226,7 @@ inputEvent(TS.earnings, {
     },
 })
 
-$('#still-employed').on('click', function() {
-    const $leftOnContainer = $('#termination-date-field')
+$stillEmployed.on('click', function() {
     let disabled = false, action = 'show'
     if ($(this).prop('checked')) {
         disabled = true
@@ -362,7 +363,10 @@ function openUpdateForm(data) {
     $(RS.dotDat[dotDat ? 'yes' : 'no']).prop('checked', true)
     $(TS.rfl).val(rfl).addClass('is-valid')
     if (leftOn) $(TS.endDate).val(moment(leftOn).format('MM/DD/YYYY')).addClass('is-valid')
-    else $leftOnContainer.hide().find('input').prop('disabled', true)
+    else {
+        $stillEmployed.prop('checked', true)
+        $leftOnContainer.hide().find('input').prop('disabled', true)
+    }
 
     $submit.employer.addClass('btn-success bg-success-subtle').text('Update Employer')
     $form.employer.show()

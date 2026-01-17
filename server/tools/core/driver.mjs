@@ -1964,13 +1964,14 @@ class Employment {
         enforceLocation: true,
         db: db.carrier,
         query: query.driver_appemployer,
+        defSorts: [ { desc: 'startedOn' } ],
     })
 
 
     static create = (session, body, params) => classStatic.create(this, session, body, params)
 
 
-    static fetch = (session, filter, { hideRawId = false, mode } = {}) => classStatic.fetch(this, session, filter, { hideRawId, mode }, {
+    static fetch = (session, filter, { hideRawId = false, sorts = Employment.config().defSorts, mode } = {}) => classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
         batch: [
             {
                 table: query.driver_appemployer.main.table,

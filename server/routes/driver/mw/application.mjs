@@ -695,7 +695,7 @@ export const applicationProgress = async (req, res) => {
             // // options._emplAddr1.text.input.placeholder = 'Type full address...'
             // // options._emplAddrState.select.input.options = { valOpt: true }
 
-            if (application.prevEmployed === null) hbs.scrollPoint.employment = scrollAttr
+            if (step === 6) hbs.scrollPoint.employment = scrollAttr
         }
 
 
