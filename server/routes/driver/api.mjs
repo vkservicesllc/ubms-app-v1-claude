@@ -177,23 +177,38 @@ router.post('/resource/application/:formId/employer', validateApplicantEmployer,
 })
 
 
+router.patch('/resource/application/employer/:_id', async (req, res) => {
+    try {
+        const { _id } = req.params
+        const employer = await Employment.fetch(res.session, { _id }, { hideRawId: false })
+        if (!employer) throw new Error('Employer not found')
+
+        await employer.update(req.body)
+
+        res.json({ status: 'OK' })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.delete('/resource/application/employer/:_id', async (req, res) => {
     try {
         const { _id } = req.params
         const employer = await Employment.fetch(res.session, { _id }, { hideRawId: false })
         if (!employer) throw new Error('Employer not found')
 
-        const { appId } = employer
+        // const { appId } = employer
 
         await employer.delete()
 
-        const employers = await Employment.fetch(res.session, { appId })
-        if (!employers.length) {
-            const application = await Application.fetch(res.session, { id: appId })
-            if (!application) throw new Error('Application not found')
+        // const employers = await Employment.fetch(res.session, { appId })
+        // if (!employers.length) {
+        //     const application = await Application.fetch(res.session, { id: appId })
+        //     if (!application) throw new Error('Application not found')
 
-            await application.update({ prevEmplGaps: null }) //! need to have a universal gap identifier in application like await application.reset('emplGaps')
-        }
+        //     await application.update({ prevEmplGaps: null }) //! need to have a universal gap identifier in application like await application.reset('emplGaps')
+        // }
 
         res.json({ status: 'OK' })
     } catch (err) {

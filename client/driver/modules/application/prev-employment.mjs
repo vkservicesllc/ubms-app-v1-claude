@@ -86,6 +86,7 @@ $button.cancel.click(function(evt) {
     evt.preventDefault()
     closeForm()
     drawEmployerList()
+    scroll()
 })
 
 $button.add.click(function(evt) {
@@ -112,10 +113,7 @@ $button.delete.click(function(evt) {
                 setTimeout(() => {
                     drawEmployerList()
                     $card.fadeIn(duration)
-
-                    const scrollPoint = document.querySelector('#employment-accordion-item')
-                    if (scrollPoint)
-                        setTimeout(() => scrollPoint.scrollIntoView({ behavior: 'smooth', block: 'start' }), scrollDuration)
+                    scroll()
                 }, duration + 250)
             }
         },
@@ -353,7 +351,7 @@ function drawEmployerList() {
                 period += leftOn ? moment(leftOn).format('ll') : 'Present Day'
 
                 list += '<li class="list-group-item"><div class="d-flex justify-content-between">'
-                list += `<span class="text-info pt-2" style="font-size: .8em;">Employer ${x--}</span>`
+                list += `<span class="employer-list-title pt-2" style="font-size: .8em;">Employer ${x--}</span>`
                 list += '<div class="d-flex flex-row-reverse gap-2 my-2">'
                 list += `<button class="btn btn-danger bg-danger-subtle btn-sm delete-employer" data-id="${_id}"><i class="fa fa-trash"></i></button>`
                 list += `<button class="btn btn-success bg-success-subtle btn-sm edit-employer" data-id="${_id}"><i class="fa fa-pen"></i></button></div></div>`
@@ -376,10 +374,9 @@ function drawEmployerList() {
                             const fieldCls = gapExpl ? ' is-valid' : ''
 
                             list += '<li class="list-group-item"><div class="d-flex flex-column flex-md-row justify-content-between">'
-                            list += `<span class="text-info pt-2" style="font-size: .8em;">Employment Gap <small>(${difference} Days)</small></span>`
-                            list += `<span class="text-secondary pt-2" style="font-size: .8em;">${period}</span></div>`
-                            list += `<div class="my-2"><input type="hidden" name="_emplId[]" value="${_id}" />`
-                            list += `<textarea class="form-control${fieldCls}" type="text" name="explGap[]" placeholder="Provide explanation here..." required>${gapExpl || ''}`
+                            list += `<span class="employer-list-title pt-2" style="font-size: .8em;">Employment Gap <small>(${difference} Days)</small></span>`
+                            list += `<span class="text-danger pt-2" style="font-size: .8em;">${period}</span></div><div class="my-2">`
+                            list += `<textarea class="form-control explain-employment-gap${fieldCls}" type="text" name="explGap[]" placeholder="Provide explanation here..." data-id="${_id}" required>${gapExpl || ''}`
                             list += '</textarea></div></li>'
                         }
                     }
@@ -476,6 +473,24 @@ function resetEvents() {
             },
         })
     })
+
+    inputEvent('.explain-employment-gap', {
+        capitalize: 'first',
+        strip: true,
+        word: true,
+        onInput,
+        onChange(gapExpl, $gapExpl) {
+            const _id = $gapExpl.data('id')
+
+            $.ajax(`/api/resource/application/employer/${_id}`, {
+                method: 'PATCH',
+                data: { gapExpl },
+                success(response) {
+                    if (response.status === 'OK') onChange(gapExpl, $gapExpl)
+                },
+            })
+        },
+    })
 }
 
 
@@ -498,12 +513,15 @@ $form.employer.submit(function(evt) {
                     closeForm()
                     drawEmployerList()
                     $card.fadeIn(duration)
-
-                    const scrollPoint = document.querySelector('#employment-accordion-item')
-                    if (scrollPoint)
-                        setTimeout(() => scrollPoint.scrollIntoView({ behavior: 'smooth', block: 'start' }), scrollDuration)
+                    scroll()
                 }, duration + 250)
             }
         },
     })
 })
+
+
+function scroll() {
+    const scrollPoint = document.querySelector('#employment-accordion-item')
+    setTimeout(() => scrollPoint.scrollIntoView({ behavior: 'smooth', block: 'start' }), scrollDuration)
+}
