@@ -75,7 +75,8 @@ inputEvent(employedId.no, {
     },
 })
 
-$button.cancel.click(function() {
+$button.cancel.click(function(evt) {
+    evt.preventDefault()
     closeForm()
     drawEmployerList()
 })
@@ -297,7 +298,7 @@ function drawEmployerList() {
             let list = '<ul class="list-group">'
             let x = data.length
             data.map(employment => {
-                const { employer, startedOn, leftOn } = employment
+                const { _id, employer, startedOn, leftOn } = employment
                 let period = moment(startedOn).format('ll') + ' – '
                 period += leftOn ? moment(leftOn).format('ll') : 'Present Day'
 
@@ -305,13 +306,15 @@ function drawEmployerList() {
                 list += `<span class="text-secondary pt-2" style="font-size: .75em;">Employer ${x--}</span>`
                 list += '<div class="d-flex flex-row-reverse gap-2 my-2">'
                 list += '<button class="btn btn-danger bg-danger-subtle btn-sm"><i class="fa fa-trash"></i></button>'
-                list += '<button class="btn btn-success bg-success-subtle btn-sm"><i class="fa fa-pen"></i></button></div></div>'
+                list += `<button class="btn btn-success bg-success-subtle btn-sm edit-employer" data-id="${_id}"><i class="fa fa-pen"></i></button></div></div>`
                 list += `<div class="d-flex flex-column flex-md-row justify-content-between"><span>${employer}</span><span class="text-secondary" style="font-size: .8em;">${period}</span></div>`
                 list += '</li>'
             })
             list += '</ul>'
 
             $emplList.html(list)
+            resetEvents()
+
             $btnContainer.employment.hide()
             $noAdditional.prop('checked', false)
             $button.add.show()
@@ -329,7 +332,10 @@ function openAddForm(cancel = true) {
 }
 
 function openUpdateForm(data) {
-    //! Populate form with fetched data
+    const { employer, startedOn, phone, address1, address2, zip, city, state, position, earnings, fmcsr, dotDat, leftOn, rfl } = data
+    $(TS.employer).val(employer).addClass('is-valid')
+    //! to be continued...
+
     $submit.employer.addClass('btn-success bg-success-subtle').text('Update Employer')
     $form.employer.show()
     // $btnContainer.employment.hide()
@@ -345,4 +351,22 @@ function closeForm() {
     $submit.employer.removeClass('btn-primary bg-primary-subtle btn-success bg-success-subtle').text(null)
     // $btnContainer.employment.show()
     $btnContainer.employerCancel.hide()
+}
+
+function resetEvents() {
+    $('.edit-employer').off('click')
+
+    $('.edit-employer').on('click', function(evt) {
+        evt.preventDefault()
+        const _id = $(this).data('id')
+
+        $.ajax(`/api/data/application/employer/${_id}`, {
+            method: 'POST',
+            success(response) {
+                $emplList.html(null)
+                $section.hide()
+                openUpdateForm(response.data)
+            },
+        })
+    })
 }

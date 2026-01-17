@@ -63,6 +63,16 @@ router.post('/login/application/:formId', validateApplicantLogin, async (req, re
 })
 
 
+router.post('/data/application/employer/:_id', async (req, res) => {
+    try {
+        const { _id } = req.params
+        res.json({ data: await Employment.fetch(res.session, { _id }) })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/data/application/:formId', async (req, res) => {
     try {
         const { formId } = req.params
