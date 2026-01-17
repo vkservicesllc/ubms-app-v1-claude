@@ -24,6 +24,7 @@ const $submit = {
 const $button = {
     cancel: $('#employer-cancel'),
     add: $('#add-prevempl-button'),
+    delete: $('#remove-prevempl-button'),
 }
 const $help = {
     form: $('#prevempl-form-help'),
@@ -87,10 +88,40 @@ $button.cancel.click(function(evt) {
     drawEmployerList()
 })
 
-$button.add.click(function() {
+$button.add.click(function(evt) {
+    evt.preventDefault()
     $section.hide()
     $emplList.html(null)
     openAddForm()
+})
+
+$button.delete.click(function(evt) {
+    evt.preventDefault()
+    const _id = $deleteTarget.val()
+
+    $.ajax(`/api/resource/application/employer/${_id}`, {
+        method: 'DELETE',
+        success(response) {
+            if (response.status === 'OK') {
+                $deleteTarget.val(null)
+                $deleteEmplDesc.html(null)
+                $deleteModal.modal('hide')
+
+                const duration = 750
+                $card.fadeOut(duration)
+                setTimeout(() => {
+                    drawEmployerList()
+                    $card.fadeIn(duration)
+
+                    const scrollPoint = document.querySelector('#employment-accordion-item')
+                    if (scrollPoint)
+                        setTimeout(() => scrollPoint.scrollIntoView({ behavior: 'smooth', block: 'start' }), scrollDuration)
+                }, duration + 250)
+            }
+        },
+    })
+
+    
 })
 
 $noAdditional.click(function() {
@@ -307,7 +338,10 @@ function drawEmployerList() {
         success(response) {
             const { data } = response
             
-            if (!data.length) return openAddForm(false)
+            if (!data.length) {
+                $btnContainer.employment.hide()
+                return openAddForm(false)
+            }
 
             let list = '<ul class="list-group">'
             let x = data.length

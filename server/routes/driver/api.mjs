@@ -165,12 +165,37 @@ router.post('/list/application/:formId/:target', async (req, res) => {
 router.post('/resource/application/:formId/employer', validateApplicantEmployer, validationCheck, async (req, res) => {
     try {
         const { formId } = req.params
-        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
+        const application = await Application.fetch(res.session, { formId })
         if (!application) throw new Error('Application not found')
 
         await application.progress('prev-employer', req.body)
 
-        res.send({ status: 'OK' })
+        res.json({ status: 'OK' })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.delete('/resource/application/employer/:_id', async (req, res) => {
+    try {
+        const { _id } = req.params
+        const employer = await Employment.fetch(res.session, { _id }, { hideRawId: false })
+        if (!employer) throw new Error('Employer not found')
+
+        const { appId } = employer
+
+        await employer.delete()
+
+        const employers = await Employment.fetch(res.session, { appId })
+        if (!employers.length) {
+            const application = await Application.fetch(res.session, { id: appId })
+            if (!application) throw new Error('Application not found')
+
+            await application.update({ prevEmplGaps: null }) //! need to have a universal gap identifier in application like await application.reset('emplGaps')
+        }
+
+        res.json({ status: 'OK' })
     } catch (err) {
         sendError.server(req, res, err)
     }
