@@ -416,3 +416,33 @@ function resetEvents() {
         })
     })
 }
+
+
+$form.employer.submit(function(evt) {
+    evt.preventDefault()
+
+    const data = {}
+    $.each($(this).serializeArray(), function () {
+        data[this.name] = this.value
+    })
+
+    $.ajax(`/api/resource/application/${formId()}/employer`, {
+        method: 'POST',
+        data,
+        success(response) {
+            if (response.status === 'OK') {
+                const duration = 750
+                $card.fadeOut(duration)
+                setTimeout(() => {
+                    closeForm()
+                    drawEmployerList()
+                    $card.fadeIn(duration)
+
+                    const scrollPoint = document.querySelector('#employment-accordion-item')
+                    if (scrollPoint)
+                        setTimeout(() => scrollPoint.scrollIntoView({ behavior: 'smooth', block: 'start' }), scrollDuration)
+                }, duration + 250)
+            }
+        },
+    })
+})

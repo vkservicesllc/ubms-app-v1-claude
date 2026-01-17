@@ -81,12 +81,12 @@ const applicantPreemploymentFields = [ 'prevEmployed' ]
 applicantPreemploymentFields.forEach(prop => validateApplicantPreemployment.push(ApplicationForm[prop].validate()))
 
 
-const validateApplicantEmployers = []
+const validateApplicantEmployer = []
 const applicantEmployerFields = [
     'employer', 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
     'startDate', 'position', 'earnings', 'FMCSR', 'dotDat', 'RFL', 'endDate',
 ]
-applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(EmploymentForm[prop].validate()))
+applicantEmployerFields.forEach(prop => validateApplicantEmployer.push(EmploymentForm[prop].validate()))
 
 
 const validateApplicantPreference = []
@@ -163,7 +163,7 @@ const dynamicValidator = {
                 validators = validateApplicantPreemployment
                 break
             case 'prev-employer':
-                validators = validateApplicantEmployers
+                validators = validateApplicantEmployer
                 break
             case 'preference':
                 validators = validateApplicantPreference
@@ -297,4 +297,4 @@ router.post('/application/submit/:formId', async (req, res) => {
 
 export default router
 
-export { validateApplicant, dynamicValidator }
+export { validateApplicant, dynamicValidator, validateApplicantEmployer }

@@ -9,7 +9,11 @@ import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
 
 /* Validators */
+
+/* Validators */
+import validationCheck from '../../tools/form/validator.mjs'
 import { validateApplicantLogin } from './application.mjs'
+import { validateApplicantEmployer } from './resource.mjs'
 
 /* API */
 import { sessionDetails } from '../api.mjs'
@@ -148,6 +152,25 @@ router.post('/list/application/:formId/:target', async (req, res) => {
         const data = await application.fetch(target)
 
         res.json({ data })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
+// ==== RESOURCE ROUTES ==== //
+
+
+router.post('/resource/application/:formId/employer', validateApplicantEmployer, validationCheck, async (req, res) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
+        if (!application) throw new Error('Application not found')
+
+        await application.progress('prev-employer', req.body)
+
+        res.send({ status: 'OK' })
     } catch (err) {
         sendError.server(req, res, err)
     }
