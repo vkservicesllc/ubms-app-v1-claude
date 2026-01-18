@@ -13,8 +13,8 @@ import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Company from '../../tools/core/company.mjs'
-import Driver, { Application, Citation, Accident } from '../../tools/core/driver.mjs'
-// import createApplicationPdf from './mv/pdf/driver-application.mjs'
+import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
+import createApplicationPdf from './mw/pdf/driver-application.mjs'
 import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 import { sortObjectByKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 import Query from '../../tools/utils/query.mjs'
@@ -86,6 +86,38 @@ router.get('/', User.mw.verify, Team.mw.verify, async (req, res) => {
         res.render(key, hbs)
     } catch (err) {
         sendError.server(res, err)
+    }
+})
+
+
+router.get('/files/application/:route?', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { user } = res.session
+        const { DS } = user
+
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('d:drv/apl', 'create', permissions, DS))
+            return respond404(res)
+
+        const { route } = req.params
+
+        let carrier
+        if (route) {
+            const company = await Company.fetch(res.session, { route }, { hideRawId: false })
+            const { name, address, phone, fax, lastLogo } = company
+
+            carrier = { name, address, phone, fax, lastLogo }
+            carrier.address = carrier.address.physical
+            carrier.companyId = company.id
+        }
+
+        const pdfBytes = await createApplicationPdf(carrier)
+
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.send(Buffer.from(pdfBytes))
+    } catch (err) {
+        sendError.server(req, res, err)
     }
 })
 
@@ -564,7 +596,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         /* PREVIOUS EMPLOYERS */
         {
-            hbs.length.prevEmployment = (await application.fetch('employer.history')).length
+            hbs.length.prevEmployment = (await Employment.fetch(res.session, { appId: application.id })).length
             if (hbs.length.prevEmployment) hbs.linkColor.prevEmployment = 'blue'
         }
 
@@ -765,6 +797,58 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
         sendError.server(req, res, err)
+    }
+})
+
+
+router.get('/application/:formId/files/application', async (req, res, next) => {
+    const user = await User.mw.verify(req, res)
+    if (!user) return res.send('Your session has expired, so you can no longer view this file.<br/>Please log in using another tab and refresh this page to regain access.')
+
+    res.session.user = user
+    next()
+}, Team.mw.verify, async (req, res) => {
+    const { formId } = req.params
+
+    try {
+        const aplUrl = '/drivers/applications'
+        const { user, team } = res.session
+        const { DS } = user
+
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('f:drv/apl', 'view', permissions, DS))
+            return res.redirect(aplUrl)
+
+        const application = await Application.fetch(res.session, { formId }, { hideRawId: false })
+
+        if (!application || application.condition !== 'c' || (team && application._teamId !== team._id))
+            return res.redirect(aplUrl)
+
+        let carrier
+        if (application._carrierId) {
+            const { _carrierId: _id } = application
+            carrier = await Carrier.fetch(res.session, { _id })
+
+            const companyId = await carrier.companyId()
+            const { name, address, phone, fax, lastLogo } = carrier
+            carrier = { name, address, phone, fax, lastLogo }
+            carrier.address = carrier.address.physical
+            carrier.companyId = companyId
+        }
+
+        const addresses = await application.fetch('address.history')
+        const violations = await application.fetch('citation.history')
+        const accidents = await application.fetch('accident.history')
+        const employers = await Employment.fetch(res.session, { appId: application.id })
+
+        const pdfBytes = await createApplicationPdf(carrier, application, addresses, violations, accidents, employers)
+
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.send(Buffer.from(pdfBytes))
+    } catch (err) {
+        sendError.server(req, res, err)
+        // res.redirect(`/drivers/application/${formId}/e-form`)
     }
 })
 

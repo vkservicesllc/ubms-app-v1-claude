@@ -783,7 +783,7 @@ class User extends Person {
                         const { logoutUrl } = config.session
 
                         if (refer) {
-                            const user = await User.fetch(session, { _id: refer }, { hideSensitive: false, hideEvents: false })
+                            const user = await User.fetch(res.session, { _id: refer }, { hideSensitive: false, hideEvents: false, offline: true })
                             if (method !== 'POST' && !excUrl.includes(originalUrl))
                                 await user.url(stripUrl(originalUrl, query, 'refer'))
                         }
