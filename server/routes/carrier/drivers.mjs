@@ -122,6 +122,10 @@ router.get('/files/application/:route?', User.mw.verify, Team.mw.verify, async (
 })
 
 
+
+// ==== APPLICATION ROUTES ==== //
+
+
 router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
@@ -849,6 +853,34 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
     } catch (err) {
         sendError.server(req, res, err)
         // res.redirect(`/drivers/application/${formId}/e-form`)
+    }
+})
+
+
+
+// ==== APPLICANT ROUTES ==== //
+
+
+router.get('/applicants', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!inPEnvironment('d:drv/apl', permissions, DS))
+            return res.redirect(res.session.defUrl)
+
+        const key = 'drivers.applicants'
+        let { hbs } = res
+        hbs = await hbs.set(key, { titlePfx: 'Driver Position Applicants' })
+
+        const { active } = hbs.nav
+        hbs.nav.left.drivers = active
+
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, null))
+
+        res.render(key.replace('.', '/'), hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
     }
 })
 

@@ -175,6 +175,88 @@ class Driver extends Individual {
     }
 
 
+    static mw = {
+
+
+        dtList: async (req, res) => {
+            try {
+                const sessionUser = res.session.user
+                const { DS, unscoped } = sessionUser
+                const permissions = await sessionUser.permissions() || {}
+
+                if (!DS && !('d:drv/apl' in permissions)) return sendError.auth(req, res)
+
+                let team, teamId = null
+                if (req.session.team) team = await Team.fetch(res.session, { _id: req.session.team }, { hideRawId: false })
+                if (team) teamId = team.id
+
+                const { draw, start, length } = req.body
+                const { blacklisted } = req.params
+
+                const excludedConditions = ['p']
+                if (false) excludedConditions.push('c') //! FILTER
+
+                const baseQuery = knex(`${db.carrier}.drivers AS drv`)
+                    .select(
+                        knex.raw(Query.hashField(Driver.hashId(), 'drv')),
+                        knex.raw(Query.hashField(Individual.hashId('personId'), 'drv')),
+                        'psn.dob',
+                        'psn.gender',
+                        knex.raw('MAX(??) AS ??', ['nms.firstName', 'firstName']),
+                        knex.raw('MAX(??) AS ??', ['nms.middleName', 'middleName']),
+                        knex.raw('MAX(??) AS ??', ['nms.lastName', 'lastName']),
+                        knex.raw('MAX(??) AS ??', ['nms.suffix', 'suffix']),
+                        knex.raw('MAX(??) AS ??', ['phn.phone', 'phone'])
+                    )
+                    .leftJoin(`${db.person}.individuals AS psn`, 'psn.id', 'drv.personId')
+                    .leftJoin(
+                        knex.raw('? AS nms', [ subQuery(db.person, 'names', 'since', 'personId') ]),
+                        'nms.personId',
+                        'drv.personId'
+                    )
+                    .leftJoin(
+                        knex.raw('? AS phn', [ subQuery(db.person, 'phones', 'since', 'personId') ]),
+                        'phn.personId',
+                        'drv.personId'
+                    )
+                    .leftJoin(`${db.carrier}.applications AS apl`, 'apl.driverId', 'drv.id')
+                    // .where('apl.teamId', teamId)
+                    .whereNotIn('apl.condition', excludedConditions)
+                    .groupBy('drv.id')
+
+                const totalCountQuery = knex.queryBuilder().count('* AS count').from(baseQuery.as('base'))
+
+                baseQuery.limit(length).offset(start)
+                const countQuery = knex.queryBuilder().count('* AS count').from(baseQuery.as('base'))
+
+                if (teamId) baseQuery.where('apl.teamId', teamId)
+
+                const [
+                    data,
+                    [{ count: recordsFiltered }],
+                    [{ count: recordsTotal }],
+                ] = await Promise.all([
+                    baseQuery,
+                    countQuery,
+                    totalCountQuery,
+                ])
+
+                res.json({
+                    draw,
+                    recordsTotal,
+                    recordsFiltered,
+                    data,
+                })
+
+            } catch (err) {
+                sendError.server(req, res, err)
+            }
+        },
+
+
+    }
+
+
 }
 
 
@@ -1785,12 +1867,11 @@ class Application {
                         _id: sessionUser._id,
                         DS: sessionUser.DS,
                     },
-                    // _sessionUserId: res.session.user._id,
                 })
             } catch (err) {
                 sendError.server(req, res, err)
             }
-        }
+        },
 
 
     }

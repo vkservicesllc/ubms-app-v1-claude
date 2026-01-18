@@ -8,7 +8,7 @@ const interval = 300000
 const table = $('#driver-aplicants-table').DataTable({
 
     ajax: {
-        url: '/api/drivers',
+        url: '/api/drivers/dt-list/applicants',
         dataSrc(response) {
             const { data } = response
 
@@ -27,12 +27,12 @@ const table = $('#driver-aplicants-table').DataTable({
         },
 
         {
-            data: 'sex',
+            data: 'gender',
             title: 'Gender',
             searchable: false,
             render(data) {
                 if (data === null) return
-                return data ? 'Male' : 'Female'
+                return { 'M': 'Male', 'F': 'Female' }[data]
             },
         },
 

@@ -99,6 +99,9 @@ router.post('/lists', User.mw.verify, Team.mw.verify, async (req, res) => {
 router.post('/drivers/dt-list/applications/:archived?', User.mw.verify, Team.mw.verify, Application.mw.dtList)
 
 
+router.post('/drivers/dt-list/applicants/:blacklisted?', User.mw.verify, Team.mw.verify, Driver.mw.dtList)
+
+
 router.post('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
