@@ -145,6 +145,17 @@ router.delete('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, 
 })
 
 
+router.post('/list/drivers/applications/prev-employers', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const _teamId = res.session?.team?._id
+
+        res.json({ data: await Employment.fetch(res.session, { condition: 'c', _teamId }, { hideRawId: true }) })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/list/drivers/application/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         let { _id, target } = req.params
@@ -164,9 +175,9 @@ router.post('/list/drivers/application/:_id/:target', User.mw.verify, Team.mw.ve
             case 'accidents':
                 target = 'accident'
                 break
-            case 'employments':
-                target = 'employer'
-                break
+            // case 'employments':
+            //     target = 'employer'
+            //     break
         }
 
         res.json({ data: await application.fetch(`${target}.history`, { filter }) })

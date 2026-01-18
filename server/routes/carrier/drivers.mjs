@@ -886,6 +886,36 @@ router.get('/applicants', User.mw.verify, Team.mw.verify, async (req, res) => {
 
 
 
+// ==== EMPLOYER ROUTES ==== //
+
+
+router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!inPEnvironment('d:drv/emp', permissions, DS))
+            return res.redirect(res.session.defUrl)
+
+        const key = 'drivers.previous-employments'
+        let { hbs } = res
+        hbs = await hbs.set(key, { titlePfx: "Applicants' Previous Employments" })
+
+        const { active } = hbs.nav
+        hbs.nav.left.drivers = active
+
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 2))
+
+        //! More stuff to be added...
+
+        res.render(key.replace('.', '/'), hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
 // ==== EXPORT ==== //
 
 export default router

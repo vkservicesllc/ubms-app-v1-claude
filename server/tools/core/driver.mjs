@@ -2039,49 +2039,80 @@ class Employment {
     static create = (session, body, params) => classStatic.create(this, session, body, params)
 
 
-    static fetch = (session, filter, { hideRawId = false, sorts = Employment.config().defSorts, mode } = {}) => classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
-        batch: [
-            {
-                table: query.driver_appemployer.main.table,
-                fields: [
-                    'id',
-                    'appId',
-                    Employment.hashId(),
-                    Application.hashId('appId'),
-                    'status',
-                    'employer',
-                    'phone',
-                    'address1',
-                    'address2',
-                    'city',
-                    'state',
-                    'zip',
-                    'startedOn',
-                    'position',
-                    'earnings',
-                    'fmcsr',
-                    'dotDat',
-                    'rfl',
-                    'leftOn',
-                    'gapExpl',
-                ],
+    static fetch = (session, filter = {}, { hideRawId = false, sorts = Employment.config().defSorts, mode } = {}) => {
+        const { teamId, condition } = filter
+        const match = { teamId, condition }
+
+        return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
+            batch: [
+                {
+                    table: query.driver_appemployer.main.table,
+                    fields: [
+                        'id',
+                        'appId',
+                        Employment.hashId(),
+                        Application.hashId('appId'),
+                        'status',
+                        'employer',
+                        'phone',
+                        'address1',
+                        'address2',
+                        'city',
+                        'state',
+                        'zip',
+                        'startedOn',
+                        'position',
+                        'earnings',
+                        'fmcsr',
+                        'dotDat',
+                        'rfl',
+                        'leftOn',
+                        'gapExpl',
+                    ],
+                },
+                {
+                    table: query.driver_application.main.table,
+                    fields: [
+                        Team.hashId('teamId'), 'formId',
+                        'firstName', 'middleName', 'lastName', 'suffix', ['phone', 'aplPhone'],
+                        'createdAt', 'finishedAt', 'carrierId',
+                    ],
+                    match,
+                    join: [ 'id', 'appId' ],
+                },
+                {
+                    table: query.carrier.main.table,
+                    join: [ 'id', 'carrierId', 1 ],
+                },
+                {
+                    db: db.business,
+                    table: query.company.main.table,
+                    join: [ 'id', 'companyId', query.carrier.main.table ],
+                },
+                {
+                    db: db.business,
+                    table: query.company.name.table,
+                    fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
+                    join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
+                },
+            ],
+            prepare(batch, filter) {
+                const {
+                    id, _id, appId, _appId, teamId, _teamId
+                } = filter
+                const single = !!id || !!_id
+
+                const match = { id, appId, teamId }
+                if (!id) match.id = Employment.matchIdHash(_id)
+                if (!appId) match.appId = Application.matchIdHash(_appId)
+                if (!teamId) match.teamId = Team.matchIdHash(_teamId)
+
+                batch[0].match = match
+
+                return { single, batch }
             },
-        ],
-        prepare(batch, filter) {
-            const {
-                id, _id, appId, _appId,
-            } = filter
-            const single = !!id || !!_id
-
-            const match = { id, appId }
-            if (!id) match.id = Employment.matchIdHash(_id)
-            if (!appId) match.appId = Application.matchIdHash(_appId)
-
-            batch[0].match = match
-
-            return { single, batch }
-        },
-    })
+        })
+    }
 
 
 }

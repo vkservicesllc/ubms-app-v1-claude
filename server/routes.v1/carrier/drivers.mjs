@@ -889,30 +889,30 @@ router.get('/pre-applications', User.mw.verify, Team.mw.verify, async (req, res)
 // })
 
 
-router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, res) => {
-    try {
-        const { user, team } = res.session
-        const { DS } = user
-        const permissions = await user.permissions(res.session)
-        if (!inPEnvironment('d:drv/emp', permissions, DS))
-            return res.redirect(res.session.defUrl)
+// router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, res) => {
+//     try {
+//         const { user, team } = res.session
+//         const { DS } = user
+//         const permissions = await user.permissions(res.session)
+//         if (!inPEnvironment('d:drv/emp', permissions, DS))
+//             return res.redirect(res.session.defUrl)
 
-        const key = 'drivers.previous-employments'
-        let { hbs } = res
-        hbs = await hbs.set(key, { titlePfx: "Applicants' Previous Employments" })
+//         const key = 'drivers.previous-employments'
+//         let { hbs } = res
+//         hbs = await hbs.set(key, { titlePfx: "Applicants' Previous Employments" })
 
-        const { active } = hbs.nav
-        hbs.nav.left.drivers = active
+//         const { active } = hbs.nav
+//         hbs.nav.left.drivers = active
 
-        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 2))
+//         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 2))
 
-        //! More stuff to be added...
+//         //! More stuff to be added...
 
-        res.render(key.replace('.', '/'), hbs)
-    } catch (err) {
-        sendError.server(res, err)
-    }
-})
+//         res.render(key.replace('.', '/'), hbs)
+//     } catch (err) {
+//         sendError.server(res, err)
+//     }
+// })
 
 
 router.get('/hired', User.mw.verify, Team.mw.verify, async (req, res) => {
