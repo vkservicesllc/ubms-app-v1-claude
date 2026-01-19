@@ -20,7 +20,7 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
     try {
         const { _id, target } = req.params
         const { user: sessionUser } = res.session
-        const options = { hideRawId, hideSensitive: false }
+        const options = { hideRawId }
 
         if (!_id) {
             const filter = {}
@@ -32,6 +32,8 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
 
         const relationships = target === 'relationships'
         if (target && !relationships) throw new Error('Invalid user target supplied')
+
+       if (!relationships) options.hideSensitive = false
 
         const user = await User.fetch(res.session, { _id }, options)
         if (!user) return res.status(404).end()
