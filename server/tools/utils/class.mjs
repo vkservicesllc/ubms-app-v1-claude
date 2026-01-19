@@ -130,7 +130,11 @@ export const classInstance = {
         }
 
         const [ rows ] = await mysql.execute(query[target].select('*', options))
-        rows.map(row => { redFields[target].map(redField => delete row[redField]) })
+        rows.map(row => {
+            delete row.id
+            delete row[idProp]
+            redFields[target].map(redField => delete row[redField] )
+        })
 
         return rows
     },

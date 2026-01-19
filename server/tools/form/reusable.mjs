@@ -19,11 +19,11 @@ const addrField = (prop, mail) => mail !== null
     : prop
 
 
-export const createIdForm = (props = {}) => createForm({
+export const createIdForm = (props = {}, arr = false) => createForm({
     target: 'id',
     ...props,
     type : 'hidden',
-    name: '_id',
+    name: '_id' + (arr ? '[]' : ''),
 })
 
 
