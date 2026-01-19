@@ -895,6 +895,7 @@ class Application {
 
                             if (_id) {
                                 const employment = await Employment.fetch(this.session, { _id }, { hideRawId: false })
+                                if (!body.leftOn) body.leftOn = null
                                 await employment.update(body)
                             } else {
                                 body.appId = this.id

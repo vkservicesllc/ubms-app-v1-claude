@@ -683,7 +683,11 @@ export const applicationProgress = async (req, res) => {
                 'position', 'earnings', 'endDate', 'RFL', 'gapExpl',
             ]
             emplOptions = updateFormOptions(emplOptions, EmploymentForm, fields, { ...formInstr, tabs: 7 })
-
+            
+                    //? Should i make changes in disabled prop here
+                    //! It's happening because of validator
+                    emplOptions.FMCSR.radio.yes.input.disabled = false
+                    emplOptions.FMCSR.radio.no.input.disabled = false
             // const fields = [
             //     '_prevEmployer', '_emplPhone',
             //     '_emplAddr1', '_emplAddr2', '_emplAddrZip',

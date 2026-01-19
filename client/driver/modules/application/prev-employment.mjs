@@ -337,6 +337,8 @@ function drawEmployerList() {
             const { application, employers } = response.data
             
             if (!employers.length) {
+                $emplList.html(null)
+                $section.hide()
                 $btnContainer.employment.hide()
                 return openAddForm(false)
             }
@@ -358,27 +360,25 @@ function drawEmployerList() {
                 list += `<div class="d-flex flex-column flex-md-row justify-content-between"><span>${employer}</span><span class="text-secondary" style="font-size: .8em;">${period}</span></div>`
                 list += '</li>'
 
-                if (leftOn) {
-                    const date = {
-                        previous: moment(prevDate),
-                        current: moment(leftOn),
-                    }
+                const date = {
+                    previous: moment(prevDate),
+                    current: moment(leftOn || application.appliedOn),
+                }
 
-                    if (date.current.isSameOrBefore(date.previous)) {
-                        prevDate = startedOn
+                if (date.current.isSameOrBefore(date.previous)) {
+                    prevDate = startedOn
 
-                        const period = date.current.format('ll') + ' – ' + date.previous.format('ll')
-                        const difference = Math.abs(date.previous.diff(date.current, 'days'))
+                    const period = date.current.format('ll') + ' – ' + date.previous.format('ll')
+                    const difference = Math.abs(date.previous.diff(date.current, 'days'))
 
-                        if (difference > 30) {
-                            const fieldCls = gapExpl ? ' is-valid' : ''
+                    if (difference > 30) {
+                        const fieldCls = gapExpl ? ' is-valid' : ''
 
-                            list += '<li class="list-group-item"><div class="d-flex flex-column flex-md-row justify-content-between">'
-                            list += `<span class="employer-list-title pt-2" style="font-size: .8em;">Employment Gap <small>(${difference} Days)</small></span>`
-                            list += `<span class="text-danger pt-2" style="font-size: .8em;">${period}</span></div><div class="my-2">`
-                            list += `<textarea class="form-control explain-employment-gap${fieldCls}" type="text" name="explGap[]" placeholder="Provide explanation here..." data-id="${_id}" required>${gapExpl || ''}`
-                            list += '</textarea></div></li>'
-                        }
+                        list += '<li class="list-group-item"><div class="d-flex flex-column flex-md-row justify-content-between">'
+                        list += `<span class="employer-list-title pt-2" style="font-size: .8em;">Employment Gap <small>(${difference} Days)</small></span>`
+                        list += `<span class="text-danger pt-2" style="font-size: .8em;">${period}</span></div><div class="my-2">`
+                        list += `<textarea class="form-control explain-employment-gap${fieldCls}" type="text" name="explGap[]" placeholder="Provide explanation here..." data-id="${_id}" required>${gapExpl || ''}`
+                        list += '</textarea></div></li>'
                     }
                 }
             })
