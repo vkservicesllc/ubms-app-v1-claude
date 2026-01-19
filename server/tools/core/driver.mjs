@@ -790,13 +790,12 @@ class Application {
 
                     case 'prev-employment':
                         {
-                            if (!body.prevEmployed) {
-                                if (this.step < 7) body.step = 7
-                                // body.prevEmplGaps = null
+                            delete body.explGap
+                            if (this.step < 7) body.step = 7
 
-                                await mysql.execute(query.driver_application.employer.delete({ appId: this.id }))
-                                await this.update(body)
-                            }
+                            if (!body.prevEmployed) await mysql.execute(query.driver_appemployer.main.delete({ appId: this.id }))
+
+                            await this.update(body)
                         }
                         {
                             // const {

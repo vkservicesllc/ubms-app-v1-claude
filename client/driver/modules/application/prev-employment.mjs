@@ -72,6 +72,7 @@ inputEvent(employedId.no, {
                 $emplList.html(null)
                 $message.hide()
                 closeForm()
+                $btnContainer.employment.show()
 
                 selected = false
             } else {
@@ -352,14 +353,6 @@ function drawEmployerList() {
                 let period = moment(startedOn).format('ll') + ' – '
                 period += leftOn ? moment(leftOn).format('ll') : 'Present Day'
 
-                list += '<li class="list-group-item"><div class="d-flex justify-content-between">'
-                list += `<span class="employer-list-title pt-2" style="font-size: .8em;">Employer ${x--}</span>`
-                list += '<div class="d-flex flex-row-reverse gap-2 my-2">'
-                list += `<button class="btn btn-danger bg-danger-subtle btn-sm delete-employer" data-id="${_id}"><i class="fa fa-trash"></i></button>`
-                list += `<button class="btn btn-success bg-success-subtle btn-sm edit-employer" data-id="${_id}"><i class="fa fa-pen"></i></button></div></div>`
-                list += `<div class="d-flex flex-column flex-md-row justify-content-between"><span>${employer}</span><span class="text-secondary" style="font-size: .8em;">${period}</span></div>`
-                list += '</li>'
-
                 const date = {
                     previous: moment(prevDate),
                     current: moment(leftOn || application.appliedOn),
@@ -381,15 +374,25 @@ function drawEmployerList() {
                         list += '</textarea></div></li>'
                     }
                 }
+
+                list += '<li class="list-group-item"><div class="d-flex justify-content-between">'
+                list += `<span class="employer-list-title pt-2" style="font-size: .8em;">Employer # ${x--}</span>`
+                list += '<div class="d-flex flex-row-reverse gap-2 my-2">'
+                list += `<button class="btn btn-danger bg-danger-subtle btn-sm delete-employer" data-id="${_id}"><i class="fa fa-trash"></i></button>`
+                list += `<button class="btn btn-success bg-success-subtle btn-sm edit-employer" data-id="${_id}"><i class="fa fa-pen"></i></button></div></div>`
+                list += `<div class="d-flex flex-column flex-md-row justify-content-between"><span>${employer}</span><span class="text-secondary" style="font-size: .8em;">${period}</span></div>`
+                list += '</li>'
             })
             list += '</ul>'
 
             $emplList.html(list)
             resetEvents()
 
-            $btnContainer.employment.hide()
-            $noAdditional.prop('checked', false)
-            $button.add.show()
+            const checked = $('#collapse-7').length > 0
+
+            $btnContainer.employment[checked ? 'show' : 'hide']()
+            $noAdditional.prop('checked', checked)
+            $button.add[checked ? 'hide' : 'show']()
             $section.show()
         },
     })
