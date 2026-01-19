@@ -318,8 +318,11 @@ class User extends Person {
 
 
             this.report = async () => {
-                const result = { user: this }
+                const result = { data: { ...this } }
                 const log = await this.log()
+
+                delete result.data.id
+                delete result.data.session
 
                 const { createdBy, deletedBy, updateLog } = log
                 /*
@@ -341,6 +344,7 @@ class User extends Person {
                     status: 'Status',
                     location: 'Location',
                     condition: 'Condition',
+                    unscoped: 'Unscoped',
                     fails: 'Login Attempts',
                     email: 'Email',
                     phone: 'US Cell Phone',
@@ -383,6 +387,9 @@ class User extends Person {
                                 case 'gender':
                                     log.updateLog[i].data.gender = Individual.list.gender[updateLog[i].data.gender] || null
                                     log.updateLog[i].oldData.gender = Individual.list.gender[updateLog[i].oldData.gender] || null
+                                case 'unscoped':
+                                    log.updateLog[i].data.unscoped = !!log.updateLog[i].data.unscoped
+                                    log.updateLog[i].oldData.unscoped = !!log.updateLog[i].oldData.unscoped
                             }
 
                             if (!(prop in labels)) labels[prop] = labelList[prop]

@@ -447,9 +447,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     closeModals()
 
                     $.ajax(`/api/log/user/${_id}`, {
-                        method: 'POST',
-                        success(data) {
-                            const { user, labels, log } = data
+                        success(response) {
+                            const { data: user, labels, log } = response
                             const { name } = user
                             const { createdBy, createdAt, deletedBy, deletedAt, updateLog } = log
                             const portals = { admin: 'Admin Portal', user: 'User Profile/Account' }
