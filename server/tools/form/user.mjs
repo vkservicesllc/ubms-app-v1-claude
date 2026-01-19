@@ -162,7 +162,22 @@ class UserForm {
 
     static status = createPropsForm('status')
     static location = createPropsForm('location')
-    static condition = createPropsForm('condition')
+    static condition = createPropsForm('condition', {
+        validator: {
+            sanitizer: value => value === 'L' ? 'I' : value,
+        },
+    })
+
+    static unscoped = createForm({
+        selector,
+        target: 'unscoped',
+        type: 'checkbox',
+        name: 'unscoped',
+        label: 'Unscoped',
+        validator: {
+            sanitizer: value => value === 'on' || value === 'true',
+        },
+    })
 
     static username = createUsernameForm()
     static newUsername = createUsernameForm('new')

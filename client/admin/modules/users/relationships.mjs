@@ -24,10 +24,9 @@ const roleRelationshipEvent = category => {
         const _id = $(this).data('role-id')
         let count = +$(this).text()
 
-        $.ajax(`/api/data/role/${_id}/users`, {
-            method: 'POST',
+        $.ajax(`/api/resource/roles/${_id}/users`, {
             success(response) {
-                const { data, source: role } = response
+                const { data, resource: role } = response
                 const { _id, name, location } = role
                 let title = `<small>Assign Users to </small> <strong>${name}`
                 if (location) title += ` <small>(${role.expansion.location})</small>`

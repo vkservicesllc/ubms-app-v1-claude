@@ -77,12 +77,13 @@ $option.all.on('change', function() {
     $(this).next().css({ borderBottom: border, borderTop: border })
 })
 
+const url = '/api/resource/company-owners/'
+
 $trigger.option.click(() => {
     const _id = $(id).val()
 
     if (_id)
-        $.ajax(`/api/data/company-owner/${_id}`, {
-            method: 'POST',
+        $.ajax(url + _id, {
             success(response) {
                 const { data } = response
                 const { dob } = data
@@ -153,8 +154,7 @@ export const openAddModal = () => {
 export const openModifyModal = _id => {
     if (!_id) return
 
-    $.ajax(`/api/data/company-owner/${_id}`, {
-        method: 'POST',
+    $.ajax(url + _id, {
         success(response) {
             const { data } = response
 
@@ -173,8 +173,7 @@ export const openModifyModal = _id => {
 export const openModifyPhoneModal = _id => {
     if (!_id) return
 
-    $.ajax(`/api/data/company-owner/${_id}`, {
-        method: 'POST',
+    $.ajax(url + _id, {
         success(response) {
             const { data } = response
 
@@ -190,8 +189,7 @@ export const openModifyPhoneModal = _id => {
 export const openDeleteModal = _id => {
     if (!_id) return
 
-    $.ajax(`/api/data/company-owner/${_id}`, {
-        method: 'POST',
+    $.ajax(url + _id, {
         success(response) {
             const { data } = response
 

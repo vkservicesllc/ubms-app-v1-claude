@@ -68,8 +68,7 @@ roleNameEvent(ajaxData, {
 roleLocationEvent(ajaxData, { onChange, onAjax })
 
 
-$.ajax('/api/list/roles/carrier', {
-    method: 'POST',
+$.ajax('/api/resource/roles?category=carrier', {
     success(response) {
         let list = ''
         let { data } = response
@@ -125,8 +124,7 @@ $.ajax('/api/list/roles/carrier', {
             removeHighlight()
             $(this).parent().addClass(highlight.block).find('.tag').addClass(highlight.tag)
 
-            $.ajax(`/api/data/role/${_id}`, {
-                method: 'POST',
+            $.ajax(`/api/resource/roles/${_id}`, {
                 success(response) {
                     const { _id, name, location, permissions } = response.data
 

@@ -189,7 +189,8 @@ export const classInstance = {
             const { jxTargets } = Cls.config()
             if (!jxTargets) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Junction targets not found`)
 
-            if (!Array.isArray(matchOrIds) || !matchOrIds.length) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Invalid ids supplied`)
+            if (!Array.isArray(matchOrIds)) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Invalid ids supplied`)
+            if (!matchOrIds.length) return { deleted: false }
 
             const [ jxQuery, jxIdProp, Src ] = jxTargets[target]
             let ids, _ids

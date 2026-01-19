@@ -71,6 +71,9 @@ const selector = {
                 locked: 'condition-locked',
             },
         },
+        checkbox: {
+            unscoped: 'unscoped',
+        },
     },
 }
 

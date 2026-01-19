@@ -48,8 +48,7 @@ if ($content.users.length) {
         applied: $('#current-users'),
     }
 
-    $.ajax(`/api/data/company/${_id}/users`, {
-        method: 'POST',
+    $.ajax(`/api/resource/companies/${_id}/users`, {
         success(response) {
             const { data: users } = response
             const options = { available: '', applied: '' }

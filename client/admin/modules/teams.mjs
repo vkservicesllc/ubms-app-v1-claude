@@ -212,8 +212,7 @@ const displayTeams = () => {
     $('.team-edit, .team-relationship, .team-profile, .team-settings').off('click')
 
     $.ajax({
-        url: '/api/list/teams',
-        method: 'POST',
+        url: '/api/resource/teams',
         success(response) {
             const { data } = response
             let i = 0, html = ''
@@ -287,8 +286,7 @@ const displayTeams = () => {
                 if ($(this).hasClass('team-settings')) target = 'settings'
 
                 $.ajax({
-                    url: `/api/data/team/${_id}`,
-                    method: 'POST',
+                    url: `/api/resource/teams/${_id}`,
                     success(response) {
                         const { _id,
                             // catId: category,
@@ -399,10 +397,9 @@ const displayTeams = () => {
                 $('.modify-team-relationship').off('change')
 
                 $.ajax({
-                    url: `/api/data/team/${_id}/${relType}`,
-                    method: 'POST',
+                    url: `/api/resource/teams/${_id}/${relType}`,
                     success(response) {
-                        const { data, source: team } = response
+                        const { data, resource: team } = response
                         const { _id, name } = team
                         $title.relationship.html(`<small>Assign ${capitalizeFirst(relType)} to</small> <strong>${escapeHTML(name)}</strong>`)
 

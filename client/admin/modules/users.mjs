@@ -206,7 +206,8 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
     const table = new DataTable('#users-table', {
 
         ajax: {
-            url: '/api/list/users',
+            method: 'GET', //! TEMP
+            url: '/api/resource/users',
             dataSrc(response) {
                 return response.data
             },
@@ -508,8 +509,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         $('.modify-user-condition').click(function() {
             const _id = $(this).data('id')
 
-            $.ajax(`/api/data/user/${_id}`, {
-                method: 'POST',
+            $.ajax(`/api/resource/users/${_id}`, {
                 success(response) {
                     const { data } = response
 
@@ -534,8 +534,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
         $('.reset-user-security').click(function() {
             const _id = $(this).data('id')
 
-            $.ajax(`/api/data/user/${_id}`, {
-                method: 'POST',
+            $.ajax(`/api/resource/users/${_id}`, {
                 success(response) {
                     const { data: user } = response
                     const { email } = user
@@ -559,8 +558,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
             const src = $(this).hasClass('edit-user') ? 'edit' : 'delete'
             const _id = $(this).data('id')
 
-            $.ajax(`/api/data/user/${_id}`, {
-                method: 'POST',
+            $.ajax(`/api/resource/users/${_id}`, {
                 success(response) {
                     const { data } = response
 

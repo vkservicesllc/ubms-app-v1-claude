@@ -1,7 +1,7 @@
 $.extend(true, $.fn.dataTable.defaults, {
 
     ajax: {
-        method: 'POST',
+        method: 'POST', //! TEMP
         error(xhr, error, thrown) {
             if (xhr.status === 401) return location.reload()
 

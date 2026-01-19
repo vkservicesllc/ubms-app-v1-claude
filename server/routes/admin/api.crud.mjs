@@ -20,7 +20,7 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
     try {
         const { _id, target } = req.params
         const { user: sessionUser } = res.session
-        const options = { hideRawId }
+        const options = { hideRawId, hideSensitive: false }
 
         if (!_id) {
             const filter = {}
@@ -32,8 +32,6 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
 
         const relationships = target === 'relationships'
         if (target && !relationships) throw new Error('Invalid user target supplied')
-
-       if (!relationships) options.hideSensitive = false
 
         const user = await User.fetch(res.session, { _id }, options)
         if (!user) return res.status(404).end()
@@ -100,9 +98,9 @@ router.get('/individuals', User.mw.verify, User.mw.developerOnly, async (req, re
 })
 
 
-router.get('/roles/:category?', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+router.get('/roles', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
-        let { category = null } = req.params
+        let { category = null } = req.query
         if (category) category = Company.list.category.key(category)
 
         res.json({ data: await Role.fetch(res.session, { category }, { hideRawId }) })
@@ -138,7 +136,7 @@ router.get('/company-owners/:_id', User.mw.verify, User.mw.superAdminOnly, async
 router.get('/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { src, _id, target } = req.params
-        const [ PriSrc ] = { roles: [ Role ], teams: [ Team ], companys: [ Company ] }[src]
+        const [ PriSrc ] = { roles: [ Role ], teams: [ Team ], companies: [ Company ] }[src]
         if (!PriSrc) throw new Error('Invalid data requested')
 
         const inst = await PriSrc.fetch(res.session, { _id }, { hideRawId })
@@ -159,8 +157,8 @@ router.get('/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, async 
                     break
             }
 
-            data.all = await Src.fetch(res.session, filter, { hideRawId, hideSensitive, sorts })
-            data.applied = await inst.fetch(`jx.${target}`, { hideRawId, hideSensitive })
+            data.all = await Src.fetch(res.session, filter, { hideRawId, hideSensitive: false, sorts })
+            data.applied = await inst.fetch(`jx.${target}`, { hideRawId, hideSensitive: false })
             data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
 
             return res.json({ data, resource: inst })
@@ -228,23 +226,74 @@ const carrierFields = ['mc', 'usdot', 'ifta', 'scac', 'irp', 'efs', 'fleetOne', 
 Object.keys(Carrier.list.permit).forEach(prop => carrierFields.push(`${prop}Permit`))
 carrierFields.map(prop => validateCarrier.push(CarrierForm[prop].validate()))
 
+const dynamicValidator = {
 
-router.patch('/users/:_id', User.mw.verify, async (req, res) => {
+    user: (req, res, next) => {
+        let validators = validateUser
+
+        if (req.method === 'PATCH') {
+            const { field } = req.params
+
+            switch (field) {
+                default:
+                    validators = [ UserForm[field].validate() ]
+                    break
+            }
+        }
+
+        Promise.all(validators.map(validator => validator.run(req)))
+            .then(() => next())
+            .catch(next)
+    },
+
+    companies: (req, res, next) => {
+        const { step } = req.params
+        let validators
+
+        switch (step) {
+            case 'ownership':
+                validators = []
+                break
+            case 'address':
+                validators = []
+                break
+            case 'contacts':
+                validators = validateCompanyContacts
+                break
+        }
+
+        Promise.all(validators.map(validator => validator.run(req)))
+            .then(() => next())
+            .catch(next)
+    },
+
+}
+
+
+router.patch('/users/:_id/:field?', User.mw.verify, dynamicValidator.user, validationCheck, async (req, res) => {
     try {
-        const { _id } = req.params
+        const { _id, field } = req.params
         const user = await User.fetch(res.session, { _id })
         if (!user) throw new Error('User not found')
 
-        if (req.body.unscoped) {
-            let { unscoped } = req.body
-            unscoped = unscoped === 'true'
+        switch (field) {
 
-            await user.update({ unscoped })
-            if (unscoped) {
-                const teamIds = await user.fetch('jx.teams', { idsOnly: true })
-                await user.delete('jx.teams', teamIds)
-            }
-        } else await user.update(req.body)
+            case 'unscoped':
+                {
+                    const { unscoped } = req.body
+                    // unscoped = unscoped === 'true'
+
+                    await user.update({ unscoped })
+                    if (unscoped) {
+                        const teamIds = await user.fetch('jx.teams', { idsOnly: true })
+                        await user.delete('jx.teams', teamIds)
+                    }
+                }
+                break
+
+            default: await user.update(req.body)
+
+        }
 
         res.json({ resource: await User.fetch(res.session, { _id }, { hideRawId }) })
     } catch (err) {

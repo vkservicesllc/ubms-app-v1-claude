@@ -128,15 +128,20 @@ router.get('/user/:identifier', User.mw.verify, async (req, res) => {
 
             const input = {
                 id: UserForm.id.hidden.input({ value: user._id }),
+                unscoped: UserForm.unscoped.checkbox.input({ checked: unscoped, class: 'switch is-rounded is-small is-info' }),
             }
-            const checked = {
-                unscoped: unscoped ? ' checked' : '',
+            const label = {
+                unscoped: UserForm.unscoped.checkbox.label({ class: 'label pb-1' })
             }
+            // const checked = {
+            //     unscoped: unscoped ? ' checked' : '',
+            // }
 
             hbs.display = display
             hbs.data = user
             hbs.input = input
-            hbs.checked = checked
+            hbs.label = label
+            // hbs.checked = checked
             hbs.self = user._id == sessionUser._id
             hbs.sessionUser = { ...sessionUser }
             hbs.sessionUser.status = sessionUser.status
