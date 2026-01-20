@@ -129,7 +129,10 @@ export const classInstance = {
                     options.match[prop] = filter.match[prop]
         }
 
-        const [ rows ] = await mysql.execute(query[target].select('*', options))
+        let fields = '*'
+        //! THE GOAL: if there is a specific setting, e.g. encId of a target, do this: fields = ['*', encId[target]]
+
+        const [ rows ] = await mysql.execute(query[target].select(fields, options))
         rows.map(row => {
             if (!inst.id) delete row.id
             delete row[idProp]

@@ -16,6 +16,7 @@ const db = {
 export default db
 
 
+
 const driverAppQuery = new Query(db.carrier, 'applications')
 
 
