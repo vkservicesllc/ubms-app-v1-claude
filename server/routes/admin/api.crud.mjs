@@ -308,5 +308,4 @@ router.patch('/users/:_id/:field?', User.mw.verify, dynamicValidator.user, valid
 
 
 /* Export */
-
 export default router

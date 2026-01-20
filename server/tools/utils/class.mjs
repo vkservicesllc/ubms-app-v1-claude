@@ -131,7 +131,7 @@ export const classInstance = {
 
         const [ rows ] = await mysql.execute(query[target].select('*', options))
         rows.map(row => {
-            delete row.id
+            if (!inst.id) delete row.id
             delete row[idProp]
             redFields[target].map(redField => delete row[redField] )
         })
@@ -243,14 +243,6 @@ export const classInstance = {
 
         return { deleted: true }
     },
-
-
-    // history: async (inst, Cls, target) => {
-    //     const { user: sessionUser } = inst.session || {}
-    //     if (!sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [HISTORY]: Session user not supplied`)
-
-    //     //! not finished...
-    // },
 
 
     log: async (inst, Cls, { field = null, target = 'main', since } = {}, fields) => {
