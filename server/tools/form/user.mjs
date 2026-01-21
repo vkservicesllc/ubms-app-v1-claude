@@ -14,6 +14,7 @@ import roleSelector from '../../../client/global/modules/registry/selectors/user
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 import { capitalizeFirst } from '../../../client/global/modules/tools/utils/string.mjs'
+import { validate } from './validator.mjs'
 
 const required = true, disabled = true
 const statusList = { ...User.list.status }
@@ -208,6 +209,8 @@ class UserForm {
     static email = createEmailForm({ selector, required })
     static phone = createPhoneForm({ selector, label: 'US Cell Phone' })
 
+    static validate = () => validate(UserForm, () => ['status', 'location', 'email', 'phone', 'firstName', 'lastName', 'alias', 'gender'])
+
 }
 
 
@@ -227,6 +230,8 @@ class RoleForm {
 
     static roleLocation = createRoleLocationForm('roleLocation')
     static carrierRoleLocation = createRoleLocationForm('carrierRoleLocation')
+
+    static validate = () => validate(RoleForm, () => ['roleName', 'roleLocation'])
 
 }
 

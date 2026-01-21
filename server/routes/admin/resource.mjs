@@ -19,64 +19,17 @@ import CarrierForm from '../../tools/form/carrier.mjs'
 
 // ==== SETUP ==== //
 
-
-const validateUser = []
-const userFields = ['status', 'location', 'email', 'phone', 'firstName', 'lastName', 'alias', 'gender']
-userFields.map(prop => validateUser.push(UserForm[prop].validate()))
-
-const validateRole = []
-const roleFields = ['roleName', 'roleLocation']
-roleFields.map(prop => validateRole.push(RoleForm[prop].validate()))
-
-
-const validateTeam = []
-const teamFields = ['teamName',
-    //'category',
-'desc']
-teamFields.map(prop => validateTeam.push(TeamForm[prop].validate()))
-
-const validateTeamProfile = []
-const teamProfileFields = [
-    'busName', 'coType', 'phone', 'email', 'website',
-    'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
-]
-teamProfileFields.map(prop => validateTeamProfile.push(TeamForm[prop].validate()))
-
-
-const validateCompany = []
-const companyFields = ['category', 'ein', 'duns', 'busName', 'coType', 'alias', 'website', 'since']
-companyFields.map(prop => validateCompany.push(CompanyForm[prop].validate()))
-
-const validateOwner = [], validateOwnerName = []
-const ownerFields = ['firstName', 'middleName', 'lastName', 'suffix']
-const ownerNameFields = [ ...ownerFields, 'nameSince' ]
-ownerFields.push('gender', 'dob', 'ssn')
-ownerFields.map(prop => validateOwner.push(OwnerForm[prop].validate()))
-ownerNameFields.map(prop => validateOwnerName.push(OwnerForm[prop].validate()))
-
-const validateCompanyContacts = []
-const companyContactsFields = ['phone', 'fax', 'email']
-companyContactsFields.map(prop => validateCompanyContacts.push(CompanyForm[prop].validate()))
-
-const validateCarrier = []
-const carrierFields = ['mc', 'usdot', 'ifta', 'scac', 'irp', 'efs', 'fleetOne', 'transflo']
-Object.keys(Carrier.list.permit).forEach(prop => carrierFields.push(`${prop}Permit`))
-carrierFields.map(prop => validateCarrier.push(CarrierForm[prop].validate()))
-
 const dynamicValidator = {
     companies: (req, res, next) => {
         const { step } = req.params
-        let validators
+        let validators = []
 
         switch (step) {
-            case 'ownership':
-                validators = []
-                break
             case 'address':
-                validators = []
+                validators = CompanyForm.validate('address')
                 break
             case 'contacts':
-                validators = validateCompanyContacts
+                validators = CompanyForm.validate('contacts')
                 break
         }
 
@@ -113,7 +66,7 @@ const source = {
 // ==== INSERT/UPDATE ROUTES ==== //
 
 
-router.post('/insert/company', User.mw.verify, User.mw.superAdminOnly, validateCompany, validationCheck, async (req, res) => {
+router.post('/insert/company', User.mw.verify, User.mw.superAdminOnly, CompanyForm.validate(), validationCheck, async (req, res) => {
     try {
         delete req.body._match
 
@@ -149,7 +102,7 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
     if (location !== 'US') delete req.body.phone
 
     next()
-}, validateUser, validationCheck, async (req, res) => {
+}, UserForm.validate(), validationCheck, async (req, res) => {
     try {
         const { _id } = req.body
         delete req.body._id
@@ -176,7 +129,7 @@ router.post('/upsert/user', User.mw.verify, async (req, res, next) => {
 })
 
 
-router.post('/upsert/role', User.mw.verify, User.mw.superAdminOnly, validateRole, validationCheck, async (req, res) => {
+router.post('/upsert/role', User.mw.verify, User.mw.superAdminOnly, RoleForm.validate(), validationCheck, async (req, res) => {
     try {
         let role
         const { _id } = req.body
@@ -203,7 +156,7 @@ router.post('/upsert/role', User.mw.verify, User.mw.superAdminOnly, validateRole
 })
 
 
-router.post('/upsert/team', User.mw.verify, User.mw.superAdminOnly, validateTeam, validationCheck, async (req, res) => {
+router.post('/upsert/team', User.mw.verify, User.mw.superAdminOnly, TeamForm.validate(), validationCheck, async (req, res) => {
     try {
         let team
         const { _id } = req.body
@@ -224,7 +177,7 @@ router.post('/upsert/team', User.mw.verify, User.mw.superAdminOnly, validateTeam
 })
 
 
-router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, validateOwner, validationCheck, async (req, res) => {
+router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, OwnerForm.validate(), validationCheck, async (req, res) => {
     try {
         const { company: _companyId } = req.query
         const { _id, _match: match = {} } = req.body
@@ -256,7 +209,7 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, val
 })
 
 
-router.post('/upsert/carrier/:_companyId', User.mw.verify, User.mw.superAdminOnly, validateCarrier, validationCheck, async (req, res) => {
+router.post('/upsert/carrier/:_companyId', User.mw.verify, User.mw.superAdminOnly, CarrierForm.validate(), validationCheck, async (req, res) => {
     try {
         const { _companyId } = req.params
         let carrier = await Carrier.fetch(res.session, { _companyId })
@@ -306,7 +259,7 @@ router.post('/update/user/condition', User.mw.verify, [ UserForm.condition.valid
 })
 
 
-router.post('/update/team/profile', User.mw.verify, User.mw.superAdminOnly, validateTeamProfile, validationCheck, async (req, res) => {
+router.post('/update/team/profile', User.mw.verify, User.mw.superAdminOnly, TeamForm.validate('profile'), validationCheck, async (req, res) => {
     try {
         const { _id } = req.body
         delete req.body._id
@@ -340,7 +293,7 @@ router.post('/update/team/settings', User.mw.verify, User.mw.superAdminOnly, asy
 })
 
 
-router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, validateCompany, validationCheck, async (req, res) => {
+router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, CompanyForm.validate(), validationCheck, async (req, res) => {
     try {
         const { _id } = req.params
         const company = await Company.fetch(res.session, { _id }, { hideSensitive: false })
@@ -435,7 +388,7 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
 })
 
 
-router.post('/update/company-owner/add/name', User.mw.verify, User.mw.superAdminOnly, validateOwnerName, validationCheck, async (req, res) => {
+router.post('/update/company-owner/add/name', User.mw.verify, User.mw.superAdminOnly, OwnerForm.validate('name'), validationCheck, async (req, res) => {
     try {
         const { company: _companyId } = req.query
         const { _id } = req.body

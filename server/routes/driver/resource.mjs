@@ -17,65 +17,6 @@ import DriverForm, { ApplicationForm, EmploymentForm } from '../../tools/form/dr
 
 // ==== SETUP ==== //
 
-const validateApplicationWorkflow = []
-const applicantWorkflowFields = ['user', 'carrier', 'condition', 'experience', 'apprPosition']
-applicantWorkflowFields.forEach(prop => validateApplicationWorkflow.push(ApplicationForm[prop].validate()))
-
-const validateApplicant = [], validateApplicantProfile = [], validateApplicantAddress = []
-const applicantProfileFields = [
-    'firstName', 'middleName', 'lastName', 'suffix',
-    'gender', 'dob', 'ssn', 'marital', 'phone', 'email',
-]
-const applicantAddressFields = ['address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince', 'addrEnough']
-const applicantFields = [...applicantProfileFields, 'position', ...applicantAddressFields, 'status', 'statusExp']
-applicantFields.forEach(prop => validateApplicant.push(ApplicationForm[prop].validate()))
-applicantProfileFields.forEach(prop => validateApplicantProfile.push(ApplicationForm[prop].validate()))
-applicantAddressFields.forEach(prop => validateApplicantAddress.push(ApplicationForm[prop].validate()))
-
-const validateApplicantPrevAddress = []
-const validatePrevAddressFields = [
-    'livedAbroad', 'country',
-    '_addrSince', '_addrEnough', '_address1', '_address2',
-    '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
-]
-validatePrevAddressFields.forEach(prop => validateApplicantPrevAddress.push(ApplicationForm[prop].validate()))
-
-const validateApplicantLegalStatus = []
-const validateLegalStatusFields = ['status', 'statusExp']
-validateLegalStatusFields.forEach(prop => validateApplicantLegalStatus.push(ApplicationForm[prop].validate()))
-
-const validateApplicantPosition = []
-const validatePositionFields = ['position']
-validatePositionFields.forEach(prop => validateApplicantPosition.push(ApplicationForm[prop].validate()))
-
-const validateApplicantDL = []
-const applicantDlFields = [
-    'dlCommercial', 'dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp',
-    'dlEndrs', 'dlRestr', 'dlDenied', 'dlRevoked', 'dlDeniedExpl', 'dlRevokedExpl',
-]
-applicantDlFields.forEach(prop => validateApplicantDL.push(ApplicationForm[prop].validate()))
-
-const validateApplicantMEC = []
-const applicantMecFields = ['noMec', 'mecExp', 'mecIss', 'mecNumber', 'underMeds', 'medList']
-applicantMecFields.forEach(prop => validateApplicantMEC.push(ApplicationForm[prop].validate()))
-
-const validateApplicantCompliance = []
-const applicantComplianceFields = ['dui', 'duiInDecade', 'criminal', 'criminalExpl', 'dotDat', 'citations', '_citDate', '_citState', '_citReason', '_citOtherReason']
-applicantComplianceFields.forEach(prop => validateApplicantCompliance.push(ApplicationForm[prop].validate()))
-
-const validateApplicantSafety = []
-const applicantSafetyFields = ['accidents', '_accType', '_accOtherType', '_accDate', '_accState', '_accInjuries', '_accFatalities']
-applicantSafetyFields.forEach(prop => validateApplicantSafety.push(ApplicationForm[prop].validate()))
-
-
-const validateApplicantExperience = []
-const applicantExperienceFields = [
-    'noExp', 'cmvExp', 'expStartDate', 'expEndDate', 'expMileage',
-    'cdlSchool', 'schName', 'schPhone', 'schState', 'schEndDate', 'schDuration',
-]
-applicantExperienceFields.forEach(prop => validateApplicantExperience.push(ApplicationForm[prop].validate()))
-
-
 const validateApplicantPreemployment = []
 const applicantPreemploymentFields = [ 'prevEmployed' ]
 applicantPreemploymentFields.forEach(prop => validateApplicantPreemployment.push(ApplicationForm[prop].validate()))
@@ -89,39 +30,6 @@ const applicantEmployerFields = [
 applicantEmployerFields.forEach(prop => validateApplicantEmployer.push(EmploymentForm[prop].validate()))
 
 
-const validateApplicantPreference = []
-const applicantPreferenceFields = ['operType', 'teamName', 'teamPhone', 'haulRegion', 'equipmentType', 'startPref']
-applicantPreferenceFields.forEach(prop => validateApplicantPreference.push(ApplicationForm[prop].validate()))
-
-
-const validateApplicantBusiness = []
-const applicantBusinessFields = [
-    'activeLLC', 'inactiveLLC', 'llcName', 'llcState', 'llcEin',
-    // 'llcAssistance', 'llcProposedName',
-]
-applicantBusinessFields.forEach(prop => validateApplicantBusiness.push(ApplicationForm[prop].validate()))
-
-const validateApplicantVehicle = []
-const applicantVehicleFields = [
-    'currentVhlType',
-    'currentVhlMMT', 'currentVhlYear', 'currentVhlMake', 'currentVhlModel', 'currentVhlLen',
-]
-applicantVehicleFields.forEach(prop => validateApplicantVehicle.push(ApplicationForm[prop].validate()))
-
-const validateApplicantBeneficiary = []
-const applicantBeneficiaryFields = [
-    'benefRelation', 'benefOtherRel',
-    'benefFirstName', 'benefMiddleName', 'benefLastName', 'benefSuffix',
-    // 'benefDob', 'benefGender',
-    'benefPhone', // 'benefAddress1', 'benefAddress2', 'benefAddrZip', 'benefAddrCity', 'benefAddrState',
-    'benefSsn',
-]
-applicantBeneficiaryFields.forEach(prop => validateApplicantBeneficiary.push(ApplicationForm[prop].validate()))
-
-const validateApplicantEmergency = []
-const applicantEmergencyFields = ['emergPhone', 'emergName', 'emergRelation']
-applicantEmergencyFields.forEach(prop => validateApplicantEmergency.push(ApplicationForm[prop].validate()))
-
 
 const dynamicValidator = {
     applications: (req, res, next) => {
@@ -130,34 +38,34 @@ const dynamicValidator = {
 
         switch (step) {
             case 'workflow':
-                validators = validateApplicationWorkflow
+                validators = ApplicationForm.validate('workflow')
                 break
             case 'profile':
-                validators = validateApplicantProfile
+                validators = ApplicationForm.validate('profile')
                 break
             case 'legal-status':
-                validators = validateApplicantLegalStatus
+                validators = ApplicationForm.validate('legal')
                 break
             case 'position':
-                validators = [ ...validateApplicantPosition, ...validateApplicantVehicle ]
+                validators = ApplicationForm.validate('position/vehicle')
                 break
             case 'residence':
-                validators = [ ...validateApplicantAddress, ...validateApplicantPrevAddress ]
+                validators = ApplicationForm.validate('residence')
                 break
             case 'driver-license':
-                validators = validateApplicantDL
+                validators = ApplicationForm.validate('license')
                 break
             case 'medical-card':
-                validators = validateApplicantMEC
+                validators = ApplicationForm.validate('medical')
                 break
             case 'legal-compliance':
-                validators = validateApplicantCompliance
+                validators = ApplicationForm.validate('compliance')
                 break
             case 'safety':
-                validators = validateApplicantSafety
+                validators = ApplicationForm.validate('safety')
                 break
             case 'experience':
-                validators = validateApplicantExperience
+                validators = ApplicationForm.validate('experience')
                 break
             case 'prev-employment':
                 validators = validateApplicantPreemployment
@@ -166,16 +74,16 @@ const dynamicValidator = {
                 validators = validateApplicantEmployer
                 break
             case 'preference':
-                validators = validateApplicantPreference
+                validators = ApplicationForm.validate('preference')
                 break
             case 'business':
-                validators = [ ...validateApplicantBusiness, ...validateApplicantVehicle ]
+                validators = ApplicationForm.validate('business/vehicle')
                 break
             case 'beneficiary':
-                validators = validateApplicantBeneficiary
+                validators = ApplicationForm.validate('beneficiary')
                 break
             case 'misc':
-                validators = validateApplicantEmergency
+                validators = Application.validate('emergency')
                 break
             case 'certify':
                 validators = []
@@ -193,7 +101,7 @@ const dynamicValidator = {
 // ==== ROUTES ==== //
 
 
-router.post('/application/start/:_teamId/:_carrierId?', validateApplicant, validationCheck, async (req, res) => {
+router.post('/application/start/:_teamId/:_carrierId?', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
     try {
         let { form: formId } = req.query
         const { address: addrBody } = req.body
@@ -297,4 +205,4 @@ router.post('/application/submit/:formId', async (req, res) => {
 
 export default router
 
-export { validateApplicant, dynamicValidator, validateApplicantEmployer }
+export { dynamicValidator, validateApplicantEmployer }

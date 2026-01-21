@@ -8,6 +8,13 @@ import Individual from '../../tools/core/individual.mjs'
 import Company, { Owner } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 
+/* Import: Validators */
+import validationCheck from '../../tools/form/validator.mjs'
+import UserForm, { RoleForm } from '../../tools/form/user.mjs'
+import TeamForm from '../../tools/form/team.mjs'
+import CompanyForm, { OwnerForm } from '../../tools/form/company.mjs'
+import CarrierForm from '../../tools/form/carrier.mjs'
+
 
 
 //* GET *//
@@ -177,59 +184,10 @@ router.get('/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, async 
 
 //* POST/PUT/PATCH *//
 
-
-/* Import: Validators */
-import validationCheck from '../../tools/form/validator.mjs'
-import UserForm, { RoleForm } from '../../tools/form/user.mjs'
-import TeamForm from '../../tools/form/team.mjs'
-import CompanyForm, { OwnerForm } from '../../tools/form/company.mjs'
-import CarrierForm from '../../tools/form/carrier.mjs'
-
-
-const validateUser = []
-const userFields = ['status', 'location', 'email', 'phone', 'firstName', 'lastName', 'alias', 'gender']
-userFields.map(prop => validateUser.push(UserForm[prop].validate()))
-
-const validateRole = []
-const roleFields = ['roleName', 'roleLocation']
-roleFields.map(prop => validateRole.push(RoleForm[prop].validate()))
-
-
-const validateTeam = []
-const teamFields = ['teamName', 'desc']
-teamFields.map(prop => validateTeam.push(TeamForm[prop].validate()))
-
-const validateTeamProfile = []
-const teamProfileFields = [
-    'busName', 'coType', 'phone', 'email', 'website',
-    'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
-]
-teamProfileFields.map(prop => validateTeamProfile.push(TeamForm[prop].validate()))
-
-const validateCompany = []
-const companyFields = ['category', 'ein', 'duns', 'busName', 'coType', 'alias', 'website', 'since']
-companyFields.map(prop => validateCompany.push(CompanyForm[prop].validate()))
-
-const validateOwner = [], validateOwnerName = []
-const ownerFields = ['firstName', 'middleName', 'lastName', 'suffix']
-const ownerNameFields = [ ...ownerFields, 'nameSince' ]
-ownerFields.push('gender', 'dob', 'ssn')
-ownerFields.map(prop => validateOwner.push(OwnerForm[prop].validate()))
-ownerNameFields.map(prop => validateOwnerName.push(OwnerForm[prop].validate()))
-
-const validateCompanyContacts = []
-const companyContactsFields = ['phone', 'fax', 'email']
-companyContactsFields.map(prop => validateCompanyContacts.push(CompanyForm[prop].validate()))
-
-const validateCarrier = []
-const carrierFields = ['mc', 'usdot', 'ifta', 'scac', 'irp', 'efs', 'fleetOne', 'transflo']
-Object.keys(Carrier.list.permit).forEach(prop => carrierFields.push(`${prop}Permit`))
-carrierFields.map(prop => validateCarrier.push(CarrierForm[prop].validate()))
-
 const dynamicValidator = {
 
     user: (req, res, next) => {
-        let validators = validateUser
+        let validators = UserForm.validate()
 
         if (req.method === 'PATCH') {
             const { field } = req.params
@@ -248,17 +206,14 @@ const dynamicValidator = {
 
     companies: (req, res, next) => {
         const { step } = req.params
-        let validators
+        let validators = []
 
         switch (step) {
-            case 'ownership':
-                validators = []
-                break
             case 'address':
-                validators = []
+                validators = CompanyForm.validate('address')
                 break
             case 'contacts':
-                validators = validateCompanyContacts
+                validators = CompanyForm.validate('contacts')
                 break
         }
 

@@ -23,6 +23,7 @@ import ownerSelector from '../../../client/global/modules/registry/selectors/com
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 import strip from '../../../client/global/modules/tools/utils/formatter.mjs'
+import { validate } from './validator.mjs'
 
 const required = true, disabled = true
 
@@ -203,6 +204,23 @@ class CompanyForm {
     static faxSince = createSinceForm({ selector: companySelector, target: 'faxSince' })
     static emailSince = createSinceForm({ selector: companySelector, target: 'emailSince' })
 
+    static validate = (target, options) => validate(CompanyForm, (target, options) => {
+        let fields
+
+        switch (target) {
+            case 'address':
+                fields = [] //! use options
+                break
+            case 'contacts':
+                fields = ['phone', 'fax', 'email']
+                break
+            default:
+                fields = ['category', 'ein', 'duns', 'busName', 'coType', 'alias', 'website', 'since']
+        }
+
+        return fields
+    }, target, options)
+
 }
 
 
@@ -233,6 +251,13 @@ class OwnerForm {
     })
 
     static phone = createPhoneForm({ selector: ownerSelector, required })
+
+    static validate = target => validate(OwnerForm, (target) => {
+        const fields = ['firstName', 'middleName', 'lastName', 'suffix']
+        if (target === 'name') fields.push('nameSince')
+
+        return fields
+    }, target)
 
 }
 

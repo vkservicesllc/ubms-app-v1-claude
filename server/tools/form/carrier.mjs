@@ -7,6 +7,7 @@ import {
 import selector from '../../../client/global/modules/registry/selectors/carrier.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
+import { validate } from './validator.mjs'
 
 import Carrier from '../core/carrier.mjs'
 
@@ -103,5 +104,12 @@ for (const key in permits) {
         },
     })
 }
+
+CarrierForm.validate = () => validate(CarrierForm, () => {
+    const fields = ['mc', 'usdot', 'ifta', 'scac', 'irp', 'efs', 'fleetOne', 'transflo']
+    Object.keys(Carrier.list.permit).forEach(prop => fields.push(`${prop}Permit`))
+
+    return fields
+})
 
 export default CarrierForm

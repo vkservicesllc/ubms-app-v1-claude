@@ -16,6 +16,7 @@ import { createCategoryForm, createBusNameForm, createCoTypeForm } from './compa
 import selector from '../../../client/global/modules/registry/selectors/team.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
+import { validate } from './validator.mjs'
 
 const required = true, disabled = true
 
@@ -89,6 +90,17 @@ class TeamForm {
     static addrZip = createAddrZipForm({ selector })
     static addrCity = createAddrCityForm({ selector })
     static addrState = createAddrStateForm({ selector, emptyOpt, options: { valOpt: true } })
+
+    static validate = target => validate(TeamForm, (target) => {
+        let fields = ['teamName', 'desc']
+        if (target === 'profile')
+            fields = [
+                'busName', 'coType', 'phone', 'email', 'website',
+                'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
+            ]
+
+        return fields
+    }, target)
 
 }
 

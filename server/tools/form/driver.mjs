@@ -28,6 +28,7 @@ import { Truck, Van } from '../core/vehicle.mjs'
 import Geography from '../../../client/global/modules/tools/core/geography.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
+import { validate } from './validator.mjs'
 
 const required = true, disabled = true, readOnly = true
 
@@ -1475,6 +1476,94 @@ class ApplicationForm {
         },
     })
 
+
+    static validate = (target, options) => validate(ApplicationForm, (target, options) => {
+        let fields
+        const profileFields = [
+            'firstName', 'middleName', 'lastName', 'suffix',
+            'gender', 'dob', 'ssn', 'marital', 'phone', 'email',
+        ]
+        const addressFields = ['address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince', 'addrEnough']
+        const vehicleFields = [
+            'currentVhlType',
+            'currentVhlMMT', 'currentVhlYear', 'currentVhlMake', 'currentVhlModel', 'currentVhlLen',
+        ]
+        const businessFields = ['activeLLC', 'inactiveLLC', 'llcName', 'llcState', 'llcEin']
+
+        switch (target) {
+            case 'registration':
+                fields = [...profileFields, 'position', ...addressFields, 'status', 'statusExp']
+                break
+            case 'workflow':
+                fields = ['user', 'carrier', 'condition', 'experience', 'apprPosition']
+                break
+            case 'profile':
+                fields = profileFields
+                break
+            case 'legal':
+                fields = ['status', 'statusExp']
+                break
+            case 'position/vehicle':
+                fields = ['position', ...vehicleFields]
+                break
+            case 'residence':
+                fields = [
+                    ...addressFields,
+                    'livedAbroad', 'country',
+                    '_addrSince', '_addrEnough', '_address1', '_address2',
+                    '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
+                ]
+                break
+            case 'license':
+                fields = [
+                    'dlCommercial', 'dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp',
+                    'dlEndrs', 'dlRestr', 'dlDenied', 'dlRevoked', 'dlDeniedExpl', 'dlRevokedExpl',
+                ]
+                break
+            case 'medical':
+                fields = ['noMec', 'mecExp', 'mecIss', 'mecNumber', 'underMeds', 'medList']
+                break
+            case 'compliance':
+                fields = [
+                    'dui', 'duiInDecade', 'criminal', 'criminalExpl', 'dotDat', 'citations',
+                    '_citDate', '_citState', '_citReason', '_citOtherReason',
+                ]
+                break
+            case 'safety':
+                fields = [
+                    'accidents',
+                    '_accType', '_accOtherType', '_accDate', '_accState', '_accInjuries', '_accFatalities',
+                ]
+                break
+            case 'experience':
+                fields = [
+                    'noExp', 'cmvExp', 'expStartDate', 'expEndDate', 'expMileage',
+                    'cdlSchool', 'schName', 'schPhone', 'schState', 'schEndDate', 'schDuration',
+                ]
+                break
+            case 'preference':
+                fields = ['operType', 'teamName', 'teamPhone', 'haulRegion', 'equipmentType', 'startPref']
+                break
+            case 'business':
+                fields = businessFields
+                break
+            case 'business/vehicle':
+                fields = [...businessFields, ...vehicleFields]
+                break
+            case 'beneficiary':
+                fields = [
+                    'benefRelation', 'benefOtherRel',
+                    'benefFirstName', 'benefMiddleName', 'benefLastName', 'benefSuffix',
+                    'benefPhone','benefSsn',
+                ]
+                break
+            case 'emergency':
+                fields = ['emergPhone', 'emergName', 'emergRelation']
+                break
+        }
+
+        return fields
+    }, target, options)
 
 
 }
