@@ -83,12 +83,12 @@ export const classInstance = {
 
 
     fetch: async (inst, Cls, target, { hideRawId = false, hideSensitive = true, idsOnly = false, filter = {}, sorts = null } = {}) => {
-        const { enforceUser = true } = Cls.config()
+        const config = Cls.config()
+        const { enforceUser = true, idProp } = config
         const { user: sessionUser } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Session user not supplied`)
         if (!target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Target not supplied`)
 
-        const { idProp } = Cls.config()
         const jx = target.slice(0, 3) === 'jx.'
         const history = target.endsWith('.history')
 
@@ -96,7 +96,7 @@ export const classInstance = {
         if (history) target = target.replace(/\.history$/, '')
 
         if (jx) {
-            const { jxTargets } = Cls.config()
+            const { jxTargets } = config
             if (!jxTargets) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Junction targets not found`)
 
             const offline = inst.session?.offline || false
@@ -112,7 +112,7 @@ export const classInstance = {
             return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, offline, sorts })
         }
 
-        const { query, redFields = {}, histSort } = Cls.config()
+        const { query, redFields = {}, histSort, _histId = {} } = config
 
         if (!redFields[target]) redFields[target] = classInstance.redFields
 
@@ -130,7 +130,7 @@ export const classInstance = {
         }
 
         let fields = '*'
-        //! THE GOAL: if there is a specific setting, e.g. encId of a target, do this: fields = ['*', encId[target]]
+        if (_histId[target]) fields = ['*', _histId[target]]
 
         const [ rows ] = await mysql.execute(query[target].select(fields, options))
         rows.map(row => {

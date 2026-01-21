@@ -1097,6 +1097,10 @@ class Application {
             accident: 'date',
             employer: 'startedOn',
         },
+        _histId: {
+            citation: Citation.hashId(),
+            accident: Accident.hashId(),
+        },
         logFile: 'driver-applications',
         logFields: {
             license: relLogFields,
