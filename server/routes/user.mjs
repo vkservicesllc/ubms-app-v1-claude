@@ -16,7 +16,6 @@ import moment from 'moment'
 import Site from '../tools/core/site.mjs'
 import User, { Token } from '../tools/core/user.mjs'
 import { respond404 } from '../tools/utils/response.mjs'
-import { calculateHourAge } from '../../client/global/modules/tools/utils/date.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
 /* Forms && Validators */

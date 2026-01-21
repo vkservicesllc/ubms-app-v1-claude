@@ -261,7 +261,7 @@ export const classInstance = {
         const log = (await mysql.execute(config.query[target].select(fields, { match })))[0][0]
 
         return fields.includes(field) ? log[field] : log
-    }
+    },
 
 
 }
@@ -348,7 +348,7 @@ export const classStatic = {
         list.forEach((data, i, arr) => arr[i] = new Cls(data, { single, session, hideRawId, hideSensitive, custom }))
 
         return single ? list[0] : list
-    }
+    },
 
 
 }

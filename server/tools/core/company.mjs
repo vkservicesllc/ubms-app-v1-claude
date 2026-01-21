@@ -8,23 +8,15 @@ const secret = {
 import db, { query, algorithm } from '../../settings/mysql.mjs'
 
 /* Tools */
-import moment from 'moment'
 import Individual from './individual.mjs'
-import Person from '../../../client/global/modules/tools/core/person.mjs'
-import Team from './team.mjs'
 import User from './user.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
-// import { sessionError } from './user.mjs'
-import Query, { hash, matchHash } from '../utils/query.mjs'
+import { hash, matchHash } from '../utils/query.mjs'
 //! import more algorithms for other categories
 import { classInstance, classStatic } from '../utils/class.mjs'
-import { processData, logDeletion } from '../utils/database.mjs'
-import { encrypt } from '../utils/crypto.mjs'
+import { processData } from '../utils/database.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
-import { numeric } from '../../../client/global/modules/tools/utils/number.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
-import strip, { ein as formatEin, ssn as formatSsn } from '../../../client/global/modules/tools/utils/formatter.mjs'
-import { sortArrayByObjectKey, sortObjectByValue } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 const mysql = require('../utils/mysql')
 

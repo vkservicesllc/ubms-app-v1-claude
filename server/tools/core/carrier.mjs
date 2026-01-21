@@ -6,12 +6,9 @@ import inputLength from '../../../client/global/modules/registry/length.mjs'
 
 /* Tools */
 import Company from './company.mjs'
-import Query, { hash, matchHash }  from '../utils/query.mjs'
+import { hash, matchHash }  from '../utils/query.mjs'
 import { classInstance, classStatic } from '../utils/class.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
-import { processData } from '../utils/database.mjs'
-
-const mysql = require('../utils/mysql')
 
 
 const stateTaxIds = Object.keys(inputLength.carrier.permit.max)
