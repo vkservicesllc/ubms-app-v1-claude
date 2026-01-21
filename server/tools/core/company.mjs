@@ -204,7 +204,7 @@ class Company {
                     ],
                 },
                 {
-                    table: query.company.name.table,
+                    table: query.company.names.table,
                     fields: [
                         'busName', 'coType', 'alias',
                         { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
@@ -213,7 +213,7 @@ class Company {
                     join,
                 },
                 {
-                    table: query.company.ownership.table,
+                    table: query.company.ownerships.table,
                     join,
                 },
                 {
@@ -229,7 +229,7 @@ class Company {
                 },
                 {
                     db: db.person,
-                    table: query.person.name.table,
+                    table: query.person.names.table,
                     fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
                     join: [ 'personId', 'id', {
                         table: 'individuals',
@@ -237,7 +237,7 @@ class Company {
                     } ],
                 },
                 {
-                    table: query.company.address.table,
+                    table: query.company.addresses.table,
                     fields: [ 'address1', 'address2', 'city', 'state', 'zip', 'mail' ],
                     join,
                 },
@@ -253,17 +253,17 @@ class Company {
                     join,
                 },
                 {
-                    table: query.company.phone.table,
+                    table: query.company.phones.table,
                     fields: 'phone',
                     join,
                 },
                 {
-                    table: query.company.fax.table,
+                    table: query.company.faxes.table,
                     fields: 'fax',
                     join,
                 },
                 {
-                    table: query.company.email.table,
+                    table: query.company.emails.table,
                     fields: 'email',
                     join,
                 },
@@ -525,7 +525,7 @@ class Owner extends Individual {
             },
             {
                 db: db.person,
-                table: query.person.name.table,
+                table: query.person.names.table,
                 fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
                 join: [ 'personId', 'id', {
                     table: 'individuals',
@@ -534,7 +534,7 @@ class Owner extends Individual {
             },
             {
                 db: db.person,
-                table: query.person.phone.table,
+                table: query.person.phones.table,
                 fields: 'phone',
                 join: [ 'personId', 'id', {
                     table: 'individuals',
@@ -542,7 +542,7 @@ class Owner extends Individual {
                 } ],
             },
             {
-                table: query.company.ownership.table,
+                table: query.company.ownerships.table,
                 join: [ 'ownerId', 'id' ],
             },
             {

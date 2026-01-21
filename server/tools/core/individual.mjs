@@ -158,7 +158,7 @@ class Individual extends Person {
                     group: 'id',
                 },
                 {
-                    table: query.person.name.table,
+                    table: query.person.names.table,
                     fields: [ 'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix' ],
                     join,
                 },
@@ -168,22 +168,22 @@ class Individual extends Person {
                     join,
                 },
                 {
-                    table: query.person.phone.table,
+                    table: query.person.phones.table,
                     fields: 'phone',
                     join,
                 },
                 {
-                    table: query.person.address.table,
+                    table: query.person.addresses.table,
                     fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
                     join,
                 },
                 {
-                    table: query.person.email.table,
+                    table: query.person.emails.table,
                     fields: 'email',
                     join,
                 },
                 {
-                    table: query.person.identification.table,
+                    table: query.person.identifications.table,
                     fields: [
                         'driver',
                         'commercial',
@@ -198,7 +198,7 @@ class Individual extends Person {
                     join: [ 'personId', 'id', { max: 'issuedOn' } ],
                 },
                 {
-                    table: query.person.marital.table,
+                    table: query.person.maritals.table,
                     fields: [ [ 'status', 'marital' ] ],
                     join,
                 },
@@ -220,6 +220,7 @@ class Individual extends Person {
                     fields: [ { count: [ 'id', 'driverAplCount' ] } ],
                     join: [ 'driverId', 'id', query.driver.main.table ],
                 },
+                //! ADD MORE COUNTS IF NEEDED
             ],
             prepare(batch, filter) {
                 const {

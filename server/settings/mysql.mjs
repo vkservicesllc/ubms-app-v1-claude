@@ -16,10 +16,6 @@ const db = {
 export default db
 
 
-
-const driverAppQuery = new Query(db.carrier, 'applications')
-
-
 export const query = {
 
     user: {
@@ -45,25 +41,25 @@ export const query = {
 
     person: {
         main: new Query(db.person, 'individuals'),
-        name: new Query(db.person, 'names'),
-        legal: new Query(db.person, 'legal_presence'),
-        marital: new Query(db.person, 'maritals'),
-        phone: new Query(db.person, 'phones'),
-        address: new Query(db.person, 'addresses'),
-        email: new Query(db.person, 'emails'),
-        identification: new Query(db.person, 'identifications'),
+        names: new Query(db.person, 'names'),  //* 1-to-many
+        legal: new Query(db.person, 'legal_presence'),  //* 1-to-many
+        maritals: new Query(db.person, 'maritals'),  //* 1-to-many
+        phones: new Query(db.person, 'phones'),  //* 1-to-many
+        addresses: new Query(db.person, 'addresses'),  //* 1-to-many
+        emails: new Query(db.person, 'emails'),  //* 1-to-many
+        identifications: new Query(db.person, 'identifications'),  //* 1-to-many
         //! ...Add more if needed
     },
 
     company: {
         main: new Query(db.business, 'companies'),
-        name: new Query(db.business, 'company_names'),
-        ownership: new Query(db.business, 'company_ownerships'),
-        address: new Query(db.business, 'company_addresses'),
-        mail: new Query(db.business, 'company_mail'),
-        phone: new Query(db.business, 'company_phones'),
-        fax: new Query(db.business, 'company_faxes'),
-        email: new Query(db.business, 'company_emails'),
+        names: new Query(db.business, 'company_names'),  //* 1-to-many
+        ownerships: new Query(db.business, 'company_ownerships'),  //* 1-to-many
+        addresses: new Query(db.business, 'company_addresses'),  //* 1-to-many
+        mail: new Query(db.business, 'company_mail'),  //* 1-to-many
+        phones: new Query(db.business, 'company_phones'),  //* 1-to-many
+        faxes: new Query(db.business, 'company_faxes'),  //* 1-to-many
+        emails: new Query(db.business, 'company_emails'),  //* 1-to-many
         //! ...Add more if needed
     },
     company_owner: {
@@ -72,22 +68,22 @@ export const query = {
 
     carrier: {
         main: new Query(db.carrier, 'carriers'),
-        ifta: new Query(db.carrier, 'carrier_ifta'),
+        ifta: new Query(db.carrier, 'carrier_ifta'),  //* 1-to-many
         stateTax: new Query(db.carrier, 'carrier_state_permits'),
     },
 
     driver: {
         main: new Query(db.carrier, 'drivers'),
-        application: driverAppQuery,
     },
     driver_application: {
-        main: driverAppQuery,
-        address: new Query(db.carrier, 'application_addresses'),
+        main: new Query(db.carrier, 'applications'),
+        addresses: new Query(db.carrier, 'application_addresses'),  //* 1-to-many
         license: new Query(db.carrier, 'application_DLs'),
         medical: new Query(db.carrier, 'application_MECs'),
-        citation: new Query(db.carrier, 'application_citations'), //! Create a separate entity
-        accident: new Query(db.carrier, 'application_accidents'), //! Create a separate entity
+        citations: new Query(db.carrier, 'application_citations'),  //* 1-to-many
+        accidents: new Query(db.carrier, 'application_accidents'),  //* 1-to-many
         experience: new Query(db.carrier, 'application_experiences'),
+        employments: new Query(db.carrier, 'application_employments'),  //* 1-to-many
         school: new Query(db.carrier, 'application_cdlschools'),
         preference: new Query(db.carrier, 'application_preferences'),
         business: new Query(db.carrier, 'application_businesses'),
@@ -96,9 +92,6 @@ export const query = {
         emergency: new Query(db.carrier, 'application_emergencies'),
         checklist: new Query(db.carrier, 'application_checklists'),
         decision: new Query(db.carrier, 'application_decisions'),
-    },
-    driver_appemployer: {
-        main: new Query(db.carrier, 'application_employments'),
     },
 
     jx: {

@@ -122,7 +122,7 @@ class Driver extends Individual {
             },
             {
                 db: db.person,
-                table: query.person.name.table,
+                table: query.person.names.table,
                 fields: [
                     'firstName',
                     'middleName',
@@ -136,7 +136,7 @@ class Driver extends Individual {
             },
             {
                 db: db.person,
-                table: query.person.phone.table,
+                table: query.person.phones.table,
                 fields: 'phone',
                 join: [ 'personId', 'id', {
                     table: query.person.main.table,
@@ -1316,7 +1316,7 @@ class Application {
                 join: [ 'id', 'driverId' ],
             },
             {
-                table: query.driver_application.address.table,
+                table: query.driver_application.addresses.table,
                 fields: [
                     [ 'enough', 'addrEnough' ],
                     [ 'since', 'addrSince' ],
