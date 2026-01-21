@@ -211,7 +211,7 @@ class Company {
                 {
                     table: query.company_owner.main.table,
                     fields: [ [ 'id', 'ownerId' ], [ Owner.hashId(), 'ownerId' ], 'personId', Individual.hashId('personId') ],
-                    join: [ 'id', 'ownerId', query.company.ownership.table ],
+                    join: [ 'id', 'ownerId', query.company.ownerships.table ],
                 },
                 {
                     db: db.person,

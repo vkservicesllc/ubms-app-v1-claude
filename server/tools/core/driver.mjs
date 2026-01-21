@@ -1450,7 +1450,7 @@ class Application {
             },
             {
                 db: db.business,
-                table: query.company.name.table,
+                table: query.company.names.table,
                 fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
                 join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
             },
@@ -2091,7 +2091,7 @@ class Employment {
                 },
                 {
                     db: db.business,
-                    table: query.company.name.table,
+                    table: query.company.names.table,
                     fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
                     join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
                 },

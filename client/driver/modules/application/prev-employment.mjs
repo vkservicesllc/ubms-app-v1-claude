@@ -4,7 +4,6 @@ import { busNameEvent } from '/modules/events/company.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import patterns from '/modules/registry/patterns.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import formId, { check, onInput, onAccept, onChange, onComplete, onBlur, onSubmit, addressPredictions } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application-employment.mjs'
 import appSelector from '/modules/registry/selectors/driver-application.mjs'
@@ -45,7 +44,7 @@ const $deleteTarget = $('#delete-prevempl-target')
 const $deleteEmplDesc = $('#delete-prevempl-desc')
 const $leftOnContainer = $('#termination-date-field')
 
-const appliedOn = $(selector.id.hidden.appliedOn).val()
+const appliedOn = $(appSelector.id.hidden.appliedOn).val()
 
 let selected = false
 
@@ -528,3 +527,6 @@ function scroll() {
     const scrollPoint = document.querySelector('#employment-accordion-item')
     setTimeout(() => scrollPoint.scrollIntoView({ behavior: 'smooth', block: 'start' }), scrollDuration)
 }
+
+
+onSubmit($form.employment, $help, $submit.employment, $card)

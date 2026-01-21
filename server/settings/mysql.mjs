@@ -83,7 +83,6 @@ export const query = {
         citations: new Query(db.carrier, 'application_citations'),  //* 1-to-many
         accidents: new Query(db.carrier, 'application_accidents'),  //* 1-to-many
         experience: new Query(db.carrier, 'application_experiences'),
-        employments: new Query(db.carrier, 'application_employments'),  //* 1-to-many
         school: new Query(db.carrier, 'application_cdlschools'),
         preference: new Query(db.carrier, 'application_preferences'),
         business: new Query(db.carrier, 'application_businesses'),
@@ -92,6 +91,9 @@ export const query = {
         emergency: new Query(db.carrier, 'application_emergencies'),
         checklist: new Query(db.carrier, 'application_checklists'),
         decision: new Query(db.carrier, 'application_decisions'),
+    },
+    driver_appemployer: {
+        main: new Query(db.carrier, 'application_employments'),
     },
 
     jx: {
