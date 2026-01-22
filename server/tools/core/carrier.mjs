@@ -44,7 +44,7 @@ class Carrier extends Company {
 
         reSuper(this, props, props2)
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
 
 

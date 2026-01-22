@@ -79,7 +79,7 @@ $button.delete.click(function() {
 
     $.ajax({
         method: 'DELETE',
-        url: `/api/data/drivers/application/${_id}`,
+        url: `/api/resource/drivers/applications/${_id}`,
         success(response) {
             const { deleted } = response
             if (!deleted) return alert('Something went wrong! Applicant could not be deleted!')
@@ -103,8 +103,7 @@ table.on('draw', function() {
             const _id = $(this).data('id')
             const assigned = $(this).data('assigned')
 
-            $.ajax(`/api/data/drivers/application/${_id}`, {
-                method: 'POST',
+            $.ajax(`/api/resource/drivers/applications/${_id}`, {
                 success(response) {
                     const { firstName, middleName, lastName, suffix, gender, phone, email, position } = response.data.application
 

@@ -8,7 +8,8 @@ const interval = 60000
 const table = $('#driver-apl-prev-employers-table').DataTable({
 
     ajax: {
-        url: '/api/list/drivers/applications/prev-employers',
+        url: '/api/resource/drivers/applications/prev-employments',
+        method: 'GET',
         dataSrc(response) {
             const { data } = response
 

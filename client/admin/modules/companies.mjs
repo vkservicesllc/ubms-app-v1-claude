@@ -16,7 +16,6 @@ $.when(statusReq).done(statusRes => {
     const table = new DataTable('#companies-table', {
 
         ajax: {
-            method: 'GET', //! TEMP
             url: '/api/resource/companies',
             dataSrc(response) {
                 const { data: companies } = response

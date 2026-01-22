@@ -206,7 +206,6 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
     const table = new DataTable('#users-table', {
 
         ajax: {
-            method: 'GET', //! TEMP
             url: '/api/resource/users',
             dataSrc(response) {
                 return response.data

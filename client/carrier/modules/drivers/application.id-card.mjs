@@ -23,8 +23,7 @@ table.on('draw', function() {
         const _id = $(this).data('id')
         const href = $(this).next().attr('href')
 
-        $.ajax(`/api/data/drivers/application/${_id}?sensitive=true`, {
-            method: 'POST',
+        $.ajax(`/api/resource/drivers/applications/${_id}?sensitive=true`, {
             success(response) {
                 const { application } = response.data
                 const { phone, dob, ssn } = application

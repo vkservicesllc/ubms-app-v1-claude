@@ -7,7 +7,9 @@ const sendError = require('../../tools/utils/error')
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
-import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+
+/* Middleware */
+import { dtDriverList, dtApplicationList } from './mw/drivers.mjs'
 
 
 // ==== SETUP ==== //
@@ -96,12 +98,6 @@ router.post('/lists', User.mw.verify, Team.mw.verify, async (req, res) => {
 // ==== DRIVERS ROUTES ==== //
 
 
-router.post('/drivers/dt-list/applications/:archived?', User.mw.verify, Team.mw.verify, Application.mw.dtList)
-
-
-router.post('/drivers/dt-list/applicants/:blacklisted?', User.mw.verify, Team.mw.verify, Driver.mw.dtList)
-
-
 router.post('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { _id } = req.params
@@ -130,30 +126,19 @@ router.post('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, as
 })
 
 
-router.delete('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
-    try {
-        const { _id } = req.params
-        const application = await Application.fetch(res.session, { _id })
-        if (!application) throw new Error('Application not found')
+// router.delete('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
+//     try {
+//         const { _id } = req.params
+//         const application = await Application.fetch(res.session, { _id })
+//         if (!application) throw new Error('Application not found')
 
-        const { deleted } = await application.delete()
+//         const { deleted } = await application.delete()
 
-        res.json({ deleted })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
-
-router.post('/list/drivers/applications/prev-employers', User.mw.verify, Team.mw.verify, async (req, res) => {
-    try {
-        const _teamId = res.session?.team?._id
-
-        res.json({ data: await Employment.fetch(res.session, { condition: 'c', _teamId }, { hideRawId: true }) })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+//         res.json({ deleted })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
 router.post('/list/drivers/application/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {

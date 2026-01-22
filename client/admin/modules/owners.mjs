@@ -158,7 +158,6 @@ columns.push({
 const table = $('#owners-table').DataTable({
 
     ajax: {
-        method: 'GET', //!TEMP
         url: '/api/resource/company-owners',
         dataSrc(response) {
             const { data } = response

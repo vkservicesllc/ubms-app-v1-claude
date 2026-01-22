@@ -567,13 +567,13 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         /* LEGAL COMPLIANCE */
         {
             options.criminalExpl = { text: { input: { rows: 2, placeholder: ' ' }, label: { content: 'Details' } } }
-            hbs.length.citations = (await application.fetch('citation.history')).length
+            hbs.length.citations = (await application.fetch('citations')).length
             if (hbs.length.citations) hbs.linkColor.citations = 'red'
         }
 
         /* SAFETY */
         {
-            hbs.length.accidents = (await application.fetch('accident.history')).length
+            hbs.length.accidents = (await application.fetch('accidents')).length
             if (hbs.length.accidents) hbs.linkColor.accidents = 'red'
         }
 

@@ -21,7 +21,7 @@ const defaultContent = '<i style="color: pink; font-size: .9em;">Unassigned</i>'
 const table = $('#driver-apl-table').DataTable({
 
     ajax: {
-        url: '/api/drivers/dt-list/applications',
+        url: '/api/resource/drivers/applications/query',
         data(search) {
             search.filter = {
                 conditions: $('#condition-filter').val(),

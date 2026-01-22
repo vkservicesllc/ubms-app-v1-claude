@@ -1,6 +1,6 @@
 const _id = $('#id').val()
 
-const response = $.ajax(`/api/data/drivers/application/${_id}?sensitive=true`, { method: 'POST', async: false }).responseJSON
+const response = $.ajax(`/api/resource/drivers/applications/${_id}?sensitive=true`, { async: false }).responseJSON
 const { data, error } = response
 
 if (error) alert(error)

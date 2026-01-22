@@ -8,7 +8,7 @@ const interval = 300000
 const table = $('#driver-aplicants-table').DataTable({
 
     ajax: {
-        url: '/api/drivers/dt-list/applicants',
+        url: '/api/resource/drivers/applicants/query',
         dataSrc(response) {
             const { data } = response
 
