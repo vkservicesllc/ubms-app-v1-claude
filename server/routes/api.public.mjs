@@ -13,7 +13,7 @@ import config from '../../config.mjs'
 import Query from '../tools/utils/query.mjs'
 import User from '../tools/core/user.mjs'
 import Company from '../tools/core/company.mjs'
-import Driver, { Application as DriverApplication, Citation, Accident } from '../tools/core/driver.mjs'
+import Driver, { Application as DriverApplication } from '../tools/core/driver.mjs'
 import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
 
 
@@ -62,8 +62,8 @@ router.post('/source/:source', (req, res) => {
 
             case 'driver-application':
                 result = {
-                    violations: Citation.list.violation,
-                    accidents: Accident.list.collision,
+                    violations: DriverApplication.list.violation,
+                    accidents: DriverApplication.list.collision,
                 }
                 break
 
