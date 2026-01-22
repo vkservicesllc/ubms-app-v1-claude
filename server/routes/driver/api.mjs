@@ -6,14 +6,12 @@ const sendError = require('../../tools/utils/error')
 /* Tools */
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
-import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
-
-/* Validators */
+import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
+import { EmploymentForm } from '../../tools/form/driver.mjs'
 import { validateApplicantLogin } from './application.mjs'
-import { validateApplicantEmployer } from './resource.mjs'
 
 /* API */
 import { sessionDetails } from '../api.mjs'
@@ -39,8 +37,8 @@ router.post('/local-source/:source', (req, res) => {
     switch (source) {
         case 'application':
             result = {
-                violations: Citation.list.violation,
-                accidents: Accident.list.collision,
+                violations: Application.list.violation,
+                accidents: Application.list.collision,
             }
             break
     }
@@ -159,7 +157,7 @@ router.post('/list/application/:formId/:target', async (req, res) => {
 // ==== RESOURCE ROUTES ==== //
 
 
-router.post('/resource/application/:formId/employer', validateApplicantEmployer, validationCheck, async (req, res) => {
+router.post('/resource/application/:formId/employer', EmploymentForm.validate(), validationCheck, async (req, res) => {
     try {
         const { formId } = req.params
         const application = await Application.fetch(res.session, { formId })

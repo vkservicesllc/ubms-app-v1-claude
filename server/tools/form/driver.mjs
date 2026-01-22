@@ -23,7 +23,7 @@ import { createBusNameForm, createEinForm } from './company.mjs'
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
 import appEmplSelector from '../../../client/global/modules/registry/selectors/driver-application-employment.mjs'
-import Driver, { Application, Citation, Accident } from '../core/driver.mjs'
+import Driver, { Application } from '../core/driver.mjs'
 import { Truck, Van } from '../core/vehicle.mjs'
 import Geography from '../../../client/global/modules/tools/core/geography.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
@@ -689,7 +689,7 @@ class ApplicationForm {
         group: 'citReason',
         type: 'select',
         name: 'violation[]',
-        data: Citation.list.violation,
+        data: Application.list.violation,
         emptyOpt,
         required,
         // disabled,
@@ -743,7 +743,7 @@ class ApplicationForm {
         group: 'accType',
         type: 'select',
         name: 'collision[]',
-        data: Accident.list.collision,
+        data: Application.list.collision,
         emptyOpt,
         required: true,
         // disabled,
@@ -1541,6 +1541,9 @@ class ApplicationForm {
                     'cdlSchool', 'schName', 'schPhone', 'schState', 'schEndDate', 'schDuration',
                 ]
                 break
+            case 'employment':
+                fields = ['prevEmployed']
+                break
             case 'preference':
                 fields = ['operType', 'teamName', 'teamPhone', 'haulRegion', 'equipmentType', 'startPref']
                 break
@@ -1738,6 +1741,10 @@ class EmploymentForm {
         label: 'Reason for Employment Gap',
     })
 
+    static validate = () => validate(EmploymentForm, () => [
+        'employer', 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
+        'startDate', 'position', 'earnings', 'FMCSR', 'dotDat', 'RFL', 'endDate',
+    ])
 
 }
 

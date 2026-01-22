@@ -6,7 +6,7 @@ const sendError = require('../../tools/utils/error')
 /* Tools */
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
-import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
+import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 

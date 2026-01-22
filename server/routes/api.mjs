@@ -9,8 +9,7 @@ import User, { Role } from '../tools/core/user.mjs'
 import Team from '../tools/core/team.mjs'
 import Company, { Owner as CompanyOwner } from '../tools/core/company.mjs'
 import Carrier from '../tools/core/carrier.mjs'
-import Driver, { Application as DriverApplication, Citation, Accident } from '../tools/core/driver.mjs'
-import { capitalizeFirst } from '../../client/global/modules/tools/utils/string.mjs'
+import Driver, { Application as DriverApplication } from '../tools/core/driver.mjs'
 
 
 // ==== SETUP ==== //
@@ -91,8 +90,8 @@ router.post('/source/:source/:_id?', User.mw.verify, async (req, res) => {
         case 'driver-application':
             Src = DriverApplication
             result = {
-                violations: Citation.list.violation,
-                accidents: Accident.list.accident,
+                violations: DriverApplication.list.violation,
+                accidents: DriverApplication.list.collision,
             }
             break
 

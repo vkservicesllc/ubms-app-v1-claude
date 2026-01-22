@@ -7,7 +7,7 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import pdfParams, { CustomFonts } from '../../../../settings/pdf-lib.mjs'
 import { ssn as formatSsn, tel as formatTel, ein as formatEin } from '../../../../../client/global/modules/tools/utils/formatter.mjs'
-import Driver, { Accident, Application, Citation } from '../../../../tools/core/driver.mjs'
+import Driver, { Application } from '../../../../tools/core/driver.mjs'
 import { getFiles } from '../../../../tools/utils/fs.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
 import Geography from '../../../../../client/global/modules/tools/core/geography.mjs'
@@ -1397,8 +1397,8 @@ export default async (carrier, application, addresses, violations, accidents, em
             if (violation) {
                 if (violation !== 'other')
                     violationLoop:
-                    for (const group in Citation.list.violation) {
-                        const set = Citation.list.violation[group]
+                    for (const group in Application.list.violation) {
+                        const set = Application.list.violation[group]
 
                         if (typeof set === 'object')
                             for (const prop in set) {
@@ -1492,8 +1492,8 @@ export default async (carrier, application, addresses, violations, accidents, em
             if (collision) {
                 if (collision !== 'other')
                     collisionLoop:
-                    for (const group in Accident.list.collision) {
-                        const set = Accident.list.collision[group]
+                    for (const group in Application.list.collision) {
+                        const set = Application.list.collision[group]
 
                         if (typeof set === 'object')
                             for (const prop in set) {

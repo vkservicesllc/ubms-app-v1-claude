@@ -13,7 +13,7 @@ import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Company from '../../tools/core/company.mjs'
-import Driver, { Application, Citation, Accident, Employment } from '../../tools/core/driver.mjs'
+import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 import createApplicationPdf from './mw/pdf/driver-application.mjs'
 import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 import { sortObjectByKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
@@ -749,8 +749,8 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
 
             case 'citations':
                 dropdown.violation = ''
-                for (const category in Citation.list.violation) {
-                    const items = Citation.list.violation[category]
+                for (const category in Application.list.violation) {
+                    const items = Application.list.violation[category]
                     dropdown.violation += `\n${t}<div class="header"><span class="ui teal text">${category}</span></div>`
 
                     for (const item in items)
@@ -761,8 +761,8 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
 
             case 'accidents':
                 dropdown.accident = ''
-                for (const category in Accident.list.collision) {
-                    const items = Accident.list.collision[category]
+                for (const category in Application.list.collision) {
+                    const items = Application.list.collision[category]
                     dropdown.accident += `\n${t}<div class="header"><span class="ui teal text">${category}</span></div>`
 
                     for (const item in items)

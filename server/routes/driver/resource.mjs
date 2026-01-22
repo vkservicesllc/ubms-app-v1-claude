@@ -17,24 +17,11 @@ import DriverForm, { ApplicationForm, EmploymentForm } from '../../tools/form/dr
 
 // ==== SETUP ==== //
 
-const validateApplicantPreemployment = []
-const applicantPreemploymentFields = [ 'prevEmployed' ]
-applicantPreemploymentFields.forEach(prop => validateApplicantPreemployment.push(ApplicationForm[prop].validate()))
-
-
-const validateApplicantEmployer = []
-const applicantEmployerFields = [
-    'employer', 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
-    'startDate', 'position', 'earnings', 'FMCSR', 'dotDat', 'RFL', 'endDate',
-]
-applicantEmployerFields.forEach(prop => validateApplicantEmployer.push(EmploymentForm[prop].validate()))
-
-
 
 const dynamicValidator = {
     applications: (req, res, next) => {
         const { step } = req.params
-        let validators
+        let validators = []
 
         switch (step) {
             case 'workflow':
@@ -68,10 +55,10 @@ const dynamicValidator = {
                 validators = ApplicationForm.validate('experience')
                 break
             case 'prev-employment':
-                validators = validateApplicantPreemployment
+                validators = ApplicationForm.validate('employment')
                 break
             case 'prev-employer':
-                validators = validateApplicantEmployer
+                validators = EmploymentForm.validate()
                 break
             case 'preference':
                 validators = ApplicationForm.validate('preference')
@@ -84,9 +71,6 @@ const dynamicValidator = {
                 break
             case 'misc':
                 validators = ApplicationForm.validate('emergency')
-                break
-            case 'certify':
-                validators = []
                 break
         }
 
@@ -205,4 +189,4 @@ router.post('/application/submit/:formId', async (req, res) => {
 
 export default router
 
-export { dynamicValidator, validateApplicantEmployer }
+export { dynamicValidator }

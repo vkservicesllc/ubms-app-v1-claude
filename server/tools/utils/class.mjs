@@ -111,7 +111,7 @@ export const classInstance = {
 
             return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, offline, sorts })
         }
-
+//! get rid of _histId
         const { query, redFields = {}, histSort, _histId = {} } = config
 
         if (!redFields[target]) redFields[target] = classInstance.redFields
