@@ -83,7 +83,7 @@ const dynamicValidator = {
                 validators = ApplicationForm.validate('beneficiary')
                 break
             case 'misc':
-                validators = Application.validate('emergency')
+                validators = ApplicationForm.validate('emergency')
                 break
             case 'certify':
                 validators = []

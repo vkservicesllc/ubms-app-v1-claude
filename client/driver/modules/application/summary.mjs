@@ -145,18 +145,18 @@ $.ajax(`/api/list/application/${formId}/accidents`, {
 
 $.ajax(`/api/list/application/${formId}/employers`, {
     method: 'POST',
-    success(response) {
-        let { data, error } = response
+    success(response) {console.log(response)
+        const { data, error } = response
         if (error) return alert(error)
 
-        const length = data.length
+        const length = data.employers.length
 
         if (length) {
             let html = ''
 
-            data = sortArrayByObjectKey(data, 'startedOn', false)
+            // data = sortArrayByObjectKey(data, 'startedOn', false)
 
-            data.forEach((row, i) => {
+            data.employers.forEach((row, i) => {console.log(row)
                 const address = new Address(row)
                 let label = 'Employer'
                 if (length > 1) label += ` ${i + 1}`
@@ -179,7 +179,7 @@ $.ajax(`/api/list/application/${formId}/employers`, {
                 html += '</tbody>'
             })
 
-            $('#pre-employments').append(html)
+            $('#prev-employments').append(html)
         }
     },
 })
