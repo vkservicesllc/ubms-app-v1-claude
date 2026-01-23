@@ -124,7 +124,7 @@ export default branch => {
             copyright: config.copyright.html(),
         }
 
-        if (req.url.startsWith('/api')) {
+        if (req.method === 'GET' && req.url.startsWith('/api')) {
             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
             res.setHeader('Pragma', 'no-cache')
             res.setHeader('Expires', '0')
