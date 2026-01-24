@@ -134,7 +134,7 @@ router.post('/application/start/:_teamId/:_carrierId?', ApplicationForm.validate
             formId = application.formId
         }
 
-        await application.add('address', addrBody)
+        await application.add('addresses', addrBody)
         await application.welcome()
 
         if (!addrBody.enough) await application.update({ step: 0 })

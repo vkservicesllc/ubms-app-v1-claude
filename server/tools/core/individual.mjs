@@ -132,7 +132,7 @@ class Individual extends Person {
 
             body = {
                 main: { dob, gender },
-                name: { since: dob, prefix, firstName, middleName, lastName, suffix, alias, },
+                names: { since: dob, prefix, firstName, middleName, lastName, suffix, alias },
             }
             if (ssn) body.main.ssn = ssn
 

@@ -96,9 +96,9 @@ export const addressPredictions = ($addr1, input, success) => {
 
     $datalist.html(null)
 
-    $.ajax('/api/public/google-api/places/autocomplete', {
-        method: 'POST',
+    $.ajax('/api/public/google/places/autocomplete', {
         data: { input, sessionToken },
+        method: 'POST',
         success(responseData) {
             const { predictions } = responseData
 
@@ -115,9 +115,9 @@ export const addressPredictions = ($addr1, input, success) => {
                 const placeId = $(this).attr('place-id')
                 const description = $(this).text()
 
-                $.ajax('/api/public/google-api/places/details', {
-                    method: 'POST',
+                $.ajax('/api/public/google/places/details', {
                     data: { placeId },
+                    method: 'POST',
                     success(responseData) {
                         const { address_components } = responseData
                         let address1 = null, address2 = null, zip = null, city = null, state = null

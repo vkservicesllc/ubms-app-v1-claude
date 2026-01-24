@@ -90,7 +90,7 @@ router.post('/unique/user', async (req, res) => {
 })
 
 
-router.post('/google-api/places/autocomplete', async (req, res) => {
+router.post('/google/places/autocomplete', async (req, res) => {
     try {
         const { input, sessionToken } = req.body
 
@@ -111,7 +111,7 @@ router.post('/google-api/places/autocomplete', async (req, res) => {
 })
 
 
-router.post('/google-api/places/details', async (req, res) => {
+router.post('/google/places/details', async (req, res) => {
     try {
         const { placeId, sessionToken } = req.body
 
