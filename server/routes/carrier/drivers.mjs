@@ -823,7 +823,7 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
         if (!withPrivileges('f:drv/apl', 'view', permissions, DS))
             return res.redirect(aplUrl)
 
-        const application = await Application.fetch(res.session, { formId }, { hideRawId: false })
+        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
 
         if (!application || application.condition !== 'c' || (team && application._teamId !== team._id))
             return res.redirect(aplUrl)
@@ -840,9 +840,9 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
             carrier.companyId = companyId
         }
 
-        const addresses = await application.fetch('address.history')
-        const violations = await application.fetch('citation.history')
-        const accidents = await application.fetch('accident.history')
+        const addresses = await application.fetch('addresses')
+        const violations = await application.fetch('citations')
+        const accidents = await application.fetch('accidents')
         const employers = await Employment.fetch(res.session, { appId: application.id })
 
         const pdfBytes = await createApplicationPdf(carrier, application, addresses, violations, accidents, employers)

@@ -160,9 +160,9 @@ class Driver extends Individual {
 
         position: {
             'CD': 'Company Driver',
-            'OO': 'Owner Operator',
+            'OO': 'Owner-Operator',
             'OD': 'Driver for Owner',
-            'LP': 'Lease Purchaser',
+            'LP': 'Lease-Purchase Driver',
         },
 
     }
@@ -406,6 +406,7 @@ class Application {
 
         if (single) {
             this.session = session
+            this.config = { hideRawId, hideSensitive }
 
 
             this.add = (target, body) => classInstance.add(this, new.target, target, body)
@@ -889,7 +890,7 @@ class Application {
             this.identity = async () => {
                 if (!this._personId) return
 
-                const individual = await Individual.fetch(this.session, { _id: this._personId })
+                const individual = await Individual.fetch(this.session, { _id: this._personId }, this.config)
                 if (!individual) throw new Error('Identity could not be determined')
 
                 const mismatch = {}

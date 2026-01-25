@@ -434,7 +434,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             const { position } = application
             let i = 0
             for (const p in positions) {
-                drawCheckBox(coverPage, x + textWidth + gap, y - 3, position?.[0] === p, 15)
+                drawCheckBox(coverPage, x + textWidth + gap, y - 3, position === p, 15)
                 coverPage.drawText(positions[p], {
                     x: x + textWidth + gap + 25, y,
                     font: font.label, size: size.label * 1.4, color: color.section,
@@ -570,7 +570,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Row 2 */
         {
-            const { dob, gender, ssn, marital, phone } = application
+            const { dob, gender, ssn, marital, phone, expansion } = application
             if (outsideBorder)
                 page1.drawLine({
                     start: { x: marginX, y },
@@ -590,7 +590,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(gender || '', {
+            page1.drawText(gender ? expansion.gender : '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -680,7 +680,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: marginX + vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            page1.drawText(state ? state[0] : '', {
+            page1.drawText(state || '', {
                 x: marginX + vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -2088,7 +2088,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            emplPages[page].drawText(leftOn ? moment(leftOn).format(dateFormat) : '', {
+            emplPages[page].drawText(employer ? leftOn ? moment(leftOn).format(dateFormat) : 'Still Employed' : '', {
                 x: vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -2215,7 +2215,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             for (const p in positions) {
                 vLineX += gap
                 text = positions[p]
-                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, position[0] === p)
+                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, position === p)
                 page5.drawText(text, {
                     x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                     font: font.label, size: size.label, color: color.label,
@@ -2436,9 +2436,16 @@ export default async (carrier, application, addresses, violations, accidents, em
             thickness: 2, color: color.line,
         })
         y -= 14
-        page5.drawText('Section 11: Personal Motor Vehicle', {
+        text = 'Section 11: Personal Motor Vehicle'
+        page5.drawText(text, {
             x: marginX + padding, y,
             font: font.section, size: size.section, color: color.section,
+        })
+        textWidth = font.section.widthOfTextAtSize(text, size.section)
+        text = '(Owner-Operators only)'
+        page5.drawText(text, {
+            x: marginX + textWidth + gap + 1, y,
+            font: font.label, size: size.label, color: color.label,
         })
 
         y -= fieldHeight / 1.7
