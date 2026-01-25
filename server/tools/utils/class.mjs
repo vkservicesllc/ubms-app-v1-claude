@@ -109,7 +109,7 @@ export const classInstance = {
             return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, offline, sorts })
         }
 
-        const { query, redFields = {}, childSort = {}, childIdHash = {} } = config
+        const { query, redFields = {}, childSort = {}, childIdHash = {}, childExclude = {} } = config
         if (!redFields[target]) redFields[target] = classInstance.redFields
 
         const options = {
@@ -126,6 +126,12 @@ export const classInstance = {
 
                 options.match[prop] = filter.match[prop]
             }
+        if (childExclude[target]) {
+            const [ prop, parent ] = childExclude[target]
+            const value = parent ? inst[parent][prop] : inst[prop]
+
+            options.match[prop] = { not: value }
+        }
 
         let fields = ['*', Cls.hashId(idProp)]
         if (childIdHash[target]) fields.push(hash('id', childIdHash[target]))
@@ -170,6 +176,8 @@ export const classInstance = {
 
         if (body?.ssn !== undefined) body.ssn = { aes: [ body.ssn, secret.ssn ] }
         if (body?.ein !== undefined) body.ein = { aes: [ body.ein, secret.ein ] }
+
+        if ('_id' in match) match._id = matchHash(match._id, config.childIdHash[target])
 
         const [ result ] = await mysql.execute(config.query[target].update(body, {
             [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
@@ -217,7 +225,9 @@ export const classInstance = {
         } else if (target) {
             const match = matchOrIds || {}
 
-            const { query } = Cls.config()
+            const { query, childIdHash = {} } = Cls.config()
+            if ('_id' in match) match._id = matchHash(match._id, childIdHash[target])
+
             const [ result ] = await mysql.execute(query[target].delete({ [idProp]: inst.id, ...match }))
 
             return { deleted: result.affectedRows > 0 }

@@ -610,7 +610,7 @@ class Application {
 
                             if (this.step < 4) body.step = 4
 
-                            await mysql.execute(query.driver_application.citation.delete({ appId: this.id }))
+                            await mysql.execute(query.driver_application.citations.delete({ appId: this.id }))
                             if (citations) {
                                 const count = violation.length
                                 const citBody = []
@@ -641,7 +641,7 @@ class Application {
 
                             if (this.step < 5) body.step = 5
 
-                            await mysql.execute(query.driver_application.accident.delete({ appId: this.id }))
+                            await mysql.execute(query.driver_application.accidents.delete({ appId: this.id }))
                             if (accidents) {
                                 const count = collision.length
                                 const accBody = []
@@ -711,25 +711,25 @@ class Application {
                         break
 
                     
-                    case 'prev-employer':
-                        {
-                            const { _id } = body
-                            delete body._id
+                    // case 'prev-employer':
+                    //     {
+                    //         const { _id } = body
+                    //         delete body._id
 
-                            const appBody = { prevEmployed: true }
+                    //         const appBody = { prevEmployed: true }
 
-                            if (_id) {
-                                const employment = await Employment.fetch(this.session, { _id }, { hideRawId: false })
-                                if (!body.leftOn) body.leftOn = null
-                                await employment.update(body)
-                            } else {
-                                body.appId = this.id
-                                await Employment.create(this.session, body)
-                            }
+                    //         if (_id) {
+                    //             const employment = await Employment.fetch(this.session, { _id }, { hideRawId: false })
+                    //             if (!body.leftOn) body.leftOn = null
+                    //             await employment.update(body)
+                    //         } else {
+                    //             body.appId = this.id
+                    //             await Employment.create(this.session, body)
+                    //         }
 
-                            await this.update(appBody)
-                        }
-                        break
+                    //         await this.update(appBody)
+                    //     }
+                    //     break
 
 
                     case 'preference':
@@ -925,6 +925,9 @@ class Application {
         childIdHash: {
             citations: 'MD5',
             accidents: 'MD5',
+        },
+        childExclude: {
+            addresses: [ 'since', 'address' ],
         },
         logFile: 'driver-applications',
         logFields: {

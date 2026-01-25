@@ -101,7 +101,7 @@ $button.delete.click(function(evt) {
     evt.preventDefault()
     const _id = $deleteTarget.val()
 
-    $.ajax(`/api/resource/application/employer/${_id}`, {
+    $.ajax(`/api/resource/application/${formId}/employers/${_id}`, {
         method: 'DELETE',
         success(response) {
             if (response.status === 'OK') {
@@ -334,7 +334,7 @@ $deleteModal
 function drawEmployerList() {
     $.ajax(`/api/resource/application/${formId}/employers`, {
         success(response) {
-            const { resource: application, data: employers } = response.data
+            const { resource: application, data: employers } = response
 
             if (!employers.length) {
                 $emplList.html(null)
@@ -453,7 +453,7 @@ function resetEvents() {
         const _id = $(this).data('id')
         const edit = $(this).hasClass('edit-employer')
 
-        $.ajax(`/api/resource/${formId}/application/employer/${_id}`, {
+        $.ajax(`/api/resource/application/${formId}/employers/${_id}`, {
             success(response) {
                 const { data } = response
 
@@ -483,7 +483,7 @@ function resetEvents() {
         onChange(gapExpl, $gapExpl) {
             const _id = $gapExpl.data('id')
 
-            $.ajax(`/api/resource/application/employer/${_id}`, {
+            $.ajax(`/api/resource/application/${formId}/employers/${_id}`, {
                 method: 'PATCH',
                 data: { gapExpl },
                 success(response) {
@@ -503,7 +503,7 @@ $form.employer.submit(function(evt) {
         data[this.name] = this.value
     })
 
-    $.ajax(`/api/resource/application/${formId}/employer`, {
+    $.ajax(`/api/resource/application/${formId}/employers`, {
         method: 'POST',
         data,
         success(response) {

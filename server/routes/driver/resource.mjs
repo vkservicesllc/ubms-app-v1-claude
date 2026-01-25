@@ -57,8 +57,8 @@ const dynamicValidator = {
             case 'prev-employment':
                 validators = ApplicationForm.validate('employment')
                 break
-            case 'prev-employer':
-                validators = EmploymentForm.validate()
+            // case 'prev-employer':
+            //     validators = EmploymentForm.validate()
                 break
             case 'preference':
                 validators = ApplicationForm.validate('preference')

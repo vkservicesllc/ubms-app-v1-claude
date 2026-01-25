@@ -157,59 +157,59 @@ router.post('/login/application/:formId', validateApplicantLogin, async (req, re
 // ==== RESOURCE ROUTES ==== //
 
 
-router.post('/resource/application/:formId/employer', EmploymentForm.validate(), validationCheck, async (req, res) => {
-    try {
-        const { formId } = req.params
-        const application = await Application.fetch(res.session, { formId })
-        if (!application) throw new Error('Application not found')
+// router.post('/resource/application/:formId/employer', EmploymentForm.validate(), validationCheck, async (req, res) => {
+//     try {
+//         const { formId } = req.params
+//         const application = await Application.fetch(res.session, { formId })
+//         if (!application) throw new Error('Application not found')
 
-        await application.progress('prev-employer', req.body)
+//         await application.progress('prev-employer', req.body)
 
-        res.json({ status: 'OK' })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
-
-router.patch('/resource/application/employer/:_id', async (req, res) => {
-    try {
-        const { _id } = req.params
-        const employer = await Employment.fetch(res.session, { _id }, { hideRawId: false })
-        if (!employer) throw new Error('Employer not found')
-
-        await employer.update(req.body)
-
-        res.json({ status: 'OK' })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+//         res.json({ status: 'OK' })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
-router.delete('/resource/application/employer/:_id', async (req, res) => {
-    try {
-        const { _id } = req.params
-        const employer = await Employment.fetch(res.session, { _id }, { hideRawId: false })
-        if (!employer) throw new Error('Employer not found')
+// router.patch('/resource/application/employer/:_id', async (req, res) => {
+//     try {
+//         const { _id } = req.params
+//         const employer = await Employment.fetch(res.session, { _id }, { hideRawId: false })
+//         if (!employer) throw new Error('Employer not found')
 
-        // const { appId } = employer
+//         await employer.update(req.body)
 
-        await employer.delete()
+//         res.json({ status: 'OK' })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
-        // const employers = await Employment.fetch(res.session, { appId })
-        // if (!employers.length) {
-        //     const application = await Application.fetch(res.session, { id: appId })
-        //     if (!application) throw new Error('Application not found')
 
-        //     await application.update({ prevEmplGaps: null }) //! need to have a universal gap identifier in application like await application.reset('emplGaps')
-        // }
+// router.delete('/resource/application/employer/:_id', async (req, res) => {
+//     try {
+//         const { _id } = req.params
+//         const employer = await Employment.fetch(res.session, { _id }, { hideRawId: false })
+//         if (!employer) throw new Error('Employer not found')
 
-        res.json({ status: 'OK' })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+//         // const { appId } = employer
+
+//         await employer.delete()
+
+//         // const employers = await Employment.fetch(res.session, { appId })
+//         // if (!employers.length) {
+//         //     const application = await Application.fetch(res.session, { id: appId })
+//         //     if (!application) throw new Error('Application not found')
+
+//         //     await application.update({ prevEmplGaps: null }) //! need to have a universal gap identifier in application like await application.reset('emplGaps')
+//         // }
+
+//         res.json({ status: 'OK' })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
 
