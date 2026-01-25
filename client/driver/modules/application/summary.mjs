@@ -52,7 +52,7 @@ $.ajax(`/api/resource/application/${formId}/citations`, {
         const length = data.length
         if (!length) return
 
-        const violations = $.ajax('/api/local-source/application?filter=violations', { method: 'POST', async: false }).responseJSON
+        const violations = $.ajax('/api/public/enum/driver-application?filter=violations', { method: 'POST', async: false }).responseJSON
         let html = ''
 
         data = sortArrayByObjectKey(data, 'citedOn', false)
@@ -98,7 +98,7 @@ $.ajax(`/api/resource/application/${formId}/accidents`, {
         const length = data.length
         if (!length) return
 
-        const accidents = $.ajax('/api/local-source/application?filter=accidents', { method: 'POST', async: false }).responseJSON
+        const accidents = $.ajax('/api/public/enum/driver-application?filter=accidents', { method: 'POST', async: false }).responseJSON
         let html = ''
 
         data = sortArrayByObjectKey(data, 'date', false)

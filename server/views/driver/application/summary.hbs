@@ -422,20 +422,26 @@
                                 <tbody class="table-group-divider">
                                     <tr>
                                         <th class="text-secondary">Operating Type:</th>
-                                        <td>{{application.preference.operType}}</td>
+                                        <td>{{application.preference.expansion.operType}}</td>
                                     </tr>
-                                    {{#if (hv application.preference.teamName)}}
+
+
+                                    {{#if (
+                                        and
+                                            (eq application.cdlRole 1)
+                                            (eq application.preference.operType 't')
+                                    )}}
                                     <tr>
                                         <th class="text-secondary">Partner's Name:</th>
-                                        <td>{{application.preference.teamName}}</td>
+                                        <td>{{{application.preference.teamName}}}</td>
                                     </tr>
-                                    {{/if}}
-                                    {{#if (hv application.preference.teamPhone)}}
                                     <tr>
                                         <th class="text-secondary">Partner's Phone:</th>
-                                        <td>{{application.preference.teamPhone}}</td>
+                                        <td>{{{application.preference.teamPhone}}}</td>
                                     </tr>
                                     {{/if}}
+
+
                                     {{#if (hv application.preference.haulRegion)}}
                                     <tr>
                                         <th class="text-secondary">Haul Region:</th>

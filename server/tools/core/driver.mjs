@@ -352,6 +352,10 @@ class Application {
                 this.preference.haulRegion = data.haulRegion
                 this.preference.equipmentType = data.equipmentType
             }
+
+            this.preference.expansion = {
+                operType: { s: 'Solo', t: 'Team' }[data.operType],
+            }
         }
 
         this.activeBusiness = bool(data.activeBusiness)

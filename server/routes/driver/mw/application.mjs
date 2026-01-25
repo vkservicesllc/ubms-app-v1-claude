@@ -1054,8 +1054,9 @@ export const applicationSummary = async (req, res) => {
             hbs.application.cdlSchool.endDate = moment(application.cdlSchool.endDate).format('ll')
         } else hbs.application.cdlSchool = { name: 'Never attended' }
 
-        hbs.application.preference.operType = { s: 'Solo', t: 'Team' }[application.preference.operType]
-        if (application.preference.teamPhone) hbs.application.preference.teamPhone = formatTel(application.preference.teamPhone)
+        // hbs.application.preference.operType = { s: 'Solo', t: 'Team' }[application.preference.operType]
+        hbs.application.preference.teamName = application.preference.teamName || na()
+        hbs.application.preference.teamPhone = application.preference.teamPhone ? formatTel(application.preference.teamPhone) : na()
         if (application.preference?.haulRegion) {
             const haulRegionList = []
             application.preference.haulRegion.forEach(region => haulRegionList.push(Application.list.haulRegion[region]))
