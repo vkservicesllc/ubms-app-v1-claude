@@ -56,19 +56,15 @@ class Driver extends Individual {
 
         if (single) {
             this.session = session
-
+            this.config = { hideRawId, hideSensitive }
 
             this.add = () => {}
 
-
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
-
 
             this.update = () => {}
 
-
             this.delete = () => {}
-
 
             this.log = () => {}
         }
@@ -1524,8 +1520,17 @@ class Employment {
         this.rfl = data.rfl
         this.gapExpl = data.gapExpl
 
+        this.application = {
+            formId: data.formId,
+            firstName: data.firstName,
+            middleName: data.middleName,
+            lastName: data.lastName,
+            suffix: data.suffix,
+        }
+
         if (single && !hideRawId) {
             this.session = session
+            this.config = { hideRawId, hideSensitive }
 
             this.update = body => classInstance.update(this, new.target, body)
 
