@@ -1526,6 +1526,17 @@ class Employment {
             middleName: data.middleName,
             lastName: data.lastName,
             suffix: data.suffix,
+            phone: data.aplPhone,
+            createdAt: data.createdAt,
+            finishedAt: data.finishedAt,
+            carrier: data.busName ?  `${data.busName}, ${data.coType}` : null,
+            carrierAlias: data.companyAlias,
+            _carrierId: data._carrierId,
+            _teamId: data._teamId,
+        }
+        if (!hideRawId) {
+            this.application.carrierId = data.carrierId
+            this.application.teamId = data.teamId
         }
 
         if (single && !hideRawId) {
@@ -1590,9 +1601,9 @@ class Employment {
                 {
                     table: query.driver_application.main.table,
                     fields: [
-                        Team.hashId('teamId'), 'formId',
+                        'teamId', Team.hashId('teamId'), 'carrierId', Carrier.hashId('carrierId'), 'formId',
                         'firstName', 'middleName', 'lastName', 'suffix', ['phone', 'aplPhone'],
-                        'createdAt', 'finishedAt', 'carrierId',
+                        'createdAt', 'finishedAt',
                     ],
                     match,
                     join: [ 'id', 'appId' ],

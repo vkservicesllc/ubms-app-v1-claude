@@ -1835,9 +1835,8 @@ export default async (carrier, application, addresses, violations, accidents, em
 
     /* Section 8 */
     {
-        let { experience } = application
-        if (!experience) experience = {}
-        const { schName, schPhone, schState, schEndDate, schDuration } = experience
+        const  { cdlSchool = {} } = application
+        const { name, phone, state, endDate, duration } = cdlSchool
         y -= fieldHeight / 2
         page2.drawLine({
             start: { x: marginX, y },
@@ -1867,7 +1866,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             x: marginX + padding, y: y - offset.labelY,
             font: font.label, size: size.label, color: color.label,
         })
-        page2.drawText(schName || '', {
+        page2.drawText(name || '', {
             x: marginX + padding, y: y - offset.valueY,
             font: font.value, size: size.value, color: color.value,
         })
@@ -1876,7 +1875,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             x: marginX + vLineX + padding, y: y - offset.labelY,
             font: font.label, size: size.label, color: color.label,
         })
-        page2.drawText(schPhone ? formatTel(schPhone) : '', {
+        page2.drawText(phone ? formatTel(phone) : '', {
             x: marginX + vLineX + padding, y: y - offset.valueY,
             font: font.value, size: size.value, color: color.value,
         })
@@ -1885,7 +1884,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             x: marginX + vLineX + padding, y: y - offset.labelY,
             font: font.label, size: size.label, color: color.label,
         })
-        page2.drawText(schState || '', {
+        page2.drawText(state || '', {
             x: marginX + vLineX + padding, y: y - offset.valueY,
             font: font.value, size: size.value, color: color.value,
         })
@@ -1894,7 +1893,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             x: marginX + vLineX + padding, y: y - offset.labelY,
             font: font.label, size: size.label, color: color.label,
         })
-        page2.drawText(schEndDate ? moment(schEndDate).format(dateFormat) : '', {
+        page2.drawText(endDate ? moment(endDate).format(dateFormat) : '', {
             x: marginX + vLineX + padding, y: y - offset.valueY,
             font: font.value, size: size.value, color: color.value,
         })
@@ -1903,7 +1902,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             x: marginX + vLineX + padding, y: y - offset.labelY,
             font: font.label, size: size.label, color: color.label,
         })
-        page2.drawText(schDuration ? Application.list.schoolDuration[schDuration]: '', {
+        page2.drawText(duration ? Application.list.schoolDuration[duration]: '', {
             x: marginX + vLineX + padding, y: y - offset.valueY,
             font: font.value, size: size.value, color: color.value,
         })
@@ -1968,11 +1967,11 @@ export default async (carrier, application, addresses, violations, accidents, em
                 })
             }
             const prevEmployer = employers[i]
-            let employer, phone, address1, address2, city, state, zip,
+            let employer, phone, address,
                 startedOn, position, earnings, fmcsr, dotDat, leftOn, rfl
             if (prevEmployer) (
                 {
-                    employer, phone, address1, address2, city, state, zip,
+                    employer, phone, address,
                     startedOn, position, earnings, fmcsr, dotDat, leftOn, rfl,
                 } = prevEmployer
             )
@@ -2010,7 +2009,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding * 2, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            emplPages[page].drawText(address1 || '', {
+            emplPages[page].drawText(address?.address1 || '', {
                 x: vLineX + padding * 2, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -2019,7 +2018,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            emplPages[page].drawText(address2 || '', {
+            emplPages[page].drawText(address?.address2 || '', {
                 x: vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -2030,7 +2029,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding * 2, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            emplPages[page].drawText(city || '', {
+            emplPages[page].drawText(address?.city || '', {
                 x: vLineX + padding * 2, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -2039,7 +2038,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            emplPages[page].drawText(state || '', {
+            emplPages[page].drawText(address?.state || '', {
                 x: vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
@@ -2048,7 +2047,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
             })
-            emplPages[page].drawText(zip || '', {
+            emplPages[page].drawText(address?.zip || '', {
                 x: vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })

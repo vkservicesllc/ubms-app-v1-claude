@@ -12,14 +12,14 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
         method: 'GET',
         dataSrc(response) {
             const { data } = response
-console.table(data)
+
             data.forEach(row => {
-                const { phone, carrier, finishedAt, application } = row.application
+                const { formId, phone, carrier, finishedAt } = row.application
 
                 row.order = finishedAt + ' ' + row.startedOn
-                row.group = new Person(application).fullName() + ` <small><small class="bull">•</small> ${formatTel(phone)}`
+                row.group = new Person(row.application).fullName() + ` <small><small class="bull">•</small> ${formatTel(phone)}`
                 if (carrier) row.group += ` <small class="bull">•</small> ${carrier}`
-                row.group += ` <small class="bull">•</small> ${moment(finishedAt).format('ll')} <small class="bull">•</small> ${application.formId}</small>`
+                row.group += ` <small class="bull">•</small> ${moment(finishedAt).format('ll')} <small class="bull">•</small> ${formId}</small>`
             })
 
             return data
