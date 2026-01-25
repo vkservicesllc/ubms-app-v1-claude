@@ -86,9 +86,6 @@ class Driver extends Individual {
         query: query.driver,
         idProp: 'driverId',
         defSorts: null,
-        histSort: {
-            application: 'finishedAt',
-        },
         logFile: 'drivers',
     })
 
@@ -921,15 +918,14 @@ class Application {
         query: query.driver_application,
         idProp: 'appId',
         defSorts: null,
-        histSort: {
-            citation: 'citedOn',
-            accident: 'date',
-            employer: 'startedOn',
+        childSort: {
+            citations: 'citedOn',
+            accidents: 'date',
         },
-        // _histId: {
-        //     citation: Citation.hashId(),
-        //     accident: Accident.hashId(),
-        // },
+        childIdHash: {
+            citations: 'MD5',
+            accidents: 'MD5',
+        },
         logFile: 'driver-applications',
         logFields: {
             license: relLogFields,

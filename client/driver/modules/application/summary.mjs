@@ -15,8 +15,7 @@ const relocate = href => {
 }
 
 
-$.ajax(`/api/list/application/${formId}/addresses`, {
-    method: 'POST',
+$.ajax(`/api/resource/application/${formId}/addresses`, {
     success(response) {
         let { data, error } = response
         if (error) return alert(error)
@@ -45,8 +44,7 @@ $.ajax(`/api/list/application/${formId}/addresses`, {
 })
 
 
-$.ajax(`/api/list/application/${formId}/citations`, {
-    method: 'POST',
+$.ajax(`/api/resource/application/${formId}/citations`, {
     success(response) {
         let { data, error } = response
         if (error) return alert(error)
@@ -92,8 +90,7 @@ $.ajax(`/api/list/application/${formId}/citations`, {
 })
 
 
-$.ajax(`/api/list/application/${formId}/accidents`, {
-    method: 'POST',
+$.ajax(`/api/resource/application/${formId}/accidents`, {
     success(response) {
         let { data, error } = response
         if (error) return alert(error)
@@ -143,8 +140,7 @@ $.ajax(`/api/list/application/${formId}/accidents`, {
 })
 
 
-$.ajax(`/api/list/application/${formId}/employers`, {
-    method: 'POST',
+$.ajax(`/api/resource/application/${formId}/employers`, {
     success(response) {console.log(response)
         const { data, error } = response
         if (error) return alert(error)

@@ -65,92 +65,92 @@ router.post('/login/application/:formId', validateApplicantLogin, async (req, re
 })
 
 
-router.post('/data/application/employer/:_id', async (req, res) => {
-    try {
-        const { _id } = req.params
-        res.json({ data: await Employment.fetch(res.session, { _id }) })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+// router.post('/data/application/employer/:_id', async (req, res) => {
+//     try {
+//         const { _id } = req.params
+//         res.json({ data: await Employment.fetch(res.session, { _id }) })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
-router.post('/data/application/:formId', async (req, res) => {
-    try {
-        const { formId } = req.params
+// router.post('/data/application/:formId', async (req, res) => {
+//     try {
+//         const { formId } = req.params
 
-        const application = await Application.fetch(res.session, { formId }, { hideRawId: true })
-        if (!application) throw new Error('Application not found')
+//         const application = await Application.fetch(res.session, { formId }, { hideRawId: true })
+//         if (!application) throw new Error('Application not found')
 
-        res.json({ data: application })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
-
-router.post('/data/application/:formId/:target', (req, res, next) => {
-    if (!req.session.application) return sendError.auth(req, res)
-
-    next()
-}, async (req, res) => {
-    try {
-        const { formId, target } = req.params
-
-        const application = await Application.fetch(res.session, { formId }, { hideRawId: true })
-        if (!application) throw new Error('Application not found')
-
-        res.json({ data: await application.data(target) })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+//         res.json({ data: application })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
-router.post('/list/application/:formId/addresses', async (req, res) => {
-    try {
-        const { formId } = req.params
-        const application = await Application.fetch(res.session, { formId })
-        if (!application) throw new Error('Application not found')
+// router.post('/data/application/:formId/:target', (req, res, next) => {
+//     if (!req.session.application) return sendError.auth(req, res)
 
-        const addresses = await application.fetch('addresses', { filter: { match: { since: { not: application.address.since } } } })
+//     next()
+// }, async (req, res) => {
+//     try {
+//         const { formId, target } = req.params
 
-        res.json({ data: addresses })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+//         const application = await Application.fetch(res.session, { formId }, { hideRawId: true })
+//         if (!application) throw new Error('Application not found')
 
-
-router.post('/list/application/:formId/employers', async (req, res) => {
-    try {
-        const { formId } = req.params
-        const application = await Application.fetch(res.session, { formId })
-        if (!application) throw new Error('Application not found')
-
-        const employers = await Employment.fetch(res.session, { _appId: application._id })
-
-        res.json({ data: { application, employers } })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+//         res.json({ data: await application.data(target) })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
-router.post('/list/application/:formId/:target', async (req, res) => {
-    try {
-        const { formId } = req.params
-        const application = await Application.fetch(res.session, { formId })
-        if (!application) throw new Error('Application not found')
+// router.post('/list/application/:formId/addresses', async (req, res) => {
+//     try {
+//         const { formId } = req.params
+//         const application = await Application.fetch(res.session, { formId })
+//         if (!application) throw new Error('Application not found')
 
-        const { target } = req.params
-        const data = await application.fetch(target)
+//         const addresses = await application.fetch('addresses', { match: { since: { not: application.address.since } } })
 
-        res.json({ data })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+//         res.json({ data: addresses })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
+
+
+// router.post('/list/application/:formId/employers', async (req, res) => {
+//     try {
+//         const { formId } = req.params
+//         const application = await Application.fetch(res.session, { formId })
+//         if (!application) throw new Error('Application not found')
+
+//         const employers = await Employment.fetch(res.session, { _appId: application._id })
+
+//         res.json({ data: { application, employers } })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
+
+
+// router.post('/list/application/:formId/:target', async (req, res) => {
+//     try {
+//         const { formId } = req.params
+//         const application = await Application.fetch(res.session, { formId })
+//         if (!application) throw new Error('Application not found')
+
+//         const { target } = req.params
+//         const data = await application.fetch(target)
+
+//         res.json({ data })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
 

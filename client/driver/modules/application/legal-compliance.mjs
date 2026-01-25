@@ -140,8 +140,7 @@ function cloneCitForm(i = 0, data = null) {
 
 
 function drawCitationForms() {
-    $.ajax(`/api/list/application/${formId()}/citations`, {
-        method: 'POST',
+    $.ajax(`/api/resource/application/${formId()}/citations`, {
         success(response) {
             let { data, error } = response
             if (error) return alert(error)

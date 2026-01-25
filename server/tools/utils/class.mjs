@@ -4,7 +4,7 @@ const secret = {
     ssn: DB__MYSQL_AES_SSN,
 }
 
-import Query from './query.mjs'
+import Query, { hash, matchHash } from './query.mjs'
 import { processData, logDeletion } from './database.mjs'
 
 const mysql = require('./mysql')
@@ -82,7 +82,7 @@ export const classInstance = {
     },
 
 
-    fetch: async (inst, Cls, target, { hideRawId = false, hideSensitive = true, idsOnly = false, filter = {}, sorts = null } = {}) => {
+    fetch: async (inst, Cls, target, filter = {}, { hideRawId = false, hideSensitive = true, idsOnly = false, sorts = null } = {}) => {
         const config = Cls.config()
         const { enforceUser = true, idProp } = config
         const { user: sessionUser } = inst.session || {}
@@ -90,10 +90,7 @@ export const classInstance = {
         if (!target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Target not supplied`)
 
         const jx = target.slice(0, 3) === 'jx.'
-        const history = target.endsWith('.history')
-
         if (jx) target = target.slice(3)
-        if (history) target = target.replace(/\.history$/, '')
 
         if (jx) {
             const { jxTargets } = config
@@ -111,31 +108,34 @@ export const classInstance = {
 
             return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, offline, sorts })
         }
-//! get rid of _histId
-        const { query, redFields = {}, histSort, _histId = {} } = config
 
+        const { query, redFields = {}, childSort = {}, childIdHash = {} } = config
         if (!redFields[target]) redFields[target] = classInstance.redFields
 
         const options = {
             match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
+            sort: { desc: childSort[target] || 'since' },
         }
+        if (filter.match)
+            for (const prop in filter.match) {
+                let value = filter.match[prop]
+                if (prop === '_id') {
+                    if (!value) continue
+                    value = matchHash(value, childIdHash[target])
+                }
 
-        if (history) {
-            const desc = histSort[target] || 'since'
+                options.match[prop] = filter.match[prop]
+            }
 
-            options.sort = { desc }
-            if (filter.match)
-                for (const prop in filter.match)
-                    options.match[prop] = filter.match[prop]
-        }
-
-        let fields = '*'
-        if (_histId[target]) fields = ['*', _histId[target]]
+        let fields = ['*', Cls.hashId(idProp)]
+        if (childIdHash[target]) fields.push(hash('id', childIdHash[target]))
 
         const [ rows ] = await mysql.execute(query[target].select(fields, options))
         rows.map(row => {
-            if (!inst.id) delete row.id
-            delete row[idProp]
+            if (!inst.id || hideRawId === true) {
+                delete row.id
+                delete row[idProp]
+            }
             redFields[target].map(redField => delete row[redField] )
         })
 

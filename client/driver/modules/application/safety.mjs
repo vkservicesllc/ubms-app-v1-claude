@@ -136,8 +136,7 @@ function cloneAccForm(i = 0, data = null) {
 
 
 function drawAccidentForms() {
-    $.ajax(`/api/list/application/${formId()}/accidents`, {
-        method: 'POST',
+    $.ajax(`/api/resource/application/${formId()}/accidents`, {
         success(response) {
             let { data, error } = response
             if (error) return alert(error)

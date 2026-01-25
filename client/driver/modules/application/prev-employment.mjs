@@ -4,12 +4,13 @@ import { busNameEvent } from '/modules/events/company.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import patterns from '/modules/registry/patterns.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
-import formId, { check, onInput, onAccept, onChange, onComplete, onBlur, onSubmit, addressPredictions } from './support.mjs'
+import formNumber, { check, onInput, onAccept, onChange, onComplete, onBlur, onSubmit, addressPredictions } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application-employment.mjs'
 import appSelector from '/modules/registry/selectors/driver-application.mjs'
 
 const HS = selector.id.hidden, TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
 const employedId = appSelector.id.radio.prevEmployed
+const formId = formNumber()
 
 const $card = $('#apl-card')
 const $form = {
@@ -331,11 +332,10 @@ $deleteModal
 
 
 function drawEmployerList() {
-    $.ajax(`/api/list/application/${formId()}/employers`, {
-        method: 'POST',
+    $.ajax(`/api/resource/application/${formId}/employers`, {
         success(response) {
-            const { application, employers } = response.data
-            
+            const { resource: application, data: employers } = response.data
+
             if (!employers.length) {
                 $emplList.html(null)
                 $section.hide()
@@ -453,8 +453,7 @@ function resetEvents() {
         const _id = $(this).data('id')
         const edit = $(this).hasClass('edit-employer')
 
-        $.ajax(`/api/data/application/employer/${_id}`, {
-            method: 'POST',
+        $.ajax(`/api/resource/${formId}/application/employer/${_id}`, {
             success(response) {
                 const { data } = response
 
@@ -504,7 +503,7 @@ $form.employer.submit(function(evt) {
         data[this.name] = this.value
     })
 
-    $.ajax(`/api/resource/application/${formId()}/employer`, {
+    $.ajax(`/api/resource/application/${formId}/employer`, {
         method: 'POST',
         data,
         success(response) {

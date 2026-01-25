@@ -59,8 +59,7 @@ const params = new URLSearchParams(window.location.search)
 if (params.has('form')) {
     const formId = params.get('form')
 
-    const response = $.ajax(`/api/data/application/${formId}`, {
-        method: 'POST',
+    const response = $.ajax(`/api/resource/application/${formId}`, {
         async: false,
         error(err) { console.error(err.responseJSON) },
     }).responseJSON

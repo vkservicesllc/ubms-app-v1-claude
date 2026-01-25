@@ -111,8 +111,7 @@ function cloneAddrForm(i = 0, data = null) {
 
 
 function drawAddressForms() {
-    $.ajax(`/api/list/application/${formId()}/addresses`, {
-        method: 'POST',
+    $.ajax(`/api/resource/application/${formId()}/addresses`, {
         success(response) {
             const { data } = response
 
