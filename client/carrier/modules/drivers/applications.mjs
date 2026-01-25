@@ -15,7 +15,7 @@ const conditions = {
     b: [ '<span class="ui red text">Disqualified</span>', 'red text thumbs down' ],
     h: [ 'Hired', 'truck moving' ],
 }
-const positions = $.ajax('/api/source/driver?filter=positions', { method: 'POST', async: false }).responseJSON
+const positions = $.ajax('/api/enum/driver?filter=positions', { async: false }).responseJSON
 const defaultContent = '<i style="color: pink; font-size: .9em;">Unassigned</i>'
 
 const table = $('#driver-apl-table').DataTable({

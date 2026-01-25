@@ -3,7 +3,7 @@ import escapeHTML from './tools/utils/html.mjs'
 import { tel as formatTel } from './tools/utils/formatter.mjs'
 import { openModifyModal, openDeleteModal, closeModals } from './company/owner.mjs'
 
-const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+const categories = $.ajax('/api/enum/company?filter=categories', { async: false }).responseJSON
 const interval = 30000
 let refreshed = false
 

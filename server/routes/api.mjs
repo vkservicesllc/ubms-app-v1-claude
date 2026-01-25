@@ -55,7 +55,7 @@ router.get('/session/keep-alive', User.mw.verify, (req, res) => {
 router.post('/session/:prop', User.mw.verify, sessionDetails)
 
 
-router.post('/source/:source/:_id?', User.mw.verify, async (req, res) => {
+router.get('/enum/:source/:_id?', User.mw.verify, async (req, res) => {
     const { filter, self, call } = req.query
     const { source } = req.params
     let { _id } = req.params

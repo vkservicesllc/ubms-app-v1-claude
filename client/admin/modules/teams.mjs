@@ -12,8 +12,8 @@ import { capitalizeFirst } from '/modules/tools/utils/string.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import selector from '/modules/registry/selectors/team.mjs'
 
-// const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
-// const driverPositions = $.ajax('/api/source/driver?filter=positions', { async: false, method: 'POST' }).responseJSON
+// const categories = $.ajax('/api/enum/company?filter=categories', { async: false }).responseJSON
+// const driverPositions = $.ajax('/api/enum/driver?filter=positions', { async: false }).responseJSON
 
 const interval = 30000
 

@@ -5,7 +5,7 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 
-const violations = $.ajax('/api/local-source/application?filter=violations', { method: 'POST', async: false }).responseJSON
+const violations = $.ajax('/api/public/enum/driver-application?filter=violations', { method: 'POST', async: false }).responseJSON
 
 const RS = selector.id.radio
 const TS = selector.class.text, SS = selector.class.select

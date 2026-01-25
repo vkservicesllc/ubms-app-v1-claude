@@ -39,7 +39,7 @@ router.get('/us-zips/:zip', async (req, res) => {
 })
 
 
-router.post('/source/:source', (req, res) => {
+router.post('/enum/:source', (req, res) => {
     try {
         const { filter } = req.query
         const { source } = req.params

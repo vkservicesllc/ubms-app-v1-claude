@@ -4,7 +4,7 @@ import patterns from '../registry/patterns.mjs'
 import { capitalizeEach } from '../tools/utils/string.mjs'
 import strip, { ein as formatEin, duns as formatDuns } from '../tools/utils/formatter.mjs'
 
-const categories = $.ajax('/api/public/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+const categories = $.ajax('/api/public/enum/company?filter=categories', { async: false, method: 'POST' }).responseJSON
 
 
 export const categoryEvent = (id, iconId, onChange, options = {}) => {

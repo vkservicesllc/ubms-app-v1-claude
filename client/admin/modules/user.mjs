@@ -3,7 +3,7 @@ import selector from "/modules/registry/selectors/user.mjs"
 const _id = $(selector.id.hidden.id).val()
 
 if (_id) {
-    const categories = $.ajax('/api/source/company?filter=categories', { async: false, method: 'POST' }).responseJSON
+    const categories = $.ajax('/api/enum/company?filter=categories', { async: false }).responseJSON
     const relationships = $.ajax(`/api/resource/users/${_id}/relationships`, { async: false }).responseJSON.data
 
     const defOpts = { available: '', applied: '' }
