@@ -255,6 +255,7 @@ class OwnerForm {
     static validate = target => validate(OwnerForm, (target) => {
         const fields = ['firstName', 'middleName', 'lastName', 'suffix']
         if (target === 'name') fields.push('nameSince')
+        else fields.push('dob', 'gender') //! ssn
 
         return fields
     }, target)

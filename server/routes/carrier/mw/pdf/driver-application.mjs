@@ -1545,35 +1545,54 @@ export default async (carrier, application, addresses, violations, accidents, em
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 75
+
+
             text = 'Injuries'
+            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, injuries === 'Yes')
             page2.drawText(text, {
-                x: marginX + vLineX + padding, y: y - offset.labelY,
+                x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
             })
             textWidth = font.label.widthOfTextAtSize(text, size.label)
-            page2.drawText('(Y/N)', {
-                x: marginX + vLineX + padding + textWidth + 2, y: y - offset.labelY,
-                font: font.label, size: size.label * .7, color: color.label,
-            })
-            page2.drawText(injuries || '', {
-                x: marginX + vLineX + padding, y: y - offset.valueY,
-                font: font.value, size: size.value, color: color.value,
-            })
-            vLineX += 75
+            vLineX += 25 + textWidth + gap
             text = 'Fatalities'
+            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, fatalities === 'Yes')
             page2.drawText(text, {
-                x: marginX + vLineX + padding, y: y - offset.labelY,
+                x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
             })
-            textWidth = font.label.widthOfTextAtSize(text, size.label)
-            page2.drawText('(Y/N)', {
-                x: marginX + vLineX + padding + textWidth + 2, y: y - offset.labelY,
-                font: font.label, size: size.label * .7, color: color.label,
-            })
-            page2.drawText(fatalities || '', {
-                x: marginX + vLineX + padding, y: y - offset.valueY,
-                font: font.value, size: size.value, color: color.value,
-            })
+
+            // text = 'Injuries'
+            // page2.drawText(text, {
+            //     x: marginX + vLineX + padding, y: y - offset.labelY,
+            //     font: font.label, size: size.label, color: color.label,
+            // })
+            // textWidth = font.label.widthOfTextAtSize(text, size.label)
+            // page2.drawText('(Y/N)', {
+            //     x: marginX + vLineX + padding + textWidth + 2, y: y - offset.labelY,
+            //     font: font.label, size: size.label * .7, color: color.label,
+            // })
+            // page2.drawText(injuries || '', {
+            //     x: marginX + vLineX + padding, y: y - offset.valueY,
+            //     font: font.value, size: size.value, color: color.value,
+            // })
+            // vLineX += 75
+            // text = 'Fatalities'
+            // page2.drawText(text, {
+            //     x: marginX + vLineX + padding, y: y - offset.labelY,
+            //     font: font.label, size: size.label, color: color.label,
+            // })
+            // textWidth = font.label.widthOfTextAtSize(text, size.label)
+            // page2.drawText('(Y/N)', {
+            //     x: marginX + vLineX + padding + textWidth + 2, y: y - offset.labelY,
+            //     font: font.label, size: size.label * .7, color: color.label,
+            // })
+            // page2.drawText(fatalities || '', {
+            //     x: marginX + vLineX + padding, y: y - offset.valueY,
+            //     font: font.value, size: size.value, color: color.value,
+            // })
+
+
             if (outsideBorder)
                 page2.drawLine({
                     start: { x: width - marginX, y },
@@ -1762,7 +1781,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         {
             const { firstDate, lastDate, mileage, hours } = experience
             let totalHours = 0
-            if (hours) hours.forEach(hr => totalHours += hr)
+            if (hours) hours.forEach(hr => totalHours += +hr)
             if (totalHours) totalHours = totalHours + ''
             if (outsideBorder)
                 page2.drawLine({

@@ -172,7 +172,7 @@ class Company {
 
             body = {
                 main: { category, since, duns, website },
-                name: { since, busName, coType, alias },
+                names: { since, busName, coType, alias },
             }
             if (ein) body.main.ein = ein
 
