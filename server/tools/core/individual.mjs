@@ -53,6 +53,10 @@ class Individual extends Person {
 
         if (single) {
             this.session = session
+            this.config = { hideRawId, hideSensitive }
+
+
+            this.add = (target, body) => classInstance.add(this, new.target, target, body)
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
@@ -199,6 +203,7 @@ class Individual extends Person {
                     fields: [ [ 'status', 'marital' ] ],
                     join,
                 },
+
                 {
                     db: db.business,
                     table: query.company_owner.main.table,

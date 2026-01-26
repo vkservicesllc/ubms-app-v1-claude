@@ -1,6 +1,7 @@
 import Person from '/modules/tools/core/person.mjs'
 import escapeHTML from '/modules/tools/utils/html.mjs'
 import styleSearch, { tag as searchTag } from '/modules/tools/search.mjs'
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 
 
 const interval = 300000
@@ -48,6 +49,15 @@ console.log(data)
         {
             data: 'phone',
             title: `Phone ${searchTag}`,
+            render(data) {
+                return formatTel(data)
+            },
+        },
+
+        {
+            data: 'email',
+            title: 'Email',
+            searchable: false,
         },
 
     ],

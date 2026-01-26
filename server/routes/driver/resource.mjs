@@ -8,6 +8,7 @@ const sendError = require('../../tools/utils/error')
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
+import Individual from '../../tools/core/individual.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
 
 /* Validators */
@@ -86,18 +87,24 @@ const dynamicValidator = {
 
 
 router.post('/application/start/:_teamId/:_carrierId?', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
+// return res.send(req.body)
     try {
         let { form: formId } = req.query
         const { address: addrBody } = req.body
         delete req.body.address
 
-        let application
+        let application, personId
 
         if (formId) {
             application = await Application.fetch(res.session, { formId })
             if (!application) throw new Error('Application not found')
 
+//* Pre-Applicant
+//! Individual add-ons
+
             await application.update(req.body)
+
+            //! Need to get personId from application
         } else {
             const { _teamId, _carrierId } = req.params
             const { cdl: cdlRole, rec: _userId } = req.query
@@ -132,6 +139,7 @@ router.post('/application/start/:_teamId/:_carrierId?', ApplicationForm.validate
             if (!application) throw new Error('Failed to create application')
 
             formId = application.formId
+            personId = application.personId
         }
 
         await application.add('addresses', addrBody)
@@ -139,6 +147,17 @@ router.post('/application/start/:_teamId/:_carrierId?', ApplicationForm.validate
 
         if (!addrBody.enough) await application.update({ step: 0 })
         await application.update({ addrComplete: !!addrBody.enough })
+
+        if (personId) { //! CONDITION IS TEMPORARY (EXPECT personId anyway)
+            const person = await Individual.fetch(res.session, { id: application.personId })
+            if (person) { //* DO NOT INTERRUPT APPLICATION WITH ERROR
+                delete addrBody.appId
+                delete addrBody.enough
+
+                //! ADD THE ADDRESS ONLY IF NOT FOUND
+                await person.add('addresses', addrBody)
+            }
+        }
 
         req.session.application = application._id
 

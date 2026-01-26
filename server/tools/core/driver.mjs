@@ -92,65 +92,109 @@ class Driver extends Individual {
 
     static fetch = (session, filter,
         { hideRawId = false, sorts = Driver.config().defSorts, mode } = {}
-    ) => classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
-        batch: [
-            {
-                table: query.driver.main.table,
-                fields: [
-                    'id',
-                    'personId',
-                    Driver.hashId(),
-                    Individual.hashId('personId'),
-                    'blackListed',
-                ],
-            },
-            {
-                db: db.person,
-                table: query.person.main.table,
-                fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
-                join: [ 'id', 'personId' ],
-            },
-            {
-                db: db.person,
-                table: query.person.names.table,
-                fields: [
-                    'firstName',
-                    'middleName',
-                    'lastName',
-                    'suffix',
-                ],
-                join: [ 'personId', 'id', {
+    ) => {
+        const join = [ 'personId', 'id', {
+            table: query.person.main.table,
+            max: 'since',
+        } ]
+
+        return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
+            batch: [
+                {
+                    table: query.driver.main.table,
+                    fields: [
+                        'id',
+                        'personId',
+                        Driver.hashId(),
+                        Individual.hashId('personId'),
+                        'blackListed',
+                    ],
+                },
+                {
+                    db: db.person,
                     table: query.person.main.table,
-                    max: 'since',
-                } ],
+                    fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
+                    join: [ 'id', 'personId' ],
+                },
+                {
+                    db: db.person,
+                    table: query.person.names.table,
+                    fields: [
+                        'firstName',
+                        'middleName',
+                        'lastName',
+                        'suffix',
+                    ],
+                    join,
+                },
+                {
+                    db: db.person,
+                    table: query.person.legal.table,
+                    fields: [ 'status', [ 'expiresOn', 'statusExpiredOn' ] ],
+                    join,
+                },
+                {
+                    db: db.person,
+                    table: query.person.maritals.table,
+                    fields: [ [ 'status', 'marital' ] ],
+                    join,
+                },
+                {
+                    db: db.person,
+                    table: query.person.phones.table,
+                    fields: 'phone',
+                    join,
+                },
+                {
+                    db: db.person,
+                    table: query.person.addresses.table,
+                    fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
+                    join,
+                },
+                {
+                    db: db.person,
+                    table: query.person.emails.table,
+                    fields: 'email',
+                    join,
+                },
+                {
+                    db: db.person,
+                    table: query.person.identifications.table,
+                    fields: [
+                        'driver',
+                        'commercial',
+                        [ 'number', 'idNumber' ],
+                        [ 'class', 'idClass' ],
+                        [ 'state', 'idState' ],
+                        [ 'issuedOn', 'idIssuedOn' ],
+                        [ 'expiresOn', 'idExpiresOn' ],
+                        [ 'endorsement', 'idEndorsement' ],
+                        [ 'restriction', 'idRestriction' ],
+                    ],
+                    join: [ 'personId', 'id', {
+                        table: query.person.main.table,
+                        max: 'issuedOn',
+                    } ],
+                },
+                //? need other props ???
+            ],
+            prepare(batch, filter) {
+                const {
+                    id, _id, personId, _personId,
+                    blackListed,
+                } = filter
+                const single = !!id || !!_id || !!personId || !!_personId
+
+                const match = { id, personId, blackListed }
+                if (!id && _id) match.id = Driver.matchIdHash(_id)
+                if (!personId && _personId) match.personId = Individual.matchIdHash(_personId)
+
+                batch[0].match = match
+
+                return { single, batch }
             },
-            {
-                db: db.person,
-                table: query.person.phones.table,
-                fields: 'phone',
-                join: [ 'personId', 'id', {
-                    table: query.person.main.table,
-                    max: 'since',
-                } ],
-            },
-            //! continue with driver licenses and other props
-        ],
-        prepare(batch, filter) {
-            const {
-                id, _id, personId, _personId,
-                blackListed,
-            } = filter
-            const single = !!id || !!_id || !!personId || !!_personId
-
-            const match = { id, personId, blackListed }
-            if (!id && _id) match.id = Driver.matchIdHash(_id)
-            if (!personId && _personId) match.personId = Individual.matchIdHash(_personId)
-
-            batch[0].match = match
-
-            return { single, batch }
-        },
-    })
+        })
+    }
 
 
     static list = {
@@ -1047,11 +1091,55 @@ class Application {
                 }
 
                 let person = await Individual.fetch(session, { ssn })
+                const since = moment().format('YYYY-MM-DD')
+                const { legalStatus, legalExpiration: expiresOn = null, marital, phone, email } = body
+                let found = { legal: false, marital: false, phone: false, email: false }
 
                 if (!person) {
                     person = (await Individual.create(session, body)).data
                     if (!person) throw new Error('Failed to create person')
+                } else {
+                    const legal = await person.fetch('legal')
+                    const maritals = await person.fetch('maritals')
+                    const phones = await person.fetch('phones')
+                    const emails = await person.fetch('emails')
+
+                    const find = (arr, prop, value) => {
+                        let found = false
+
+                        for (const row of arr) {
+                            if (Array.isArray(prop)) {
+                                let matched = true
+
+                                for (let i = 0; i < prop.length; i ++) {
+                                    if (row[prop[i]] !== value[i]) {
+                                        matched = false
+                                        break
+                                    }
+                                }
+
+                                if (!matched) continue
+                            } else if (row[prop] !== value) continue
+
+                            found = true
+                            break
+                        }
+
+                        return found
+                    }
+
+                    found = {
+                        legal: find(legal, ['status', 'expiresOn'], [legalStatus, expiresOn]),
+                        marital: find(maritals, 'status', marital),
+                        phone: find(phones, 'phone', phone),
+                        email: find(emails, 'email', email),
+                    }
+
                 }
+                if (!found.legal) await person.add('legal', { since, status: legalStatus, expiresOn })
+                if (!found.marital) await person.add('maritals', { since, status: marital })
+                if (!found.phone) await person.add('phones', { since, phone })
+                if (!found.email) await person.add('emails', { since, email })
 
                 let driver = await Driver.fetch(session, { personId: person.id })
                 if (!driver) driver = (await Driver.create(session, { personId: person.id })).data

@@ -13,6 +13,16 @@ const knex = require('../../../tools/utils/knex')
 const sendError = require('../../../tools/utils/error')
 
 
+const subQuery = (db, table, maxField, groupId) => knex
+    .select('*')
+    .from(`${db}.${table}`)
+    .whereIn(maxField, function() {
+        this.select(knex.raw(`MAX(${maxField})`))
+            .from(`${db}.${table}`)
+            .groupBy(groupId)
+    })
+
+
 export const dtDriverList = async (req, res) => {
     try {
         const sessionUser = res.session.user
@@ -41,7 +51,8 @@ export const dtDriverList = async (req, res) => {
                 knex.raw('MAX(??) AS ??', ['nms.middleName', 'middleName']),
                 knex.raw('MAX(??) AS ??', ['nms.lastName', 'lastName']),
                 knex.raw('MAX(??) AS ??', ['nms.suffix', 'suffix']),
-                knex.raw('MAX(??) AS ??', ['phn.phone', 'phone'])
+                knex.raw('MAX(??) AS ??', ['phn.phone', 'phone']),
+                knex.raw('MAX(??) AS ??', ['eml.email', 'email'])
             )
             .leftJoin(`${db.person}.individuals AS psn`, 'psn.id', 'drv.personId')
             .leftJoin(
@@ -54,9 +65,14 @@ export const dtDriverList = async (req, res) => {
                 'phn.personId',
                 'drv.personId'
             )
+            .leftJoin(
+                knex.raw('? AS eml', [ subQuery(db.person, 'emails', 'since', 'personId') ]),
+                'phn.personId',
+                'drv.personId'
+            )
             .leftJoin(`${db.carrier}.applications AS apl`, 'apl.driverId', 'drv.id')
             // .where('apl.teamId', teamId)
-            .whereNotIn('apl.condition', excludedConditions)
+            // .whereNotIn('apl.condition', excludedConditions)
             .groupBy('drv.id')
 
         const totalCountQuery = knex.queryBuilder().count('* AS count').from(baseQuery.as('base'))
@@ -87,16 +103,6 @@ export const dtDriverList = async (req, res) => {
         sendError.server(req, res, err)
     }
 }
-
-
-const subQuery = (db, table, maxField, groupId) => knex
-    .select('*')
-    .from(`${db}.${table}`)
-    .whereIn(maxField, function() {
-        this.select(knex.raw(`MAX(${maxField})`))
-            .from(`${db}.${table}`)
-            .groupBy(groupId)
-    })
 
 
 export const dtApplicationList = async (req, res) => {
