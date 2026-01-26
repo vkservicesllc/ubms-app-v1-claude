@@ -394,7 +394,7 @@ class ApplicationForm {
             selector: appSelector,
             target: 'country',
             type: 'select',
-            name: 'country',
+            name: 'prevCountry',
             data,
             emptyOpt,
             required,

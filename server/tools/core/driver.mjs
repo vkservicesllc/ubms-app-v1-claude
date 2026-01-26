@@ -24,6 +24,7 @@ import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buff
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import bool from '../../../client/global/modules/tools/utils/boolean.mjs'
 import { tel as formatTel } from '../../../client/global/modules/tools/utils/formatter.mjs'
+import { application } from '../../includes/driver'
 
 const mysql = require('../utils/mysql')
 const knex = require('../utils/knex')
@@ -157,8 +158,8 @@ class Driver extends Individual {
         position: {
             'CD': 'Company Driver',
             'OO': 'Owner-Operator',
-            'OD': 'Driver for Owner',
             'LP': 'Lease-Purchase Driver',
+            'OD': "Owner's Driver",
         },
 
     }
@@ -552,7 +553,7 @@ class Application {
                                 }
                             }
 
-                            if (!body.country) body.country = null
+                            if (!body.prevCountry) body.prevCountry = null
                             body.addrComplete = true
                             if (this.step === 0) body.step = 1
 
@@ -1652,12 +1653,16 @@ class Employment {
                 } = filter
                 const single = !!id || !!_id
 
-                const match = { id, appId, teamId }
-                if (!id) match.id = Employment.matchIdHash(_id)
-                if (!appId) match.appId = Application.matchIdHash(_appId)
-                if (!teamId) match.teamId = Team.matchIdHash(_teamId)
+                const match = {
+                    main: { id, appId },
+                    applications: { teamId },
+                }
+                if (!id) match.main.id = Employment.matchIdHash(_id)
+                if (!appId) match.main.appId = Application.matchIdHash(_appId)
+                if (!teamId) match.applications.teamId = Team.matchIdHash(_teamId)
 
-                batch[0].match = match
+                batch[0].match = match.main
+                batch[1].match = match.applications
 
                 return { single, batch }
             },

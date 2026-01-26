@@ -11,7 +11,7 @@ const table = $('#driver-aplicants-table').DataTable({
         url: '/api/resource/drivers/applicants/query',
         dataSrc(response) {
             const { data } = response
-
+console.log(data)
             return data
         },
     },

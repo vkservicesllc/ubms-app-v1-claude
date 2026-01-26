@@ -977,7 +977,7 @@ export const applicationSummary = async (req, res) => {
         hbs.application.fullAddress = application.address.html({ inline: false })
         hbs.application.address.since = moment(application.address.since).format('ll')
         if (application.address.country)
-            hbs.application.address.country = Geography.countryList[application.address.country]
+            hbs.application.address.country = Geography.list.country[application.address.country]
 
         hbs.application.dl.type = application.dl.commercial ? 'Commercial' : 'Non-Commercial'
         hbs.application.dl.state = Address.list.state[application.dl.state]

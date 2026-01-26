@@ -904,7 +904,7 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
         const { active } = hbs.nav
         hbs.nav.left.drivers = active
 
-        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 2))
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
         //! More stuff to be added...
 

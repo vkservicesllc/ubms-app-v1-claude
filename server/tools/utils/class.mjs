@@ -211,10 +211,10 @@ export const classInstance = {
             let ids, _ids
             if (typeof matchOrIds[0] === 'number') ids = matchOrIds
             if (typeof matchOrIds[0] === 'string') _ids = matchOrIds
-            if (!ids && !_ids) throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Invalid id types supplied`)
 
-            if (!ids) {
+            if (!ids && _ids) {
                 ids = []
+
                 const list = await Src.fetch(inst.session, { _ids })
                 list.map(item => ids.push(item.id))
             }
