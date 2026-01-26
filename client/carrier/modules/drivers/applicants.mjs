@@ -1,4 +1,5 @@
 import Person from '/modules/tools/core/person.mjs'
+import Address from '/modules/tools/core/address.us.mjs'
 import escapeHTML from '/modules/tools/utils/html.mjs'
 import styleSearch, { tag as searchTag } from '/modules/tools/search.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
@@ -12,7 +13,7 @@ const table = $('#driver-aplicants-table').DataTable({
         url: '/api/resource/drivers/applicants/query',
         dataSrc(response) {
             const { data } = response
-console.log(data)
+
             return data
         },
     },
@@ -58,6 +59,15 @@ console.log(data)
             data: 'email',
             title: 'Email',
             searchable: false,
+        },
+
+        {
+            data: null,
+            title: 'Address',
+            searchable: false,
+            render(data, type, row) {
+                return new Address(row).html()
+            },
         },
 
     ],

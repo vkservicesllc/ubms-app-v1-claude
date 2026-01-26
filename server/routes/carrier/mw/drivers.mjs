@@ -52,7 +52,12 @@ export const dtDriverList = async (req, res) => {
                 knex.raw('MAX(??) AS ??', ['nms.lastName', 'lastName']),
                 knex.raw('MAX(??) AS ??', ['nms.suffix', 'suffix']),
                 knex.raw('MAX(??) AS ??', ['phn.phone', 'phone']),
-                knex.raw('MAX(??) AS ??', ['eml.email', 'email'])
+                knex.raw('MAX(??) AS ??', ['eml.email', 'email']),
+                knex.raw('MAX(??) AS ??', ['adr.address1', 'address1']),
+                knex.raw('MAX(??) AS ??', ['adr.address2', 'address2']),
+                knex.raw('MAX(??) AS ??', ['adr.city', 'city']),
+                knex.raw('MAX(??) AS ??', ['adr.state', 'state']),
+                knex.raw('MAX(??) AS ??', ['adr.zip', 'zip'])
             )
             .leftJoin(`${db.person}.individuals AS psn`, 'psn.id', 'drv.personId')
             .leftJoin(
@@ -67,20 +72,29 @@ export const dtDriverList = async (req, res) => {
             )
             .leftJoin(
                 knex.raw('? AS eml', [ subQuery(db.person, 'emails', 'since', 'personId') ]),
-                'phn.personId',
+                'eml.personId',
+                'drv.personId'
+            )
+            .leftJoin(
+                knex.raw('? AS adr', [ subQuery(db.person, 'addresses', 'since', 'personId') ]),
+                'adr.personId',
                 'drv.personId'
             )
             .leftJoin(`${db.carrier}.applications AS apl`, 'apl.driverId', 'drv.id')
-            // .where('apl.teamId', teamId)
-            // .whereNotIn('apl.condition', excludedConditions)
+            .leftJoin(`${db.online}.teams AS env`, 'env.id', 'apl.teamId')
+            .whereNotIn('apl.condition', excludedConditions)
             .groupBy('drv.id')
 
-        const totalCountQuery = knex.queryBuilder().count('* AS count').from(baseQuery.as('base'))
+                //! NEEDS TESTING
+                if (teamId) baseQuery.where('apl.teamId', teamId)
+                else baseQuery.andWhere(function() {
+                    this.where('env.scoped', false).orWhereNull('env.scoped')
+                })
 
-        baseQuery.limit(length).offset(start)
+        const totalCountQuery = knex.queryBuilder().count('* AS count').from(baseQuery.as('base'))
         const countQuery = knex.queryBuilder().count('* AS count').from(baseQuery.as('base'))
 
-        if (teamId) baseQuery.where('apl.teamId', teamId)
+        baseQuery.limit(length).offset(start)
 
         const [
             data,
@@ -207,7 +221,7 @@ export const dtApplicationList = async (req, res) => {
                 'usr.condition AS userCondition',
                 'usr.location AS userLocation',
                 'usr.deletedAt AS userDeletedAt',
-                'env.name AS teamName',
+                'env.name AS teamName'
             )
 
         const countQuery = knex(`${db.carrier}.applications AS apl`).count('* AS count')
@@ -215,11 +229,18 @@ export const dtApplicationList = async (req, res) => {
 
         applyJoins(baseQuery)
         applyJoins(countQuery)
+        totalCountQuery.leftJoin(knex.raw(`${db.online}.teams AS env ON apl.teamId = env.id`))
 
         if (teamId) {
             baseQuery.where({ teamId })
             countQuery.where({ teamId })
             totalCountQuery.where({ teamId })
+        } else {
+            const queries = [ baseQuery, countQuery, totalCountQuery ]
+
+            queries.forEach(query => query.andWhere(function() {
+                this.where('env.scoped', false).orWhereNull('env.scoped')
+            }))
         }
 
         const archiveWhere = archived === 'true'
