@@ -1334,6 +1334,28 @@ class Application {
     }
 
 
+    static chart = async (session, filter = {}) => {
+        if (!session.user) return
+
+        const { teamId } = filter
+        const data = { applications: {} }
+        let match
+        if (teamId) match = { teamId }
+
+        const [ result ] = await mysql.execute(query.driver_application.main.select(['condition', { count: ['condition', 'count'] }], {
+            match, group: 'condition',
+        }))
+        data.applications.conditions = {}
+
+        result.forEach(row => {
+            const { condition, count } = row
+            data.applications.conditions[condition] = count
+        })
+
+        return data
+    }
+
+
     static list = {
 
         step: [
@@ -1515,8 +1537,8 @@ class Employment {
         this.leftOn = data.leftOn
         this.position = data.position
         this.earnings = data.earnings
-        this.fmcsr = data.fmcsr
-        this.dotDat = data.dotDat
+        this.fmcsr = bool(data.fmcsr)
+        this.dotDat = !!data.dotDat
         this.rfl = data.rfl
         this.gapExpl = data.gapExpl
 
@@ -1541,7 +1563,7 @@ class Employment {
 
         if (single && !hideRawId) {
             this.session = session
-            this.config = { hideRawId, hideSensitive }
+            this.config = { hideRawId }
 
             this.update = body => classInstance.update(this, new.target, body)
 

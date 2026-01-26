@@ -1648,6 +1648,7 @@ class EmploymentForm {
         target: 'position',
         group: 'position',
         name: 'position',
+        maxLength: 20,
         required,
         label: 'Position/Title',
     })

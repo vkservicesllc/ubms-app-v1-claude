@@ -62,7 +62,6 @@ export const applicationStart = async (req, res, next) => {
 
         if (route) {
             const carrier = await Carrier.fetch(session, { route })
-
             if (!carrier) return respond404(res)
 
             _carrierId = carrier._id

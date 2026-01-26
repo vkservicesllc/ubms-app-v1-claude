@@ -145,15 +145,13 @@ $.ajax(`/api/resource/application/${formId}/employers`, {
         const { data, error } = response
         if (error) return alert(error)
 
-        const length = data.employers.length
+        const length = data.length
 
         if (length) {
             let html = ''
 
-            // data = sortArrayByObjectKey(data, 'startedOn', false)
-
-            data.employers.forEach((row, i) => {console.log(row)
-                const address = new Address(row)
+            data.forEach((row, i) => {console.log(row)
+                const address = new Address(row.address)
                 let label = 'Employer'
                 if (length > 1) label += ` ${i + 1}`
                 let period = `${moment(row.startedOn).format('ll')} — `
@@ -172,6 +170,7 @@ $.ajax(`/api/resource/application/${formId}/employers`, {
                 html += `<tr><th class="text-secondary">Earnings/Salary:</th><td>$${row.earnings.toLocaleString()} per month</td></tr>`
                 html += `<tr><th class="text-secondary">Subject to:</th><td>${subject}</td></tr>`
                 html += `<tr><th class="text-secondary">Reason for Leaving:</th><td>${row.rfl}</td></tr>`
+                if (row.gapExpl) html += `<tr><th class="text-secondary">Employment Gap:</th><td>${row.gapExpl}</td></tr>`
                 html += '</tbody>'
             })
 

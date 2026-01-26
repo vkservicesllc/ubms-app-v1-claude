@@ -149,16 +149,22 @@ class Carrier extends Company {
             batch[idx + 1].match = { number: ifta?.number }
             Object.keys(stateTax).forEach(state => batch[idx + 2].match = { [state]: stateTax[state] })
 
+            if (!batch[0].match) batch[0].match = {}
+            if (!batch[1].match) batch[1].match = {}
 
             if (id || _id || ids || _ids) {
                 if (id) batch[idx].match.id = id
                 else if (ids) batch[idx].match.id = ids
                 else if (_id || _ids) batch[idx].match.id = Carrier.matchIdHash(_id || _ids)
             }
-
-
             if (companyId || _companyId || companyIds || _companyIds)
                 batch[0].match.id = companyId || companyIds || Company.matchIdHash(_companyId || _companyIds)
+            if (ein) batch[0].match.ein = { aes: [ ein, secret.ein ] }
+            if (busName && coType) {
+                batch[1].match.busName = busName
+                batch[1].match.coType = coType
+            }
+            if (route) batch[1].match.route = { route: [ [ 'busName', 'coType' ], route ] }
 
             return { single, batch }
         },

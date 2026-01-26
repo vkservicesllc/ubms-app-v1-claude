@@ -503,9 +503,15 @@ $form.employer.submit(function(evt) {
         data[this.name] = this.value
     })
 
-    $.ajax(`/api/resource/application/${formId}/employers`, {
-        method: 'POST',
-        data,
+    let url = `/api/resource/application/${formId}/employers`
+    let method = 'POST'
+    if (data._id) {
+        url += `/${data._id}`
+        method = 'PUT'
+    }
+
+    $.ajax({
+        url, method, data,
         success(response) {
             if (response.status === 'OK') {
                 const duration = 750

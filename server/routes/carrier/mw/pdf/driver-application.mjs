@@ -364,8 +364,8 @@ export default async (carrier, application, addresses, violations, accidents, em
             y -= fieldHeight
             let residence = ''
             if (application.address) {
-                const { city, state } = application.address
-                if (state) residence = `${city}, ${state[0]}`
+                const { city, state, expansion } = application.address
+                if (state) residence = `${city}, ${expansion.state}`
             }
             text = "Residence (City, State):"
             textWidth = font.label.widthOfTextAtSize(text, size.label * 1.4)

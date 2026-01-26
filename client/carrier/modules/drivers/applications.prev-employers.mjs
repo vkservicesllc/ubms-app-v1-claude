@@ -101,7 +101,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             orderable: false,
             searchable: false,
             render(data, type, row) {
-                let until = 'Present'
+                let until = '<span class="ui dark red text">Still Employed</span>'
                 if (row.leftOn) until = moment(row.leftOn).format('ll')
 
                 return moment(data).format('ll') + ' – ' + until
@@ -113,6 +113,27 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             title: 'Position',
             orderable: false,
             searchable: false,
+        },
+
+        {
+            data: 'fmcsr',
+            title: 'FMCSR',
+            orderable: false,
+            searchable: false,
+            render(data) {
+                if (data === null) return '<i style="color: pink; font-size: .9em;">N/A</i>'
+                return `<i class="${data ? 'dark green check' : 'dark red close'} icon"></i>`
+            },
+        },
+
+        {
+            data: 'dotDat',
+            title: 'Drug/Alcohol',
+            orderable: false,
+            searchable: false,
+            render(data) {
+                return `<i class="${data ? 'dark green check' : 'dark red close'} icon"></i>`
+            },
         },
 
         {

@@ -262,14 +262,14 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         const { active } = hbs.nav
         hbs.nav.left.drivers = active
 
-        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 0))
 
         const { _carrierId, _userId, cdlRole } = application
 
         if (_carrierId) {
             hbs.carrier = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch carrier</span>'
 
-            const carrier = await Carrier.data(res.session, { _id: _carrierId })
+            const carrier = await Carrier.fetch(res.session, { _id: _carrierId })
             if (carrier) hbs.carrier = carrier.name
         }
 
@@ -694,7 +694,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
         const { active } = hbs.nav
         hbs.nav.left.drivers = active
 
-        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 0))
 
         hbs._id = application._id
         hbs.formId = formId
@@ -833,7 +833,7 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
             const { _carrierId: _id } = application
             carrier = await Carrier.fetch(res.session, { _id })
 
-            const companyId = await carrier.companyId()
+            const companyId = carrier.companyId
             const { name, address, phone, fax, lastLogo } = carrier
             carrier = { name, address, phone, fax, lastLogo }
             carrier.address = carrier.address.physical

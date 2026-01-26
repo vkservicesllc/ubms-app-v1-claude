@@ -43,39 +43,42 @@ const buildChart = (ctx, chart, data, labels, colors, type = 'doughnut') => {
 
 
 $(() => {
+    const id = {
+        conditions: '#application-conditions-doughnut-chart',
+    }
     const canvasId = {
         applications: {
-            statuses: '#application-statuses-doughnut-chart',
+            conditions: id.conditions,
         },
     }
     const options = {
         applications: {
-            statuses: {
-                canvasId: '#application-statuses-doughnut-chart',
+            conditions: {
+                canvasId: id.conditions,
                 labels: { p: 'Pending', c: 'In Review', a: 'Approved', r: 'Waiting List', b: 'Disqualified', h: 'Hired'},
                 colors: { p: 'grey', c: 'blue', a: 'green', r: 'orange', b: 'red', h: 'black'},
-                ctx: $(canvasId.applications.statuses).length ? $(canvasId.applications.statuses)[0].getContext('2d') : null,
+                ctx: $(canvasId.applications.conditions).length ? $(canvasId.applications.conditions)[0].getContext('2d') : null,
                 chart: null,
             },
         },
     }
 
     const fetchDraw = () => {
-        $.post('/api/drivers/charts', null, response => {
+        $.post('/api/charts/drivers', null, response => {
             const { applications } = response
 
-            if (options.applications.statuses.ctx) { /* Application Statuses */
-                const { statuses } = applications
+            if (options.applications.conditions.ctx) { /* Application Conditions */
+                const { conditions } = applications
                 const data = [], labels = [], colors = []
 
-                for (const prop in options.applications.statuses.labels) {
-                    data.push(statuses[prop] || 0)
-                    labels.push(options.applications.statuses.labels[prop])
-                    colors.push(options.applications.statuses.colors[prop])
+                for (const prop in options.applications.conditions.labels) {
+                    data.push(conditions[prop] || 0)
+                    labels.push(options.applications.conditions.labels[prop])
+                    colors.push(options.applications.conditions.colors[prop])
                 }
-                options.applications.statuses.chart = buildChart(
-                    options.applications.statuses.ctx,
-                    options.applications.statuses.chart,
+                options.applications.conditions.chart = buildChart(
+                    options.applications.conditions.ctx,
+                    options.applications.conditions.chart,
                     data, labels, colors
                 )
             }
