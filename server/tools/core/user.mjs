@@ -18,7 +18,7 @@ import Query, { hash, matchHash } from '../utils/query.mjs'
 import { classInstance, classStatic } from '../utils/class.mjs'
 import transporter, { sender } from '../utils/nodemailer.mjs'
 import { generateRandomString } from '../utils/string.mjs'
-import { processData, logDeletion } from '../utils/database.OLD.mjs'
+import { processData, logDeletion } from '../utils/data.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { utcTimeStamp } from '../utils/date.mjs'
@@ -130,10 +130,8 @@ class User extends Person {
                 if (!this.session?.user?.id) throw new Error('User Constructor Method Error [DELETE]: Session user not supplied')
 
                 return classInstance.delete(this, new.target, target, ids, async () => {
-                    const update = processData({ username: null, email: null, phone: null, condition: 'I' }, {
-                        modifiedBy: this.session.user.id,
-                        currentData: this,
-                        currentUpdateLog: await this.log({ field: 'updateLog' }),
+                    const update = await processData({ username: null, email: null, phone: null, condition: 'I' }, {
+                        query: User.config().query, skipLog: true,
                     })
                     update._passKey = null
                     update.deletedBy = this.session.user.id

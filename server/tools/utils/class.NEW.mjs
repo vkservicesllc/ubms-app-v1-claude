@@ -5,6 +5,7 @@ const secret = {
 }
 
 import Query, { hash, matchHash } from './query.mjs'
+import { processData, logDeletion, logFields } from './data.mjs'
 
 const mysql = require('./mysql')
 const { sqlMode } = Query
@@ -163,7 +164,7 @@ export const classInstance = {
     },
 
 
-    update: async (inst, Cls, targetOrBody, body, match = {}, { currentData, final, skipLog = false } = {}) => {
+    update: async (inst, Cls, targetOrBody, body, match = {}, { final, skipLog = false } = {}) => {
         const config = Cls.config()
 
         const { enforceUser = true, enforceLocation = false } = config
@@ -171,21 +172,23 @@ export const classInstance = {
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session user not supplied`)
         if (enforceLocation && !branch) throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session branch not supplied`)
 
-        const { query } = config
+        const { query, childIdHash = {} } = config
         let target = 'main'
         if (typeof targetOrBody === 'string') target = targetOrBody
         else body = targetOrBody
 
         const idProp = target === 'main' ? 'id' : config.idProp
+
+        if ('_id' in match) match._id = matchHash(match._id, childIdHash[target])
         match = { [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match }
 
-        const options = { modifiedBy: sessionUser.id, skipLog }
+        const options = { query, target, skipLog, modifiedBy: sessionUser.id }
         if ((typeof enforceLocation === 'string' && enforceLocation.includes('update')) || enforceLocation === true) {
             options.branch = branch
             options.siteId = siteId
         }
 
-        options.currentData = await mysql(query[target].select('*', { match }))
+        body = await processData(body, options)
     },
 
 
@@ -250,16 +253,16 @@ export const classInstance = {
             if (handled === true) return { deleted: true }
         } else if (!handle) handle = {}
 
-        const { extendLog } = handle
-
         const { query, logDeleted = true, logFile } = Cls.config()
-        const { id } = inst
-        let log = logDeleted && logFile ? await inst.log() : null
+        let log = logDeleted && logFile && inst.id ? await inst.log() : null
 
-        const [ result ] = await mysql.execute(query.main.delete({ id }))
+        const [ result ] = await mysql.execute(query.main.delete({ id: inst.id || Cls.matchIdHash(inst._id) }))
         if (!result.affectedRows) return { deleted: false }
 
         if (log) {
+            const { id } = inst
+            const { extendLog } = handle
+
             for (const prop in log) inst[prop] = log[prop]
             if (typeof extendLog === 'function') inst = await extendLog(inst, log)
 
@@ -300,124 +303,6 @@ export const classInstance = {
 
 export const classStatic = {}
 
-
-
-async function processData(data = {}, { query, target, skipLog = false, modifiedBy, branch, siteId } = {}) {
-    const update = query && target
-    let currentData, currentUpdateLog, updateLog
-
-    if (update) {
-        currentData = await mysql(query[target].select('*', { match }))[0][0]
-        if (!currentData) throw new Error('Could not process data: current data not found')
-
-        logFields.map(logField => delete currentData[logField])
-
-        if (!skipLog && modifiedBy) {
-            currentUpdateLog = currentData.updateLog
-            updateLog = [
-                {
-                    data: {},
-                    oldData: {},
-                    modifiedBy,
-                    modifiedAt: utcTimeStamp(),
-                }
-            ]
-            if (branch) updateLog[0].modifiedIn = { branch }
-            if (siteId) updateLog[0].modifiedIn.siteId = siteId
-        }
-    }
-
-    for (const field in data) {
-        const value = data[field]
-
-        //* Ignore logging Objects
-        if (value !== null && typeof value === 'object') {
-            data[field] = JSON.stringify(value)
-            continue
-        }
-
-        //* Ignore undefined fields
-        if (value === undefined) {
-            delete data[field]
-            continue
-        }
-
-        //* Convert empty string to null
-        if (value === '') data[field] = null
-
-        if (update) {
-            const currentValue = currentData[field]
-
-            //* Boolean to TinyInt when update for correct comparison
-            if (typeof value === 'boolean') data[field] = value ? 1 : 0
-
-            if (currentValue === undefined || value === currentValue) {
-                delete data[field]
-                continue
-            }
-
-            if (updateLog) {
-                const encData = ['ssn', 'ein'].includes(field)
-
-                updateLog[0].data[field] = value && encData ? encrypt(value) : processValue(value)
-                updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : processValue(currentValue)
-            }
-        } else if (value === null) delete data[field]
-    }
-
-    if (updateLog && Object.keys(updateLog[0].data).length) {
-        if (currentUpdateLog)
-            updateLog = updateLog.concat(currentUpdateLog)
-
-        data.updateLog = JSON.stringify(updateLog).replace(/(?<!\\)\\"/g, '\\\\"')
-    }
-
-    return data
-}
-
-
-async function logDeletion(session, target, instance, ids = {}) {
-    if (!session?.user) return
-
-    const { branch, siteId, user } = session
-    const dirPath = `${directory}/log/deleted/`
-    const filePath = path.join(dirPath, `${target}.json`).replace(/\\/g, '/')
-    const { name: signature } = user
-    const deletedBy = user.id
-    const deletedAt = utcTimeStamp()
-    let deletedIn = null
-
-    if (branch) {
-        deletedIn = { branch }
-        if (siteId) deletedIn.siteId = siteId
-    }
-
-    for (const prop in ids) delete instance[prop]
-    instance = resetProto(instance, ids, { deletedBy, deletedIn, deletedAt, signature })
-
-    if (!existsSync(dirPath)) mkdirSync(dirPath, { recursive: true })
-
-    const file = Bun.file(filePath, { type: 'application/json' })
-    let log = [ instance ]
-
-    if (await file.exists()) {
-        log = JSON.parse(await file.text())
-        log.unshift(instance)
-    }
-
-    await Bun.write(filePath, JSON.stringify(log, null, 4))
-}
-
-
-function processValue(value) {
-    if (typeof value === 'boolean') value = value ? 1 : 0
-    else if (typeof value === 'string') {
-        if (value === '') value = null
-        else value = value.replace(/"/g, '\\"')
-    }
-
-    return value
-}
 
 
 function setSession(user = {}, branch, siteId = null) {
