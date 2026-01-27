@@ -303,15 +303,83 @@ export const classInstance = {
 export const classStatic = {
 
 
-    create: async (Cls, { user: sessionUser = {}, branch, siteId = null }, body = {}, { hideRawId = false } = {}, {
-        find, split, final,
-    } = {}) => {},
+    create: async (Cls, { user: sessionUser = {}, branch, siteId = null }, body = {},
+        { hideRawId = false } = {},
+        { find, split, final } = {}
+    ) => {
+        const config = Cls.config()
+
+        const { enforceUser = true } = config
+        if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [CREATE]: Session user not supplied`)
+
+        let found = false, data
+        if (typeof find === 'function') ({ found, data } = await find(body, hideRawId))
+
+        if (found) {
+            if (Array.isArray(data)) data = data[0]
+            return { created: false, data }
+        }
+
+        body = processData(body)
+
+        if (typeof split === 'function') body = await split(body)
+        else body = { main: body }
+
+        let createdIn = { branch }
+        if (siteId) createdIn.siteId = siteId
+        createdIn = JSON.stringify(createdIn)
+
+        const { enforceLocation = false, query, idProp } = config
+        const locationEnforced = (typeof enforceLocation === 'string' && enforceLocation.includes('create')) || enforceLocation === true
+
+        if (sessionUser?.id) body.main.createdBy = sessionUser.id
+        if (locationEnforced) body.main.createdIn = createdIn
+
+        for (const target in body) {
+            if (target === 'main') continue
+
+            body[target][idProp] = id
+            if (sessionUser?.id) body[target].createdBy = sessionUser.id
+            if (locationEnforced) body[target].createdIn = createdIn
+
+            const [ result ] = await mysql.execute(query[target].insert(body[target]))
+            if (!result.affectedRows) throw new Error(`Failed to create ${Cls.name.toLowerCase()}'s ${target}`)
+        }
+
+        data = await Cls.fetch({ user: sessionUser, branch, siteId }, { id }, { hideRawId })
+
+        if (typeof final === 'function') await final(data, id, body)
+
+        return { created: true, data }
+    },
 
 
     fetch: async (Cls, { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
         { hideRawId = false, hideSensitive = true, sorts, mode = 'data' } = {},
         { batch = [], prepare, removeFullGroupBy = false } = {}
-    ) => {}
+    ) => {
+        const { enforceUser = true, db } = Cls.config()
+        if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Static Method Error [FETCH]: Session user not supplied`)
+
+        let single = false, custom = {}
+        if (typeof prepare === 'function') ({ batch, single = false, custom = {} } = await prepare(batch, filter))
+
+        if (!single && Array.isArray(sorts))
+            sorts.forEach((sort, i) => { if (sort) batch[i].sort = sort })
+
+        if (mode === 'batch') return batch
+
+        const queryStr = Query.select(db, batch)
+        if (mode === 'query') return queryStr
+
+        if (removeFullGroupBy) await mysql.query(sqlMode.onlyFullGroupBy.remove)
+        const list = (await mysql.execute(queryStr))[0]
+
+        const session = setSession(sessionUser, branch, siteId)
+        list.forEach((data, i, arr) => arr[i] = new Cls(data, { single, session, hideRawId, hideSensitive, custom }))
+
+        return single ? list[0] : list
+    }
 
 
 }
