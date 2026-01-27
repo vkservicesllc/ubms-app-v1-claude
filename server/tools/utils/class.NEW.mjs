@@ -67,9 +67,6 @@ export const classInstance = {
 
         body = processData(body)
 
-        if (body?.ssn && typeof body.ssn !== 'object') body.ssn = { aes: [ body.ssn, secret.ssn ] }
-        if (body?.ein && typeof body.ein !== 'object') body.ein = { aes: [ body.ein, secret.ein ] }
-
         if (typeof bodyCB === 'function') body = await bodyCB(body)
         body.createdBy = createdBy
 
@@ -189,6 +186,17 @@ export const classInstance = {
         }
 
         body = await processData(body, options)
+
+        if (body?.ssn && typeof body.ssn !== 'object') body.ssn = { aes: [ body.ssn, secret.ssn ] }
+        if (body?.ein && typeof body.ein !== 'object') body.ein = { aes: [ body.ein, secret.ein ] }
+
+        const [ result ] = await mysql.execute(config.query[target].update(body, {
+            [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
+        }))
+
+        if (typeof final === 'function') await final(inst, body, target)
+
+        return { updated: result.affectedRows > 0 }
     },
 
 

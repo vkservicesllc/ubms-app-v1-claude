@@ -1,4 +1,8 @@
-const { DIR__PATH: directory } = Bun.env
+const { DB__MYSQL_AES_EIN, DB__MYSQL_AES_SSN, DIR__PATH: directory } = Bun.env
+const secret = {
+    ein: DB__MYSQL_AES_EIN,
+    ssn: DB__MYSQL_AES_SSN,
+}
 
 import { mkdirSync, existsSync } from 'fs'
 import path from 'path'
@@ -24,8 +28,15 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
     const update = query && target
     let currentData, currentUpdateLog, updateLog
 
+    if (data.ssn && body.ssn?.aes) data.ssn = data.ssn.aes[0]
+    if (data.ein && body.ein?.aes) data.ein = data.ein.aes[0]
+
     if (update) {
-        currentData = await mysql(query[target].select('*', { match }))[0][0]
+        const fields = ['*']
+        if ('ssn' in data) fields.push({ aes: [ 'ssn', secret.ssn ] })
+        if ('ein' in data) fields.push({ aes: [ 'ein', secret.ein ] })
+
+        currentData = await mysql(query[target].select(fields, { match }))[0][0]
         if (!currentData) throw new Error('Could not process data: current data not found')
 
         logFields.map(logField => delete currentData[logField])
@@ -81,6 +92,8 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
                 updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : processValue(currentValue)
             }
         } else if (value === null) delete data[field]
+
+        if (field === 'ssn' || field === 'ein') data[field] = { aes: [ value, secret[field] ] }
     }
 
     if (updateLog && Object.keys(updateLog[0].data).length) {

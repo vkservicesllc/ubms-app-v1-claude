@@ -300,7 +300,10 @@ class Query {
 
 
     static #_value(value, secret) {
-        if (secret && value) return `AES_ENCRYPT('${value}', '${secret}')`
+        if (secret) {
+            if (!value) return 'NULL'
+            return `AES_ENCRYPT('${value}', '${secret}')`
+        }
         else if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE'
         else if (!value && value !== 0) return 'NULL'
         else if (value === Query.timeStamp) return Query.timeStamp
