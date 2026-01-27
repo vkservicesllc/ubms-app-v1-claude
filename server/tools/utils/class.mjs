@@ -273,7 +273,7 @@ export const classInstance = {
         const config = Cls.config()
         const idProp = target === 'main' ? 'id' : config.idProp
         const log = (await mysql.execute(config.query[target].select(fields, {
-            [idProp]: inst.id || Cls.matchIdHash(inst._id), since, ... match,
+            [idProp]: inst.id || Cls.matchIdHash(inst._id), since, ...match,
         })))[0][0]
 
         return fields.includes(field) ? log[field] : log
