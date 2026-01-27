@@ -5,7 +5,7 @@ const secret = {
 }
 
 import Query, { hash, matchHash } from './query.mjs'
-import { processData, logDeletion } from './database.mjs'
+import { processData, logDeletion } from './database.OLD.mjs'
 
 const mysql = require('./mysql')
 const { sqlMode } = Query

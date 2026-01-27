@@ -5,19 +5,9 @@ const secret = {
 }
 
 import Query, { hash, matchHash } from './query.mjs'
-import { processData, logDeletion } from './data.mjs'
 
 const mysql = require('./mysql')
 const { sqlMode } = Query
-
-const setSession = (user = {}, branch, siteId = null) => {
-    const { id, DS, DSA, status, location, unscoped } = user
-
-    return {
-        user: { id, DS, DSA, status, location, unscoped },
-        branch, siteId,
-    }
-}
 
 const logActions = ['created', 'deleted', 'archived', 'invited', 'finished', 'reviewed', 'declined']
 const logFields = []
@@ -173,7 +163,7 @@ export const classInstance = {
     },
 
 
-    update: async (inst, Cls, targetOrBody, body, match = {}, { currentData, final } = {}) => {
+    update: async (inst, Cls, targetOrBody, body, match = {}, { currentData, final, skipLog = false } = {}) => {
         const config = Cls.config()
 
         const { enforceUser = true, enforceLocation = false } = config
@@ -181,20 +171,21 @@ export const classInstance = {
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session user not supplied`)
         if (enforceLocation && !branch) throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session branch not supplied`)
 
+        const { query } = config
         let target = 'main'
         if (typeof targetOrBody === 'string') target = targetOrBody
         else body = targetOrBody
 
         const idProp = target === 'main' ? 'id' : config.idProp
+        match = { [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match }
 
-        const options = { modifiedBy: sessionUser.id }
+        const options = { modifiedBy: sessionUser.id, skipLog }
         if ((typeof enforceLocation === 'string' && enforceLocation.includes('update')) || enforceLocation === true) {
             options.branch = branch
             options.siteId = siteId
         }
 
-        //! fetch target currentData based on match
-        //! fetch target currentUpdateLog based on match
+        options.currentData = await mysql(query[target].select('*', { match }))
     },
 
 
@@ -308,3 +299,126 @@ export const classInstance = {
 
 
 export const classStatic = {}
+
+
+
+async function processData(data = {}, { query, target, skipLog = false, modifiedBy, branch, siteId } = {}) {
+    // let currentUpdateLog = {}
+    // let updateLog = Object.keys(currentData).length > 0 && modifiedBy !== undefined
+    //     ? [
+    //         {
+    //             data: {},
+    //             oldData: {},
+    //             modifiedBy,
+    //             modifiedAt: utcTimeStamp(),
+    //         }
+    //     ]
+    //     : null
+
+    // if (updateLog) {
+    //     if (branch) updateLog[0].modifiedIn = { branch }
+    //     if (siteId) updateLog[0].modifiedIn.siteId = siteId
+
+    //     currentUpdateLog = currentData.updateLog
+    //     logFields.map(logField => delete currentData[logField])
+    // }
+
+    // for (const field in data) {
+    //     const value = data[field]
+
+    //     //* Ignore logging Objects
+    //     if (value !== null && typeof value === 'object') {
+    //         data[field] = JSON.stringify(value)
+    //         continue
+    //     }
+
+    //     //* Ignore undefined fields
+    //     if (value === undefined) {
+    //         delete data[field]
+    //         continue
+    //     }
+
+    //     //* Convert empty string to null
+    //     if (value === '') data[field] = null
+
+    //     if (updateLog) {
+    //         const currentValue = currentData[field]
+
+    //         //* Boolean to TinyInt when update for correct comparison
+    //         if (typeof value === 'boolean') data[field] = value ? 1 : 0
+
+    //         if (currentValue === undefined || value === currentValue) {
+    //             delete data[field]
+    //             continue
+    //         }
+
+    //         const encData = ['ssn', 'ein'].includes(field)
+
+    //         updateLog[0].data[field] = value && encData ? encrypt(value) : processValue(value)
+    //         updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : processValue(currentValue)
+    //     } else if (value === null) delete data[field]
+    // }
+
+    // if (updateLog && Object.keys(updateLog[0].data).length) {
+    //     if (currentUpdateLog)
+    //         updateLog = updateLog.concat(currentUpdateLog)
+
+    //     data.updateLog = JSON.stringify(updateLog).replace(/(?<!\\)\\"/g, '\\\\"')
+    // }
+
+    // return data
+}
+
+
+async function logDeletion(session, target, instance, ids = {}) {
+    if (!session?.user) return
+
+    const { branch, siteId, user } = session
+    const dirPath = `${directory}/log/deleted/`
+    const filePath = path.join(dirPath, `${target}.json`).replace(/\\/g, '/')
+    const { name: signature } = user
+    const deletedBy = user.id
+    const deletedAt = utcTimeStamp()
+    let deletedIn = null
+
+    if (branch) {
+        deletedIn = { branch }
+        if (siteId) deletedIn.siteId = siteId
+    }
+
+    for (const prop in ids) delete instance[prop]
+    instance = resetProto(instance, ids, { deletedBy, deletedIn, deletedAt, signature })
+
+    if (!existsSync(dirPath)) mkdirSync(dirPath, { recursive: true })
+
+    const file = Bun.file(filePath, { type: 'application/json' })
+    let log = [ instance ]
+
+    if (await file.exists()) {
+        log = JSON.parse(await file.text())
+        log.unshift(instance)
+    }
+
+    await Bun.write(filePath, JSON.stringify(log, null, 4))
+}
+
+
+function processValue(value) {
+    if (typeof value === 'boolean') value = value ? 1 : 0
+    else if (typeof value === 'string') {
+        if (value === '') value = null
+        else value = value.replace(/"/g, '\\"')
+    }
+
+    return value
+}
+
+
+function setSession(user = {}, branch, siteId = null) {
+    const { id, DS, DSA, status, location, unscoped } = user
+
+    return {
+        user: { id, DS, DSA, status, location, unscoped },
+        branch, siteId,
+    }
+}

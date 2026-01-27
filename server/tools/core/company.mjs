@@ -14,7 +14,7 @@ import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import { hash, matchHash } from '../utils/query.mjs'
 //! import more algorithms for other categories
 import { classInstance, classStatic } from '../utils/class.mjs'
-import { processData } from '../utils/database.mjs'
+// import { processData } from '../utils/database.OLD.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 
@@ -389,50 +389,50 @@ class Owner extends Individual {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
-            this.update = async (body, { since } = {}) => {
-                if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
+            // this.update = async (body, { since } = {}) => {
+            //     if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
 
-                const { signature } = body
-                if (typeof signature === 'boolean') {
-                    const [ result ] = await mysql.execute(query.company_owner.main.update({ signature }, { id: this.id }))
-                    return { updated: result.affectedRows > 0 }
-                }
+            //     const { signature } = body
+            //     if (typeof signature === 'boolean') {
+            //         const [ result ] = await mysql.execute(query.company_owner.main.update({ signature }, { id: this.id }))
+            //         return { updated: result.affectedRows > 0 }
+            //     }
 
-                const person = await Individual.fetch(this.session, { id: this.personId }, { hideSensitive: false })
-                if (!person) throw new Error('Person not identified')
+            //     const person = await Individual.fetch(this.session, { id: this.personId }, { hideSensitive: false })
+            //     if (!person) throw new Error('Person not identified')
 
-                const { dob, gender, ssn, firstName, middleName, lastName, suffix, phone } = body
-                body = {
-                    person: { dob, gender, ssn },
-                    name: { firstName, middleName, lastName, suffix },
-                    phone: { phone },
-                }
+            //     const { dob, gender, ssn, firstName, middleName, lastName, suffix, phone } = body
+            //     body = {
+            //         person: { dob, gender, ssn },
+            //         name: { firstName, middleName, lastName, suffix },
+            //         phone: { phone },
+            //     }
 
-                if (ssn && person.ssn && ssn !== ssn) {
-                    const person2 = await Individual.fetch(this.session, { ssn })
+            //     if (ssn && person.ssn && ssn !== ssn) {
+            //         const person2 = await Individual.fetch(this.session, { ssn })
 
-                    if (person2) {
-                        if (person.dob !== person2.dob) throw new Error('Submitted SSN belongs to someone else with a different DOB')
+            //         if (person2) {
+            //             if (person.dob !== person2.dob) throw new Error('Submitted SSN belongs to someone else with a different DOB')
 
-                        Object.keys(body).map(key => body[key] = {})
+            //             Object.keys(body).map(key => body[key] = {})
 
-                        body.main = processData({ personId: person2.id }, {
-                            currentData: this,
-                            currentUpdateLog: await this.log({ field: 'updateLog' }),
-                            modifiedBy: this.session.user.id,
-                        })
+            //             body.main = processData({ personId: person2.id }, {
+            //                 currentData: this,
+            //                 currentUpdateLog: await this.log({ field: 'updateLog' }),
+            //                 modifiedBy: this.session.user.id,
+            //             })
 
-                        const [ result ] = await mysql.execute(query.company_owner.main.update(body.main, { id: this.id }))
-                        return { updated: result.affectedRows > 0 }
-                    }
-                }
+            //             const [ result ] = await mysql.execute(query.company_owner.main.update(body.main, { id: this.id }))
+            //             return { updated: result.affectedRows > 0 }
+            //         }
+            //     }
 
-                const { updated } = await person.update(body.main)
-                const { updated: nameUpdated } = await person.update('name', body.name, { since: since || dob })
-                const { updated: phoneUpdated } = person.phone ? await person.update('phone', body.phone, { since: since || dob }) : { updated: false }
+            //     const { updated } = await person.update(body.main)
+            //     const { updated: nameUpdated } = await person.update('name', body.name, { since: since || dob })
+            //     const { updated: phoneUpdated } = person.phone ? await person.update('phone', body.phone, { since: since || dob }) : { updated: false }
 
-                return { updated: updated || nameUpdated || phoneUpdated }
-            }
+            //     return { updated: updated || nameUpdated || phoneUpdated }
+            // }
 
 
             //? NOT SURE HOW IT IS TO BE USED EXCEPT DELETING THE OWNER
