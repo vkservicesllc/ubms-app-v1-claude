@@ -57,7 +57,9 @@ export const dtDriverList = async (req, res) => {
                 knex.raw('MAX(??) AS ??', ['adr.address2', 'address2']),
                 knex.raw('MAX(??) AS ??', ['adr.city', 'city']),
                 knex.raw('MAX(??) AS ??', ['adr.state', 'state']),
-                knex.raw('MAX(??) AS ??', ['adr.zip', 'zip'])
+                knex.raw('MAX(??) AS ??', ['adr.zip', 'zip']),
+                knex.raw('MAX(??) AS ??', ['dls.state', 'dlState']),
+                knex.raw('MAX(??) AS ??', ['dls.expiresOn', 'dlExpiresOn'])
             )
             .leftJoin(`${db.person}.individuals AS psn`, 'psn.id', 'drv.personId')
             .leftJoin(
@@ -78,6 +80,11 @@ export const dtDriverList = async (req, res) => {
             .leftJoin(
                 knex.raw('? AS adr', [ subQuery(db.person, 'addresses', 'since', 'personId') ]),
                 'adr.personId',
+                'drv.personId'
+            )
+            .leftJoin(
+                knex.raw('? AS dls', [ subQuery(db.person, 'identifications', 'issuedOn', 'personId') ]),
+                'dls.personId',
                 'drv.personId'
             )
             .leftJoin(`${db.carrier}.applications AS apl`, 'apl.driverId', 'drv.id')
@@ -243,13 +250,14 @@ export const dtApplicationList = async (req, res) => {
             }))
         }
 
-        const archiveWhere = archived === 'true'
-            ? 'whereNotNull'
-            : 'whereNull'
+                //! NEED TO USE AND WHERE
+                const archiveWhere = archived === 'true'
+                    ? 'whereNotNull'
+                    : 'whereNull'
 
-        baseQuery[archiveWhere]('archivedAt')
-        countQuery[archiveWhere]('archivedAt')
-        totalCountQuery[archiveWhere]('archivedAt')
+                baseQuery[archiveWhere]('archivedAt')
+                countQuery[archiveWhere]('archivedAt')
+                totalCountQuery[archiveWhere]('archivedAt')
 
 
         /* STEP 2: Prepare Filters */

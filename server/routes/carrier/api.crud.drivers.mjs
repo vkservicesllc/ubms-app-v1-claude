@@ -29,7 +29,6 @@ const hideRawId = true
 router.get('/applications/prev-employments', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const _teamId = res.session?.team?._id
-
         res.json({ data: await Employment.fetch(res.session, { condition: 'c', _teamId }, { hideRawId }) })
     } catch (err) {
         sendError.server(req, res, err)
@@ -54,7 +53,7 @@ router.get('/applications/:_id', User.mw.verify, Team.mw.verify, async (req, res
         const identity = await application.identity()
         const log = await application.log()
 
-        const applications = await Application.fetch(res.session, { driverId: driver.id }) // await driver.fetch('application.history')
+        const applications = await Application.fetch(res.session, { driverId: driver.id })
         const count = applications.length
         const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
 

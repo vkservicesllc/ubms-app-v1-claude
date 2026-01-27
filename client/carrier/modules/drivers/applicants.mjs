@@ -13,6 +13,21 @@ const table = $('#driver-aplicants-table').DataTable({
         url: '/api/resource/drivers/applicants/query',
         dataSrc(response) {
             const { data } = response
+            const today = moment()
+
+            data.map(row => {
+                const dlExpiresOn = moment(row.dlExpiresOn)
+                row.dlStatus = 'Valid'
+
+                if (today.isSameOrAfter(dlExpiresOn)) row.dlStatus = 'Expired'
+                else {
+                    const dlDiff = dlExpiresOn.diff(today, 'days')
+                    if (dlDiff < 30) {
+                        row.dlStatus = 'Expires Soon'
+                        row.dlDiff = dlDiff
+                    }
+                }
+            })
 
             return data
         },
@@ -67,6 +82,44 @@ const table = $('#driver-aplicants-table').DataTable({
             searchable: false,
             render(data, type, row) {
                 return new Address(row).html()
+            },
+        },
+
+        {
+            data: 'dlState',
+            title: 'DL State',
+            searchable: false,
+            render(data) {
+                return Address.list.state[data]
+            },
+        },
+
+        {
+            data: 'dlExpiresOn',
+            title: 'DL Expires on',
+            searchable: false,
+            render(data, type, row) {
+                let warning = ''
+                if (row.dlStatus === 'Expired') warning = ' <i class="dark red exclamation triangle icon"></i>'
+                if (row.dlStatus === 'Expires Soon') warning = ' <i class="dark orange exclamation circle icon"></i>'
+
+                return moment(data).format('ll') + warning
+            },
+        },
+
+        {
+            data: 'dlStatus',
+            title: 'DL Status',
+            searchable: false,
+            render(data, type, row) {
+                let style = 'green'
+                if (data === 'Expired') style = 'red'
+                if (data === 'Expires Soon') {
+                    style = 'orange'
+                    data += ` <small>(${row.dlDiff} days)</small>`
+                }
+
+                return `<span class="ui dark ${style} text">${data}</span>`
             },
         },
 

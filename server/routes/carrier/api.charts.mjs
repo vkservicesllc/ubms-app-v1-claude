@@ -8,15 +8,9 @@ import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 
 
 
-router.post('/drivers', User.mw.verify, Team.mw.verify, async (req, res) => {
+router.post('/drivers/applications', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
-        let team, teamId
-        if (req.session.team) {
-            team = await Team.fetch(res.session, { _id: req.session.team })
-            teamId = team.id
-        }
-
-        res.send(await Application.chart(res.session, { teamId }))
+        res.send(await Application.chart(res.session, { _teamId: req.session.team }))
     } catch (err) {
         sendError.server(req, res, err)
     }

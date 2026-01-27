@@ -111,6 +111,15 @@ class Driver extends Individual {
                     ],
                 },
                 {
+                    table: query.driver_application.main.table,
+                    join: [ 'driverId', 'id' ],
+                },
+                {
+                    db: db.online,
+                    table: query.team.main.table,
+                    join: [ 'id', 'teamId', 1 ],
+                },
+                {
                     db: db.person,
                     table: query.person.main.table,
                     fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
@@ -180,16 +189,22 @@ class Driver extends Individual {
             ],
             prepare(batch, filter) {
                 const {
-                    id, _id, personId, _personId,
-                    blackListed,
+                    id, _id, personId, _personId, blackListed,
+                    teamId, _teamId,
                 } = filter
                 const single = !!id || !!_id || !!personId || !!_personId
 
-                const match = { id, personId, blackListed }
-                if (!id && _id) match.id = Driver.matchIdHash(_id)
-                if (!personId && _personId) match.personId = Individual.matchIdHash(_personId)
+                const match = {
+                    main: { id, personId, blackListed },
+                    applications: { teamId },
+                }
+                if (!id && _id) match.main.id = Driver.matchIdHash(_id)
+                if (!personId && _personId) match.main.personId = Individual.matchIdHash(_personId)
+                if (!teamId) match.applications.teamId = Team.matchIdHash(_teamId)
 
-                batch[0].match = match
+                batch[0].match = match.main
+                batch[1].match = match.applications
+                if (!single && !teamId && !_teamId) batch[2].match = { scoped: [ false, null ] }
 
                 return { single, batch }
             },
@@ -617,7 +632,23 @@ class Application {
                             if (!this.dl) {
                                 await this.add('license', body)
                                 await this.update({ step: 2 })
-                            } else await this.update('license', body)
+
+                                const person = await Individual.fetch(this.session, { id: this.personId })
+
+                                //! IF THIS IDENTIFICATION NOT FOUND ONLY
+                                delete body.appId
+                                delete body.denied
+                                delete body.revoked
+                                delete body.deniedExpl
+                                delete body.revokedExpl
+
+                                //! IF THIS IDENTIFICATION NOT FOUND ONLY
+                                await person.add('identifications', body)
+                            } else {
+                                await this.update('license', body)
+
+                                //! UPDATE IN PERSONS's IDENTIFICATIONS
+                            }
                         }
                         break
 
@@ -1399,13 +1430,20 @@ class Application {
         prepare(batch, filter) {
             const {
                 id, _id, formId,
+                driverId, _driverId, teamId, _teamId,
             } = filter
             const single = !!id || !!_id || !!formId
 
-            const match = { id, formId }
+            const match = { id, formId, driverId, teamId }
             if (!id) match.id = Application.matchIdHash(_id)
+            if (!driverId) match.driverId = Driver.matchIdHash(_driverId)
+            if (!teamId) match.teamId = Team.matchIdHash(_teamId)
 
             batch[0].match = match
+            if (!single && !teamId && !_teamId) {
+                const idx = batch.length - 1
+                batch[idx].match = { scoped: [ false, null ] }
+            }
 
             return { single, batch }
         },
@@ -1426,14 +1464,29 @@ class Application {
     static chart = async (session, filter = {}) => {
         if (!session.user) return
 
-        const { teamId } = filter
+        const { teamId, _teamId } = filter
         const data = { applications: {} }
-        let match
-        if (teamId) match = { teamId }
+        const match = { teamId }
+        if (!teamId) match.teamId = Team.matchIdHash(_teamId)
 
-        const [ result ] = await mysql.execute(query.driver_application.main.select(['condition', { count: ['condition', 'count'] }], {
-            match, group: 'condition',
-        }))
+        const batch = [
+            {
+                table: query.driver_application.main.table,
+                fields: [ 'condition', { count: ['condition', 'count'] } ],
+                group: 'condition',
+                match,
+            },
+            {
+                db: db.online,
+                table: query.team.main.table,
+                join: [ 'id', 'teamId' ],
+            },
+        ]
+
+        if (!teamId && !teamId)
+            batch[1].match = { scoped: [ false, null ] }
+
+        const [ result ] = await mysql.execute(Query.select(db.carrier, batch))
         data.applications.conditions = {}
 
         result.forEach(row => {
@@ -1734,16 +1787,22 @@ class Employment {
                     fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
                     join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
                 },
+                {
+                    db: db.online,
+                    table: query.team.main.table,
+                    join: [ 'id', 'teamId', 1 ],
+                },
             ],
             prepare(batch, filter) {
                 const {
-                    id, _id, appId, _appId, teamId, _teamId
+                    id, _id,
+                    appId, _appId, teamId, _teamId, condition,
                 } = filter
                 const single = !!id || !!_id
 
                 const match = {
                     main: { id, appId },
-                    applications: { teamId },
+                    applications: { teamId, condition },
                 }
                 if (!id) match.main.id = Employment.matchIdHash(_id)
                 if (!appId) match.main.appId = Application.matchIdHash(_appId)
@@ -1751,6 +1810,10 @@ class Employment {
 
                 batch[0].match = match.main
                 batch[1].match = match.applications
+                if (!single && !teamId && !_teamId) {
+                    const idx = batch.length - 1
+                    batch[idx].match = { scoped: [ false, null ] }
+                }
 
                 return { single, batch }
             },

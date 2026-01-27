@@ -64,7 +64,7 @@ $(() => {
     }
 
     const fetchDraw = () => {
-        $.post('/api/charts/drivers', null, response => {
+        $.post('/api/charts/drivers/applications', null, response => {
             const { applications } = response
 
             if (options.applications.conditions.ctx) { /* Application Conditions */
