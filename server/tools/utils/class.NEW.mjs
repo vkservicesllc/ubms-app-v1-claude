@@ -1,9 +1,3 @@
-const { DB__MYSQL_AES_EIN, DB__MYSQL_AES_SSN } = Bun.env
-const secret = {
-    ein: DB__MYSQL_AES_EIN,
-    ssn: DB__MYSQL_AES_SSN,
-}
-
 import Query, { hash, matchHash } from './query.mjs'
 import { processData, logDeletion, logFields } from './data.mjs'
 
@@ -187,9 +181,6 @@ export const classInstance = {
 
         body = await processData(body, options)
 
-        if (body?.ssn && typeof body.ssn !== 'object') body.ssn = { aes: [ body.ssn, secret.ssn ] }
-        if (body?.ein && typeof body.ein !== 'object') body.ein = { aes: [ body.ein, secret.ein ] }
-
         const [ result ] = await mysql.execute(config.query[target].update(body, {
             [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
         }))
@@ -309,7 +300,21 @@ export const classInstance = {
 
 
 
-export const classStatic = {}
+export const classStatic = {
+
+
+    create: async (Cls, { user: sessionUser = {}, branch, siteId = null }, body = {}, { hideRawId = false } = {}, {
+        find, split, final,
+    } = {}) => {},
+
+
+    fetch: async (Cls, { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
+        { hideRawId = false, hideSensitive = true, sorts, mode = 'data' } = {},
+        { batch = [], prepare, removeFullGroupBy = false } = {}
+    ) => {}
+
+
+}
 
 
 

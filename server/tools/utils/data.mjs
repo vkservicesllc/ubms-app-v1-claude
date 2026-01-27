@@ -41,7 +41,7 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
 
         logFields.map(logField => delete currentData[logField])
 
-        if (!skipLog && modifiedBy) {
+        if (!skipLog && modifiedBy && currentData.updateLog !== undefined) {
             currentUpdateLog = currentData.updateLog
             updateLog = [
                 {
