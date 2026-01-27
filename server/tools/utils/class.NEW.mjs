@@ -303,70 +303,76 @@ export const classStatic = {}
 
 
 async function processData(data = {}, { query, target, skipLog = false, modifiedBy, branch, siteId } = {}) {
-    // let currentUpdateLog = {}
-    // let updateLog = Object.keys(currentData).length > 0 && modifiedBy !== undefined
-    //     ? [
-    //         {
-    //             data: {},
-    //             oldData: {},
-    //             modifiedBy,
-    //             modifiedAt: utcTimeStamp(),
-    //         }
-    //     ]
-    //     : null
+    const update = query && target
+    let currentData, currentUpdateLog, updateLog
 
-    // if (updateLog) {
-    //     if (branch) updateLog[0].modifiedIn = { branch }
-    //     if (siteId) updateLog[0].modifiedIn.siteId = siteId
+    if (update) {
+        currentData = await mysql(query[target].select('*', { match }))[0][0]
+        if (!currentData) throw new Error('Could not process data: current data not found')
 
-    //     currentUpdateLog = currentData.updateLog
-    //     logFields.map(logField => delete currentData[logField])
-    // }
+        logFields.map(logField => delete currentData[logField])
 
-    // for (const field in data) {
-    //     const value = data[field]
+        if (!skipLog && modifiedBy) {
+            currentUpdateLog = currentData.updateLog
+            updateLog = [
+                {
+                    data: {},
+                    oldData: {},
+                    modifiedBy,
+                    modifiedAt: utcTimeStamp(),
+                }
+            ]
+            if (branch) updateLog[0].modifiedIn = { branch }
+            if (siteId) updateLog[0].modifiedIn.siteId = siteId
+        }
+    }
 
-    //     //* Ignore logging Objects
-    //     if (value !== null && typeof value === 'object') {
-    //         data[field] = JSON.stringify(value)
-    //         continue
-    //     }
+    for (const field in data) {
+        const value = data[field]
 
-    //     //* Ignore undefined fields
-    //     if (value === undefined) {
-    //         delete data[field]
-    //         continue
-    //     }
+        //* Ignore logging Objects
+        if (value !== null && typeof value === 'object') {
+            data[field] = JSON.stringify(value)
+            continue
+        }
 
-    //     //* Convert empty string to null
-    //     if (value === '') data[field] = null
+        //* Ignore undefined fields
+        if (value === undefined) {
+            delete data[field]
+            continue
+        }
 
-    //     if (updateLog) {
-    //         const currentValue = currentData[field]
+        //* Convert empty string to null
+        if (value === '') data[field] = null
 
-    //         //* Boolean to TinyInt when update for correct comparison
-    //         if (typeof value === 'boolean') data[field] = value ? 1 : 0
+        if (update) {
+            const currentValue = currentData[field]
 
-    //         if (currentValue === undefined || value === currentValue) {
-    //             delete data[field]
-    //             continue
-    //         }
+            //* Boolean to TinyInt when update for correct comparison
+            if (typeof value === 'boolean') data[field] = value ? 1 : 0
 
-    //         const encData = ['ssn', 'ein'].includes(field)
+            if (currentValue === undefined || value === currentValue) {
+                delete data[field]
+                continue
+            }
 
-    //         updateLog[0].data[field] = value && encData ? encrypt(value) : processValue(value)
-    //         updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : processValue(currentValue)
-    //     } else if (value === null) delete data[field]
-    // }
+            if (updateLog) {
+                const encData = ['ssn', 'ein'].includes(field)
 
-    // if (updateLog && Object.keys(updateLog[0].data).length) {
-    //     if (currentUpdateLog)
-    //         updateLog = updateLog.concat(currentUpdateLog)
+                updateLog[0].data[field] = value && encData ? encrypt(value) : processValue(value)
+                updateLog[0].oldData[field] = currentValue && encData ? encrypt(currentValue) : processValue(currentValue)
+            }
+        } else if (value === null) delete data[field]
+    }
 
-    //     data.updateLog = JSON.stringify(updateLog).replace(/(?<!\\)\\"/g, '\\\\"')
-    // }
+    if (updateLog && Object.keys(updateLog[0].data).length) {
+        if (currentUpdateLog)
+            updateLog = updateLog.concat(currentUpdateLog)
 
-    // return data
+        data.updateLog = JSON.stringify(updateLog).replace(/(?<!\\)\\"/g, '\\\\"')
+    }
+
+    return data
 }
 
 
