@@ -111,6 +111,9 @@ class Individual extends Person {
         query: query.person,
         idProp: 'personId',
         defSorts: [ null, [ 'lastName', 'suffix', 'firstName', 'middleName' ] ],
+        childSort: {
+            identifications: 'issuedOn',
+        },
         logFile: 'individuals',
     })
 

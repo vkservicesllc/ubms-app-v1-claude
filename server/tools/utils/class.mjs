@@ -172,12 +172,17 @@ export const classInstance = {
 
         if (typeof currentData === 'function') options.currentData = await currentData(target, options.currentData)
 
+        if (Object.keys(match).length) {
+            if ('_id' in match) match._id = matchHash(match._id, config.childIdHash[target])
+
+            options.currentData = await inst.fetch(target, { match })
+            options.currentUpdateLog = await inst.log()
+        }
+
         body = processData(body, options)
 
         if (body?.ssn !== undefined) body.ssn = { aes: [ body.ssn, secret.ssn ] }
         if (body?.ein !== undefined) body.ein = { aes: [ body.ein, secret.ein ] }
-
-        if ('_id' in match) match._id = matchHash(match._id, config.childIdHash[target])
 
         const [ result ] = await mysql.execute(config.query[target].update(body, {
             [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
@@ -258,7 +263,7 @@ export const classInstance = {
     },
 
 
-    log: async (inst, Cls, { field = null, target = 'main', since } = {}, fields) => {
+    log: async (inst, Cls, { field = null, target = 'main', since, match = {} } = {}, fields) => {
         const { enforceUser = true, logFields = {} } = Cls.config()
         const { user: sessionUser } = inst.session || {}
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
@@ -267,8 +272,9 @@ export const classInstance = {
 
         const config = Cls.config()
         const idProp = target === 'main' ? 'id' : config.idProp
-        const match = { [idProp]: inst.id || Cls.matchIdHash(inst._id), since }
-        const log = (await mysql.execute(config.query[target].select(fields, { match })))[0][0]
+        const log = (await mysql.execute(config.query[target].select(fields, {
+            [idProp]: inst.id || Cls.matchIdHash(inst._id), since, ... match,
+        })))[0][0]
 
         return fields.includes(field) ? log[field] : log
     },

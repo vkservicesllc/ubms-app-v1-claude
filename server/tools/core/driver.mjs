@@ -629,25 +629,35 @@ class Application {
                             if (!body.denied) body.deniedExpl = null
                             if (!body.revoked) body.revokedExpl = null
 
+                            const person = await Individual.fetch(this.session, { id: this.personId })
+                            const identifications = await person.fetch('identifications')
+
+                            const dlBody = { ...body }
+                            delete dlBody.appId
+                            delete dlBody.denied
+                            delete dlBody.revoked
+                            delete dlBody.deniedExpl
+                            delete dlBody.revokedExpl
+
                             if (!this.dl) {
                                 await this.add('license', body)
                                 await this.update({ step: 2 })
 
-                                const person = await Individual.fetch(this.session, { id: this.personId })
+                                let found = false
 
-                                //! IF THIS IDENTIFICATION NOT FOUND ONLY
-                                delete body.appId
-                                delete body.denied
-                                delete body.revoked
-                                delete body.deniedExpl
-                                delete body.revokedExpl
+                                for (const id of identifications) {
+                                    if (body.state === id.state && body.issuedOn === id.issuedOn && body.expiresOn === id.expiresOn) {
+                                        found = true
+                                        break
+                                    }
+                                }
 
-                                //! IF THIS IDENTIFICATION NOT FOUND ONLY
-                                await person.add('identifications', body)
+                                if (!found) await person.add('identifications', dlBody)
                             } else {
+                                const { state, issuedOn, expiresOn } = this.dl
+console.log({ body, dlBody })
                                 await this.update('license', body)
-
-                                //! UPDATE IN PERSONS's IDENTIFICATIONS
+                                await person.update('identifications', dlBody, { state, issuedOn, expiresOn })
                             }
                         }
                         break
