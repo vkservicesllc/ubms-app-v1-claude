@@ -13,16 +13,6 @@ import { resetProto } from '../../../client/global/modules/tools/utils/object.mj
 const mysql = require('./mysql')
 
 
-const logActions = ['created', 'deleted', 'archived', 'invited', 'finished', 'reviewed', 'declined']
-const logFields = []
-logActions.map(action => {
-    logFields.push(action + 'By')
-    logFields.push(action + 'At')
-    logFields.push(action + 'In')
-})
-logFields.push('updateLog')
-
-
 
 export async function processData(data = {}, { query, target = 'main', skipLog = false, match = {}, modifiedBy, branch, siteId } = {}) {
     const update = query && target
@@ -38,8 +28,6 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
 
         currentData = await mysql(query[target].select(fields, { match }))[0][0]
         if (!currentData) throw new Error('Could not process data: current data not found')
-
-        logFields.map(logField => delete currentData[logField])
 
         if (!skipLog && currentData.updateLog !== undefined) {
             currentUpdateLog = currentData.updateLog
@@ -138,9 +126,6 @@ export async function logDeletion(session, target, instance, ids = {}) {
 
     await Bun.write(filePath, JSON.stringify(log, null, 4))
 }
-
-
-export { logFields }
 
 
 
