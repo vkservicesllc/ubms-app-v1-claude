@@ -1,8 +1,18 @@
 import Query, { hash, matchHash } from './query.mjs'
-import { processData, logDeletion, logFields } from './data.mjs'
+import { processData, logDeletion } from './data.mjs'
 
 const mysql = require('./mysql')
 const { sqlMode } = Query
+
+
+const logActions = ['created', 'deleted', 'archived', 'invited', 'finished', 'reviewed', 'declined']
+const logFields = []
+logActions.map(action => {
+    logFields.push(action + 'By')
+    logFields.push(action + 'At')
+    logFields.push(action + 'In')
+})
+logFields.push('updateLog')
 
 
 
