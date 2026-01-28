@@ -69,7 +69,7 @@ roleLocationEvent(ajaxData, { onChange, onAjax })
 
 
 $.ajax('/api/resource/roles?category=carrier', {
-    success(response) {console.log(response)
+    success(response) {
         let list = ''
         let { data } = response
 

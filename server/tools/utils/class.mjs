@@ -90,6 +90,8 @@ export const classInstance = {
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Session user not supplied`)
         if (!idProp) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: ID Property not supplied`)
 
+        const { hideRawId, hideSensitive } = inst.config
+
         const jx = target.slice(0, 3) === 'jx.'
         if (jx) target = target.slice(3)
 
@@ -100,7 +102,7 @@ export const classInstance = {
 
             const ids = []
             const [ jxQuery, jxIdProp, Src ] = jxTargets[target]
-            if (!sorts) sorts = defSorts
+            if (!sorts) sorts = Src.config().defSorts || null
 
             const [ rows ] = await mysql.execute(jxQuery.select(jxIdProp, {
                 match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
