@@ -410,7 +410,7 @@ class Owner extends Individual {
             //             Object.keys(body).map(key => body[key] = {})
 
             //             body.main = await processData({ personId: person2.id }, {
-            //                 query: Owner.config().query,
+            //                 query: Owner.config().query, match: { id: this.id },
             //                 modifiedBy: this.session.user.id,
             //             })
 
