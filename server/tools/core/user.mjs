@@ -131,8 +131,10 @@ class User extends Person {
                 if (!this.session?.user?.id) throw new Error('User Constructor Method Error [DELETE]: Session user not supplied')
 
                 return classInstance.delete(this, new.target, target, ids, async () => {
+                    const config = User.config()
+
                     const update = await processData({ username: null, email: null, phone: null, condition: 'I' }, {
-                        query: User.config().query, skipLog: true,
+                        query: config.query, match: { id: this.id }, skipLog: true,
                     })
                     update._passKey = null
                     update.deletedBy = this.session.user.id
@@ -146,7 +148,8 @@ class User extends Person {
                     await mysql.execute(query.user.passReset.delete(match))
                     await mysql.execute(query.session.token.delete(match))
 
-                    const { jxTargets } = User.config()
+                    const { jxTargets } = config
+
                     for (const target in jxTargets) {
                         const [ jxQuery ] = jxTargets[target]
 

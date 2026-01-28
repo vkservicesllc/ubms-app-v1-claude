@@ -36,11 +36,11 @@ router.post('/unique/user/new/username', async (req, res) => {
 router.post('/user/decline/:_id', async (req, res) => {
     try {
         const { _id } = req.params
+
         const user = await User.fetch(res.session, { _id }, { offline: true })
         if (!user) throw new Error('Oops! Something went wrong!')
 
         const inviter = await user.inviter()
-
         await mysql.execute(query.user.registration.delete({ userId: user.id }))
         await mysql.execute(query.user.main.update({ declinedAt: utcTimeStamp(), condition: 'L' }, { id: user.id }))
 

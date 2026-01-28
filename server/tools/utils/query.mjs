@@ -57,7 +57,7 @@ class Query {
         const tables = []
         const joins = []
         const matches = []
-        const sorts = [] //! UNTESTED
+        const sorts = []
 
         let grouper
         let columns = []
@@ -169,7 +169,7 @@ class Query {
 
     select(fields, filter = {}) {
         const table = Query.#_table(this.table, this.db)
-        const { match, group, sort, limit } = filter
+        let { match, group, sort, limit } = filter
 
         if (!Array.isArray(fields)) fields = [ fields ]
         fields = fields.map(field => field = Query.#field(field))
@@ -178,7 +178,9 @@ class Query {
         query += fields.join(`,\n`)
         query += `\nFROM ${table}\n`
 
-        if (match) query += `WHERE ${Query.#match(match)}\n`
+        match = Query.#match(match)
+
+        if (match) query += `WHERE ${match}\n`
         if (group) query += `GROUP BY ${Query.#_field(group)}\n`
         if (sort) query += `ORDER BY ${Query.#sort(sort)}\n`
         if (limit) query += `LIMIT ${limit}\n`

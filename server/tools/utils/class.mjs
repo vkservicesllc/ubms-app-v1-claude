@@ -60,7 +60,7 @@ export const classInstance = {
         const { query, idProp } = config
         let body = bodyOrIds || {}
 
-        body = processData(body)
+        body = await processData(body)
 
         if (typeof bodyCB === 'function') body = await bodyCB(body)
         body.createdBy = createdBy
@@ -281,11 +281,10 @@ export const classInstance = {
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`)
 
         const { query } = config
-
         const idProp = target === 'main' ? 'id' : config.idProp
 
         const data = (await mysql.execute(query[target].select('*', {
-            [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
+            match: { [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match },
         })))[0][0]
         if (!data) return
         
@@ -293,7 +292,7 @@ export const classInstance = {
         for (const field in data)
             if (logFields.includes(field)) log[field] = data[field]
 
-        return log?.[field] || log
+        return field ? log[field] : log
     },
 
 
@@ -321,7 +320,7 @@ export const classStatic = {
             return { created: false, data }
         }
 
-        body = processData(body)
+        body = await processData(body)
 
         if (typeof split === 'function') body = await split(body)
         else body = { main: body }
@@ -335,6 +334,10 @@ export const classStatic = {
 
         if (sessionUser?.id) body.main.createdBy = sessionUser.id
         if (locationEnforced) body.main.createdIn = createdIn
+
+        const [ result ] = await mysql.execute(query.main.insert(body.main))
+        const id = result.insertId
+        if (!id) throw new Error(`Failed to create ${Cls.name.toLowerCase()}`)
 
         for (const target in body) {
             if (target === 'main') continue

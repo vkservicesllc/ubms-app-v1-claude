@@ -26,7 +26,7 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
         if ('ssn' in data) fields.push({ aes: [ 'ssn', secret.ssn ] })
         if ('ein' in data) fields.push({ aes: [ 'ein', secret.ein ] })
 
-        currentData = await mysql(query[target].select(fields, { match }))[0][0]
+        currentData = (await mysql.execute(query[target].select(fields, { match })))[0][0]
         if (!currentData) throw new Error('Could not process data: current data not found')
 
         if (!skipLog && currentData.updateLog !== undefined) {
