@@ -24,7 +24,7 @@ logFields.push('updateLog')
 
 
 
-export async function processData(data = {}, { query, target = 'main', skipLog = false, modifiedBy, branch, siteId } = {}) {
+export async function processData(data = {}, { query, target = 'main', skipLog = false, match = {}, modifiedBy, branch, siteId } = {}) {
     const update = query && target
     let currentData, currentUpdateLog, updateLog
 
@@ -41,7 +41,7 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
 
         logFields.map(logField => delete currentData[logField])
 
-        if (!skipLog && modifiedBy && currentData.updateLog !== undefined) {
+        if (!skipLog && currentData.updateLog !== undefined) {
             currentUpdateLog = currentData.updateLog
             updateLog = [
                 {

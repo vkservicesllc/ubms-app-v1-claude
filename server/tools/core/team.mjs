@@ -48,6 +48,7 @@ class Team {
         if (single) {
             this.session = session || {}
             this.session.offline = offline
+            this.config = { hideRawId }
 
 
             this.add = (target, bodyOrIds) => {
@@ -61,24 +62,9 @@ class Team {
 
 
             this.update = (targetOrBody, body) => {
-                const team = this
                 if (!session?.user?.id) throw new Error('Team Constructor Method Error [UPDATE]: Session user not supplied')
 
-                return classInstance.update(this, new.target, targetOrBody, body, {}, {
-                    currentData(target, data) {
-                        switch (target) {
-                            case 'profile':
-                                const { profile } = team
-                                const { address } = profile
-                                delete profile.address
-
-                                data = { ...profile, ...address }
-                                break
-                        }
-
-                        return data
-                    }
-                })
+                return classInstance.update(this, new.target, targetOrBody, body)
             }
 
 

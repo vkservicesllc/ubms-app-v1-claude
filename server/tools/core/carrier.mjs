@@ -46,12 +46,16 @@ class Carrier extends Company {
 
         if (single) {
             this.session = session
+            this.config = { hideRawId, hideSensitive }
 
 
             this.add = (target, body) => classInstance.add(this, new.target, target, body)
 
 
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+
+
+            this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match)
 
 
             this.delete = (target, match) => classInstance.delete(this, new.target, target, match)

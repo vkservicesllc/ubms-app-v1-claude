@@ -63,13 +63,6 @@ class Individual extends Person {
 
 
             this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
-                currentData(target, data) {
-                    switch (target) {
-                        //
-                    }
-
-                    return data
-                },
                 async final(person, body) {
                     if (!body.dob || body.dob === person.dob) return
 

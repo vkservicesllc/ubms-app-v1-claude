@@ -97,6 +97,7 @@ class Company {
 
         if (single) {
             this.session = session
+            this.config = { hideRawId, hideSensitive }
 
 
             this.add = (target, bodyOrIds) => classInstance.add(this, new.target, target, bodyOrIds)
@@ -106,13 +107,6 @@ class Company {
 
 
             this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
-                currentData(target, data) {
-                    switch (target) {
-                        //
-                    }
-
-                    return data
-                },
                 async final(company, body, target) {
                     if (target === 'main' || !body.since || body.since === company.since) return
 
@@ -380,61 +374,58 @@ class Owner extends Individual {
 
         if (single) {
             this.session = session
+            this.config = { hideRawId, hideSensitive }
 
 
-            this.add = () => {} //?
+            this.add = undefined
 
+            this.fetch = undefined
 
-            //? NOT SURE HOW IT IS TO BE USED
-            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+            this.update = (targetOrBody, body, match = {}) => classInstance.update(this, new.target, targetOrBody, body, match)
+            // this.update = async (body, { since } = {}) => {
+            //     if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
 
+            //     const { signature } = body
+            //     if (typeof signature === 'boolean') {
+            //         const [ result ] = await mysql.execute(query.company_owner.main.update({ signature }, { id: this.id }))
+            //         return { updated: result.affectedRows > 0 }
+            //     }
 
-            this.update = async (body, { since } = {}) => {
-                if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
+            //     const person = await Individual.fetch(this.session, { id: this.personId }, { hideSensitive: false })
+            //     if (!person) throw new Error('Person not identified')
 
-                const { signature } = body
-                if (typeof signature === 'boolean') {
-                    const [ result ] = await mysql.execute(query.company_owner.main.update({ signature }, { id: this.id }))
-                    return { updated: result.affectedRows > 0 }
-                }
+            //     const { dob, gender, ssn, firstName, middleName, lastName, suffix, phone } = body
+            //     body = {
+            //         person: { dob, gender, ssn },
+            //         name: { firstName, middleName, lastName, suffix },
+            //         phone: { phone },
+            //     }
 
-                const person = await Individual.fetch(this.session, { id: this.personId }, { hideSensitive: false })
-                if (!person) throw new Error('Person not identified')
+            //     if (ssn && person.ssn && ssn !== ssn) {
+            //         const person2 = await Individual.fetch(this.session, { ssn })
 
-                const { dob, gender, ssn, firstName, middleName, lastName, suffix, phone } = body
-                body = {
-                    person: { dob, gender, ssn },
-                    name: { firstName, middleName, lastName, suffix },
-                    phone: { phone },
-                }
+            //         if (person2) {
+            //             if (person.dob !== person2.dob) throw new Error('Submitted SSN belongs to someone else with a different DOB')
 
-                if (ssn && person.ssn && ssn !== ssn) {
-                    const person2 = await Individual.fetch(this.session, { ssn })
+            //             Object.keys(body).map(key => body[key] = {})
 
-                    if (person2) {
-                        if (person.dob !== person2.dob) throw new Error('Submitted SSN belongs to someone else with a different DOB')
+            //             body.main = await processData({ personId: person2.id }, {
+            //                 query: Owner.config().query,
+            //                 modifiedBy: this.session.user.id,
+            //             })
 
-                        Object.keys(body).map(key => body[key] = {})
+            //             const [ result ] = await mysql.execute(query.company_owner.main.update(body.main, { id: this.id }))
+            //             return { updated: result.affectedRows > 0 }
+            //         }
+            //     }
 
-                        body.main = await processData({ personId: person2.id }, {
-                            query: Owner.config().query,
-                            modifiedBy: this.session.user.id,
-                        })
+            //     const { updated } = await person.update(body.main)
+            //     const { updated: nameUpdated } = await person.update('name', body.name, { since: since || dob })
+            //     const { updated: phoneUpdated } = person.phone ? await person.update('phone', body.phone, { since: since || dob }) : { updated: false }
 
-                        const [ result ] = await mysql.execute(query.company_owner.main.update(body.main, { id: this.id }))
-                        return { updated: result.affectedRows > 0 }
-                    }
-                }
+            //     return { updated: updated || nameUpdated || phoneUpdated }
+            // }
 
-                const { updated } = await person.update(body.main)
-                const { updated: nameUpdated } = await person.update('name', body.name, { since: since || dob })
-                const { updated: phoneUpdated } = person.phone ? await person.update('phone', body.phone, { since: since || dob }) : { updated: false }
-
-                return { updated: updated || nameUpdated || phoneUpdated }
-            }
-
-
-            //? NOT SURE HOW IT IS TO BE USED EXCEPT DELETING THE OWNER
             this.delete = () => classInstance.delete(this, new.target, null, null, {
                 extendLog(owner, log) {
                     const reduntant = [

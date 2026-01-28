@@ -27,20 +27,6 @@ import { tel as formatTel } from '../../../client/global/modules/tools/utils/for
 import { application } from '../../includes/driver'
 
 const mysql = require('../utils/mysql')
-const knex = require('../utils/knex')
-const sendError = require('../utils/error')
-
-const relLogFields = ['createdBy', 'createdAt', 'createdIn', 'updateLog']
-
-
-const subQuery = (db, table, maxField, groupId) => knex
-    .select('*')
-    .from(`${db}.${table}`)
-    .whereIn(maxField, function() {
-        this.select(knex.raw(`MAX(${maxField})`))
-            .from(`${db}.${table}`)
-            .groupBy(groupId)
-    })
 
 
 
@@ -471,43 +457,10 @@ class Application {
             this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
 
 
-            this.update = (targetOrBody, body) => {
+            this.update = (targetOrBody, body, filter) => {
                 const application = this
 
-                return classInstance.update(this, new.target, targetOrBody, body, {}, {
-                    currentData(target, data) {
-                        switch (target) { //! SEEMS TO NOT WORK
-                            case 'license':
-                                data = application.dl
-                                break
-                            case 'medical':
-                                data = application.mec
-                                break
-                            case 'experience':
-                                data = application.experience
-                                break
-                            case 'school':
-                                data = application.cdlSchool
-                                break
-                            case 'preference':
-                                data = application.preference
-                                break
-                            case 'business':
-                                data = application.business
-                                break
-                            case 'vehicle':
-                                data = application.vehicle
-                                break
-                            case 'beneficiary':
-                                data = application.beneficiary
-                                break
-                            case 'emergency':
-                                data = application.emergency
-                                break
-                        }
-
-                        return data
-                    },
+                return classInstance.update(this, new.target, targetOrBody, body, filter, {
                     async final(inst, body, target) {
                         if (target !== 'main' || !body.ssn) return
 
@@ -987,10 +940,7 @@ console.log({ body, dlBody })
             }
 
 
-            this.log = params => classInstance.log(this, new.target, params, [
-                ...classInstance.logFields,
-                'createdIn', 'finishedAt', 'reviewedBy', 'reviewedAt', 'archivedBy', 'archivedAt',
-            ])
+            this.log = params => classInstance.log(this, new.target, params)
         }
     }
 
@@ -1017,17 +967,6 @@ console.log({ body, dlBody })
             addresses: [ 'since', 'address' ],
         },
         logFile: 'driver-applications',
-        logFields: {
-            license: relLogFields,
-            medical: relLogFields,
-            experience: relLogFields,
-            school: relLogFields,
-            preference: relLogFields,
-            business: relLogFields,
-            vehicle: relLogFields,
-            beneficiary: relLogFields,
-            emergency: relLogFields,
-        },
     })
 
 

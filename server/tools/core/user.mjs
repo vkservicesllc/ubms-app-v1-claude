@@ -18,7 +18,7 @@ import Query, { hash, matchHash } from '../utils/query.mjs'
 import { classInstance, classStatic } from '../utils/class.mjs'
 import transporter, { sender } from '../utils/nodemailer.mjs'
 import { generateRandomString } from '../utils/string.mjs'
-import { processData, logDeletion } from '../utils/data.mjs'
+import { processData } from '../utils/data.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { utcTimeStamp } from '../utils/date.mjs'
@@ -83,6 +83,7 @@ class User extends Person {
         if (single) {
             this.session = session || {}
             this.session.offline = offline
+            this.config = { hideRawId, hideSensitive }
 
 
             this.add = (target, ids = []) => {
@@ -401,10 +402,7 @@ class User extends Person {
             }
 
 
-            this.log = params => classInstance.log(this, new.target, params, [
-                ...classInstance.logFields,
-                'deletedBy', 'deletedAt', 'declinedAt',
-            ])
+            this.log = params => classInstance.log(this, new.target, params)
         }
     }
 
@@ -646,23 +644,11 @@ class User extends Person {
                         apiRes.password = false
                         apiRes.error.password = 'Incorrect password'
 
-                        if (fails < loginAttempts && condition !== 'L') {
+                        if (fails <= loginAttempts && condition !== 'L') {
                             fails++
                             let update = { fails }
-
-                            if (fails === loginAttempts) {
-                                update.condition = 'L'
-                                user = await User.fetch(res.session, { id }, { hideSensitive: false })
-
-                                const currentData = { ...user }
-                                const currentUpdateLog = await user.log({ field: 'updateLog' })
-                                currentData.condition = user.condition
-
-                                const options = { currentData, currentUpdateLog, modifiedBy: 0, modifiedIn: { branch } }
-                                if (siteId) options.modifiedIn.siteId = siteId
-
-                                update = processData(update, options)
-                            }
+                            if (fails === loginAttempts) update.condition = 'L'
+                            update = await processData(update, { query: User.config().query, match: { id }, modifiedBy: 0, branch, siteId })
 
                             await mysql.execute(query.user.main.update(update, { id }))
                         }
@@ -1029,6 +1015,7 @@ class Role {
 
         if (single) {
             this.session = session
+            this.config = { hideRawId }
 
 
             this.add = (target, ids = []) => classInstance.add(this, new.target, target, ids)
@@ -1041,26 +1028,6 @@ class Role {
 
 
             this.delete = (target, ids = []) => classInstance.delete(this, new.target, target, ids)
-
-
-            // this.unique = async body => {
-            //     if (!this.session?.user?.id) throw new Error('User Constructor Method Error [UNIQUE]: Session user not supplied')
-
-            //     let unique = false, original = true
-            //     const { name, category, location } = body
-            //     if (
-            //         (name !== this.name) ||
-            //         (name === this.name && category !== this.category) ||
-            //         (name === this.name && category === this.category && location !== this.location)
-            //     ) {
-            //         original = false
-            //         const role = (await Role.fetch(this.session, { name, category, location }))[0]
-
-            //         unique = !role
-            //     }
-
-            //     return { unique, original }
-            // }
 
 
             this.log = params => classInstance.log(this, new.target, params)
