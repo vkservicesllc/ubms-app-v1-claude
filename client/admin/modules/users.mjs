@@ -97,9 +97,11 @@ $location.on('change', function() {
     const location = $(this).val()
     let readonly = false
 
-    if (location && location !== 'US') {
-        $phone.val(null)
-        readonly = true
+    if (location) {
+        if (location !== 'US') {
+            $phone.val(null)
+            readonly = true
+        } else $status.find('option[value=S]').prop('disabled', false)
     }
 
     $phone.prop('readonly', readonly)
