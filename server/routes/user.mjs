@@ -417,24 +417,6 @@ router.post('/account', User.mw.verify, [
 })
 
 
-router.post('/security', User.mw.verify, [
-    UserForm.password.validate(),
-    UserForm.createPassword.validate(),
-], validationCheck, async(req, res) => {
-    try {
-        const user = await User.fetch(res.session, { id: res.session.user.id }, { offline: true, auth: true })
-
-        const { password, newPassword } = req.body
-        const { _hash } = user
-        const matched = await Bun.password.verify(password, _hash)
-
-return res.send({ password, _hash, matched })
-    } catch (err) {
-        sendError.server(res, err)
-    }
-})
-
-
 router.post('/register', [
     UserForm.newUsername.validate(),
     UserForm.createPassword.validate(),

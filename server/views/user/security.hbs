@@ -16,7 +16,12 @@
                 <div class="two fields">
                     <div class="field">
                         {{{label.createPassword}}}
-                        {{{input.createPassword}}}
+                        <div class="ui corder labeled input">
+                            {{{input.createPassword}}}
+                            <div class="ui corner label">
+                                <i class="ui eye slash icon" id="eye-icon"></i>
+                            </div>
+                        </div>
                         <p class="help" id="password-help" style="display: none;"><span class="ui text"></span></p>
                     </div>
                     <div class="field">
@@ -38,14 +43,15 @@
                         <li>NOT have whitespaces</li>
                     </div>
                 </div>
-                <div class="ui error message" id="password-form-error-tip">
-                    <div class="header">
-                        Failed to update the password!
-                    </div>
-                    <div class="list"></div>
-                </div>
-                <button type="submit" class="ui teal button" disabled>Update</button>
+                <button type="submit" class="ui teal button" disabled>Change Password</button>
             </form>
+        </div>
+        <div class="ui error message" id="password-form-error-tip" style="display: none;">
+            <p><i class="times icon"></i> Failed to update the password!</p>
+            <div class="list"></div>
+        </div>
+        <div class="ui success message" id="password-form-success-tip" style="display: none;">
+            <p><i class="check icon"></i> Password updated successfully!</p>
         </div>
     </div>
     <script type="module" src="/modules/security.mjs"></script>

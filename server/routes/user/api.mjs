@@ -13,6 +13,10 @@ import User, { Token } from '../../tools/core/user.mjs'
 import transporter, { sender } from '../../tools/utils/nodemailer.mjs'
 import { utcTimeStamp } from '../../tools/utils/date.mjs'
 
+/* Forms && Validators */
+import UserForm from '../../tools/form/user.mjs'
+import validationCheck from '../../tools/form/validator.mjs'
+
 
 
 // ==== ROUTES ==== //
@@ -93,7 +97,26 @@ router.post('/user/decline/:_id', async (req, res) => {
 })
 
 
-// router.post('/user/security', User.verify)
+router.post('/user/security', User.mw.verify, [
+    UserForm.password.validate(),
+    UserForm.createPassword.validate(),
+], validationCheck, async(req, res) => {
+    try {
+        const user = await User.fetch(res.session, { id: res.session.user.id }, { offline: true, auth: true })
+
+        const { password, newPassword } = req.body
+        const { _hash } = user
+        const matched = await Bun.password.verify(password, _hash)
+        const same = password === newPassword
+        let updated = false
+
+        if (matched && !same) updated = await user.password(newPassword)
+
+        return res.json({ matched, updated, same })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
 
 
 router.post('/token/resend', async (req, res) => {

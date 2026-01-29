@@ -319,6 +319,17 @@ class User extends Person {
             }
 
 
+            this.password = async newPassword => {
+                const { id } = this
+                if (this.session?.user?.id !== this.id) return false
+
+                const _passKey = await Bun.password.hash(newPassword)
+                const [ result ] = await mysql.execute(query.user.main.update({ _passKey }, { id }))
+
+                return result.affectedRows > 0
+            }
+
+
             this.report = async () => {
                 const result = { data: { ...this } }
                 const log = await this.log()

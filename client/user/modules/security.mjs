@@ -13,6 +13,7 @@ const $help = {
     confPassword: $('#conf-password-help'),
     passError: $('#password-error-tip'),
     formError: $('#password-form-error-tip'),
+    formSuccess: $('#password-form-success-tip'),
 }
 const $button = {
     submit: $('[type=submit]'),
@@ -28,6 +29,19 @@ const style = {
 }
 const $password = $(selector.id.text.password)
 const $newPassword = $(selector.id.text.createPassword)
+const $eye = $('#eye-icon')
+
+$eye.click(function() {
+    const $password = $newPassword
+
+    if ($(this).hasClass('slash')) {
+        $(this).removeClass('slash')
+        $password.attr('type', 'text')
+    } else {
+        $(this).addClass('slash')
+        $password.attr('type', 'password')
+    }
+})
 
 
 passwordEvent('current', {
@@ -35,6 +49,7 @@ passwordEvent('current', {
         $button.submit.prop('disabled', true)
     }, onChange() {
         $button.submit.prop('disabled', !formValid())
+        $help.formSuccess.hide()
     },
 })
 
@@ -48,6 +63,7 @@ passwordEvent('new', {
     },
     onChange(valid, $password, $confirm) {
         formError()
+        $help.formSuccess.hide()
         $confirm.val(null).parent().removeClass('error')
         $validation.confPassword.val(null)
         $help.confPassword.hide().find('span').removeClass(style.message.all).html(null)
@@ -85,6 +101,7 @@ passwordEvent('confirm', {
         $button.submit.prop('disabled', true)
     },
     onChange(valid, $password) {
+        $help.formSuccess.hide()
         if (valid !== null) {
             const { success, failed } = style.message
             let styler = success,
@@ -115,19 +132,34 @@ passwordEvent('confirm', {
 
 $form.submit(function(evt) {
     evt.preventDefault()
+    $button.submit.addClass('loading')
     formError()
+    $help.formSuccess.hide()
 
     const password = $password.val()
     const newPassword = $newPassword.val()
-
-    if (newPassword && newPassword === password)
-        return formError('<li>Please choose a password different from your current one</li>')
 
     $.ajax('/api/user/security', {
         method: 'POST', 
         data: { password, newPassword },
         success(response) {
-            //! work in progress
+            $button.submit.removeClass('loading')
+            const { updated, matched, same } = response
+
+            if (!updated) {
+                let list = '<li>Oops! Something went wrong!'
+                if (!matched) list = '<li>The current password you entered is incorrect</li>'
+                else if (same) list = '<li>Please choose a password different from your current one</li>'
+
+                return formError(list)
+            }
+
+            $('input').val(null)
+            $help.all.hide().find('span').removeClass(style.message.all).html(null)
+            $button.submit.prop('disabled', true)
+            $eye.addClass('slash')
+            $newPassword.attr('type', 'password')
+            $help.formSuccess.show()
         },
     })
 })
