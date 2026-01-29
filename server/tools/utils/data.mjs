@@ -18,8 +18,8 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
     const update = query && target
     let currentData, currentUpdateLog, updateLog
 
-    if (data.ssn && body.ssn?.aes) data.ssn = data.ssn.aes[0]
-    if (data.ein && body.ein?.aes) data.ein = data.ein.aes[0]
+    if (data.ssn && data.ssn?.aes) data.ssn = data.ssn.aes[0]
+    if (data.ein && data.ein?.aes) data.ein = data.ein.aes[0]
 
     if (update) {
         const fields = ['*']
