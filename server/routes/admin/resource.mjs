@@ -445,7 +445,11 @@ router.post('/jx/:src/:_id/:action/:target', User.mw.verify, async (req, res) =>
         if (src !== 'user' && res.session.user.status === 'A')
             throw new Error('Access to this path is granted to Super Admin only<br><a href="/">Home</a>')
 
+        const url = req.get('referer') + (tab ? `?${tab}` : '') || redirUrl
+
         let { _ids } = req.body
+        if (!_ids) return res.redirect(url)
+
         if (!Array.isArray(_ids)) _ids = [ _ids ]
         const [ Src, redirUrl ] = source[src]
 
@@ -454,7 +458,7 @@ router.post('/jx/:src/:_id/:action/:target', User.mw.verify, async (req, res) =>
 
         await inst[action](`jx.${target}`, _ids)
 
-        res.redirect(req.get('referer') + (tab ? `?${tab}` : '') || redirUrl)
+        res.redirect(url)
     } catch (err) {
         sendError.server(req, res, err)
     }
