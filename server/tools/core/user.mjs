@@ -362,7 +362,7 @@ class User extends Person {
                 if (users)
                     for (let i = 0; i < users.length; i++) {
                         const { id } = users[i]
-                        names[id] = users[i].fullName()
+                        names[id] = users[i].fullName('AL')
                     }
 
                 log.createdBy = names[createdBy] || config.site.name
@@ -636,7 +636,7 @@ class User extends Person {
                 /* Step 2: Verify Password if User found */
 
                 const { loginAttempts } = config.session
-                const { id, _hash, condition  } = user
+                const { id, _hash, condition } = user
                 let { fails } = user
 
                 const matched = await Bun.password.verify(password, _hash)
@@ -880,7 +880,7 @@ class User extends Person {
 
         register: async (req, res) => {
             try {
-                const { _id, username, password } = req.body
+                const { _id, username, newPassword: password } = req.body
                 
                 const [ result ] = await mysql.execute(query.user.main.update({
                     username, _passKey: await Bun.password.hash(password),
@@ -932,7 +932,7 @@ class User extends Person {
 
         reset: async (req, res) => {
             try {
-                const { _id, password } = req.body
+                const { _id, newPassword: password } = req.body
 
                 const [ result ] = await mysql.execute(query.user.main.update({
                     _passKey: await Bun.password.hash(password),

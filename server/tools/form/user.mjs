@@ -72,6 +72,7 @@ const createPasswordForm = flag => {
         case 'new':
             target = 'createPassword'
             label = 'Create Password'
+            name = 'newPassword'
             validator = {
                 length: { min: length.user.password.min },
                 //! add more...

@@ -287,7 +287,7 @@ function formValid() {
     let valid = true
 
     for (const prop in $validation) {
-        if ($validation[prop].val() == 'passed') continue
+        if ($validation[prop].val() === 'passed') continue
 
         valid = false
         break

@@ -71,7 +71,6 @@ router.use((req, res, next) => {
             hbs.user = {}
 
             const props = [
-                'name',
                 'username',
                 'firstName',
                 'lastName',
@@ -88,6 +87,7 @@ router.use((req, res, next) => {
             ]
             for (const prop of props)
                 hbs.user[prop] = user[prop]
+            hbs.user.name = user.fullName('AL')
         }
 
         return hbs
@@ -204,6 +204,10 @@ router.get('/security', User.mw.verify, (req, res) => {
             hbs.input[prop] = UserForm[prop].text.input({ disabled: false })
         }
         hbs.label.password = hbs.label.password.replace('>Password<', '>Current Password<')
+
+        hbs.length = {
+            password: length.user.password,
+        }
 
         res.render(key, hbs)
     } catch (err) {
@@ -409,6 +413,24 @@ router.post('/account', User.mw.verify, [
         res.redirect('/account')
     } catch (err) {
         sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/security', User.mw.verify, [
+    UserForm.password.validate(),
+    UserForm.createPassword.validate(),
+], validationCheck, async(req, res) => {
+    try {
+        const user = await User.fetch(res.session, { id: res.session.user.id }, { offline: true, auth: true })
+
+        const { password, newPassword } = req.body
+        const { _hash } = user
+        const matched = await Bun.password.verify(password, _hash)
+
+return res.send({ password, _hash, matched })
+    } catch (err) {
+        sendError.server(res, err)
     }
 })
 

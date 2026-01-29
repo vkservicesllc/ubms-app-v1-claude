@@ -93,6 +93,9 @@ router.post('/user/decline/:_id', async (req, res) => {
 })
 
 
+// router.post('/user/security', User.verify)
+
+
 router.post('/token/resend', async (req, res) => {
     try {
         const { _id } = req.body

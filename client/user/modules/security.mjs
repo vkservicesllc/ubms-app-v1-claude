@@ -1,6 +1,6 @@
 /* jQuery & jQuery Caret required */
 import { passwordEvent } from './events/user.mjs'
-import selector from './registry/selectors/user.mjs'
+import selector from '/modules/registry/selectors/user.mjs'
 
 
 const $validation = {
@@ -12,7 +12,12 @@ const $help = {
     password: $('#password-help'),
     confPassword: $('#conf-password-help'),
     passError: $('#password-error-tip'),
+    formError: $('#password-form-error-tip'),
 }
+const $button = {
+    submit: $('[type=submit]'),
+}
+const $form = $('#user-security-form')
 const style = {
     message: {
         all: 'success red info',  // ? check if info needed
@@ -21,21 +26,16 @@ const style = {
         info: 'info',  // ?
     },
 }
-const $button = {
-    submit: $('[type=submit]'),
-}
-const $eye = $('#eye-icon')
+const $password = $(selector.id.text.password)
+const $newPassword = $(selector.id.text.createPassword)
 
-$eye.click(function() {
-    const $password = $(selector.id.text.createPassword)
 
-    if ($(this).hasClass('slash')) {
-        $(this).removeClass('slash')
-        $password.attr('type', 'text')
-    } else {
-        $(this).addClass('slash')
-        $password.attr('type', 'password')
-    }
+passwordEvent('current', {
+    onInput() {
+        $button.submit.prop('disabled', true)
+    }, onChange() {
+        $button.submit.prop('disabled', !formValid())
+    },
 })
 
 passwordEvent('new', {
@@ -47,6 +47,7 @@ passwordEvent('new', {
         $button.submit.prop('disabled', true)
     },
     onChange(valid, $password, $confirm) {
+        formError()
         $confirm.val(null).parent().removeClass('error')
         $validation.confPassword.val(null)
         $help.confPassword.hide().find('span').removeClass(style.message.all).html(null)
@@ -112,15 +113,44 @@ passwordEvent('confirm', {
 })
 
 
+$form.submit(function(evt) {
+    evt.preventDefault()
+    formError()
+
+    const password = $password.val()
+    const newPassword = $newPassword.val()
+
+    if (newPassword && newPassword === password)
+        return formError('<li>Please choose a password different from your current one</li>')
+
+    $.ajax('/api/user/security', {
+        method: 'POST', 
+        data: { password, newPassword },
+        success(response) {
+            //! work in progress
+        },
+    })
+})
+
+
 function formValid() {
-    let valid = true
+    let valid = !!$password.val()
 
-    for (const prop in $validation) {
-        if ($validation[prop].val() === 'passed') continue
+    if (valid)
+        for (const prop in $validation) {
+            if ($validation[prop].val() === 'passed') continue
 
-        valid = false
-        break
-    }
+            valid = false
+            break
+        }
 
     return valid
+}
+
+
+function formError(list = null) {
+    const $errList = $help.formError.find('.list')
+
+    $errList.html(list)
+    $help.formError[list ? 'show' : 'hide']()
 }

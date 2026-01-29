@@ -4,7 +4,9 @@
         {{> user/nav}}
         <div class="ui segment">
             <h4 class="ui dividing header">{{user.name}}</h4>
-            <form class="ui form" id="user-security-form" action="/security" method="POST" autocomplete="off">
+            <form class="ui form" id="user-security-form" method="POST" autocomplete="off">
+                <input type="hidden" id="password-validation" />
+                <input type="hidden" id="conf-password-validation" />
                 <div class="two fields">
                     <div class="field">
                         {{{label.password}}}
@@ -15,15 +17,37 @@
                     <div class="field">
                         {{{label.createPassword}}}
                         {{{input.createPassword}}}
+                        <p class="help" id="password-help" style="display: none;"><span class="ui text"></span></p>
                     </div>
                     <div class="field">
                         {{{label.confirmPassword}}}
                         {{{input.confirmPassword}}}
+                        <p class="help" id="conf-password-help" style="display: none;"><span class="ui text"></span></p>
                     </div>
                 </div>
-                <button type="submit" class="ui teal button">Update</button>
+                <div class="ui error message" id="password-error-tip">
+                    <div class="header">
+                        Password must:
+                    </div>
+                    <div class="list">
+                        <li>be at least {{length.password.min}} characters long</li>
+                        <li>have at least one small letter</li>
+                        <li>have at least one capital letter</li>
+                        <li>have at least one number</li>
+                        <li>have at least one special characters</li>
+                        <li>NOT have whitespaces</li>
+                    </div>
+                </div>
+                <div class="ui error message" id="password-form-error-tip">
+                    <div class="header">
+                        Failed to update the password!
+                    </div>
+                    <div class="list"></div>
+                </div>
+                <button type="submit" class="ui teal button" disabled>Update</button>
             </form>
         </div>
     </div>
+    <script type="module" src="/modules/security.mjs"></script>
 
 {{> foot}}
