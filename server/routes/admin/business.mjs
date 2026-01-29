@@ -11,7 +11,7 @@ import { updateFormOptions } from '../../tools/form/builder.mjs'
 import { OwnerForm } from '../../tools/form/company.mjs'
 
 /* Middleware */
-import { companyById, companyByCategoryAndRoute } from './mw/company.mjs'
+import { companyById, companyByCategoryAndRoute, companyManagement } from './mw/company.mjs'
 
 /* Assets */
 import { labelClass, labelClassRequired } from './assets.mjs'
@@ -40,22 +40,9 @@ router.get('/companies', User.mw.verify, (req, res) => {
 
 router.get('/company/:_id', User.mw.verify, User.mw.superAdminOnly, companyById)
 
-
 router.get('/:category/:route', User.mw.verify, User.mw.superAdminOnly, companyByCategoryAndRoute)
 
-
-//! TEMP
-router.get('/:category/:route/manage', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-                //! SKETCH
-                const key = 'company-management'
-                let { hbs } = res
-                hbs = hbs.set(key)
-
-                const { active } = hbs.nav
-                hbs.nav.companies = active
-
-                res.render(key, hbs)
-})
+router.get('/:category/:route/management', User.mw.verify, User.mw.superAdminOnly, companyManagement)
 
 
 router.get('/company-owners', User.mw.verify, (req, res) => {

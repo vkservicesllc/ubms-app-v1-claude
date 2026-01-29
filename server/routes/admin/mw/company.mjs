@@ -512,8 +512,24 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs.display.statusTrigger = company.active ? 'Deactivate' : 'Activate'
         hbs.display.statusMessage = company.active ? 'place the company on hold' : 'release the company from hold'
         hbs.url = {
-            update: `/business/${Company.list.category[company.category].path[1]}/${company.route}/manage`,
+            update: `/business/${Company.list.category[company.category].path[1]}/${company.route}/management`,
         }
+
+        res.render(key, hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+}
+
+
+export const companyManagement = async (req, res) => {
+    try {
+        const key = 'company-management'
+        let { hbs } = res
+        hbs = hbs.set(key)
+
+        const { active } = hbs.nav
+        hbs.nav.companies = active
 
         res.render(key, hbs)
     } catch (err) {
