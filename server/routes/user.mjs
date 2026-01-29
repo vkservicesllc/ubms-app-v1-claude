@@ -391,9 +391,22 @@ router.post('/profile', User.mw.verify, [
     UserForm.gender.validate(),
 ], validationCheck, async (req, res) => {
     try {
-// return res.send(req.body)
         res.session.user.update(req.body)
         res.redirect('/profile')
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/account', User.mw.verify, [
+    UserForm.newUsername.validate(),
+    UserForm.email.validate(),
+    UserForm.phone.validate(),
+], validationCheck, async(req, res) => {
+    try {
+        res.session.user.update(req.body)
+        res.redirect('/account')
     } catch (err) {
         sendError.server(req, res, err)
     }
