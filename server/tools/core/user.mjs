@@ -22,6 +22,7 @@ import { processData } from '../utils/data.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { utcTimeStamp } from '../utils/date.mjs'
+import { respond404 } from '../utils/response.mjs'
 
 const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
@@ -855,21 +856,15 @@ class User extends Person {
 
 
         superAdminOnly: async (req, res, next) => {
-            if (res.session.branch !== 'admin' || res.session.user.status === 'A') {
-                const api = recognizeApi(req)
-        
-                return sendError.auth(req, res, 'Access to this path is granted to Super Admin only<br><a href="/">Home</a>')
-            }
+            if (res.session.branch !== 'admin' || res.session.user.status === 'A') return respond404(res)
+
             next()
         },
 
 
         developerOnly: async (req, res, next) => {
-            if (res.session.branch !== 'admin' || res.session.user.status === 'D') {
-                const api = recognizeApi(req)
-        
-                return sendError.auth(req, res, 'Access to this path is granted to Developer only<br><a href="/">Home</a>')
-            }
+            if (res.session.branch !== 'admin' || res.session.user.status !== 'D') return respond404(res)
+
             next()
         },
 
