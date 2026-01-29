@@ -330,8 +330,8 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
 
                 const ownerId = owner.id
 
-                if (action === 'update') await company.delete(step, match)
-                await company.add(step, { ownerId, since })
+                if (action === 'update') await company.delete('ownerships', match)
+                await company.add('ownerships', { ownerId, since })
                 break
 
             case 'address':
