@@ -76,7 +76,7 @@ router.use((req, res, next) => {
                 'firstName',
                 'lastName',
                 'alias',
-                'sex',
+                'gender',
                 'email',
                 'phone',
                 'location',
@@ -146,15 +146,15 @@ router.get('/profile', User.mw.verify, (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key)
 
-        const { firstName, lastName, alias, sex, DSA } = hbs.user
+        const { firstName, lastName, alias, gender, DSA } = hbs.user
         const readOnly = !DSA
 
         hbs.input = {
             firstName: UserForm.firstName.text.input({ placeholder: 'Real First Name', value: firstName, readOnly }),
             alias: UserForm.alias.text.input({ placeholder: 'Alias', value: alias, readOnly }),
             lastName: UserForm.lastName.text.input({ placeholder: 'Last Name', value: lastName, readOnly }),
-            genderMale: UserForm.gender.radio.male.input({ checked: sex === 1 }),
-            genderFemale: UserForm.gender.radio.female.input({ checked: sex === 0 }),
+            genderMale: UserForm.gender.radio.male.input({ checked: gender === 'M' }),
+            genderFemale: UserForm.gender.radio.female.input({ checked: gender === 'F' }),
         }
 
         res.render(key, hbs)
@@ -382,6 +382,22 @@ router.get('/pass-reset/:_id', async (req, res) => {
 
 
 // ==== POST ROUTES ==== //
+
+
+router.post('/profile', User.mw.verify, [
+    UserForm.firstName.validate(),
+    UserForm.lastName.validate(),
+    UserForm.alias.validate(),
+    UserForm.gender.validate(),
+], validationCheck, async (req, res) => {
+    try {
+// return res.send(req.body)
+        res.session.user.update(req.body)
+        res.redirect('/profile')
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
 
 
 router.post('/register', [

@@ -362,7 +362,7 @@ class User extends Person {
                 if (users)
                     for (let i = 0; i < users.length; i++) {
                         const { id } = users[i]
-                        names[id] = users[i].name
+                        names[id] = users[i].fullName()
                     }
 
                 log.createdBy = names[createdBy] || config.site.name
@@ -370,6 +370,7 @@ class User extends Person {
 
                 if (updateLog)
                     for (let i = 0; i < updateLog.length; i++) {
+
                         log.updateLog[i].modifiedBy = names[updateLog[i].modifiedBy] || config.site.name
 
                         for (const prop in updateLog[i].data) {
@@ -636,7 +637,7 @@ class User extends Person {
 
                 const { loginAttempts } = config.session
                 const { id, _hash, condition  } = user
-                let { fails} = user
+                let { fails } = user
 
                 const matched = await Bun.password.verify(password, _hash)
 
