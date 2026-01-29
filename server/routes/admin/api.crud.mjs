@@ -160,7 +160,7 @@ router.get('/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, async 
             switch (target) {
                 case 'users':
                     filter.status = ['U', 'A']
-                    if (src === 'role' && inst.location) filter.location = [ inst.location, null ]
+                    if (src === 'roles' && inst.location) filter.location = [ inst.location, null ]
                     break
             }
 
