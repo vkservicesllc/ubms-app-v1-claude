@@ -26,7 +26,7 @@ const $lastName = $(lastNameId)
 const $alias = $(aliasId)
 const $gender = $(genderClass)
 const $condition = $(conditionClass)
-const $lockedCondition = $(selector.id.radio.condition.locked)
+const setLockedCondition = (disabled = true) => $(selector.id.radio.condition.locked).prop('disabled', disabled)
 
 const $title = {
     all: $('.modal-card-title:not(#user-security-modal-title)'),
@@ -74,7 +74,7 @@ const message = {
     },
 }
 
-$lockedCondition.prop('disabled', true)
+setLockedCondition()
 
 
 $status.on('change', function() {
@@ -106,6 +106,8 @@ $location.on('change', function() {
 
     $phone.prop('readonly', readonly)
 })
+
+$condition.on('change', setLockedCondition)
 
 const removeNameErrMsg = () => {
     const emailTip = $help.email.html()
@@ -405,7 +407,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 $status.find('[value=S]').prop('disabled', false)
                 $gender.prop('checked', false)
                 $condition.prop('checked', false)
-                $lockedCondition.prop('disabled', true)
+                setLockedCondition()
                 $confirmation.deleteUser.prop('checked', false)
                 $submit.user.text(null).removeClass('is-link is-success')
                 $submit.deleteUser.prop('disabled', true)
@@ -516,7 +518,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     const { _id, condition } = data
 
                     $id.val(_id)
-                    if (condition === 'L') $lockedCondition.prop('disabled', false)
+                    if (condition === 'L') setLockedCondition(false)
                     $condition.filter(function() {
                         return $(this).val() === condition
                     }).prop('checked', true)
