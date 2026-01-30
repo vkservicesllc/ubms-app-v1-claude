@@ -11,3 +11,13 @@ html {
 .tag.table-tag {
     border: 1px solid gray;
 }
+
+/* light theme (default) */
+.has-text-extreme {
+  color: #000;
+}
+
+/* dark theme */
+:root[data-theme="dark"] .has-text-extreme {
+  color: #fff;
+}

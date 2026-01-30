@@ -547,6 +547,16 @@ export const companyManagement = async (req, res) => {
             back: `/business/${req.params.category}/${route}`,
         }
 
+        switch (category) {
+
+            case 'crr':
+                company = await Carrier.fetch(res.session, { _companyId })
+                break
+
+        }
+
+        hbs.data = company
+
         res.render(key, hbs)
     } catch (err) {
         sendError.server(req, res, err)

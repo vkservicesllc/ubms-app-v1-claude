@@ -1,91 +1,180 @@
 {{> admin/nav.alpha}}
-                <span class="subtitle is-4 mr-2">{{{cardTitle}}}</span>
-                <sup><a href="{{url.back}}"><i class="fa fa-close has-text-danger-55"></i></a></sup>
-                <div class="tabs mt-3" id="company-management-tabs">
+                <span class="subtitle has-text-normal has-text-extreme is-4 mr-2">{{{cardTitle}}}</span>
+                <sup><a href="{{url.back}}"><i class="fa fa-close has-text-danger-65"></i></a></sup>
+                <div class="tabs mt-3">
                     <ul>
-                        <li class="tab-link is-active" data-section="contacts-address"><a>Contacts / Address</a></li>
-                        <li class="tab-link" data-section="credentials"><a>Credentials</a></li>
-                        <li class="tab-link" data-section="ownership"><a>Ownership</a></li>
+                        <li class="tab-link company-management-tabs is-active" data-section="profile"><a>Profile</a></li>
+                        <li class="tab-link company-management-tabs" data-section="address"><a>Address</a></li>
+                        <li class="tab-link company-management-tabs" data-section="contacts"><a>Contacts</a></li>
+                        {{#if (eq data.category 'crr')}}
+                        <li class="tab-link company-management-tabs" data-section="credentials"><a>Credentials</a></li>
+                        {{/if}}
                     </ul>
                 </div>
-                {{!-- <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future</i></p> --}}
-                <section class="tab-section" id="contacts-address-section">
-                    <style>
-                        .column {
-                            min-width: 280px;
+                <style>
+                        .initial {
+                            font-size: .5em;
                         }
-                    </style>
+                        .effective-date {
+                            min-width: 130px;
+                        }
+                        .controls {
+                            min-width: 70px;
+                        }
+                        .column-address {
+                            min-width: 520px;
+                        }
+                        .column-contacts {
+                            min-width: 380px;
+                        }
+                </style>
+
+                <section class="tab-section company-management-content" id="profile-section">
+                    <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future</i></p>
+                </section>
+
+                <section class="tab-section company-management-content" id="address-section" style="display: none;">
                     <div class="columns is-2">
-                        <div class="column">
-                            <p class="subtitle is-5 has-text-primary">Phone History</p>
+                        <div class="column column-address">
+                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Address History</p>
 
 
                                     {{!-- Sketch --}}
-                                    <div class="card">
-                                        <header class="card-header">
-                                            <p class="card-header-title">Current Phone</p>
-                                        </header>
-                                        <div class="card-content">
-                                            <table class="table">
-                                                <tr>
-                                                    <td>Oct 10, 2025</td>
-                                                    <td>(828) 741-0258</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                        <footer class="card-footer">
-                                            <a href="#" class="card-footer-item">Edit</a>
-                                            <a href="#" class="card-footer-item has-text-danger-50">Delete</a>
-                                        </footer>
-                                    </div>
-                                    <div class="card">
-                                        <div class="card-content">
-                                            <table class="table">
-                                                <tr>
-                                                    <td>Mar 5, 2025</td>
-                                                    <td>(828) 345-8765</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                        <footer class="card-footer">
-                                            <a href="#" class="card-footer-item">Edit</a>
-                                            <span class="card-footer-item">Initial</span>
-                                        </footer>
-                                    </div>
+                                    <table class="table mb-5">
+                                        <tr>
+                                            <td colspan="3"></td>
+                                            <td class="has-text-right controls">
+                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><li class="fa fa-check has-text-success"></li></td>
+                                            <td class="effective-date">Aug 9, 2024</td>
+                                            <td>
+                                                3131 Meetinghouse Rd, Unit O16, Upper Chichester, PA 19061
+                                            </td>
+                                            <td class="has-text-right controls">
+                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                                <a class="ml-1" href=""><i class="fa fa-trash has-text-danger-60"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td class="effective-date">Jun 16, 2021 <sup class="has-text-warning initial"><i class="fas fa-star"></i></sup></td>
+                                            <td>
+                                                2348 Smokey Park Hwy, Suite 101, Candler, NC 28715
+                                            </td>
+                                            <td class="has-text-right controls">
+                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                            </td>
+                                        </tr>
+                                    </table>
 
 
                         </div>
-                        <div class="column">
-                            <p class="subtitle is-5 has-text-primary">Fax History</p>
+                        <div class="column column-address">
+                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Mailing Address History</p>
 
 
                                     {{!-- Sketch --}}
-                                    <div class="card">
-                                        <header class="card-header">
-                                            <p class="card-header-title">Current Fax</p>
-                                        </header>
-                                        <div class="card-content">
-                                            <table class="table">
-                                                <tr>
-                                                    <td>Oct 10, 2025</td>
-                                                    <td>(828) 741-0258</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                        <footer class="card-footer">
-                                            <a href="#" class="card-footer-item">Edit</a>
-                                            <a href="#" class="card-footer-item has-text-danger-50">Delete</a>
-                                        </footer>
-                                    </div>
+                                    <table class="table mb-5">
+                                        <tr>
+                                            <td colspan="3"></td>
+                                            <td class="has-text-right controls">
+                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="has-text-centered has-text-danger-65" colspan="4"><small><i>No mailing addresses registered yet</i></small></td>
+                                        </tr>
+                                    </table>
 
 
-                        </div>
-                        <div class="column">
-                            <p class="subtitle is-5 has-text-primary">Email History</p>
-                        </div>
-                        <div class="column">
-                            <p class="subtitle is-5 has-text-primary">Address History</p>
                         </div>
                     </div>
+                    <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future (Sketches only)</i></p>
                 </section>
+
+                <section class="tab-section company-management-content" id="contacts-section" style="display: none;">
+                    <div class="columns is-2">
+                        <div class="column column-contacts">
+                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Phone History</p>
+
+
+                                    {{!-- Sketch --}}
+                                    <table class="table mb-5">
+                                        <tr>
+                                            <td colspan="3"></td>
+                                            <td class="has-text-right controls">
+                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><li class="fa fa-check has-text-success"></li></td>
+                                            <td class="effective-date">Nov 7, 2024</td>
+                                            <td>(647) 739-0537</td>
+                                            <td class="has-text-right controls">
+                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                                <a class="ml-1" href=""><i class="fa fa-trash has-text-danger-60"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td class="effective-date">Jun 16, 2021 <sup class="has-text-warning initial"><i class="fas fa-star"></i></sup></td>
+                                            <td>(647) 382-7294</td>
+                                            <td class="has-text-right controls">
+                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+
+                        </div>
+                        <div class="column column-contacts">
+                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Fax History</p>
+
+
+                                    {{!-- Sketch --}}
+                                    <table class="table mb-5">
+                                        <tr>
+                                            <td colspan="3"></td>
+                                            <td class="has-text-right controls">
+                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="has-text-centered has-text-danger-65" colspan="4"><small><i>No faxes registered yet</i></small></td>
+                                        </tr>
+                                    </table>
+
+
+                        </div>
+                        <div class="column column-contacts">
+                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Email History</p>
+
+
+                                    {{!-- Sketch --}}
+                                    <table class="table mb-5">
+                                        <tr>
+                                            <td colspan="3"></td>
+                                            <td class="has-text-right">
+                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="has-text-centered has-text-danger-65" colspan="4"><small><i>No emails registered yet</i></small></td>
+                                        </tr>
+                                    </table>
+
+
+                        </div>
+                        {{!-- <div class="column">
+                            <p class="subtitle is-5 has-text-primary">Address History</p>
+                        </div> --}}
+                    </div>
+                    <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future (Sketches only)</i></p>
+                </section>
+
+                <script type="module" src="/modules/company/management.mjs"></script>
+
 {{> admin/nav.omega}}
