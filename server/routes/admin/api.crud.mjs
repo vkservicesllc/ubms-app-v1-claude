@@ -129,6 +129,38 @@ router.get('/:src', User.mw.verify, User.mw.superAdminOnly, async (req, res) => 
 })
 
 
+router.get('/companies/:_id/history', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { _id } = req.params
+        const company = await Company.fetch(res.session, { _id }, { hideRawId })
+        if (!company) throw new Error('Company not found')
+
+        const data = {}
+        const targets = ['names', 'ownerships', 'addresses', 'mail', 'phones', 'faxes', 'emails']
+        const { since } = company
+
+        for (const target of targets) {
+            data[target] = await company.fetch(target)
+
+            for (const row of data[target]) {
+                row.initial = row.since === since
+
+                if (target === 'ownerships') {
+                    row.owner = await Owner.fetch(res.session, { id: row.ownerId }, { hideRawId })
+                    if (!row.owner) throw new Error('Owner not found')
+
+                    delete row.ownerId
+                }
+            }
+        }
+
+        res.json({ data, resource: company })
+    } catch(err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.get('/company-owners/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { _id } = req.params

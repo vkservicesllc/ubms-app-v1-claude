@@ -94,7 +94,7 @@ module.exports = {
     },
 
     'company-management': {
-        external: [ ...online.external ],
+        external: [ ...online.external, 'moment' ],
         internal: {
             css: [ ...online.internal.css, 'form' ],
             js: [ ...online.internal.js ],

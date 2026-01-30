@@ -11,6 +11,7 @@
                         {{/if}}
                     </ul>
                 </div>
+                <input type="hidden" id="company-id" value="{{data._companyId}}" />
                 <style>
                         .initial {
                             font-size: .5em;
@@ -99,80 +100,47 @@
                     <div class="columns is-2">
                         <div class="column column-contacts">
                             <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Phone History</p>
-
-
-                                    {{!-- Sketch --}}
-                                    <table class="table mb-5">
-                                        <tr>
-                                            <td colspan="3"></td>
-                                            <td class="has-text-right controls">
-                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><li class="fa fa-check has-text-success"></li></td>
-                                            <td class="effective-date">Nov 7, 2024</td>
-                                            <td>(647) 739-0537</td>
-                                            <td class="has-text-right controls">
-                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
-                                                <a class="ml-1" href=""><i class="fa fa-trash has-text-danger-60"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td class="effective-date">Jun 16, 2021 <sup class="has-text-warning initial"><i class="fas fa-star"></i></sup></td>
-                                            <td>(647) 382-7294</td>
-                                            <td class="has-text-right controls">
-                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
-                                            </td>
-                                        </tr>
-                                    </table>
-
-
+                            <table class="table mb-5">
+                                <thead>
+                                    <tr>
+                                        <td colspan="3"></td>
+                                        <td class="has-text-right controls">
+                                            <a id="add-company-phone" title="Register new phone" href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody id="phone-table-list"></tbody>
+                            </table>
                         </div>
                         <div class="column column-contacts">
                             <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Fax History</p>
-
-
-                                    {{!-- Sketch --}}
-                                    <table class="table mb-5">
-                                        <tr>
-                                            <td colspan="3"></td>
-                                            <td class="has-text-right controls">
-                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="has-text-centered has-text-danger-65" colspan="4"><small><i>No faxes registered yet</i></small></td>
-                                        </tr>
-                                    </table>
-
-
+                            <table class="table mb-5">
+                                <thead>
+                                    <tr>
+                                        <td colspan="3"></td>
+                                        <td class="has-text-right controls">
+                                            <a id="add-company-fax" title="Register new fax" href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody id="fax-table-list"></tbody>
+                            </table>
                         </div>
                         <div class="column column-contacts">
                             <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Email History</p>
-
-
-                                    {{!-- Sketch --}}
-                                    <table class="table mb-5">
-                                        <tr>
-                                            <td colspan="3"></td>
-                                            <td class="has-text-right">
-                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="has-text-centered has-text-danger-65" colspan="4"><small><i>No emails registered yet</i></small></td>
-                                        </tr>
-                                    </table>
-
-
+                            <table class="table mb-5">
+                                <thead>
+                                    <tr>
+                                        <td colspan="3"></td>
+                                        <td class="has-text-right controls">
+                                            <a id="add-company-email" title="Register new email" href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody id="email-table-list"></tbody>
+                            </table>
                         </div>
-                        {{!-- <div class="column">
-                            <p class="subtitle is-5 has-text-primary">Address History</p>
-                        </div> --}}
                     </div>
-                    <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future (Sketches only)</i></p>
                 </section>
 
                 <script type="module" src="/modules/company/management.mjs"></script>
