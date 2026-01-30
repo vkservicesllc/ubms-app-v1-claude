@@ -1,13 +1,14 @@
 {{> admin/nav.alpha}}
+
                 <span class="subtitle has-text-normal has-text-extreme is-4 mr-2">{{{cardTitle}}}</span>
                 <sup><a href="{{url.back}}"><i class="fa fa-close has-text-danger-65"></i></a></sup>
                 <div class="tabs mt-3">
                     <ul>
                         <li class="tab-link company-management-tabs is-active" data-section="profile"><a>Profile</a></li>
-                        <li class="tab-link company-management-tabs" data-section="address"><a>Address</a></li>
-                        <li class="tab-link company-management-tabs" data-section="contacts"><a>Contacts</a></li>
+                        <li class="tab-link company-management-tabs" data-section="contacts-address"><a>Contacts / Location</a></li>
+                        {{!-- <li class="tab-link company-management-tabs" data-section="contacts"><a>Contacts</a></li> --}}
                         {{#if (eq data.category 'crr')}}
-                        <li class="tab-link company-management-tabs" data-section="credentials"><a>Credentials</a></li>
+                        {{!-- <li class="tab-link company-management-tabs" data-section="credentials"><a>Credentials</a></li> --}}
                         {{/if}}
                     </ul>
                 </div>
@@ -16,128 +17,110 @@
                         .initial {
                             font-size: .5em;
                         }
+                        .current-status {
+                            width: 40px;
+                        }
                         .effective-date {
-                            min-width: 130px;
+                            width: 130px;
                         }
                         .controls {
                             min-width: 70px;
+                        }
+                        .secondary-column {
+                            min-width: 450px;
                         }
                         .column-address {
                             min-width: 520px;
                         }
                         .column-contacts {
-                            min-width: 380px;
+                            min-width: 400px;
                         }
                 </style>
 
                 <section class="tab-section company-management-content" id="profile-section">
                     <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future</i></p>
-                </section>
-
-                <section class="tab-section company-management-content" id="address-section" style="display: none;">
-                    <div class="columns is-2">
-                        <div class="column column-address">
-                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Address History</p>
-
-
-                                    {{!-- Sketch --}}
-                                    <table class="table mb-5">
-                                        <tr>
-                                            <td colspan="3"></td>
-                                            <td class="has-text-right controls">
-                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><li class="fa fa-check has-text-success"></li></td>
-                                            <td class="effective-date">Aug 9, 2024</td>
-                                            <td>
-                                                3131 Meetinghouse Rd, Unit O16, Upper Chichester, PA 19061
-                                            </td>
-                                            <td class="has-text-right controls">
-                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
-                                                <a class="ml-1" href=""><i class="fa fa-trash has-text-danger-60"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td class="effective-date">Jun 16, 2021 <sup class="has-text-warning initial"><i class="fas fa-star"></i></sup></td>
-                                            <td>
-                                                2348 Smokey Park Hwy, Suite 101, Candler, NC 28715
-                                            </td>
-                                            <td class="has-text-right controls">
-                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
-                                            </td>
-                                        </tr>
-                                    </table>
-
-
-                        </div>
-                        <div class="column column-address">
-                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Mailing Address History</p>
-
-
-                                    {{!-- Sketch --}}
-                                    <table class="table mb-5">
-                                        <tr>
-                                            <td colspan="3"></td>
-                                            <td class="has-text-right controls">
-                                                <a href=""><i class="fa fa-plus has-text-link-70"></i></a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="has-text-centered has-text-danger-65" colspan="4"><small><i>No mailing addresses registered yet</i></small></td>
-                                        </tr>
-                                    </table>
-
-
+                    <div class="columns is-4">
+                        <div class="column"></div>
+                        <div class="column"></div>
+                        <div class="column secondary-column pt-6">
+                            <table class="table mb-6">
+                                <thead><tr><td colspan="5"><p class="subtitle is-6 has-text-primary-35 mb-0">Name History</p></td></tr></thead>
+                                <tbody id="name-table-list"></tbody>
+                                <tfoot><tr><td colspan="5"></td></tr></tfoot>
+                            </table>
+                            <table class="table mb-6">
+                                <thead><tr><td colspan="4"><p class="subtitle is-6 has-text-primary-35 mb-0">Ownership History</p></td></tr></thead>
+                                <tbody id="ownership-table-list"></tbody>
+                                <tfoot><tr><td colspan="4"></td></tr></tfoot>
+                            </table>
                         </div>
                     </div>
-                    <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future (Sketches only)</i></p>
                 </section>
 
-                <section class="tab-section company-management-content" id="contacts-section" style="display: none;">
-                    <div class="columns is-2">
-                        <div class="column column-contacts">
-                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Phone History</p>
-                            <table class="table mb-5">
+                <section class="tab-section company-management-content" id="contacts-address-section" style="display: none;">
+                    <div class="columns is-4">
+                        <div class="column column-contacts is-one-third pt-6">
+                            <table class="table mb-6">
                                 <thead>
                                     <tr>
-                                        <td colspan="3"></td>
+                                        <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Phone History</p></td>
                                         <td class="has-text-right controls">
                                             <a id="add-company-phone" title="Register new phone" href=""><i class="fa fa-plus has-text-link-70"></i></a>
                                         </td>
                                     </tr>
                                 </thead>
                                 <tbody id="phone-table-list"></tbody>
+                                <tfoot><tr><td colspan="4"></td></tr></tfoot>
                             </table>
-                        </div>
-                        <div class="column column-contacts">
-                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Fax History</p>
-                            <table class="table mb-5">
+                            <table class="table mb-6">
                                 <thead>
                                     <tr>
-                                        <td colspan="3"></td>
+                                        <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Fax History</p></td>
                                         <td class="has-text-right controls">
                                             <a id="add-company-fax" title="Register new fax" href=""><i class="fa fa-plus has-text-link-70"></i></a>
                                         </td>
                                     </tr>
                                 </thead>
                                 <tbody id="fax-table-list"></tbody>
+                                <tfoot><tr><td colspan="4"></td></tr></tfoot>
                             </table>
-                        </div>
-                        <div class="column column-contacts">
-                            <p class="subtitle is-5 has-text-primary-35 has-text-centered mb-0">Email History</p>
-                            <table class="table mb-5">
+                            <table class="table mb-6">
                                 <thead>
                                     <tr>
-                                        <td colspan="3"></td>
+                                        <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Email History</p></td>
                                         <td class="has-text-right controls">
                                             <a id="add-company-email" title="Register new email" href=""><i class="fa fa-plus has-text-link-70"></i></a>
                                         </td>
                                     </tr>
                                 </thead>
                                 <tbody id="email-table-list"></tbody>
+                                <tfoot><tr><td colspan="4"></td></tr></tfoot>
+                            </table>
+                        </div>
+                        <div class="column column-address is-two-thirds pt-6">
+                            <table class="table mb-6">
+                                <thead>
+                                    <tr>
+                                        <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Address History</p></td>
+                                        <td class="has-text-right controls">
+                                            <a id="add-company-address" title="Register new address" href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody id="address-table-list"></tbody>
+                                <tfoot><tr><td colspan="4"></td></tr></tfoot>
+                            </table>
+                            <table class="table mb-6">
+                                <thead>
+                                    <tr>
+                                        <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Mailing Address History</p></td>
+                                        <td class="has-text-right controls">
+                                            <a id="add-company-mail" title="Register new mailing address" href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody id="mail-table-list"></tbody>
+                                <tfoot><tr><td colspan="4"></td></tr></tfoot>
                             </table>
                         </div>
                     </div>

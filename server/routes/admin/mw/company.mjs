@@ -118,7 +118,6 @@ export const companyById = async (req, res) => {
 
         /* Steps */
         const step = { segment: '', link: '', marker: '', span: '' }
-        let step1 = 'Registration'
         const activeStep = {
             segment: ' is-active',
             link: ' is-link-live is-link-active',
@@ -192,7 +191,6 @@ export const companyById = async (req, res) => {
             const { _id: _ownerId } = owner
             const { icon: catIdIcon } = Company.list.category[category]
 
-            step1 = 'Record'
             titlePfx = name
             contentTitle = `<span class="has-text-weight-semibold is-size-4">${escapeHTML(name)}</span>`
             contentTitle += ' &nbsp;&nbsp;<a id="delete-company-trigger"><i class="fas fa-trash-can has-text-danger is-size-6"></i></a>'
@@ -401,7 +399,6 @@ export const companyById = async (req, res) => {
         hbs.display = display(data, ein)
         hbs.contentTitle = contentTitle
         hbs.steps = steps
-        hbs.step1 = step1
         hbs.visibility = visibility
         hbs.css = css
         hbs.form = new CompanyForm(options)
