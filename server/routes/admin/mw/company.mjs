@@ -525,7 +525,7 @@ export const companyManagement = async (req, res) => {
         let company = await Company.fetch(res.session, { route }, { hideSensitive: false })
 
         const { _id: _companyId, category, ein } = company
-        if (!company) return respond404(res)
+        if (!company || company.until) return respond404(res)
         if (req.params.category !== Company.list.category[category].path[1])
             return respond404(res)
 
