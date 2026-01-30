@@ -60,8 +60,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
         names.map((row, i) => {
             list.names += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
             list.names += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
-            list.names += `<td>${row.busName}, ${row.coType}</td>`
-            list.names += `<td>${row.alias}</td>`
+            list.names += `<td>${row.busName}, ${row.coType} &nbsp;<small class="has-text-grey">(${row.alias})</small></td>`
             list.names += `<td class="has-text-right controls">`
             list.names += `<a ${defs.aAttr.edit(row, 'name', 'names')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
             if (!row.initial) list.names += `<a ${defs.aAttr.delete(row, 'name', 'names')}><i class="fa fa-trash has-text-danger-60"></i></a>`
@@ -72,8 +71,9 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             const owner = new Person(row.owner)
             list.ownerships += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
             list.ownerships += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
-            list.ownerships += `<td>${owner.fullName()} <small>(${owner.age})</small></td>`
+            list.ownerships += `<td>${owner.fullName()}</td>`
             list.ownerships += `<td class="has-text-right controls">`
+            if (!i) list.ownerships += `<a id="transfer-ownership" title="Transfer ownership" href=""><i class="fas fa-arrows-turn-right has-text-link-70"></i></a>`
             if (!row.initial) list.ownerships += `<a ${defs.aAttr.delete(row, 'ownership', 'ownerships')}><i class="fa fa-trash has-text-danger-60"></i></a>`
             list.ownerships += '</td></tr>'
         })

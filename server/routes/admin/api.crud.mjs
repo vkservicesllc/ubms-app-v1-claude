@@ -154,7 +154,7 @@ router.get('/companies/:_id/history', User.mw.verify, User.mw.superAdminOnly, as
             }
         }
 
-        res.json({ data, resource: company })
+        res.json({ data })
     } catch(err) {
         sendError.server(req, res, err)
     }
