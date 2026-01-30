@@ -1,4 +1,91 @@
 {{> admin/nav.alpha}}
-                <span class="subtitle is-5">Company management</span>
-                <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future</i></p>
+                <span class="subtitle is-4 mr-2">{{{cardTitle}}}</span>
+                <sup><a href="{{url.back}}"><i class="fa fa-close has-text-danger-55"></i></a></sup>
+                <div class="tabs mt-3" id="company-management-tabs">
+                    <ul>
+                        <li class="tab-link is-active" data-section="contacts-address"><a>Contacts / Address</a></li>
+                        <li class="tab-link" data-section="credentials"><a>Credentials</a></li>
+                        <li class="tab-link" data-section="ownership"><a>Ownership</a></li>
+                    </ul>
+                </div>
+                {{!-- <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future</i></p> --}}
+                <section class="tab-section" id="contacts-address-section">
+                    <style>
+                        .column {
+                            min-width: 280px;
+                        }
+                    </style>
+                    <div class="columns is-2">
+                        <div class="column">
+                            <p class="subtitle is-5 has-text-primary">Phone History</p>
+
+
+                                    {{!-- Sketch --}}
+                                    <div class="card">
+                                        <header class="card-header">
+                                            <p class="card-header-title">Current Phone</p>
+                                        </header>
+                                        <div class="card-content">
+                                            <table class="table">
+                                                <tr>
+                                                    <td>Oct 10, 2025</td>
+                                                    <td>(828) 741-0258</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <footer class="card-footer">
+                                            <a href="#" class="card-footer-item">Edit</a>
+                                            <a href="#" class="card-footer-item has-text-danger-50">Delete</a>
+                                        </footer>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-content">
+                                            <table class="table">
+                                                <tr>
+                                                    <td>Mar 5, 2025</td>
+                                                    <td>(828) 345-8765</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <footer class="card-footer">
+                                            <a href="#" class="card-footer-item">Edit</a>
+                                            <span class="card-footer-item">Initial</span>
+                                        </footer>
+                                    </div>
+
+
+                        </div>
+                        <div class="column">
+                            <p class="subtitle is-5 has-text-primary">Fax History</p>
+
+
+                                    {{!-- Sketch --}}
+                                    <div class="card">
+                                        <header class="card-header">
+                                            <p class="card-header-title">Current Fax</p>
+                                        </header>
+                                        <div class="card-content">
+                                            <table class="table">
+                                                <tr>
+                                                    <td>Oct 10, 2025</td>
+                                                    <td>(828) 741-0258</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <footer class="card-footer">
+                                            <a href="#" class="card-footer-item">Edit</a>
+                                            <a href="#" class="card-footer-item has-text-danger-50">Delete</a>
+                                        </footer>
+                                    </div>
+
+
+                        </div>
+                        <div class="column">
+                            <p class="subtitle is-5 has-text-primary">Email History</p>
+                        </div>
+                        <div class="column">
+                            <p class="subtitle is-5 has-text-primary">Address History</p>
+                        </div>
+                    </div>
+                </section>
 {{> admin/nav.omega}}

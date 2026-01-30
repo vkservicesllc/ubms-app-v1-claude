@@ -524,12 +524,28 @@ export const companyByCategoryAndRoute = async (req, res) => {
 
 export const companyManagement = async (req, res) => {
     try {
+        const { route } = req.params
+        let company = await Company.fetch(res.session, { route }, { hideSensitive: false })
+
+        const { _id: _companyId, category, ein } = company
+        if (!company) return respond404(res)
+        if (req.params.category !== Company.list.category[category].path[1])
+            return respond404(res)
+
         const key = 'company-management'
         let { hbs } = res
         hbs = hbs.set(key)
 
         const { active } = hbs.nav
         hbs.nav.companies = active
+
+        const icon = Company.list.category[category].icon
+        hbs.cardTitle = company.name
+        if (icon) hbs.cardTitle = `${icon}&nbsp;&nbsp;${hbs.cardTitle}`
+
+        hbs.url = {
+            back: `/business/${req.params.category}/${route}`,
+        }
 
         res.render(key, hbs)
     } catch (err) {
