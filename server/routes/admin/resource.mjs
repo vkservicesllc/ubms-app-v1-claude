@@ -200,7 +200,17 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, Own
             }
         } else {
             const owner = await Owner.fetch(res.session, { _id })
-            await owner.update(req.body, match)
+            if (!owner) throw new Error('Owner not found')
+
+            const person = await Individual.fetch(res.session, { id: owner.personId })
+            if (!person) throw new Error('Individual not found')
+
+            const names = await person.fetch('names')
+            const { since } = names[0]
+            const { fistName, middleName, lastName, suffix, gender, dob } = req.body
+
+            await person.update({ gender, dob })
+            await person.update('names', { fistName, middleName, lastName, suffix }, { since })
         }
 
         res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][1])

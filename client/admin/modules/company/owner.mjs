@@ -4,7 +4,7 @@ import selector from '../registry/selectors/company-owner.mjs'
 import { nameEvent, ssnEvent } from '../events/person.mjs'
 import { inputEvent, selectEvent } from '../events/form.mjs'
 import { reformatDateString } from '../tools/utils/date.mjs'
-import { ssn as formatSsn } from '..//tools/utils/formatter.mjs'
+import { ssn as formatSsn } from '../tools/utils/formatter.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
 const { id, modifyId, deleteId } = selector.id.hidden
@@ -95,7 +95,7 @@ $trigger.option.click(() => {
                     $(middleNameId).val(middleName)
                     $(lastNameId).val(lastName)
                     $(suffixId).val(suffix)
-                    if (gender !== 'X') $(genderId).val(gender).find('option[value=""]').remove()
+                    $(genderId).val(gender).find('option[value=""]').remove()
                     $(dobId).val(reformatDateString(dob, 'us'))
                     if (ssn) $(ssnId).val(formatSsn(ssn))
 
