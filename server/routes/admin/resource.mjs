@@ -6,6 +6,7 @@ const sendError = require('../../tools/utils/error')
 /* Tools */
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
+import Individual from '../../tools/core/individual.mjs'
 import Company, { Owner } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 
@@ -397,9 +398,12 @@ router.post('/update/company-owner/add/name', User.mw.verify, User.mw.superAdmin
         const owner = await Owner.fetch(res.session, { _id })
         if (!owner) throw new Error('Owner not found')
 
-        await owner.add('name', req.body)
+        const person = await Individual.fetch(res.session, { id: owner.personId })
+        if (!person) throw new Error('Individual not found')
 
-        res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][2])
+        await person.add('names', req.body)
+
+        res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][1])
     } catch (err) {
         sendError.server(req, res, err)
     }
