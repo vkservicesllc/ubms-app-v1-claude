@@ -18,10 +18,10 @@
                             font-size: .5em;
                         }
                         .current-status {
-                            width: 40px;
+                            width: 45px;
                         }
                         .effective-date {
-                            width: 130px;
+                            width: 140px;
                         }
                         .controls {
                             min-width: 70px;
@@ -39,7 +39,7 @@
 
                 <section class="tab-section company-management-content" id="profile-section">
                     <div class="columns is-4">
-                        <div class="column">
+                        <div class="column is-one-quarter">
                             <p class="has-text-danger mt-4"><i>Work in progress...<br/>Main content will be available in the future</i></p>
                         </div>
                         <div class="column"></div>
@@ -49,7 +49,7 @@
                                     <tr>
                                         <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Name History</p></td>
                                         <td class="has-text-right controls">
-                                            <a id="add-company-name" title="Register new name" href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                            <a class="add-event" data-target="names" title="Register new name" href=""><i class="fa fa-plus has-text-link-70"></i></a>
                                         </td>
                                     </tr>
                                 </thead>
@@ -73,7 +73,7 @@
                                     <tr>
                                         <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Phone History</p></td>
                                         <td class="has-text-right controls">
-                                            <a id="add-company-phone" title="Register new phone" href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                            <a class="add-event" data-target="phones" title="Register new phone" href=""><i class="fa fa-plus has-text-link-70"></i></a>
                                         </td>
                                     </tr>
                                 </thead>
@@ -85,7 +85,7 @@
                                     <tr>
                                         <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Fax History</p></td>
                                         <td class="has-text-right controls">
-                                            <a id="add-company-fax" title="Register new fax" href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                            <a class="add-event" data-target="faxes" title="Register new fax" href=""><i class="fa fa-plus has-text-link-70"></i></a>
                                         </td>
                                     </tr>
                                 </thead>
@@ -97,7 +97,7 @@
                                     <tr>
                                         <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Email History</p></td>
                                         <td class="has-text-right controls">
-                                            <a id="add-company-email" title="Register new email" href=""><i class="fa fa-plus has-text-link-70"></i></a>
+                                            <a class="add-event" data-target="emails" title="Register new email" href=""><i class="fa fa-plus has-text-link-70"></i></a>
                                         </td>
                                     </tr>
                                 </thead>
@@ -134,7 +134,44 @@
                     </div>
                 </section>
 
-                
+                <div class="modal" id="upsert-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title"></p>
+                        </header>
+                        <section class="modal-card-body warning-body" style="display: none;"></section>
+                        <section class="modal-card-body form-body" style="display: none;">
+                            <form id="upsert-form" method="POST"></form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <div class="buttons">
+                                <button type="submit" form="upsert-form" class="button" style="display: none;"></button>
+                                <button class="button proceed-button" disabled style="display: none;">Proceed</button>
+                                <button class="button modal-cancel">Cancel</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+
+                <div class="modal" id="delete-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title"></p>
+                        </header>
+                        <section class="modal-card-body form-body" style="display: none;">
+                            <form id="delete-form" method="POST"></form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <div class="buttons">
+                                <button type="submit" form="delete-form" class="button" style="display: none;"></button>
+                                <button class="button proceed-button" disabled style="display: none;">Proceed</button>
+                                <button class="button modal-cancel">Cancel</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
 
                 <script type="module" src="/modules/company/management.mjs"></script>
 
