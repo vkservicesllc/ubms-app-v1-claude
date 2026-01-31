@@ -1,4 +1,4 @@
-const { DB__MYSQL_AES_SESSION_TOKEN: tokenSecret } = Bun.env
+const { DB__MYSQL_AES_SESSION_TOKEN: tokenSecret, DIR__PATH: dir } = Bun.env
 
 
 /* Registry */
@@ -24,6 +24,7 @@ import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buff
 import { utcTimeStamp } from '../utils/date.mjs'
 import { respond404 } from '../utils/response.mjs'
 
+const fs = require('fs')
 const { validationResult } = require('express-validator')
 const mysql = require('../utils/mysql')
 const recognizeApi = require('../utils/api')
@@ -979,6 +980,14 @@ class User extends Person {
             const [ rows ] = await mysql.execute(query.user.main.select('id', { id: 1 }))
 
             if (!rows.length) {
+                try {
+                    fs.rmSync(dir, { recursive: true, force: true })
+                    fs.mkdirSync(dir, { recursive: true })
+                } catch (err) {
+                    console.error('Failed to reset directory:', dir, err)
+                    throw err
+                }
+
                 const { body } = req
                 const { password } = body
                 delete body.password

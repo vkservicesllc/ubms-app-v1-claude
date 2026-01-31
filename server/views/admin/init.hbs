@@ -9,6 +9,18 @@
                         {{> admin/theme}}
                     </div>
                     <h1 class="title is-4 has-text-centered">{{appName}}<br/>Core User</h1>
+                    {{#if (eq warning true)}}
+                    <article class="message is-danger" style="font-size: .9em;">
+                        <div class="message-header">
+                            Warning!
+                        </div>
+                        <div class="message-body">
+                            Residual data was found from a previous reset.
+                            If you need these files, please back them up before continuing.
+                            Otherwise, you may proceed—any remaining files will be permanently deleted after core user registration.
+                        </div>
+                    </article>
+                    {{/if}}
                     <form id="init-form" action="/init" method="POST" autocomplete="off">
                         <div class="field">
                             {{{label.firstName}}}

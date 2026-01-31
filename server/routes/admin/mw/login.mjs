@@ -1,5 +1,8 @@
+const { DIR__PATH: dir } = Bun.env
+
 import User from '../../../tools/core/user.mjs'
 import UserForm from '../../../tools/form/user.mjs'
+import { getFiles } from '../../../tools/utils/fs.mjs'
 
 const sendError = require('../../../tools/utils/error')
 
@@ -42,13 +45,13 @@ export default (req, res, next) => {
 export const initialize = async (req, res, next) => {
     if (req.session.user) return next()
 
-    const developer = await User.fetch(res.session, { id: 1 }, { offline: true })
-    if (developer) return next()
+    const coreUser = await User.fetch(res.session, { id: 1 }, { offline: true })
+    if (coreUser) return next()
 
     try {
         const key = 'init'
         let { hbs } = res
-        hbs = hbs.set(key)
+        hbs = hbs.set(key, { titlePfx: 'Core User' })
 
         hbs.label = {
             firstName: UserForm.firstName.text.label({ class: 'label', content: 'First Name' }),
@@ -64,6 +67,9 @@ export const initialize = async (req, res, next) => {
             username: input.username,
             password: input.password,
         }
+
+        const files = await getFiles(dir)
+        hbs.warning = files.length > 0
 
         res.render(key, hbs)
     } catch (err) {
