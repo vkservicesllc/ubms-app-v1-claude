@@ -67,7 +67,6 @@ const closeUpsertModal = () => {
 
     $title.html(null)
     $body.hide()
-    $form.removeAttr('action')
     $submit.hide().text(null)
     $proceed.hide.prop('disabled', true)
 }
@@ -86,8 +85,6 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
                 delete: (row, target, value) => `class="delete-event ml-1" title="Delete selected ${value}" data-target="${target}" data-id="${row._companyId}" data-since="${row.since}" href=""`,
             },
         }
-
-// console.table(addresses) //! TEMP
 
         const list = {
             names: '',
@@ -171,5 +168,35 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
         })
 
         Object.keys($tableList).forEach(target => $tableList[target].html(list[target]))
+
+        const url = (target, since) => {
+            let url = `/api/resource/companies/${_id}/${target}`
+            if (since) url += `/${since}`
+
+            return url
+        }
+
+        $('.add-event').click(function(evt) {
+            evt.preventDefault()
+
+            const target = $(this).data('target')
+console.log({ _id, target, url: url(target) }) //!TEMP
+        })
+
+        $('.edit-event').click(function(evt) {
+            evt.preventDefault()
+
+            const target = $(this).data('target')
+            const since = $(this).data('since')
+console.log({ _id, target, since, url: url(target, since) }) //!TEMP
+        })
+
+        $('.delete-event').click(function(evt) {
+            evt.preventDefault()
+
+            const target = $(this).data('target')
+            const since = $(this).data('since')
+console.log({ _id, target, since, url: url(target, since) }) //!TEMP
+        })
     },
 })

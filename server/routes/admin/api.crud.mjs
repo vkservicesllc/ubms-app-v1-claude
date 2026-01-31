@@ -254,7 +254,69 @@ const dynamicValidator = {
             .catch(next)
     },
 
+    companyTargets: (req, res, next) => {
+        const { target } = res.params
+        let validators = []
+
+        switch (target) {
+            case 'names':
+                //
+                break
+            case 'phones':
+                //
+                break
+            case 'faxes':
+                //
+                break
+            case 'emails':
+                //
+                break
+            case 'addresses':
+                //
+                break
+            case 'mail':
+                //
+                break
+        }
+
+        Promise.all(validators.map(validator => validator.run(req)))
+            .then(() => next())
+            .catch(next)
+    },
+
 }
+
+
+router.post('/companies/:_id/:target', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.companyTargets, validationCheck, async (req, res) => {
+    try {
+        const { _id, target } = req.params
+        const company = await Company.fetch(res.session, { _id }, { hideRawId })
+        if (!company) throw new Error('Company not found')
+
+        const { added } = await company.add(target, req.body)
+        const data = await company.fetch(target)
+
+        res.json({ added, data })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.put('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.companyTargets, validationCheck, async (req, res) => {
+    try {
+        const { _id, target, since } = req.params
+        const company = await Company.fetch(res.session, { _id }, { hideRawId })
+        if (!company) throw new Error('Company not found')
+
+        const { updated } = await company.update(target, req.body, { since })
+        const data = await company.fetch(target)
+
+        res.json({ updated, data })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
 
 
 router.patch('/users/:_id/:field?', User.mw.verify, dynamicValidator.user, validationCheck, async (req, res) => {
@@ -291,6 +353,22 @@ router.patch('/users/:_id/:field?', User.mw.verify, dynamicValidator.user, valid
 
 
 //* DELETE *//
+
+
+router.delete('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+    try {
+        const { _id, target, since } = req.params
+        const company = await Company.fetch(res.session, { _id }, { hideRawId })
+        if (!company) throw new Error('Company not found')
+
+        const { deleted } = await company.update(target, { since })
+        const data = await company.fetch(target)
+
+        res.json({ deleted, data })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
 
 
 
