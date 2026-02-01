@@ -56,7 +56,7 @@ $tabs.click(function() {
 })
 
 
-const openUpsertModal = (target, action = 'insert', data = null) => {
+const openUpsertModal = (target, action = 'insert', data, since) => {
     const { $title, $warning, $main, $form, $submit, $proceed } = $modal.elements('upsert')
     let title = {
         names: 'Name',
@@ -71,11 +71,18 @@ const openUpsertModal = (target, action = 'insert', data = null) => {
 
         case 'update':
             title = '<small>Modify selected</small> ' + title
+            data = data[target]
+            for (const row of data) {
+                if (row.since !== since) continue
+                data = row
+                break
+            }
+            $warning.show()
+            $proceed.show()
             break
 
         default:
             title = '<small>Register new</small> ' + title
-
 
     }
 
@@ -91,13 +98,14 @@ const closeUpsertModal = () => {
     $title.html(null)
     $body.hide()
     $submit.hide().text(null)
-    $proceed.hide().prop('disabled', true)
+    $proceed.hide()
 }
 
 
 $.ajax(`/api/resource/companies/${_id}/history`, {
     success(response) {
-        const { names, ownerships, addresses, mail, phones, faxes, emails } = response.data
+        const { data } = response
+        const { names, ownerships, addresses, mail, phones, faxes, emails } = data
         const defs = {
             a: span => `<tr><td class="has-text-centered has-text-danger-65" colspan="${span}"><small><i>`,
             b: '</i></small></td></tr>',
@@ -211,13 +219,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
 
             const target = $(this).data('target')
             const since = $(this).data('since')
-            $.ajax(`/api/resource/companies/${_id}/${target}/${since}`, {
-                success(response) {
-                    const data = response.data[0]
-
-                    openUpsertModal(target, 'update', data)
-                },
-            })
+            openUpsertModal(target, 'update', data, since)
         })
 
         $('.delete-event').click(function(evt) {
