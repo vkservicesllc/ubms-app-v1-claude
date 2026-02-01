@@ -544,6 +544,16 @@ export const companyManagement = async (req, res) => {
             back: `/business/${req.params.category}/${route}`,
         }
 
+        const instr = { labelClass, labelClassRequired, textClass: 'input' }
+        let options = {}
+        const fields = [
+            'since',
+            'busName', 'coType', 'alias',
+        ]
+
+        options = updateFormOptions(options, CompanyForm, fields, { ...instr, tabs: 13 })
+        options.since.text.label.content = 'Effective Date'
+
         switch (category) {
 
             case 'crr':
@@ -553,6 +563,7 @@ export const companyManagement = async (req, res) => {
         }
 
         hbs.data = company
+        hbs.form = new CompanyForm(options)
 
         res.render(key, hbs)
     } catch (err) {

@@ -22,7 +22,7 @@ const $modal = {
         const $submit = $(this[target]).find('[type="submit"]')
         const $body = $(this[target]).find('.modal-card-body')
         const $main = $(this[target]).find('.form-body')
-        const $form = $main.find('form')
+        const $form = $main.find('.form')
 
         switch (target) {
             case 'upsert':
@@ -79,10 +79,14 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
             }
             $warning.show()
             $proceed.show()
+            $submit.text('Register').addClass('is-success')
             break
 
         default:
             title = '<small>Register new</small> ' + title
+            $(`#${target}-form`).show()
+            $main.show()
+            $submit.text('Register').addClass('is-link').show()
 
     }
 
@@ -93,11 +97,13 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
 const closeUpsertModal = () => {
     $modal.upsert.removeClass('is-active')
 
-    const { $title, $body, $form, $submit, $proceed } = $modal.elements('upsert')
+    const { $title, $warning, $main, $form, $submit, $proceed } = $modal.elements('upsert')
 
     $title.html(null)
-    $body.hide()
-    $submit.hide().text(null)
+    $form.hide()
+    $main.hide()
+    $submit.hide().text(null).removeClass('is-link is-success')
+    $warning.hide()
     $proceed.hide()
 }
 
@@ -130,7 +136,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
         names.map((row, i) => {
             list.names += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
             list.names += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
-            list.names += `<td>${row.busName}, ${row.coType} &nbsp;<small class="has-text-grey">(${row.alias})</small></td>`
+            list.names += `<td><span class="has-text-weight-semibold">${row.busName}, ${row.coType}</span> &nbsp;<small>(${row.alias})</small></td>`
             list.names += `<td class="has-text-right controls">`
             list.names += `<a ${defs.aAttr.edit(row, 'names', 'name')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
             if (!row.initial) list.names += `<a ${defs.aAttr.delete(row, 'names', 'name')}><i class="fa fa-trash has-text-danger-60"></i></a>`
@@ -141,37 +147,17 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             const owner = new Person(row.owner)
             list.ownerships += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
             list.ownerships += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
-            list.ownerships += `<td>${owner.fullName()}</td>`
+            list.ownerships += `<td><span class="has-text-weight-semibold">${owner.fullName()}</span></td>`
             list.ownerships += `<td class="has-text-right controls">`
             if (!i) list.ownerships += `<a id="transfer-ownership" title="Transfer ownership" href=""><i class="fas fa-arrows-turn-right has-text-link-70"></i></a>`
             if (!row.initial) list.ownerships += `<a ${defs.aAttr.delete(row, 'ownerships', 'ownership')}><i class="fa fa-trash has-text-danger-60"></i></a>`
             list.ownerships += '</td></tr>'
         })
 
-        addresses.map((row, i) => {
-            list.addresses += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
-            list.addresses += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
-            list.addresses += `<td>${new Address(row).html()}</td>`
-            list.addresses += `<td class="has-text-right controls">`
-            list.addresses += `<a ${defs.aAttr.edit(row, 'addresses', 'address')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
-            if (!row.initial) list.addresses += `<a ${defs.aAttr.delete(row, 'addresses', 'address')}><i class="fa fa-trash has-text-danger-60"></i></a>`
-            list.addresses += '</td></tr>'
-        })
-
-        mail.map((row, i) => {
-            list.mail += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
-            list.mail += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
-            list.mail += `<td>${new Address(row).html()}</td>`
-            list.mail += `<td class="has-text-right controls">`
-            list.mail += `<a ${defs.aAttr.edit(row, 'mail', 'mailing address')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
-            list.mail += `<a ${defs.aAttr.delete(row, 'mail', 'mailing address')}><i class="fa fa-trash has-text-danger-60"></i></a>`
-            list.mail += '</td></tr>'
-        })
-
         phones.map((row, i) => {
             list.phones += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
             list.phones += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
-            list.phones += `<td>${formatTel(row.phone)}</td>`
+            list.phones += `<td><span class="has-text-weight-semibold">${formatTel(row.phone)}</span></td>`
             list.phones += `<td class="has-text-right controls">`
             list.phones += `<a ${defs.aAttr.edit(row, 'phones', 'phone')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
             if (!row.initial) list.phones += `<a ${defs.aAttr.delete(row, 'phones', 'phone')}><i class="fa fa-trash has-text-danger-60"></i></a>`
@@ -181,7 +167,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
         faxes.map((row, i) => {
             list.faxes += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
             list.faxes += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
-            list.faxes += `<td>${formatTel(row.fax)}</td>`
+            list.faxes += `<td><span class="has-text-weight-semibold">${formatTel(row.fax)}</span></td>`
             list.faxes += `<td class="has-text-right controls">`
             list.faxes += `<a ${defs.aAttr.edit(row, 'faxes', 'fax')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
             list.faxes += `<a ${defs.aAttr.delete(row, 'faxes', 'fax')}><i class="fa fa-trash has-text-danger-60"></i></a>`
@@ -191,11 +177,31 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
         emails.map((row, i) => {
             list.emails += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
             list.emails += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
-            list.emails += `<td>${row.email}</td>`
+            list.emails += `<td><span class="has-text-weight-semibold">${row.email}</span></td>`
             list.emails += `<td class="has-text-right controls">`
             list.emails += `<a ${defs.aAttr.edit(row, 'emails', 'email')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
             list.emails += `<a ${defs.aAttr.delete(row, 'emails', 'email')}><i class="fa fa-trash has-text-danger-60"></i></a>`
             list.emails += '</td></tr>'
+        })
+
+        addresses.map((row, i) => {
+            list.addresses += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
+            list.addresses += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
+            list.addresses += `<td><span class="has-text-weight-semibold">${new Address(row).html()}</span></td>`
+            list.addresses += `<td class="has-text-right controls">`
+            list.addresses += `<a ${defs.aAttr.edit(row, 'addresses', 'address')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
+            if (!row.initial) list.addresses += `<a ${defs.aAttr.delete(row, 'addresses', 'address')}><i class="fa fa-trash has-text-danger-60"></i></a>`
+            list.addresses += '</td></tr>'
+        })
+
+        mail.map((row, i) => {
+            list.mail += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
+            list.mail += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
+            list.mail += `<td><span class="has-text-weight-semibold">${new Address(row).html()}</span></td>`
+            list.mail += `<td class="has-text-right controls">`
+            list.mail += `<a ${defs.aAttr.edit(row, 'mail', 'mailing address')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
+            list.mail += `<a ${defs.aAttr.delete(row, 'mail', 'mailing address')}><i class="fa fa-trash has-text-danger-60"></i></a>`
+            list.mail += '</td></tr>'
         })
 
         Object.keys($tableList).forEach(target => $tableList[target].html(list[target]))

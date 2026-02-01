@@ -142,7 +142,7 @@
 
                 <div class="modal" id="upsert-modal">
                     <div class="modal-background"></div>
-                    <div class="modal-card">
+                    <div class="modal-card" style="width: 720px;">
                         <header class="modal-card-head">
                             <p class="modal-card-title">
                                 <strong>{{{companyName}}}</strong>
@@ -160,12 +160,53 @@
                             </article>
                         </section>
                         <section class="modal-card-body form-body" style="display: none;">
-                            <form id="upsert-form"></form>
+                            <form id="upsert-form">
+                                <div class="columns">
+                                    <div class="column is-4">
+                                        {{{form.since.text.label}}}
+                                        <div class="control has-icons-left">
+                                            {{{form.since.text.input}}}
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-calendar-days"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form" id="names-form" style="display: none;">
+                                    <div class="columns">
+                                        <div class="column is-6">
+                                            {{{form.busName.text.label}}}
+                                            <div class="control">
+                                                {{{form.busName.text.input}}}
+                                            </div>
+                                            <p class="help is-info" id="busname-tip">Without Co Type</p>
+                                        </div>
+                                        <div class="column is-3">
+                                            {{{form.coType.select.label}}}
+                                            <div class="control">
+                                                <div class="select is-fullwidth">
+                                                    {{{form.coType.select.input}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-3">
+                                            {{{form.alias.text.label}}}
+                                            <div class="control">
+                                                {{{form.alias.text.input}}}
+                                            </div>
+                                            <p class="help is-info" id="alias-tip"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form" id="phones-form" style="display: none;">
+                                    PHONE
+                                </div>
+                            </form>
                         </section>
                         <footer class="modal-card-foot">
                             <div class="buttons">
                                 <button type="submit" form="upsert-form" class="button" style="display: none;"></button>
-                                <button class="button is-danger is-outlined proceed-button" style="display: none;">Proceed to Correct Errors</button>
+                                <button class="button is-danger is-outlined proceed-button" style="display: none;">Proceed to Error Correction</button>
                                 <button class="button upsert-modal-cancel">Cancel</button>
                             </div>
                         </footer>
