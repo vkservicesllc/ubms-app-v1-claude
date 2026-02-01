@@ -1,6 +1,6 @@
 {{> admin/nav.alpha}}
 
-                <span class="subtitle has-text-normal has-text-extreme is-4 mr-2">{{{cardTitle}}}</span>
+                <span class="subtitle has-text-normal has-text-extreme is-4 mr-2">{{{companyName}}}</span>
                 <sup><a href="{{url.back}}"><i class="fa fa-close has-text-danger-65"></i></a></sup>
                 <div class="tabs mt-3">
                     <ul>
@@ -34,6 +34,12 @@
                         }
                         .column-contacts {
                             min-width: 400px;
+                        }
+                        .modal-card-title strong {
+                            display: block;
+                            margin-bottom: 10px;
+                            padding-bottom: 7px;
+                            border-bottom: 1px solid rgb(119, 119, 119);
                         }
                 </style>
 
@@ -138,7 +144,10 @@
                     <div class="modal-background"></div>
                     <div class="modal-card">
                         <header class="modal-card-head">
-                            <p class="modal-card-title"></p>
+                            <p class="modal-card-title">
+                                <strong>{{{companyName}}}</strong>
+                                <span class="modal-card-target-title"></span>
+                            </p>
                         </header>
                         <section class="modal-card-body warning-body" style="display: none;"></section>
                         <section class="modal-card-body form-body" style="display: none;">
@@ -148,7 +157,7 @@
                             <div class="buttons">
                                 <button type="submit" form="upsert-form" class="button" style="display: none;"></button>
                                 <button class="button proceed-button" disabled style="display: none;">Proceed</button>
-                                <button class="button modal-cancel">Cancel</button>
+                                <button class="button upsert-modal-cancel">Cancel</button>
                             </div>
                         </footer>
                     </div>
@@ -167,7 +176,7 @@
                             <div class="buttons">
                                 <button type="submit" form="delete-form" class="button" style="display: none;"></button>
                                 <button class="button proceed-button" disabled style="display: none;">Proceed</button>
-                                <button class="button modal-cancel">Cancel</button>
+                                <button class="button delete-modal-cancel">Cancel</button>
                             </div>
                         </footer>
                     </div>

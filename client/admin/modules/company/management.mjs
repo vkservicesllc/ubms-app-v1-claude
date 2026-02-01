@@ -17,17 +17,17 @@ const $tableList = {
 const $modal = {
     upsert: $('#upsert-modal'),
     delete: $('#delete-modal'),
-    elements: target => {
-        const $title = this[target].find('.modal-card-title')
-        const $submit = this[target].find('[type="submit"]')
-        const $body = this[target].find('.modal-card-body')
-        const $main = this[target].find('.form-body')
-        const $form = this.find('form')
+    elements: function(target) {
+        const $title = $(this[target]).find('.modal-card-target-title')
+        const $submit = $(this[target]).find('[type="submit"]')
+        const $body = $(this[target]).find('.modal-card-body')
+        const $main = $(this[target]).find('.form-body')
+        const $form = $main.find('form')
 
         switch (target) {
             case 'upsert':
-                const $warning = this.upsert.find('.warning-body')
-                const $proceed = this.upsert.find('.proceed-button')
+                const $warning = $(this.upsert).find('.warning-body')
+                const $proceed = $(this.upsert).find('.proceed-button')
 
                 return { $title, $body, $warning, $main, $form, $submit, $proceed }
                 break
@@ -56,19 +56,42 @@ $tabs.click(function() {
 })
 
 
-const openUpsertModal = (action, target) => {
+const openUpsertModal = (target, action = 'insert', data = null) => {
     const { $title, $warning, $main, $form, $submit, $proceed } = $modal.elements('upsert')
+    let title = {
+        names: 'Name',
+        phones: 'Phone',
+        faxes: 'Fax',
+        emails: 'Email',
+        addresses: 'Physical Address',
+        mail: 'Mailing Address',
+    }[target]
 
-    //!...
+    switch (action) {
+
+        case 'update':
+            title = '<small>Modify selected</small> ' + title
+            break
+
+        default:
+            title = '<small>Register new</small> ' + title
+
+
+    }
+
+    $title.html(title)
+    $modal.upsert.addClass('is-active')
 }
 
 const closeUpsertModal = () => {
+    $modal.upsert.removeClass('is-active')
+
     const { $title, $body, $form, $submit, $proceed } = $modal.elements('upsert')
 
     $title.html(null)
     $body.hide()
     $submit.hide().text(null)
-    $proceed.hide.prop('disabled', true)
+    $proceed.hide().prop('disabled', true)
 }
 
 
@@ -180,7 +203,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             evt.preventDefault()
 
             const target = $(this).data('target')
-console.log({ _id, target, url: url(target) }) //!TEMP
+            openUpsertModal(target)
         })
 
         $('.edit-event').click(function(evt) {
@@ -188,7 +211,13 @@ console.log({ _id, target, url: url(target) }) //!TEMP
 
             const target = $(this).data('target')
             const since = $(this).data('since')
-console.log({ _id, target, since, url: url(target, since) }) //!TEMP
+            $.ajax(`/api/resource/companies/${_id}/${target}/${since}`, {
+                success(response) {
+                    const data = response.data[0]
+
+                    openUpsertModal(target, 'update', data)
+                },
+            })
         })
 
         $('.delete-event').click(function(evt) {
@@ -198,5 +227,7 @@ console.log({ _id, target, since, url: url(target, since) }) //!TEMP
             const since = $(this).data('since')
 console.log({ _id, target, since, url: url(target, since) }) //!TEMP
         })
+
+        $('.upsert-modal-cancel').click(closeUpsertModal)
     },
 })

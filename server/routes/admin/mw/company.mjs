@@ -537,8 +537,8 @@ export const companyManagement = async (req, res) => {
         hbs.nav.companies = active
 
         const icon = Company.list.category[category].icon
-        hbs.cardTitle = company.name
-        if (icon) hbs.cardTitle = `${icon}&nbsp;&nbsp;${hbs.cardTitle}`
+        hbs.companyName = company.name
+        if (icon) hbs.companyName = `${icon}&nbsp;&nbsp;${hbs.companyName}`
 
         hbs.url = {
             back: `/business/${req.params.category}/${route}`,
