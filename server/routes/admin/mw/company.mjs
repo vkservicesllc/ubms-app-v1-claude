@@ -549,6 +549,8 @@ export const companyManagement = async (req, res) => {
         const fields = [
             'since',
             'busName', 'coType', 'alias',
+
+            'phone', 'fax', 'email',
         ]
 
         options = updateFormOptions(options, CompanyForm, fields, { ...instr, tabs: 13 })

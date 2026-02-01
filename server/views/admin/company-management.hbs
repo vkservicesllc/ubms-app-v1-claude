@@ -171,6 +171,34 @@
                                             </span>
                                         </div>
                                     </div>
+                                    <div class="column form is-4" id="phones-form" style="display: none;">
+                                        {{{form.phone.text.label}}}
+                                        <div class="control has-icons-left">
+                                            {{{form.phone.text.input}}}
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-phone"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="column form is-4" id="faxes-form" style="display: none;">
+                                        {{{form.fax.text.label}}}
+                                        <div class="control has-icons-left">
+                                            {{{form.fax.text.input}}}
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-fax"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="column form is-8" id="emails-form" style="display: none;">
+                                        {{{form.email.text.label}}}
+                                        <div class="control has-icons-left">
+                                            {{{form.email.text.input}}}
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-envelope"></i>
+                                            </span>
+                                        </div>
+                                        <p class="help is-danger" id="email-tip"></p>
+                                    </div>
                                 </div>
                                 <div class="form" id="names-form" style="display: none;">
                                     <div class="columns">
@@ -197,9 +225,6 @@
                                             <p class="help is-info" id="alias-tip"></p>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="form" id="phones-form" style="display: none;">
-                                    PHONE
                                 </div>
                             </form>
                         </section>
