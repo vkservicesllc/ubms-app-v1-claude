@@ -142,7 +142,7 @@
 
                 <div class="modal" id="upsert-modal">
                     <div class="modal-background"></div>
-                    <div class="modal-card" style="width: 720px;">
+                    <div class="modal-card" style="width: 840px;">
                         <header class="modal-card-head">
                             <p class="modal-card-title">
                                 <strong>{{{companyName}}}</strong>
@@ -162,7 +162,7 @@
                         <section class="modal-card-body form-body" style="display: none;">
                             <form id="upsert-form">
                                 <div class="columns">
-                                    <div class="column is-4">
+                                    <div class="column is-3">
                                         {{{form.since.text.label}}}
                                         <div class="control has-icons-left">
                                             {{{form.since.text.input}}}
@@ -171,7 +171,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="column form is-4" id="phones-form" style="display: none;">
+                                    <div class="column is-4 form phones-form" style="display: none;">
                                         {{{form.phone.text.label}}}
                                         <div class="control has-icons-left">
                                             {{{form.phone.text.input}}}
@@ -180,7 +180,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="column form is-4" id="faxes-form" style="display: none;">
+                                    <div class="column is-4 form faxes-form" style="display: none;">
                                         {{{form.fax.text.label}}}
                                         <div class="control has-icons-left">
                                             {{{form.fax.text.input}}}
@@ -189,7 +189,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="column form is-8" id="emails-form" style="display: none;">
+                                    <div class="column is-6 form emails-form" style="display: none;">
                                         {{{form.email.text.label}}}
                                         <div class="control has-icons-left">
                                             {{{form.email.text.input}}}
@@ -199,8 +199,21 @@
                                         </div>
                                         <p class="help is-danger" id="email-tip"></p>
                                     </div>
+                                    <div class="column is-6 form addresses-form" style="display: none;">
+                                        {{{form.address1.text.label}}}
+                                        <div class="control">
+                                            {{{form.address1.text.input}}}
+                                        </div>
+                                        <p class="help is-info" id="addr1-tip">Without Suite/Unit</p>
+                                    </div>
+                                    <div class="column is-3 form addresses-form" style="display: none;">
+                                        {{{form.address2.text.label}}}
+                                        <div class="control">
+                                            {{{form.address2.text.input}}}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form" id="names-form" style="display: none;">
+                                <div class="form names-form" style="display: none;">
                                     <div class="columns">
                                         <div class="column is-6">
                                             {{{form.busName.text.label}}}
@@ -223,6 +236,28 @@
                                                 {{{form.alias.text.input}}}
                                             </div>
                                             <p class="help is-info" id="alias-tip"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form addresses-form" style="display: none;">
+                                    <div class="columns">
+                                        <div class="column is-3">
+                                            {{{form.addrZip.text.label}}}
+                                            <div class="control">
+                                                {{{form.addrZip.text.input}}}
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            {{{form.addrCity.text.label}}}
+                                            <div class="control">
+                                                {{{form.addrCity.text.input}}}
+                                            </div>
+                                        </div>
+                                        <div class="column is-3">
+                                            {{{form.addrState.select.label}}}
+                                            <div class="select is-fullwidth">
+                                                {{{form.addrState.select.input}}}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

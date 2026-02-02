@@ -1,6 +1,78 @@
 import Person from '/modules/tools/core/person.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
+import Tip from '/modules/tools/tip.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
+import { busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '/modules/events/company.mjs'
+import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
+import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
+import selector from '/modules/registry/selectors/company.mjs'
+
+const TS = selector.id.text, SS = selector.id.select
+const sinceId = TS.since
+const einId = TS.ein, dunsId = TS.duns, websiteId = TS.website
+const busNameId = TS.busName, coTypeId = SS.coType, aliasId = TS.alias
+const phoneId = TS.phone, faxId = TS.fax, emailId = TS.email
+const addr1Id = TS.address1, addr2Id = TS.address2
+const zipId = TS.addrZip, cityId = TS.addrCity, stateId = SS.addrState
+const mailAddr1Id = TS.mailAddress1, mailAddr2Id = TS.mailAddress2
+const mailZipId = TS.mailAddrZip, mailCityId = TS.mailAddrCity, mailStateId = SS.mailAddrState
+
+const $tip = {
+    name: $('#busname-tip'),
+    alias: $('#alias-tip'),
+    email: $('#email-tip'),
+    // ein: $('#ein-tip'),
+    // duns: $('#duns-tip'),
+    // website: $('#website-tip'),
+    // form: $('#company-form-tip'),
+}
+
+const tipDefs = {}
+for (const key in $tip)
+    tipDefs[key] = $tip[key].html()
+
+const message = {
+    success: {
+        name: 'Name is unique',
+        alias: 'Alias is unique',
+        // ein: 'EIN is unique',
+        // duns: 'DUNS is unique',
+    },
+    failed: {
+        name: 'Name is taken',
+        alias: 'Alias is taken',
+        // ein: 'EIN is taken',
+        // duns: 'DUNS is taken',
+    },
+}
+
+const setTip = new Tip($tip, tipDefs, message)
+
+const handleChange = (props = {}) => {
+    let input = true, action = 'passed'
+    const { data, key } = props
+
+    data._id = _id
+    for (const prop in data)
+        if (!data[prop]) {
+            input = false
+            break
+        }
+
+    if (!input) action = 'default'
+
+
+    $.ajax('/api/unique/company', {
+        method: 'POST',
+        data,
+        success(response) {
+            const { unique } = response
+            if (input && !unique) action = 'failed'
+
+            setTip[action](key)
+        },
+    })
+}
 
 const $tabs = $('.company-management-tabs')
 const $sections = $('.company-management-content')
@@ -13,6 +85,7 @@ const $tableList = {
     faxes: $('#fax-table-list'),
     emails: $('#email-table-list'),
 }
+const $input = $('input:not([type="checkbox"]), select')
 
 const $modal = {
     upsert: $('#upsert-modal'),
@@ -29,15 +102,16 @@ const $modal = {
                 const $warning = $(this.upsert).find('.warning-body')
                 const $proceed = $(this.upsert).find('.proceed-button')
 
-                return { $title, $body, $warning, $main, $form, $submit, $proceed }
+                return { $title, $body, $warning, $main, $form, $input, $submit, $proceed }
                 break
             case 'delete':
-                return { $title, $body, $submit, $form }
+                const $checkbox = $('input[type="checkbox"]')
+
+                return { $title, $body, $submit, $form, $checkbox }
                 break
         }
     }
 }
-
 
 const _id = $('#company-id').val()
 const timeout = 250
@@ -57,7 +131,7 @@ $tabs.click(function() {
 
 
 const openUpsertModal = (target, action = 'insert', data, since) => {
-    const { $title, $warning, $main, $form, $submit, $proceed } = $modal.elements('upsert')
+    const { $title, $warning, $main, $submit, $proceed } = $modal.elements('upsert')
     let title = {
         names: 'Name',
         phones: 'Phone',
@@ -66,6 +140,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
         addresses: 'Physical Address',
         mail: 'Mailing Address',
     }[target]
+    let formAction = 'hide'
 
     switch (action) {
 
@@ -84,28 +159,70 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
 
         default:
             title = '<small>Register new</small> ' + title
-            $(`#${target}-form`).show()
+            formAction = 'show'
             $main.show()
             $submit.text('Register').addClass('is-link').show()
 
     }
 
     $title.html(title)
+    $(`.${target}-form`)[formAction]().find('input, select').prop('disabled', false)
     $modal.upsert.addClass('is-active')
 }
 
 const closeUpsertModal = () => {
     $modal.upsert.removeClass('is-active')
 
-    const { $title, $warning, $main, $form, $submit, $proceed } = $modal.elements('upsert')
+    const { $title, $warning, $main, $form, $input, $submit, $proceed } = $modal.elements('upsert')
 
+    $input.val(null).prop('disabled', true)
     $title.html(null)
+    Object.keys(message.success).forEach(key => setTip.default(key))
+    $tip.email.html(null)
     $form.hide()
     $main.hide()
     $submit.hide().text(null).removeClass('is-link is-success')
     $warning.hide()
     $proceed.hide()
 }
+
+
+$input.prop('disabled', true)
+
+
+busNameEvent(busNameId, coTypeId, {
+    onInput() {
+        setTip.default('name')
+    },
+    onChange(busName, coType) {
+        handleChange({ data: { busName, coType }, key: 'name' })
+    },
+})
+
+coTypeEvent(coTypeId, busNameId, (coType, busName) => {
+    handleChange({ data: { busName, coType }, key: 'name' })
+})
+
+aliasEvent(aliasId, {
+    onInput() {
+        setTip.default('alias')
+    },
+    onChange(alias) {
+        handleChange({ data: { alias }, key: 'alias' })
+    },
+})
+
+telEvent(phoneId)
+telEvent(faxId)
+emailEvent(emailId, {
+    onInput() {
+        if ($tip.email.html()) $tip.email.html(null)
+    },
+    onChange(email, valid) {
+        if (email && !valid)
+            $tip.email.html('<i class="fa fa-triangle-exclamation"></i> Invalid email')
+    },
+})
 
 
 $.ajax(`/api/resource/companies/${_id}/history`, {

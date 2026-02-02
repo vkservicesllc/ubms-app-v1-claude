@@ -549,7 +549,7 @@ export const companyManagement = async (req, res) => {
         const fields = [
             'since',
             'busName', 'coType', 'alias',
-
+            'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             'phone', 'fax', 'email',
         ]
 
