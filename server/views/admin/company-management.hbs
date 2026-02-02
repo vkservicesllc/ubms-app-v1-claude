@@ -204,12 +204,25 @@
                                         <div class="control">
                                             {{{form.address1.text.input}}}
                                         </div>
-                                        <p class="help is-info" id="addr1-tip">Without Suite/Unit</p>
+                                        <p class="help is-info">Without Suite/Unit</p>
                                     </div>
                                     <div class="column is-3 form addresses-form" style="display: none;">
                                         {{{form.address2.text.label}}}
                                         <div class="control">
                                             {{{form.address2.text.input}}}
+                                        </div>
+                                    </div>
+                                    <div class="column is-6 form mail-form" style="display: none;">
+                                        {{{form.mailAddress1.text.label}}}
+                                        <div class="control">
+                                            {{{form.mailAddress1.text.input}}}
+                                        </div>
+                                        <p class="help is-info">Without Suite/Unit</p>
+                                    </div>
+                                    <div class="column is-3 form mail-form" style="display: none;">
+                                        {{{form.mailAddress2.text.label}}}
+                                        <div class="control">
+                                            {{{form.mailAddress2.text.input}}}
                                         </div>
                                     </div>
                                 </div>
@@ -257,6 +270,28 @@
                                             {{{form.addrState.select.label}}}
                                             <div class="select is-fullwidth">
                                                 {{{form.addrState.select.input}}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form mail-form" style="display: none;">
+                                    <div class="columns">
+                                        <div class="column is-3">
+                                            {{{form.mailAddrZip.text.label}}}
+                                            <div class="control">
+                                                {{{form.mailAddrZip.text.input}}}
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            {{{form.mailAddrCity.text.label}}}
+                                            <div class="control">
+                                                {{{form.mailAddrCity.text.input}}}
+                                            </div>
+                                        </div>
+                                        <div class="column is-3">
+                                            {{{form.mailAddrState.select.label}}}
+                                            <div class="select is-fullwidth">
+                                                {{{form.mailAddrState.select.input}}}
                                             </div>
                                         </div>
                                     </div>

@@ -550,6 +550,7 @@ export const companyManagement = async (req, res) => {
             'since',
             'busName', 'coType', 'alias',
             'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
+            'mailAddress1', 'mailAddress2', 'mailAddrZip', 'mailAddrCity', 'mailAddrState',
             'phone', 'fax', 'email',
         ]
 
