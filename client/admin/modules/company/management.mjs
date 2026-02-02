@@ -5,6 +5,7 @@ import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import { busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '/modules/events/company.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
+import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import selector from '/modules/registry/selectors/company.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
@@ -176,6 +177,7 @@ const closeUpsertModal = () => {
     const { $title, $warning, $main, $form, $input, $submit, $proceed } = $modal.elements('upsert')
 
     $input.val(null).prop('disabled', true)
+    if (!$(coTypeId).find('option[value=""]').length) $(coTypeId).prepend('<option value="">--</option>')
     $title.html(null)
     Object.keys(message.success).forEach(key => setTip.default(key))
     $tip.email.html(null)
@@ -223,6 +225,12 @@ emailEvent(emailId, {
             $tip.email.html('<i class="fa fa-triangle-exclamation"></i> Invalid email')
     },
 })
+
+addr1Event(addr1Id, { addr2Id })
+addr2Event(addr2Id)
+zipEvent(zipId, { cityId, stateId })
+cityEvent(cityId)
+selectEvent(stateId)
 
 
 $.ajax(`/api/resource/companies/${_id}/history`, {

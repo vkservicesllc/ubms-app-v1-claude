@@ -204,6 +204,7 @@ const closeUpsert = () => {
     // if (!$catId.find('option[value=""]').length)
     //     $catId.prepend('<option value="">--</option>').val(null)
     // $(`#${ids.catIdIcon}`).html(defaults.catIdIcon)
+    if (!$(coTypeId).find('option[value=""]').length) $(coTypeId).prepend('<option value="">--</option>')
     countDescChars()
     $settings.html(null)
 }
