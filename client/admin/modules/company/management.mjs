@@ -155,7 +155,13 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                 break
             }
             $since.val(moment(data.since).format('MM/DD/YYYY')).prop('disabled', data.initial)
-            //! POPULATE DATA ACCORDINGLY
+            switch (target) {
+                case 'names':
+                    $(busNameId).val(data.busName)
+                    $(coTypeId).val(data.coType).find('option[value=""]').remove()
+                    $(aliasId).val(data.alias)
+                    break
+            }
             $warning.show()
             $proceed.show()
             $submit.text('Register').addClass('is-success')
