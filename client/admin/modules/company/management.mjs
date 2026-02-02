@@ -88,6 +88,7 @@ const $tableList = {
 }
 const $input = $('input:not([type="checkbox"]), select')
 const $since = $(sinceId)
+const $proceed = $('#proceed-button')
 
 const $modal = {
     upsert: $('#upsert-modal'),
@@ -102,9 +103,8 @@ const $modal = {
         switch (target) {
             case 'upsert':
                 const $warning = $(this.upsert).find('.warning-body')
-                const $proceed = $(this.upsert).find('.proceed-button')
 
-                return { $title, $body, $warning, $main, $form, $input, $submit, $proceed }
+                return { $title, $body, $warning, $main, $form, $input, $submit }
                 break
             case 'delete':
                 const $checkbox = $('input[type="checkbox"]')
@@ -133,7 +133,7 @@ $tabs.click(function() {
 
 
 const openUpsertModal = (target, action = 'insert', data, since) => {
-    const { $title, $warning, $main, $submit, $proceed } = $modal.elements('upsert')
+    const { $title, $warning, $main, $submit } = $modal.elements('upsert')
     let title = {
         names: 'Name',
         phones: 'Phone',
@@ -142,7 +142,6 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
         addresses: 'Physical Address',
         mail: 'Mailing Address',
     }[target]
-    let formAction = 'hide'
 
     switch (action) {
 
@@ -161,15 +160,43 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                     $(coTypeId).val(data.coType).find('option[value=""]').remove()
                     $(aliasId).val(data.alias)
                     break
+                case 'phones':
+                    $(phoneId).val(formatTel(data.phone))
+                    break
+                case 'faxes':
+                    $(faxId).val(formatTel(data.fax))
+                    break
+                case 'emails':
+                    $(emailId).val(data.email)
+                    break
+                case 'addresses':
+                    $(addr1Id).val(data.address1)
+                    $(addr2Id).val(data.address2)
+                    $(zipId).val(data.zip)
+                    $(cityId).val(data.city)
+                    $(stateId).val(data.state).find('option[value=""]').remove()
+                    break
+                case 'mail':
+                    $(mailAddr1Id).val(data.address1)
+                    $(mailAddr2Id).val(data.address2)
+                    $(mailZipId).val(data.zip)
+                    $(mailCityId).val(data.city)
+                    $(mailStateId).val(data.state).find('option[value=""]').remove()
+                    break
             }
             $warning.show()
             $proceed.show()
             $submit.text('Register').addClass('is-success')
+
+            $proceed.on('click', function() {
+                $(this).hide()
+                $warning.hide()
+                $main.show()
+            })
             break
 
         default:
             title = '<small>Register new</small> ' + title
-            formAction = 'show'
             $since.prop('disabled', false)
             $main.show()
             $submit.text('Register').addClass('is-link').show()
@@ -177,14 +204,15 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
     }
 
     $title.html(title)
-    $(`.${target}-form`)[formAction]().find('input, select').prop('disabled', false)
+    $(`.${target}-form`).show().find('input, select').prop('disabled', false)
     $modal.upsert.addClass('is-active')
 }
 
 const closeUpsertModal = () => {
     $modal.upsert.removeClass('is-active')
+    $proceed.off('click')
 
-    const { $title, $warning, $main, $form, $input, $submit, $proceed } = $modal.elements('upsert')
+    const { $title, $warning, $main, $form, $input, $submit } = $modal.elements('upsert')
 
     $input.val(null).prop('disabled', true)
     if (!$(coTypeId).find('option[value=""]').length) $(coTypeId).prepend('<option value="">--</option>')
