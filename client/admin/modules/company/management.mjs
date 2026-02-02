@@ -116,6 +116,7 @@ const $modal = {
 }
 
 const _id = $('#company-id').val()
+const since = $('#company-since').val()
 const timeout = 250
 
 
@@ -384,6 +385,8 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             return url
         }
 
+        inputEvent(sinceId, { datepicker: { minDate: moment(since, 'YYYY-MM-DD').toDate(), maxDate: 0 } })
+
         $('.add-event').click(function(evt) {
             evt.preventDefault()
 
@@ -408,5 +411,7 @@ console.log({ _id, target, since, url: url(target, since) }) //!TEMP
         })
 
         $('.upsert-modal-cancel').click(closeUpsertModal)
+
+        $('.loader-wrapper').remove()
     },
 })

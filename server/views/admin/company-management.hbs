@@ -1,5 +1,6 @@
 {{> admin/nav.alpha}}
 
+                <div class="loader-wrapper is-active"><div class="loader is-loading"></div></div>
                 <span class="subtitle has-text-normal has-text-extreme is-4 mr-2">{{{companyName}}}</span>
                 <sup><a href="{{url.back}}"><i class="fa fa-close has-text-danger-65"></i></a></sup>
                 <div class="tabs mt-3">
@@ -13,6 +14,7 @@
                     </ul>
                 </div>
                 <input type="hidden" id="company-id" value="{{data._companyId}}" />
+                <input type="hidden" id="company-since" value="{{data.since}}" />
                 <style>
                         .initial {
                             font-size: .5em;
