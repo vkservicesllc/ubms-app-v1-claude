@@ -1,5 +1,6 @@
 import Tip from './tools/tip.mjs'
 import Person from '/modules/tools/core/person.mjs'
+import { selectEvent } from '/modules/events/form.mjs'
 import { teamNameEvent, teamDescEvent } from '/modules/events/team.mjs'
 import { categoryEvent, busNameEvent, coTypeEvent } from '/modules/events/company.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
@@ -180,12 +181,10 @@ urlEvent(websiteId, {
 
 
 addr1Event(addr1Id, { addr2Id })
-
 addr2Event(addr2Id)
-
 zipEvent(zipId, { cityId, stateId })
-
 cityEvent(cityId)
+selectEvent(stateId, { fill: true })
 
 
 const closeUpsert = () => {
@@ -205,6 +204,9 @@ const closeUpsert = () => {
     //     $catId.prepend('<option value="">--</option>').val(null)
     // $(`#${ids.catIdIcon}`).html(defaults.catIdIcon)
     if (!$(coTypeId).find('option[value=""]').length) $(coTypeId).prepend('<option value="">--</option>')
+    if (!$(stateId).find('option[value=""]').length) $(stateId).prepend('<option value="">--</option>')
+    $tip.email.html(null)
+    $tip.website.html(null)
     countDescChars()
     $settings.html(null)
 }
@@ -331,7 +333,7 @@ const displayTeams = () => {
 
                                 if (busName && coType) {
                                     $(busNameId).val(busName)
-                                    $(coTypeId).val(coType)
+                                    $(coTypeId).val(coType).find('option[value=""]').remove()
                                     $(phoneId).val(formatTel(phone))
                                     $(emailId).val(email)
                                     $(websiteId).val(website)
@@ -339,7 +341,7 @@ const displayTeams = () => {
                                     $(addr2Id).val(address2)
                                     $(zipId).val(zip)
                                     $(cityId).val(city)
-                                    $(stateId).val(state)
+                                    $(stateId).val(state).find('option[value=""]').remove()
                                 }
                             }
 

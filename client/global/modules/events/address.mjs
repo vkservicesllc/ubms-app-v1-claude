@@ -113,7 +113,7 @@ export const zipEvent = (id, options = {}) => {
 
                         if (state && stateId) {
                             $state = $(stateId)
-                            $state.val(state)
+                            $state.val(state).find('option[value=""]').remove()
                         }
 
                         if (onChange) onChange(zip, $zip, city, state, $city, $state)

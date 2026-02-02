@@ -87,6 +87,7 @@ const $tableList = {
     emails: $('#email-table-list'),
 }
 const $input = $('input:not([type="checkbox"]), select')
+const $since = $(sinceId)
 
 const $modal = {
     upsert: $('#upsert-modal'),
@@ -153,6 +154,8 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                 data = row
                 break
             }
+            $since.val(moment(data.since).format('MM/DD/YYYY')).prop('disabled', data.initial)
+            //! POPULATE DATA ACCORDINGLY
             $warning.show()
             $proceed.show()
             $submit.text('Register').addClass('is-success')
@@ -161,6 +164,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
         default:
             title = '<small>Register new</small> ' + title
             formAction = 'show'
+            $since.prop('disabled', false)
             $main.show()
             $submit.text('Register').addClass('is-link').show()
 
@@ -178,6 +182,8 @@ const closeUpsertModal = () => {
 
     $input.val(null).prop('disabled', true)
     if (!$(coTypeId).find('option[value=""]').length) $(coTypeId).prepend('<option value="">--</option>')
+    if (!$(stateId).find('option[value=""]').length) $(stateId).prepend('<option value="">--</option>')
+    if (!$(mailStateId).find('option[value=""]').length) $(mailStateId).prepend('<option value="">--</option>')
     $title.html(null)
     Object.keys(message.success).forEach(key => setTip.default(key))
     $tip.email.html(null)
@@ -230,7 +236,13 @@ addr1Event(addr1Id, { addr2Id })
 addr2Event(addr2Id)
 zipEvent(zipId, { cityId, stateId })
 cityEvent(cityId)
-selectEvent(stateId)
+selectEvent(stateId, { fill: true })
+
+addr1Event(mailAddr1Id, { addr2Id: mailAddr2Id, mail: true })
+addr2Event(mailAddr2Id)
+zipEvent(mailZipId, { cityId: mailCityId, stateId: mailStateId })
+cityEvent(mailCityId)
+selectEvent(mailStateId, { fill: true })
 
 
 $.ajax(`/api/resource/companies/${_id}/history`, {
