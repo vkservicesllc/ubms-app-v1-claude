@@ -308,7 +308,7 @@ router.put('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminO
         const { _id, target, since } = req.params
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
-console.log({ target, since }, req.body)
+
         const { updated } = await company.update(target, req.body, { since })
         const data = await company.fetch(target)
 
