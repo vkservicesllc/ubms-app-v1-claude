@@ -184,7 +184,9 @@
                             </article>
                         </section>
                         <section class="modal-card-body form-body" style="display: none;">
-                            <form id="upsert-form">
+                            <form id="upsert-form" autocomplete="off">
+                                <input type="hidden" id="since-match" />
+                                <input type="hidden" id="target" />
                                 <div class="columns">
                                     <div class="column is-3">
                                         {{{form.since.text.label}}}

@@ -255,15 +255,15 @@ const dynamicValidator = {
     },
 
     companyTargets: (req, res, next) => {
-        const { target } = res.params
-        let validators = []
+        const { target } = req.params
+        let validators = [ CompanyForm.since.validate() ]
 
         switch (target) {
             case 'names':
                 //
                 break
             case 'phones':
-                //
+                validators.push(CompanyForm.phone.validate())
                 break
             case 'faxes':
                 //
@@ -290,7 +290,7 @@ const dynamicValidator = {
 router.post('/companies/:_id/:target', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.companyTargets, validationCheck, async (req, res) => {
     try {
         const { _id, target } = req.params
-        const company = await Company.fetch(res.session, { _id }, { hideRawId })
+        const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
         const { added } = await company.add(target, req.body)
@@ -306,9 +306,9 @@ router.post('/companies/:_id/:target', User.mw.verify, User.mw.superAdminOnly, d
 router.put('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.companyTargets, validationCheck, async (req, res) => {
     try {
         const { _id, target, since } = req.params
-        const company = await Company.fetch(res.session, { _id }, { hideRawId })
+        const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
-
+console.log({ target, since }, req.body)
         const { updated } = await company.update(target, req.body, { since })
         const data = await company.fetch(target)
 

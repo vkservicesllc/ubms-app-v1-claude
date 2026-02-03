@@ -86,8 +86,10 @@ const $tableList = {
     faxes: $('#fax-table-list'),
     emails: $('#email-table-list'),
 }
-const $input = $('input:not([type="checkbox"]), select')
+const $input = $('input:not([type="hidden"]):not([type="checkbox"]), select')
 const $since = $(sinceId)
+const $sinceMatch = $('#since-match')
+const $target = $('#target')
 const $proceed = $('#proceed-button')
 
 const $modal = {
@@ -155,6 +157,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                 break
             }
             $since.val(moment(data.since).format('MM/DD/YYYY')).prop('disabled', data.initial)
+            $sinceMatch.val(data.since)
             switch (target) {
                 case 'names':
                     $(busNameId).val(data.busName)
@@ -191,6 +194,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
 
             $proceed.on('click', function() {
                 $(this).hide()
+                $submit.text('Save Changes').addClass('is-success').show()
                 $warning.hide()
                 $main.show()
             })
@@ -204,6 +208,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
 
     }
 
+    $target.val(target)
     $title.html(title)
     $(`.${target}-form`).show().find('input, select').prop('disabled', false)
     $modal.upsert.addClass('is-active')
@@ -215,7 +220,9 @@ const closeUpsertModal = () => {
 
     const { $title, $warning, $main, $form, $input, $submit } = $modal.elements('upsert')
 
+    $target.val(null)
     $input.val(null).prop('disabled', true)
+    $sinceMatch.val(null)
     if (!$(coTypeId).find('option[value=""]').length) $(coTypeId).prepend('<option value="">--</option>')
     if (!$(stateId).find('option[value=""]').length) $(stateId).prepend('<option value="">--</option>')
     if (!$(mailStateId).find('option[value=""]').length) $(mailStateId).prepend('<option value="">--</option>')
@@ -278,6 +285,33 @@ addr2Event(mailAddr2Id)
 zipEvent(mailZipId, { cityId: mailCityId, stateId: mailStateId })
 cityEvent(mailCityId)
 selectEvent(mailStateId, { fill: true })
+
+$('#upsert-form').submit(function(evt) {
+    evt.preventDefault()
+    $since.prop('disabled', false)
+
+    const serialized = $(this).serializeArray()
+    const data = {}, target = $target.val(), since = $sinceMatch.val()
+    let method = 'POST', url = `/api/resource/companies/${_id}/${target}`
+
+    if (since) {
+        method = 'PUT'
+        url += `/${since}`
+    }
+
+    serialized.map(input => {
+        let { name } = input
+        if (name.includes('[')) name = name.split('[')[1].replace(']', '')
+
+        data[name] = input.value
+    })
+
+    let { href } = location
+    const tabLink = $('.tab-link.is-active').data('section')
+    href += `?tab=${tabLink}`
+
+    $.ajax({ url, method, data, success() { window.location.replace(href) } })
+})
 
 
 $.ajax(`/api/resource/companies/${_id}/history`, {
