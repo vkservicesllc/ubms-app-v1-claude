@@ -294,10 +294,15 @@ router.post('/companies/:_id/:target', User.mw.verify, User.mw.superAdminOnly, d
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
+        if (target === 'addresses') req.body.mail = req.body.mail === 'on'
+
+        const { route: oldRoute } = company
         const { added } = await company.add(target, req.body)
         const data = await company.fetch(target)
+        const resource = await Company.fetch(res.session, { _id }, { hideRawId })
+        const { route: newRoute } = resource
 
-        res.json({ added, data })
+        res.json({ added, data, props: { oldRoute, newRoute } })
     } catch (err) {
         sendError.server(req, res, err)
     }
@@ -310,10 +315,15 @@ router.put('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminO
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
+        if (target === 'addresses') req.body.mail = req.body.mail === 'on'
+
+        const { route: oldRoute } = company
         const { updated } = await company.update(target, req.body, { since })
         const data = await company.fetch(target)
+        const resource = await Company.fetch(res.session, { _id }, { hideRawId })
+        const { route: newRoute } = resource
 
-        res.json({ updated, data })
+        res.json({ updated, data, props: { oldRoute, newRoute } })
     } catch (err) {
         sendError.server(req, res, err)
     }
@@ -359,13 +369,16 @@ router.patch('/users/:_id/:field?', User.mw.verify, dynamicValidator.user, valid
 router.delete('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { _id, target, since } = req.params
-        const company = await Company.fetch(res.session, { _id }, { hideRawId })
+        const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
 
-        const { deleted } = await company.update(target, { since })
-        const data = await company.fetch(target)
+        const { route: oldRoute } = company
+        const { deleted } = await company.delete(target, { since })
+        const data = await company.fetch(target, { hideRawId })
+        const resource = await Company.fetch(res.session, { _id }, { hideRawId })
+        const { route: newRoute } = resource
 
-        res.json({ deleted, data })
+        res.json({ deleted, data, props: { oldRoute, newRoute } })
     } catch (err) {
         sendError.server(req, res, err)
     }

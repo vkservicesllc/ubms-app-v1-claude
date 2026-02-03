@@ -4,6 +4,9 @@
                         .initial {
                             font-size: .5em;
                         }
+                        .enforced {
+                            font-size: .75em;
+                        }
                         .current-status {
                             width: 45px;
                         }
@@ -185,8 +188,8 @@
                         </section>
                         <section class="modal-card-body form-body" style="display: none;">
                             <form id="upsert-form" autocomplete="off">
-                                <input type="hidden" id="since-match" />
-                                <input type="hidden" id="target" />
+                                <input type="hidden" id="upsert-since-match" />
+                                <input type="hidden" id="upsert-target" />
                                 <div class="columns">
                                     <div class="column is-3">
                                         {{{form.since.text.label}}}
@@ -299,6 +302,14 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="columns">
+                                        <div class="column">
+                                            <label class="checkbox">
+                                                <input type="checkbox" id="enforce-mail" name="mail" />
+                                                Receive mail at this address (ignore mailing address)
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form mail-form" style="display: none;">
                                     <div class="columns">
@@ -350,6 +361,7 @@
                             <p class="has-text-danger-60">This action is irreversible. To proceed, click the <i>Delete</i> button.</p>
                             <form id="delete-form">
                                 <input type="hidden" id="delete-since-match" />
+                                <input type="hidden" id="delete-target" />
                             </form>
                         </section>
                         <footer class="modal-card-foot">

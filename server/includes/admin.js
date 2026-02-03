@@ -94,7 +94,7 @@ module.exports = {
     },
 
     'company-management': {
-        external: [ ...online.external, 'jquery.masked-input', 'moment' ],
+        external: [ ...online.external, 'jquery.masked-input', 'moment', 'bulma.switch' ],
         internal: {
             css: [ ...online.internal.css, 'form' ],
             js: [ ...online.internal.js ],
