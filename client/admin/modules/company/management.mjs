@@ -88,9 +88,13 @@ const $tableList = {
 }
 const $input = $('input:not([type="hidden"]):not([type="checkbox"]), select')
 const $since = $(sinceId)
-const $sinceMatch = $('#since-match')
+const $sinceMatch = {
+    upsert: $('#since-match'),
+    delete: $('#delete-since-match'),
+}
 const $target = $('#target')
 const $proceed = $('#proceed-button')
+const $delRecord = $('#delete-record')
 const $error = {
     upsert: $('#upsert-error'),
 }
@@ -112,9 +116,7 @@ const $modal = {
                 return { $title, $body, $warning, $main, $form, $input, $submit }
                 break
             case 'delete':
-                const $checkbox = $('input[type="checkbox"]')
-
-                return { $title, $body, $submit, $form, $checkbox }
+                return { $title }
                 break
         }
     }
@@ -137,17 +139,19 @@ $tabs.click(function() {
     }, timeout)
 })
 
+const titles = {
+    names: 'Name',
+    phones: 'Phone',
+    faxes: 'Fax',
+    emails: 'Email',
+    addresses: 'Physical Address',
+    mail: 'Mailing Address',
+}
+
 
 const openUpsertModal = (target, action = 'insert', data, since) => {
     const { $title, $warning, $main, $submit } = $modal.elements('upsert')
-    let title = {
-        names: 'Name',
-        phones: 'Phone',
-        faxes: 'Fax',
-        emails: 'Email',
-        addresses: 'Physical Address',
-        mail: 'Mailing Address',
-    }[target]
+    let title = titles[target]
 
     switch (action) {
 
@@ -160,7 +164,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                 break
             }
             $since.val(moment(data.since).format('MM/DD/YYYY')).prop('disabled', data.initial)
-            $sinceMatch.val(data.since)
+            $sinceMatch.upsert.val(data.since)
             switch (target) {
                 case 'names':
                     $(busNameId).val(data.busName)
@@ -225,7 +229,7 @@ const closeUpsertModal = () => {
 
     $target.val(null)
     $input.val(null).prop('disabled', true).removeClass('is-danger')
-    $sinceMatch.val(null)
+    $sinceMatch.upsert.val(null)
     if (!$(coTypeId).find('option[value=""]').length) $(coTypeId).prepend('<option value="">--</option>')
     if (!$(stateId).find('option[value=""]').length) $(stateId).prepend('<option value="">--</option>')
     if (!$(mailStateId).find('option[value=""]').length) $(mailStateId).prepend('<option value="">--</option>')
@@ -238,6 +242,47 @@ const closeUpsertModal = () => {
     $submit.hide().text(null).removeClass('is-link is-success')
     $warning.hide()
     $proceed.hide()
+}
+
+
+const openDeleteModal = (target, data, since) => {
+    const { $title } = $modal.elements('delete')
+    const title = '<small>Delete selected</small> ' + titles[target]
+
+    data = data[target]
+    for (const row of data) {
+        if (row.since !== since) continue
+        data = row
+        break
+    }
+    let record = ''
+    let recordSince = `<br/><small class="has-text-weight-normal has-text-grey">Effective Date:</small> `
+    recordSince += `<span class="has-text-info-45">${moment(since).format('ll')}</span>`
+
+    switch (target) {
+        case 'phones':
+            record = formatTel(data.phone)
+            break
+        case 'addresses':
+        case 'mail':
+            record = new Address(data).html({ inline: false })
+            break
+    }
+    record = `<span class="has-text-info-45">${record}</span>`
+
+    $title.html(title)
+    $delRecord.html(record + recordSince)
+    $sinceMatch.delete.val(since)
+    $modal.delete.addClass('is-active')
+}
+
+const closeDeleteModal = () => {
+    $modal.delete.removeClass('is-active')
+
+    const { $title } = $modal.elements('delete')
+    $title.html(null)
+    $delRecord.html(null)
+    $sinceMatch.delete.val(null)
 }
 
 
@@ -290,12 +335,15 @@ zipEvent(mailZipId, { cityId: mailCityId, stateId: mailStateId })
 cityEvent(mailCityId)
 selectEvent(mailStateId, { fill: true })
 
+
+let { href } = location
+
 $('#upsert-form').submit(function(evt) {
     evt.preventDefault()
     $since.prop('disabled', false)
 
     const serialized = $(this).serializeArray()
-    const data = {}, target = $target.val(), since = $sinceMatch.val()
+    const data = {}, target = $target.val(), since = $sinceMatch.upsert.val()
     let method = 'POST', url = `/api/resource/companies/${_id}/${target}`
 
     if (since) {
@@ -310,7 +358,7 @@ $('#upsert-form').submit(function(evt) {
         data[name] = input.value
     })
 
-    let { href } = location
+    
 
     $.ajax({ url, method, data,
         success() {
@@ -326,6 +374,23 @@ $('#upsert-form').submit(function(evt) {
     })
 })
 
+$('#delete-form').submit(function(evt) {
+    evt.preventDefault()
+
+    const target = 'unknown' //! FIX IT
+
+    const since = $sinceMatch.delete.val()
+    $.ajax(`/api/resource/companies/${_id}/${target}/${since}`, {
+        method: 'DELETE',
+        success() {
+            const tabLink = $('.tab-link.is-active').data('section')
+            href += `?tab=${tabLink}`
+
+            window.location.replace(href)
+        },
+    })
+})
+
 
 $.ajax(`/api/resource/companies/${_id}/history`, {
     success(response) {
@@ -337,8 +402,8 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             current: '<li class="fa fa-check has-text-success" title="Current data"></li>',
             init: ' <sup class="has-text-warning initial" title="Initial data: effective since launch date"><i class="fas fa-star"></i></sup>',
             aAttr: {
-                edit: (row, target, value) => `class="edit-event" title="Edit selected ${value}" data-target="${target}" data-id="${row._companyId}" data-since="${row.since}" href=""`,
-                delete: (row, target, value) => `class="delete-event ml-2" title="Delete selected ${value}" data-target="${target}" data-id="${row._companyId}" data-since="${row.since}" href=""`,
+                edit: (row, target, value) => `class="edit-event" title="Edit selected ${value}" data-target="${target}" data-since="${row.since}" href=""`,
+                delete: (row, target, value) => `class="delete-event ml-2" title="Delete selected ${value}" data-target="${target}" data-since="${row.since}" href=""`,
             },
         }
 
@@ -459,10 +524,12 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
 
             const target = $(this).data('target')
             const since = $(this).data('since')
-console.log({ _id, target, since, url: url(target, since) }) //!TEMP
+
+            openDeleteModal(target, data, since)
         })
 
         $('.upsert-modal-cancel').click(closeUpsertModal)
+        $('.delete-modal-cancel').click(closeDeleteModal)
 
         $('.loader-wrapper').remove()
     },

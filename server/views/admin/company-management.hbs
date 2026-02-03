@@ -339,14 +339,22 @@
                     <div class="modal-background"></div>
                     <div class="modal-card">
                         <header class="modal-card-head">
-                            <p class="modal-card-title"></p>
+                            <p class="modal-card-title has-text-danger-60">
+                                <strong>{{{companyName}}}</strong>
+                                <span class="modal-card-target-title"></span>
+                            </p>
                         </header>
-                        <section class="modal-card-body form-body" style="display: none;">
-                            <form id="delete-form"></form>
+                        <section class="modal-card-body form-body">
+                            <p class="has-text-danger-60">You are about to delete the following record:</p>
+                            <div class="has-text-weight-semibold mt-1 mb-3" id="delete-record" style="font-size: 1.05em;"></div>
+                            <p class="has-text-danger-60">This action is irreversible. To proceed, click the <i>Delete</i> button.</p>
+                            <form id="delete-form">
+                                <input type="hidden" id="delete-since-match" />
+                            </form>
                         </section>
                         <footer class="modal-card-foot">
                             <div class="buttons">
-                                <button type="submit" form="delete-form" class="button is-danger" disabled>Delete</button>
+                                <button type="submit" form="delete-form" class="button is-danger">Delete</button>
                                 <button class="button delete-modal-cancel">Cancel</button>
                             </div>
                         </footer>
