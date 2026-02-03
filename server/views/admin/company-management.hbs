@@ -1,20 +1,5 @@
 {{> admin/nav.alpha}}
 
-                <div class="loader-wrapper is-active"><div class="loader is-loading"></div></div>
-                <span class="subtitle has-text-normal has-text-extreme is-4 mr-2">{{{companyName}}}</span>
-                <sup><a href="{{url.back}}"><i class="fa fa-close has-text-danger-65"></i></a></sup>
-                <div class="tabs mt-3">
-                    <ul>
-                        <li class="tab-link company-management-tabs is-active" data-section="profile"><a>Profile</a></li>
-                        <li class="tab-link company-management-tabs" data-section="contacts-address"><a>Contacts / Location</a></li>
-                        {{!-- <li class="tab-link company-management-tabs" data-section="contacts"><a>Contacts</a></li> --}}
-                        {{#if (eq data.category 'crr')}}
-                        {{!-- <li class="tab-link company-management-tabs" data-section="credentials"><a>Credentials</a></li> --}}
-                        {{/if}}
-                    </ul>
-                </div>
-                <input type="hidden" id="company-id" value="{{data._companyId}}" />
-                <input type="hidden" id="company-since" value="{{data.since}}" />
                 <style>
                         .initial {
                             font-size: .5em;
@@ -44,6 +29,43 @@
                             border-bottom: 1px solid rgb(119, 119, 119);
                         }
                 </style>
+                <script>
+                    $(document).ready(() => {
+                        const urlParams = new URLSearchParams(window.location.search)
+                        if (urlParams.has('tab')) {
+                            const $tab = $('.tab-link')
+                            const tabSection = urlParams.get('tab')
+
+                            $tab.removeClass('is-active')
+                            $('.tab-section').hide()
+                            history.replaceState(null, '', window.location.href.split('?')[0])
+
+                            $tab.each(function() {
+                                const section = $(this).data('section')
+                                if (section === tabSection) {
+                                    $(this).addClass('is-active')
+                                    $(`#${section}-section`).show()
+                                }
+                            })
+                        }
+                    })
+                </script>
+
+                <div class="loader-wrapper is-active"><div class="loader is-loading"></div></div>
+                <span class="subtitle has-text-normal has-text-extreme is-4 mr-2">{{{companyName}}}</span>
+                <sup><a href="{{url.back}}"><i class="fa fa-close has-text-danger-65"></i></a></sup>
+                <div class="tabs mt-3">
+                    <ul>
+                        <li class="tab-link company-management-tabs is-active" data-section="profile"><a>Profile</a></li>
+                        <li class="tab-link company-management-tabs" data-section="contacts-address"><a>Contacts / Location</a></li>
+                        {{!-- <li class="tab-link company-management-tabs" data-section="contacts"><a>Contacts</a></li> --}}
+                        {{#if (eq data.category 'crr')}}
+                        {{!-- <li class="tab-link company-management-tabs" data-section="credentials"><a>Credentials</a></li> --}}
+                        {{/if}}
+                    </ul>
+                </div>
+                <input type="hidden" id="company-id" value="{{data._companyId}}" />
+                <input type="hidden" id="company-since" value="{{data.since}}" />
 
                 <section class="tab-section company-management-content" id="profile-section">
                     <div class="columns is-4">
