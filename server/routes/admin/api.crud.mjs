@@ -260,22 +260,23 @@ const dynamicValidator = {
 
         switch (target) {
             case 'names':
-                //
+                validators.push(CompanyForm.busName.validate(), CompanyForm.coType.validate())
+                validators.push(CompanyForm.alias.validate())
                 break
             case 'phones':
                 validators.push(CompanyForm.phone.validate())
                 break
             case 'faxes':
-                //
+                validators.push(CompanyForm.fax.validate())
                 break
             case 'emails':
-                //
+                validators.push(CompanyForm.email.validate())
                 break
             case 'addresses':
-                //
+                //? need to figure out
                 break
             case 'mail':
-                //
+                //? need to figure out
                 break
         }
 

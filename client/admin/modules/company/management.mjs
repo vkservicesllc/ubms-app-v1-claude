@@ -91,6 +91,9 @@ const $since = $(sinceId)
 const $sinceMatch = $('#since-match')
 const $target = $('#target')
 const $proceed = $('#proceed-button')
+const $error = {
+    upsert: $('#upsert-error'),
+}
 
 const $modal = {
     upsert: $('#upsert-modal'),
@@ -221,7 +224,7 @@ const closeUpsertModal = () => {
     const { $title, $warning, $main, $form, $input, $submit } = $modal.elements('upsert')
 
     $target.val(null)
-    $input.val(null).prop('disabled', true)
+    $input.val(null).prop('disabled', true).removeClass('is-danger')
     $sinceMatch.val(null)
     if (!$(coTypeId).find('option[value=""]').length) $(coTypeId).prepend('<option value="">--</option>')
     if (!$(stateId).find('option[value=""]').length) $(stateId).prepend('<option value="">--</option>')
@@ -229,6 +232,7 @@ const closeUpsertModal = () => {
     $title.html(null)
     Object.keys(message.success).forEach(key => setTip.default(key))
     $tip.email.html(null)
+    $error.upsert.hide().html(null)
     $form.hide()
     $main.hide()
     $submit.hide().text(null).removeClass('is-link is-success')
@@ -307,10 +311,19 @@ $('#upsert-form').submit(function(evt) {
     })
 
     let { href } = location
-    const tabLink = $('.tab-link.is-active').data('section')
-    href += `?tab=${tabLink}`
 
-    $.ajax({ url, method, data, success() { window.location.replace(href) } })
+    $.ajax({ url, method, data,
+        success() {
+            const tabLink = $('.tab-link.is-active').data('section')
+            href += `?tab=${tabLink}`
+
+            window.location.replace(href)
+        },
+        error() {
+            $since.addClass('is-danger')
+            $error.upsert.html('<i class="fa fa-exclamation-triangle"></i> Failed to write data: Effective date may exist').show()
+        },
+    })
 })
 
 
@@ -325,7 +338,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             init: ' <sup class="has-text-warning initial" title="Initial data: effective since launch date"><i class="fas fa-star"></i></sup>',
             aAttr: {
                 edit: (row, target, value) => `class="edit-event" title="Edit selected ${value}" data-target="${target}" data-id="${row._companyId}" data-since="${row.since}" href=""`,
-                delete: (row, target, value) => `class="delete-event ml-1" title="Delete selected ${value}" data-target="${target}" data-id="${row._companyId}" data-since="${row.since}" href=""`,
+                delete: (row, target, value) => `class="delete-event ml-2" title="Delete selected ${value}" data-target="${target}" data-id="${row._companyId}" data-since="${row.since}" href=""`,
             },
         }
 
@@ -419,7 +432,12 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             return url
         }
 
-        inputEvent(sinceId, { datepicker: { minDate: moment(since, 'YYYY-MM-DD').toDate(), maxDate: 0 } })
+        inputEvent(sinceId, {
+            datepicker: { minDate: moment(since, 'YYYY-MM-DD').toDate(), maxDate: 0 },
+            onChange(date, $date) {
+                $date.removeClass('is-danger')
+            },
+        })
 
         $('.add-event').click(function(evt) {
             evt.preventDefault()
