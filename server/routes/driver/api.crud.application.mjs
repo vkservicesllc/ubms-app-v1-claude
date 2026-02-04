@@ -101,6 +101,7 @@ router.post('/:formId/:target', dynamicValidator, validationCheck, async (req, r
         let created = false
 
         if (target === 'employers') {
+            delete req.body._id
             req.body.appId = application.id
 
             const result = await Employment.create(res.session, req.body)
