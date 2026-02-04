@@ -72,10 +72,51 @@
 
                 <section class="tab-section company-management-content" id="profile-section">
                     <div class="columns is-4">
-                        <div class="column is-one-quarter">
-                            <p class="has-text-danger mt-4"><i>Work in progress...<br/>Main content will be available in the future</i></p>
+                        <div class="column" style="min-width: 840px;">
+                            <p class="has-text-danger mt-4"><i>Work in progress... Main content will be available in the future</i></p>
+                            <form class="mt-6" autocomplete="off" style="display: none;">
+                                <div class="columns">
+                                    <div class="column is-3">
+                                        {{{form.since.text.label}}}
+                                        <div class="control has-icons-left">
+                                            {{{form.since.text.input}}}
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-calendar-days"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="column is-4">
+                                        {{{form.ein.text.label}}}
+                                        <div class="control has-icons-left">
+                                            {{{form.ein.text.input}}}
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-fingerprint"></i>
+                                            </span>
+                                        </div>
+                                        <p class="help is-info" id="ein-tip">Not public; encrypted</p>
+                                    </div>
+                                    <div class="column is-4">
+                                        {{{form.duns.text.label}}}
+                                        <div class="control">
+                                            {{{form.duns.text.input}}}
+                                        </div>
+                                        <p class="help" id="duns-tip"></p>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-7">
+                                        {{{form.website.text.label}}}
+                                        <div class="control has-icons-left">
+                                            {{{form.website.text.input}}}
+                                            <span class="icon is-small is-left">
+                                                <i class="fas fa-globe"></i>
+                                            </span>
+                                        </div>
+                                        <p class="help is-danger" id="website-tip"></p>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <div class="column"></div>
                         <div class="column secondary-column pt-6">
                             <table class="table mb-6">
                                 <thead>
@@ -188,13 +229,13 @@
                         </section>
                         <section class="modal-card-body form-body" style="display: none;">
                             <form id="upsert-form" autocomplete="off">
-                                <input type="hidden" id="upsert-since-match" />
+                                <input type="hidden" id="upsert-effective-match" />
                                 <input type="hidden" id="upsert-target" />
                                 <div class="columns">
                                     <div class="column is-3">
-                                        {{{form.since.text.label}}}
+                                        {{{form.effective.text.label}}}
                                         <div class="control has-icons-left">
-                                            {{{form.since.text.input}}}
+                                            {{{form.effective.text.input}}}
                                             <span class="icon is-small is-left">
                                                 <i class="fas fa-calendar-days"></i>
                                             </span>
@@ -360,7 +401,7 @@
                             <div class="has-text-weight-semibold mt-1 mb-3" id="delete-record" style="font-size: 1.05em;"></div>
                             <p class="has-text-danger-60">This action is irreversible. To proceed, click the <i>Delete</i> button.</p>
                             <form id="delete-form">
-                                <input type="hidden" id="delete-since-match" />
+                                <input type="hidden" id="delete-effective-match" />
                                 <input type="hidden" id="delete-target" />
                             </form>
                         </section>

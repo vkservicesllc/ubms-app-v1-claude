@@ -9,7 +9,7 @@ import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import selector from '/modules/registry/selectors/company.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
-const sinceId = TS.since
+const sinceId = TS.since, effectiveId = TS.effective
 const einId = TS.ein, dunsId = TS.duns, websiteId = TS.website
 const busNameId = TS.busName, coTypeId = SS.coType, aliasId = TS.alias
 const phoneId = TS.phone, faxId = TS.fax, emailId = TS.email
@@ -86,11 +86,13 @@ const $tableList = {
     faxes: $('#fax-table-list'),
     emails: $('#email-table-list'),
 }
-const $input = $(`input:not([type="hidden"]):not([type="checkbox"]):not(${sinceId}), select`)
-const $since = $(sinceId)
-const $sinceMatch = {
-    upsert: $('#upsert-since-match'),
-    delete: $('#delete-since-match'),
+let not = `:not([type="hidden"]):not([type="checkbox"]):not(${sinceId}):not(${effectiveId})`
+not += `:not(${einId}):not(${dunsId}):not(${websiteId})`
+const $input = $(`input${not}, select`)
+const $effective = $(effectiveId)
+const $effectiveMatch = {
+    upsert: $('#upsert-effective-match'),
+    delete: $('#delete-effective-match'),
 }
 const $target = { upsert: $('#upsert-target'), delete: $('#delete-target') }
 const $enfMail = $('#enforce-mail')
@@ -164,10 +166,10 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                 data = row
                 break
             }
-            $since.val(moment(data.since).format('MM/DD/YYYY'))
+            $effective.val(moment(data.since).format('MM/DD/YYYY'))
             if (['names', 'phones', 'addresses'].includes(target))
-                $since.prop('disabled', data.initial)
-            $sinceMatch.upsert.val(data.since)
+                $effective.prop('disabled', data.initial)
+            $effectiveMatch.upsert.val(data.since)
             switch (target) {
                 case 'names':
                     $(busNameId).val(data.busName)
@@ -213,7 +215,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
 
         default:
             title = '<small>Register new</small> ' + title
-            $since.prop('disabled', false)
+            $effective.prop('disabled', false)
             $main.show()
             $submit.text('Register').addClass('is-link').show()
 
@@ -233,8 +235,8 @@ const closeUpsertModal = () => {
 
     $target.upsert.val(null)
     $input.val(null).prop('disabled', true).removeClass('is-danger')
-    $since.val(null)
-    $sinceMatch.upsert.val(null)
+    $effective.val(null)
+    $effectiveMatch.upsert.val(null)
     $enfMail.prop('checked', false)
     if (!$(coTypeId).find('option[value=""]').length) $(coTypeId).prepend('<option value="">--</option>')
     if (!$(stateId).find('option[value=""]').length) $(stateId).prepend('<option value="">--</option>')
@@ -288,7 +290,7 @@ const openDeleteModal = (target, data, since) => {
     $target.delete.val(target)
     $title.html(title)
     $delRecord.html(record + recordSince)
-    $sinceMatch.delete.val(since)
+    $effectiveMatch.delete.val(since)
     $modal.delete.addClass('is-active')
 }
 
@@ -299,7 +301,7 @@ const closeDeleteModal = () => {
     $title.html(null)
     $target.delete.val(null)
     $delRecord.html(null)
-    $sinceMatch.delete.val(null)
+    $effectiveMatch.delete.val(null)
 }
 
 
@@ -358,10 +360,10 @@ href = href.split('?')[0]
 
 $('#upsert-form').submit(function(evt) {
     evt.preventDefault()
-    $since.prop('disabled', false)
+    $effective.prop('disabled', false)
 
     const serialized = $(this).serializeArray()
-    const data = {}, target = $target.upsert.val(), since = $sinceMatch.upsert.val()
+    const data = {}, target = $target.upsert.val(), since = $effectiveMatch.upsert.val()
     let method = 'POST', url = `/api/resource/companies/${_id}/${target}`
 
     if (since) {
@@ -387,7 +389,7 @@ $('#upsert-form').submit(function(evt) {
             window.location.replace(href)
         },
         error() {
-            $since.addClass('is-danger')
+            $effective.addClass('is-danger')
             $error.upsert.html('<i class="fa fa-exclamation-triangle"></i> Failed to write data: Effective date may exist').show()
         },
     })
@@ -397,7 +399,7 @@ $('#delete-form').submit(function(evt) {
     evt.preventDefault()
 
     const target = $target.delete.val()
-    const since = $sinceMatch.delete.val()
+    const since = $effectiveMatch.delete.val()
 
     $.ajax(`/api/resource/companies/${_id}/${target}/${since}`, {
         method: 'DELETE',
@@ -521,6 +523,10 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
         }
 
         inputEvent(sinceId, {
+            datepicker: {},
+        })
+
+        inputEvent(effectiveId, {
             datepicker: { minDate: moment(since, 'YYYY-MM-DD').toDate(), maxDate: 0 },
             onChange(date, $date) {
                 $date.removeClass('is-danger')

@@ -117,10 +117,8 @@ class CompanyForm {
     static id = createIdForm({ selector: companySelector })
     static deleteId = createIdForm({ selector: companySelector, target: 'deleteId' })
     static category = createCategoryForm(companySelector)
-    static since = createSinceForm({
-        selector: companySelector,
-        label: 'Launch Date',
-    })
+    static since = createSinceForm({ selector: companySelector, label: 'Launch Date' })
+    static effective = createSinceForm({ selector: companySelector, target: 'effective' })
     static until = createUntilForm({ selector: companySelector })
 
     static busName = createBusNameForm(companySelector)
@@ -198,11 +196,11 @@ class CompanyForm {
     static fax = createPhoneForm({ selector: companySelector, target: 'fax', name: 'fax', label: 'Fax' })
     static email = createEmailForm({ selector: companySelector})
 
-    static addrSince = createSinceForm({ selector: companySelector, target: 'addrSince' })
-    static mailAddrSince = createSinceForm({ selector: companySelector, target: 'mailAddrSince' })
-    static phoneSince = createSinceForm({ selector: companySelector, target: 'phoneSince' })
-    static faxSince = createSinceForm({ selector: companySelector, target: 'faxSince' })
-    static emailSince = createSinceForm({ selector: companySelector, target: 'emailSince' })
+    // static addrSince = createSinceForm({ selector: companySelector, target: 'addrSince' })
+    // static mailAddrSince = createSinceForm({ selector: companySelector, target: 'mailAddrSince' })
+    // static phoneSince = createSinceForm({ selector: companySelector, target: 'phoneSince' })
+    // static faxSince = createSinceForm({ selector: companySelector, target: 'faxSince' })
+    // static emailSince = createSinceForm({ selector: companySelector, target: 'emailSince' })
 
     static validate = (target, options) => validate(CompanyForm, (target, options) => {
         let fields

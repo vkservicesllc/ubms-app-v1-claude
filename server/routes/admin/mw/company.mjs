@@ -524,7 +524,7 @@ export const companyManagement = async (req, res) => {
         const { route } = req.params
         let company = await Company.fetch(res.session, { route }, { hideSensitive: false })
 
-        const { _id: _companyId, category, ein } = company
+        const { _id: _companyId, category, since, ein, duns, website } = company
         if (!company || company.until) return respond404(res)
         if (req.params.category !== Company.list.category[category].path[1])
             return respond404(res)
@@ -546,16 +546,17 @@ export const companyManagement = async (req, res) => {
 
         const instr = { labelClass, labelClassRequired, textClass: 'input' }
         let options = {}
+
+        const values = { since: moment(since).format('MM/DD/YYYY'), ein, duns, website }
         const fields = [
-            'since',
             'busName', 'coType', 'alias',
             'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             'mailAddress1', 'mailAddress2', 'mailAddrZip', 'mailAddrCity', 'mailAddrState',
             'phone', 'fax', 'email',
         ]
 
+        options = updateFormOptions(options, CompanyForm, values, { ...instr })
         options = updateFormOptions(options, CompanyForm, fields, { ...instr, tabs: 13 })
-        options.since.text.label.content = 'Effective Date'
 
         switch (category) {
 

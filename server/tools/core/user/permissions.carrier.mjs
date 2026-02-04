@@ -91,7 +91,7 @@ export default {
                 privileges: '*',
             },
             'emp': {
-                name: 'Pre-Employment',
+                name: 'Previous Employment',
                 format: '.pdf',
                 privileges: '*',
             },
