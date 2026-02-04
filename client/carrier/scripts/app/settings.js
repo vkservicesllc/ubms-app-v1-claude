@@ -36,8 +36,7 @@ $button.submit.click(() => {
     $form.submit()
 })
 
-$.ajax('/api/source/user?filter=settings&self=true&call=true', {
-    method: 'POST',
+$.ajax('/api/enum/user?filter=settings&self=true&call=true', {
     success(response) {
 console.log(response) //! TEMP
         resetDefaults()
