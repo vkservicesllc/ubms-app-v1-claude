@@ -1,0 +1,2 @@
+When company launch date is updated anywhere,
+update not only in child tables, but also find initial logo file and update its name accordingly.
