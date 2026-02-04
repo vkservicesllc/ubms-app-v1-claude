@@ -66,6 +66,7 @@ class Query {
         for (const cluster of batch) {
             let { db, table, fields, match, sort, group } = cluster
             const { join } = cluster
+
             let joiner
 
             if (!db) db = primaryDb
@@ -93,46 +94,68 @@ class Query {
                 if (['left', 'right', 'inner', 'outter', null].includes(type))
                     joiner.type = type
 
+                joiner.table = table
+                joiner.id = `${Query.#_table(table, false)}.${id} = ${foreignTable}.${foreignId}`
+
                 if (max || min) {
                     const purpose = max || min
-                    let field, groups = [ id ], groupMatch = '', comparison = ''
+                    const func = max ? 'MAX' : 'MIN'
+                    const subTable = 'latest'
+                    let field = purpose, match = ''
 
                     if (Array.isArray(purpose)) {
                         field = purpose[0]
 
-                        if (typeof purpose[1] === 'object') {
-                            if ('lessEq' in purpose[1]) {
-                                let [ outterField, outterTable, outterId ] = purpose[1].lessEq
-                                outterField = Query.#field(outterField, outterTable)
-                                if (outterTable) {
-                                    if (!outterId) outterId = 'id'
-                                    comparison += ` LEFT JOIN ${outterTable} ON ${outterTable}.${foreignId} = ${table}.${id}`
-                                }
-
-                                comparison += ` WHERE ${outterField} <= ${field}`
-                            } else {
-                                groups = groups.concat(Object.keys(purpose[1]))
-
-                                groupMatch = ` WHERE ${Query.#match(purpose[1])}`
+                        if (typeof purpose[1] === 'object')
+                            for (const field in purpose[1]) {
+                                const value = purpose[1][field]
+                                if (value) match += ` AND ${subTable}.${field} = ${Query.#_value(value)}`
                             }
-                        }
-                    } else field = purpose
+                    }
 
-                    const func = max ? 'MAX' : 'MIN'
+                    joiner.id += `\nAND ${Query.#_table(table, false)}.${field} = (`
+                    joiner.id += `\nSELECT ${func}(${subTable}.${field}) `
+                    joiner.id += `FROM ${db}.${Query.#_table(table, false)} AS ${subTable}`
+                    joiner.id += `\nWHERE ${subTable}.${id} = ${foreignTable}.${foreignId}${match}\n)`
+                    // console.log('id', joiner.id)
 
-                    joiner.table = `(SELECT * FROM ${table} WHERE ${field} IN\n`
-                    joiner.table += `(SELECT ${func}(${field}) FROM ${table}`
-                    joiner.table += groupMatch
-                    joiner.table += comparison
-                    joiner.table += ` GROUP BY ${groups.join(', ')}))\n`
-                    joiner.table += `AS ${Query.#_table(table, false)}`
+                    // const purpose = max || min
+                    // let field, groups = [ id ], groupMatch = '', comparison = ''
+
+                    // if (Array.isArray(purpose)) {
+                    //     field = purpose[0]
+
+                    //     if (typeof purpose[1] === 'object') {
+                    //         if ('lessEq' in purpose[1]) {
+                    //             let [ outterField, outterTable, outterId ] = purpose[1].lessEq
+                    //             outterField = Query.#field(outterField, outterTable)
+                    //             if (outterTable) {
+                    //                 if (!outterId) outterId = 'id'
+                    //                 comparison += ` LEFT JOIN ${outterTable} ON ${outterTable}.${foreignId} = ${table}.${id}`
+                    //             }
+
+                    //             comparison += ` WHERE ${outterField} <= ${field}`
+                    //         } else {
+                    //             groups = groups.concat(Object.keys(purpose[1]))
+
+                    //             groupMatch = ` WHERE ${Query.#match(purpose[1])}`
+                    //         }
+                    //     }
+                    // } else field = purpose
+
+                    // const func = max ? 'MAX' : 'MIN'
+
+                    // joiner.table = `(SELECT * FROM ${table} WHERE ${field} IN\n`
+                    // joiner.table += `(SELECT ${func}(${field}) FROM ${table}`
+                    // joiner.table += groupMatch
+                    // joiner.table += comparison
+                    // joiner.table += ` GROUP BY ${groups.join(', ')}))\n`
+                    // joiner.table += `AS ${Query.#_table(table, false)}`
                 }
 
                 else if (foreignMatch)
                     joiner.table =`(SELECT * FROM ${table}\nWHERE ${Query.#match(foreignMatch)}) AS ${Query.#_table(table, false)}`
-                else joiner.table = table
-
-                joiner.id = `${Query.#_table(table, false)}.${id} = ${foreignTable}.${foreignId}`
+                // else joiner.table = table
             }
 
             if (!primaryTable) primaryTable = table
