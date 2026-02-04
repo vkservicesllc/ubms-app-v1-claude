@@ -31,6 +31,9 @@
                             padding-bottom: 7px;
                             border-bottom: 1px solid rgb(119, 119, 119);
                         }
+                        .side-header {
+                            width: 110px;
+                        }
                 </style>
                 <script>
                     $(document).ready(() => {
@@ -72,9 +75,53 @@
 
                 <section class="tab-section company-management-content" id="profile-section">
                     <div class="columns is-4">
-                        <div class="column" style="min-width: 840px;">
-                            <p class="has-text-danger mt-4"><i>Work in progress... Main content will be available in the future</i></p>
-                            <form class="mt-6" autocomplete="off" style="display: none;">
+                        <div class="column is-one-quarter pt-6">
+                            <form autocomplete="off">
+                                <table class="table">
+                                    <thead><tr><td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Static Information</p></td></tr></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="has-text-info-50 side-header"><small>Launch Date:</small></td>
+                                            <td class="has-text-weight-semibold static-data">
+                                                <span>{{data.moment.since}}</span>
+                                                <div class="control has-icons-left" style="display: none;">
+                                                    {{{form.since.text.input}}}
+                                                    <span class="icon is-small is-left">
+                                                        <i class="fas fa-calendar-days"></i>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="static-action has-text-right">
+                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="has-text-info-50 side-header"><small>EIN:</small></td>
+                                            <td class="has-text-weight-semibold static-data">{{data.ein}}</td>
+                                            <td class="static-action has-text-right">
+                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="has-text-info-50 side-header"><small>DUNS:</small></td>
+                                            <td class="has-text-weight-semibold static-data">{{data.duns}}</td>
+                                            <td class="static-action has-text-right">
+                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="has-text-info-50 side-header"><small>Website:</small></td>
+                                            <td class="has-text-weight-semibold static-data">{{data.website}}</td>
+                                            <td class="static-action has-text-right">
+                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </form>
+                            <p class="has-text-danger mt-4"><i>Work in progress... Coming soon...</i></p>
+                            {{!-- REDUNDANT --}}
+                            {{!-- <form class="mt-6" autocomplete="off" style="display: none;">
                                 <div class="columns">
                                     <div class="column is-3">
                                         {{{form.since.text.label}}}
@@ -115,7 +162,15 @@
                                         <p class="help is-danger" id="website-tip"></p>
                                     </div>
                                 </div>
+                            </form> --}}
+                        </div>
+                        <div class="column is-one-quarter pt-6">
+                            <form autocomplete="off">
+                                <table class="table">
+                                    <thead><tr><td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Credentials</p></td></tr></thead>
+                                </table>
                             </form>
+                            <p class="has-text-danger mt-4"><i>Work in progress... Coming soon...</i></p>
                         </div>
                         <div class="column secondary-column pt-6">
                             <table class="table mb-6">

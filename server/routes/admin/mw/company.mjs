@@ -549,6 +549,7 @@ export const companyManagement = async (req, res) => {
 
         const values = { since: moment(since).format('MM/DD/YYYY'), ein, duns, website }
         const fields = [
+            'effective',
             'busName', 'coType', 'alias',
             'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             'mailAddress1', 'mailAddress2', 'mailAddrZip', 'mailAddrCity', 'mailAddrState',
@@ -564,6 +565,10 @@ export const companyManagement = async (req, res) => {
                 company = await Carrier.fetch(res.session, { _companyId })
                 break
 
+        }
+
+        company.moment = {
+            since: moment(company.since).format('ll')
         }
 
         hbs.data = company
