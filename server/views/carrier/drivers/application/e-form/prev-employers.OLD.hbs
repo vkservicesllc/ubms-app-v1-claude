@@ -84,27 +84,27 @@
         <div class="header"><small>New</small> Previous Employer</div>
         <div class="content">
             <form class="ui form" id="new-employer-form" action="/resource/driver/application/prev-employer/upsert" method="POST">
-                {{{emplForm.id.hidden.input}}}
+                {{{form._emplId.hidden.input}}}
                 <input type="hidden" name="_aplId[]" value="{{_id}}" />
                 <div class="ui compact grid">
                     <div class="eight wide field">
-                        {{{emplForm.employer.text.label}}}
-                        {{{emplForm.employer.text.input}}}
+                        {{{form._prevEmployer.text.label}}}
+                        {{{form._prevEmployer.text.input}}}
                     </div>
                     <div class="four wide field">
-                        {{{emplForm.startDate.text.label}}}
+                        {{{form._emplStartDate.text.label}}}
                         <div class="ui calendar empl-start-calendar">
                             <div class="ui fluid input left icon">
-                                {{{emplForm.startDate.text.input}}}
+                                {{{form._emplStartDate.text.input}}}
                                 <i class="calendar icon"></i>
                             </div>
                         </div>
                     </div>
                     <div class="four wide field">
-                        {{{emplForm.endDate.text.label}}}
+                        {{{form._emplEndDate.text.label}}}
                         <div class="ui calendar empl-end-calendar">
                             <div class="ui fluid input left icon">
-                                {{{emplForm.endDate.text.input}}}
+                                {{{form._emplEndDate.text.input}}}
                                 <i class="calendar icon"></i>
                             </div>
                         </div>
@@ -112,32 +112,32 @@
                 </div>
                 <div class="ui compact grid">
                     <div class="five wide field">
-                        {{{emplForm.phone.text.label}}}
-                        {{{emplForm.phone.text.input}}}
+                        {{{form._emplPhone.text.label}}}
+                        {{{form._emplPhone.text.input}}}
                     </div>
                     <div class="seven wide field">
-                        {{{emplForm.address1.text.label}}}
-                        {{{emplForm.address1.text.input}}}
+                        {{{form._emplAddr1.text.label}}}
+                        {{{form._emplAddr1.text.input}}}
                     </div>
                     <div class="four wide field">
-                        {{{emplForm.address2.text.label}}}
-                        {{{emplForm.address2.text.input}}}
+                        {{{form._emplAddr2.text.label}}}
+                        {{{form._emplAddr2.text.input}}}
                     </div>
                 </div>
                 <div class="ui compact grid">
                     <div class="four wide field">
-                        {{{emplForm.addrZip.text.label}}}
-                        {{{emplForm.addrZip.text.input}}}
+                        {{{form._emplAddrZip.text.label}}}
+                        {{{form._emplAddrZip.text.input}}}
                     </div>
                     <div class="seven wide field">
-                        {{{emplForm.addrCity.text.label}}}
-                        {{{emplForm.addrCity.text.input}}}
+                        {{{form._emplAddrCity.text.label}}}
+                        {{{form._emplAddrCity.text.input}}}
                     </div>
                     <div class="five wide field">
                         <div class="field">
-                            {{{emplForm.addrState.select.label}}}
+                            {{{form._emplAddrState.select.label}}}
                             <div class="ui fluid selection required dropdown empl-addr-state-dropdown">
-                                {{{emplForm.addrState.hidden.input}}}
+                                {{{form._emplAddrState.hidden.input}}}
                                 <i class="dropdown icon"></i>
                                 <div class="default text"></div>
                                 <div class="menu">{{{dropdown.addrState}}}
@@ -148,34 +148,34 @@
                 </div>
                 <div class="ui compact grid">
                     <div class="five wide field">
-                        {{{emplForm.position.text.label}}}
-                        {{{emplForm.position.text.input}}}
+                        {{{form._emplPosition.text.label}}}
+                        {{{form._emplPosition.text.input}}}
                     </div>
                     <div class="five wide field">
-                        {{{emplForm.earnings.text.label}}}
+                        {{{form._emplEarnings.text.label}}}
                         <div class="ui left icon input">
                             <i class="dollar icon"></i>
-                            {{{emplForm.earnings.text.input}}}
+                            {{{form._emplEarnings.text.input}}}
                         </div>
                     </div>
                     <div class="six wide field">
-                        {{{emplForm.RFL.text.label}}}
-                        {{{emplForm.RFL.text.input}}}
+                        {{{form._emplRFL.text.label}}}
+                        {{{form._emplRFL.text.input}}}
                     </div>
                 </div>
                 <div class="ui grouped fields">
                     {{#if (eq cdl true)}}
                     <div class="field">
                         <div class="ui checkbox">
-                            {{{emplForm.FMCSR2.checkbox.input}}}
-                            {{{emplForm.FMCSR2.checkbox.label}}}
+                            {{{form._emplFMCSR2.checkbox.input}}}
+                            {{{form._emplFMCSR2.checkbox.label}}}
                         </div>
                     </div>
                     {{/if}}
                     <div class="field">
                         <div class="ui checkbox">
-                            {{{emplForm.dotDat2.checkbox.input}}}
-                            {{{emplForm.dotDat2.checkbox.label}}}
+                            {{{form._emplDotDat2.checkbox.input}}}
+                            {{{form._emplDotDat2.checkbox.label}}}
                         </div>
                     </div>
                 </div>

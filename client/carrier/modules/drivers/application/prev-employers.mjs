@@ -3,7 +3,6 @@ import { inputEvent } from '/modules/events/form.mjs'
 import { busNameEvent } from '/modules/events/company.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import patterns from '/modules/registry/patterns.mjs'
@@ -86,21 +85,21 @@ console.log(data)
                 $footer.append(`<button type="submit" form="${formId}" class="ui right floated dark green circular button" disabled>Save</button>`)
                 $footer.append('<span class="right floated unsaved-changes" style="display: none; margin-right: 10px;"><i class="red exclamation triangle icon"></i></span>')
 
-                $form.find('[name="_id[]"]').removeAttr('id').val(_id)
+                $form.find(selector.class.hidden.id).removeAttr('id').val(_id)
                 $form.find(TS.employer).removeAttr('id').val(employer)
-                $form.find(TS.emplStartDate).removeAttr('id').val(moment(startedOn).format('ll'))
-                $form.find(TS.emplEndDate).removeAttr('id').val(leftOn ? moment(leftOn).format('ll') : null)
-                $form.find(TS.emplPhone).removeAttr('id').val(formatTel(phone))
-                $form.find(TS.emplAddress1).removeAttr('id').val(address1)
-                $form.find(TS.emplAddress2).removeAttr('id').val(address2)
-                $form.find(TS.emplAddrZip).removeAttr('id').val(zip)
-                $form.find(TS.emplAddrCity).removeAttr('id').val(city)
-                $form.find('[name="state[]"]').removeAttr('id').val(state[0])
-                $form.find(TS.emplPosition).removeAttr('id').val(position)
-                $form.find(TS.emplEarnings).removeAttr('id').val(earnings.toLocaleString())
-                $form.find(TS.emplRfl).removeAttr('id').val(rfl)
-                $form.find(CS.emplFmcsr).removeAttr('id').prop('checked', !!fmcsr)
-                $form.find(CS.emplDotDat).removeAttr('id').prop('checked', !!dotDat)
+                $form.find(TS.startDate).removeAttr('id').val(moment(startedOn).format('ll'))
+                $form.find(TS.endDate).removeAttr('id').val(leftOn ? moment(leftOn).format('ll') : null)
+                $form.find(TS.phone).removeAttr('id').val(formatTel(phone))
+                $form.find(TS.address1).removeAttr('id').val(address1)
+                $form.find(TS.address2).removeAttr('id').val(address2)
+                $form.find(TS.addrZip).removeAttr('id').val(zip)
+                $form.find(TS.addrCity).removeAttr('id').val(city)
+                $form.find('[name="state"]').removeAttr('id').val(state)
+                $form.find(TS.position).removeAttr('id').val(position)
+                $form.find(TS.earnings).removeAttr('id').val(earnings.toLocaleString())
+                $form.find(TS.rfl).removeAttr('id').val(rfl)
+                $form.find(CS.fmcsr).removeAttr('id').prop('checked', !!fmcsr)
+                $form.find(CS.dotDat).removeAttr('id').prop('checked', !!dotDat)
 
                 $card.find('.card-form').append($form)
                 $card.append($footer)

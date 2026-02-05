@@ -25,7 +25,7 @@ import { navBuilder } from './tools.mjs'
 
 /* Forms */
 import { updateFormOptions } from '../../tools/form/builder.mjs'
-import DriverForm, { ApplicationForm, currentExpediteVhlMMTData, descYears } from '../../tools/form/driver.mjs'
+import DriverForm, { ApplicationForm, EmploymentForm, currentExpediteVhlMMTData, descYears } from '../../tools/form/driver.mjs'
 
 
 // ==== SETUP ==== //
@@ -775,22 +775,41 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
                 dropdown.addrState = ''
                 for (const state in Address.list.state)
                     dropdown.addrState += `\n${t}<div class="item" data-value="${state}">${Address.list.state[state]}</div>`
+
+                let emplOptions = {}
                 const fields = [
-                    '_prevEmployer', '_emplPhone', '_emplStartDate', '_emplEndDate',
-                    '_emplAddr1', '_emplAddr2', '_emplAddrZip', '_emplAddrCity', ['_emplAddrState', 'hidden'],
-                    '_emplPosition', '_emplEarnings', '_emplRFL',
+                    'employer', 'startDate', 'endDate', 
+                    'phone', 'address1', 'address2', 'addrZip', 'addrCity', [ 'addrState', 'hidden' ],
+                    'position', 'earnings', 'RFL', //'gapExpl',
                 ]
                 fields.forEach(field => {
                     let prop = 'text'
                     if (Array.isArray(field))
                         [ field, prop ] = field
 
-                    options[field] = { [prop]: { input: { disabled: false } } }
+                    emplOptions[field] = { [prop]: { input: { disabled: false } } }
                 })
-                options._emplEndDate.text.label = { content: 'Left on' }
-                options._emplRFL.text.input.rows = 2,
-                options._emplRFL.text.input.placeholder = ' '
+                emplOptions.endDate.text.label = { content: 'Left on' }
+                emplOptions.RFL.text.input.rows = 2,
+                emplOptions.RFL.text.input.placeholder = ' '
+
+                // const fields = [
+                //     '_prevEmployer', '_emplPhone', '_emplStartDate', '_emplEndDate',
+                //     '_emplAddr1', '_emplAddr2', '_emplAddrZip', '_emplAddrCity', ['_emplAddrState', 'hidden'],
+                //     '_emplPosition', '_emplEarnings', '_emplRFL',
+                // ]
+                // fields.forEach(field => {
+                //     let prop = 'text'
+                //     if (Array.isArray(field))
+                //         [ field, prop ] = field
+
+                //     options[field] = { [prop]: { input: { disabled: false } } }
+                // })
+                // options._emplEndDate.text.label = { content: 'Left on' }
+                // options._emplRFL.text.input.rows = 2,
+                // options._emplRFL.text.input.placeholder = ' '
                 hbs.cdl = application?.dl?.commercial === true
+                hbs.emplForm = new EmploymentForm(emplOptions)
                 break
 
         }

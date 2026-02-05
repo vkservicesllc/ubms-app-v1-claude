@@ -4,6 +4,10 @@ const prefix = 'driver-application-employment'
 
 const selector = {
     class: {
+        hidden: {
+            id: 'id',
+            appId: 'app-id',
+        },
         text: {
             employer: 'employer',
             phone: 'employer-phone',
