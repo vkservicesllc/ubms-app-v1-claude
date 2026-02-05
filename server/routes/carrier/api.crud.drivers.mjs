@@ -5,6 +5,7 @@ const sendError = require('../../tools/utils/error')
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
+import { withPrivileges } from '../../tools/core/user/permissions.mjs'
 
 /* Middleware */
 import { dtDriverList, dtApplicationList } from './mw/drivers.mjs'
@@ -58,6 +59,28 @@ router.get('/applications/:_id', User.mw.verify, Team.mw.verify, async (req, res
         const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
 
         res.json({ data: { application, identity, count, unmatchedIdx, log } })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.get('/applications/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { user } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('d:drv/apl', 'view', permissions, DS)) return sendError.auth(req, res)
+
+        const { _id, target } = req.params
+
+        if (target === 'employments') {
+            const employers = await Employment.fetch(res.session, { _appId: _id })
+
+            return res.json({ data: employers })
+        }
+
+        res.json({ data: [] })
     } catch (err) {
         sendError.server(req, res, err)
     }

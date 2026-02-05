@@ -7,7 +7,7 @@ import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import patterns from '/modules/registry/patterns.mjs'
-import selector from '/modules/registry/selectors/driver-application.mjs'
+import selector from '/modules/registry/selectors/driver-application-employment.mjs'
 import application, { dropdownEvent } from './hub.mjs'
 
 const $form = { add: $('#new-employer-form') }
@@ -59,11 +59,11 @@ $template.removeAttr('id').find('[name="_aplId[]"]').remove()
         $modal.add.modal('show')
     })
 
-    $.ajax(`/api/list/drivers/application/${_id}/employments`, {
-        method: 'POST',
+    $.ajax(`/api/resource/drivers/applications/${_id}/employments`, {
         success(response) {
-            let { data } = response
-            data = sortArrayByObjectKey(data, 'startedOn', false)
+            const { data } = response
+console.log(data)
+            // data = sortArrayByObjectKey(data, 'startedOn', false)
             let len = data.length
 
             data.forEach((record, i) => {
@@ -87,7 +87,7 @@ $template.removeAttr('id').find('[name="_aplId[]"]').remove()
                 $footer.append('<span class="right floated unsaved-changes" style="display: none; margin-right: 10px;"><i class="red exclamation triangle icon"></i></span>')
 
                 $form.find('[name="_id[]"]').removeAttr('id').val(_id)
-                $form.find(TS.prevEmployer).removeAttr('id').val(employer)
+                $form.find(TS.employer).removeAttr('id').val(employer)
                 $form.find(TS.emplStartDate).removeAttr('id').val(moment(startedOn).format('ll'))
                 $form.find(TS.emplEndDate).removeAttr('id').val(leftOn ? moment(leftOn).format('ll') : null)
                 $form.find(TS.emplPhone).removeAttr('id').val(formatTel(phone))

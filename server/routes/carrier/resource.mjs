@@ -149,6 +149,30 @@ router.post('/drivers/delete/application', User.mw.verify, Team.mw.verify, async
 })
 
 
+router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.verify,
+    dynamicApplicantValidator.applications, //! validationCheck, // validationCheck returns error when checkbox is unchecked
+    async (req, res) => {
+        try {
+            const { user } = res.session
+            const { DS } = user
+            const permissions = await user.permissions(res.session)
+            // if (!withPrivileges('d:drv/apl', ['modify', 'update'], permissions, DS))
+            //! NOT sure about update permission
+            if (!withPrivileges('d:drv/apl', 'modify', permissions, DS)) return sendError.auth(req, res)
+
+            const { formId, step } = req.params
+            const application = await Application.fetch(res.session, { formId })
+            if (!application) throw new Error('Application not found')
+
+            await application.progress(step, req.body)
+
+            res.redirect(`/drivers/application/${formId}/e-form?${step}`)
+        } catch (err) {
+            sendError.server(req, res, err)
+        }
+    }
+)
+
 
 // ==== EXPORT ==== //
 
