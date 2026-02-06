@@ -49,7 +49,7 @@ router.get('/log/:env/:_id', User.mw.verify, User.mw.superAdminOnly, async (req,
 
         res.send(report)
     } catch (err) {
-        sendError.server(res, err, true)
+        sendError.server(req, res, err)
     }
 })
 

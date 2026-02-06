@@ -213,7 +213,7 @@ module.exports = {
             js: [
                 '<script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/moment.min.js"></script>',
                 '<script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.45/moment-timezone.min.js"></script>',
-                '<script src="/scripts/moment.js"></script>',
+                // '<script src="/scripts/moment.js"></script>',
             ],
         },
 

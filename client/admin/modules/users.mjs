@@ -319,7 +319,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                     if (!lastLogin) return '<small class="has-text-grey"><i>Never logged in</i></small>'
 
                     return type === 'display'
-                        ? momentUTC2ET(lastLogin, 'llll')
+                        ? moment(lastLogin).format('llll')
                             + ` <small class="has-text-grey">(${capitalizeFirst(lastBranch)})</small>`
                         : lastLogin
                 },
@@ -456,8 +456,9 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                             const { createdBy, createdAt, deletedBy, deletedAt, updateLog } = log
                             const portals = { admin: 'Admin Portal', user: 'User Profile/Account' }
                             const formatTimeStamp = stamp => {
-                                const date = momentUTC2ET(stamp, 'ddd, MMM D, YYYY')
-                                const time = momentUTC2ET(stamp, 'h:mm:ss A')
+                                stamp = moment(stamp)
+                                const date = stamp.format('ddd, MMM D, YYYY')
+                                const time = stamp.format('h:mm:ss A')
 
                                 return `on ${date} at ${time}`
                             }

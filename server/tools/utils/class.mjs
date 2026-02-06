@@ -296,7 +296,7 @@ export const classInstance = {
             if (logFields.includes(field)) {
                 log[field] = data[field]
 
-                if (field === 'updateLog')
+                if (field === 'updateLog' && field.updateLog)
                     for (const row of data.updateLog) row.modifiedBy = utc2tz(row.modifiedBy)
                 else log[field] = utc2tz(log[field])
             }
