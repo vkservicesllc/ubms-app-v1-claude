@@ -275,6 +275,7 @@ export const classInstance = {
     },
 
 
+    //! convert UTC to TZ
     log: async (inst, Cls, { target = 'main', field, match = {} } = {}) => {
         const config = Cls.config()
 

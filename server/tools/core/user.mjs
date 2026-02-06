@@ -1138,7 +1138,7 @@ class Token {
         this.userId = data.userId
         this.clientIp = data.clientIp
         this.verified = !!data.verified
-        this.createdAt = data.createdAt
+        this.createdAt = utc2tz(data.createdAt)
         this.expiresAt = new Date(this.createdAt).getTime() + data.tokenAge * 60 * 1000
         this.expired = new Date >= this.expiresAt
     }
