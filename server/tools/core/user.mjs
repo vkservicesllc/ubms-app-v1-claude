@@ -21,7 +21,7 @@ import { generateRandomString } from '../utils/string.mjs'
 import { processData } from '../utils/data.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
-import { utcTimeStamp, utc2tz } from '../utils/date.mjs'
+import { utcTimeStamp, utc2tz, tz2utc } from '../utils/date.mjs'
 import { respond404 } from '../utils/response.mjs'
 
 const fs = require('fs')
@@ -270,7 +270,7 @@ class User extends Person {
                 if (!branch) throw new Error('User URL Error: Session branch not supplied')
 
                 const { id: userId } = this
-                const { lastLogin } = this.events
+                const lastLogin = tz2utc(this.events.lastLogin)
 
                 await mysql.execute(query.session.main.update(
                     { lastUrl },
@@ -792,6 +792,7 @@ class User extends Person {
 
                         if (refer) {
                             const user = await User.fetch(res.session, { _id: refer }, { hideSensitive: false, hideEvents: false, offline: true })
+
                             if (method !== 'POST' && !excUrl.includes(originalUrl))
                                 await user.url(stripUrl(originalUrl, query, 'refer'))
                         }
