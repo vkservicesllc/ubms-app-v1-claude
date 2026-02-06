@@ -1,5 +1,6 @@
 import Query, { hash, matchHash } from './query.mjs'
 import { processData, logDeletion } from './data.mjs'
+import { utc2tz } from './date.mjs'
 
 const mysql = require('./mysql')
 const { sqlMode } = Query
@@ -275,7 +276,6 @@ export const classInstance = {
     },
 
 
-    //! convert UTC to TZ
     log: async (inst, Cls, { target = 'main', field, match = {} } = {}) => {
         const config = Cls.config()
 
@@ -290,10 +290,16 @@ export const classInstance = {
             match: { [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match },
         })))[0][0]
         if (!data) return
-        
+
         const log = {}
         for (const field in data)
-            if (logFields.includes(field)) log[field] = data[field]
+            if (logFields.includes(field)) {
+                log[field] = data[field]
+
+                if (field === 'updateLog')
+                    for (const row of data.updateLog) row.modifiedBy = utc2tz(row.modifiedBy)
+                else log[field] = utc2tz(log[field])
+            }
 
         return field ? log[field] : log
     },

@@ -8,6 +8,7 @@ import User from '../../../tools/core/user.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
 import Individual from '../../../tools/core/individual.mjs'
 import Query from '../../../tools/utils/query.mjs'
+import { utc2tz } from '../../../tools/utils/date.mjs'
 
 const knex = require('../../../tools/utils/knex')
 const sendError = require('../../../tools/utils/error')
@@ -384,6 +385,13 @@ export const dtApplicationList = async (req, res) => {
             countQuery,
             totalCountQuery,
         ])
+
+        data.forEach(row => {
+            data.createdAt = utc2tz(data.createdAt)
+            data.finishedAt = utc2tz(data.finishedAt)
+            data.userDeletedAt = utc2tz(data.userDeletedAt)
+            // if (data.archivedAt) data.archivedAt = utc2tz(data.archivedAt)
+        })
 
         res.json({
             draw,

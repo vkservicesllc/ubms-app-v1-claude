@@ -17,7 +17,7 @@ export const utcTimeStamp = () => {
 }
 
 
-export const utc2tz = utcTS => moment.utc(utcTS).tz(timezone).format('YYYY-MM-DD HH:mm:ss')
+export const utc2tz = (utcTS, toDate = false) => utcTS ? moment.utc(utcTS).tz(timezone).format('YYYY-MM-DD' + (!toDate ? ' HH:mm:ss' : '')) : utcTS
 
 
 export const dateAfter = (firstDate, num, units, lastDate) => {

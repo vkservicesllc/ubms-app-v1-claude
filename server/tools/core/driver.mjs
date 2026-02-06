@@ -9,7 +9,7 @@ import db, { query } from '../../settings/mysql.mjs'
 
 /* Tools */
 import moment from 'moment'
-import { utcTimeStamp } from '../utils/date.mjs'
+import { utc2tz, utcTimeStamp } from '../utils/date.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Individual from './individual.mjs'
@@ -237,9 +237,9 @@ class Application {
         this.formId = data.formId
         this.position = data.position
         this.condition = data.condition
-        this.appliedAt = data.createdAt
-        this.appliedOn = moment(data.createdAt).format('YYYY-MM-DD')
-        this.finishedAt = data.finishedAt
+        this.appliedAt = utc2tz(data.createdAt)
+        this.appliedOn = utc2tz(data.createdAt, true)
+        this.finishedAt = utc2tz(data.finishedAt)
         this.matched = data.matched
 
         this.checklist = {
@@ -1640,8 +1640,8 @@ class Employment {
             lastName: data.lastName,
             suffix: data.suffix,
             phone: data.aplPhone,
-            createdAt: data.createdAt,
-            finishedAt: data.finishedAt,
+            createdAt: utc2tz(data.createdAt),
+            finishedAt: utc2tz(data.finishedAt),
             carrier: data.busName ?  `${data.busName}, ${data.coType}` : null,
             carrierAlias: data.companyAlias,
             _carrierId: data._carrierId,
