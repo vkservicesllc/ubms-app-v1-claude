@@ -4,7 +4,7 @@ import { capitalizeFirst } from '../../../../client/global/modules/tools/utils/s
 
 export const privileges = {
     data: [ 'view', 'comment', 'create', 'modify', 'update', 'delete' ],
-    file: [ 'view', 'upload', 'download', 'delete' ],
+    file: [ 'download', 'upload', 'delete' ],
 }
 
 

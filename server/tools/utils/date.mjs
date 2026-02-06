@@ -1,4 +1,6 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
+
+const timezone = 'America/New_York'
 
 
 export const utcTimeStamp = () => {
@@ -13,6 +15,9 @@ export const utcTimeStamp = () => {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
+
+
+export const utc2tz = utcTS => moment.utc(utcTS).tz(timezone).format('YYYY-MM-DD HH:mm:ss')
 
 
 export const dateAfter = (firstDate, num, units, lastDate) => {

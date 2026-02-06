@@ -98,7 +98,7 @@ export default {
             'agr': {
                 name: 'Pay Agreement',
                 format: '.pdf (automatic)',
-                privileges: [ 0, 2 ],
+                privileges: [ 0 ],
             },
             'pas': {
                 name: 'Passenger Form',

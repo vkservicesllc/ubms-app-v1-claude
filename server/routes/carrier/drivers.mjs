@@ -465,7 +465,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         {
             hbs.fileTab = inPGroup('f:drv', permissions, DS)
             hbs.filePerms = {
-                application: withPrivileges('f:drv/apl', 'view', permissions, DS),
+                application: withPrivileges('f:drv/apl', 'download', permissions, DS),
             }
         }
 
@@ -839,7 +839,7 @@ router.get('/application/:formId/files/application', async (req, res, next) => {
         const { DS } = user
 
         const permissions = await user.permissions(res.session)
-        if (!withPrivileges('f:drv/apl', 'view', permissions, DS))
+        if (!withPrivileges('f:drv/apl', 'download', permissions, DS))
             return res.redirect(aplUrl)
 
         const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
@@ -925,7 +925,24 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-        //! More stuff to be added...
+        const privs = ['modify', 'update']
+        hbs.permissions = {}
+        privs.forEach(priv => hbs.permissions[priv] = withPrivileges('d:drv/empl', priv, permissions, DS))
+
+        if (hbs.permissions.modify || hbs.permissions.update) {
+            if (hbs.permissions.modify) {
+                // make the form
+            } else {
+                // make html info only
+            }
+
+            if (hbs.permissions.update) {
+                // make form for inquiries
+                if (withPrivileges('f:drv/apl', 'download', permissions, DS)) {
+                    // show link to prev-employment file
+                }
+            }
+        }
 
         res.render(key.replace('.', '/'), hbs)
     } catch (err) {
