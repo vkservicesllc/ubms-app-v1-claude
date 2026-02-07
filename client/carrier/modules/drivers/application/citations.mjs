@@ -33,8 +33,7 @@ const $form ={
 
     const $add = $('#add'), $cancel = $('#cancel')
 
-    $.ajax(`/api/list/drivers/application/${_id}/citations`, {
-        method: 'POST',
+    $.ajax(`/api/resource/drivers/applications/${_id}/citations`, {
         success(response) {
             let { data } = response
             data = sortArrayByObjectKey(data, 'citedOn')

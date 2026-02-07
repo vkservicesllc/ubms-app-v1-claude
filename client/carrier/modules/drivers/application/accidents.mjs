@@ -33,8 +33,7 @@ const $form ={
 
     const $add = $('#add'), $cancel = $('#cancel')
 
-    $.ajax(`/api/list/drivers/application/${_id}/accidents`, {
-        method: 'POST',
+    $.ajax(`/api/resource/drivers/applications/${_id}/accidents`, {
         success(response) {
             let { data } = response
             data = sortArrayByObjectKey(data, 'date')

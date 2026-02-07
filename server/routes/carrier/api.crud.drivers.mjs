@@ -80,7 +80,10 @@ router.get('/applications/:_id/:target', User.mw.verify, Team.mw.verify, async (
             return res.json({ data: employers })
         }
 
-        res.json({ data: [] })
+        const application = await Application.fetch(res.session, { _id }, { hideRawId })
+        if (!application) throw new Error('Application not found')
+
+        res.json({ data: await application.fetch(target) })
     } catch (err) {
         sendError.server(req, res, err)
     }

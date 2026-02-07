@@ -141,35 +141,35 @@ router.post('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, as
 // })
 
 
-router.post('/list/drivers/application/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
-    try {
-        let { _id, target } = req.params
+// router.post('/list/drivers/application/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
+//     try {
+//         let { _id, target } = req.params
 
-        const application = await Application.fetch(res.session, { _id })
-        if (!application) throw new Error('Application not found')
+//         const application = await Application.fetch(res.session, { _id })
+//         if (!application) throw new Error('Application not found')
 
-        const filter = {}
-        switch (target) {
-            case 'addresses':
-                target = 'address'
-                filter.since = { not: application.address.since }
-                break
-            case 'citations':
-                target = 'citation'
-                break
-            case 'accidents':
-                target = 'accident'
-                break
-            // case 'employments':
-            //     target = 'employer'
-            //     break
-        }
+//         const filter = {}
+//         switch (target) {
+//             case 'addresses':
+//                 target = 'address'
+//                 filter.since = { not: application.address.since }
+//                 break
+//             case 'citations':
+//                 target = 'citation'
+//                 break
+//             case 'accidents':
+//                 target = 'accident'
+//                 break
+//             // case 'employments':
+//             //     target = 'employer'
+//             //     break
+//         }
 
-        res.json({ data: await application.fetch(`${target}.history`, { filter }) })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+//         res.json({ data: await application.fetch(`${target}.history`, { filter }) })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
 // ==== EXPORT ==== //
