@@ -796,6 +796,7 @@ export const applicationProgress = async (req, res) => {
                 const values = {
                     currentVhlType: application?.vehicle?.type,
                 }
+
                 const vhlTypeData = Application.list.vhlType[cdlRole]
 
                 if (!cdlRole) {
@@ -829,7 +830,7 @@ export const applicationProgress = async (req, res) => {
                     if (values.currentVhlType !== 'straightBox')
                         options.currentVhlLen.select.input.disabled = true
 
-                    options.currentVhlLen.select.input.data = Application.vhlLengthList.straightBox
+                    options.currentVhlLen.select.input.data = Application.list.vhlLength.straightBox
                 }
             }
 
@@ -1081,7 +1082,7 @@ export const applicationSummary = async (req, res) => {
         hbs.application.beneficiary.fullName = new Person(application.beneficiary).fullName('FMLs')
         hbs.application.beneficiary.phone = formatTel(application.beneficiary.phone)
         hbs.application.beneficiary.ssn = application.beneficiary.ssn ? formatSsn(application.beneficiary.ssn) : na('N/A')
-
+console.log(application.vehicle)
         if (application.vehicle) {
             if (application?.vehicle?.mmt && application?.vehicle?.mmt !== 'other') {
                 const [ type, make, model ] = application.vehicle.mmt.split(':')

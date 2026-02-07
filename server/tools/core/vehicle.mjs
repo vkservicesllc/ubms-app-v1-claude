@@ -31,14 +31,18 @@ class Vehicle {
 class Truck extends Vehicle {
     constructor(data) {}
 
-    static straightBoxMakeModelList = {
-        'Ford': ['F-650 Box', 'F-750 Box'],
-        'Chevrolet': ['LCF 6500XD'],
-        'Freightliner': ['M2 106 Box'],
-        'Kenworth': ['T270 Box'],
-        'International': ['MV607', 'Durastar 4300'],
-        'Isuzu': ['NPR-HD', 'NQR', 'FTR'],
-        'Hino': ['268A', 'L6 Box'],
+    static list = {
+
+        straightBoxMakeModel: {
+            'Ford': ['F-650 Box', 'F-750 Box'],
+            'Chevrolet': ['LCF 6500XD'],
+            'Freightliner': ['M2 106 Box'],
+            'Kenworth': ['T270 Box'],
+            'International': ['MV607', 'Durastar 4300'],
+            'Isuzu': ['NPR-HD', 'NQR', 'FTR'],
+            'Hino': ['268A', 'L6 Box'],
+        },
+
     }
 
     // static straightCubeMakeModelList = {
@@ -88,14 +92,18 @@ class Trailer extends Vehicle {
 class Van extends Vehicle {
     constructor(data) {}
 
-    static cargoMakeModelList = {
-        'Ford': ['Transit', 'Transit Connect', 'E-Series'],
-        'Mercedes-Benz': ['Sprinter', 'Metris'],
-        'Freightliner': ['Sprinter'],
-        'Ram': ['ProMaster', 'ProMaster City'],
-        'Chevrolet': ['Express 2500', 'Express 3500'],
-        'GMC': ['Savana 2500', 'Savana 3500'],
-        'Nissan': ['NV1500', 'NV2500', 'NV3500', 'NV200'],
+    static list = {
+
+        cargoMakeModel: {
+            'Ford': ['Transit', 'Transit Connect', 'E-Series'],
+            'Mercedes-Benz': ['Sprinter', 'Metris'],
+            'Freightliner': ['Sprinter'],
+            'Ram': ['ProMaster', 'ProMaster City'],
+            'Chevrolet': ['Express 2500', 'Express 3500'],
+            'GMC': ['Savana 2500', 'Savana 3500'],
+            'Nissan': ['NV1500', 'NV2500', 'NV3500', 'NV200'],
+        },
+
     }
 
 }

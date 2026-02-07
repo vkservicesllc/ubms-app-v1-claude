@@ -513,7 +513,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             if (!cdlRole) {
                 const mmtData = currentExpediteVhlMMTData()
                 const yearData = descYears()
-                const lenData = Application.vhlLengthList.straightBox
+                const lenData = Application.list.vhlLength.straightBox
                 dropdown.vehicleMMT = ''
                 dropdown.vehicleYear = ''
                 dropdown.vehicleLength = ''

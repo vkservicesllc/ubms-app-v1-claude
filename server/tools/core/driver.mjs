@@ -509,7 +509,7 @@ class Application {
 
                 const vehicleRecord = async (application, body) => {
                     if (application.position !== 'OO') return await application.delete('vehicle')
-                    if (!body.type) return
+                    // if (!body.type) return
 
                     if (body.mmt) {
                         if (body.mmt !== 'other') {
@@ -608,7 +608,7 @@ class Application {
                                 if (!found) await person.add('identifications', dlBody)
                             } else {
                                 const { state, issuedOn, expiresOn } = this.dl
-console.log({ body, dlBody })
+
                                 await this.update('license', body)
                                 await person.update('identifications', dlBody, { state, issuedOn, expiresOn })
                             }
@@ -710,7 +710,7 @@ console.log({ body, dlBody })
                         {
                             const experience = body.noExp !== true
                             let { cdlSchool } = body
-                            const { vehicles, cmv, firstDate, lastDate, mileage, hours } = body
+                            const { vehicles = {}, cmv, firstDate, lastDate, mileage, hours } = body
                             const { name, phone, state, endDate, duration } = body
                             if (cdlSchool === undefined) cdlSchool = false
 
