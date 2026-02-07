@@ -46,6 +46,7 @@ export const dtDriverList = async (req, res) => {
             .select(
                 knex.raw(Query.hashField(Driver.hashId(), 'drv')),
                 knex.raw(Query.hashField(Individual.hashId('personId'), 'drv')),
+                'drv.blackListed',
                 'psn.dob',
                 'psn.gender',
                 knex.raw('MAX(??) AS ??', ['nms.firstName', 'firstName']),

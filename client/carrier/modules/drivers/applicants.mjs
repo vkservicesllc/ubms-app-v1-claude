@@ -36,11 +36,22 @@ const table = $('#driver-aplicants-table').DataTable({
     columns: [
 
         {
+            data: 'blackListed',
+            searchable: false,
+            orderable: false,
+            render(data) {
+                if (!data) return '<i class="dark green thumbs up icon outline"></i>'
+
+                return '<i class="dark red thumbs down icon outline" title="Blacklisted"></i>'
+            },
+        },
+
+        {
             data: null,
             title: `Legal Name ${searchTag}`,
             render(data, type, row) {
                 return new Person(row).fullName('FMLs')
-            }
+            },
         },
 
         {
@@ -112,18 +123,29 @@ const table = $('#driver-aplicants-table').DataTable({
             title: 'DL Status',
             searchable: false,
             render(data, type, row) {
-                let style = 'green'
-                if (data === 'Expired') style = 'red'
+                let style = ' green'
+                if (data === 'Expired') style = ' red'
                 if (data === 'Expires Soon') {
-                    style = 'orange'
+                    style = ' orange'
                     data += ` <small>(${row.dlDiff} days)</small>`
                 }
 
-                return `<span class="ui dark ${style} text">${data}</span>`
+                if (row.blackListed) style = ''
+                else style = ` dark ${style}`
+
+                return `<span class="ui${style} text">${data}</span>`
             },
         },
 
     ],
+
+    createdRow(row, data) {
+        if (data.blackListed)
+            $(row).css({
+                backgroundColor: '#FFE9EC',
+                color: '#d32d2dff',
+            })
+    },
 
     dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
 

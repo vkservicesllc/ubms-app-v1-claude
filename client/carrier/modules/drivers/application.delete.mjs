@@ -32,15 +32,15 @@ table.on('draw', function() {
 
         const _id = $(this).data('id')
 
-        $.ajax(`/api/resource/drivers/applications/${_id}`, {
+        $.ajax(`/api/resource/drivers/applications/${_id}?sensitive=true`, {
             success(response) {
                 const { application, identity, log } = response.data
-                const { position, dob, ssn, gender, phone, address, carrier, user, expansion } = application
+                const { position, dob, ssn, phone, address, carrier, user, expansion } = application
                 const { createdAt, finishedAt } = log
                 const na = '<span class="ui dark red text"><small><i>N/A</i></small></span>'
 
                 application.appliedOn = moment(finishedAt || createdAt).format('ll')
-                application.gender = gender[1]
+                application.gender = expansion.gender
                 application.dob = moment(dob).format('ll')
                 application.ssn = formatSsn(ssn)
                 application.phone = formatTel(phone)
