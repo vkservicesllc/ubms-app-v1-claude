@@ -12,7 +12,7 @@ import { getFiles } from '../../../../tools/utils/fs.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
 import Geography from '../../../../../client/global/modules/tools/core/geography.mjs'
 import Individual from '../../../../tools/core/individual.mjs'
-import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools/utils/sorter.mjs'
+// import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools/utils/sorter.mjs'
 import { calculateYearAge } from '../../../../../client/global/modules/tools/utils/date.mjs'
 
 
@@ -720,7 +720,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
     /* Section 2 */
     {
-        addresses = sortArrayByObjectKey(addresses, 'since', false)
+        // addresses = sortArrayByObjectKey(addresses, 'since', false)
         y -= fieldHeight / 2
         page1.drawLine({
             start: { x: marginX, y },
@@ -1370,7 +1370,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
     /* Section 5 */
     {
-        violations = sortArrayByObjectKey(violations, 'citedOn', false)
+        // violations = sortArrayByObjectKey(violations, 'citedOn', false)
         page2.drawLine({
             start: { x: marginX, y },
             end: { x: width - marginX, y },
@@ -1465,7 +1465,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
     /* Section 6 */
     {
-        accidents = sortArrayByObjectKey(accidents, 'citedOn', false)
+        // accidents = sortArrayByObjectKey(accidents, 'citedOn', false)
         y -= fieldHeight / 2
         page2.drawLine({
             start: { x: marginX, y },
@@ -1946,12 +1946,12 @@ export default async (carrier, application, addresses, violations, accidents, em
 
     /* Section 9 */
     {
-        employers = sortArrayByObjectKey(employers, 'startedOn', false)
+        // employers = sortArrayByObjectKey(employers, 'startedOn', false)
 
-        for (let i = 0; i < 12; i++) {
-            const page = i < 6 ? 'page3' : 'page4'
-            const pageN = i < 6 ? 3 : 4
-            if (!i || i === 6) {
+        for (let i = 0; i < 10; i++) {
+            const page = i < 5 ? 'page3' : 'page4'
+            const pageN = i < 5 ? 3 : 4
+            if (!i || i === 5) {
                 emplPages[page] = pdfDoc.addPage([width, height])
                 text = `Page ${pageN} of ${totalPages}`
                 textWidth = font.label.widthOfTextAtSize(text, size.label)
@@ -1994,14 +1994,18 @@ export default async (carrier, application, addresses, violations, accidents, em
                     startedOn, position, earnings, fmcsr, dotDat, leftOn, rfl,
                 } = prevEmployer
             )
-            if (!i || i % 2 === 0) vLineX = marginX
-            else vLineX = (width - marginX * 2) / 2 + marginX
-            if (outsideBorder)
-                emplPages[page].drawLine({
-                    start: { x: vLineX, y },
-                    end: { x: vLineX, y: y - fieldHeight * 7 + 5 },
-                    color: color.line,
-                })
+
+            vLineX = marginX
+            emplPages[page].drawLine({
+                start: { x: vLineX, y },
+                end: { x: vLineX, y: y - fieldHeight * 4 + 2 },
+                color: color.line,
+            })
+            emplPages[page].drawLine({
+                start: { x: width - marginX, y },
+                end: { x: width - marginX, y: y - fieldHeight * 4 + 2 },
+                color: color.line,
+            })
 
             y -= 1
             emplPages[page].drawText(`Employer #${i + 1}`, {
@@ -2012,7 +2016,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding * 2, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX += 150
+            vLineX += 190
             emplPages[page].drawText('Phone', {
                 x: vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
@@ -2021,7 +2025,25 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX -= 150
+            vLineX += 130
+            emplPages[page].drawText('Employment Date', {
+                x: vLineX + padding * 2, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(startedOn ? moment(startedOn).format(dateFormat) : '', {
+                x: vLineX + padding * 2, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX += 120
+            emplPages[page].drawText('Termination Date', {
+                x: vLineX + padding, y: y - offset.labelY,
+                font: font.label, size: size.label, color: color.label,
+            })
+            emplPages[page].drawText(employer ? leftOn ? moment(leftOn).format(dateFormat) : 'Still Employed' : '', {
+                x: vLineX + padding, y: y - offset.valueY,
+                font: font.value, size: size.value, color: color.value,
+            })
+            vLineX -= 190 + 130 + 120
             y -= fieldHeight
             y += 1
             emplPages[page].drawText('Street Address', {
@@ -2032,7 +2054,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding * 2, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX += 150
+            vLineX += 190
             emplPages[page].drawText('Suite/Unit #', {
                 x: vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
@@ -2041,9 +2063,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX -= 150
-            y -= fieldHeight
-            y += 1
+            vLineX += 80
             emplPages[page].drawText('City', {
                 x: vLineX + padding * 2, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
@@ -2052,7 +2072,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding * 2, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX += 150
+            vLineX += 170
             emplPages[page].drawText('State', {
                 x: vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
@@ -2070,7 +2090,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX -= 195
+            vLineX -= 45 + 170 + 80 + 190
             y -= fieldHeight
             y += 1
             emplPages[page].drawText('Position', {
@@ -2081,7 +2101,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding * 2, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX += 150
+            vLineX += 130
             emplPages[page].drawText('Monthly Earnings/Salary', {
                 x: vLineX + padding, y: y - offset.labelY,
                 font: font.label, size: size.label, color: color.label,
@@ -2090,27 +2110,18 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX -= 150
-            y -= fieldHeight
-            y += 1
-            emplPages[page].drawText('Employment Date', {
-                x: vLineX + padding * 2, y: y - offset.labelY,
-                font: font.label, size: size.label, color: color.label,
+            vLineX += 140
+            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 2, fmcsr)
+            emplPages[page].drawText("Subject to FMCSR's?", {
+                x: vLineX + padding * 2 + 15, y: y - offset.labelY - 2,
+                font: font.label, size: size.label * .9, color: color.label,
             })
-            emplPages[page].drawText(startedOn ? moment(startedOn).format(dateFormat) : '', {
-                x: vLineX + padding * 2, y: y - offset.valueY,
-                font: font.value, size: size.value, color: color.value,
+            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 15, dotDat)
+            emplPages[page].drawText('Subject to drug/alcohol testing requirements per 49 CFR Part 40', {
+                x: vLineX + padding * 2 + 15, y: y - offset.labelY - 15,
+                font: font.label, size: size.label * .9, color: color.label,
             })
-            vLineX += 150
-            emplPages[page].drawText('Termination Date', {
-                x: vLineX + padding, y: y - offset.labelY,
-                font: font.label, size: size.label, color: color.label,
-            })
-            emplPages[page].drawText(employer ? leftOn ? moment(leftOn).format(dateFormat) : 'Still Employed' : '', {
-                x: vLineX + padding, y: y - offset.valueY,
-                font: font.value, size: size.value, color: color.value,
-            })
-            vLineX -= 150
+            vLineX -= 130 + 140
             y -= fieldHeight
             y += 1
             emplPages[page].drawText('Reason for Leaving', {
@@ -2121,61 +2132,244 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: vLineX + padding * 2, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX 
-            y -= fieldHeight
-            y += 1
-            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2, fmcsr)
-            emplPages[page].drawText("Subject to FMCSR's?", {
-                x: vLineX + padding * 2 + 15, y: y - offset.labelY,
-                font: font.label, size: size.label * .9, color: color.label,
-            })
-            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 13, dotDat)
-            emplPages[page].drawText('Subject to drug/alcohol testing requirements per 49 CFR Part 40', {
-                x: vLineX + padding * 2 + 15, y: y - offset.labelY - 13,
-                font: font.label, size: size.label * .9, color: color.label,
-            })
-            // emplPages[page].drawText('Subject to:', {
-            //     x: vLineX + padding * 2, y: y - offset.labelY,
-            //     font: font.label, size: size.label, color: color.label,
-            // })
-            // vLineX += 75
-            // emplPages[page].drawText('FMCSR', {
-            //     x: vLineX + padding * 2, y: y - offset.labelY,
-            //     font: font.label, size: size.label, color: color.label,
-            // })
-            // emplPages[page].drawText(fmcsr || '', {
-            //     x: vLineX + padding * 2, y: y - offset.valueY,
-            //     font: font.value, size: size.value, color: color.value,
-            // })
-            // vLineX += 65
-            // emplPages[page].drawText('DOT Drug/Alcohol Testing', {
-            //     x: vLineX + padding, y: y - offset.labelY,
-            //     font: font.label, size: size.label, color: color.label,
-            // })
-            // emplPages[page].drawText(dotDat || '', {
-            //     x: vLineX + padding, y: y - offset.valueY,
-            //     font: font.value, size: size.value, color: color.value,
-            // })
-
             y += fieldHeight * 6
             y -= 5
-            if (i % 2 !== 0) {
-                if (outsideBorder)
-                    emplPages[page].drawLine({
-                        start: { x: width - marginX, y },
-                        end: { x: width - marginX, y: y - fieldHeight * 7 + 5 },
-                        color: color.line,
-                    })
-
-                y -= fieldHeight * 7 - 5
-                emplPages[page].drawLine({
-                    start: { x: marginX, y },
-                    end: { x: width - marginX, y },
-                    color: color.line,
-                })
-            }
-
+            y -= fieldHeight * 7 - 5
+            emplPages[page].drawLine({
+                start: { x: marginX, y },
+                end: { x: width - marginX, y },
+                color: color.line,
+            })
         }
+
+        // for (let i = 0; i < 12; i++) {
+        //     const page = i < 6 ? 'page3' : 'page4'
+        //     const pageN = i < 6 ? 3 : 4
+        //     if (!i || i === 6) {
+        //         emplPages[page] = pdfDoc.addPage([width, height])
+        //         text = `Page ${pageN} of ${totalPages}`
+        //         textWidth = font.label.widthOfTextAtSize(text, size.label)
+        //         emplPages[page].drawText(text, {
+        //             x: width - marginX - textWidth, y: marginY,
+        //             font: font.label, size: size.label / 1.2, color: color.label,
+        //         })
+        //         y = height - marginY
+        //         emplPages[page].drawLine({
+        //             start: { x: marginX, y },
+        //             end: { x: width - marginX, y },
+        //             thickness: 2, color: color.line,
+        //         })
+        //         y -= 14
+        //         text = 'Section 9: Previous Employments'
+        //         emplPages[page].drawText(text, {
+        //             x: marginX + padding, y,
+        //             font: font.section, size: size.section, color: color.section,
+        //         })
+        //         textWidth = font.section.widthOfTextAtSize(text, size.section)
+        //         text = '(All jobs from the past 3 years and commercial experience from the past 10 years)'
+        //         emplPages[page].drawText(text, {
+        //             x: marginX + textWidth + gap, y,
+        //             font: font.label, size: size.label, color: color.label,
+        //         })
+
+        //         y -= gap
+        //         emplPages[page].drawLine({
+        //             start: { x: marginX, y },
+        //             end: { x: width - marginX, y },
+        //             color: color.line,
+        //         })
+        //     }
+        //     const prevEmployer = employers[i]
+        //     let employer, phone, address,
+        //         startedOn, position, earnings, fmcsr, dotDat, leftOn, rfl
+        //     if (prevEmployer) (
+        //         {
+        //             employer, phone, address,
+        //             startedOn, position, earnings, fmcsr, dotDat, leftOn, rfl,
+        //         } = prevEmployer
+        //     )
+        //     if (!i || i % 2 === 0) vLineX = marginX
+        //     else vLineX = (width - marginX * 2) / 2 + marginX
+        //     if (outsideBorder)
+        //         emplPages[page].drawLine({
+        //             start: { x: vLineX, y },
+        //             end: { x: vLineX, y: y - fieldHeight * 7 + 5 },
+        //             color: color.line,
+        //         })
+
+        //     y -= 1
+        //     emplPages[page].drawText(`Employer #${i + 1}`, {
+        //         x: vLineX + padding * 2, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(employer || '', {
+        //         x: vLineX + padding * 2, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX += 150
+        //     emplPages[page].drawText('Phone', {
+        //         x: vLineX + padding, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(phone ? formatTel(phone) : '', {
+        //         x: vLineX + padding, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX -= 150
+        //     y -= fieldHeight
+        //     y += 1
+        //     emplPages[page].drawText('Street Address', {
+        //         x: vLineX + padding * 2, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(address?.address1 || '', {
+        //         x: vLineX + padding * 2, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX += 150
+        //     emplPages[page].drawText('Suite/Unit #', {
+        //         x: vLineX + padding, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(address?.address2 || '', {
+        //         x: vLineX + padding, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX -= 150
+        //     y -= fieldHeight
+        //     y += 1
+        //     emplPages[page].drawText('City', {
+        //         x: vLineX + padding * 2, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(address?.city || '', {
+        //         x: vLineX + padding * 2, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX += 150
+        //     emplPages[page].drawText('State', {
+        //         x: vLineX + padding, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(address?.state || '', {
+        //         x: vLineX + padding, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX += 45
+        //     emplPages[page].drawText('Zip', {
+        //         x: vLineX + padding, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(address?.zip || '', {
+        //         x: vLineX + padding, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX -= 195
+        //     y -= fieldHeight
+        //     y += 1
+        //     emplPages[page].drawText('Position', {
+        //         x: vLineX + padding * 2, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(position || '', {
+        //         x: vLineX + padding * 2, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX += 150
+        //     emplPages[page].drawText('Monthly Earnings/Salary', {
+        //         x: vLineX + padding, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(earnings ? '$' + earnings.toLocaleString('en-US') : '', {
+        //         x: vLineX + padding, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX -= 150
+        //     y -= fieldHeight
+        //     y += 1
+        //     emplPages[page].drawText('Employment Date', {
+        //         x: vLineX + padding * 2, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(startedOn ? moment(startedOn).format(dateFormat) : '', {
+        //         x: vLineX + padding * 2, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX += 150
+        //     emplPages[page].drawText('Termination Date', {
+        //         x: vLineX + padding, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(employer ? leftOn ? moment(leftOn).format(dateFormat) : 'Still Employed' : '', {
+        //         x: vLineX + padding, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX -= 150
+        //     y -= fieldHeight
+        //     y += 1
+        //     emplPages[page].drawText('Reason for Leaving', {
+        //         x: vLineX + padding * 2, y: y - offset.labelY,
+        //         font: font.label, size: size.label, color: color.label,
+        //     })
+        //     emplPages[page].drawText(rfl || '', {
+        //         x: vLineX + padding * 2, y: y - offset.valueY,
+        //         font: font.value, size: size.value, color: color.value,
+        //     })
+        //     vLineX 
+        //     y -= fieldHeight
+        //     y += 1
+        //     drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2, fmcsr)
+        //     emplPages[page].drawText("Subject to FMCSR's?", {
+        //         x: vLineX + padding * 2 + 15, y: y - offset.labelY,
+        //         font: font.label, size: size.label * .9, color: color.label,
+        //     })
+        //     drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 13, dotDat)
+        //     emplPages[page].drawText('Subject to drug/alcohol testing requirements per 49 CFR Part 40', {
+        //         x: vLineX + padding * 2 + 15, y: y - offset.labelY - 13,
+        //         font: font.label, size: size.label * .9, color: color.label,
+        //     })
+        //     // emplPages[page].drawText('Subject to:', {
+        //     //     x: vLineX + padding * 2, y: y - offset.labelY,
+        //     //     font: font.label, size: size.label, color: color.label,
+        //     // })
+        //     // vLineX += 75
+        //     // emplPages[page].drawText('FMCSR', {
+        //     //     x: vLineX + padding * 2, y: y - offset.labelY,
+        //     //     font: font.label, size: size.label, color: color.label,
+        //     // })
+        //     // emplPages[page].drawText(fmcsr || '', {
+        //     //     x: vLineX + padding * 2, y: y - offset.valueY,
+        //     //     font: font.value, size: size.value, color: color.value,
+        //     // })
+        //     // vLineX += 65
+        //     // emplPages[page].drawText('DOT Drug/Alcohol Testing', {
+        //     //     x: vLineX + padding, y: y - offset.labelY,
+        //     //     font: font.label, size: size.label, color: color.label,
+        //     // })
+        //     // emplPages[page].drawText(dotDat || '', {
+        //     //     x: vLineX + padding, y: y - offset.valueY,
+        //     //     font: font.value, size: size.value, color: color.value,
+        //     // })
+
+        //     y += fieldHeight * 6
+        //     y -= 5
+        //     if (i % 2 !== 0) {
+        //         if (outsideBorder)
+        //             emplPages[page].drawLine({
+        //                 start: { x: width - marginX, y },
+        //                 end: { x: width - marginX, y: y - fieldHeight * 7 + 5 },
+        //                 color: color.line,
+        //             })
+
+        //         y -= fieldHeight * 7 - 5
+        //         emplPages[page].drawLine({
+        //             start: { x: marginX, y },
+        //             end: { x: width - marginX, y },
+        //             color: color.line,
+        //         })
+        //     }
+
+        // }
     }
 
 
