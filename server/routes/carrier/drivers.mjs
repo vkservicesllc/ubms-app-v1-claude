@@ -165,7 +165,9 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
             let carrierItems = '', teamItems = '', suffixItems = '', genderItems = '', maritalItems = '', positionItems = '', addrStateItems = ''
             let t = `\t`.repeat(9)
 
-            const carriers = await user.fetch('jx.companies', { filter: { category: 'crr', confirmed: true } })
+            const carriers = !DS
+                ? await user.fetch('jx.companies', { filter: { category: 'crr', confirmed: true } })
+                : await Company.fetch(res.session, { category: 'crr', confirmed: true })
 
             carriers.forEach(carrier => {
                 const { externalId, route, name } = carrier
