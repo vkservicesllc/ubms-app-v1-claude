@@ -86,4 +86,13 @@ export default {
         model: { max: 25 },
     },
 
+    driver: {
+        application: {
+            employment: {
+                rfl: { max: 75 },
+                gapExpl: { max: 75 },
+            },
+        },
+    },
+
 }

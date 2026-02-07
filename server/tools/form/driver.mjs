@@ -1716,7 +1716,7 @@ class EmploymentForm {
         group: 'rfl',
         type: 'textarea',
         name: 'rfl',
-        maxLength: 50,
+        maxLength: length.driver.application.employment.rfl.max,
         required,
         label: 'Reason for Leaving',
     })
@@ -1736,7 +1736,7 @@ class EmploymentForm {
         group: 'gapExpl',
         type: 'textarea',
         name: 'gapExpl',
-        maxLength: 50,
+        maxLength: length.driver.application.employment.gapExpl.max,
         required,
         disabled,
         label: 'Reason for Employment Gap',
