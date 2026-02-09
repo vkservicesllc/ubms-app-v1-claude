@@ -1205,6 +1205,14 @@
                                     Employers <i class="angle double right icon"></i>
                                 </div>
                             </a>
+                            <h5 class="ui blue text first header">Employment 30+ Day Gaps</h5>
+                            <table class="ui compact grey table">
+                                <tbody id="empl-gap-table">
+                                    <tr>
+                                        <td><span class="ui dark red text"><i>No gaps determined</i></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </form>
                     </div>
 
@@ -1492,6 +1500,7 @@
         <script type="module" src="/modules/drivers/application/experience.cdl-role.mjs"></script>
         {{/if}}
         <script type="module" src="/modules/drivers/application/experience.form.mjs"></script>
+        <script type="module" src="/modules/drivers/application/prev-employers.gaps.mjs"></script>
         <script type="module" src="/modules/drivers/application/preference.mjs"></script>
         {{#if (eq cdlRole 1)}}
         <script type="module" src="/modules/drivers/application/preference.cdl-role.mjs"></script>
