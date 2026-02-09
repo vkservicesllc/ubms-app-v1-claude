@@ -80,7 +80,7 @@ export const classInstance = {
         return { added: result.affectedRows > 0 }
     },
 
-
+//! CHECK Filter in jx, what does it doo exactly
     fetch: async (inst, Cls, target, filter = {}, { idsOnly = false, sorts = null, mode = 'data' } = {}) => {
         if (!target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Target not supplied`)
 
@@ -109,7 +109,7 @@ export const classInstance = {
                 match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
             }))
             rows.map(row => ids.push(row[jxIdProp]))
-
+//! double check how filter works here, it may contain match, or is it same as match
             return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, offline, sorts, mode })
         }
 
@@ -122,13 +122,16 @@ export const classInstance = {
             sort: { desc: childSort[target] || 'since' },
         }
 
+        let single = false
         const { match = {} } = filter
-        for (const prop in match) {
+        for (let prop in match) {
             let value = match[prop]
             if (prop === '_id') {
                 if (!value) continue
+                prop = 'id'
                 value = matchHash(value, childIdHash[target])
-            }
+                single = true
+            } else if (prop === 'id' && value) single = true
 
             options.match[prop] = value
         }
@@ -155,7 +158,7 @@ export const classInstance = {
             logFields.map(logField => delete row[logField] )
         })
 
-        return rows
+        return single ? rows[0] : rows
     },
 
 

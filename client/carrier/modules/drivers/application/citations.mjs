@@ -2,7 +2,7 @@ import { inputEvent } from '/modules/events/form.mjs'
 import Person from '/modules/tools/core/person.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+// import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application from './hub.mjs'
@@ -35,8 +35,7 @@ const $form ={
 
     $.ajax(`/api/resource/drivers/applications/${_id}/citations`, {
         success(response) {
-            let { data } = response
-            data = sortArrayByObjectKey(data, 'citedOn')
+            const { data } = response
 
             data.forEach((record, i) => {
                 const $tr = $('<tr></tr>')
@@ -58,8 +57,7 @@ const $form ={
                 $delete.attr('data-id', _id)
 
                 $tr.append($cells)
-                $form.add.after($tr)
-
+                $form.add.before($tr)
             })
 
             const $dropdown = {
@@ -117,17 +115,17 @@ const $form ={
             $table.fadeIn()
 
             if (data.length) {
-                const violations = $.ajax('/api/drivers/applications/source/violations', { method: 'POST', async: false }).responseJSON
+                const violations = $.ajax('/api/enum/driver-application?filter=violations', { async: false }).responseJSON
 
                 $('.delete').on('click', function() {
-                    const _id = $(this).data('id')
+                    const _citId = $(this).data('id')
 
-                    const citation = $.ajax(`/api/drivers/applications/citation/${_id}`, { method: 'POST', async: false }).responseJSON
+                    const { data: citation } = $.ajax(`/api/resource/drivers/applications/${_id}/citations/${_citId}`, { async: false }).responseJSON
                     if (!citation) return alert('Oops! Something went wrong!')
 
-                    const { other, state, formId } = citation
-                    let { violation, citedOn } = citation
-                    const recipient = new Person(citation)
+                    const { other, state, citedOn  } = citation
+                    let { violation } = citation
+                    const recipient = new Person(application)
 
                     if (violation === 'other') violation = `<b>${other}</b>`
                     else
@@ -139,11 +137,11 @@ const $form ={
                             }
                         }
                     
-                    let html = `<b>${recipient.fullName()}</b> <small>(${formId})</small><br/>`
-                    html += `${violation} on ${moment(citedOn).format('ll')} in ${Address.stateList[state]}`
+                    let html = `<b>${recipient.fullName()}</b> <small>(${application.formId})</small><br/>`
+                    html += `${violation} on ${moment(citedOn).format('ll')} in ${Address.list.state[state]}`
 
                     $('#delete-info').html(html)
-                    $('#delete-id').val(_id)
+                    $('#delete-id').val(_citId)
                     $modal.delete.modal('show')
                 })
                 $modal.delete.modal({

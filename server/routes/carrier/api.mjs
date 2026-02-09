@@ -98,32 +98,32 @@ router.post('/lists', User.mw.verify, Team.mw.verify, async (req, res) => {
 // ==== DRIVERS ROUTES ==== //
 
 
-router.post('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
-    try {
-        const { _id } = req.params
-        const { sensitive = 'false' } = req.query
-        const params = {}
-        if (sensitive === 'true') params.hideSensitive = false
+// router.post('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
+//     try {
+//         const { _id } = req.params
+//         const { sensitive = 'false' } = req.query
+//         const params = {}
+//         if (sensitive === 'true') params.hideSensitive = false
 
-        const application = await Application.fetch(res.session, { _id }, params)
-        if (!application) throw new Error('Application not found')
+//         const application = await Application.fetch(res.session, { _id }, params)
+//         if (!application) throw new Error('Application not found')
 
-        const driver = await Driver.fetch(res.session, { _id: application._driverId })
-        if (!driver) throw new Error('Driver not found')
+//         const driver = await Driver.fetch(res.session, { _id: application._driverId })
+//         if (!driver) throw new Error('Driver not found')
 
-        const { formId } = application
-        const identity = await application.identity()
-        const log = await application.log()
+//         const { formId } = application
+//         const identity = await application.identity()
+//         const log = await application.log()
 
-        const applications = await driver.fetch('application.history')
-        const count = applications.length
-        const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
+//         const applications = await driver.fetch('application.history')
+//         const count = applications.length
+//         const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
 
-        res.json({ data: { application, identity, count, unmatchedIdx, log } })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+//         res.json({ data: { application, identity, count, unmatchedIdx, log } })
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
 // router.delete('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {

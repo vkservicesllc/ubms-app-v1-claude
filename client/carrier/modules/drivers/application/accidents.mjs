@@ -2,7 +2,7 @@ import { inputEvent } from '/modules/events/form.mjs'
 import Person from '/modules/tools/core/person.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+// import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application from './hub.mjs'
@@ -35,8 +35,7 @@ const $form ={
 
     $.ajax(`/api/resource/drivers/applications/${_id}/accidents`, {
         success(response) {
-            let { data } = response
-            data = sortArrayByObjectKey(data, 'date')
+            const { data } = response
 
             data.forEach((record, i) => {
                 const $tr = $('<tr></tr>')
@@ -62,8 +61,7 @@ const $form ={
                 $delete.attr('data-id', _id)
 
                 $tr.append($cells)
-                $form.add.after($tr)
-
+                $form.add.before($tr)
             })
 
             const $dropdown = {
@@ -122,17 +120,17 @@ const $form ={
             $table.fadeIn()
 
             if (data.length) {
-                const accidents = $.ajax('/api/drivers/applications/source/accidents', { method: 'POST', async: false }).responseJSON
+                const accidents = $.ajax('/api/enum/driver-application?filter=accidents', { async: false }).responseJSON
 
                 $('.delete').on('click', function() {
-                    const _id = $(this).data('id')
+                    const _accId = $(this).data('id')
 
-                    const accident = $.ajax(`/api/drivers/applications/accident/${_id}`, { method: 'POST', async: false }).responseJSON
+                    const { data: accident } = $.ajax(`/api/resource/drivers/applications/${_id}/accidents/${_accId}`, { async: false }).responseJSON
                     if (!accident) return alert('Oops! Something went wrong!')
 
-                    const { other, state, formId } = accident
-                    let { collision, date } = accident
-                    const participant = new Person(accident)
+                    const { other, state, date } = accident
+                    let { collision } = accident
+                    const participant = new Person(application)
 
                     if (collision === 'other') collision = `<b>${other}</b>`
                     else
@@ -144,11 +142,11 @@ const $form ={
                             }
                         }
                     
-                    let html = `<b>${participant.fullName()}</b> <small>(${formId})</small><br/>`
-                    html += `${collision} on ${moment(date).format('ll')} in ${Address.stateList[state]}`
+                    let html = `<b>${participant.fullName()}</b> <small>(${application.formId})</small><br/>`
+                    html += `${collision} on ${moment(date).format('ll')} in ${Address.list.state[state]}`
 
                     $('#delete-info').html(html)
-                    $('#delete-id').val(_id)
+                    $('#delete-id').val(_accId)
                     $modal.delete.modal('show')
                 })
                 $modal.delete.modal({
