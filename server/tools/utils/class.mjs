@@ -80,8 +80,8 @@ export const classInstance = {
         return { added: result.affectedRows > 0 }
     },
 
-//! CHECK Filter in jx, what does it doo exactly
-    fetch: async (inst, Cls, target, filter = {}, { idsOnly = false, sorts = null, mode = 'data' } = {}) => {
+
+    fetch: async (inst, Cls, target, filter = {}, { hideRawId: hideRawIdEnf, hideSensitive: hideSensitiveEnf, idsOnly = false, sorts = null, mode = 'data' } = {}) => {
         if (!target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Target not supplied`)
 
         const config = Cls.config()
@@ -91,7 +91,10 @@ export const classInstance = {
         if (enforceUser && !sessionUser?.id) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Session user not supplied`)
         if (!idProp) throw new Error(`${Cls.name} Constructor Method Error [FETCH]: ID Property not supplied`)
 
-        const { hideRawId, hideSensitive } = inst.config
+        let { hideRawId, hideSensitive } = inst.config
+
+        if (typeof hideRawIdEnf === 'boolean') hideRawId = hideRawIdEnf
+        if (typeof hideSensitiveEnf === 'boolean') hideSensitive = hideSensitiveEnf
 
         const jx = target.slice(0, 3) === 'jx.'
         if (jx) target = target.slice(3)
@@ -109,7 +112,7 @@ export const classInstance = {
                 match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
             }))
             rows.map(row => ids.push(row[jxIdProp]))
-//! double check how filter works here, it may contain match, or is it same as match
+
             return idsOnly ? ids : await Src.fetch(inst.session, { ids, ...filter }, { hideRawId, hideSensitive, offline, sorts, mode })
         }
 
@@ -123,9 +126,9 @@ export const classInstance = {
         }
 
         let single = false
-        const { match = {} } = filter
-        for (let prop in match) {
-            let value = match[prop]
+
+        for (let prop in filter) {
+            let value = filter[prop]
             if (prop === '_id') {
                 if (!value) continue
                 prop = 'id'

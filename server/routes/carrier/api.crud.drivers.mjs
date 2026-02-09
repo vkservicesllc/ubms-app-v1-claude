@@ -84,7 +84,7 @@ router.get('/applications/:_id/:target/:_targetId?', User.mw.verify, Team.mw.ver
         if (!application) throw new Error('Application not found')
 
         const { _targetId } = req.params
-        const data = await application.fetch(target, { match: { _id: _targetId } })
+        const data = await application.fetch(target, { _id: _targetId })
 
         res.json({ data })
     } catch (err) {

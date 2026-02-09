@@ -47,7 +47,7 @@ class Driver extends Individual {
 
             this.add = () => {}
 
-            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+            this.fetch = undefined //? (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
 
             this.update = () => {}
 
@@ -454,7 +454,7 @@ class Application {
             this.add = (target, body) => classInstance.add(this, new.target, target, body)
 
 
-            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+            this.fetch = (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
 
 
             this.update = (targetOrBody, body, filter) => {

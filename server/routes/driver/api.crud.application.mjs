@@ -34,7 +34,7 @@ router.get('/:formId/:target?/:_id?', async (req, res) => {
                 resource: application,
             })
 
-        res.json({ data: await application.fetch(target, { match: { _id } }), resource: application })
+        res.json({ data: await application.fetch(target, { _id }), resource: application })
     } catch (err) {
         sendError.server(req, res, err)
     }

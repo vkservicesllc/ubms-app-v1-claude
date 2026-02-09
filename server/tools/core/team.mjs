@@ -58,7 +58,7 @@ class Team {
             }
 
 
-            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+            this.fetch = (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
 
 
             this.update = (targetOrBody, body) => {

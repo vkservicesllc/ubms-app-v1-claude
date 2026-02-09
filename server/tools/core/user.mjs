@@ -95,7 +95,7 @@ class User extends Person {
             }
 
 
-            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+            this.fetch = (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
 
 
             this.update = body => {
@@ -1041,7 +1041,7 @@ class Role {
             this.add = (target, ids = []) => classInstance.add(this, new.target, target, ids)
 
 
-            this.fetch = (target, params) => classInstance.fetch(this, new.target, target, params)
+            this.fetch = (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
 
 
             this.update = body => classInstance.update(this, new.target, body)

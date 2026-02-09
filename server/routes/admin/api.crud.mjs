@@ -57,7 +57,7 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
                 if (target === 'companies') filter.confirmed = true
 
                 data[target].all = await Src.fetch(res.session, filter, { hideRawId, sorts })
-                data[target].applied = await user.fetch(`jx.${target}`, { hideRawId })
+                data[target].applied = await user.fetch(`jx.${target}`)
 
                 if (!sessionUser.DS) {
                     const sessData = await sessionUser.fetch(`jx.${target}`)
@@ -82,14 +82,16 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
 router.get('/companies', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser } = res.session
-        const options = { hideRawId }
+        const options = { hideRawId }, filter = {}
 
         if (!sessionUser.DS) {
-            options.filter = { closed: false, confirmed: true }
-            return res.json({ data: await sessionUser.fetch('jx.companies', options) })
+            filter.closed = false
+            filter.confirmed = true
+
+            return res.json({ data: await sessionUser.fetch('jx.companies', filter, options) })
         }
 
-        res.json({ data: await Company.fetch(res.session, {}, options) })
+        res.json({ data: await Company.fetch(res.session, filter, options) })
     } catch (err) {
         sendError.server(req, res, err)
     }
@@ -197,7 +199,7 @@ router.get('/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, async 
             }
 
             data.all = await Src.fetch(res.session, filter, { hideRawId, hideSensitive: false, sorts })
-            data.applied = await inst.fetch(`jx.${target}`, { hideRawId, hideSensitive: false })
+            data.applied = await inst.fetch(`jx.${target}`, {}, { hideRawId, hideSensitive: false })
             data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
 
             return res.json({ data, resource: inst })
@@ -345,7 +347,7 @@ router.patch('/users/:_id/:field?', User.mw.verify, dynamicValidator.user, valid
 
                     await user.update({ unscoped })
                     if (unscoped) {
-                        const teamIds = await user.fetch('jx.teams', { idsOnly: true })
+                        const teamIds = await user.fetch('jx.teams', {}, { idsOnly: true })
                         await user.delete('jx.teams', teamIds)
                     }
                 }
