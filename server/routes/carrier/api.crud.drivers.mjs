@@ -94,6 +94,38 @@ router.get('/applications/:_id/:target/:_targetId?', User.mw.verify, Team.mw.ver
 
 
 
+//* POST/PUT/PATCH *//
+
+
+router.post('/applications/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { _id, target } = req.params
+        const application = await Application.fetch(res.session, { _id })
+        if (!application) throw new Error('Application not found')
+
+        const { added } = await application.add(target, req.body)
+        res.json({ added })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.put('/applications/:_id/:target/:_targetId', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { _id, target, _targetId } = req.params
+        const application = await Application.fetch(res.session, { _id })
+        if (!application) throw new Error('Application not found')
+
+        const { updated } = await application.update(target, req.body, { _id: _targetId })
+        res.json({ updated })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
 //* DELETE *//
 
 

@@ -32,6 +32,7 @@ const $form ={
     }
 
     const $add = $('#add'), $cancel = $('#cancel')
+    $('input:not([type="hidden"]):not([type="checkbox"])').attr('autocomplete', 'off')
 
     $.ajax(`/api/resource/drivers/applications/${_id}/accidents`, {
         success(response) {
@@ -118,6 +119,64 @@ const $form ={
                 $tr.find('.unsaved-changes').html('<i class="red exclamation triangle icon"></i>').next().prop('disabled', false)
             })
 
+            $('#create, .save').on('click', function() {
+                const $button = $(this)
+                $button.addClass('loading')
+                const _accId = $button.data('id')
+                if (!_accId) return
+
+                const $fields = $button.parent().parent().find('input')
+                const date = $($fields[2]).val()
+                const data = {
+                    collision: $($fields[0]).val() || null,
+                    other: $($fields[1]).val(),
+                    date: date ? moment(date, "MMM D, YYYY").format('YYYY-MM-DD') : null,
+                    state: $($fields[3]).val() || null,
+                    injuries: $($fields[4]).prop('checked'),
+                    fatalities: $($fields[5]).prop('checked'),
+                }
+                if (data.collision !== 'other') data.other = null
+
+                if (
+                    !data.collision || (data.collision === 'other' && !data.other) ||
+                    !data.date || !data.state
+                ) {
+                    alert('Fill out all required fields')
+                    $button.removeClass('loading')
+                        .find('.icon').removeClass('loading')
+                    return
+                }
+
+                let url = `/api/resource/drivers/applications/${_id}/accidents`, method = 'POST'
+                if (_accId !== 'new') {
+                    url += `/${_accId}`
+                    method = 'PUT'
+                }
+
+                $.ajax({
+                    url, method, contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success(response) {
+                        // const { error } = response
+                        // if (error) return alert(error)
+
+                        if (_accId === 'new') {
+                            const { added } = response
+                            if (added) location.reload()
+                            return
+                        }
+
+                        location.reload()
+                        // else {
+                        //     $button.prev().html('<i class="green checkmark icon"></i>')
+                        //     $button.removeClass('loading').prop('disabled', true)
+                        //         .find('.icon').removeClass('loading')
+                        //     setTimeout(() => $button.prev().html(null), 5000)
+                        // }
+                    },
+                })
+            })
+
             $table.fadeIn()
 
             if (data.length) {
@@ -169,56 +228,6 @@ const $form ={
                             if (!deleted) return alert('Oops! Something went wrong!')
 
                             location.reload()
-                        },
-                    })
-                })
-
-                $('#create, .save').on('click', function() {
-                    const $button = $(this)
-                    $button.addClass('loading')
-                    const _id = $button.data('id')
-                    if (!_id) return
-
-                    const $fields = $button.parent().parent().find('input')
-                    const date = $($fields[2]).val()
-                    let data = {
-                        _id, _aplId: $('#id').val(),
-                        collision: $($fields[0]).val() || null,
-                        other: $($fields[1]).val(),
-                        date: date ? moment(date, "MMM D, YYYY").format('YYYY-MM-DD') : null,
-                        state: $($fields[3]).val() || null,
-                        injuries: $($fields[4]).prop('checked'),
-                        fatalities: $($fields[5]).prop('checked'),
-                    }
-                    if (data.collision !== 'other') data.other = null
-
-                    if (
-                        !data.collision || (data.collision === 'other' && !data.other) ||
-                        !data.date || !data.state
-                    ) {
-                        alert('Fill out all required fields')
-                        $button.removeClass('loading')
-                            .find('.icon').removeClass('loading')
-                        return
-                    }
-
-                    data = JSON.stringify(data)
-
-                    $.ajax('/api/resource/drivers/applications/accident', {
-                        method: 'POST',
-                        contentType: 'application/json',
-                        data,
-                        success(response) {
-                            const { error } = response
-                            if (error) return alert(error)
-
-                            if (_id === 'new') location.reload()
-                            else {
-                                $button.prev().html('<i class="green checkmark icon"></i>')
-                                $button.removeClass('loading').prop('disabled', true)
-                                    .find('.icon').removeClass('loading')
-                                setTimeout(() => $button.prev().html(null), 5000)
-                            }
                         },
                     })
                 })

@@ -32,6 +32,7 @@ const $form ={
     }
 
     const $add = $('#add'), $cancel = $('#cancel')
+    $('input:not([type="hidden"]):not([type="checkbox"])').attr('autocomplete', 'off')
 
     $.ajax(`/api/resource/drivers/applications/${_id}/citations`, {
         success(response) {
@@ -113,6 +114,62 @@ const $form ={
                 $tr.find('.unsaved-changes').html('<i class="red exclamation triangle icon"></i>').next().prop('disabled', false)
             })
 
+            $('#create, .save').on('click', function() {
+                const $button = $(this)
+                $button.addClass('loading')
+                const _citId = $button.data('id')
+                if (!_citId) return
+
+                const $fields = $button.parent().parent().find('input')
+                const citedOn = $($fields[2]).val()
+                const data = {
+                    violation: $($fields[0]).val() || null,
+                    other: $($fields[1]).val(),
+                    citedOn: citedOn ? moment(citedOn, "MMM D, YYYY").format('YYYY-MM-DD') : null,
+                    state: $($fields[3]).val() || null,
+                }
+                if (data.violation !== 'other') data.other = null
+
+                if (
+                    !data.violation || (data.violation === 'other' && !data.other) ||
+                    !data.citedOn || !data.state
+                ) {
+                    alert('Fill out all required fields')
+                    $button.removeClass('loading')
+                        .find('.icon').removeClass('loading')
+                    return
+                }
+
+                let url = `/api/resource/drivers/applications/${_id}/citations`, method = 'POST'
+                if (_citId !== 'new') {
+                    url += `/${_citId}`
+                    method = 'PUT'
+                }
+
+                $.ajax({
+                    url, method, contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success(response) {
+                        // const { error } = response
+                        // if (error) return alert(error)
+
+                        if (_citId === 'new') {
+                            const { added } = response
+                            if (added) location.reload()
+                            return
+                        }
+
+                        location.reload()
+                        // else {
+                        //     $button.prev().html('<i class="green checkmark icon"></i>')
+                        //     $button.removeClass('loading').prop('disabled', true)
+                        //         .find('.icon').removeClass('loading')
+                        //     setTimeout(() => $button.prev().html(null), 5000)
+                        // }
+                    },
+                })
+            })
+
             $table.fadeIn()
 
             if (data.length) {
@@ -164,51 +221,6 @@ const $form ={
                             if (!deleted) return alert('Oops! Something went wrong!')
 
                             location.reload()
-                        },
-                    })
-                })
-
-                $('#create, .save').on('click', function() {
-                    const $button = $(this)
-                    $button.addClass('loading')
-                    const _id = $button.data('id')
-                    if (!_id) return
-
-                    const $fields = $button.parent().parent().find('input')
-                    const citedOn = $($fields[2]).val()
-                    const data = {
-                        _id, _aplId: $('#id').val(),
-                        violation: $($fields[0]).val() || null,
-                        other: $($fields[1]).val(),
-                        citedOn: citedOn ? moment(citedOn, "MMM D, YYYY").format('YYYY-MM-DD') : null,
-                        state: $($fields[3]).val() || null,
-                    }
-                    if (data.violation !== 'other') data.other = null
-
-                    if (
-                        !data.violation || (data.violation === 'other' && !data.other) ||
-                        !data.citedOn || !data.state
-                    ) {
-                        alert('Fill out all required fields')
-                        $button.removeClass('loading')
-                            .find('.icon').removeClass('loading')
-                        return
-                    }
-
-                    $.ajax('/api/resource/drivers/applications/citation', {
-                        method: 'POST',
-                        data,
-                        success(response) {
-                            const { error } = response
-                            if (error) return alert(error)
-
-                            if (_id === 'new') location.reload()
-                            else {
-                                $button.prev().html('<i class="green checkmark icon"></i>')
-                                $button.removeClass('loading').prop('disabled', true)
-                                    .find('.icon').removeClass('loading')
-                                setTimeout(() => $button.prev().html(null), 5000)
-                            }
                         },
                     })
                 })
