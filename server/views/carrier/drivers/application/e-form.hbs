@@ -1197,7 +1197,7 @@
                     </div>
 
                     <div class="ui tab" data-tab="prev-employment">
-                        <form class="ui loading form" id="safety-form" action="{{actionUrl.prevEmployment}}" method="POST" autocomplete="off">
+                        <form class="ui loading form" id="employment-form" action="{{actionUrl.prevEmployment}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Previous Employment</h5>
                             <a class="ui left labeled button" href="{{linkUrl.prevEmployment}}">
                                 <span class="ui {{linkColor.prevEmployment}} right pointing label">{{length.prevEmployment}}</span>
@@ -1206,11 +1206,35 @@
                                 </div>
                             </a>
                             <h5 class="ui blue text first header">Employment 30+ Day Gaps</h5>
-                            <table class="ui compact grey table">
-                                <tbody id="empl-gap-table">
+                            <table class="ui compact grey table" style="display: none;">
+                                <thead>
                                     <tr>
-                                        <td><span class="ui dark red text"><i>No gaps determined</i></span></td>
+                                        <th>
+                                            <div class="field">
+                                                <label>
+                                                    Employer
+                                                </label>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="field">
+                                                <label>
+                                                    Gap Period
+                                                </label>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="field">
+                                                <label class="input-required">
+                                                    Reason for Gap
+                                                </label>
+                                            </div>
+                                        </th>
+                                        <th></th>
                                     </tr>
+                                </thead>
+                                <tbody id="empl-gap-table">
+                                    <tr><td><span class="ui dark red text"><i>No gaps determined</i></span></td></tr>
                                 </tbody>
                             </table>
                         </form>
