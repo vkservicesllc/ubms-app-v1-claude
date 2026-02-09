@@ -2,7 +2,7 @@ import { inputEvent } from '/modules/events/form.mjs'
 import Person from '/modules/tools/core/person.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
 import { capitalizeEach } from '/modules/tools/utils/string.mjs'
-// import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application from './hub.mjs'
@@ -35,7 +35,8 @@ const $form ={
 
     $.ajax(`/api/resource/drivers/applications/${_id}/accidents`, {
         success(response) {
-            const { data } = response
+            let { data } = response
+            data = sortArrayByObjectKey(data, 'date')
 
             data.forEach((record, i) => {
                 const $tr = $('<tr></tr>')
@@ -61,7 +62,7 @@ const $form ={
                 $delete.attr('data-id', _id)
 
                 $tr.append($cells)
-                $form.add.before($tr)
+                $form.add.after($tr)
             })
 
             const $dropdown = {
@@ -156,6 +157,20 @@ const $form ={
                         $('#delete-id').val(null)
                         $('#delete-info').html(null)
                     },
+                })
+                $('#delete-form').submit(function(evt) {
+                    evt.preventDefault()
+                    const _accId = $('#delete-id').val()
+
+                    $.ajax(`/api/resource/drivers/applications/${_id}/accidents/${_accId}`, {
+                        method: 'DELETE',
+                        success(response) {
+                            const { deleted } = response
+                            if (!deleted) return alert('Oops! Something went wrong!')
+
+                            location.reload()
+                        },
+                    })
                 })
 
                 $('#create, .save').on('click', function() {

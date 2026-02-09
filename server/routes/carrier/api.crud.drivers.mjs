@@ -97,11 +97,16 @@ router.get('/applications/:_id/:target/:_targetId?', User.mw.verify, Team.mw.ver
 //* DELETE *//
 
 
-router.delete('/applications/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
+router.delete('/applications/:_id/:target?/:_targetId?', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
-        const { _id } = req.params
+        const { _id, target, _targetId } = req.params
         const application = await Application.fetch(res.session, { _id })
         if (!application) throw new Error('Application not found')
+
+        if (target && _targetId) {
+            const { deleted } = await application.delete(target, { _id: _targetId })
+            return res.json({ deleted })
+        }
 
         const { deleted } = await application.delete()
 

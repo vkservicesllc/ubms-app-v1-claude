@@ -180,7 +180,10 @@ export const classInstance = {
 
         const idProp = target === 'main' ? 'id' : config.idProp
 
-        if ('_id' in match) match._id = matchHash(match._id, childIdHash[target])
+        if ('_id' in match) {
+            match.id = matchHash(match._id, childIdHash[target])
+            delete match._id
+        }
         match = { [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match }
 
         const options = { query, target, skipLog, match, modifiedBy: sessionUser.id }
@@ -248,7 +251,10 @@ export const classInstance = {
             const match = matchOrIds || {}
 
             const { query, childIdHash = {} } = config
-            if ('_id' in match) match._id = matchHash(match._id, childIdHash[target])
+            if ('_id' in match) {
+                match.id = matchHash(match._id, childIdHash[target])
+                delete match._id
+            }
 
             const [ result ] = await mysql.execute(query[target].delete({ [idProp]: inst.id, ...match }))
 
