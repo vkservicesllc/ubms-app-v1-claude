@@ -7,6 +7,10 @@ import Team from '../../tools/core/team.mjs'
 import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 import { withPrivileges } from '../../tools/core/user/permissions.mjs'
 
+/* Import: Validators */
+import validationCheck from '../../tools/form/validator.mjs'
+import { ApplicationForm, EmploymentForm } from '../../tools/form/driver.mjs'
+
 /* Middleware */
 import { dtDriverList, dtApplicationList } from './mw/drivers.mjs'
 
@@ -95,6 +99,23 @@ router.get('/applications/:_id/:target/:_targetId?', User.mw.verify, Team.mw.ver
 
 
 //* POST/PUT/PATCH *//
+
+
+const dynamicValidator = (req, res, next) => {
+    const { target } = req.params
+    let validators = []
+
+    switch (target) {
+        case 'employers':
+            validators = EmploymentForm.validate()
+            break
+        //! add more validators later if needed
+    }
+
+    Promise.all(validators.map(validator => validator.run(req)))
+            .then(() => next())
+            .catch(next)
+}
 
 
 router.post('/applications/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {

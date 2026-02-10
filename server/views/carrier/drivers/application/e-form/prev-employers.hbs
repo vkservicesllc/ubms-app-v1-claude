@@ -83,7 +83,7 @@
     <div class="ui modal" id="add-modal" style="width: 735px;">
         <div class="header"><small>New</small> Previous Employer</div>
         <div class="content">
-            <form class="ui form" id="new-employer-form" action="/resource/driver/application/prev-employer/upsert" method="POST">
+            <form class="ui form" id="new-employer-form" autocomplete="off">
                 {{{emplForm.id.hidden.input}}}
                 <input type="hidden" name="_aplId[]" value="{{_id}}" />
                 <div class="ui compact grid">

@@ -10,7 +10,6 @@ import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
-import { EmploymentForm } from '../../tools/form/driver.mjs'
 import { validateApplicantLogin } from './application.mjs'
 
 /* API */

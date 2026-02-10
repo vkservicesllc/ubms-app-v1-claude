@@ -7,7 +7,6 @@ import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 /* Import: Validators */
 import validationCheck from '../../tools/form/validator.mjs'
 import { ApplicationForm, EmploymentForm } from '../../tools/form/driver.mjs'
-import { validateApplicantLogin } from './application.mjs'
 
 
 
