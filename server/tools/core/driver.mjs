@@ -740,14 +740,14 @@ class Application {
 
 
                     case 'prev-employment':
-                        {
-                            delete body.explGap
-                            if (this.step < 7) body.step = 7
+                        // {
+                        //     delete body.explGap
+                        //     if (this.step < 7) body.step = 7
 
-                            if (!body.prevEmployed) await mysql.execute(query.driver_appemployer.main.delete({ appId: this.id }))
+                        //     if (!body.prevEmployed) await mysql.execute(query.driver_appemployer.main.delete({ appId: this.id }))
 
-                            await this.update(body)
-                        }
+                        //     await this.update(body)
+                        // }
                         break
 
                     
@@ -1615,10 +1615,10 @@ class Employment {
         if (!data?._id) throw new Error('Constructor Error: Invalid Employer Data')
 
         this._id = data._id
-        this._appId = data._appId
+        // this._appId = data._appId
         if (!hideRawId) {
             this.id = data.id
-            this.appId = data.appId
+            // this.appId = data.appId
         }
         this.status = data.status
         this.employer = data.employer
@@ -1633,23 +1633,27 @@ class Employment {
         this.rfl = data.rfl
         this.gapExpl = data.gapExpl
 
-        this.application = {
-            formId: data.formId,
-            firstName: data.firstName,
-            middleName: data.middleName,
-            lastName: data.lastName,
-            suffix: data.suffix,
-            phone: data.aplPhone,
-            createdAt: utc2tz(data.createdAt),
-            finishedAt: utc2tz(data.finishedAt),
-            carrier: data.busName ?  `${data.busName}, ${data.coType}` : null,
-            carrierAlias: data.companyAlias,
-            _carrierId: data._carrierId,
-            _teamId: data._teamId,
-        }
-        if (!hideRawId) {
-            this.application.carrierId = data.carrierId
-            this.application.teamId = data.teamId
+        if (data.formId) {
+            this._appId = data._appId
+            this.application = {
+                formId: data.formId,
+                firstName: data.appFirstName,
+                middleName: data.appMiddleName,
+                lastName: data.appLastName,
+                suffix: data.appSuffix,
+                phone: data.appPhone,
+                createdAt: utc2tz(data.createdAt),
+                finishedAt: utc2tz(data.finishedAt),
+                carrier: data.busName ?  `${data.busName}, ${data.coType}` : null,
+                carrierAlias: data.companyAlias,
+                _carrierId: data._carrierId,
+                _teamId: data._teamId,
+            }
+            if (!hideRawId) {
+                this.appId = data.appId
+                this.application.carrierId = data.carrierId
+                this.application.teamId = data.teamId
+            }
         }
 
         if (single && !hideRawId) {
@@ -1672,7 +1676,7 @@ class Employment {
         enforceUser: false,
         enforceLocation: true,
         db: db.carrier,
-        query: query.driver_appemployer,
+        query: query.driver_prevemployment,
         defSorts: [ { desc: 'startedOn' } ],
     })
 
@@ -1681,18 +1685,19 @@ class Employment {
 
 
     static fetch = (session, filter = {}, { hideRawId = false, sorts = Employment.config().defSorts, mode } = {}) => {
-        const { teamId, condition } = filter
-        const match = { teamId, condition }
+        // const { teamId, condition } = filter
+        // const match = { teamId, condition }
 
         return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
             batch: [
                 {
-                    table: query.driver_appemployer.main.table,
+                    table: query.driver_prevemployment.main.table,
                     fields: [
                         'id',
-                        'appId',
+                        // 'appId',
+                        'driverId',
                         Employment.hashId(),
-                        Application.hashId('appId'),
+                        // Application.hashId('appId'),
                         'status',
                         'employer',
                         'phone',
@@ -1712,57 +1717,129 @@ class Employment {
                     ],
                 },
                 {
-                    table: query.driver_application.main.table,
+                    table: query.driver.main.table,
+                    join: [ 'driverId', 'id' ],
+                },
+                {
+                    db: db.person,
+                    table: query.person.main.table,
+                    fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
+                    join: [ 'id', 'personId', 1 ],
+                },
+                {
+                    db: db.person,
+                    table: query.person.names.table,
                     fields: [
-                        'teamId', Team.hashId('teamId'), 'carrierId', Carrier.hashId('carrierId'), 'formId',
-                        'firstName', 'middleName', 'lastName', 'suffix', ['phone', 'aplPhone'],
-                        'createdAt', 'finishedAt',
+                        [ 'firstName', 'driverFirstName' ],
+                        [ 'middleName', 'driverMiddleName' ],
+                        [ 'lastName', 'driverLastName' ],
+                        [ 'suffix', 'driverSuffix' ],
                     ],
-                    match,
-                    join: [ 'id', 'appId' ],
+                    join: [ 'personId', 'id', {
+                        table: query.person.main.table,
+                        max: 'since',
+                    } ],
                 },
-                {
-                    table: query.carrier.main.table,
-                    join: [ 'id', 'carrierId', 1 ],
-                },
-                {
-                    db: db.business,
-                    table: query.company.main.table,
-                    join: [ 'id', 'companyId', query.carrier.main.table ],
-                },
-                {
-                    db: db.business,
-                    table: query.company.names.table,
-                    fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
-                    join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
-                },
-                {
-                    db: db.online,
-                    table: query.team.main.table,
-                    join: [ 'id', 'teamId', 1 ],
-                },
+                // {
+                //     table: query.driver_application.main.table,
+                //     fields: [
+                //         'teamId', Team.hashId('teamId'), 'carrierId', Carrier.hashId('carrierId'), 'formId',
+                //         'firstName', 'middleName', 'lastName', 'suffix', ['phone', 'aplPhone'],
+                //         'createdAt', 'finishedAt',
+                //     ],
+                //     match,
+                //     join: [ 'id', 'appId' ],
+                // },
+                // {
+                //     table: query.carrier.main.table,
+                //     join: [ 'id', 'carrierId', 1 ],
+                // },
+                // {
+                //     db: db.business,
+                //     table: query.company.main.table,
+                //     join: [ 'id', 'companyId', query.carrier.main.table ],
+                // },
+                // {
+                //     db: db.business,
+                //     table: query.company.names.table,
+                //     fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
+                //     join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
+                // },
+                // {
+                //     db: db.online,
+                //     table: query.team.main.table,
+                //     join: [ 'id', 'teamId', 1 ],
+                // },
             ],
             prepare(batch, filter) {
                 const {
                     id, _id,
-                    appId, _appId, teamId, _teamId, condition,
+                    // appId, _appId, teamId, _teamId,
+                    driverId, _driverId, appId, _appId, condition,
                 } = filter
                 const single = !!id || !!_id
 
-                const match = {
-                    main: { id, appId },
-                    applications: { teamId, condition },
-                }
-                if (!id) match.main.id = Employment.matchIdHash(_id)
-                if (!appId) match.main.appId = Application.matchIdHash(_appId)
-                if (!teamId) match.applications.teamId = Team.matchIdHash(_teamId)
+                batch[0].match = { id, driverId }
+                if (!id) batch[0].match.main.id = Employment.matchIdHash(_id)
+                if (!driverId) batch[0].match.main.driverId = Driver.matchIdHash(_driverId)
 
-                batch[0].match = match.main
-                batch[1].match = match.applications
-                if (!single && !teamId && !_teamId) {
-                    const idx = batch.length - 1
-                    batch[idx].match = { scoped: [ false, null ] }
+                if (appId || _appId) {
+                    batch.push({
+                        table: query.driver_prevemployment.verifications.table,
+                        fields: [
+                            'appId', Application.hashId('appId'), 'status',
+                            'method1', 'inquiredBy1', User.hashId('inquiredBy1'), 'inquiredOn1', 'inquirer1', 'response1',
+                            'method2', 'inquiredBy2', User.hashId('inquiredBy2'), 'inquiredOn2', 'inquirer2', 'response2',
+                            'method3', 'inquiredBy3', User.hashId('inquiredBy3'), 'inquiredOn3', 'inquirer3', 'response3',
+                            'comment',
+                            //! continue with more data
+                        ],
+                        join: [ 'emplId', 'id' ],
+                        match: { appId: appId || Application.matchIdHash(_appId) },
+                    }, {
+                        table: query.driver_application.main.table,
+                        fields: [
+                            'teamId', Team.hashId('teamId'), 'carrierId', Carrier.hashId('carrierId'), 'formId',
+                            [ 'firstName', 'appFirstName' ], [ 'middleName', 'appMiddleName' ],
+                            [ 'lastName', 'appLastName' ], [ 'suffix', 'appSuffix' ],
+                            ['phone', 'appPhone'], 'createdAt', 'finishedAt',
+                        ],
+                        join: [ 'id', 'appId', query.driver_prevemployment.verifications.table ],
+                    }, {
+                        table: query.carrier.main.table,
+                        join: [ 'id', 'carrierId', query.driver_prevemployment.verifications.table ],
+                    }, {
+                        db: db.business,
+                        table: query.company.main.table,
+                        join: [ 'id', 'companyId', query.carrier.main.table ],
+                    }, {
+                        db: db.business,
+                        table: query.company.names.table,
+                        fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
+                        join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
+                    },
+                    {
+                        db: db.online,
+                        table: query.team.main.table,
+                        fields: [ [ 'name', 'teamName' ] ],
+                        join: [ 'id', 'teamId', 1 ],
+                    })
                 }
+
+                // const match = {
+                //     main: { id, appId },
+                //     applications: { teamId, condition },
+                // }
+                // if (!id) match.main.id = Employment.matchIdHash(_id)
+                // if (!appId) match.main.appId = Application.matchIdHash(_appId)
+                // if (!teamId) match.applications.teamId = Team.matchIdHash(_teamId)
+
+                // batch[0].match = match.main
+                // batch[1].match = match.applications
+                // if (!single && !teamId && !_teamId) {
+                //     const idx = batch.length - 1
+                //     batch[idx].match = { scoped: [ false, null ] }
+                // }
 
                 return { single, batch }
             },

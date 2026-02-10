@@ -92,8 +92,9 @@ export const query = {
         checklist: new Query(db.carrier, 'application_checklists'),
         decision: new Query(db.carrier, 'application_decisions'),
     },
-    driver_appemployer: {
-        main: new Query(db.carrier, 'application_employments'),
+    driver_prevemployment: {
+        main: new Query(db.carrier, 'prev_employments'),
+        verifications: new Query(db.carrier, 'application_employments'),
     },
 
     jx: {
