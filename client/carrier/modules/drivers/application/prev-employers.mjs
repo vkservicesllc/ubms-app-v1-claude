@@ -96,7 +96,7 @@ console.log(data)
                 $form.find(TS.addrCity).removeAttr('id').val(city)
                 $form.find('[name="state"]').removeAttr('id').val(state)
                 $form.find(TS.position).removeAttr('id').val(position)
-                $form.find(TS.earnings).removeAttr('id').val(earnings.toLocaleString())
+                $form.find(TS.earnings).removeAttr('id').val(earnings.toLocaleString('en-US'))
                 $form.find(TS.rfl).removeAttr('id').val(rfl)
                 $form.find(CS.fmcsr).removeAttr('id').prop('checked', !!fmcsr)
                 $form.find(CS.dotDat).removeAttr('id').prop('checked', !!dotDat)
@@ -168,7 +168,7 @@ console.log(data)
                     $amount.val(amount)
                 },
                 onBlur(amount, $amount) {
-                    amount = (+amount).toLocaleString()
+                    amount = (+amount).toLocaleString('en-US')
                     $amount.val(amount)
                 },
             })

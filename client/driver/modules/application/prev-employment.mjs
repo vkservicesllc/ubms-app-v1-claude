@@ -249,7 +249,7 @@ inputEvent(TS.earnings, {
         $amount.val(amount)
     },
     onBlur(amount, $amount) {
-        amount = (+amount).toLocaleString()
+        amount = (+amount).toLocaleString('en-US')
 
         $amount.val(amount)
         onBlur(amount, $amount)
@@ -418,7 +418,7 @@ function openUpdateForm(data) {
     $(TS.addrCity).val(address.city).addClass('is-valid')
     $(SS.addrState).val(address.state).addClass('is-valid')
     $(TS.position).val(position).addClass('is-valid')
-    $(TS.earnings).val(earnings.toLocaleString()).addClass('is-valid')
+    $(TS.earnings).val(earnings.toLocaleString('en-US')).addClass('is-valid')
     $(RS.fmcsr[fmcsr ? 'yes' : 'no']).prop('checked', true)
     $(RS.dotDat[dotDat ? 'yes' : 'no']).prop('checked', true)
     $(TS.rfl).val(rfl).addClass('is-valid')
