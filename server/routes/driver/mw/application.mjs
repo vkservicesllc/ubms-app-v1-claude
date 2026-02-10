@@ -180,7 +180,10 @@ export const applicationLogin = async (req, res, next) => {
         }
         const fields = Object.keys(placeholders)
         options = updateFormOptions(options, ApplicationForm, fields, formInstr)
-        fields.forEach(prop => options[prop].text.input.placeholder = placeholders[prop])
+        fields.forEach(prop => {
+            options[prop].text.input.placeholder = placeholders[prop]
+            options[prop].text.input.autoComplete = 'off'
+        })
 
         hbs.firstName = application.firstName
         hbs.form = new ApplicationForm(options)
