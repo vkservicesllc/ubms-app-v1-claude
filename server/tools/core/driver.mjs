@@ -1611,13 +1611,15 @@ class Application {
 
 
 class Employment {
-    constructor(data = {}, { single = true, session, hideRawId = false }) {
+    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid Employer Data')
 
         this._id = data._id
+        this._driverId = data._driverId
         // this._appId = data._appId
         if (!hideRawId) {
             this.id = data.id
+            this.driverId = data.driverId
             // this.appId = data.appId
         }
         this.status = data.status
@@ -1632,6 +1634,16 @@ class Employment {
         this.dotDat = !!data.dotDat
         this.rfl = data.rfl
         this.gapExpl = data.gapExpl
+
+        const driverParams = {
+            firstName: data.driverFirstName,
+            middleName: data.driverMiddleName,
+            lastName: data.driverLastName,
+            suffix: data.driverSuffix,
+            dob: data.dob,
+            gender: data.gender,
+        }
+        this.driver = new Person(driverParams)
 
         if (data.formId) {
             this._appId = data._appId
@@ -1656,9 +1668,9 @@ class Employment {
             }
         }
 
-        if (single && !hideRawId) {
+        if (single) {
             this.session = session
-            this.config = { hideRawId }
+            this.config = { hideRawId, hideSensitive }
 
             this.update = body => classInstance.update(this, new.target, body)
 
@@ -1792,7 +1804,7 @@ class Employment {
                             'method2', 'inquiredBy2', User.hashId('inquiredBy2'), 'inquiredOn2', 'inquirer2', 'response2',
                             'method3', 'inquiredBy3', User.hashId('inquiredBy3'), 'inquiredOn3', 'inquirer3', 'response3',
                             'comment',
-                            //! continue with more data
+                            //! continue with more data from verification
                         ],
                         join: [ 'emplId', 'id' ],
                         match: { appId: appId || Application.matchIdHash(_appId) },
