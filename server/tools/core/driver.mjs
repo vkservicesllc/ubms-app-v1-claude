@@ -237,10 +237,12 @@ class Application {
         this.formId = data.formId
         this.position = data.position
         this.condition = data.condition
+        this.rehire = !!data.rehire
+        this.step = data.step
         this.appliedAt = utc2tz(data.createdAt)
         this.appliedOn = utc2tz(data.createdAt, true)
         this.finishedAt = utc2tz(data.finishedAt)
-        this.matched = data.matched
+        //? this.matched = data.matched
 
         this.checklist = {
             dlScn: data.dlScn,
@@ -257,7 +259,6 @@ class Application {
         }
 
         this.legalStatus = [ data.legalStatus, data.legalExpiration ]
-        this.step = data.step
 
         if (data.decExperience || data.decPosition)
             this.decision = {
@@ -1162,7 +1163,8 @@ class Application {
                     'cdlRole',
                     'condition',
                     'step',
-                    'matched',
+                    'rehire',
+                    //? 'matched',
                     'createdBy',
                     'createdAt',
                     'finishedAt',
