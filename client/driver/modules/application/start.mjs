@@ -1,18 +1,25 @@
+import { selectEvent } from '/modules/events/form.mjs'
 import { idMask } from '/modules/events/imask.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { check, onInput, onAccept, onComplete, onChange, addressPredictions } from './support.mjs'
 
-const TS = selector.id.text
+const TS = selector.id.text, SS = selector.id.select
+const positionId = SS.position
 const ssnId = TS.ssn, ssnConfId = TS.ssnConf
 const ssnSelector = `${ssnId}, ${ssnConfId}`
 
-
 const $card = $('#new-apl-card')
-const $submit = $('[type="submit"]')
-const $form = $('#apl-start-form')
-const $help = $('#form-help')
+const $position = $(positionId)
+const $positionIntro = $('#position-intro, #position-desc')
+const $section = $('#application-form')
+const $label = {
+    position: $(`label[for=${positionId.replace('#', '')}]`),
+}
 const $certifyDl = $('#confirm-dl')
 const $certifyStatus = $('#confirm-status')
+const $help = $('#form-help')
+const $submit = $('[type="submit"]')
+const $form = $('#apl-start-form')
 
 
 const aplStatus = sessionStorage.getItem('aplStatus')
@@ -25,6 +32,19 @@ if (aplStatus === 'started') {
 }
 
 const duration = 750
+let positionDetermined = false
+
+const position = sessionStorage.getItem(positionId.replace('#', ''))
+
+if (position) {
+    $position.val(position).addClass('is-valid')
+    $position.find('option[value=""]').remove()
+    $positionIntro.hide()
+    $section.show()
+
+    positionDetermined = true
+} else $label.position.hide()
+
 $card.fadeIn(duration)
 
 $('#apply').click(() => {
@@ -44,6 +64,24 @@ $('#confirm').click(() => {
         sessionStorage.setItem('aplStatus', 'confirmed')
     }, duration)
 })
+
+selectEvent(positionId, { fill: true, onChange(position, $position) {
+    if (!positionDetermined) {
+        positionDetermined = true
+
+        $card.fadeOut(duration)
+        setTimeout(() => {
+            $position.find('option[value=""]').remove()
+            $positionIntro.hide()
+            $section.show()
+            $label.position.show()
+            $card.fadeIn(duration)
+        }, duration)
+    }
+
+    $position.addClass('is-valid').blur()
+    sessionStorage.setItem(positionId.replace('#', ''), position)
+} })
 
 idMask(ssnSelector, 'ssn', {
     onAccept,

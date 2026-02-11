@@ -82,10 +82,30 @@ export const applicationStart = async (req, res, next) => {
         }
         if (cdl === '1') hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
 
+        const positionList = Driver.list.position
+
         let options = {}
-        const fields = ['ssn', 'ssnConf']
-        options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr })
+        const fields = [ 'position', 'ssn', 'ssnConf' ]
+        options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tab: 8 })
+        options.position.select.label.content = 'Desired Position'
         options.ssn.text.label.content = 'Provide SSN'
+
+        const t = `\t\t\t\t\t\t\t`
+        const positionDesc = {
+            CD: 'You drive a truck that belongs to the company. The company covers the vehicle, maintenance, and insurance.',
+            OO: 'You drive your own truck under the company’s authority. You are responsible for your truck’s expenses and upkeep.',
+            OD: 'You drive a truck that belongs to an Owner-Operator (not the company). The truck owner is responsible for the vehicle.',
+            LP: 'You lease a truck from the company with the option to own it after payments are completed.',
+        }
+        hbs.positionDesc = ''
+
+        for (const position in positionList) {
+            const title = positionList[position]
+            const desc = positionDesc[position]
+
+            hbs.positionDesc += `\n${t}<dt class="text-success">${title}</dt>`
+            hbs.positionDesc += `\n${t}<dd class="text-secondary"><small>${desc}</small></dd>`
+        }
 
         hbs.form = new ApplicationForm(options)
 

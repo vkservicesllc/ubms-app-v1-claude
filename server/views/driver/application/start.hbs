@@ -7,6 +7,10 @@
         #intro, #privacy {
             font-size: .92em;
         }
+        .icon {
+            display: inline-block;
+            width: 1.2rem;
+        }
         .form-text {
             font-size: .8em;
         }
@@ -45,91 +49,112 @@
                             <li>are able to meet DOT and company safety requirements</li>
                         </ul>
                     </div>
-                    <button class="btn btn-success bg-success-subtle" id="apply">APPLY NOW</button>
-                </div>
-                <div class="card-text" id="privacy-card" style="display: none;">
-                    <div class="text-start pt-2" id="privacy">
-                        <h6 class="text-success mb-3">Privacy & Data Security Notice</h6>
-                        <div style="font-size: .92em;">
-                            <p>
-                                To proceed with the application process,
-                                we are required by the Department of Transportation to obtain your Motor Vehicle Report.
-                                To access this report, we will need your Social Security Number.
-                            </p>
-                            <p>
-                                Please rest assured that all information you submit will be securely stored,
-                                with the most sensitive data — such as Social Security numbers — being encrypted for maximum protection.
-                                We will not share your information with any third party under any circumstances, except as required by law.
-                            </p>
-                            <p>
-                                Your privacy and security are our top priorities.
-                                Our commitment is to handle your data with the highest level of confidentiality and security.
-                            </p>
-                            {{#if (ne company false)}}
-                            <p>If you have any questions about our data protection practices, please feel free to contact us at {{company.phone}}.</p>
-                            {{/if}}
-                        </div>
-                    </div>
-                    <div class="text-start pt-2" id="warning">
-                        <h6 class="text-warning mb-3">Important</h6>
+                    <div class="text-start pt-2" id="warning" style="font-size: .9em;">
                         <p class="text-danger" style="font-size: .9em;">
+                            <i class="fas fa-exclamation-triangle pe-1"></i>
                             If you've already submitted an application, please do not reapply.
                             Multiple submissions may cause delays.
                         </p>
                     </div>
+                    <button class="btn btn-success bg-success-subtle" id="apply">APPLY NOW</button>
+                </div>
+                <div class="card-text" id="privacy-card" style="display: none;">
+                    <div class="text-start pt-2" id="privacy">
+                        <h6 class="mb-3">Privacy & Data Security Notice</h6>
+                        <div style="font-size: .92em;">
+                            <p class="text-warning">
+                                <span class="icon"><i class="fas fa-fingerprint"></i></span>
+                                To proceed with the application process,
+                                we are required by the Department of Transportation to obtain your Motor Vehicle Report (MVR).
+                                To access this report, we will need your Social Security Number (SSN).
+                            </p>
+                            <p class="text-success">
+                                <span class="icon"><i class="fas fa-shield-halved"></i></span>
+                                Please rest assured that all information you submit will be securely stored,
+                                with the most sensitive data — such as Social Security numbers — being encrypted for maximum protection.
+                                We will not share your information with any third party under any circumstances, except as required by law.
+                            </p>
+                            <p class="text-success">
+                                <span class="icon"><i class="fas fa-user-shield"></i></span>
+                                Your privacy and security are our top priorities.
+                                Our commitment is to handle your data with the highest level of confidentiality and security.
+                            </p>
+                            {{#if (ne company false)}}
+                            <p class="text-secondary">If you have any questions about our data protection practices, please feel free to contact us at {{company.phone}}.</p>
+                            {{/if}}
+                        </div>
+                    </div>
                     <button class="btn btn-success bg-success-subtle" id="confirm">I Understand & Agree</button>
                 </div>
                 <div class="card-text text-start px-2" id="form-card" style="display: none;">
-                    <div class="text-start text-success pt-3" style="font-size: .92em;">
-                        <p>
-                            To begin the application process, please provide your Social Security Number (SSN).<br/>
-                            It will be used for identification purposes only.
-                        </p>
-                        <p>
-                            No background checks or employment decisions are made at this stage.
-                        </p>
-                    </div>
                     <form id="apl-start-form" action="{{{formUrl}}}" method="POST" autocomplete="off">
-                        <div class="row g-3 my-1">
-                            <div class="col-md-6">
-                                {{{form.ssn.text.label}}}
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-user-shield"></i>
-                                    </span>
-                                    {{{form.ssn.text.input}}}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                {{{form.ssnConf.text.label}}}
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-fingerprint"></i>
-                                    </span>
-                                    {{{form.ssnConf.text.input}}}
-                                </div>
+                        <p class="pt-3" id="position-intro">Please choose the position you'd like to apply for:<p>
+                        <div class="row g-3 mb-2">
+                            <div class="col-md-6 pt-0">
+                                {{{form.position.select.label}}}
+                                {{{form.position.select.input}}}
                             </div>
                         </div>
-                        <p class="form-text text-center text-danger mt-4" id="form-help" style="display: none;"></p>
-                        <div class="row g-3 my-3">
-                            <div class="col-md-12">
-                                <p>I certify under penalty of law that:</p>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="confirm-dl" required />
-                                    <label class="form-check-label input-required" for="confirm-dl">
-                                        I have a valid and genuine driver's license
-                                    </label>
+                        <dl class="pt-3" id="position-desc">{{{positionDesc}}}
+                        </dl>
+                        <div id="application-form" style="display: none;">
+                            <div class="text-start pt-3 pb-0" style="font-size: .92em;">
+                                <p class="text-warning">
+                                    To begin the application process, please provide your Social Security Number (SSN).
+                                </p>
+                                <p class="mb-2" style="font-size: .9em;">
+                                    <span class="text-success">
+                                        <i class="fas fa-fingerprint pe-1"></i> The provided SSN will be used for identification purposes only at this stage.
+                                    </span>
+                                </p>
+                                <p style="font-size: .9em;">
+                                    <span class="text-danger">
+                                        <i class="fas fa-exclamation-circle pe-1"></i>
+                                        No background checks or employment decisions will be made until the application is complete.
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="row g-3 mb-1">
+                                <div class="col-md-6">
+                                    {{{form.ssn.text.label}}}
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user-shield"></i>
+                                        </span>
+                                        {{{form.ssn.text.input}}}
+                                    </div>
                                 </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="confirm-status" required />
-                                    <label class="form-check-label input-required" for="confirm-status">
-                                        I am legally authorized to work in the United States
-                                    </label>
+                                <div class="col-md-6">
+                                    {{{form.ssnConf.text.label}}}
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-fingerprint"></i>
+                                        </span>
+                                        {{{form.ssnConf.text.input}}}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="d-grid gap-2 mt-4 mb-2">
-                            <button type="submit" class="btn btn-primary bg-primary-subtle" disabled>Start Application</button>
+                            <p class="form-text text-center text-danger mt-4" id="form-help" style="display: none;"></p>
+                            <div class="row g-3 my-3">
+                                <div class="col-md-12">
+                                    <p>I certify under penalty of law that:</p>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="confirm-dl" required />
+                                        <label class="form-check-label" for="confirm-dl">
+                                            I have a valid and genuine driver's license
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="confirm-status" required />
+                                        <label class="form-check-label" for="confirm-status">
+                                            I am legally authorized to work in the United States
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 mt-4 mb-2">
+                                <button type="submit" class="btn btn-primary bg-primary-subtle" disabled>Start Application</button>
+                            </div>
                         </div>
                     </form>
                 </div>
