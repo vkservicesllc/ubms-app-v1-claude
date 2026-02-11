@@ -1,0 +1,144 @@
+{{> head}}
+
+    <style>
+        #company-name {
+            font-weight: 500;
+        }
+        #intro, #privacy {
+            font-size: .92em;
+        }
+        .form-text {
+            font-size: .8em;
+        }
+        .input-group-text {
+            width: 45px;
+        }
+        h6 {
+            font-size: .95em;
+        }
+    </style>
+
+    <div class="d-flex justify-content-center align-items-lg-center full-height-fix">
+        <div class="card text-center" id="new-apl-card" style="display: none;">
+            <div class="card-body pt-4">
+                <h5 class="card-title text-info">Professional Driver Application</h5>
+                <div class="card-text" id="intro-card">
+                    {{#if (ne company false)}}
+                    <div class="border-top border-bottom py-2">
+                        <span id="company-name" style="font-size: 1.2em;">{{company.name}}</span><br/>
+                        {{{company.address}}}<br/>
+                        {{company.phone}}
+                    </div>
+                    {{/if}}
+                    <div class="text-start text-light pt-3" id="intro">
+                        <p>
+                            We're looking for experienced and reliable drivers to join our carrier team.
+                            If you meet the qualifications and are committed to safety, efficiency,
+                            and top-tier service, we'd love to have you on board.
+                        </p>
+                        Before you begin the application, please ensure you:
+                        <ul>
+                            <li>are at least 18 years old</li>
+                            <li>have a valid {{text.requiredDL}}</li>
+                            <li>have a clean driving record</li>
+                            <li>have required permits and credentials</li>
+                            <li>are able to meet DOT and company safety requirements</li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-success bg-success-subtle" id="apply">APPLY NOW</button>
+                </div>
+                <div class="card-text" id="privacy-card" style="display: none;">
+                    <div class="text-start pt-2" id="privacy">
+                        <h6 class="text-success mb-3">Privacy & Data Security Notice</h6>
+                        <div style="font-size: .92em;">
+                            <p>
+                                To proceed with the application process,
+                                we are required by the Department of Transportation to obtain your Motor Vehicle Report.
+                                To access this report, we will need your Social Security Number.
+                            </p>
+                            <p>
+                                Please rest assured that all information you submit will be securely stored,
+                                with the most sensitive data — such as Social Security numbers — being encrypted for maximum protection.
+                                We will not share your information with any third party under any circumstances, except as required by law.
+                            </p>
+                            <p>
+                                Your privacy and security are our top priorities.
+                                Our commitment is to handle your data with the highest level of confidentiality and security.
+                            </p>
+                            {{#if (ne company false)}}
+                            <p>If you have any questions about our data protection practices, please feel free to contact us at {{company.phone}}.</p>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div class="text-start pt-2" id="warning">
+                        <h6 class="text-warning mb-3">Important</h6>
+                        <p class="text-danger" style="font-size: .9em;">
+                            If you've already submitted an application, please do not reapply.
+                            Multiple submissions may cause delays.
+                        </p>
+                    </div>
+                    <button class="btn btn-success bg-success-subtle" id="confirm">I Understand & Agree</button>
+                </div>
+                <div class="card-text text-start px-2" id="form-card" style="display: none;">
+                    <div class="text-start text-success pt-3" style="font-size: .92em;">
+                        <p>
+                            To begin the application process, please provide your Social Security Number (SSN).<br/>
+                            It will be used for identification purposes only.
+                        </p>
+                        <p>
+                            No background checks or employment decisions are made at this stage.
+                        </p>
+                    </div>
+                    <form id="apl-start-form" action="{{{formUrl}}}" method="POST" autocomplete="off">
+                        <div class="row g-3 my-1">
+                            <div class="col-md-6">
+                                {{{form.ssn.text.label}}}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user-shield"></i>
+                                    </span>
+                                    {{{form.ssn.text.input}}}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                {{{form.ssnConf.text.label}}}
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-fingerprint"></i>
+                                    </span>
+                                    {{{form.ssnConf.text.input}}}
+                                </div>
+                            </div>
+                        </div>
+                        <p class="form-text text-center text-danger mt-4" id="form-help" style="display: none;"></p>
+                        <div class="row g-3 my-3">
+                            <div class="col-md-12">
+                                <p>I certify under penalty of law that:</p>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="confirm-dl" required />
+                                    <label class="form-check-label input-required" for="confirm-dl">
+                                        I have a valid and genuine driver's license
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="confirm-status" required />
+                                    <label class="form-check-label input-required" for="confirm-status">
+                                        I am legally authorized to work in the United States
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 mt-4 mb-2">
+                            <button type="submit" class="btn btn-primary bg-primary-subtle" disabled>Start Application</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card-footer text-secondary">
+                {{{copyright}}}
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/modules/application/start.mjs"></script>
+
+{{> foot}}

@@ -9,7 +9,7 @@ const defaults = {
 
 module.exports = {
 
-    'application.registration': {
+    'application.start': {
         external: [ ...defaults.external, 'imask', 'font-awesome', 'moment' ],
         internal: {
             css: [ ...defaults.internal.css, 'bootstrap.form', 'application' ],

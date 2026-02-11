@@ -51,7 +51,7 @@ export const applicationStart = async (req, res, next) => {
             if (!user) return respond404(res)
         }
 
-        const key = 'application.start'
+        const key = 'application.registration'
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application' })
         hbs.bodyAttrs = ' data-bs-theme="dark"'
@@ -82,10 +82,53 @@ export const applicationStart = async (req, res, next) => {
         }
         if (cdl === '1') hbs.text.requiredDL = `commercial ${hbs.text.requiredDL}`
 
+        const positionList = Driver.list.position
+
         let options = {}
-        const fields = ['ssn', 'ssnConf']
-        options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr })
-        options.ssn.text.label.content = 'Provide SSN'
+        const fields = [
+            'firstName', 'middleName', 'lastName', 'suffix',
+            'gender', 'dob', 'ssn', 'phone', 'email',
+            'address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince',
+            'statusExp', 'position',
+        ]
+        options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
+        options.position.select.label.content = 'Desired Position'
+        // options.position.select.input.data = positionList
+
+        options.phone.text.label.content = 'U.S. Phone'
+        options.addrState.select.input.options = { valOpt: true }
+        options.marital = { radio: { label: { class: formInstr.labelClassRequired } } }
+        options.status = { radio: { label: { class: formInstr.labelClassRequired } } }
+
+        for (const prop of ['single', 'married', 'divorced', 'separated', 'widowed']) {
+            options.marital.radio[prop] = { input: {}, label: {} }
+            options.marital.radio[prop].input.class = 'form-check-input status-radio'
+            options.marital.radio[prop].label.class = 'form-check-label'
+        }
+
+        for (const prop of ['citizen', 'resident', 'authorized']) {
+            options.status.radio[prop] = { input: {}, label: {} }
+            options.status.radio[prop].input.class = 'form-check-input status-radio'
+            options.status.radio[prop].label.class = 'form-check-label'
+        }
+
+        const t = `\t\t\t\t\t\t\t`
+        const positionDesc = {
+            CD: 'You drive a truck that belongs to the company. The company covers the vehicle, maintenance, and insurance.',
+            OO: 'You drive your own truck under the company’s authority. You are responsible for your truck’s expenses and upkeep.',
+            OD: 'You drive a truck that belongs to an Owner-Operator (not the company). The truck owner is responsible for the vehicle.',
+            LP: 'You lease a truck from the company with the option to own it after payments are completed.',
+        }
+        hbs.positionDesc = '' // `\n${t}<dl>`
+
+        for (const position in positionList) {
+            const title = positionList[position]
+            const desc = positionDesc[position]
+
+            hbs.positionDesc += `\n${t}<dt class="text-success">${title}</dt>`
+            hbs.positionDesc += `\n${t}<dd class="text-secondary"><small>${desc}</small></dd>`
+        }
+        // hbs.positionDesc += `\n${t}</dl>`
 
         hbs.form = new ApplicationForm(options)
 
@@ -96,7 +139,7 @@ export const applicationStart = async (req, res, next) => {
         if (_userId) hbs.formUrl += `&rec=${_userId}`
         if (formId) hbs.formUrl += `&form=${formId}`
 
-        res.render('application/start', hbs)
+        res.render('application/registration', hbs)
     } catch (err) {
         sendError.server(req, res, err)
     }

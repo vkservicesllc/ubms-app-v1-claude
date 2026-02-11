@@ -286,6 +286,10 @@ class ApplicationForm {
     })
 
 
+    static ssn = createSsnForm({ selector: appSelector, target: 'ssn' })
+    static ssn_ = createSsnForm({ selector: appSelector, target: 'ssn', required: false })
+    static ssnConf = createSsnForm({ selector: appSelector, target: 'ssnConf', name: undefined, label: 'Confirm SSN' })
+
 
     static appliedOn = createForm({
         selector: appSelector,
@@ -299,8 +303,6 @@ class ApplicationForm {
     static suffix = createPersonNameForm('suffix', { selector: appSelector, group: 'name' })
     static dob = createDobForm({ selector: appSelector, target: 'dob' })
     // static dob_ = createDobForm({ selector: appSelector, target: 'dob', required: false })
-    static ssn = createSsnForm({ selector: appSelector, target: 'ssn' })
-    static ssn_ = createSsnForm({ selector: appSelector, target: 'ssn', required: false })
     static gender = createGenderForm({ selector: appSelector, target: 'gender', group: 'gender' })
 
     static phone = createPhoneForm({ selector: appSelector, target: 'phone', required })

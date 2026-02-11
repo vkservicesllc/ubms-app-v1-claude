@@ -100,6 +100,7 @@ const selector = {
             leadLastName: 'lead-last-name',
             dob: 'dob',
             ssn: 'ssn',
+            ssnConf: 'ssn-confirmation',
             phone: 'phone',
             leadPhone: 'lead-phone',
             email: 'email',
