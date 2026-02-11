@@ -77,7 +77,7 @@ class Query {
             table = Query.#_table(table, db)
 
             if (primaryTable && join) {
-                joiner = { table: '', id: '', type: 'left' }
+                joiner = { table: '', links: [ '' ], type: 'left' }
                 const [ id, foreignId, param3 ] = join
                 let foreignTable, foreignMatch, min, max, type
 
@@ -95,7 +95,7 @@ class Query {
                     joiner.type = type
 
                 joiner.table = table
-                joiner.id = `${Query.#_table(table, false)}.${id} = ${foreignTable}.${foreignId}`
+                joiner.links[0] = `${Query.#_table(table, false)}.${id} = ${foreignTable}.${foreignId}`
 
                 if (max || min) {
                     const purpose = max || min
@@ -113,11 +113,11 @@ class Query {
                             }
                     }
 
-                    joiner.id += `\nAND ${Query.#_table(table, false)}.${field} = (`
-                    joiner.id += `\nSELECT ${func}(${subTable}.${field}) `
-                    joiner.id += `FROM ${db}.${Query.#_table(table, false)} AS ${subTable}`
-                    joiner.id += `\nWHERE ${subTable}.${id} = ${foreignTable}.${foreignId}${match}\n)`
-                    // console.log('id', joiner.id)
+                    joiner.links[0] += `\nAND ${Query.#_table(table, false)}.${field} = (`
+                    joiner.links[0] += `\nSELECT ${func}(${subTable}.${field}) `
+                    joiner.links[0] += `FROM ${db}.${Query.#_table(table, false)} AS ${subTable}`
+                    joiner.links[0] += `\nWHERE ${subTable}.${id} = ${foreignTable}.${foreignId}${match}\n)`
+                    // console.log('id', joiner.links[0])
 
                     // const purpose = max || min
                     // let field, groups = [ id ], groupMatch = '', comparison = ''
@@ -156,6 +156,23 @@ class Query {
                 else if (foreignMatch)
                     joiner.table =`(SELECT * FROM ${table}\nWHERE ${Query.#match(foreignMatch)}) AS ${Query.#_table(table, false)}`
                 // else joiner.table = table
+
+                if (Array.isArray(join[3])) {
+                    let join2 = join[3]
+                    if (!Array.isArray(join2[0])) join[2] = [ join[2] ]
+
+                    join2.map((pieces, i) => {
+                        const [ field, foreignField, param3 ] = pieces
+
+                        if (typeof param3 === 'string')
+                            foreignTable = param3
+                        else if (typeof param3 === 'number')
+                            foreignTable = tables[param3]
+                        else foreignTable = primaryTable
+
+                        joiner.links[i + 1] = `${Query.#_table(table, false)}.${field} = ${foreignTable}.${foreignField}`
+                    })
+                }
             }
 
             if (!primaryTable) primaryTable = table
@@ -176,10 +193,10 @@ class Query {
         query += columns.join(`,\n`)
         query += `\nFROM ${primaryTable}\n`
         joins.map(joiner => {
-            const { table, id, type } = joiner
-            const  join = (type ? `${type.toUpperCase()} ` : '') + 'JOIN '
+            const { table, type, links } = joiner
+            const join = (type ? `${type.toUpperCase()} ` : '') + 'JOIN '
 
-            query += `${join + table}\nON ${id}\n`
+            query += `${join + table}\nON ${links.join(`\nAND `)}\n`
         })
         if (matches.length) query += `WHERE ${matches.join(`\nAND `)}\n`
         if (grouper) query += `GROUP BY ${Query.#_field(grouper)}\n`

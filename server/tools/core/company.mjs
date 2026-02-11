@@ -508,7 +508,7 @@ class Owner extends Individual {
             {
                 db: db.person,
                 table: query.person.names.table,
-                fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
+                fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix' ],
                 join: [ 'personId', 'id', {
                     table: 'individuals',
                     max: 'since',

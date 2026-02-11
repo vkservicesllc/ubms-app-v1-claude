@@ -4,10 +4,12 @@ import { calculateYearAge } from '../utils/date.mjs'
 
 class Person {
     constructor(data) {
+        if (!data.firstName || !data.lastName) throw new Error('Person Constructor Error: Invalid data supplied')
+
         this.prefix = data.prefix || data.pfx || null
-        this.firstName = data.firstName || data.fname || null
+        this.firstName = data.firstName || data.fname
         this.middleName = data.middleName || data.mname || null
-        this.lastName = data.lastName || data.lname || null
+        this.lastName = data.lastName || data.lname
         this.suffix = data.suffix || data.sfx || null
         this.alias = data.alias || null
         this.dob = data.dob || null
