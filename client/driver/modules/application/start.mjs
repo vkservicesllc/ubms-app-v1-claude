@@ -34,6 +34,19 @@ if (aplStatus === 'started') {
 const duration = 750
 let positionDetermined = false
 
+const params = new URLSearchParams(window.location.search)
+if (params.has('form')) {
+    const formId = params.get('form')
+
+    const response = $.ajax(`/api/resource/drivers/applications/${formId}`, {
+        async: false,
+        error(err) { console.error(err.responseJSON) },
+    }).responseJSON
+
+    const { position } = response.data
+    if (position) sessionStorage.setItem(positionId.replace('#', ''), position)
+}
+
 const position = sessionStorage.getItem(positionId.replace('#', ''))
 
 if (position) {
@@ -123,7 +136,7 @@ $certifyStatus.on('change', function() {
 $form.submit(function(evt) {
     evt.preventDefault()
 
-    const valid = $('input[required]').filter('.is-invalid').length === 0
+    const valid = $('input[required]').filter('.is-invalid').length === 0 && $(ssnId).val() === $(ssnConfId).val()
     if (!valid) return
 
     $submit

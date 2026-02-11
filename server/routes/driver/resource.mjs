@@ -86,7 +86,27 @@ const dynamicValidator = {
 // ==== ROUTES ==== //
 
 
-router.post('/application/start/:_teamId/:_carrierId?', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
+router.post('/application/start/:_teamId/:_carrierId?', [ ApplicationForm.position.validate(), ApplicationForm.ssn.validate() ], validationCheck, async (req, res) => {
+    try {
+        const { position, ssn } = req.body
+
+        let { form: formId } = req.query
+        const person = await Individual.fetch(res.session, { ssn }, { hideSensitive: false })
+console.log(person)
+return res.send(person)
+        let personId, application
+
+        if (formId) {
+            application = await Application.fetch(res.session, { formId })
+            if (!application) throw new Error('Application not found')
+        }
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/OLD/application/start/:_teamId/:_carrierId?', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
 // return res.send(req.body)
     try {
         let { form: formId } = req.query

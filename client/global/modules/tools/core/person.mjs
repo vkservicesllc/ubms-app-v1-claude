@@ -1,16 +1,13 @@
 import { calculateYearAge } from '../utils/date.mjs'
-import { formSelect } from '../utils/html/form.mjs'
 
 
 
 class Person {
     constructor(data) {
-        if (!data?.firstName || !data?.lastName) throw new Error('Invalid Person Data')
-
         this.prefix = data.prefix || data.pfx || null
-        this.firstName = data.firstName || data.fname
+        this.firstName = data.firstName || data.fname || null
         this.middleName = data.middleName || data.mname || null
-        this.lastName = data.lastName || data.lname
+        this.lastName = data.lastName || data.lname || null
         this.suffix = data.suffix || data.sfx || null
         this.alias = data.alias || null
         this.dob = data.dob || null
