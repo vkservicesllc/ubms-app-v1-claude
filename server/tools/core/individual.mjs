@@ -141,11 +141,11 @@ class Individual extends Person {
     })
 
 
-    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Individual.config().defSorts, mode = 'data' } = {}) => {
+    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Individual.config().defSorts, limit, mode = 'data' } = {}) => {
         const join = [ 'personId', 'id', { max: 'since' } ]
 
         return classStatic.fetch(this, session, filter, {
-            hideRawId, hideSensitive, sorts, mode,
+            hideRawId, hideSensitive, sorts, limit, mode,
         }, {
             removeFullGroupBy: true,
             batch: [

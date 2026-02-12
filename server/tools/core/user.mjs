@@ -478,7 +478,7 @@ class User extends Person {
 
 
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
-        { hideRawId = false, hideSensitive = true, combined = false, offline = false, auth = false, hideEvents = true, sorts = User.config().defSorts, mode } = {}
+        { hideRawId = false, hideSensitive = true, combined = false, offline = false, auth = false, hideEvents = true, sorts = User.config().defSorts, limit, mode } = {}
     ) => {
         if (!offline) {
             if (!sessionUser?.id) throw new Error('User Static Method Error [FETCH]: Session user not supplied')
@@ -487,7 +487,7 @@ class User extends Person {
 
         const join = [ 'userId', 'id' ]
 
-        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, mode }, {
+        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, limit, mode }, {
             removeFullGroupBy: true,
             batch: [
                 {
@@ -1078,8 +1078,8 @@ class Role {
     })
 
 
-    static fetch = (session, filter, { hideRawId = false, sorts = Role.config().defSorts, mode } = {}) => classStatic.fetch(this, session, filter, {
-        hideRawId, sorts, mode,
+    static fetch = (session, filter, { hideRawId = false, sorts = Role.config().defSorts, limit, mode } = {}) => classStatic.fetch(this, session, filter, {
+        hideRawId, sorts, limit, mode,
     }, {
         batch: [
             {

@@ -103,8 +103,8 @@ class Carrier extends Company {
 
 
     static fetch = (session, filter,
-        { hideRawId = false, hideSensitive = true, sorts = Company.config().defSorts, mode } = {}
-    ) => classStatic.fetch(this, session, filter, { hideRawId, hideSensitive, sorts, mode }, {
+        { hideRawId = false, hideSensitive = true, sorts = Company.config().defSorts, limit, mode } = {}
+    ) => classStatic.fetch(this, session, filter, { hideRawId, hideSensitive, sorts, limit, mode }, {
         async prepare(batch, filter) {
             batch = await Company.fetch(session, {}, { mode: 'batch' })
 

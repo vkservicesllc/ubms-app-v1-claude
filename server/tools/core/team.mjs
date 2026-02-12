@@ -128,11 +128,11 @@ class Team {
     }
 
 
-    static fetch = (session, filter, { hideRawId = false, offline = false, sorts = Team.config().defSorts, mode } = {}) => {
+    static fetch = (session, filter, { hideRawId = false, offline = false, sorts = Team.config().defSorts, limit, mode } = {}) => {
         if (!offline && !session?.user?.id) throw new Error('Team Static Method Error [FETCH]: Session user not supplied')
         const join = [ 'teamId', 'id' ]
 
-        return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
+        return classStatic.fetch(this, session, filter, { hideRawId, sorts, limit, mode }, {
             batch: [
                 {
                     table: query.team.main.table,

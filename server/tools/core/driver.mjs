@@ -89,14 +89,14 @@ class Driver extends Individual {
 
 
     static fetch = (session, filter,
-        { hideRawId = false, sorts = Driver.config().defSorts, mode } = {}
+        { hideRawId = false, sorts = Driver.config().defSorts, limit, mode } = {}
     ) => {
         const join = [ 'personId', 'id', {
             table: query.person.main.table,
             max: 'since',
         } ]
 
-        return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
+        return classStatic.fetch(this, session, filter, { hideRawId, sorts, limit, mode }, {
             batch: [
                 {
                     table: query.driver.main.table,
@@ -453,6 +453,11 @@ class Application {
         this.expansion = {
             position: this.position ? Driver.list.position[this.position] : null,
             gender: person?.expansion?.gender || null,
+        }
+
+        this.signature = {
+            applicant: data.applicant_,
+            recruiter: data.recruiter_,
         }
 
         if (single) {
@@ -1151,8 +1156,8 @@ class Application {
 
 
     static fetch = (session, filter,
-        { hideRawId = false, hideSensitive = true, sorts = Application.config().defSorts, mode } = {}
-    ) => classStatic.fetch(this, session, filter, { hideRawId, hideSensitive, sorts, mode }, {
+        { hideRawId = false, hideSensitive = true, sorts = Application.config().defSorts, limit, mode } = {}
+    ) => classStatic.fetch(this, session, filter, { hideRawId, hideSensitive, sorts, limit, mode }, {
         batch: [
             {
                 table: query.driver_application.main.table,
@@ -1195,6 +1200,8 @@ class Application {
                     'cdlSchool',
                     'prevEmployed',
                     'activeBusiness',
+                    'applicant_',
+                    'recruiter_',
                 ],
             },
             {
@@ -1281,11 +1288,7 @@ class Application {
                     [ 'endorsement', 'dlEndors' ],
                     [ 'restriction', 'dlRestr' ],
                 ],
-                join: [ 'personId', 'personId', 2, [
-                    [ 'state', 'dlState', 3 ],
-                    [ 'issuedOn', 'dlSince', 3 ],
-                    [ 'expiresOn', 'dlUntil', 3 ],
-                ] ],
+                join: [ 'personId', 'personId', 2, [ 'id', 'dlId', 3 ] ],
             },
             {
                 table: query.driver.mecs.table,
@@ -1747,11 +1750,11 @@ class Employment {
     static create = (session, body, params) => classStatic.create(this, session, body, params)
 
 
-    static fetch = (session, filter = {}, { hideRawId = false, sorts = Employment.config().defSorts, mode } = {}) => {
+    static fetch = (session, filter = {}, { hideRawId = false, sorts = Employment.config().defSorts, limit, mode } = {}) => {
         // const { teamId, condition } = filter
         // const match = { teamId, condition }
 
-        return classStatic.fetch(this, session, filter, { hideRawId, sorts, mode }, {
+        return classStatic.fetch(this, session, filter, { hideRawId, sorts, limit, mode }, {
             batch: [
                 {
                     table: query.driver_employment.main.table,

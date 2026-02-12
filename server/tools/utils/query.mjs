@@ -201,7 +201,7 @@ class Query {
         if (matches.length) query += `WHERE ${matches.join(`\nAND `)}\n`
         if (grouper) query += `GROUP BY ${Query.#_field(grouper)}\n`
         if (sorts.length) query += `ORDER BY ${sorts.join(', ')}\n` //! UNTESTED
-        if (limit) query += `LIMIT ${limit}\n`
+        if (limit) query += `LIMIT ${Array.isArray(limit) ? limit.join(', ') : limit}\n`
 
         return query
     }
@@ -223,7 +223,7 @@ class Query {
         if (match) query += `WHERE ${match}\n`
         if (group) query += `GROUP BY ${Query.#_field(group)}\n`
         if (sort) query += `ORDER BY ${Query.#sort(sort)}\n`
-        if (limit) query += `LIMIT ${limit}\n`
+        if (limit) query += `LIMIT ${Array.isArray(limit) ? limit.join(', ') : limit}\n`
 
         return query
     }

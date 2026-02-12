@@ -176,11 +176,11 @@ class Company {
 
 
     static fetch = ({ user: sessionUser = {}, branch, siteId = null }, filter,
-        { hideRawId = false, hideSensitive = true, sorts = Company.config().defSorts, mode } = {}
+        { hideRawId = false, hideSensitive = true, sorts = Company.config().defSorts, limit, mode } = {}
     ) => {
         const join = [ 'companyId', 'id', { max: 'since' } ]
 
-        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, mode }, {
+        return classStatic.fetch(this, { user: sessionUser, branch, siteId }, filter, { hideRawId, hideSensitive, sorts, limit, mode }, {
             batch: [
                 {
                     table: query.company.main.table,
@@ -489,8 +489,8 @@ class Owner extends Individual {
     }
 
 
-    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Owner.config().defSorts, mode } = {}) => classStatic.fetch(this, session, filter, {
-        hideRawId, hideSensitive, sorts, mode,
+    static fetch = (session, filter, { hideRawId = false, hideSensitive = true, sorts = Owner.config().defSorts, limit, mode } = {}) => classStatic.fetch(this, session, filter, {
+        hideRawId, hideSensitive, sorts, limit, mode,
     }, {
         removeFullGroupBy: true,
         batch: [

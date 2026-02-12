@@ -118,6 +118,8 @@ export const classInstance = {
 
         //* One-to-Many
 
+        //! NEED TO THINK THROUGH STATIC SELECT WITH JOINS
+
         const { query, childSort = {}, childIdHash = {}, childExclude = {} } = config
 
         const options = {
@@ -380,7 +382,7 @@ export const classStatic = {
 
 
     fetch: async (Cls, { user: sessionUser = {}, branch, siteId = null } = {}, filter = {},
-        { hideRawId = false, hideSensitive = true, sorts, mode = 'data' } = {},
+        { hideRawId = false, hideSensitive = true, sorts, limit, mode = 'data' } = {},
         { batch = [], prepare, removeFullGroupBy = false } = {}
     ) => {
         const { enforceUser = true, db } = Cls.config()
@@ -394,7 +396,7 @@ export const classStatic = {
 
         if (mode === 'batch') return batch
 
-        const queryStr = Query.select(db, batch)
+        const queryStr = Query.select(db, batch, limit)
         if (mode === 'query') return queryStr
 
         if (removeFullGroupBy) await mysql.query(sqlMode.onlyFullGroupBy.remove)
