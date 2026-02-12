@@ -46,17 +46,18 @@ class Query {
 
     static select(primaryDb, batch, limit) {
         if (!Array.isArray(batch)) {
-            const { table, fields, match, sort, group } = batch
+            const { table, fields, match, search, sort, group } = batch
             let { limit: setLimit } = batch
             if (setLimit) limit = setLimit
 
-            return new Query(primaryDb, table).select(fields, { match, sort, group, limit })
+            return new Query(primaryDb, table).select(fields, { match, search, sort, group, limit })
         }
 
         const databases = []
         const tables = []
         const joins = []
         const matches = []
+        let searches = []
         const sorts = []
 
         let grouper
@@ -64,7 +65,7 @@ class Query {
         let primaryTable
 
         for (const cluster of batch) {
-            let { db, table, fields, match, sort, group } = cluster
+            let { db, table, fields, match, search, sort, group } = cluster
             const { join } = cluster
 
             let joiner
@@ -178,6 +179,7 @@ class Query {
             if (!primaryTable) primaryTable = table
 
             match = Query.#match(match, table)
+
             if (sort) sort = Query.#sort(sort, table) //! UNTESTED
 
             databases.push(db)
@@ -185,6 +187,10 @@ class Query {
             columns = [ ...columns, ...fields ]
             if (joiner) joins.push(joiner)
             if (match) matches.push(match)
+            if (Array.isArray(search)) {
+                const [ searchStr, searchFields ] = search
+                searches = search.concat(Query.#search(searchStr, searchFields, table)) //! UNTESTED
+            }
             if (sort) sorts.push(sort) //! UNTESTED
             if (!grouper && group) grouper = Query.#field(group, table)
         }
@@ -199,6 +205,8 @@ class Query {
             query += `${join + table}\nON ${links.join(`\nAND `)}\n`
         })
         if (matches.length) query += `WHERE ${matches.join(`\nAND `)}\n`
+        if (searches.length)
+            query += (matches.length ? 'AND ' : 'WHERE ') + `(${searches.join(' OR ')})`
         if (grouper) query += `GROUP BY ${Query.#_field(grouper)}\n`
         if (sorts.length) query += `ORDER BY ${sorts.join(', ')}\n` //! UNTESTED
         if (limit) query += `LIMIT ${Array.isArray(limit) ? limit.join(', ') : limit}\n`
@@ -209,7 +217,7 @@ class Query {
 
     select(fields, filter = {}) {
         const table = Query.#_table(this.table, this.db)
-        let { match, group, sort, limit } = filter
+        let { match, search = [], group, sort, limit } = filter
 
         if (!Array.isArray(fields)) fields = [ fields ]
         fields = fields.map(field => field = Query.#field(field))
@@ -220,7 +228,13 @@ class Query {
 
         match = Query.#match(match)
 
+        let searchChunks = []
+        const [ searchStr, searchFields ] = search
+        if (searchStr) searchChunks = Query.#search(searchStr, searchFields)
+
         if (match) query += `WHERE ${match}\n`
+        if (searchChunks.length)
+            query += (match ? 'AND ' : 'WHERE ') + `(${searchChunks.join(' OR ')})` //! UNTESTED
         if (group) query += `GROUP BY ${Query.#_field(group)}\n`
         if (sort) query += `ORDER BY ${Query.#sort(sort)}\n`
         if (limit) query += `LIMIT ${Array.isArray(limit) ? limit.join(', ') : limit}\n`
@@ -692,6 +706,19 @@ class Query {
             return [ `IN (${values.join(', ')})`, operator, extension ]
         }
 
+    }
+
+    static #search(searchStr, fields = [], table) {
+        const chunks = []
+        if (table) table = Query.#_table(table, false)
+        searchStr = searchStr.replace(/'/g, "''")
+
+        fields.map(field => {
+            field = Query.#_field(field, table)
+            chunks.push(`${field} LIKE '%${searchStr}%'`)
+        })
+
+        return chunks
     }
 
 

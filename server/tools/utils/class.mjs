@@ -120,7 +120,11 @@ export const classInstance = {
 
         //! NEED TO THINK THROUGH STATIC SELECT WITH JOINS
 
-        const { query, childSort = {}, childIdHash = {}, childExclude = {} } = config
+        const { query, childBatch = {}, childSort = {}, childIdHash = {}, childExclude = {} } = config
+
+        if (childBatch[target]) {
+            //! figure out
+        }
 
         const options = {
             match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },

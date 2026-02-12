@@ -219,6 +219,18 @@ class Driver extends Individual {
     }
 
 
+    static count = async (session, filter = {}) => {
+        if (!session?.user?.id) return 0
+
+        const { teamId, _teamId, blackListed } = filter
+        const match = { teamId, blackListed }
+        if (!teamId) match.teamId = Team.matchIdHash(_teamId)
+
+        const [ rows ] = await mysql.execute(query.driver.main.count(match))
+        return rows[0].count
+    }
+
+
     static list = {
 
         position: {
@@ -448,6 +460,41 @@ class Application {
                 phone: data.emergPhone,
                 name: data.emergName,
                 relation: data.emergRelation,
+            }
+
+        if (data.coAlias)
+            this.carrier = {
+                name: `${data.coBusName}, ${data.coCoType}`,
+                alias: data.coAlias,
+                address: new Address({
+                    address1: data.coAddress1,
+                    address2: data.coAddress2,
+                    city: data.coCity,
+                    state: data.coState,
+                    zip: data.coZip,
+                }),
+                phone: data.coPhone,
+                fax: data.coFax,
+            }
+
+        if (data.userAlias) {
+            const user = new Person({
+                firstName: data.userFirstName,
+                lastName: data.userLastName,
+                alias: data.userAlias,
+            })
+            this.user = {
+                name: user.fullName('AL'),
+                shortName: user.fullName('Al'),
+                condition: data.userCondition,
+                location: data.userLocation,
+                deleted: !!data.userDeletedAt,
+            }
+        }
+
+        if (data.teamName)
+            this.team = {
+                name: data.teamName,
             }
 
         this.expansion = {
@@ -1395,52 +1442,90 @@ class Application {
                 ],
                 join: [ 'appId', 'id' ],
             },
-            // {
-            //     table: query.carrier.main.table,
-            //     join: [ 'id', 'carrierId' ],
-            // },
-            // {
-            //     db: db.business,
-            //     table: query.company.main.table,
-            //     join: [ 'id', 'companyId', query.carrier.main.table ],
-            // },
-            // {
-            //     db: db.business,
-            //     table: query.company.names.table,
-            //     fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
-            //     join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
-            // },
-            // {
-            //     db: db.online,
-            //     table: query.user.main.table,
-            //     fields: [
-            //         [ 'firstName', 'userFirstName' ],
-            //         [ 'lastName', 'userLastName' ],
-            //         [ 'alias', 'userAlias' ],
-            //         [ 'condition', 'userCondition' ],
-            //         [ 'location', 'userLocation' ],
-            //         [ 'deletedAt', 'userDeletedAt' ],
-            //     ],
-            //     join: [ 'id', 'userId' ],
-            // },
-            // {
-            //     db: db.online,
-            //     table: query.team.main.table,
-            //     fields: [ [ 'name', 'teamName' ] ],
-            //     join: [ 'id', 'teamId' ],
-            // },
+            {
+                table: query.carrier.main.table,
+                join: [ 'id', 'carrierId' ],
+            },
+            {
+                db: db.business,
+                table: query.company.main.table,
+                join: [ 'id', 'companyId', query.carrier.main.table ],
+            },
+            {
+                db: db.business,
+                table: query.company.names.table,
+                fields: [
+                    [ 'busName', 'coBusName' ],
+                    [ 'coType', 'coCoType' ],
+                    [ 'alias', 'coAlias' ],
+                ],
+                join: [ 'companyId', 'id', query.company.main.table, [ 'since', 'coNameSince', 3 ] ],
+            },
+            {
+                db: db.business,
+                table: query.company.addresses.table,
+                fields: [
+                    [ 'placeId', 'coPlaceId' ],
+                    [ 'address1', 'coAddress1' ],
+                    [ 'address2', 'coAddress2' ],
+                    [ 'city', 'coCity' ],
+                    [ 'state', 'coState' ],
+                    [ 'zip', 'coZip' ],
+                ],
+                join: [ 'companyId', 'id', query.company.main.table, [ 'since', 'coAddrSince', 3 ] ],
+            },
+            {
+                db: db.business,
+                table: query.company.phones.table,
+                fields: [ [ 'phone', 'coPhone' ] ],
+                join: [ 'companyId', 'id', query.company.main.table, [ 'since', 'coPhoneSince', 3 ] ],
+            },
+            {
+                db: db.business,
+                table: query.company.faxes.table,
+                fields: [ [ 'fax', 'coFax' ] ],
+                join: [ 'companyId', 'id', query.company.main.table, [ 'since', 'coFaxSince', 3 ] ],
+            },
+            {
+                db: db.online,
+                table: query.user.main.table,
+                fields: [
+                    [ 'firstName', 'userFirstName' ],
+                    [ 'lastName', 'userLastName' ],
+                    [ 'alias', 'userAlias' ],
+                    [ 'condition', 'userCondition' ],
+                    [ 'location', 'userLocation' ],
+                    [ 'deletedAt', 'userDeletedAt' ],
+                ],
+                join: [ 'id', 'userId' ],
+            },
+            {
+                db: db.online,
+                table: query.team.main.table,
+                fields: [ [ 'name', 'teamName' ] ],
+                join: [ 'id', 'teamId' ],
+            },
         ],
         prepare(batch, filter) {
             const {
                 id, _id, formId,
-                driverId, _driverId, teamId, _teamId,
+                driverId, _driverId, teamId, _teamId, userId, _userId, carrierId, _carrierId,
+                cdlRole, position, condition, rehire, archived,
             } = filter
             const single = !!id || !!_id || !!formId
 
-            const match = { id, formId, driverId, teamId }
+            const match = {
+                id, formId, driverId, teamId, userId, carrierId,
+                cdlRole, position, condition, rehire,
+            }
             if (!id) match.id = Application.matchIdHash(_id)
             if (!driverId) match.driverId = Driver.matchIdHash(_driverId)
             if (!teamId) match.teamId = Team.matchIdHash(_teamId)
+            if (!userId) match.userId = User.matchIdHash(_userId)
+            if (!carrierId) match.carrierId = Carrier.matchIdHash(_carrierId)
+            if (typeof archived === 'boolean') {
+                match.archivedAt = archived ? { not: null } : null
+            }
 
             batch[0].match = match
             if (!single && !teamId && !_teamId) {
@@ -1451,6 +1536,22 @@ class Application {
             return { single, batch }
         },
     })
+
+
+    static count = async (session, filter = {}) => {
+        if (!session?.user?.id) return 0
+
+        const { driverId, _driverId, teamId, _teamId, cdlRole, position, condition, rehire, archived } = filter
+        const match = { driverId, teamId, cdlRole, position, condition, rehire }
+        if (!driverId) match.driverId = Driver.matchIdHash(_driverId)
+        if (!teamId) match.teamId = Team.matchIdHash(_teamId)
+        if (typeof archived === 'boolean') {
+            match.archivedAt = archived ? { not: null } : null
+        }
+
+        const [ rows ] = await mysql.execute(query.driver_application.main.count(match))
+        return rows[0].count
+    }
 
 
     static assigned = async session => {
