@@ -160,7 +160,7 @@ class Query {
 
                 if (Array.isArray(join[3])) {
                     let join2 = join[3]
-                    if (!Array.isArray(join2[0])) join[2] = [ join[2] ]
+                    if (!Array.isArray(join2[0])) join2 = [ join2 ]
 
                     join2.map((pieces, i) => {
                         const [ field, foreignField, param3 ] = pieces
@@ -189,8 +189,9 @@ class Query {
             if (match) matches.push(match)
             if (Array.isArray(search)) {
                 const [ searchStr, searchFields ] = search
+
                 if (searchStr)
-                    searches = search.concat(Query.#search(searchStr, searchFields, table)) //! UNTESTED
+                    searches = searches.concat(Query.#search(searchStr, searchFields, table)) //! UNTESTED
             }
             if (sort) sorts.push(sort) //! UNTESTED
             if (!grouper && group) grouper = Query.#field(group, table)
@@ -207,7 +208,7 @@ class Query {
         })
         if (matches.length) query += `WHERE ${matches.join(`\nAND `)}\n`
         if (searches.length)
-            query += (matches.length ? 'AND ' : 'WHERE ') + `(${searches.join(' OR ')})`
+            query += (matches.length ? 'AND ' : 'WHERE ') + `(${searches.join(' OR ')})\n`
         if (grouper) query += `GROUP BY ${Query.#_field(grouper)}\n`
         if (sorts.length) query += `ORDER BY ${sorts.join(', ')}\n` //! UNTESTED
         if (limit) query += `LIMIT ${Array.isArray(limit) ? limit.join(', ') : limit}\n`
@@ -235,7 +236,7 @@ class Query {
 
         if (match) query += `WHERE ${match}\n`
         if (searchChunks.length)
-            query += (match ? 'AND ' : 'WHERE ') + `(${searchChunks.join(' OR ')})` //! UNTESTED
+            query += (match ? 'AND ' : 'WHERE ') + `(${searchChunks.join(' OR ')})\n` //! UNTESTED
         if (group) query += `GROUP BY ${Query.#_field(group)}\n`
         if (sort) query += `ORDER BY ${Query.#sort(sort)}\n`
         if (limit) query += `LIMIT ${Array.isArray(limit) ? limit.join(', ') : limit}\n`

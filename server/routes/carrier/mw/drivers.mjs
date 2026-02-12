@@ -10,6 +10,8 @@ import Individual from '../../../tools/core/individual.mjs'
 import Query from '../../../tools/utils/query.mjs'
 import { utc2tz } from '../../../tools/utils/date.mjs'
 
+const sendError = require('../../../tools/utils/error')
+
 
 
 export const dtDriverList = async (req, res) => {
@@ -37,7 +39,7 @@ export const dtApplicationList = async (req, res) => {
 
         //* Params and Filters
 
-        const { draw, start, length, columns, search, filter = {} } = req.body
+        const { draw, start, length, search, filter = {} } = req.body
         let { archived } = req.query
         archived = archived === 'true'
         //* As of Archived it is never unfiltered

@@ -1228,7 +1228,6 @@ class Application {
                     'createdAt',
                     'finishedAt',
                     'reviewedAt',
-                    'addrSince',
                     'dlDenied',
                     'dlDeniedExpl',
                     'dlRevoked',
@@ -1280,6 +1279,7 @@ class Application {
             {
                 table: query.driver.appDef.table,
                 fields: [ 'prevCountry', 'expDate' ],
+                join: [ 'driverId', 'driverId' ],
             },
             {
                 db: db.person,
@@ -1329,7 +1329,7 @@ class Application {
             },
             {
                 db: db.person,
-                table: query.person.identifications.name,
+                table: query.person.identifications.table,
                 fields: [
                     [ 'commercial', 'dlCommercial' ],
                     [ 'number', 'dlNumber' ],
