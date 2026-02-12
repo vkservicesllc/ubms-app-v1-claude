@@ -83,17 +83,20 @@ export const query = {
     driver_application: {
         main: new Query(db.carrier, 'applications'),
         lead: new Query(db.carrier, 'pre_applications'),
+        matcher: new Query(db.carrier, 'application_matchers'),
         addresses: new Query(db.carrier, 'application_addresses'),  //* 1-to-many
+        citations: new Query(db.carrier, 'application_citations'),  //* 1-to-many
+        accidents: new Query(db.carrier, 'application_accidents'),  //* 1-to-many
         // license: new Query(db.carrier, 'application_DLs'),
         // medical: new Query(db.carrier, 'application_MECs'),
-        // experience: new Query(db.carrier, 'application_experiences'),
-        // preference: new Query(db.carrier, 'application_preferences'),
-        // business: new Query(db.carrier, 'application_businesses'),
-        // vehicle: new Query(db.carrier, 'application_vehicles'),
-        // beneficiary: new Query(db.carrier, 'application_beneficiaries'),
-        // emergency: new Query(db.carrier, 'application_emergencies'),
-        // checklist: new Query(db.carrier, 'application_checklists'),
-        // decision: new Query(db.carrier, 'application_decisions'),
+        experience: new Query(db.carrier, 'application_experiences'),
+        preference: new Query(db.carrier, 'application_preferences'),
+        business: new Query(db.carrier, 'application_businesses'),
+        vehicle: new Query(db.carrier, 'application_vehicles'),
+        beneficiary: new Query(db.carrier, 'application_beneficiaries'),
+        emergency: new Query(db.carrier, 'application_emergencies'),
+        checklist: new Query(db.carrier, 'application_checklists'),
+        decision: new Query(db.carrier, 'application_decisions'),
     },
     driver_employment: {
         main: new Query(db.carrier, 'prev_employments'),

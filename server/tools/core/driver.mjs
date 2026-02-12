@@ -285,19 +285,38 @@ class Application {
         this.reviewedAt = utc2tz(data.reviewedAt)
         this.reviewedOn = utc2tz(data.reviewedAt, true)
 
+        this.prefix = data.prefix
+        this.firstName = data.firstName
+        this.middleName = data.middleName
+        this.lastName = data.lastName
+        this.suffix = data.suffix
+        this.dob = data.dob
+        this.gender = data.gender
+        if (!hideSensitive) this.ssn = stringifyBuffer(data.ssn)
+
+        const person = data.firstName && data.lastName ? new Person(data) : null
+        this.name = person ? person.fullName() : null
+        this.fullName = person ? person.fullName('FMLs') : null
+
         this.checklist = {
-            // dlScn: data.dlScn,
-            // dlScnId: data.dlScnId,
-            // dlVrfId: data.dlVrfId,
-            // mecScn: data.mecScn,
-            // mecScnId: data.mecScnId,
-            // mecVrfId: data.mecVrfId,
-            // docScn: data.docScn,
-            // docScnId: data.docScnId,
-            // docVrfId: data.docVrfId,
-            // mvrUplId: data.mvrUplId,
-            // pspUplId: data.pspUplId,
+            dlScn: data.dlScn,
+            dlScnId: data.dlScnId,
+            dlVrfId: data.dlVrfId,
+            mecScn: data.mecScn,
+            mecScnId: data.mecScnId,
+            mecVrfId: data.mecVrfId,
+            docScn: data.docScn,
+            docScnId: data.docScnId,
+            docVrfId: data.docVrfId,
+            mvrUplId: data.mvrUplId,
+            pspUplId: data.pspUplId,
         }
+
+        if (data.decExperience || data.decPosition)
+            this.decision = {
+                experience: data.decExperience,
+                position: data.decPosition,
+            }
 
         this.legalStatus = [ data.legalStatus, data.legalExpiration ]
         this.marital = data.marital
@@ -350,7 +369,91 @@ class Application {
         this.accidents = bool(data.accidents)
 
         this.experience = bool(data.experience)
-        //! NOT FINISHED
+        if (this.experience)
+            this.experience = {
+                cmv: bool(data.cmvExp),
+                vehicles: data.expVehicles,
+                firstDate: data.expDate,
+                lastDate: data.expLastDate,
+                mileage: data.expMileage,
+                hours: data.expHours,
+            }
+
+        this.cdlSchool = bool(data.cdlSchool)
+        if (this.cdlSchool)
+            this.cdlSchool = {
+                name: data.schName,
+                phone: data.schPhone,
+                state: data.schState,
+                endDate: data.schEndDate,
+                duration: data.schDuration,
+            }
+
+        this.prevEmployed = bool(data.prevEmployed)
+
+        if (data.startPref !== null) {
+            this.preference = {
+                startPref: data.startPref.toString(),
+                operType: data.operType,
+            }
+
+            if (this.cdlRole) {
+                this.preference.teamName = data.partnerName
+                this.preference.teamPhone = data.partnerPhone
+                this.preference.haulRegion = data.haulRegion
+                this.preference.equipmentType = data.equipmentType
+            }
+
+            this.preference.expansion = {
+                operType: { s: 'Solo', t: 'Team' }[data.operType],
+            }
+        }
+
+        this.activeBusiness = bool(data.activeBusiness)
+        if (this.activeBusiness) {
+            this.business = {
+                busName: data.ownBusName,
+                state: data.busState,
+            }
+            if (!hideSensitive) this.business.ein = stringifyBuffer(data.busEin)
+        }
+
+        if (data.vhlType || data.vhlMmt)
+            this.vehicle = {
+                mmt: data.vhlMmt,
+                make: data.vhlMake,
+                model: data.vhlModel,
+                year: data.vhlYear,
+                type: data.vhlType,
+                length: data.vhlLength,
+            }
+
+        if (data.benefRelation) {
+            let { benefRelation: relation, benefOtherRel: otherRel } = data
+
+            this.beneficiary = {
+                firstName: data.benefFirstName,
+                middleName: data.benefMiddleName,
+                lastName: data.benefLastName,
+                suffix: data.benefSuffix,
+                relation: relation,
+                otherRel: otherRel,
+                phone: data.benefPhone,
+            }
+            if (!hideSensitive) this.beneficiary.ssn = stringifyBuffer(data.benefSsn)
+        }
+
+        if (data.emergPhone)
+            this.emergency = {
+                phone: data.emergPhone,
+                name: data.emergName,
+                relation: data.emergRelation,
+            }
+
+        this.expansion = {
+            position: this.position ? Driver.list.position[this.position] : null,
+            gender: person?.expansion?.gender || null,
+        }
 
         if (single) {
             this.session = session
@@ -1095,7 +1198,7 @@ class Application {
                 ],
             },
             {
-                table: query.driver_application.main.table,
+                table: query.driver_application.lead.table,
                 fields: [
                     [ { aes: [ 'ssn', ssnSecret ] }, 'leadSsn' ],
                     [ 'position', 'leadPosition' ],
@@ -1112,7 +1215,12 @@ class Application {
             },
             {
                 table: query.driver.main.table,
+                fields: [ 'personId', Individual.hashId('personId') ],
                 join: [ 'id', 'driverId' ],
+            },
+            {
+                table: query.driver_application.matcher.table,
+                join: [ 'appId', 'id' ],
             },
             {
                 table: query.driver.appDef.table,
@@ -1128,37 +1236,37 @@ class Application {
                 db: db.person,
                 table: query.person.names.table,
                 fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix' ],
-                join: [ 'personId', 'personId', 2, [ 'since', 'nameSince' ] ],
+                join: [ 'personId', 'personId', 2, [ 'since', 'nameSince', 3 ] ],
             },
             {
                 db: db.person,
                 table: query.person.legal.table,
                 fields: [ [ 'status', 'legalStatus' ], [ 'expiresOn', 'legalExpiration' ] ],
-                join: [ 'personId', 'personId', 2, [ 'since', 'legalSince' ] ],
+                join: [ 'personId', 'personId', 2, [ 'since', 'legalSince', 3 ] ],
             },
             {
                 db: db.person,
                 table: query.person.maritals.table,
                 fields: [ [ 'status', 'marital' ] ],
-                join: [ 'personId', 'personId', 2, [ 'since', 'maritalSince' ] ],
+                join: [ 'personId', 'personId', 2, [ 'since', 'maritalSince', 3 ] ],
             },
             {
                 db: db.person,
                 table: query.person.emails.table,
                 fields: 'email',
-                join: [ 'personId', 'personId', 2, [ 'since', 'emailSince' ] ],
+                join: [ 'personId', 'personId', 2, [ 'since', 'emailSince', 3 ] ],
             },
             {
                 db: db.person,
                 table: query.person.phones.table,
                 fields: 'phone',
-                join: [ 'personId', 'personId', 2, [ 'since', 'phoneSince' ] ],
+                join: [ 'personId', 'personId', 2, [ 'since', 'phoneSince', 3 ] ],
             },
             {
                 db: db.person,
                 table: query.person.addresses.table,
                 fields: [ 'placeId', 'address1', 'address2', 'city', 'state', 'zip' ],
-                join: [ 'personId', 'personId', 2, [ 'since', 'addrSince' ] ],
+                join: [ 'personId', 'personId', 2, [ 'since', 'addrSince', 3 ] ],
             },
             {
                 db: db.person,
@@ -1174,9 +1282,9 @@ class Application {
                     [ 'restriction', 'dlRestr' ],
                 ],
                 join: [ 'personId', 'personId', 2, [
-                    [ 'state', 'dlState' ],
-                    [ 'issuedOn', 'dlSince' ],
-                    [ 'expiresOn', 'dlUntil' ],
+                    [ 'state', 'dlState', 3 ],
+                    [ 'issuedOn', 'dlSince', 3 ],
+                    [ 'expiresOn', 'dlUntil', 3 ],
                 ] ],
             },
             {
@@ -1186,9 +1294,138 @@ class Application {
                     [ 'issuedOn', 'mecIssuedOn' ],
                     'nrcme',
                 ],
-                join: [ 'driverId', 'driverId', 0, [ 'expiresOn', 'mecUntil' ] ],
+                join: [ 'driverId', 'driverId', 0, [ 'expiresOn', 'mecUntil', 3 ] ],
             },
-            //! NOT FINISHED
+            {
+                table: query.driver_application.experience.table,
+                fields: [
+                    [ 'cmv', 'cmvExp' ],
+                    [ 'vehicles', 'expVehicles' ],
+                    [ 'lastDate', 'expLastDate' ],
+                    [ 'mileage', 'expMileage' ],
+                    [ 'hours', 'expHours' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver.school.table,
+                fields: [
+                    [ 'name', 'schName' ],
+                    [ 'phone', 'schPhone' ],
+                    [ 'state', 'schState' ],
+                    [ 'endDate', 'schEndDate' ],
+                    [ 'duration', 'schDuration' ],
+                ],
+                join: [ 'driverId', 'driverId' ],
+            },
+            {
+                table: query.driver_application.preference.table,
+                fields: [
+                    'operType',
+                    [ 'teamName', 'partnerName' ],
+                    [ 'teamPhone', 'partnerPhone' ],
+                    'haulRegion',
+                    [ 'equipment', 'equipmentType' ],
+                    'startPref',
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.business.table,
+                fields: [
+                    [ 'busName', 'ownBusName' ],
+                    [ 'state', 'busState' ],
+                    [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.vehicle.table,
+                fields: [
+                    [ 'mmt', 'vhlMmt' ],
+                    [ 'make', 'vhlMake' ],
+                    [ 'model', 'vhlModel' ],
+                    [ 'year', 'vhlYear' ],
+                    [ 'type', 'vhlType' ],
+                    [ 'length', 'vhlLength' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.beneficiary.table,
+                fields: [
+                    [ 'firstName', 'benefFirstName' ],
+                    [ 'middleName', 'benefMiddleName' ],
+                    [ 'lastName', 'benefLastName' ],
+                    [ 'suffix', 'benefSuffix' ],
+                    [ 'relation', 'benefRelation' ],
+                    [ 'otherRel', 'benefOtherRel' ],
+                    [ { aes: [ 'ssn', ssnSecret ] }, 'benefSsn' ],
+                    [ 'phone', 'benefPhone' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.emergency.table,
+                fields: [
+                    [ 'phone', 'emergPhone' ],
+                    [ 'name', 'emergName' ],
+                    [ 'relation', 'emergRelation' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.checklist.table,
+                fields: [
+                    'dlScn', 'dlScnId', 'dlVrfId',
+                    'mecScn', 'mecScnId', 'mecVrfId',
+                    'docScn', 'docScnId', 'docVrfId',
+                    'mvrUplId', 'pspUplId',
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.decision.table,
+                fields: [
+                    [ 'experience', 'decExperience' ],
+                    [ 'position', 'decPosition' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            // {
+            //     table: query.carrier.main.table,
+            //     join: [ 'id', 'carrierId' ],
+            // },
+            // {
+            //     db: db.business,
+            //     table: query.company.main.table,
+            //     join: [ 'id', 'companyId', query.carrier.main.table ],
+            // },
+            // {
+            //     db: db.business,
+            //     table: query.company.names.table,
+            //     fields: [ 'busName', 'coType', [ 'alias', 'companyAlias' ] ],
+            //     join: [ 'companyId', 'id', { max: 'since', table: query.company.main.table } ],
+            // },
+            // {
+            //     db: db.online,
+            //     table: query.user.main.table,
+            //     fields: [
+            //         [ 'firstName', 'userFirstName' ],
+            //         [ 'lastName', 'userLastName' ],
+            //         [ 'alias', 'userAlias' ],
+            //         [ 'condition', 'userCondition' ],
+            //         [ 'location', 'userLocation' ],
+            //         [ 'deletedAt', 'userDeletedAt' ],
+            //     ],
+            //     join: [ 'id', 'userId' ],
+            // },
+            // {
+            //     db: db.online,
+            //     table: query.team.main.table,
+            //     fields: [ [ 'name', 'teamName' ] ],
+            //     join: [ 'id', 'teamId' ],
+            // },
         ],
         prepare(batch, filter) {
             const {
