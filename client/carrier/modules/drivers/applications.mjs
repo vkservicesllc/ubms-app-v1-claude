@@ -22,8 +22,8 @@ const table = $('#driver-apl-table').DataTable({
 
     ajax: {
         url: '/api/resource/drivers/applications/query',
-        data(search) {
-            search.filter = {
+        data(body) {
+            body.filter = {
                 conditions: $('#condition-filter').val(),
                 positions: $('#position-filter').val(),
                 carriers: $('#carrier-filter').val(),

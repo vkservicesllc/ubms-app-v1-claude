@@ -1250,6 +1250,7 @@ class Application {
                     'applicant_',
                     'recruiter_',
                 ],
+                search: [ null, 'formId' ]
             },
             {
                 table: query.driver_application.lead.table,
@@ -1285,12 +1286,14 @@ class Application {
                 table: query.person.main.table,
                 fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
                 join: [ 'id', 'personId', 2 ],
+                search: [ null, { aes: [ 'ssn', ssnSecret ] } ],
             },
             {
                 db: db.person,
                 table: query.person.names.table,
                 fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix' ],
                 join: [ 'personId', 'personId', 2, [ 'since', 'nameSince', 3 ] ],
+                search: [ null, [ 'lastName', 'firstName' ] ],
             },
             {
                 db: db.person,
@@ -1309,12 +1312,14 @@ class Application {
                 table: query.person.emails.table,
                 fields: 'email',
                 join: [ 'personId', 'personId', 2, [ 'since', 'emailSince', 3 ] ],
+                search: [ null, 'email' ],
             },
             {
                 db: db.person,
                 table: query.person.phones.table,
                 fields: 'phone',
                 join: [ 'personId', 'personId', 2, [ 'since', 'phoneSince', 3 ] ],
+                search: [ null, 'phone' ],
             },
             {
                 db: db.person,
@@ -1511,6 +1516,7 @@ class Application {
                 id, _id, formId,
                 driverId, _driverId, teamId, _teamId, userId, _userId, carrierId, _carrierId,
                 cdlRole, position, condition, rehire, archived,
+                search = {},
             } = filter
             const single = !!id || !!_id || !!formId
 
@@ -1532,6 +1538,12 @@ class Application {
                 const idx = batch.length - 1
                 batch[idx].match = { scoped: [ false, null ] }
             }
+
+            if (!single && search.value)
+                for (const piece of batch) {
+                    if (!piece.search) continue
+                    piece.search[0] = search.value
+                }
 
             return { single, batch }
         },

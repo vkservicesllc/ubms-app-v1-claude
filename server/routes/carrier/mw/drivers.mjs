@@ -37,22 +37,45 @@ export const dtApplicationList = async (req, res) => {
 
         //* Params and Filters
 
-        const { draw, start, length, columns, search, filter } = req.body
+        const { draw, start, length, columns, search, filter = {} } = req.body
         let { archived } = req.query
         archived = archived === 'true'
         //* As of Archived it is never unfiltered
 
-        const searchableColumns = columns
-            .filter(column => column.data && column.data !== 'function' && column.searchable === 'true')
-            .map(column => column.data)
+        filter.teamId = teamId
+        filter.archived = archived
 
         const limit = [ start, length ]
+        filter.search = search
 
-        //! Complication based on LIKE search
-        //! THE SEARCH IS TEMPORARY UNAVAILABLE
+        const data = await Application.fetch(res.session, filter, { limit })
+        const recordsTotal = await Application.count(res.session, filter)
+        const recordsFiltered = data.length
 
-        //
-
+        res.json({
+            draw,
+            recordsTotal,
+            recordsFiltered,
+            data,
+            actions: {
+                data: {
+                    comment: DS || permissions?.['d:drv/apl'].includes('1'),
+                    create: DS || permissions?.['d:drv/apl'].includes('2'),
+                    modify: DS || permissions?.['d:drv/apl'].includes('3'),
+                    delete: DS || permissions?.['d:drv/apl'].includes('5'),
+                },
+                file: {
+                    access: Object.keys(permissions).some(key => key.startsWith('f:drv')),
+                },
+            },
+            aplAddress: `${res.hbs.addrBook.driver}/application/`,
+            unscoped,
+            stepLen: Application.list.step.length,
+            sessionUser: {
+                _id: sessionUser._id,
+                DS: sessionUser.DS,
+            },
+        })
     } catch (err) {
         sendError.server(req, res, err)
     }

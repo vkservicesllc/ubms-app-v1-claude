@@ -189,7 +189,8 @@ class Query {
             if (match) matches.push(match)
             if (Array.isArray(search)) {
                 const [ searchStr, searchFields ] = search
-                searches = search.concat(Query.#search(searchStr, searchFields, table)) //! UNTESTED
+                if (searchStr)
+                    searches = search.concat(Query.#search(searchStr, searchFields, table)) //! UNTESTED
             }
             if (sort) sorts.push(sort) //! UNTESTED
             if (!grouper && group) grouper = Query.#field(group, table)
@@ -710,11 +711,12 @@ class Query {
 
     static #search(searchStr, fields = [], table) {
         const chunks = []
+        if (!Array.isArray(fields)) fields = [ fields ]
         if (table) table = Query.#_table(table, false)
         searchStr = searchStr.replace(/'/g, "''")
 
         fields.map(field => {
-            field = Query.#_field(field, table)
+            field = Query.#field(field, table).split(' AS ')[0]
             chunks.push(`${field} LIKE '%${searchStr}%'`)
         })
 
