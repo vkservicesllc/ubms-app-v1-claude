@@ -122,7 +122,7 @@ router.post('/drivers/update/applicant', User.mw.verify, Team.mw.verify, validat
         const applicant = await Application.fetch(res.session, { _id })
         if (!applicant) throw new Error('Applicant not found')
 
-        await applicant.update(req.body)
+        await applicant.update('lead', req.body)
         res.redirect('/drivers/applications')
     } catch (err) {
         sendError.server(req, res, err)
