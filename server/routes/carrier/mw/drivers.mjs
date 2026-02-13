@@ -32,13 +32,13 @@ export const dtDriverList = async (req, res) => {
 
         filter.teamId = teamId
 
-        const recordsTotal = await Driver.count(res.session, filter)
 
         const limit = [ start, length ]
         filter.search = search
 
         const data = await Driver.fetch(res.session, filter, { limit })
         const recordsFiltered = data.length
+        const recordsTotal = await Driver.count(res.session, filter)
 
         res.json({
             draw,
@@ -76,13 +76,13 @@ export const dtApplicationList = async (req, res) => {
         filter.teamId = teamId
         filter.archived = archived
 
-        const recordsTotal = await Application.count(res.session, filter)
 
         const limit = [ start, length ]
         filter.search = search
 
         const data = await Application.fetch(res.session, filter, { limit })
         const recordsFiltered = data.length
+        const recordsTotal = await Application.count(res.session, filter)
 
         res.json({
             draw,
