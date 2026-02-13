@@ -86,20 +86,33 @@ const dynamicValidator = {
 // ==== ROUTES ==== //
 
 
-router.post('/application/start/:_teamId/:_carrierId?', [ ApplicationForm.position.validate(), ApplicationForm.ssn.validate() ], validationCheck, async (req, res) => {
+router.post('/application/start/:_teamId?/:_carrierId?', [ ApplicationForm.position.validate(), ApplicationForm.ssn.validate() ], validationCheck, async (req, res) => {
     try {
         const { position, ssn } = req.body
-
-        let { form: formId } = req.query
-        const person = await Individual.fetch(res.session, { ssn }, { hideSensitive: false })
-console.log(person)
-return res.send(person)
-        let personId, application
+        const { form: formId } = req.query
 
         if (formId) {
-            application = await Application.fetch(res.session, { formId })
+            const application = await Application.fetch(res.session, { formId })
             if (!application) throw new Error('Application not found')
+
+            // update
+        } else {
+            const { _teamId, _carrierId } = req.params
+            const { cdl: cdrlRole, rec: _userSimpleId } = req.query
+            const {  } = await Application.create(res.session, { position, ssn, _teamId, _carrierId, cdrlRole, _userSimpleId })
+
         }
+
+//         let { form: formId } = req.query
+//         const person = await Individual.fetch(res.session, { ssn }, { hideSensitive: false })
+// console.log(person)
+// return res.send(person)
+//         let personId, application
+
+//         if (formId) {
+//             application = await Application.fetch(res.session, { formId })
+//             if (!application) throw new Error('Application not found')
+//         }
     } catch (err) {
         sendError.server(req, res, err)
     }

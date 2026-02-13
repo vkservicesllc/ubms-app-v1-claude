@@ -527,38 +527,38 @@ class Application {
                 const application = this
 
                 return classInstance.update(this, new.target, targetOrBody, body, filter, {
-                    async final(inst, body, target) {
-                        if (target !== 'main' || !body.ssn) return
+                    // async final(inst, body, target) {
+                    //     if (target !== 'main' || !body.ssn) return
 
-                        let { ssn } = body
-                        if (typeof ssn === 'object') {
-                            ssn = ssn.aes[0]
-                            body.ssn = ssn
-                        }
+                    //     let { ssn } = body
+                    //     if (typeof ssn === 'object') {
+                    //         ssn = ssn.aes[0]
+                    //         body.ssn = ssn
+                    //     }
 
-                        let person = await Individual.fetch(session, { ssn })
+                    //     let person = await Individual.fetch(session, { ssn })
 
-                        if (!person) {
-                            if (!body.firstName || !body.lastName) {
-                                body.firstName = inst.firstName
-                                body.middleName = inst.middleName
-                                body.lastName = inst.lastName
-                            }
-                            if (!body.dob) body.dob = inst.dob
-                            if (!body.gender) body.gender = inst.gender
+                    //     if (!person) {
+                    //         if (!body.firstName || !body.lastName) {
+                    //             body.firstName = inst.firstName
+                    //             body.middleName = inst.middleName
+                    //             body.lastName = inst.lastName
+                    //         }
+                    //         if (!body.dob) body.dob = inst.dob
+                    //         if (!body.gender) body.gender = inst.gender
 
-                            person = (await Individual.create(session, body)).data
-                            if (!person) throw new Error('Failed to create person')
-                        }
+                    //         person = (await Individual.create(session, body)).data
+                    //         if (!person) throw new Error('Failed to create person')
+                    //     }
 
-                        let driver = await Driver.fetch(session, { personId: person.id })
-                        if (!driver) driver = (await Driver.create(session, { personId: person.id })).data
-                        if (!driver) throw new Error('Failed to fetch or create driver')
+                    //     let driver = await Driver.fetch(session, { personId: person.id })
+                    //     if (!driver) driver = (await Driver.create(session, { personId: person.id })).data
+                    //     if (!driver) throw new Error('Failed to fetch or create driver')
 
-                        const updateBody = { driverId: driver.id }
-                        if (inst.step === 0) updateBody.step = 1
-                        await inst.update(updateBody)
-                    },
+                    //     const updateBody = { driverId: driver.id }
+                    //     if (inst.step === 0) updateBody.step = 1
+                    //     await inst.update(updateBody)
+                    // },
                 })
             }
 
@@ -1116,7 +1116,7 @@ class Application {
             } while (found)
 
             const {
-                _carrierId, _teamId, selfAssign, cdlRole, ssn,
+                _carrierId, _teamId, _userSimpleId, selfAssign, cdlRole, ssn,
                 prefix, firstName, middleName, lastName, suffix, phone, email, position,
             } = body
             
@@ -1129,9 +1129,13 @@ class Application {
 
             let { team, user } = session
 
-            if (!team && _teamId) team = await Team.fetch(session, { _id: _teamId }, { offline: true })
+            if (!team && _teamId && _teamId !== 'global') team = await Team.fetch(session, { _id: _teamId }, { offline: true })
             if (team) teamId = team.id
             if (user && selfAssign) userId = user.id
+            else if (_userSimpleId) {
+                const user = await User.fetch(session, { _simpleId: _userSimpleId })
+                if (user) userId = userId
+            }
 
             body = {
                 main: { formId, cdlRole, carrierId, teamId, userId, position },
