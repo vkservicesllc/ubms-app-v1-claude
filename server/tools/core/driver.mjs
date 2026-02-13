@@ -1036,10 +1036,72 @@ class Application {
     })
 
 
-    static invite = async (session, body, formId) => {
+    static invite = async (session, data, formId) => {
         if (!session?.user?.id) return
 
-        //
+        let email = data.email || data?.lead?.email
+        if (!email) throw new Error('Failed to send invitation; email undefined')
+
+        let { team, user } = session
+        let { from } = senderParams
+        let companyName, phone, url = '/application'
+
+        const { cdlRole, carrierId, _carrierId, teamId, _teamId, _userSimpleId, selfAssign } = data
+
+        if (!team && (teamId || _teamId)) team = await Team.fetch(session, { id: teamId, _id: _teamId })
+
+        if (carrierId || _carrierId) {
+            const carrier = await Carrier.fetch(session, { id: carrierId, _id: _carrierId })
+            if (!carrier) throw new Error('Carrier not found')
+
+            if (carrier) {
+                companyName = carrier.name
+                phone = carrier.phone
+                url += `/${carrier.route}`
+            }
+        } else if (team?.profile) {
+            companyName = team.profile.company
+            phone = team.profile.phone
+        }
+
+        if (companyName) from = `"${companyName}" <${senderParams.email}>`
+
+        if (formId) url += `?form=${formId}`
+        else {
+            url += `?env=${team ? team._id : 'global'}`
+            url += `&cdl=${cdlRole}`
+            if (_userSimpleId) url += `&rec=${_userSimpleId}`
+            else if (selfAssign) url += `&rec=${user._simpleId}`
+        }
+
+        if (email.split('@')[1] === 'bogus.xyz') email = senderParams.email
+
+        const mailOpts = {
+            from,
+            to: email,
+            replyTo: user.email,
+            subject: 'Invitation to Apply – Professional Driver Position',
+            html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                Dear Friend,<br/>
+                ${
+                    companyName
+                        ? `${companyName} invites you`
+                        : 'You are invited'
+                } to apply for a Professional Driver position!
+                We are looking for dedicated and skilled drivers to join our team and would love for you to be part of it.<br/><br/>
+                To learn more and submit your application, please visit the link below:<br/>
+                <a href="${addrBook.driver + url}" target="_blank">APPLY TODAY</a><br/><br/>
+                If you have any questions, feel free to reach out. We look forward to your application!<br/><br/>
+                Best regards,<br/>
+                ${user.fullName('AL')}<br/>
+                Professional Driver Recruiter<br/>
+                ${companyName && phone ? `${companyName}<br/>${formatTel(phone)}` : `<a href="mailto:${user.email}">${user.email}</a>`}
+            </div>`,
+        }
+
+        transporter.sendMail(mailOpts, error => {
+            if (error) console.error(error)
+        })
     }
 
 
@@ -1099,8 +1161,8 @@ class Application {
 
             return body
         },
-        async final(application, id, body) {
-            await Application.invite(session, body, application.formId)
+        async final(application) {
+            await Application.invite(session, application, application.formId)
         },
     })
 

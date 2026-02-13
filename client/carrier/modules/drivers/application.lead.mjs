@@ -105,10 +105,13 @@ table.on('draw', function() {
 
             $.ajax(`/api/resource/drivers/applications/${_id}`, {
                 success(response) {
-                    const { firstName, middleName, lastName, suffix, gender, phone, email, position } = response.data.application
+                    const { application } = response.data
+                    const appData = application?.lead || application
+                    const { prefix, firstName, middleName, lastName, suffix, gender, phone, email } = appData
+                    const { position } = application
 
                     if (assigned === undefined) {
-                        const name = new Person({ firstName, middleName, lastName, suffix }).fullName()
+                        const name = new Person({ prefix, firstName, middleName, lastName, suffix }).fullName()
                         const $name = $('#reinvite-name')
                         const $email = $('#reinvite-email')
 

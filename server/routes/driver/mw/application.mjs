@@ -37,9 +37,9 @@ export const applicationStart = async (req, res, next) => {
     try {
         const { env, cdl, rec: _userId, form: formId } = req.query
         const application = await Application.fetch(res.session, { formId })
-        if (application._driverId) return res.redirect(`/application/${formId}`)
+        if ((formId && !application) || application?._driverId) return res.redirect(`/application/${formId}`)
 
-        if (!env || !cdl) return next()
+        if (!formId && (!env || !cdl)) return next()
 
         const { session } = res
         session.user = { id: 1 }
@@ -110,11 +110,14 @@ export const applicationStart = async (req, res, next) => {
         hbs.form = new ApplicationForm(options)
 
         hbs.formUrl = '/resource/application/start'
-        hbs.formUrl += team ? `/${team._id}` : '/global'
-        if (_carrierId) hbs.formUrl += `/${_carrierId}`
-        hbs.formUrl += `?cdl=${cdl}`
-        if (_userId) hbs.formUrl += `&rec=${_userId}`
-        if (formId) hbs.formUrl += `&form=${formId}`
+
+        if (formId) hbs.formUrl += `?form=${formId}`
+        else {
+            hbs.formUrl += team ? `/${team._id}` : '/global'
+            if (_carrierId) hbs.formUrl += `/${_carrierId}`
+            hbs.formUrl += `?cdl=${cdl}`
+            if (_userId) hbs.formUrl += `&rec=${_userId}`
+        }
 
         res.render('application/start', hbs)
     } catch (err) {

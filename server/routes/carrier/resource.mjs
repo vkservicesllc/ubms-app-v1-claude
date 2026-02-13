@@ -93,7 +93,7 @@ router.post('/drivers/reinvite/applicant', User.mw.verify, Team.mw.verify, async
             const user = await User.fetch(res.session, { id: userId })
             if (!user) throw new Error('Assigned user not found')
 
-            applicant._userSimpleId = user._userSimpleId
+            applicant._userSimpleId = user._simpleId
         }
 
         await Application.invite(res.session, applicant, applicant.formId)
