@@ -132,14 +132,14 @@ const table = $('#driver-apl-table').DataTable({
             title: `Last Name ${searchTag}`,
             orderable: false,
             render(data, type, row) {
-                data = escapeHTML(new Person(row).fullLastName())
+                // data = escapeHTML(new Person(row).fullLastName())
 
-                const { originalLastName, originalSuffix } = row
-                if (originalLastName && (row.lastName !== originalLastName || row.suffix !== originalSuffix)) {
-                    const original = new Person({ ...row, lastName: originalLastName, suffix: originalSuffix })
+                // const { originalLastName, originalSuffix } = row
+                // if (originalLastName && (row.lastName !== originalLastName || row.suffix !== originalSuffix)) {
+                //     const original = new Person({ ...row, lastName: originalLastName, suffix: originalSuffix })
 
-                    data += ` <small><span class="ui orange text">(${escapeHTML(original.fullLastName())})</span></small>`
-                }
+                //     data += ` <small><span class="ui orange text">(${escapeHTML(original.fullLastName())})</span></small>`
+                // }
 
                 return data
             },
@@ -150,14 +150,14 @@ const table = $('#driver-apl-table').DataTable({
             title: `First Name ${searchTag}`,
             orderable: false,
             render(data, type, row) {
-                data = escapeHTML(new Person(row).fullFirstName())
+                // data = escapeHTML(new Person(row).fullFirstName())
 
-                const { originalFirstName, originalMiddleName } = row
-                if (originalFirstName && (row.firstName !== originalFirstName || row.middleName !== originalMiddleName)) {
-                    const original = new Person({ ...row, firstName: originalFirstName, middleName: originalMiddleName })
+                // const { originalFirstName, originalMiddleName } = row
+                // if (originalFirstName && (row.firstName !== originalFirstName || row.middleName !== originalMiddleName)) {
+                //     const original = new Person({ ...row, firstName: originalFirstName, middleName: originalMiddleName })
 
-                    data += ` <small><span class="ui orange text">(${escapeHTML(original.fullFirstName())})</span></small>`
-                }
+                //     data += ` <small><span class="ui orange text">(${escapeHTML(original.fullFirstName())})</span></small>`
+                // }
 
                 return data
             },
@@ -168,19 +168,19 @@ const table = $('#driver-apl-table').DataTable({
             searchable: false,
             orderable: false,
             type: 'string',
-            data(row) {
-                row.dob = moment(row.dob).format('YYYY-MM-DD')
-                return new Person(row).age
-            },
+            // data(row) {
+            //     row.dob = moment(row.dob).format('YYYY-MM-DD')
+            //     return new Person(row).age
+            // },
         },
 
         {
             data: 'phone',
             title: `Phone ${searchTag}`,
             orderable: false,
-            render(data) {
-                return formatTel(data)
-            },
+            // render(data) {
+            //     return formatTel(data)
+            // },
         },
 
         {

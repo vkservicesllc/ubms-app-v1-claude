@@ -196,22 +196,17 @@ class Driver extends Individual {
             ],
             prepare(batch, filter) {
                 const {
-                    id, _id, personId, _personId, blackListed,
-                    teamId, _teamId,
+                    id, _id, personId, _personId, ssn,
+                    blackListed, teamId, _teamId,
                 } = filter
-                const single = !!id || !!_id || !!personId || !!_personId
+                const single = !!id || !!_id || !!personId || !!_personId || !!ssn
 
-                const match = {
-                    main: { id, personId, blackListed },
-                    // applications: { teamId },
-                }
-                if (!id && _id) match.main.id = Driver.matchIdHash(_id)
-                if (!personId && _personId) match.main.personId = Individual.matchIdHash(_personId)
-                // if (!teamId) match.applications.teamId = Team.matchIdHash(_teamId)
+                batch[0].match = { id, personId, blackListed }
+                if (!id && _id) batch[0].match.id = Driver.matchIdHash(_id)
+                if (!personId && _personId) batch[0].match.personId = Individual.matchIdHash(_personId)
 
-                batch[0].match = match.main
-                // batch[1].match = match.applications
-                // if (!single && !teamId && !_teamId) batch[2].match = { scoped: [ false, null ] }
+                if (ssn) batch[2].match.ssn = { aes: [ ssn, secret ] }
+
                 const teamIdx = batch.length - 1
                 const appIdx = teamIdx - 1
 
@@ -283,20 +278,20 @@ class Application {
         this.step = data.step
         this.rehire = data.rehire
 
-        if (data.leadLastName || leadSsn) {
+        if (data.leadLastName || data.leadSsn) {
             this.lead = {
-                prefix: leadPrefix,
-                firstName: leadFirstName,
-                middleName: leadMiddleName,
-                lastName: leadLastName,
-                suffix: leadSuffix,
-                gender: leadGender,
+                prefix: data.leadPrefix,
+                firstName: data.leadFirstName,
+                middleName: data.leadMiddleName,
+                lastName: data.leadLastName,
+                suffix: data.leadSuffix,
+                gender: data.leadGender,
             }
-            if (this.lead.firstName && this.leadLastName)
+            if (this.lead.firstName && this.lead.lastName)
                 this.lead = new Person(this.lead)
             this.lead.email = data.leadEmail
             this.lead.phone = data.leadPhone
-            this.lead.position = data.leadPosition
+            // this.lead.position = data.leadPosition
             if (!hideSensitive) this.lead.ssn = stringifyBuffer(data.leadSsn)
         }
 
@@ -1044,170 +1039,68 @@ class Application {
     static invite = async (session, body, formId) => {
         if (!session?.user?.id) return
 
-        const { _carrierId, carrierId, _teamId, teamId, _userSimpleId, cdlRole, selfAssign } = body
-        let { email } = body
-
-        let { team, user } = session
-        let { from } = senderParams
-        let companyName, phone, url = '/application'
-
-        if (!team && (_teamId || teamId)) team = await Team.fetch(session, { _id: _teamId, id: teamId })
-
-        if (_carrierId || carrierId) {
-            const carrier = await Carrier.fetch(session, { _id: _carrierId, id: carrierId })
-            if (!carrier) throw new Error('Carrier not found')
-
-            if (carrier) {
-                companyName = carrier.name
-                phone = carrier.phone
-                url += `/${carrier.route}`
-            }
-        } else if (team?.profile) {
-            companyName = team.profile.company
-            phone = team.profile.phone
-        }
-
-        if (companyName) from = `"${companyName}" <${senderParams.email}>`
-        url += `?env=${team ? team._id : 'global'}`
-        url += `&cdl=${cdlRole}`
-        if (_userSimpleId) url += `&rec=${_userSimpleId}`
-        else if (selfAssign) url += `&rec=${user._simpleId}`
-        if (formId) url += `&form=${formId}`
-
-        if (email.split('@')[1] === 'bogus.xyz') email = senderParams.email
-
-        const mailOpts = {
-            from,
-            to: email,
-            replyTo: user.email,
-            subject: 'Invitation to Apply – Professional Driver Position',
-            html: `<div style="font-family: Arial, Helvetica, sans-serif;">
-                Dear Friend,<br/>
-                ${
-                    companyName
-                        ? `${companyName} invites you`
-                        : 'You are invited'
-                } to apply for a Professional Driver position!
-                We are looking for dedicated and skilled drivers to join our team and would love for you to be part of it.<br/><br/>
-                To learn more and submit your application, please visit the link below:<br/>
-                <a href="${addrBook.driver + url}" target="_blank">APPLY TODAY</a><br/><br/>
-                If you have any questions, feel free to reach out. We look forward to your application!<br/><br/>
-                Best regards,<br/>
-                ${user.fullName('AL')}<br/>
-                Professional Driver Recruiter<br/>
-                ${companyName && phone ? `${companyName}<br/>${formatTel(phone)}` : `<a href="mailto:${user.email}">${user.email}</a>`}
-            </div>`,
-        }
-
-        transporter.sendMail(mailOpts, error => {
-            if (error) console.error(error)
-        })
+        //
     }
 
 
     static create = (session, body, params) => classStatic.create(this, session, body, params, {
         async split(body) {
-            let found = true
+            let formId, found = true, carrierId, teamId, userId, personId
             do {
-                const formId = generateRandomString(12, 'ud')
+                formId = generateRandomString(12, 'ud')
+
                 const application = await Application.fetch(session, { formId })
-                if (!application) {
-                    found = false
-                    body.formId = formId
-                }
+                if (!application) found = false
             } while (found)
 
-            const { _carrierId, _teamId, selfAssign } = body
-            let { ssn } = body
-            delete body._carrierId
-            delete body._teamId
-            delete body.selfAssign
-
+            const {
+                _carrierId, _teamId, selfAssign, cdlRole, ssn,
+                prefix, firstName, middleName, lastName, suffix, phone, email, position,
+            } = body
+            
             if (_carrierId) {
                 const carrier = await Carrier.fetch(session, { _id: _carrierId })
                 if (!carrier) throw new Error('Carrier not found')
 
-                body.carrierId = carrier.id
+                carrierId = carrier.id
             }
 
             let { team, user } = session
 
             if (!team && _teamId) team = await Team.fetch(session, { _id: _teamId }, { offline: true })
-            if (team) body.teamId = team.id
+            if (team) teamId = team.id
+            if (user && selfAssign) userId = user.id
 
-            if (ssn) { //* This means that the form is submitted from driver branch
-                if (typeof ssn === 'object') {
-                    ssn = ssn.aes[0]
-                    body.ssn = ssn
-                }
+            body = {
+                main: { formId, cdlRole, carrierId, teamId, userId, position },
+            }
 
-                let person = await Individual.fetch(session, { ssn })
-                const since = moment().format('YYYY-MM-DD')
-                const { legalStatus, legalExpiration: expiresOn = null, marital, phone, email } = body
-                let found = { legal: false, marital: false, phone: false, email: false }
+            if (!ssn) { //* Pre-Application
+                body.main.step = 0
+                body.lead = { prefix, firstName, middleName, lastName, suffix, email, phone }
 
-                if (!person) {
-                    person = (await Individual.create(session, body)).data
-                    if (!person) throw new Error('Failed to create person')
-                } else {
-                    const legal = await person.fetch('legal')
-                    const maritals = await person.fetch('maritals')
-                    const phones = await person.fetch('phones')
-                    const emails = await person.fetch('emails')
+                return body
+            }
 
-                    const find = (arr, prop, value) => {
-                        let found = false
+            const person = await Individual.fetch(session, { ssn })
 
-                        for (const row of arr) {
-                            if (Array.isArray(prop)) {
-                                let matched = true
+            if (person) {
+                personId = person.id
 
-                                for (let i = 0; i < prop.length; i ++) {
-                                    if (row[prop[i]] !== value[i]) {
-                                        matched = false
-                                        break
-                                    }
-                                }
+                let driver = await Driver.fetch(session, { personId })
 
-                                if (!matched) continue
-                            } else if (row[prop] !== value) continue
+                if (!driver) driver = (await Driver.create(session, { personId })).data
+                else body.main.rehire = true
 
-                            found = true
-                            break
-                        }
-
-                        return found
-                    }
-
-                    found = {
-                        legal: find(legal, ['status', 'expiresOn'], [legalStatus, expiresOn]),
-                        marital: find(maritals, 'status', marital),
-                        phone: find(phones, 'phone', phone),
-                        email: find(emails, 'email', email),
-                    }
-
-                }
-                if (!found.legal) await person.add('legal', { since, status: legalStatus, expiresOn })
-                if (!found.marital) await person.add('maritals', { since, status: marital })
-                if (!found.phone) await person.add('phones', { since, phone })
-                if (!found.email) await person.add('emails', { since, email })
-
-                let driver = await Driver.fetch(session, { personId: person.id })
-                if (!driver) driver = (await Driver.create(session, { personId: person.id })).data
                 if (!driver) throw new Error('Failed to fetch or create driver')
 
-                body.driverId = driver.id
-                body.ssn = { aes: [ ssn, ssnSecret ] }
-            } else body.step = 0
-
-            if (user && selfAssign) body.userId = user.id
-
-            body = { main: body }
+                body.main.driverId = driver.id
+            } else body.lead = { ssn }
 
             return body
         },
         async final(application, id, body) {
-            await Application.invite(session, body.main, application.formId)
+            await Application.invite(session, body, application.formId)
         },
     })
 
@@ -1265,7 +1158,7 @@ class Application {
                 table: query.driver_application.lead.table,
                 fields: [
                     [ { aes: [ 'ssn', ssnSecret ] }, 'leadSsn' ],
-                    [ 'position', 'leadPosition' ],
+                    // [ 'position', 'leadPosition' ],
                     [ 'prefix', 'leadPrefix' ],
                     [ 'firstName', 'leadFirstName' ],
                     [ 'middleName', 'leadMiddleName' ],
