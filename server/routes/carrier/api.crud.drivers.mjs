@@ -34,6 +34,8 @@ const hideRawId = true
 router.get('/applications/prev-employments', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const _teamId = res.session?.team?._id
+        //! temp
+        return res.json({ data: [] })
         res.json({ data: await Employment.fetch(res.session, { condition: 'c', _teamId }, { hideRawId }) })
     } catch (err) {
         sendError.server(req, res, err)

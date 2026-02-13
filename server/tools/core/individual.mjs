@@ -43,13 +43,18 @@ class Individual extends Person {
             }
             : null
 
-        const count = {
-            companyOwners: data.ownerCount,
-            drivers: data.driverCount,
-            driverApplications: data.driverAplCount,
-        }
+        let count
+        if (data.ownerCount !== undefined && data.driverCount !== undefined)
+            count = {
+                companyOwners: data.ownerCount,
+                drivers: data.driverCount,
+                driverApplications: data.driverAplCount,
+            }
 
-        reSuper(this, props, { legal, phone, email, marital, address, identification, count })
+        const props2 = { legal, phone, email, marital, address, identification }
+        if (count) props2.count = count
+
+        reSuper(this, props, props2)
 
         if (single) {
             this.session = session
@@ -165,13 +170,18 @@ class Individual extends Person {
                     join,
                 },
                 {
-                    table: query.person.phones.table,
-                    fields: 'phone',
+                    table: query.person.maritals.table,
+                    fields: [ [ 'status', 'marital' ] ],
                     join,
                 },
                 {
                     table: query.person.addresses.table,
                     fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
+                    join,
+                },
+                {
+                    table: query.person.phones.table,
+                    fields: 'phone',
                     join,
                 },
                 {
@@ -194,12 +204,7 @@ class Individual extends Person {
                     ],
                     join: [ 'personId', 'id', { max: 'issuedOn' } ],
                 },
-                {
-                    table: query.person.maritals.table,
-                    fields: [ [ 'status', 'marital' ] ],
-                    join,
-                },
-
+                //? need it?
                 {
                     db: db.business,
                     table: query.company_owner.main.table,

@@ -217,6 +217,31 @@ class Query {
     }
 
 
+    static count(primaryDb, batch, field = 'id') {
+        if (!Array.isArray(batch)) {
+            const { table, match } = batch
+
+            return new Query(primaryDb, table).count(match, field)
+        }
+
+        const databases = []
+        const tables = []
+        const joins = []
+        const matches = []
+        let primaryTable
+
+        for (const cluster of batch) {
+            let { db, table, match } = cluster
+            const { join } = cluster
+
+            let joiner
+
+            if (!db) db = primaryDb
+            table = Query.#_table(table, db)
+        }
+    }
+
+
     select(fields, filter = {}) {
         const table = Query.#_table(this.table, this.db)
         let { match, search = [], group, sort, limit } = filter
@@ -247,11 +272,11 @@ class Query {
 
     count(match = {}, field = 'id') {
         const table = Query.#_table(this.table, this.db)
+        match = Query.#match(match)
 
         let query = `\nSELECT COUNT(${field}) AS count\n`
-        query += `\nFROM ${table}\n`
-        if (match && Object.keys(match).length)
-            query += `WHERE ${Query.#match(match)}\n`
+        query += `FROM ${table}\n`
+        if (match) query += `WHERE ${match}\n`
 
         return query
     }

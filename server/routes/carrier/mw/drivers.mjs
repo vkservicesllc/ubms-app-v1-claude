@@ -15,7 +15,30 @@ const sendError = require('../../../tools/utils/error')
 
 
 export const dtDriverList = async (req, res) => {
-    try {} catch (err) {
+    try {
+        const sessionUser = res.session.user
+        const { DS, unscoped } = sessionUser
+        const permissions = await sessionUser.permissions() || {}
+
+        if (!DS && !('d:drv/apl' in permissions)) return sendError.auth(req, res)
+
+        const { draw, start, length, search, filter = {} } = req.body
+
+        const limit = [ start, length ]
+        filter.search = search
+
+        const data = await Driver.fetch(res.session, filter, { limit })
+        const recordsTotal = await Driver.count(res.session, filter)
+        const recordsFiltered = data.length
+
+        res.json({
+            draw,
+            recordsTotal,
+            recordsFiltered,
+            data,
+            //! add more if needed
+        })
+    } catch (err) {
         sendError.server(req, res, err)
     }
 }
@@ -36,8 +59,6 @@ export const dtApplicationList = async (req, res) => {
             team = await Team.fetch(res.session, { _id: req.session.team })
             teamId = team.id
         }
-
-        //* Params and Filters
 
         const { draw, start, length, search, filter = {} } = req.body
         let { archived } = req.query

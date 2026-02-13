@@ -38,12 +38,11 @@ class Driver extends Individual {
 
         const {
             id, _id, personId, _personId, blackListed,
-            //? prevCountry, abroadUntil,
             expDate,
         } = data
         const properties = {
             first: { _id, _personId },
-            last: { expDate }, //? { prevCountry, abroadUntil, expDate },
+            last: { expDate },
         }
         if (!hideRawId) {
             properties.first.id = id
@@ -110,26 +109,15 @@ class Driver extends Individual {
                 },
                 {
                     table: query.driver.appDef.table,
-                    fields: [
-                        //? 'prevCountry', 'abroadUntil',
-                        'expDate',
-                    ],
+                    fields: 'expDate',
                     join: [ 'driverId', 'id' ],
                 },
-                // {
-                //     table: query.driver_application.main.table,
-                //     join: [ 'driverId', 'id' ],
-                // },
-                // {
-                //     db: db.online,
-                //     table: query.team.main.table,
-                //     join: [ 'id', 'teamId', 1 ],
-                // },
                 {
                     db: db.person,
                     table: query.person.main.table,
                     fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
                     join: [ 'id', 'personId' ],
+                    search: [ null, { aes: [ 'ssn', ssnSecret ] } ],
                 },
                 {
                     db: db.person,
@@ -142,6 +130,7 @@ class Driver extends Individual {
                         'suffix',
                     ],
                     join,
+                    search: [ null, [ 'lastName', 'firstName' ] ],
                 },
                 {
                     db: db.person,
@@ -157,21 +146,23 @@ class Driver extends Individual {
                 },
                 {
                     db: db.person,
-                    table: query.person.phones.table,
-                    fields: 'phone',
-                    join,
-                },
-                {
-                    db: db.person,
                     table: query.person.addresses.table,
                     fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
                     join,
                 },
                 {
                     db: db.person,
+                    table: query.person.phones.table,
+                    fields: 'phone',
+                    join,
+                    search: [ null, 'phone' ],
+                },
+                {
+                    db: db.person,
                     table: query.person.emails.table,
                     fields: 'email',
                     join,
+                    search: [ null, 'email' ],
                 },
                 {
                     db: db.person,
@@ -193,6 +184,15 @@ class Driver extends Individual {
                     } ],
                 },
                 //? need other props ???
+                // {
+                //     table: query.driver_application.main.table,
+                //     join: [ 'driverId', 'id' ],
+                // },
+                // {
+                //     db: db.online,
+                //     table: query.team.main.table,
+                //     join: [ 'id', 'teamId', 1 ],
+                // },
             ],
             prepare(batch, filter) {
                 const {
@@ -203,28 +203,30 @@ class Driver extends Individual {
 
                 const match = {
                     main: { id, personId, blackListed },
-                    applications: { teamId },
+                    // applications: { teamId },
                 }
                 if (!id && _id) match.main.id = Driver.matchIdHash(_id)
                 if (!personId && _personId) match.main.personId = Individual.matchIdHash(_personId)
-                if (!teamId) match.applications.teamId = Team.matchIdHash(_teamId)
+                // if (!teamId) match.applications.teamId = Team.matchIdHash(_teamId)
 
                 batch[0].match = match.main
-                batch[1].match = match.applications
-                if (!single && !teamId && !_teamId) batch[2].match = { scoped: [ false, null ] }
+                // batch[1].match = match.applications
+                // if (!single && !teamId && !_teamId) batch[2].match = { scoped: [ false, null ] }
 
                 return { single, batch }
             },
         })
     }
 
-
+//! INNER JOIN???
     static count = async (session, filter = {}) => {
         if (!session?.user?.id) return 0
 
-        const { teamId, _teamId, blackListed } = filter
-        const match = { teamId, blackListed }
-        if (!teamId) match.teamId = Team.matchIdHash(_teamId)
+        // const { teamId, _teamId, blackListed } = filter
+        // const match = { teamId, blackListed }
+        // if (!teamId) match.teamId = Team.matchIdHash(_teamId)
+        const { blackListed } = filter
+        const match = { blackListed }
 
         const [ rows ] = await mysql.execute(query.driver.main.count(match))
         return rows[0].count
@@ -1266,6 +1268,7 @@ class Application {
                     [ 'phone', 'leadPhone' ],
                 ],
                 join: [ 'appId', 'id' ],
+                search: [ null, [ 'lastName', 'firstName' ] ],
             },
             {
                 table: query.driver.main.table,
