@@ -184,15 +184,15 @@ class Driver extends Individual {
                     } ],
                 },
                 //? need other props ???
-                // {
-                //     table: query.driver_application.main.table,
-                //     join: [ 'driverId', 'id' ],
-                // },
-                // {
-                //     db: db.online,
-                //     table: query.team.main.table,
-                //     join: [ 'id', 'teamId', 1 ],
-                // },
+                {
+                    table: query.driver_application.main.table,
+                    join: [ 'driverId', 'id', { type: 'inner' } ],
+                },
+                {
+                    db: db.online,
+                    table: query.team.main.table,
+                    join: [ 'id', 'teamId', query.driver_application.main.table ],
+                },
             ],
             prepare(batch, filter) {
                 const {
@@ -212,23 +212,31 @@ class Driver extends Individual {
                 batch[0].match = match.main
                 // batch[1].match = match.applications
                 // if (!single && !teamId && !_teamId) batch[2].match = { scoped: [ false, null ] }
+                const teamIdx = batch.length - 1
+                const appIdx = teamIdx - 1
+
+                if (teamId || _teamId)
+                    batch[appIdx].match = { teamId: teamId || Team.matchIdHash(_teamId) }
+                else batch[teamIdx].match = { scoped: [ false, null ] }
 
                 return { single, batch }
             },
         })
     }
 
-//! INNER JOIN???
+
     static count = async (session, filter = {}) => {
         if (!session?.user?.id) return 0
 
-        // const { teamId, _teamId, blackListed } = filter
-        // const match = { teamId, blackListed }
-        // if (!teamId) match.teamId = Team.matchIdHash(_teamId)
-        const { blackListed } = filter
-        const match = { blackListed }
+        delete filter.id
+        delete filter._id
+        delete filter.personId
+        delete filter._personId
+        delete filter.search
 
-        const [ rows ] = await mysql.execute(query.driver.main.count(match))
+        const batch = await Driver.fetch(session, filter, { mode: 'batch' })
+
+        const [ rows ] = await mysql.execute(Query.count(db.carrier, batch))
         return rows[0].count
     }
 

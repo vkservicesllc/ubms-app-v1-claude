@@ -22,13 +22,22 @@ export const dtDriverList = async (req, res) => {
 
         if (!DS && !('d:drv/apl' in permissions)) return sendError.auth(req, res)
 
+        let team, teamId
+        if (req.session.team) {
+            team = await Team.fetch(res.session, { _id: req.session.team })
+            teamId = team.id
+        }
+
         const { draw, start, length, search, filter = {} } = req.body
+
+        filter.teamId = teamId
+
+        const recordsTotal = await Driver.count(res.session, filter)
 
         const limit = [ start, length ]
         filter.search = search
 
         const data = await Driver.fetch(res.session, filter, { limit })
-        const recordsTotal = await Driver.count(res.session, filter)
         const recordsFiltered = data.length
 
         res.json({
@@ -54,7 +63,6 @@ export const dtApplicationList = async (req, res) => {
         if (!DS && !('d:drv/apl' in permissions)) return sendError.auth(req, res)
 
         let team, teamId
-
         if (req.session.team) {
             team = await Team.fetch(res.session, { _id: req.session.team })
             teamId = team.id
@@ -68,11 +76,12 @@ export const dtApplicationList = async (req, res) => {
         filter.teamId = teamId
         filter.archived = archived
 
+        const recordsTotal = await Application.count(res.session, filter)
+
         const limit = [ start, length ]
         filter.search = search
 
         const data = await Application.fetch(res.session, filter, { limit })
-        const recordsTotal = await Application.count(res.session, filter)
         const recordsFiltered = data.length
 
         res.json({

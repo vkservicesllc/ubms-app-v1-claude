@@ -53,159 +53,12 @@ class Query {
             return new Query(primaryDb, table).select(fields, { match, search, sort, group, limit })
         }
 
-        const databases = []
-        const tables = []
-        const joins = []
-        const matches = []
-        let searches = []
-        const sorts = []
-
-        let grouper
-        let columns = []
-        let primaryTable
-
-        for (const cluster of batch) {
-            let { db, table, fields, match, search, sort, group } = cluster
-            const { join } = cluster
-
-            let joiner
-
-            if (!db) db = primaryDb
-            if (!fields) fields = []
-            else if (!Array.isArray(fields)) fields = [ fields ]
-
-            fields = fields.map(field => field = Query.#field(field, table))
-            table = Query.#_table(table, db)
-
-            if (primaryTable && join) {
-                joiner = { table: '', links: [ '' ], type: 'left' }
-                const [ id, foreignId, param3 ] = join
-                let foreignTable, foreignMatch, min, max, type
-
-                if (typeof param3 === 'string')
-                    foreignTable = param3
-                else if (typeof param3 === 'number')
-                    foreignTable = tables[param3]
-                else if (typeof param3 === 'object')
-                    ({ min, max, match: foreignMatch, table: foreignTable, type } = param3)
-
-                if (!foreignTable) foreignTable = primaryTable
-                foreignTable = Query.#_table(foreignTable, false)
-
-                if (['left', 'right', 'inner', 'outter', null].includes(type))
-                    joiner.type = type
-
-                joiner.table = table
-                joiner.links[0] = `${Query.#_table(table, false)}.${id} = ${foreignTable}.${foreignId}`
-
-                if (max || min) {
-                    const purpose = max || min
-                    const func = max ? 'MAX' : 'MIN'
-                    const subTable = 'latest'
-                    let field = purpose, match = ''
-
-                    if (Array.isArray(purpose)) {
-                        field = purpose[0]
-
-                        if (typeof purpose[1] === 'object')
-                            for (const field in purpose[1]) {
-                                const value = purpose[1][field]
-                                if (value) match += ` AND ${subTable}.${field} = ${Query.#_value(value)}`
-                            }
-                    }
-
-                    joiner.links[0] += `\nAND ${Query.#_table(table, false)}.${field} = (`
-                    joiner.links[0] += `\nSELECT ${func}(${subTable}.${field}) `
-                    joiner.links[0] += `FROM ${db}.${Query.#_table(table, false)} AS ${subTable}`
-                    joiner.links[0] += `\nWHERE ${subTable}.${id} = ${foreignTable}.${foreignId}${match}\n)`
-                    // console.log('id', joiner.links[0])
-
-                    // const purpose = max || min
-                    // let field, groups = [ id ], groupMatch = '', comparison = ''
-
-                    // if (Array.isArray(purpose)) {
-                    //     field = purpose[0]
-
-                    //     if (typeof purpose[1] === 'object') {
-                    //         if ('lessEq' in purpose[1]) {
-                    //             let [ outterField, outterTable, outterId ] = purpose[1].lessEq
-                    //             outterField = Query.#field(outterField, outterTable)
-                    //             if (outterTable) {
-                    //                 if (!outterId) outterId = 'id'
-                    //                 comparison += ` LEFT JOIN ${outterTable} ON ${outterTable}.${foreignId} = ${table}.${id}`
-                    //             }
-
-                    //             comparison += ` WHERE ${outterField} <= ${field}`
-                    //         } else {
-                    //             groups = groups.concat(Object.keys(purpose[1]))
-
-                    //             groupMatch = ` WHERE ${Query.#match(purpose[1])}`
-                    //         }
-                    //     }
-                    // } else field = purpose
-
-                    // const func = max ? 'MAX' : 'MIN'
-
-                    // joiner.table = `(SELECT * FROM ${table} WHERE ${field} IN\n`
-                    // joiner.table += `(SELECT ${func}(${field}) FROM ${table}`
-                    // joiner.table += groupMatch
-                    // joiner.table += comparison
-                    // joiner.table += ` GROUP BY ${groups.join(', ')}))\n`
-                    // joiner.table += `AS ${Query.#_table(table, false)}`
-                }
-
-                else if (foreignMatch)
-                    joiner.table =`(SELECT * FROM ${table}\nWHERE ${Query.#match(foreignMatch)}) AS ${Query.#_table(table, false)}`
-                // else joiner.table = table
-
-                if (Array.isArray(join[3])) {
-                    let join2 = join[3]
-                    if (!Array.isArray(join2[0])) join2 = [ join2 ]
-
-                    join2.map((pieces, i) => {
-                        const [ field, foreignField, param3 ] = pieces
-
-                        if (typeof param3 === 'string')
-                            foreignTable = param3
-                        else if (typeof param3 === 'number')
-                            foreignTable = tables[param3]
-                        else foreignTable = primaryTable
-
-                        joiner.links[i + 1] = `${Query.#_table(table, false)}.${field} = ${foreignTable}.${foreignField}`
-                    })
-                }
-            }
-
-            if (!primaryTable) primaryTable = table
-
-            match = Query.#match(match, table)
-
-            if (sort) sort = Query.#sort(sort, table) //! UNTESTED
-
-            databases.push(db)
-            tables.push(table)
-            columns = [ ...columns, ...fields ]
-            if (joiner) joins.push(joiner)
-            if (match) matches.push(match)
-            if (Array.isArray(search)) {
-                const [ searchStr, searchFields ] = search
-
-                if (searchStr)
-                    searches = searches.concat(Query.#search(searchStr, searchFields, table)) //! UNTESTED
-            }
-            if (sort) sorts.push(sort) //! UNTESTED
-            if (!grouper && group) grouper = Query.#field(group, table)
-        }
+        const { columns, primaryTable, joins, matches, searches, grouper, sorts } = Query.#unbatch(primaryDb, batch)
 
         let query = `\nSELECT DISTINCT\n`
         query += columns.join(`,\n`)
         query += `\nFROM ${primaryTable}\n`
-        joins.map(joiner => {
-            const { table, type, links } = joiner
-            const join = (type ? `${type.toUpperCase()} ` : '') + 'JOIN '
-
-            query += `${join + table}\nON ${links.join(`\nAND `)}\n`
-        })
+        query += Query.#join(joins)
         if (matches.length) query += `WHERE ${matches.join(`\nAND `)}\n`
         if (searches.length)
             query += (matches.length ? 'AND ' : 'WHERE ') + `(${searches.join(' OR ')})\n`
@@ -224,21 +77,14 @@ class Query {
             return new Query(primaryDb, table).count(match, field)
         }
 
-        const databases = []
-        const tables = []
-        const joins = []
-        const matches = []
-        let primaryTable
+        const { primaryTable, joins, matches } = Query.#unbatch(primaryDb, batch)
 
-        for (const cluster of batch) {
-            let { db, table, match } = cluster
-            const { join } = cluster
+        let query = `\nSELECT DISTINCT COUNT(${Query.#_field(field, primaryTable)}) AS count\n`
+        query += `FROM ${primaryTable}\n`
+        query += Query.#join(joins)
+        if (matches.length) query += `WHERE ${matches.join(`\nAND `)}\n`
 
-            let joiner
-
-            if (!db) db = primaryDb
-            table = Query.#_table(table, db)
-        }
+        return query
     }
 
 
@@ -561,6 +407,20 @@ class Query {
     }
 
 
+    static #join(joins) {
+        let query = ''
+
+        joins.map(joiner => {
+            const { table, type, links } = joiner
+            const join = (type ? `${type.toUpperCase()} ` : '') + 'JOIN '
+
+            query += `${join + table}\nON ${links.join(`\nAND `)}\n`
+        })
+
+        return query
+    }
+
+
     static #match(match = {}, table) { /* AND only */
         const chunks = []
         if (table) table = Query.#_table(table, false)
@@ -735,6 +595,7 @@ class Query {
 
     }
 
+
     static #search(searchStr, fields = [], table) {
         const chunks = []
         if (!Array.isArray(fields)) fields = [ fields ]
@@ -786,6 +647,153 @@ class Query {
             if (('aes' in value || 'ip' in value) && field[0] !== '_') field = `_${field}`
 
         return [ Query.#field(field), Query.#value(value) ]
+    }
+
+
+    static #unbatch(primaryDb, batch) {
+        const tables = []
+        const joins = []
+        const matches = []
+        let searches = []
+        const sorts = []
+
+        let grouper
+        let columns = []
+        let primaryTable
+
+        for (const cluster of batch) {
+            let { db, table, fields, match, search, sort, group } = cluster
+            const { join } = cluster
+
+            let joiner
+
+            if (!db) db = primaryDb
+            if (!fields) fields = []
+            else if (!Array.isArray(fields)) fields = [ fields ]
+
+            fields = fields.map(field => field = Query.#field(field, table))
+            table = Query.#_table(table, db)
+
+            if (primaryTable && join) {
+                joiner = { table: '', links: [ '' ], type: 'left' }
+                const [ id, foreignId, param3 ] = join
+                let foreignTable, foreignMatch, min, max, type
+
+                if (typeof param3 === 'string')
+                    foreignTable = param3
+                else if (typeof param3 === 'number')
+                    foreignTable = tables[param3]
+                else if (typeof param3 === 'object')
+                    ({ min, max, match: foreignMatch, table: foreignTable, type } = param3)
+
+                if (!foreignTable) foreignTable = primaryTable
+                foreignTable = Query.#_table(foreignTable, false)
+
+                if (['left', 'right', 'inner', 'outter', null].includes(type))
+                    joiner.type = type
+
+                joiner.table = table
+                joiner.links[0] = `${Query.#_table(table, false)}.${id} = ${foreignTable}.${foreignId}`
+
+                if (max || min) {
+                    const purpose = max || min
+                    const func = max ? 'MAX' : 'MIN'
+                    const subTable = 'latest'
+                    let field = purpose, match = ''
+
+                    if (Array.isArray(purpose)) {
+                        field = purpose[0]
+
+                        if (typeof purpose[1] === 'object')
+                            for (const field in purpose[1]) {
+                                const value = purpose[1][field]
+                                if (value) match += ` AND ${subTable}.${field} = ${Query.#_value(value)}`
+                            }
+                    }
+
+                    joiner.links[0] += `\nAND ${Query.#_table(table, false)}.${field} = (`
+                    joiner.links[0] += `\nSELECT ${func}(${subTable}.${field}) `
+                    joiner.links[0] += `FROM ${db}.${Query.#_table(table, false)} AS ${subTable}`
+                    joiner.links[0] += `\nWHERE ${subTable}.${id} = ${foreignTable}.${foreignId}${match}\n)`
+                    // console.log('id', joiner.links[0])
+
+                    // const purpose = max || min
+                    // let field, groups = [ id ], groupMatch = '', comparison = ''
+
+                    // if (Array.isArray(purpose)) {
+                    //     field = purpose[0]
+
+                    //     if (typeof purpose[1] === 'object') {
+                    //         if ('lessEq' in purpose[1]) {
+                    //             let [ outterField, outterTable, outterId ] = purpose[1].lessEq
+                    //             outterField = Query.#field(outterField, outterTable)
+                    //             if (outterTable) {
+                    //                 if (!outterId) outterId = 'id'
+                    //                 comparison += ` LEFT JOIN ${outterTable} ON ${outterTable}.${foreignId} = ${table}.${id}`
+                    //             }
+
+                    //             comparison += ` WHERE ${outterField} <= ${field}`
+                    //         } else {
+                    //             groups = groups.concat(Object.keys(purpose[1]))
+
+                    //             groupMatch = ` WHERE ${Query.#match(purpose[1])}`
+                    //         }
+                    //     }
+                    // } else field = purpose
+
+                    // const func = max ? 'MAX' : 'MIN'
+
+                    // joiner.table = `(SELECT * FROM ${table} WHERE ${field} IN\n`
+                    // joiner.table += `(SELECT ${func}(${field}) FROM ${table}`
+                    // joiner.table += groupMatch
+                    // joiner.table += comparison
+                    // joiner.table += ` GROUP BY ${groups.join(', ')}))\n`
+                    // joiner.table += `AS ${Query.#_table(table, false)}`
+                }
+
+                else if (foreignMatch)
+                    joiner.table =`(SELECT * FROM ${table}\nWHERE ${Query.#match(foreignMatch)}) AS ${Query.#_table(table, false)}`
+                // else joiner.table = table
+
+                if (Array.isArray(join[3])) {
+                    let join2 = join[3]
+                    if (!Array.isArray(join2[0])) join2 = [ join2 ]
+
+                    join2.map((pieces, i) => {
+                        const [ field, foreignField, param3 ] = pieces
+
+                        if (typeof param3 === 'string')
+                            foreignTable = param3
+                        else if (typeof param3 === 'number')
+                            foreignTable = tables[param3]
+                        else foreignTable = primaryTable
+
+                        joiner.links[i + 1] = `${Query.#_table(table, false)}.${field} = ${foreignTable}.${foreignField}`
+                    })
+                }
+            }
+
+            if (!primaryTable) primaryTable = table
+
+            match = Query.#match(match, table)
+
+            if (sort) sort = Query.#sort(sort, table) //! UNTESTED
+
+            tables.push(table)
+            columns = [ ...columns, ...fields ]
+            if (joiner) joins.push(joiner)
+            if (match) matches.push(match)
+            if (Array.isArray(search)) {
+                const [ searchStr, searchFields ] = search
+
+                if (searchStr)
+                    searches = searches.concat(Query.#search(searchStr, searchFields, table)) //! UNTESTED
+            }
+            if (sort) sorts.push(sort) //! UNTESTED
+            if (!grouper && group) grouper = Query.#field(group, table)
+        }
+
+        return { columns, primaryTable, joins, matches, searches, grouper, sorts }
     }
 
 
