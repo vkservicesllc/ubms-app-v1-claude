@@ -1483,7 +1483,9 @@ class ApplicationForm {
         let fields
         const profileFields = [
             'firstName', 'middleName', 'lastName', 'suffix',
-            'gender', 'dob', 'ssn', 'marital', 'phone', 'email',
+            'gender',
+            // 'dob', 'ssn',
+            'marital', 'phone', 'email',
         ]
         const addressFields = ['address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince', 'addrEnough']
         const vehicleFields = [
@@ -1494,13 +1496,14 @@ class ApplicationForm {
 
         switch (target) {
             case 'registration':
-                fields = [...profileFields, 'position', ...addressFields, 'status', 'statusExp']
+                // fields = [...profileFields, 'position', ...addressFields, 'status', 'statusExp']
+                fields = [...profileFields, 'status', 'statusExp']
                 break
             case 'workflow':
                 fields = ['user', 'carrier', 'condition', 'experience', 'apprPosition']
                 break
             case 'profile':
-                fields = profileFields
+                fields = profileFields //! consider dob based on new or rehire
                 break
             case 'legal':
                 fields = ['status', 'statusExp']

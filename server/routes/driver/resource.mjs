@@ -184,6 +184,15 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
 })
 
 
+router.post('/application/register', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
+    try {
+        return res.send(req.body)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/OLD/application/start/:_teamId/:_carrierId?', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
 // return res.send(req.body)
     try {

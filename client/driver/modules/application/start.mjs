@@ -36,6 +36,12 @@ if (aplStatus === 'started') {
     $('#form-card').show()
 }
 
+
+/* Reset Form on Refresh */
+$(selector.class.global).val(null)
+$('.form-check-input').prop('checked', false)
+
+
 const duration = 750
 let positionDetermined = false
 

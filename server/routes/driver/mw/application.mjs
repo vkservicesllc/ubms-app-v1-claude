@@ -39,7 +39,7 @@ export const applicationStart = async (req, res, next) => {
         const application = await Application.fetch(res.session, { formId })
         if ((formId && !application) || application?._driverId) return res.redirect(`/application/${formId}`)
 
-        if (!formId && (!env || !cdl)) return next()
+        if (!formId && (!env || !cdl || !['0', '1'].includes(cdl))) return next()
 
         const { session } = res
         session.user = { id: 1 }
@@ -130,7 +130,7 @@ export const applicationRegistration = async (req, res, next) => {
     try {
         const { formId } = req.params
         const { id: _id } = req.query
-        const application = await Application.fetch(res.session, { formId })
+        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
         if (!application || application._id !== _id || application.driverId || application.rehire)
             return res.redirect(`/application/${formId}`)
 
@@ -147,6 +147,7 @@ export const applicationRegistration = async (req, res, next) => {
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
 
         options.phone.text.label.content = 'U.S. Phone'
+        options.statusExp.text.label.content = 'Expiration Date'
         options.marital = { radio: { label: { class: formInstr.labelClassRequired } } }
         options.status = { radio: { label: { class: formInstr.labelClassRequired } } }
 
@@ -157,13 +158,17 @@ export const applicationRegistration = async (req, res, next) => {
         }
 
         for (const prop of ['citizen', 'resident', 'authorized']) {
-            options.status.radio[prop] = { input: {}, label: {} }
+            options.status.radio[prop] = { input: { disabled: false }, label: {} }
             options.status.radio[prop].input.class = 'form-check-input status-radio'
             options.status.radio[prop].label.class = 'form-check-label'
         }
 
+        hbs.carrier = application?.carrier?.name || null
+        hbs.agency = !hbs.carrier ? application?.team?.name : null
         hbs.formId = application.formId
         hbs.position = application.expansion.position
+        hbs.maskedSsn = formatSsn(application.lead.ssn, '*')
+        hbs.dob = moment(application.lead.dob).format('ll')
         hbs.form = new ApplicationForm(options)
 
         res.render('application/registration', hbs)
