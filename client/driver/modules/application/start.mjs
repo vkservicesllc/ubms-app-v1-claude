@@ -1,12 +1,13 @@
 import { selectEvent } from '/modules/events/form.mjs'
-import { idMask } from '/modules/events/imask.mjs'
+import { idMask, dateMask } from '/modules/events/imask.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import { check, onInput, onAccept, onComplete, onChange, addressPredictions } from './support.mjs'
 
 const TS = selector.id.text, SS = selector.id.select
 const positionId = SS.position
-const ssnId = TS.ssn, ssnConfId = TS.ssnConf
-const ssnSelector = `${ssnId}, ${ssnConfId}`
+const ssnId = TS.ssn //, ssnConfId = TS.ssnConf
+const dobId = TS.dob
+// const ssnSelector = `${ssnId}, ${ssnConfId}`
 
 const $card = $('#new-apl-card')
 const $position = $(positionId)
@@ -17,7 +18,10 @@ const $label = {
 }
 const $certifyDl = $('#confirm-dl')
 const $certifyStatus = $('#confirm-status')
-const $help = $('#form-help')
+const $help = {
+    dob: $('#dob-help'),
+    // form: $('#form-help'),
+}
 const $submit = $('[type="submit"]')
 const $form = $('#apl-start-form')
 
@@ -95,47 +99,92 @@ selectEvent(positionId, { fill: true, onChange(position, $position) {
     sessionStorage.setItem(positionId.replace('#', ''), position)
 } })
 
-idMask(ssnSelector, 'ssn', {
-    onAccept,
-    onComplete(mask, $el) {
-        const ssn = $(ssnId).val()
-        const ssnConf = $(ssnConfId).val()
-        let message = null, action = 'hide', style = 'is-valid'
+// idMask(ssnSelector, 'ssn', {
+//     onAccept,
+//     onComplete(mask, $el) {
+//         const ssn = $(ssnId).val()
+//         const ssnConf = $(ssnConfId).val()
+//         let message = null, action = 'hide', style = 'is-valid'
 
-        if (ssn && ssnConf) {
-            if (ssn !== ssnConf) {
-                message = '<i class="fas fa-exclamation-triangle"></i> Social Security Numbers did not match.<br/>Please try again.'
-                action = 'show'
-                style = 'is-invalid'
-                if (!$submit.prop('disabled')) $submit.prop('disabled', true)
-                $(ssnSelector).removeClass('is-valid is-invalid').addClass('is-invalid')
-            } else {
-                $(ssnSelector).removeClass('is-valid is-invalid').addClass('is-valid')
-                if ($certifyDl.prop('checked') && $certifyStatus.prop('checked')) $submit.prop('disabled', false)
-            }
-        } else $el.addClass('is-valid')
+//         if (ssn && ssnConf) {
+//             if (ssn !== ssnConf) {
+//                 message = '<i class="fas fa-exclamation-triangle"></i> Social Security Numbers did not match.<br/>Please try again.'
+//                 action = 'show'
+//                 style = 'is-invalid'
+//                 if (!$submit.prop('disabled')) $submit.prop('disabled', true)
+//                 $(ssnSelector).removeClass('is-valid is-invalid').addClass('is-invalid')
+//             } else {
+//                 $(ssnSelector).removeClass('is-valid is-invalid').addClass('is-valid')
+//                 if ($certifyDl.prop('checked') && $certifyStatus.prop('checked')) $submit.prop('disabled', false)
+//             }
+//         } else $el.addClass('is-valid')
 
-        $help.html(message)[action]()
+//         $help.form.html(message)[action]()
+//     },
+// })
+
+idMask(ssnId, 'ssn', {
+    onAccept(mask, $ssn) {
+        $ssn.removeClass('is-valid is-invalid')
+        $submit.prop('disabled', true)
+    },
+    onComplete(mask, $ssn) {
+        $ssn.addClass('is-valid')
+        $submit.prop('disabled', !validForm())
     },
 })
 
-$(ssnSelector).on('paste drop', function (evt) {
+dateMask(dobId, {
+    pattern: 'us',
+    onAccept(mask, $dob) {
+        $help.dob.text(null)
+        $dob.removeClass('is-valid is-invalid')
+        $submit.prop('disabled', true)
+    },
+    onComplete(mask, $dob) {
+        const dob = mask.value
+
+        if (dob) {
+            const date = moment(dob, 'MM/DD/YYYY', true)
+            let invalid
+
+            if (!date.isValid()) {
+                $dob.addClass('is-invalid')
+                invalid = '* Invalid date'
+            } else {
+                const today = moment()
+                const diff = today.clone().subtract(18, 'years').startOf('day')
+
+                if (date.isAfter(diff)) {
+                    $dob.addClass('is-invalid')
+                    invalid = "* Too young to apply"
+                } else
+                    $dob.addClass('is-valid')
+            }
+
+            if (invalid) $help.dob.text(invalid)
+            else $submit.prop('disabled', !validForm())
+        }
+    },
+})
+
+$(`${ssnId}, ${dobId}`).on('paste drop', function (evt) {
     evt.preventDefault()
 })
 
 $certifyDl.on('change', function() {
-    $submit.prop('disabled', !($(this).prop('checked') && $certifyStatus.prop('checked')))
+    $submit.prop('disabled', !validForm())
 })
 
 $certifyStatus.on('change', function() {
-    $submit.prop('disabled', !($(this).prop('checked') && $certifyDl.prop('checked')))
+    $submit.prop('disabled', !validForm())
 })
 
 
 $form.submit(function(evt) {
     evt.preventDefault()
 
-    const valid = $('input[required]').filter('.is-invalid').length === 0 && $(ssnId).val() === $(ssnConfId).val()
+    const valid = $('input[required]').filter('.is-invalid').length === 0 && !$help.dob.html() // && $(ssnId).val() === $(ssnConfId).val()
     if (!valid) return
 
     $submit
@@ -145,3 +194,11 @@ $form.submit(function(evt) {
     $card.fadeOut(duration)
     setTimeout(() => $form.unbind().submit(), duration)
 })
+
+
+function validForm() {
+    const validSsn = $(ssnId).hasClass('is-valid')
+    const validDob = $(dobId).hasClass('is-valid')
+
+    return validSsn && validDob && $certifyDl.prop('checked') & $certifyStatus.prop('checked')
+}

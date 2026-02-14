@@ -288,7 +288,7 @@ class ApplicationForm {
 
     static ssn = createSsnForm({ selector: appSelector, target: 'ssn' })
     static ssn_ = createSsnForm({ selector: appSelector, target: 'ssn', required: false })
-    static ssnConf = createSsnForm({ selector: appSelector, target: 'ssnConf', name: undefined, label: 'Confirm SSN' })
+    // static ssnConf = createSsnForm({ selector: appSelector, target: 'ssnConf', name: undefined, label: 'Confirm SSN' })
 
 
     static appliedOn = createForm({

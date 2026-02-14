@@ -100,11 +100,11 @@
                         <div id="application-form" style="display: none;">
                             <div class="text-start pt-3 pb-0" style="font-size: .92em;">
                                 <p class="text-warning">
-                                    To begin the application process, please provide your Social Security Number (SSN).
+                                    To begin the application process, please provide your Social Security Number (SSN) and Date of Birth (DOB).
                                 </p>
                                 <p class="mb-2" style="font-size: .9em;">
                                     <span class="text-success">
-                                        <i class="fas fa-fingerprint pe-1"></i> The provided SSN will be used for identification purposes only at this stage.
+                                        <i class="fas fa-fingerprint pe-1"></i> The provided SSN will be used for <u>identification purposes only</u> at this stage.
                                     </span>
                                 </p>
                                 <p style="font-size: .9em;">
@@ -119,22 +119,23 @@
                                     {{{form.ssn.text.label}}}
                                     <div class="input-group">
                                         <span class="input-group-text">
-                                            <i class="fas fa-user-shield"></i>
+                                            <i class="fas fa-fingerprint"></i>
                                         </span>
                                         {{{form.ssn.text.input}}}
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    {{{form.ssnConf.text.label}}}
+                                    {{{form.dob.text.label}}}
                                     <div class="input-group">
                                         <span class="input-group-text">
-                                            <i class="fas fa-fingerprint"></i>
+                                            <i class="fas fa-user-shield"></i>
                                         </span>
-                                        {{{form.ssnConf.text.input}}}
+                                        {{{form.dob.text.input}}}
                                     </div>
+                                    <div class="form-text text-danger" id="dob-help"></div>
                                 </div>
                             </div>
-                            <p class="form-text text-center text-danger mt-4" id="form-help" style="display: none;"></p>
+                            {{!-- <p class="form-text text-center text-danger mt-4" id="form-help" style="display: none;"></p> --}}
                             <div class="row g-3 my-3">
                                 <div class="col-md-12">
                                     <p>I certify under penalty of law that:</p>

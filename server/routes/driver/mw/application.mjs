@@ -85,10 +85,10 @@ export const applicationStart = async (req, res, next) => {
         const positionList = Driver.list.position
 
         let options = {}
-        const fields = [ 'position', 'ssn', 'ssnConf' ]
+        const fields = [ 'position', 'ssn', 'dob' ] // 'ssnConf' ]
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tab: 8 })
         options.position.select.label.content = 'Desired Position'
-        options.ssn.text.label.content = 'Provide SSN'
+        options.ssn.text.label.content = 'Social Security Number'
 
         const t = `\t\t\t\t\t\t\t`
         const positionDesc = {
