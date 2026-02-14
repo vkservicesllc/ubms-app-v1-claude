@@ -35,6 +35,7 @@ const table = $('#driver-apl-table').DataTable({
 
             table?.column(12).visible(unscoped)
 
+            // data = data.filter
             data.forEach(row => {
                 row.actions = actions
                 row.stepLen = stepLen
@@ -133,6 +134,8 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             render(data, type, row) {
                 if (!data) row = row.lead
+                if (!row.lastName) return
+
                 return new Person(row).fullLastName()
             },
         },
@@ -143,6 +146,8 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             render(data, type, row) {
                 if (!data) row = row.lead
+                if (!row.firtName) return
+
                 return new Person(row).fullFirstName()
             },
         },

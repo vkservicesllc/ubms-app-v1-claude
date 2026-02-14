@@ -18,13 +18,15 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
     const update = query && target
     let currentData, currentUpdateLog, updateLog
 
-    if (data.ssn && data.ssn?.aes) data.ssn = data.ssn.aes[0]
-    if (data.ein && data.ein?.aes) data.ein = data.ein.aes[0]
+    // if (data.ssn && data.ssn?.aes) data.ssn = data.ssn.aes[0]
+    // if (data.ein && data.ein?.aes) data.ein = data.ein.aes[0]
+    data.ssn = unprocessAES(data.ssn)
+    data.ein = unprocessAES(data.ein)
 
     if (update) {
         const fields = ['*']
-        if ('ssn' in data) fields.push({ aes: [ 'ssn', secret.ssn ] })
-        if ('ein' in data) fields.push({ aes: [ 'ein', secret.ein ] })
+        if ('ssn' in data) fields.push(selectAES('ssn'))
+        if ('ein' in data) fields.push(selectAES('ein'))
 
         currentData = (await mysql.execute(query[target].select(fields, { match })))[0][0]
         if (!currentData) throw new Error('Could not process data: current data not found')
@@ -81,7 +83,8 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
             }
         } else if (value === null) delete data[field]
 
-        if (field === 'ssn' || field === 'ein') data[field] = { aes: [ value, secret[field] ] }
+        // if (field === 'ssn' || field === 'ein') data[field] = { aes: [ value, secret[field] ] }
+        if (field === 'ssn' || field === 'ein') data[field] = processAES(field, value)
     }
 
     if (updateLog && Object.keys(updateLog[0].data).length) {
@@ -136,5 +139,24 @@ function processValue(value) {
         else value = value.replace(/"/g, '\\"')
     }
 
+    return value
+}
+
+
+export function selectAES(target, field) {
+    if (!field) field = target
+
+    return { aes: [ field, secret[target] ] }
+}
+
+
+export function processAES(target, value) {
+    if (value && !value?.aes) value = { aes: [ value, secret[target] ] }
+    return value
+}
+
+
+export function unprocessAES(value) {
+    if (value && value?.aes) value = value.aes[0]
     return value
 }

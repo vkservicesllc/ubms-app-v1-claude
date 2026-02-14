@@ -1,9 +1,3 @@
-const { DB__MYSQL_AES_EIN, DB__MYSQL_AES_SSN } = Bun.env
-const secret = {
-    ein: DB__MYSQL_AES_EIN,
-    ssn: DB__MYSQL_AES_SSN,
-}
-
 /* Settings */
 import db, { query, algorithm } from '../../settings/mysql.mjs'
 
@@ -14,9 +8,10 @@ import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import { hash, matchHash } from '../utils/query.mjs'
 //! import more algorithms for other categories
 import { classInstance, classStatic } from '../utils/class.mjs'
-import { processData } from '../utils/data.mjs'
+// import { processData } from '../utils/data.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
+import { selectAES, processAES } from '../utils/data.mjs'
 
 const mysql = require('../utils/mysql')
 
@@ -185,7 +180,7 @@ class Company {
                 {
                     table: query.company.main.table,
                     fields: [
-                        'id', Company.hashId(), 'category', { aes: [ 'ein', secret.ein ] }, 'duns', 'website',
+                        'id', Company.hashId(), 'category', selectAES('ein'), 'duns', 'website',
                         'since', 'until', 'global', 'active', 'confirmed', 'locked', 'lastLogo', 'style',
                     ],
                 },
@@ -210,7 +205,7 @@ class Company {
                 {
                     db: db.person,
                     table: query.person.main.table,
-                    fields: [ 'dob', 'gender', { aes: [ 'ssn', secret.ssn ] } ],
+                    fields: [ 'dob', 'gender', selectAES('ssn') ],
                     join: [ 'id', 'personId', query.company_owner.main.table ],
                 },
                 {
@@ -280,7 +275,7 @@ class Company {
                     if (ids) match.main.id = ids
                     else match.main.id = Company.matchIdHash(_id || _ids)
                 }
-                if (ein) match.main.ein = { aes: [ ein, secret.ein ] }
+                if (ein) match.main.ein = processAES('ein', ein)
                 if (busName && coType) {
                     match.names.busName = busName
                     match.names.coType = coType
@@ -502,7 +497,7 @@ class Owner extends Individual {
             {
                 db: db.person,
                 table: query.person.main.table,
-                fields: [ 'dob', 'gender', { aes: [ 'ssn', secret.ssn ] } ],
+                fields: [ 'dob', 'gender', selectAES('ssn') ],
                 join: [ 'id', 'personId' ],
             },
             {
@@ -557,7 +552,7 @@ class Owner extends Individual {
                 if (ids) match.main.id = ids
                 match.main.id = Owner.matchIdHash(_id || _ids)
             }
-            if (ssn) match.individuals.ssn = { aes: [ ssn, secret.ssn ] }
+            if (ssn) match.individuals.ssn = processAES('ssn', ssn)
 
             batch[0].match = match.main
             batch[1].match = match.individuals

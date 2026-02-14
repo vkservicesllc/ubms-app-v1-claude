@@ -1,14 +1,9 @@
-const { DB__MYSQL_AES_SSN, DB__MYSQL_AES_EIN } = Bun.env
-const ssnSecret = DB__MYSQL_AES_SSN
-const einSecret = DB__MYSQL_AES_EIN
-
-
 /* Settings */
 import { addrBook } from '../../../config.mjs'
 import db, { query } from '../../settings/mysql.mjs'
 
 /* Tools */
-import moment from 'moment'
+// import moment from 'moment'
 import { utc2tz, utcTimeStamp } from '../utils/date.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
@@ -24,7 +19,8 @@ import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buff
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import bool from '../../../client/global/modules/tools/utils/boolean.mjs'
 import { tel as formatTel } from '../../../client/global/modules/tools/utils/formatter.mjs'
-import { application } from '../../includes/driver'
+// import { application } from '../../includes/driver'
+import { selectAES, processAES, unprocessAES } from '../utils/data.mjs'
 
 const mysql = require('../utils/mysql')
 
@@ -115,9 +111,9 @@ class Driver extends Individual {
                 {
                     db: db.person,
                     table: query.person.main.table,
-                    fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
+                    fields: [ 'dob', 'gender', selectAES('ssn') ],
                     join: [ 'id', 'personId' ],
-                    search: [ null, { aes: [ 'ssn', ssnSecret ] } ],
+                    search: [ null, selectAES('ssn') ],
                 },
                 {
                     db: db.person,
@@ -205,7 +201,7 @@ class Driver extends Individual {
                 if (!id && _id) batch[0].match.id = Driver.matchIdHash(_id)
                 if (!personId && _personId) batch[0].match.personId = Individual.matchIdHash(_personId)
 
-                if (ssn) batch[2].match.ssn = { aes: [ ssn, secret ] }
+                if (ssn) batch[2].match.ssn = processAES('ssn', ssn)
 
                 const teamIdx = batch.length - 1
                 const appIdx = teamIdx - 1
@@ -286,6 +282,7 @@ class Application {
                 lastName: data.leadLastName,
                 suffix: data.leadSuffix,
                 gender: data.leadGender,
+                dob: data.leadDob,
             }
             if (this.lead.firstName && this.lead.lastName)
                 this.lead = new Person(this.lead)
@@ -905,7 +902,10 @@ class Application {
 
                     case 'certify':
                         {
-                            if (this.step < 12) await this.update({ step: 12 })
+                            if (this.step < 12) {
+                                await this.update({ step: 12 })
+                                await this.delete('lead')
+                            }
                         }
                         break
 
@@ -1040,7 +1040,7 @@ class Application {
         if (!session?.user?.id) return
 
         let email = data.email || data?.lead?.email
-        if (!email) throw new Error('Failed to send invitation; email undefined')
+        if (!email) return
 
         let { team, user } = session
         let { from } = senderParams
@@ -1116,10 +1116,11 @@ class Application {
             } while (found)
 
             const {
-                _carrierId, _teamId, _userSimpleId, selfAssign, cdlRole, ssn,
+                _carrierId, _teamId, _userSimpleId, selfAssign, cdlRole, dob,
                 prefix, firstName, middleName, lastName, suffix, phone, email, position,
             } = body
-            
+            const ssn = unprocessAES(body.ssn)
+
             if (_carrierId) {
                 const carrier = await Carrier.fetch(session, { _id: _carrierId })
                 if (!carrier) throw new Error('Carrier not found')
@@ -1148,6 +1149,9 @@ class Application {
                 return body
             }
 
+            const application = await Application.fetch(session, { ssn })
+            if (application) throw new Error('DAPP_LOCKED_SSN_ERROR')
+
             const person = await Individual.fetch(session, { ssn })
 
             if (person) {
@@ -1161,7 +1165,10 @@ class Application {
                 if (!driver) throw new Error('Failed to fetch or create driver')
 
                 body.main.driverId = driver.id
-            } else body.lead = { ssn }
+            } else {
+                body.main.public = false
+                body.lead = { ssn: processAES('ssn', ssn), dob }
+            }
 
             return body
         },
@@ -1223,7 +1230,8 @@ class Application {
             {
                 table: query.driver_application.lead.table,
                 fields: [
-                    [ { aes: [ 'ssn', ssnSecret ] }, 'leadSsn' ],
+                    [ selectAES('ssn'), 'leadSsn' ],
+                    [ 'dob', 'leadDob' ],
                     // [ 'position', 'leadPosition' ],
                     [ 'prefix', 'leadPrefix' ],
                     [ 'firstName', 'leadFirstName' ],
@@ -1254,9 +1262,9 @@ class Application {
             {
                 db: db.person,
                 table: query.person.main.table,
-                fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
+                fields: [ 'dob', 'gender', selectAES('ssn') ],
                 join: [ 'id', 'personId', 2 ],
-                search: [ null, { aes: [ 'ssn', ssnSecret ] } ],
+                search: [ null, selectAES('ssn') ],
             },
             {
                 db: db.person,
@@ -1360,7 +1368,7 @@ class Application {
                 fields: [
                     [ 'busName', 'ownBusName' ],
                     [ 'state', 'busState' ],
-                    [ { aes: [ 'ein', einSecret ] }, 'busEin' ],
+                    [ selectAES('ein'), 'busEin' ],
                 ],
                 join: [ 'appId', 'id' ],
             },
@@ -1385,7 +1393,7 @@ class Application {
                     [ 'suffix', 'benefSuffix' ],
                     [ 'relation', 'benefRelation' ],
                     [ 'otherRel', 'benefOtherRel' ],
-                    [ { aes: [ 'ssn', ssnSecret ] }, 'benefSsn' ],
+                    [ selectAES('ssn'), 'benefSsn' ],
                     [ 'phone', 'benefPhone' ],
                 ],
                 join: [ 'appId', 'id' ],
@@ -1483,17 +1491,18 @@ class Application {
         ],
         prepare(batch, filter) {
             const {
-                id, _id, formId,
+                id, _id, formId, ssn,
                 driverId, _driverId, teamId, _teamId, userId, _userId, carrierId, _carrierId,
                 cdlRole, position, condition, rehire, archived,
                 search = {},
             } = filter
-            const single = !!id || !!_id || !!formId
+            const single = !!id || !!_id || !!formId || !!ssn
 
             const match = {
                 id, formId, driverId, teamId, userId, carrierId,
                 cdlRole, position, condition, rehire,
             }
+            if (!single) match.public = true
             if (!id) match.id = Application.matchIdHash(_id)
             if (!driverId) match.driverId = Driver.matchIdHash(_driverId)
             if (!teamId) match.teamId = Team.matchIdHash(_teamId)
@@ -1504,6 +1513,8 @@ class Application {
             }
 
             batch[0].match = match
+            if (ssn) batch[1].match = { ssn: processAES('ssn', ssn) }
+
             if (!single && !teamId && !_teamId) {
                 const idx = batch.length - 1
                 batch[idx].match = { scoped: [ false, null ] }
@@ -1872,7 +1883,7 @@ class Employment {
                 {
                     db: db.person,
                     table: query.person.main.table,
-                    fields: [ 'dob', 'gender', { aes: [ 'ssn', ssnSecret ] } ],
+                    fields: [ 'dob', 'gender', selectAES('ssn') ],
                     join: [ 'id', 'personId', 1 ],
                 },
                 {

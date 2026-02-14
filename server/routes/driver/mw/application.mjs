@@ -126,6 +126,49 @@ export const applicationStart = async (req, res, next) => {
 }
 
 
+export const applicationRegistration = async (req, res, next) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.fetch(res.session, { formId })
+        if (!application || application.driverId || application.rehire) return res.redirect(`/application/${formId}`)
+
+        const key = 'application.registration'
+        let { hbs } = res
+        hbs = hbs.set(key, { title: 'Driver Application' })
+        hbs.bodyAttrs = ' data-bs-theme="dark"'
+
+        let options = {}
+        const fields = [
+            'firstName', 'middleName', 'lastName', 'suffix',
+            'gender', 'dob', 'phone', 'email', 'statusExp',
+        ]
+        options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
+
+        options.phone.text.label.content = 'U.S. Phone'
+        options.marital = { radio: { label: { class: formInstr.labelClassRequired } } }
+        options.status = { radio: { label: { class: formInstr.labelClassRequired } } }
+
+        for (const prop of ['single', 'married', 'divorced', 'separated', 'widowed']) {
+            options.marital.radio[prop] = { input: {}, label: {} }
+            options.marital.radio[prop].input.class = 'form-check-input status-radio'
+            options.marital.radio[prop].label.class = 'form-check-label'
+        }
+
+        for (const prop of ['citizen', 'resident', 'authorized']) {
+            options.status.radio[prop] = { input: {}, label: {} }
+            options.status.radio[prop].input.class = 'form-check-input status-radio'
+            options.status.radio[prop].label.class = 'form-check-label'
+        }
+
+        hbs.form = new ApplicationForm(options)
+
+        res.render('application/registration', hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+}
+
+
 export const applicationLogin = async (req, res, next) => {
     try {
         const { param: formId } = req.params
@@ -178,11 +221,42 @@ export const applicationLogin = async (req, res, next) => {
 
 export const applicationProgress = async (req, res) => {
     try {
+        const { application: _id } = req.session
+        if (!_id || _id !== application._id || application.condition !== 'p') {
+            delete req.session.application
+
+            return res.redirect(`/application/${formId}`)
+        }
+
+        const { session } = res
+        session.user = { id: 1 } //* For fetch purposes only
+
+        const { application } = session
+        const { formId, cdlRole, _teamId, step } = application
+
+
+        const key = 'application'
+        let { hbs } = res
+        hbs = hbs.set(key, { title: 'Driver Application' })
+        hbs.bodyAttrs = ' data-bs-theme="dark"'
+
+        hbs.formId = formId
+        hbs.agency = '???'
+        hbs.carrier = '???'
+
+        res.render(key, hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+}
+
+
+export const applicationProgressOLD = async (req, res) => {
+    try {
         const { session } = res
         session.user = { id: 1 }
 
         const { application } = session
-
         const { formId, cdlRole, _teamId, step } = application
 
         const { application: _id } = req.session
@@ -203,7 +277,6 @@ export const applicationProgress = async (req, res) => {
         // if (agency) agency = `<span title="${depts}">${agency}</span>`
         let carrier = application?.carrier?.name
         // if (carrier) carrier = `<span title="${depts}">${carrier}</span>`
-
 
         if (step === 12) return res.redirect(`/application/${formId}/agreement`)
 
@@ -883,13 +956,13 @@ export const applicationProgress = async (req, res) => {
 
         hbs.form = new ApplicationForm(options)
         hbs.emplForm = new EmploymentForm(emplOptions)
+        hbs.formId = formId
         hbs.agency = agency
         hbs.carrier = carrier
         hbs.progress = Math.round(step / steps.length * 100)
         hbs.progressBg = hbs.progress === 100 ? 'success' : 'secondary'
         hbs.step = step
         hbs.steps = steps
-        hbs.formId = formId
         hbs.cdlRole = cdlRole
         hbs.applicantName = application.fullName
         hbs.applicantPosition = application.expansion.position

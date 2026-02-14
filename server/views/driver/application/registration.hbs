@@ -1,0 +1,149 @@
+{{> head}}
+
+    <style>
+        #company-name {
+            font-weight: 500;
+        }
+        #intro, #privacy {
+            font-size: .92em;
+        }
+        .form-text {
+            font-size: .8em;
+        }
+        h6 {
+            font-size: .95em;
+        }
+    </style>
+
+    <div class="d-flex justify-content-center align-items-lg-center full-height-fix">
+        <div class="card text-center" id="new-apl-card" style="display: none;">
+            <div class="card-body pt-4">
+                <h5 class="card-title text-info">Professional Driver Application</h5>
+                <div class="card-text text-start px-2" id="form-card">
+                    <form class="pt-2" id="apl-start-form" action="{{{formUrl}}}" method="POST" autocomplete="off">
+                        <div id="application-form">
+                            <h6 class="text-secondary mt-4 my-1 border-top pt-3">Legal Name <small>(per Government ID)</small></h6>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-6">
+                                    {{{form.firstName.text.label}}}
+                                    {{{form.firstName.text.input}}}
+                                </div>
+                                <div class="col-md-6">
+                                    {{{form.middleName.text.label}}}
+                                    {{{form.middleName.text.input}}}
+                                </div>
+                            </div>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-6">
+                                    {{{form.lastName.text.label}}}
+                                    {{{form.lastName.text.input}}}
+                                </div>
+                                <div class="col-md-3">
+                                    {{{form.suffix.select.label}}}
+                                    {{{form.suffix.select.input}}}
+                                </div>
+                                <div class="col-md-3">
+                                    {{{form.gender.select.label}}}
+                                    {{{form.gender.select.input}}}
+                                </div>
+                            </div>
+                            {{!-- <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Personal Information</h6>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-4">
+                                    {{{form.gender.select.label}}}
+                                    {{{form.gender.select.input}}}
+                                </div>
+                                <div class="col-md-4">
+                                    {{{form.dob.text.label}}}
+                                    {{{form.dob.text.input}}}
+                                    <div class="form-text text-danger" id="dob-help"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    {{{form.ssn.text.label}}}
+                                    {{{form.ssn.text.input}}}
+                                </div>
+                            </div> --}}
+                            <div class="row g-3 my-1">
+                                {{{form.marital.radio.label}}}
+                                <div class="col-md-4 my-0">
+                                    <div class="form-check">
+                                        {{{form.marital.radio.single.input}}}
+                                        {{{form.marital.radio.single.label}}}
+                                    </div>
+                                    <div class="form-check">
+                                        {{{form.marital.radio.married.input}}}
+                                        {{{form.marital.radio.married.label}}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 my-0">
+                                    <div class="form-check">
+                                        {{{form.marital.radio.divorced.input}}}
+                                        {{{form.marital.radio.divorced.label}}}
+                                    </div>
+                                    <div class="form-check">
+                                        {{{form.marital.radio.separated.input}}}
+                                        {{{form.marital.radio.separated.label}}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 my-0">
+                                    <div class="form-check">
+                                        {{{form.marital.radio.widowed.input}}}
+                                        {{{form.marital.radio.widowed.label}}}
+                                    </div>
+                                </div>
+                            </div>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Contacts</h6>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-5">
+                                    {{{form.phone.text.label}}}
+                                    {{{form.phone.text.input}}}
+                                </div>
+                                <div class="col-md-7">
+                                    {{{form.email.text.label}}}
+                                    {{{form.email.text.input}}}
+                                    <div class="form-text text-danger" id="email-help"></div>
+                                </div>
+                            </div>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Eligibility</h6>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-6">
+                                    {{{form.status.radio.label}}}
+                                    <div class="form-check">
+                                        {{{form.status.radio.citizen.input}}}
+                                        {{{form.status.radio.citizen.label}}}
+                                    </div>
+                                    <div class="form-check">
+                                        {{{form.status.radio.resident.input}}}
+                                        {{{form.status.radio.resident.label}}}
+                                    </div>
+                                    <div class="form-check">
+                                        {{{form.status.radio.authorized.input}}}
+                                        {{{form.status.radio.authorized.label}}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4" style="display: none;">
+                                    {{{form.statusExp.text.label}}}
+                                    {{{form.statusExp.text.input}}}
+                                    <div class="form-text text-danger" id="status-exp-help"></div>
+                                </div>
+                            </div>
+                            <p class="form-text text-danger mt-4" id="form-help" style="display: none;"></p>
+                            <div class="row g-3 my-2">
+                                <div class="col-md-4">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary bg-primary-subtle" id="profile-submit">Next</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card-footer text-secondary">
+                {{{copyright}}}
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/modules/application/registration.mjs"></script>
+
+{{> foot}}

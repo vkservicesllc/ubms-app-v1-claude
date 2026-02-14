@@ -86,22 +86,60 @@ const dynamicValidator = {
 // ==== ROUTES ==== //
 
 
-router.post('/application/start/:_teamId?/:_carrierId?', [ ApplicationForm.position.validate(), ApplicationForm.ssn.validate() ], validationCheck, async (req, res) => {
+router.post('/application/start/:_teamId?/:_carrierId?', [
+    ApplicationForm.position.validate(),
+    ApplicationForm.ssn.validate(),
+    ApplicationForm.dob.validate(),
+], validationCheck, async (req, res) => {
     try {
-        const { position, ssn } = req.body
-        const { form: formId } = req.query
+        const { session } = res
+        session.user = { id: 1 } //* For fetch purposes only
+        //* 1. NEW
+        //* a) Pre-Application
+        //* b) Brand New
 
-        if (formId) {
-            const application = await Application.fetch(res.session, { formId })
-            if (!application) throw new Error('Application not found')
+        //* 2) REHIRE
+        //* a) Pre-Application (ignore)
+        //* b) Returning
 
-            // update
-        } else {
-            const { _teamId, _carrierId } = req.params
-            const { cdl: cdrlRole, rec: _userSimpleId } = req.query
-            const {  } = await Application.create(res.session, { position, ssn, _teamId, _carrierId, cdrlRole, _userSimpleId })
+        const { position, ssn, dob } = req.body
+        const person = await Individual.fetch(res.session, { ssn })
 
-        }
+        if (person && dob !== person.dob)  throw new Error('DAPP_DOB_MISMATCH_ERROR')
+
+        const { _teamId, _carrierId } = req.params
+        const { cdl: cdlRole, rec: _userSimpleId, form: formId } = req.query
+        let application, urlExt = ''
+        if (formId) application = await Application.fetch(res.session, { formId })
+
+        if (!application) {
+            application = (await Application.create(res.session, {
+                cdlRole, _teamId, _carrierId, _userSimpleId,
+                ssn, dob, position,
+            })).data
+            if (!application) throw new Error('Failed to create application')
+            urlExt = '/registration'
+        } else
+            application = (await application.update(res.session, {
+                //! Pre-Applicant without Driver ID
+            }))
+
+        req.session.application = application._id
+
+        res.redirect(`/application/${application.formId + urlExt}`)
+        // const { form: formId } = req.query
+
+        // if (formId) {
+        //     const application = await Application.fetch(res.session, { formId })
+        //     if (!application) throw new Error('Application not found')
+
+        //     // update
+        // } else {
+        //     const { _teamId, _carrierId } = req.params
+        //     const { cdl: cdrlRole, rec: _userSimpleId } = req.query
+        //     const {  } = await Application.create(res.session, { position, ssn, _teamId, _carrierId, cdrlRole, _userSimpleId })
+
+        // }
 
 //         let { form: formId } = req.query
 //         const person = await Individual.fetch(res.session, { ssn }, { hideSensitive: false })
@@ -114,7 +152,21 @@ router.post('/application/start/:_teamId?/:_carrierId?', [ ApplicationForm.posit
 //             if (!application) throw new Error('Application not found')
 //         }
     } catch (err) {
-        sendError.server(req, res, err)
+        switch (err.message) {
+            case 'DAPP_DOB_MISMATCH_ERROR':
+                {
+                    //! Return HBS with message
+                    return res.send('DOB Mismatch Error. HBS comming later...')
+                }
+                break
+            case 'DAPP_LOCKED_SSN_ERROR':
+                {
+                    //! Return HBS with message
+                    return res.send('SSN is locked. HBS comming later...')
+                }
+            default:
+                sendError.server(req, res, err)
+        }
     }
 })
 

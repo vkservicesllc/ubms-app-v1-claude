@@ -9,6 +9,7 @@ import Company from './company.mjs'
 import { hash, matchHash }  from '../utils/query.mjs'
 import { classInstance, classStatic } from '../utils/class.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
+import { processAES } from '../utils/data.mjs'
 
 
 const stateTaxIds = Object.keys(inputLength.carrier.permit.max)
@@ -163,7 +164,7 @@ class Carrier extends Company {
             }
             if (companyId || _companyId || companyIds || _companyIds)
                 batch[0].match.id = companyId || companyIds || Company.matchIdHash(_companyId || _companyIds)
-            if (ein) batch[0].match.ein = { aes: [ ein, secret.ein ] }
+            if (ein) batch[0].match.ein = processAES('ein', ein)
             if (busName && coType) {
                 batch[1].match.busName = busName
                 batch[1].match.coType = coType

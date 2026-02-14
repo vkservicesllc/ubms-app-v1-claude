@@ -1,5 +1,3 @@
-const { DB__MYSQL_AES_SSN: secret } = Bun.env
-
 /* Settings */
 import db, { query } from '../../settings/mysql.mjs'
 
@@ -10,6 +8,7 @@ import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { hash, matchHash } from '../utils/query.mjs'
 import { classInstance, classStatic } from '../utils/class.mjs'
+import { selectAES, processAES } from '../utils/data.mjs'
 
 const mysql = require('../utils/mysql')
 
@@ -156,7 +155,7 @@ class Individual extends Person {
             batch: [
                 {
                     table: query.person.main.table,
-                    fields: [ 'id', Individual.hashId(), 'dob', 'gender', { aes: [ 'ssn', secret ] } ],
+                    fields: [ 'id', Individual.hashId(), 'dob', 'gender', selectAES('ssn') ],
                     group: 'id',
                 },
                 {
@@ -240,7 +239,7 @@ class Individual extends Person {
                     if (ids) match.main.id = ids
                     match.main.id = Individual.matchIdHash(_id || _ids)
                 }
-                if (ssn) match.main.ssn = { aes: [ ssn, secret ] }
+                if (ssn) match.main.ssn = processAES('ssn', ssn)
 
                 batch[0].match = match.main
                 batch[1].match = match.names
