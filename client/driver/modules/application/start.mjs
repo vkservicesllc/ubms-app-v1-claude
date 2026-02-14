@@ -18,6 +18,7 @@ const $label = {
 }
 const $certifyDl = $('#confirm-dl')
 const $certifyStatus = $('#confirm-status')
+const $certifyPersonal = $('#confirm-personal')
 const $help = {
     dob: $('#dob-help'),
     // form: $('#form-help'),
@@ -180,6 +181,10 @@ $certifyStatus.on('change', function() {
     $submit.prop('disabled', !validForm())
 })
 
+$certifyPersonal.on('change', function() {
+    $submit.prop('disabled', !validForm())
+})
+
 
 $form.submit(function(evt) {
     evt.preventDefault()
@@ -200,5 +205,5 @@ function validForm() {
     const validSsn = $(ssnId).hasClass('is-valid')
     const validDob = $(dobId).hasClass('is-valid')
 
-    return validSsn && validDob && $certifyDl.prop('checked') & $certifyStatus.prop('checked')
+    return validSsn && validDob && $certifyDl.prop('checked') && $certifyStatus.prop('checked') && $certifyPersonal.prop('checked')
 }
