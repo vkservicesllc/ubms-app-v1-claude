@@ -129,8 +129,10 @@ export const applicationStart = async (req, res, next) => {
 export const applicationRegistration = async (req, res, next) => {
     try {
         const { formId } = req.params
+        const { id: _id } = req.query
         const application = await Application.fetch(res.session, { formId })
-        if (!application || application.driverId || application.rehire) return res.redirect(`/application/${formId}`)
+        if (!application || application._id !== _id || application.driverId || application.rehire)
+            return res.redirect(`/application/${formId}`)
 
         const key = 'application.registration'
         let { hbs } = res
@@ -160,6 +162,8 @@ export const applicationRegistration = async (req, res, next) => {
             options.status.radio[prop].label.class = 'form-check-label'
         }
 
+        hbs.formId = application.formId
+        hbs.position = application.expansion.position
         hbs.form = new ApplicationForm(options)
 
         res.render('application/registration', hbs)

@@ -105,12 +105,15 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
         const { position, ssn, dob } = req.body
         const person = await Individual.fetch(res.session, { ssn })
 
-        if (person && dob !== person.dob)  throw new Error('DAPP_DOB_MISMATCH_ERROR')
+        if (person && dob !== person.dob) throw new Error('DAPP_DOB_MISMATCH_ERROR')
 
         const { _teamId, _carrierId } = req.params
         const { cdl: cdlRole, rec: _userSimpleId, form: formId } = req.query
-        let application, urlExt = ''
-        if (formId) application = await Application.fetch(res.session, { formId })
+        const filter = { formId }
+
+        if (!formId) filter.ssn = ssn
+        let application = await Application.fetch(res.session, filter, { hideSensitive: false })
+        let urlExt = ''
 
         if (!application) {
             application = (await Application.create(res.session, {
@@ -118,13 +121,23 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
                 ssn, dob, position,
             })).data
             if (!application) throw new Error('Failed to create application')
-            urlExt = '/registration'
-        } else
-            application = (await application.update(res.session, {
-                //! Pre-Applicant without Driver ID
-            }))
+            urlExt = `/registration?id=${application._id}`
+        } else {
+            if (!application.driverId && application?.lead?.ssn)
+                urlExt = `/registration?id=${application._id}`
 
-        req.session.application = application._id
+            else {
+                // application = (await application.update(res.session, {
+                //     //! Pre-Applicant without Driver ID
+                // }))
+                return res.send({
+                    cdlRole, _teamId, _carrierId, _userSimpleId,
+                    ssn, dob, position,
+                })
+            }
+        }
+
+        // req.session.application = application._id
 
         res.redirect(`/application/${application.formId + urlExt}`)
         // const { form: formId } = req.query
