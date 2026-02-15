@@ -90,6 +90,13 @@ class Company {
         this.fax = data.fax
         this.email = data.email
 
+        this.effectiveDate = {
+            name: data.nameSince,
+            address: data.addrSince,
+            phone: data.phoneSince,
+            fax: data.faxSince,
+        }
+
         if (single) {
             this.session = session
             this.config = { hideRawId, hideSensitive }
@@ -187,6 +194,7 @@ class Company {
                 {
                     table: query.company.names.table,
                     fields: [
+                        [ 'since', 'nameSince' ],
                         'busName', 'coType', 'alias',
                         { concat: [ [ 'busName', '^, ', 'coType' ], 'name' ] },
                         { route: [ [ 'busName', 'coType' ] ] },
@@ -219,7 +227,11 @@ class Company {
                 },
                 {
                     table: query.company.addresses.table,
-                    fields: [ 'address1', 'address2', 'city', 'state', 'zip', 'mail' ],
+                    fields: [
+                        [ 'since', 'addrSince' ],
+                        'address1', 'address2',
+                        'city', 'state', 'zip', 'mail',
+                    ],
                     join,
                 },
                 {
@@ -235,12 +247,12 @@ class Company {
                 },
                 {
                     table: query.company.phones.table,
-                    fields: 'phone',
+                    fields: [ [ 'since', 'phoneSince' ], 'phone' ],
                     join,
                 },
                 {
                     table: query.company.faxes.table,
-                    fields: 'fax',
+                    fields: [ [ 'since', 'faxSince' ], 'fax' ],
                     join,
                 },
                 {
