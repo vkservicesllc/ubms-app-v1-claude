@@ -53,6 +53,16 @@ class Individual extends Person {
         const props2 = { legal, phone, email, marital, address, identification }
         if (count) props2.count = count
 
+        props2.matcher = {
+            name: data.nameSince,
+            legal: data.legalSince,
+            marital: data.maritalSince,
+            address: data.addrSince,
+            phone: data.phoneSince,
+            email: data.emailSince,
+            identification: data.identId,
+        }
+
         reSuper(this, props, props2)
 
         if (single) {
@@ -160,39 +170,49 @@ class Individual extends Person {
                 },
                 {
                     table: query.person.names.table,
-                    fields: [ 'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix' ],
+                    fields: [
+                        [ 'since', 'nameSince' ],
+                        'prefix', 'firstName', 'alias', 'middleName', 'lastName', 'suffix',
+                    ],
                     join,
                 },
                 {
                     table: query.person.legal.table,
-                    fields: [ 'status', [ 'expiresOn', 'statusExpiredOn' ] ],
+                    fields: [
+                        [ 'since', 'legalSince' ],
+                        'status', [ 'expiresOn', 'statusExpiredOn' ],
+                    ],
                     join,
                 },
                 {
                     table: query.person.maritals.table,
-                    fields: [ [ 'status', 'marital' ] ],
+                    fields: [ [ 'since', 'maritalSince' ], [ 'status', 'marital' ] ],
                     join,
                 },
                 {
                     table: query.person.addresses.table,
-                    fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
+                    fields: [
+                        [ 'since', 'addrSince' ],
+                        'address1', 'address2',
+                        'city', 'state', 'zip',
+                    ],
                     join,
                 },
                 {
                     table: query.person.phones.table,
-                    fields: 'phone',
+                    fields: [ [ 'since', 'phoneSince' ], 'phone' ],
                     join,
                 },
                 {
                     table: query.person.emails.table,
-                    fields: 'email',
+                    fields: [ [ 'since', 'emailSince' ], 'email' ],
                     join,
                 },
                 {
                     table: query.person.identifications.table,
                     fields: [
-                        'driver',
-                        'commercial',
+                        [ 'id', 'identId' ],
+                        'driver', 'commercial',
                         [ 'number', 'idNumber' ],
                         [ 'class', 'idClass' ],
                         [ 'state', 'idState' ],
