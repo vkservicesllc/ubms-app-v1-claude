@@ -514,6 +514,48 @@ class Application {
             this.config = { hideRawId, hideSensitive }
 
 
+            this.register = async body => {
+                if (this.driverId || this.rehire || !this?.lead?.ssn || !this?.lead?.dob) return
+
+                const { prefix, firstName, middleName, lastName, suffix, gender, phone, email, marital, legalStatus: status, legalExpiration: expiresOn } = body
+                const { ssn, dob } = this.lead
+                const since = dob
+
+                let person = await Individual.fetch(this.session, { ssn }) //? Technically it is checked before in create
+                if (!person) person = (await Individual.create(this.session, {
+                    ssn, dob, gender,
+                    prefix, firstName, middleName, lastName, suffix,
+                })).data
+                if (!person) throw new Error('Failed to create individual')
+
+                await person.add('phones', { since, phone })
+                await person.add('emails', { since, email })
+                await person.add('maritals', { since, status: marital })
+                await person.add('legal', { since, status, expiresOn })
+
+                const personId = person.id
+                const driver = (await Driver.create(this.session, { personId })).data
+                if (!driver) throw new Error('Failed to create driver')
+
+                let companyId, coNameSince, coAddrSince, coPhoneSince, coFaxSince
+                if (this._carrierId) {
+                    const carrier = await Carrier.fetch(this.session, { id: this.carrierId || Carrier.matchIdHash(this._carrierId) })
+                    if (carrier) companyId = carrier.companyId
+
+                    //! FIND VALUES FOR coNameSince, coAddrSince, coPhoneSince, coFaxSince
+                }
+
+                const driverId = driver.id
+                await this.update({ driverId })
+                await this.add('matcher', {
+                    personId, driverId, companyId,
+                    nameSince: since, legalSince: since, maritalSince: since,
+                    phoneSince: since, emailSince: since,
+                    coNameSince, coAddrSince, coPhoneSince, coFaxSince,
+                })
+            }
+
+
             this.add = (target, body) => classInstance.add(this, new.target, target, body)
 
 

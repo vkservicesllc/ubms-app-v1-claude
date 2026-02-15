@@ -8,7 +8,7 @@ import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { hash, matchHash } from '../utils/query.mjs'
 import { classInstance, classStatic } from '../utils/class.mjs'
-import { selectAES, processAES } from '../utils/data.mjs'
+import { selectAES, processAES, unprocessAES } from '../utils/data.mjs'
 
 const mysql = require('../utils/mysql')
 
@@ -138,7 +138,7 @@ class Individual extends Person {
                 main: { dob, gender },
                 names: { since: dob, prefix, firstName, middleName, lastName, suffix, alias },
             }
-            if (ssn) body.main.ssn = ssn
+            if (ssn) body.main.ssn = processAES('ssn', unprocessAES(ssn))
 
             return body
         },
