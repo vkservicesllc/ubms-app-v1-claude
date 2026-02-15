@@ -540,9 +540,13 @@ class Application {
                 let companyId, coNameSince, coAddrSince, coPhoneSince, coFaxSince
                 if (this._carrierId) {
                     const carrier = await Carrier.fetch(this.session, { id: this.carrierId || Carrier.matchIdHash(this._carrierId) })
-                    if (carrier) companyId = carrier.companyId
-
-                    //! FIND VALUES FOR coNameSince, coAddrSince, coPhoneSince, coFaxSince
+                    if (carrier) {
+                        companyId = carrier.companyId
+                        coNameSince = carrier.matcher.name
+                        coAddrSince = carrier.matcher.address
+                        coPhoneSince = carrier.matcher.phone
+                        coFaxSince = carrier.matcher.fax
+                    }
                 }
 
                 const driverId = driver.id
