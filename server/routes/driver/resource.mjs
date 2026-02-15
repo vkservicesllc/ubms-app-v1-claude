@@ -10,6 +10,7 @@ import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Individual from '../../tools/core/individual.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
+import { utcTimeStamp } from '../../tools/utils/date.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
@@ -92,8 +93,6 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
     ApplicationForm.dob.validate(),
 ], validationCheck, async (req, res) => {
     try {
-        const { session } = res
-        session.user = { id: 1 } //* For fetch purposes only
         //* 1. NEW
         //* a) Pre-Application
         //* b) Brand New
@@ -114,6 +113,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
         if (!formId) filter.ssn = ssn
         let application = await Application.fetch(res.session, filter, { hideSensitive: false })
         let urlExt = ''
+        const extendUrl = _id => `/registration?id=${_id}`
 
         if (!application) {
             application = (await Application.create(res.session, {
@@ -121,19 +121,26 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
                 ssn, dob, position,
             })).data
             if (!application) throw new Error('Failed to create application')
-            urlExt = `/registration?id=${application._id}`
-        } else {
-            if (!application.driverId && application?.lead?.ssn)
-                urlExt = `/registration?id=${application._id}`
-
+            urlExt = extendUrl(application._id)
+        } else if (!application.driverId) {
+            if (application?.lead?.ssn) urlExt = extendUrl(application._id)  //* Driver never registered but started in the past
             else {
                 // application = (await application.update(res.session, {
                 //     //! Pre-Applicant without Driver ID
                 // }))
-                return res.send({
-                    cdlRole, _teamId, _carrierId, _userSimpleId,
-                    ssn, dob, position,
-                })
+                // return res.send({
+                //     cdlRole, _teamId, _carrierId, _userSimpleId,
+                //     ssn, dob, position,
+                // })
+                let driverId, rehire
+                const driver = await Driver.fetch(res.session, { ssn })
+                if (driver) {
+                    driverId = driver.id
+                    rehire = true
+                } else urlExt = extendUrl(application._id)
+
+                await application.update('lead', { ssn, dob })
+                await application.update({ driverId, rehire, position }) //, createdAt: utcTimeStamp()
             }
         }
 

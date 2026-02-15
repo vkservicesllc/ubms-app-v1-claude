@@ -73,9 +73,14 @@ export const dtApplicationList = async (req, res) => {
         archived = archived === 'true'
         //* As of Archived it is never unfiltered
 
+        for (const prop of ['condition', 'position']) {
+            if (!filter[prop]) filter[prop] = undefined
+            else if (filter[prop].includes(',')) filter[prop] = filter[prop].split(',')
+        }
+        //! carrier and user must be either null, undefined or string
+
         filter.teamId = teamId
         filter.archived = archived
-
 
         const limit = [ start, length ]
         filter.search = search

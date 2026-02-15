@@ -39,6 +39,11 @@ const $submit = $('[type=submit]')
 const $form = $('#apl-start-form')
 const duration = 750
 
+const lead = {
+    phone: $('#lead-phone').val() || null,
+    email: $('#lead-email').val() || null,
+}
+
 
 /* Reset Form on Refresh */
 $(selector.class.global).val(null)
@@ -56,7 +61,9 @@ $expiration.prop('disabled', true)
         emailId,
         genderId,
     ].forEach(id => {
-        const value = sessionStorage.getItem(id.replace('#', ''))
+        let value = sessionStorage.getItem(id.replace('#', ''))
+        if (id === phoneId && !value) value = lead.phone
+        if (id === emailId && !value) value = lead.email
 
         if (value) {
             const $el = $(id)
@@ -139,6 +146,7 @@ emailEvent(emailId, {
         if (check($form)) $help.form.hide().html(null)
     },
 })
+
 
 dateMask(statusExpId, {
     pattern: 'us',

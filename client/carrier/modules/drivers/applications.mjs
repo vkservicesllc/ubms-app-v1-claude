@@ -24,10 +24,10 @@ const table = $('#driver-apl-table').DataTable({
         url: '/api/resource/drivers/applications/query',
         data(body) {
             body.filter = {
-                conditions: $('#condition-filter').val(),
-                positions: $('#position-filter').val(),
-                carriers: $('#carrier-filter').val(),
-                user: $('#user-filter').val(),
+                condition: $('#condition-filter').val(),
+                position: $('#position-filter').val(),
+                // carrier: $('#carrier-filter').val(),
+                // user: $('#user-filter').val(),
             }
         },
         dataSrc(response) {
@@ -62,33 +62,33 @@ const table = $('#driver-apl-table').DataTable({
 
                 let data = `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`
 
-                if (!row._driverId)
+                if (!row._driverId && !row?.lead?.dob)
                     return data + ' <div class="ui inverted grey label">Pre-Application</div>'
 
-                if (row.dob !== row.originalDob || row.sex !== row.originalSex)
-                    data += `<span title="Identity Error: False DOB or Gender"><i class="ui red exclamation triangle icon"></i></span>`
+                // if (row.dob !== row.originalDob || row.sex !== row.originalSex)
+                //     data += `<span title="Identity Error: False DOB or Gender"><i class="ui red exclamation triangle icon"></i></span>`
 
-                if (row.marital === 'm') {
-                    let { sex, benefRelation, benefOtherRel } = row
+                // if (row.marital === 'm') {
+                //     let { sex, benefRelation, benefOtherRel } = row
 
-                    if (benefRelation) benefRelation = benefRelation.toLowerCase().trim()
-                    if (benefOtherRel) benefOtherRel = benefOtherRel.toLowerCase().trim()
+                //     if (benefRelation) benefRelation = benefRelation.toLowerCase().trim()
+                //     if (benefOtherRel) benefOtherRel = benefOtherRel.toLowerCase().trim()
 
-                    switch (true) {
-                        case sex === 0 && (benefRelation === 'wife' || benefOtherRel === 'wife'):
-                        case sex === 1 && (benefRelation === 'husband' || benefOtherRel === 'husband'):
-                            data += `<span title="Logical Error: Incorrect Gender"><i class="ui red exclamation triangle icon"></i></span>`
-                            break
-                    }
-                }
+                //     switch (true) {
+                //         case sex === 0 && (benefRelation === 'wife' || benefOtherRel === 'wife'):
+                //         case sex === 1 && (benefRelation === 'husband' || benefOtherRel === 'husband'):
+                //             data += `<span title="Logical Error: Incorrect Gender"><i class="ui red exclamation triangle icon"></i></span>`
+                //             break
+                //     }
+                // }
 
-                if (
-                    row.firstName !== row.originalFirstName ||
-                    row.middleName !== row.originalMiddleName ||
-                    row.lastName !== row.originalLastName ||
-                    row.suffix !== row.originalSuffix
-                )
-                    data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange id badge outline icon"></i></span>`
+                // if (
+                //     row.firstName !== row.originalFirstName ||
+                //     row.middleName !== row.originalMiddleName ||
+                //     row.lastName !== row.originalLastName ||
+                //     row.suffix !== row.originalSuffix
+                // )
+                //     data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange id badge outline icon"></i></span>`
 
                 if (step > 2 && !row.medCard)
                     data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`
@@ -158,8 +158,10 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             type: 'string',
             data(row) {
-                if (!row.dob) return
-                return new Person(row).age
+                const dob = row.dob || row?.lead?.dob
+                if (!dob) return
+
+                return new Person({ firstName: 'fn', lastName: 'ln', dob }).age
             },
         },
 
@@ -199,14 +201,14 @@ const table = $('#driver-apl-table').DataTable({
         },
 
         {
-            data: 'createdAt',
+            data: 'appliedOn',
             title: 'Applied on',
             searchable: false,
             orderable: false,
             defaultContent: '<i style="color: pink; font-size: .9em;">...pending</i>',
             type: 'string',
             render(data, type, row) {
-                if (!row._driverId) return
+                if (!row._driverId && !row?.lead?.dob) return
                 return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
         },
@@ -271,12 +273,14 @@ const table = $('#driver-apl-table').DataTable({
                 let panel = ''
 
                 if (!row._driverId) {
-                    const { _userId, sessionUser } = row
-                    const assigned = !_userId || _userId === sessionUser._id || sessionUser.DS
+                    if (!row?.lead?.dob) {
+                        const { _userId, sessionUser } = row
+                        const assigned = !_userId || _userId === sessionUser._id || sessionUser.DS
 
-                    if (modify && assigned) {
-                        panel += `<a class="reinvite-apl" data-id="${_id}" href="" title="Invite again"><i class="blue envelope outline icon"></i></a>`
-                        return panel += `<a class="modify-preapl" data-id="${_id}" data-assigned="${assigned ? 1 : 0}" href="" title="Modify Pre-Application"><i class="dark green edit outline icon"></i></a>`
+                        if (modify && assigned) {
+                            panel += `<a class="reinvite-apl" data-id="${_id}" href="" title="Invite again"><i class="blue envelope outline icon"></i></a>`
+                            return panel += `<a class="modify-preapl" data-id="${_id}" data-assigned="${assigned ? 1 : 0}" href="" title="Modify Pre-Application"><i class="dark green edit outline icon"></i></a>`
+                        }
                     }
 
                     return

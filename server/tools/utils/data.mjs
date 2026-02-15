@@ -25,8 +25,8 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
 
     if (update) {
         const fields = ['*']
-        if ('ssn' in data) fields.push(selectAES('ssn'))
-        if ('ein' in data) fields.push(selectAES('ein'))
+        if (data.ssn) fields.push(selectAES('ssn'))
+        if (data.ein) fields.push(selectAES('ein'))
 
         currentData = (await mysql.execute(query[target].select(fields, { match })))[0][0]
         if (!currentData) throw new Error('Could not process data: current data not found')

@@ -169,6 +169,7 @@ export const applicationRegistration = async (req, res, next) => {
         hbs.position = application.expansion.position
         hbs.maskedSsn = formatSsn(application.lead.ssn, '*')
         hbs.dob = moment(application.lead.dob).format('ll')
+        hbs.lead = application.lead
         hbs.form = new ApplicationForm(options)
 
         res.render('application/registration', hbs)

@@ -201,7 +201,7 @@ class Driver extends Individual {
                 if (!id && _id) batch[0].match.id = Driver.matchIdHash(_id)
                 if (!personId && _personId) batch[0].match.personId = Individual.matchIdHash(_personId)
 
-                if (ssn) batch[2].match.ssn = processAES('ssn', ssn)
+                if (ssn) batch[2].match = { ssn: processAES('ssn', ssn) }
 
                 const teamIdx = batch.length - 1
                 const appIdx = teamIdx - 1
@@ -904,7 +904,8 @@ class Application {
                         {
                             if (this.step < 12) {
                                 await this.update({ step: 12 })
-                                await this.delete('lead')
+                                // await this.delete('lead')
+                                await this.update('lead', { ssn: null })
                             }
                         }
                         break
