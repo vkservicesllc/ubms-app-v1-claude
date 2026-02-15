@@ -90,7 +90,7 @@ class Company {
         this.fax = data.fax
         this.email = data.email
 
-        this.effectiveDate = {
+        this.matcher = {
             name: data.nameSince,
             address: data.addrSince,
             phone: data.phoneSince,
