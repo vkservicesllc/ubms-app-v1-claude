@@ -11,7 +11,7 @@ const middleNameId = TS.middleName
 const lastNameId = TS.lastName
 const suffixId = SS.suffix
 const dobId = TS.dob
-const ssnId = TS.ssn
+// const ssnId = TS.ssn
 const phoneId = TS.phone
 const emailId = TS.email
 
@@ -67,7 +67,7 @@ dateMask(dobId, {
     },
 })
 
-idMask(ssnId, 'ssn', { onAccept, onComplete })
+// idMask(ssnId, 'ssn', { onAccept, onComplete })
 
 telMask(phoneId, { onAccept, onComplete })
 

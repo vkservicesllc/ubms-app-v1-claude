@@ -94,48 +94,94 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
 ], validationCheck, async (req, res) => {
     try {
         const { position, ssn, dob } = req.body
-        const person = await Individual.fetch(res.session, { ssn })
+        let { form: formId } = req.query
 
+        const person = await Individual.fetch(res.session, { ssn })
         if (person && dob !== person.dob) throw new Error('DAPP_DOB_MISMATCH_ERROR')
 
-        const { _teamId, _carrierId } = req.params
-        const { cdl: cdlRole, rec: _userSimpleId, form: formId } = req.query
-        const filter = { formId }
-
-        if (!formId) filter.ssn = ssn
-        let application = await Application.fetch(res.session, filter, { hideSensitive: false })
         let urlExt = ''
         const extendUrl = _id => `/registration?id=${_id}`
 
-        if (!application) {
-            application = (await Application.create(res.session, {
+        if (formId) {
+            const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
+            if (!application) throw new Error('DAPP_NFOUND_ERROR')
+
+            if (!application.driverId) {
+                if (application?.lead?.ssn) urlExt = extendUrl(application._id)  //* Driver never registered but started in the past
+                else {
+                    let driverId, rehire
+                    const driver = await Driver.fetch(res.session, { ssn })
+                    if (driver) {
+                        driverId = driver.id
+                        rehire = true
+                        req.session.application = application._id
+                    } else urlExt = extendUrl(application._id)
+
+                    await application.update('lead', { ssn, dob })
+                    await application.update({ driverId, rehire, position }) //, createdAt: utcTimeStamp()
+                }
+            }
+        } else {
+            const { _teamId, _carrierId } = req.params
+            const { cdl: cdlRole, rec: _userSimpleId,  } = req.query
+
+            const application = (await Application.create(res.session, {
                 cdlRole, _teamId, _carrierId, _userSimpleId,
                 ssn, dob, position,
             })).data
-            if (!application) throw new Error('Failed to create application')
-            urlExt = extendUrl(application._id)
-        } else if (!application.driverId) {
-            if (application?.lead?.ssn) urlExt = extendUrl(application._id)  //* Driver never registered but started in the past
-            else {
-                let driverId, rehire
-                const driver = await Driver.fetch(res.session, { ssn })
-                if (driver) {
-                    driverId = driver.id
-                    rehire = true
-                } else urlExt = extendUrl(application._id)
 
-                await application.update('lead', { ssn, dob })
-                await application.update({ driverId, rehire, position }) //, createdAt: utcTimeStamp()
-            }
+            formId = application.formId
+            urlExt = extendUrl(application._id)
         }
 
-        res.redirect(`/application/${application.formId + urlExt}`)
+        res.redirect(`/application/${formId + urlExt}`)
+        // const person = await Individual.fetch(res.session, { ssn })
+        // if (person && dob !== person.dob) throw new Error('DAPP_DOB_MISMATCH_ERROR')
+
+        // const { _teamId, _carrierId } = req.params
+        // const { cdl: cdlRole, rec: _userSimpleId, form: formId } = req.query
+        // const filter = { formId }
+
+        // if (!formId) filter.ssn = ssn
+        // let application = await Application.fetch(res.session, filter, { hideSensitive: false })
+        // let urlExt = ''
+        // const extendUrl = _id => `/registration?id=${_id}`
+
+        // if (!application) {
+        //     application = (await Application.create(res.session, {
+        //         cdlRole, _teamId, _carrierId, _userSimpleId,
+        //         ssn, dob, position,
+        //     })).data
+        //     if (!application) throw new Error('Failed to create application')
+        //     urlExt = extendUrl(application._id)
+        // } else if (!application.driverId) {
+        //     if (application?.lead?.ssn) urlExt = extendUrl(application._id)  //* Driver never registered but started in the past
+        //     else {
+        //         let driverId, rehire
+        //         const driver = await Driver.fetch(res.session, { ssn })
+        //         if (driver) {
+        //             driverId = driver.id
+        //             rehire = true
+        //         } else urlExt = extendUrl(application._id)
+
+        //         await application.update('lead', { ssn, dob })
+        //         await application.update({ driverId, rehire, position }) //, createdAt: utcTimeStamp()
+        //     }
+        // }
+
+        // res.redirect(`/application/${application.formId + urlExt}`)
     } catch (err) {
         switch (err.message) {
             case 'DAPP_DOB_MISMATCH_ERROR':
                 {
                     //! Return HBS with message
                     return res.send('DOB Mismatch Error. HBS comming later...')
+                }
+                break
+            case 'DAPP_NFOUND_ERROR':
+                {
+                    //! Return HBS with message
+                    return res.send('Form ID Error. HBS comming later...')
                 }
                 break
             case 'DAPP_LOCKED_SSN_ERROR':

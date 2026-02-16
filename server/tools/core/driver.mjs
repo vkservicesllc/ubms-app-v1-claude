@@ -271,6 +271,18 @@ class Application {
         }
         this.formId = data.formId
 
+        if (data.matchNameSince)
+            this.matcher = {
+                nameSince: data.matchNameSince,
+                legalSince: data.matchLegalSince,
+                maritalSince: data.matchMaritalSince,
+                phoneSince: data.matchPhoneSince,
+                emailSince: data.matchEmailSince,
+                addrSince: data.matchAddrSince,
+                dlId: data.matchDlId,
+                mecUntil: data.matchMecUntil,
+            }
+
         this.cdlRole = data.cdlRole
         this.position = data.position
         this.condition = data.condition
@@ -534,17 +546,20 @@ class Application {
                 if (!addrEnough) step = 0
 
                 let person = await Individual.fetch(this.session, { ssn }) //? Technically it is checked before in create
-                if (!person) person = (await Individual.create(this.session, {
-                    ssn, dob, gender,
-                    prefix, firstName, middleName, lastName, suffix,
-                })).data
-                if (!person) throw new Error('Failed to create individual')
+                if (!person) {
+                    person = (await Individual.create(this.session, {
+                        ssn, dob, gender,
+                        prefix, firstName, middleName, lastName, suffix,
+                    })).data
 
-                await person.add('phones', { since, phone })
-                await person.add('emails', { since, email })
-                await person.add('addresses', address)
-                await person.add('maritals', { since, status: marital })
-                await person.add('legal', { since, status, expiresOn })
+                    await person.add('phones', { since, phone })
+                    await person.add('emails', { since, email })
+                    await person.add('addresses', address)
+                    await person.add('maritals', { since, status: marital })
+                    await person.add('legal', { since, status, expiresOn })
+
+                    person = await Individual.fetch(this.session, { id: person.id })
+                }
 
                 const personId = person.id
                 const driver = (await Driver.create(this.session, { personId })).data
@@ -555,10 +570,10 @@ class Application {
                     const carrier = await Carrier.fetch(this.session, { id: this.carrierId || Carrier.matchIdHash(this._carrierId) })
                     if (carrier) {
                         companyId = carrier.companyId
-                        coNameSince = carrier.matcher.name
-                        coAddrSince = carrier.matcher.address
-                        coPhoneSince = carrier.matcher.phone
-                        coFaxSince = carrier.matcher.fax
+                        coNameSince = carrier.comparator.name
+                        coAddrSince = carrier.comparator.address
+                        coPhoneSince = carrier.comparator.phone
+                        coFaxSince = carrier.comparator.fax
                     }
                 }
 
@@ -566,8 +581,8 @@ class Application {
                 const application = (await this.update({ driverId, addrEnough, step, public: true })).data
                 await this.add('matcher', {
                     personId, driverId, companyId,
-                    nameSince: since, legalSince: since, maritalSince: since,
-                    phoneSince: since, emailSince: since, addrSince: address.since,
+                    nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
+                    phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
                     coNameSince, coAddrSince, coPhoneSince, coFaxSince,
                 })
 
@@ -624,7 +639,7 @@ class Application {
             this.delete = (target, match = {}) => classInstance.delete(this, new.target, target, match)
 
 
-            this.progress = async (step, body) => {
+            this.progress = async (step, body, rehire = false) => {
                 const { branch, siteId } = this.session
                 const modifiedBy = this.session?.user?.id || null
                 let createdIn = { branch }
@@ -650,354 +665,38 @@ class Application {
                     await application[application.vehicle ? 'update' : 'add']('vehicle', body)
                 }
 
-                switch (step) {
+                if (rehire !== true) {
+
+                    switch (step) {
 
 
-                    case 'profile':
-                        await this.update(body)
-                        break
+                        case 'profile':
+                            const person = await Individual.fetch(this.session, { id: this.personId || Individual.matchHash(this._personId) })
+                            if (!person) throw new Error('Person not found')
 
+                            const { prefix, firstName, middleName, lastName, suffix, dob, gender, marital, phone, email } = body
+                            let { nameSince, maritalSince, phoneSince, emailSince } = this.matcher
 
-                    case 'residence':
-                        {
-                            const { address, addresses } = body
-                            delete body.address
-                            delete body.addresses
+                            const matcherData = {}
 
-                            address.appId = this.id
-                            address.createdIn = createdIn
-
-                            const addrBody = [ address ]
-
-                            if (addresses) {
-                                const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
-                                const count = zip.length
-
-                                for (let i = 0; i < count; i++) {
-                                    addrBody.push({
-                                        appId: this.id,
-                                        address1: address1[i],
-                                        address2: address2[i],
-                                        zip: zip[i],
-                                        city: city[i],
-                                        state: state[i],
-                                        since: since[i],
-                                        enough: enough[i],
-                                        livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
-                                        createdIn,
-                                    })
-                                }
+                            if (dob !== this.dob) {
+                                if (nameSince === this.dob) matcherData.nameSince = dob
+                                if (maritalSince === this.dob) matcherData.maritalSince = dob
+                                if (phoneSince === this.dob) matcherData.phoneSince = dob
+                                if (emailSince === this.dob) matcherData.emailSince = dob
                             }
-
-                            if (!body.prevCountry) body.prevCountry = null
-                            body.addrComplete = true
-                            if (this.step === 0) body.step = 1
-
-                            await mysql.execute(query.driver_application.addresses.delete({ appId: this.id }))
-                            await mysql.execute(query.driver_application.addresses.insert(addrBody))
-
-                            await this.update(body)
-                        }
-                        break
-
-
-                    case 'driver-license':
-                        {
-                            if (!body.denied) body.deniedExpl = null
-                            if (!body.revoked) body.revokedExpl = null
-
-                            const person = await Individual.fetch(this.session, { id: this.personId })
-                            const identifications = await person.fetch('identifications')
-
-                            const dlBody = { ...body }
-                            delete dlBody.appId
-                            delete dlBody.denied
-                            delete dlBody.revoked
-                            delete dlBody.deniedExpl
-                            delete dlBody.revokedExpl
-
-                            if (!this.dl) {
-                                await this.add('license', body)
-                                await this.update({ step: 2 })
-
-                                let found = false
-
-                                for (const id of identifications) {
-                                    if (body.state === id.state && body.issuedOn === id.issuedOn && body.expiresOn === id.expiresOn) {
-                                        found = true
-                                        break
-                                    }
-                                }
-
-                                if (!found) await person.add('identifications', dlBody)
-                            } else {
-                                const { state, issuedOn, expiresOn } = this.dl
-
-                                await this.update('license', body)
-                                await person.update('identifications', dlBody, { state, issuedOn, expiresOn })
-                            }
-                        }
-                        break
-
-
-                    case 'medical-card':
-                        {
-                            const { expiresOn, issuedOn, nrcme, mecAbsent } = body
-                            delete body.expiresOn
-                            delete body.issuedOn
-                            delete body.nrcme
-                            delete body.mecAbsent
-                            
-                            if (!body.underMeds) body.medList = null
-                            body.medCard = !mecAbsent
-                            if (this.step < 3) body.step = 3
-
-                            if (expiresOn) await this[this.medCard ? 'update' : 'add']('medical', { expiresOn, issuedOn, nrcme })
-                            else await this.delete('medical')
-
-                            await this.update(body)
-                        }
-                        break
-
-
-                    case 'legal-compliance':
-                        {
-                            if (!body.dui) body.duiInDecade = null
-                            if (!body.criminal) body.criminalExpl = null
-
-                            const { citations, violation, other: otherViolation, citedOn, state: citState } = body
-                            delete body.violation
-                            delete body.other
-                            delete body.citedOn
-                            delete body.state
-                            if (!violation && body.citations) body.citations = false
-
-                            if (this.step < 4) body.step = 4
-
-                            await mysql.execute(query.driver_application.citations.delete({ appId: this.id }))
-                            if (citations) {
-                                const count = violation.length
-                                const citBody = []
-
-                                for (let i = 0; i < count; i++)
-                                    citBody.push({
-                                        appId: this.id,
-                                        violation: violation[i],
-                                        other: violation[i] === 'other' ? otherViolation?.[i] : null,
-                                        citedOn: citedOn[i],
-                                        state: citState[i],
-                                        createdIn,
-                                    })
-
-                                await mysql.execute(query.driver_application.citations.insert(citBody))
-                            }
-
-                            await this.update(body)
-                        }
-                        break
-
-
-                    case 'safety':
-                        {
-                            const { accidents, collision, other: otherCollision, date: accDate, state: accState, injuries, fatalities } = body
-                            body = { accidents }
-                            if (!collision && body.accidents) body.accidents = false
-
-                            if (this.step < 5) body.step = 5
-
-                            await mysql.execute(query.driver_application.accidents.delete({ appId: this.id }))
-                            if (accidents) {
-                                const count = collision.length
-                                const accBody = []
-
-                                for (let i = 0; i < count; i++)
-                                    accBody.push({
-                                        appId: this.id,
-                                        collision: collision[i],
-                                        other: collision[i] === 'other' ? otherCollision?.[i] : null,
-                                        date: accDate[i],
-                                        state: accState[i],
-                                        injuries: injuries[i],
-                                        fatalities: fatalities[i],
-                                        createdIn,
-                                    })
-
-                                await mysql.execute(query.driver_application.accidents.insert(accBody))
-                            }
-
-                            await this.update(body)
-                        }
-                        break
-
-
-                    case 'experience':
-                        {
-                            const experience = body.noExp !== true
-                            let { cdlSchool } = body
-                            const { vehicles = {}, cmv, firstDate, lastDate, mileage, hours } = body
-                            const { name, phone, state, endDate, duration } = body
-                            if (cdlSchool === undefined) cdlSchool = false
-
-                            body = { experience, cdlSchool }
-                            if (this.step < 6) body.step = 6
-
-                            let { misc } = vehicles
-                            if (misc) {
-                                if (!cmv) { //* VERY IMPORTANT! If other non-cmv types are added, they must be deleted also
-                                    delete misc.tandem
-                                }
-
-                                misc = Object.keys(misc)
-                                vehicles.misc = misc
-                            }
-                            if (!cmv) delete vehicles.semi
-
-                            if (experience) await this[this.experience ? 'update' : 'add']('experience', { vehicles, cmv, firstDate, lastDate, mileage, hours })
-                            else await this.delete('experience')
-
-                            if (cdlSchool) await this[this.cdlSchool ? 'update' : 'add']('school', { name, phone, state, endDate, duration })
-                            else await this.delete('school')
-
-                            await this.update(body)
-                        }
-                        break
-
-
-                    case 'prev-employment':
-                        // {
-                        //     delete body.explGap
-                        //     if (this.step < 7) body.step = 7
-
-                        //     if (!body.prevEmployed) await mysql.execute(query.driver_appemployer.main.delete({ appId: this.id }))
-
-                        //     await this.update(body)
-                        // }
-                        break
-
-                    
-                    // case 'prev-employer':
-                    //     {
-                    //         const { _id } = body
-                    //         delete body._id
-
-                    //         const appBody = { prevEmployed: true }
-
-                    //         if (_id) {
-                    //             const employment = await Employment.fetch(this.session, { _id }, { hideRawId: false })
-                    //             if (!body.leftOn) body.leftOn = null
-                    //             await employment.update(body)
-                    //         } else {
-                    //             body.appId = this.id
-                    //             await Employment.create(this.session, body)
-                    //         }
-
-                    //         await this.update(appBody)
-                    //     }
-                    //     break
-
-
-                    case 'preference':
-                        {
-                            body.appId = this.id
-                            if (body.operType === 's' || !this.cdlRole) {
-                                body.teamName = null
-                                body.teamPhone = null
-                            }
-
-                            if (!this.cdlRole) {
-                                body.haulRegion = null
-                                body.equipment = null
-                            }
-
-                            await this[this.preference ? 'update' : 'add']('preference', body)
-                            if (this.step < 8) await this.update({ step: 8 })
-                        }
-                        break
-
-
-                    case 'business':
-                        {
-                            let { activeLLC } = body
-                            const {
-                                inactiveLLC, busName, state, ein,
-                                mmt, type, make, model, year, length,
-                            } = body
-                            if (inactiveLLC) activeLLC = false
-                            else if (activeLLC === undefined) activeLLC = true
-
-                            body = { activeBusiness: activeLLC }
-                            if (this.step < 9) body.step = 9
-
-                            if (activeLLC) await this[this.activeBusiness ? 'update' : 'add']('business', { busName, state, ein })
-                            else await this.delete('business')
-
-                            //* Driver Application only (when type if defined)
-                            await vehicleRecord(this, { mmt, type, make, model, year, length })
-
-                            await this.update(body)
-                        }
-                        break
-
-
-                    case 'beneficiary':
-                        {
-                            if (body.relation !== 'Other') body.otherRel = null
-
-                            if (!this.beneficiary) {
-                                await this.add('beneficiary', body)
-                                await this.update({ step: 10 })
-                            } else await this.update('beneficiary', body)
-                        }
-                        break
-
-
-                    case 'misc':
-                        {
-                            if (!this.emergency) {
-                                await this.add('emergency', body)
-                                await this.update({ step: 11 })
-                            } else await this.update('emergency', body)
-                        }
-                        break
-
-
-                    case 'certify':
-                        {
-                            if (this.step < 12) {
-                                await this.update({ step: 12 })
-                                // await this.delete('lead')
-                                await this.update('lead', { ssn: null })
-                            }
-                        }
-                        break
-
-
-                    case 'legal-status': //* Carrier UI only (no step)
-                        {
-                            if (body.legalStatus < 2) body.legalExpiration = null
-                            await this.update(body)
-                        }
-                        break
-
-
-                    case 'position': //* Carrier UI only (no step)
-                        {
-                            const { position, mmt, type, make, model, year, length } = body
-
-                            await vehicleRecord(this, { mmt, type, make, model, year, length })
-                            await this.update({ position })
-                        }
-                        break
-
-
-                    case 'workflow': //* Carrier UI only
-                        break
-
-
-                    case 'assignment': //* Carrier UI only
-                        break
-
-
+console.log(body)
+console.log(this.matcher)
+                            await person.update({ dob, gender })
+                            await person.update('names', { prefix, firstName, middleName, lastName, suffix }, { since: nameSince })
+                            await person.update('maritals', { status: marital }, { since: maritalSince })
+                            await person.update('phones', { phone }, { since: phoneSince })
+                            await person.update('emails', { email }, { since: emailSince })
+                            if (Object.keys(matcherData).length) await this.update('matcher', matcherData)
+                            break
+
+
+                    }
                 }
             }
 
@@ -1016,6 +715,9 @@ class Application {
                 let { from } = senderParams
                 const url = `/application/${formId}`
                 let companyName
+
+                if (!email) email = this?.lead?.email
+                if (!email) return
 
                 if (carrier?.name) companyName = carrier.name
                 else if (team?.name) {
@@ -1321,7 +1023,7 @@ class Application {
                 table: query.driver_application.lead.table,
                 fields: [
                     [ 'personId', 'leadPersonId' ],
-                    [ Person.hashId('personId'), '_leadPersonId' ],
+                    [ Individual.hashId('personId'), '_leadPersonId' ],
                     [ selectAES('ssn'), 'leadSsn' ],
                     [ 'dob', 'leadDob' ],
                     // [ 'position', 'leadPosition' ],
@@ -1344,6 +1046,16 @@ class Application {
             },
             {
                 table: query.driver_application.matcher.table,
+                fields: [
+                    [ 'nameSince', 'matchNameSince' ],
+                    [ 'legalSince', 'matchLegalSince' ],
+                    [ 'maritalSince', 'matchMaritalSince' ],
+                    [ 'phoneSince', 'matchPhoneSince' ],
+                    [ 'emailSince', 'matchEmailSince' ],
+                    [ 'addrSince', 'matchAddrSince' ],
+                    [ 'dlId', 'matchDlId' ],
+                    [ 'mecUntil', 'matchMecUntil' ],
+                ],
                 join: [ 'appId', 'id' ],
             },
             {
@@ -1394,7 +1106,7 @@ class Application {
             {
                 db: db.person,
                 table: query.person.addresses.table,
-                fields: [ 'placeId', 'address1', 'address2', 'city', 'state', 'zip' ],
+                fields: [ [ 'since', 'addrSince' ], 'placeId', 'address1', 'address2', 'city', 'state', 'zip' ],
                 join: [ 'personId', 'personId', 2, [ 'since', 'addrSince', 3 ] ],
             },
             {

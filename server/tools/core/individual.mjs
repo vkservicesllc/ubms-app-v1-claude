@@ -53,7 +53,7 @@ class Individual extends Person {
         const props2 = { legal, phone, email, marital, address, identification }
         if (count) props2.count = count
 
-        props2.matcher = {
+        props2.comparator = {
             name: data.nameSince,
             legal: data.legalSince,
             marital: data.maritalSince,
@@ -81,12 +81,11 @@ class Individual extends Person {
                     if (!body.dob || body.dob === person.dob) return
 
                     let keys = Object.keys(query.person)
-                    keys = keys.filter(key => !['main', 'identification'].includes(key))
+                    keys = keys.filter(key => !['main', 'identifications'].includes(key))
+                    const match = { personId: person.id, since: person.dob }
 
                     for (const target of keys)
-                        await mysql.execute(query.person[target].update({ since: body.dob }, {
-                            personId: person.id, since: person.dob,
-                        }))
+                        await mysql.execute(query.person[target].update({ since: body.dob }, match))
                 },
             })
 

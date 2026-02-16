@@ -1483,8 +1483,7 @@ class ApplicationForm {
         let fields
         const profileFields = [
             'firstName', 'middleName', 'lastName', 'suffix',
-            'gender',
-            // 'dob', 'ssn',
+            'gender', 'dob', // 'ssn',
             'marital', 'phone', 'email',
         ]
         const addressFields = ['address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince', 'addrEnough']
