@@ -171,7 +171,7 @@ export const classInstance = {
     },
 
 
-    update: async (inst, Cls, targetOrBody, body, match = {}, { final, skipLog = false } = {}) => {
+    update: async (inst, Cls, targetOrBody, body, match = {}, { final, skipLog = false, hideRawId = false } = {}) => {
         const config = Cls.config()
 
         const { enforceUser = true, enforceLocation = false } = config
@@ -206,7 +206,9 @@ export const classInstance = {
 
         if (typeof final === 'function') await final(inst, body, target)
 
-        return { updated: result.affectedRows > 0 }
+        const data = await Cls.fetch({ user: sessionUser, branch, siteId }, { id: inst.id || Cls.matchIdHash(inst._id) }, { hideRawId })
+
+        return { updated: result.affectedRows > 0, data }
     },
 
 

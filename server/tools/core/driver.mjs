@@ -293,6 +293,8 @@ class Application {
             this.lead.phone = data.leadPhone
             // this.lead.position = data.leadPosition
             if (!hideSensitive) this.lead.ssn = stringifyBuffer(data.leadSsn)
+            this.lead._personId = data._leadPersonId
+            if (!hideRawId) this.lead.personId = data.personId
         }
 
         this.appliedAt = utc2tz(data.createdAt)
@@ -520,9 +522,16 @@ class Application {
             this.register = async body => {
                 if (this.driverId || this.rehire || !this?.lead?.ssn || !this?.lead?.dob) return
 
-                const { prefix, firstName, middleName, lastName, suffix, gender, phone, email, marital, legalStatus: status, legalExpiration: expiresOn } = body
+                const {
+                    prefix, firstName, middleName, lastName, suffix, gender,
+                    phone, email, address, marital, legalStatus: status, legalExpiration: expiresOn,
+                } = body
                 const { ssn, dob } = this.lead
                 const since = dob
+                let step
+                const { enough: addrEnough } = address
+                delete address.enough
+                if (!addrEnough) step = 0
 
                 let person = await Individual.fetch(this.session, { ssn }) //? Technically it is checked before in create
                 if (!person) person = (await Individual.create(this.session, {
@@ -533,12 +542,12 @@ class Application {
 
                 await person.add('phones', { since, phone })
                 await person.add('emails', { since, email })
+                await person.add('addresses', address)
                 await person.add('maritals', { since, status: marital })
                 await person.add('legal', { since, status, expiresOn })
 
                 const personId = person.id
                 const driver = (await Driver.create(this.session, { personId })).data
-console.log('driver:', driver)
                 if (!driver) throw new Error('Failed to create driver')
 
                 let companyId, coNameSince, coAddrSince, coPhoneSince, coFaxSince
@@ -554,13 +563,15 @@ console.log('driver:', driver)
                 }
 
                 const driverId = driver.id
-                await this.update({ driverId })
+                const application = (await this.update({ driverId, addrEnough, step, public: true })).data
                 await this.add('matcher', {
                     personId, driverId, companyId,
                     nameSince: since, legalSince: since, maritalSince: since,
-                    phoneSince: since, emailSince: since,
+                    phoneSince: since, emailSince: since, addrSince: address.since,
                     coNameSince, coAddrSince, coPhoneSince, coFaxSince,
                 })
+
+                await application.welcome()
             }
 
 
@@ -1203,25 +1214,53 @@ console.log('driver:', driver)
             const application = await Application.fetch(session, { ssn })
             if (application) throw new Error('DAPP_LOCKED_SSN_ERROR')
 
-            const person = await Individual.fetch(session, { ssn })
+            let driver = await Driver.fetch(session, { ssn })
 
-            if (person) {
-                personId = person.id
+            if (!driver) {
+                const person = await Individual.fetch(session, { ssn })
 
-                let driver = await Driver.fetch(session, { personId })
-
-                if (!driver) driver = (await Driver.create(session, { personId })).data
-                else body.main.rehire = true
-
-                if (!driver) throw new Error('Failed to fetch or create driver')
-
-                body.main.driverId = driver.id
-            } else {
                 body.main.public = false
-                body.lead = { ssn: processAES('ssn', ssn), dob }
+                body.lead = !person ? { ssn: processAES('ssn', ssn), dob } : { personId }
+
+                return body
             }
 
+            body.main.driverId = driver.id
+            body.main.rehire = true
+
             return body
+            // const person = await Individual.fetch(session, { ssn })
+
+            // if (person) {
+            //     personId = person.id
+
+            //     let driver = await Driver.fetch(session, { personId })
+
+            //     if (!driver) {
+            //         driver = (await Driver.create(session, { personId })).data
+            //         if (!driver) throw new Error('Driver could not be created')
+
+            //         const { matcher } = person
+            //         body.matcher = {
+            //             personId, driverId: driver.id,
+            //             nameSince: matcher.name, legalSince: matcher
+            //         }
+            //         // companyId,
+            //         // nameSince: since, legalSince: since, maritalSince: since,
+            //         // phoneSince: since, emailSince: since, addrSince: address.since,
+            //         // coNameSince, coAddrSince, coPhoneSince, coFaxSince,
+            //     }
+            //     else body.main.rehire = true
+
+            //     if (!driver) throw new Error('Failed to fetch or create driver')
+
+            //     body.main.driverId = driver.id
+            // } else {
+            //     body.main.public = false
+            //     body.lead = { ssn: processAES('ssn', ssn), dob }
+            // }
+
+            // return body
         },
         async final(application) {
             await Application.invite(session, application, application.formId)
@@ -1281,6 +1320,8 @@ console.log('driver:', driver)
             {
                 table: query.driver_application.lead.table,
                 fields: [
+                    [ 'personId', 'leadPersonId' ],
+                    [ Person.hashId('personId'), '_leadPersonId' ],
                     [ selectAES('ssn'), 'leadSsn' ],
                     [ 'dob', 'leadDob' ],
                     // [ 'position', 'leadPosition' ],

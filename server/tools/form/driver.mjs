@@ -1496,8 +1496,8 @@ class ApplicationForm {
 
         switch (target) {
             case 'registration':
-                // fields = [...profileFields, 'position', ...addressFields, 'status', 'statusExp']
-                fields = [...profileFields, 'status', 'statusExp']
+                fields = [...profileFields, 'position', ...addressFields, 'status', 'statusExp']
+                // fields = [...profileFields, 'status', 'statusExp']
                 break
             case 'workflow':
                 fields = ['user', 'carrier', 'condition', 'experience', 'apprPosition']

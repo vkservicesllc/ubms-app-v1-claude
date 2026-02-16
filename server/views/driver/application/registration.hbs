@@ -21,7 +21,7 @@
     </style>
 
     <div class="d-flex justify-content-center align-items-lg-center full-height-fix">
-        <div class="card text-center" id="new-apl-card" style="display: none;">
+        <div class="card text-center" id="new-apl-card" style="display: none; width: 640px;">
             <div class="card-body pt-4">
                 <h5 class="card-title text-info">Professional Driver Application</h5>
                 <div class="card-text text-start px-2" id="form-card">
@@ -78,6 +78,38 @@
                                     <div class="form-text text-danger" id="email-help"></div>
                                 </div>
                             </div>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-4">Current U.S. Address</h6>
+                            <div class="row g-3 my-1">
+                                {{{form.addrEnough.hidden.input}}}
+                                <div class="col-md-6 autocomplete">
+                                    {{{form.address1.text.label}}}
+                                    {{{form.address1.text.input}}}
+                                    <ul class="autocomplete-list address-predictions"></ul>
+                                </div>
+                                <div class="col-md-3">
+                                    {{{form.address2.text.label}}}
+                                    {{{form.address2.text.input}}}
+                                </div>
+                                <div class="col-md-3">
+                                    {{{form.addrZip.text.label}}}
+                                    {{{form.addrZip.text.input}}}
+                                </div>
+                            </div>
+                            <div class="row g-3 my-1">
+                                <div class="col-md-5">
+                                    {{{form.addrCity.text.label}}}
+                                    {{{form.addrCity.text.input}}}
+                                </div>
+                                <div class="col-md-3">
+                                    {{{form.addrState.select.label}}}
+                                    {{{form.addrState.select.input}}}
+                                </div>
+                                <div class="col-md-4">
+                                    {{{form.addrSince.text.label}}}
+                                    {{{form.addrSince.text.input}}}
+                                    <div class="form-text text-danger" id="addr-since-help"></div>
+                                </div>
+                            </div>
                             <h6 class="text-secondary mt-4 mb-1 border-top pt-4">Marital Status</h6>
                             <div class="row g-3 my-1 pt-3">
                                 {{!-- {{{form.marital.radio.label}}} --}}
@@ -132,12 +164,15 @@
                                 </div>
                             </div>
                             <p class="form-text text-danger mt-4" id="form-help" style="display: none;"></p>
-                            <div class="row g-3 my-2">
+                            {{!-- <div class="row g-3 my-2">
                                 <div class="col-md-4">
                                     <div class="d-grid">
                                         <button type="submit" class="btn btn-primary bg-primary-subtle" id="profile-submit">Next</button>
                                     </div>
                                 </div>
+                            </div> --}}
+                            <div class="d-grid gap-2 mt-4 mb-2">
+                                <button type="submit" class="btn btn-primary bg-primary-subtle">Register & Proceed</button>
                             </div>
                         </div>
                     </form>

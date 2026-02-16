@@ -16,19 +16,20 @@ const suffixId = SS.suffix
 const genderId = SS.gender
 const phoneId = TS.phone
 const emailId = TS.email
-// const addr1Id = TS.address1
-// const addr2Id = TS.address2
-// const zipId = TS.addrZip
-// const cityId = TS.addrCity
-// const stateId = SS.addrState
-// const addrSinceId = TS.addrSince
-// const addrEnoughId = selector.id.hidden.addrEnough
+const addr1Id = TS.address1
+const addr2Id = TS.address2
+const zipId = TS.addrZip
+const cityId = TS.addrCity
+const stateId = SS.addrState
+const addrSinceId = TS.addrSince
+const addrEnoughId = selector.id.hidden.addrEnough
 // const positionId = SS.position
 const statusExpId = TS.statusExp
 
 const $card = $('#new-apl-card')
 const $help = {
     email: $('#email-help'),
+    addrSince: $('#addr-since-help'),
     statusExp: $('#status-exp-help'),
     form: $('#form-help'),
 }
@@ -57,9 +58,16 @@ $expiration.prop('disabled', true)
         middleNameId,
         lastNameId,
         suffixId,
+        genderId,
         phoneId,
         emailId,
-        genderId,
+        addrEnoughId,
+        addr1Id,
+        addr2Id,
+        zipId,
+        cityId,
+        stateId,
+        addrSinceId,
     ].forEach(id => {
         let value = sessionStorage.getItem(id.replace('#', ''))
         if (id === phoneId && !value) value = lead.phone
@@ -142,6 +150,83 @@ emailEvent(emailId, {
                 $help.email.text('* Invalid email address')
                 $email.addClass('is-invalid')
             } else $email.addClass('is-valid')
+
+        if (check($form)) $help.form.hide().html(null)
+    },
+})
+
+
+let timer
+
+addr1Event(addr1Id, {
+    addr2Id,
+    onInput(addr1, $addr1) {
+        clearTimeout(timer)
+        timer = setTimeout(() => addressPredictions($addr1, addr1, () => {
+            const zip = $(zipId).val()
+            sessionStorage.setItem(zipId.replace('#', ''), zip || '')
+        }), 500)
+
+        onInput(addr1, $addr1)
+    },
+    onChange(addr1, $addr1, addr2, $addr2) {
+        onChange(addr1, $addr1)
+        onChange(addr2, $addr2)
+    },
+    onBlur(addr1, $addr1) {
+        setTimeout(() => $addr1.parent().find('.address-predictions').html(null), 500)
+    },
+})
+
+addr2Event(addr2Id, { onInput, onChange })
+
+zipEvent(zipId, {
+    cityId,
+    stateId,
+    onInput,
+    onChange(zip, $zip, city, state, $city, $state) {
+        onChange(zip, $zip)
+        onChange(city, $city)
+        onChange(state, $state)
+    },
+})
+
+cityEvent(cityId, { onInput, onChange })
+
+selectEvent(stateId, { fill: true, onChange })
+
+dateMask(addrSinceId, {
+    pattern: 'us',
+    onAccept(mask, $since) {
+        $help.addrSince.text(null)
+        $since.removeClass('is-valid is-invalid')
+    },
+    onComplete(mask, $since) {
+        let since = mask.value
+
+        if (since) {
+            since = moment(since, 'MM/DD/YYYY', true)
+
+            if (!since.isValid()) {
+                $since.addClass('is-invalid')
+                $help.addrSince.text('* Invalid date')
+            } else {
+                const today = moment()
+
+                if (since.isAfter(today)) {
+                    $since.addClass('is-invalid')
+                    $help.addrSince.text('* Future date forbidden')
+                } else {
+                    $since.addClass('is-valid')
+                    sessionStorage.setItem(addrSinceId.replace('#', ''), moment(since, 'MM/DD/YYYY').format('MM/DD/YYYY'))
+
+                    const limit = today.clone().subtract(3, 'years')
+                    const addrEnough = since.isBefore(limit) ? '1' : '0'
+                    $(addrEnoughId).val(addrEnough)
+                    sessionStorage.setItem(addrEnoughId.replace('#', ''), addrEnough)
+                }
+            }
+        }
 
         if (check($form)) $help.form.hide().html(null)
     },

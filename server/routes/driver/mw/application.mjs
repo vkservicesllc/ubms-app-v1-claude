@@ -143,10 +143,12 @@ export const applicationRegistration = async (req, res, next) => {
         const fields = [
             'firstName', 'middleName', 'lastName', 'suffix',
             'gender', 'dob', 'phone', 'email', 'statusExp',
+            'address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince',
         ]
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tabs: 8 })
 
         options.phone.text.label.content = 'U.S. Phone'
+        options.addrState.select.input.options = { valOpt: true }
         options.statusExp.text.label.content = 'Expiration Date'
         options.marital = { radio: { label: { class: formInstr.labelClassRequired } } }
         options.status = { radio: { label: { class: formInstr.labelClassRequired } } }
@@ -230,38 +232,6 @@ export const applicationLogin = async (req, res, next) => {
 }
 
 
-// export const applicationProgress = async (req, res) => {
-//     try {
-//         const { application: _id } = req.session
-//         if (!_id || _id !== application._id || application.condition !== 'p') {
-//             delete req.session.application
-
-//             return res.redirect(`/application/${formId}`)
-//         }
-
-//         const { session } = res
-//         session.user = { id: 1 } //* For fetch purposes only
-
-//         const { application } = session
-//         const { formId, cdlRole, _teamId, step } = application
-
-
-//         const key = 'application'
-//         let { hbs } = res
-//         hbs = hbs.set(key, { title: 'Driver Application' })
-//         hbs.bodyAttrs = ' data-bs-theme="dark"'
-
-//         hbs.formId = formId
-//         hbs.agency = '???'
-//         hbs.carrier = '???'
-
-//         res.render(key, hbs)
-//     } catch (err) {
-//         sendError.server(req, res, err)
-//     }
-// }
-
-
 export const applicationProgress = async (req, res) => {
     try {
         const { session } = res
@@ -285,16 +255,11 @@ export const applicationProgress = async (req, res) => {
         const team = _teamId ? await Team.fetch(session, { _id: _teamId }) : null
         if (_teamId && !team) return sendError.server(req, res, new Error('Unidentified Environment'))
 
-        // const depts = team ? team.depts.join(', ') : ''
         let agency = team?.profile?.company
-        // if (agency) agency = `<span title="${depts}">${agency}</span>`
         let carrier = application?.carrier?.name
-        // if (carrier) carrier = `<span title="${depts}">${carrier}</span>`
 
         if (step === 12) return res.redirect(`/application/${formId}/agreement`)
 
-        // const settings = team?.settings || null
-        // const { settings } = team
         const steps = [ ...Application.list.step ]
         const key = 'application'
         let { hbs } = res
@@ -363,7 +328,6 @@ export const applicationProgress = async (req, res) => {
         let emplOptions = {}
 
         {
-            //! const count = (await driver.applications(session)).count
             const { firstName, middleName, lastName, suffix, email } = application
             const { address1, address2, zip: addrZip, city: addrCity } = application.address
             const values = {
@@ -382,7 +346,6 @@ export const applicationProgress = async (req, res) => {
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
             options.addrState.select.input.options = { valOpt: true }
-            //! if (count.matched) options.ssn.text.input.readOnly = true
         }
 
         if (step >= 0) { /* PRIOR RESIDENCE */
