@@ -12,7 +12,7 @@ import { ApplicationForm } from '../../tools/form/driver.mjs'
 
 /* Middleware */
 import {
-    applicationStart, applicationRegistration, applicationLogin, applicationProgress,
+    applicationStart, applicationRegistration, applicationLogin, applicationProgress, applicationRehireProgress,
     applicationSummary, applicationDocuments, applicationAgreement,
 } from './mw/application.mjs'
 
@@ -26,7 +26,7 @@ applicantLoginFields.forEach(prop => validateApplicantLogin.push(ApplicationForm
 // ==== ROUTES ==== //
 
 
-router.get('/:param?', applicationStart, applicationLogin, applicationProgress)
+router.get('/:param?', applicationStart, applicationLogin, applicationProgress, applicationRehireProgress)
 
 
 router.get('/:formId/registration', applicationRegistration)

@@ -37,11 +37,11 @@
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">SSN:</small> {{maskedSsn}}</p>
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">DOB:</small> {{dob}}</p>
                     </div>
-                    <form id="apl-start-form" action="/resource/application/register" method="POST" autocomplete="off">
+                    <form id="apl-start-form" action="/resource/application/register/{{_id}}" method="POST" autocomplete="off">
                         <input type="hidden" id="lead-phone" value="{{lead.phone}}" />
                         <input type="hidden" id="lead-email" value="{{lead.email}}" />
                         <div id="application-form">
-                            <h6 class="text-secondary mt-4 my-1 border-top pt-3">Identity <small>(per Government ID)</small></h6>
+                            <h6 class="text-secondary mt-4 my-1 border-top pt-4">Identity <small>(per Government ID)</small></h6>
                             <div class="row g-3 my-1">
                                 <div class="col-md-6">
                                     {{{form.firstName.text.label}}}
@@ -66,7 +66,7 @@
                                     {{{form.gender.select.input}}}
                                 </div>
                             </div>
-                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Contacts</h6>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-4">Contacts</h6>
                             <div class="row g-3 my-1">
                                 <div class="col-md-5">
                                     {{{form.phone.text.label}}}
@@ -78,10 +78,10 @@
                                     <div class="form-text text-danger" id="email-help"></div>
                                 </div>
                             </div>
-                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Marital Status</h6>
-                            <div class="row g-3 my-1">
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-4">Marital Status</h6>
+                            <div class="row g-3 my-1 pt-3">
                                 {{!-- {{{form.marital.radio.label}}} --}}
-                                <div class="col-md-4 mb-0">
+                                <div class="col-md-4 my-0">
                                     <div class="form-check">
                                         {{{form.marital.radio.single.input}}}
                                         {{{form.marital.radio.single.label}}}
@@ -108,7 +108,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <h6 class="text-secondary mt-4 mb-1 border-top pt-3">Immigration Status</h6>
+                            <h6 class="text-secondary mt-4 mb-1 border-top pt-4">Immigration Status</h6>
                             <div class="row g-3 my-1">
                                 <div class="col-md-6 mb-0">
                                     {{!-- {{{form.status.radio.label}}} --}}

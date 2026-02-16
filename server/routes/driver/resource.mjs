@@ -93,14 +93,6 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
     ApplicationForm.dob.validate(),
 ], validationCheck, async (req, res) => {
     try {
-        //* 1. NEW
-        //* a) Pre-Application
-        //* b) Brand New
-
-        //* 2) REHIRE
-        //* a) Pre-Application (ignore)
-        //* b) Returning
-
         const { position, ssn, dob } = req.body
         const person = await Individual.fetch(res.session, { ssn })
 
@@ -125,13 +117,6 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
         } else if (!application.driverId) {
             if (application?.lead?.ssn) urlExt = extendUrl(application._id)  //* Driver never registered but started in the past
             else {
-                // application = (await application.update(res.session, {
-                //     //! Pre-Applicant without Driver ID
-                // }))
-                // return res.send({
-                //     cdlRole, _teamId, _carrierId, _userSimpleId,
-                //     ssn, dob, position,
-                // })
                 let driverId, rehire
                 const driver = await Driver.fetch(res.session, { ssn })
                 if (driver) {
@@ -144,33 +129,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
             }
         }
 
-        // req.session.application = application._id
-
         res.redirect(`/application/${application.formId + urlExt}`)
-        // const { form: formId } = req.query
-
-        // if (formId) {
-        //     const application = await Application.fetch(res.session, { formId })
-        //     if (!application) throw new Error('Application not found')
-
-        //     // update
-        // } else {
-        //     const { _teamId, _carrierId } = req.params
-        //     const { cdl: cdrlRole, rec: _userSimpleId } = req.query
-        //     const {  } = await Application.create(res.session, { position, ssn, _teamId, _carrierId, cdrlRole, _userSimpleId })
-
-        // }
-
-//         let { form: formId } = req.query
-//         const person = await Individual.fetch(res.session, { ssn }, { hideSensitive: false })
-// console.log(person)
-// return res.send(person)
-//         let personId, application
-
-//         if (formId) {
-//             application = await Application.fetch(res.session, { formId })
-//             if (!application) throw new Error('Application not found')
-//         }
     } catch (err) {
         switch (err.message) {
             case 'DAPP_DOB_MISMATCH_ERROR':
@@ -191,95 +150,100 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
 })
 
 
-router.post('/application/register', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
+router.post('/application/register/:_id', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
     try {
-        return res.send(req.body)
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+        const { _id } = req.params
+        const application = await Application.fetch(res.session, { _id }, { hideSensitive: false })
+        if (!application) throw new Error('Application not found')
 
-
-router.post('/OLD/application/start/:_teamId/:_carrierId?', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
-// return res.send(req.body)
-    try {
-        let { form: formId } = req.query
-        const { address: addrBody } = req.body
-        delete req.body.address
-
-        let application, personId
-
-        if (formId) {
-            application = await Application.fetch(res.session, { formId })
-            if (!application) throw new Error('Application not found')
-
-//* Pre-Applicant
-//! Individual add-ons
-
-            await application.update(req.body)
-
-            //! Need to get personId from application
-        } else {
-            const { _teamId, _carrierId } = req.params
-            const { cdl: cdlRole, rec: _userId } = req.query
-
-            req.body.cdlRole = +cdlRole
-
-            let team
-            if (_teamId !== 'global') {
-                team = await Team.fetch(res.session, { _id: _teamId }, { offline: true })
-                if (!team) throw new Error('Team not found')
-
-                res.session.team = team
-                req.body.teamId = team.id
-            }
-
-            if (_carrierId) {
-                const carrier = await Carrier.fetch({ ...res.session, user: { id: 1 } }, { _id: _carrierId })
-                if (!carrier) throw new Error('Carrier not found')
-
-                req.body.carrierId = carrier.id
-            }
-
-            if (_userId) {
-                const user = await User.fetch(res.session, { _simpleId: _userId }, { offline: true })
-                if (!user) throw new Error('User not found')
-
-                req.body.userId = user.id
-            }
-
-            const result = await Application.create(res.session, req.body)
-            application = result.data
-            if (!application) throw new Error('Failed to create application')
-
-            formId = application.formId
-            personId = application.personId
-        }
-
-        await application.add('addresses', addrBody)
-        await application.welcome()
-
-        if (!addrBody.enough) await application.update({ step: 0 })
-        await application.update({ addrComplete: !!addrBody.enough })
-
-        if (personId) { //! CONDITION IS TEMPORARY (EXPECT personId anyway)
-            const person = await Individual.fetch(res.session, { id: application.personId })
-            if (person) { //* DO NOT INTERRUPT APPLICATION WITH ERROR
-                delete addrBody.appId
-                delete addrBody.enough
-
-                //! ADD THE ADDRESS ONLY IF NOT FOUND
-                await person.add('addresses', addrBody)
-            }
-        }
-
+        await application.register(req.body)
         req.session.application = application._id
 
-        res.redirect(`/application/${formId}`)
+        res.redirect(`/application/${application.formId}`)
     } catch (err) {
         sendError.server(req, res, err)
     }
 })
+
+
+// router.post('/OLD/application/start/:_teamId/:_carrierId?', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
+// // return res.send(req.body)
+//     try {
+//         let { form: formId } = req.query
+//         const { address: addrBody } = req.body
+//         delete req.body.address
+
+//         let application, personId
+
+//         if (formId) {
+//             application = await Application.fetch(res.session, { formId })
+//             if (!application) throw new Error('Application not found')
+
+// //* Pre-Applicant
+// //! Individual add-ons
+
+//             await application.update(req.body)
+
+//             //! Need to get personId from application
+//         } else {
+//             const { _teamId, _carrierId } = req.params
+//             const { cdl: cdlRole, rec: _userId } = req.query
+
+//             req.body.cdlRole = +cdlRole
+
+//             let team
+//             if (_teamId !== 'global') {
+//                 team = await Team.fetch(res.session, { _id: _teamId }, { offline: true })
+//                 if (!team) throw new Error('Team not found')
+
+//                 res.session.team = team
+//                 req.body.teamId = team.id
+//             }
+
+//             if (_carrierId) {
+//                 const carrier = await Carrier.fetch({ ...res.session, user: { id: 1 } }, { _id: _carrierId })
+//                 if (!carrier) throw new Error('Carrier not found')
+
+//                 req.body.carrierId = carrier.id
+//             }
+
+//             if (_userId) {
+//                 const user = await User.fetch(res.session, { _simpleId: _userId }, { offline: true })
+//                 if (!user) throw new Error('User not found')
+
+//                 req.body.userId = user.id
+//             }
+
+//             const result = await Application.create(res.session, req.body)
+//             application = result.data
+//             if (!application) throw new Error('Failed to create application')
+
+//             formId = application.formId
+//             personId = application.personId
+//         }
+
+//         await application.add('addresses', addrBody)
+//         await application.welcome()
+
+//         if (!addrBody.enough) await application.update({ step: 0 })
+//         await application.update({ addrComplete: !!addrBody.enough })
+
+//         if (personId) { //! CONDITION IS TEMPORARY (EXPECT personId anyway)
+//             const person = await Individual.fetch(res.session, { id: application.personId })
+//             if (person) { //* DO NOT INTERRUPT APPLICATION WITH ERROR
+//                 delete addrBody.appId
+//                 delete addrBody.enough
+
+//                 //! ADD THE ADDRESS ONLY IF NOT FOUND
+//                 await person.add('addresses', addrBody)
+//             }
+//         }
+
+//         res.redirect(`/application/${formId}`)
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
 router.post('/application/progress/:formId/:step', dynamicValidator.applications, validationCheck, async (req, res) => {

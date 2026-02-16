@@ -180,15 +180,6 @@ class Driver extends Individual {
                     } ],
                 },
                 //? need other props ???
-                {
-                    table: query.driver_application.main.table,
-                    join: [ 'driverId', 'id', { type: 'inner' } ],
-                },
-                {
-                    db: db.online,
-                    table: query.team.main.table,
-                    join: [ 'id', 'teamId', query.driver_application.main.table ],
-                },
             ],
             prepare(batch, filter) {
                 const {
@@ -203,12 +194,24 @@ class Driver extends Individual {
 
                 if (ssn) batch[2].match = { ssn: processAES('ssn', ssn) }
 
-                const teamIdx = batch.length - 1
-                const appIdx = teamIdx - 1
+                if (!single) {
+                    batch.push({
+                        table: query.driver_application.main.table,
+                        join: [ 'driverId', 'id', { type: 'inner' } ],
+                    },
+                    {
+                        db: db.online,
+                        table: query.team.main.table,
+                        join: [ 'id', 'teamId', query.driver_application.main.table ],
+                    })
 
-                if (teamId || _teamId)
-                    batch[appIdx].match = { teamId: teamId || Team.matchIdHash(_teamId) }
-                else batch[teamIdx].match = { scoped: [ false, null ] }
+                    const teamIdx = batch.length - 1
+                    const appIdx = teamIdx - 1
+
+                    if (teamId || _teamId)
+                        batch[appIdx].match = { teamId: teamId || Team.matchIdHash(_teamId) }
+                    else batch[teamIdx].match = { scoped: [ false, null ] }
+                }
 
                 return { single, batch }
             },
@@ -479,7 +482,7 @@ class Application {
                 fax: data.coFax,
             }
 
-        if (data.userAlias) {
+        if (data.userLastName) {
             const user = new Person({
                 firstName: data.userFirstName,
                 lastName: data.userLastName,
@@ -535,6 +538,7 @@ class Application {
 
                 const personId = person.id
                 const driver = (await Driver.create(this.session, { personId })).data
+console.log('driver:', driver)
                 if (!driver) throw new Error('Failed to create driver')
 
                 let companyId, coNameSince, coAddrSince, coPhoneSince, coFaxSince
@@ -1181,7 +1185,7 @@ class Application {
             if (team) teamId = team.id
             if (user && selfAssign) userId = user.id
             else if (_userSimpleId) {
-                const user = await User.fetch(session, { _simpleId: _userSimpleId })
+                const user = await User.fetch(session, { _simpleId: _userSimpleId }, { offline: true })
                 if (user) userId = userId
             }
 

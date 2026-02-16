@@ -1482,7 +1482,7 @@ class ApplicationForm {
     static validate = (target, options) => validate(ApplicationForm, (target, options) => {
         let fields
         const profileFields = [
-            'prefix', 'firstName', 'middleName', 'lastName', 'suffix',
+            'firstName', 'middleName', 'lastName', 'suffix',
             'gender',
             // 'dob', 'ssn',
             'marital', 'phone', 'email',

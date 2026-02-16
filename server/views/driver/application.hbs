@@ -32,6 +32,7 @@
                         {{/if}}
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Form ID:</small> {{formId}}</p>
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Applicant:</small> {{applicantName}}</p>
+                        {{!-- <p class="text-start my-0 px-1"><small class="text-muted apl-label">SSN:</small> {{maskedSsn}}</p> --}}
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Position:</small> {{applicantPosition}}</p>
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Started at:</small> {{startedAt}}</p>
                         <div class="progress mt-2">
@@ -85,13 +86,9 @@
                                                 {{{form.lastName.text.label}}}
                                                 {{{form.lastName.text.input}}}
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 {{{form.suffix.select.label}}}
                                                 {{{form.suffix.select.input}}}
-                                            </div>
-                                            <div class="col-md-4">
-                                                {{{form.gender.select.label}}}
-                                                {{{form.gender.select.input}}}
                                             </div>
                                         </div>
                                         <div class="row g-3 my-1">
@@ -101,8 +98,8 @@
                                                 <div class="form-text text-danger" id="profile-dob-help"></div>
                                             </div>
                                             <div class="col-md-4">
-                                                {{{form.ssn.text.label}}}
-                                                {{{form.ssn.text.input}}}
+                                                {{{form.gender.select.label}}}
+                                                {{{form.gender.select.input}}}
                                             </div>
                                             <div class="col-md-4">
                                                 {{{form.marital.select.label}}}

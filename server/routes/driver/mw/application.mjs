@@ -163,6 +163,7 @@ export const applicationRegistration = async (req, res, next) => {
             options.status.radio[prop].label.class = 'form-check-label'
         }
 
+        hbs._id = application._id
         hbs.carrier = application?.carrier?.name || null
         hbs.agency = !hbs.carrier ? application?.team?.name : null
         hbs.formId = application.formId
@@ -229,44 +230,46 @@ export const applicationLogin = async (req, res, next) => {
 }
 
 
+// export const applicationProgress = async (req, res) => {
+//     try {
+//         const { application: _id } = req.session
+//         if (!_id || _id !== application._id || application.condition !== 'p') {
+//             delete req.session.application
+
+//             return res.redirect(`/application/${formId}`)
+//         }
+
+//         const { session } = res
+//         session.user = { id: 1 } //* For fetch purposes only
+
+//         const { application } = session
+//         const { formId, cdlRole, _teamId, step } = application
+
+
+//         const key = 'application'
+//         let { hbs } = res
+//         hbs = hbs.set(key, { title: 'Driver Application' })
+//         hbs.bodyAttrs = ' data-bs-theme="dark"'
+
+//         hbs.formId = formId
+//         hbs.agency = '???'
+//         hbs.carrier = '???'
+
+//         res.render(key, hbs)
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// }
+
+
 export const applicationProgress = async (req, res) => {
-    try {
-        const { application: _id } = req.session
-        if (!_id || _id !== application._id || application.condition !== 'p') {
-            delete req.session.application
-
-            return res.redirect(`/application/${formId}`)
-        }
-
-        const { session } = res
-        session.user = { id: 1 } //* For fetch purposes only
-
-        const { application } = session
-        const { formId, cdlRole, _teamId, step } = application
-
-
-        const key = 'application'
-        let { hbs } = res
-        hbs = hbs.set(key, { title: 'Driver Application' })
-        hbs.bodyAttrs = ' data-bs-theme="dark"'
-
-        hbs.formId = formId
-        hbs.agency = '???'
-        hbs.carrier = '???'
-
-        res.render(key, hbs)
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-}
-
-
-export const applicationProgressOLD = async (req, res) => {
     try {
         const { session } = res
         session.user = { id: 1 }
 
         const { application } = session
+        if (application.rehire) return next()
+
         const { formId, cdlRole, _teamId, step } = application
 
         const { application: _id } = req.session
@@ -367,7 +370,7 @@ export const applicationProgressOLD = async (req, res) => {
                 firstName, middleName, lastName, suffix,
                 gender: application.gender,
                 dob: moment(application.dob).format('MM/DD/YYYY'),
-                ssn: formatSsn(application.ssn),
+                // ssn: formatSsn(application.ssn),
                 marital: application.marital,
                 phone: formatTel(application.phone),
                 email, position: application.position,
@@ -969,6 +972,7 @@ export const applicationProgressOLD = async (req, res) => {
         hbs.formId = formId
         hbs.agency = agency
         hbs.carrier = carrier
+        hbs.maskedSsn = formatSsn(application.ssn, '*')
         hbs.progress = Math.round(step / steps.length * 100)
         hbs.progressBg = hbs.progress === 100 ? 'success' : 'secondary'
         hbs.step = step
@@ -987,6 +991,9 @@ export const applicationProgressOLD = async (req, res) => {
         sendError.server(req, res, err)
     }
 }
+
+
+export const applicationRehireProgress = async (req, res) => {}
 
 
 export const applicationSummary = async (req, res) => {
