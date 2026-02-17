@@ -62,6 +62,7 @@ class Company {
                 _personId: data._personId,
                 id: data.ownerId,
                 personId: data.personId,
+                prefix: data.prefix,
                 firstName: data.firstName,
                 middleName: data.middleName,
                 lastName: data.lastName,
@@ -219,7 +220,7 @@ class Company {
                 {
                     db: db.person,
                     table: query.person.names.table,
-                    fields: [ 'firstName', 'middleName', 'lastName', 'suffix' ],
+                    fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix' ],
                     join: [ 'personId', 'id', {
                         table: 'individuals',
                         max: 'since',
@@ -401,10 +402,10 @@ class Owner extends Individual {
             //     const person = await Individual.fetch(this.session, { id: this.personId }, { hideSensitive: false })
             //     if (!person) throw new Error('Person not identified')
 
-            //     const { dob, gender, ssn, firstName, middleName, lastName, suffix, phone } = body
+            //     const { dob, gender, ssn, prefix, firstName, middleName, lastName, suffix, phone } = body
             //     body = {
             //         person: { dob, gender, ssn },
-            //         name: { firstName, middleName, lastName, suffix },
+            //         name: { prefix, firstName, middleName, lastName, suffix },
             //         phone: { phone },
             //     }
 

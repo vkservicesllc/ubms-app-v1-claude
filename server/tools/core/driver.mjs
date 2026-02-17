@@ -463,6 +463,7 @@ class Application {
             let { benefRelation: relation, benefOtherRel: otherRel } = data
 
             this.beneficiary = {
+                prefix: data.benefPrefix,
                 firstName: data.benefFirstName,
                 middleName: data.benefMiddleName,
                 lastName: data.benefLastName,
@@ -760,7 +761,7 @@ console.log(this.matcher)
 
                 const mismatch = {}
 
-                let props = ['dob', 'sex', 'firstName', 'middleName', 'lastName', 'suffix']
+                let props = ['dob', 'sex', 'prefix', 'firstName', 'middleName', 'lastName', 'suffix']
                 props.forEach(prop => mismatch[prop] = this[prop] !== individual[prop])
 
                 props = ['phone', 'email', 'marital']
@@ -1191,6 +1192,7 @@ console.log(this.matcher)
             {
                 table: query.driver_application.beneficiary.table,
                 fields: [
+                    [ 'prefix', 'benefPrefix' ],
                     [ 'firstName', 'benefFirstName' ],
                     [ 'middleName', 'benefMiddleName' ],
                     [ 'lastName', 'benefLastName' ],
@@ -1273,6 +1275,22 @@ console.log(this.matcher)
                 fields: [ [ 'fax', 'coFax' ] ],
                 join: [ 'companyId', 'id', query.company.main.table, [ 'since', 'coFaxSince', 3 ] ],
             },
+            {
+                db: db.business,
+                table: query.company.ownerships.table,
+                join: [ 'companyId', 'id', query.company.main.table, [ 'since', 'coOwnerSince', 3 ] ],
+            },
+            {
+                db: db.business,
+                table: query.company_owner.main.table,
+                join: [ 'id', 'ownerId', query.company.ownerships.table ],
+            },
+            // {
+            //     db: db.person,
+            //     table: [ query.person.names.table, 'owner_names' ],
+            //     fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix' ],
+            //     join: [ 'personId', 'personId', query.company_owner.main.table, [ 'since', 'owNameSince', 3 ] ],
+            // },
             {
                 db: db.online,
                 table: query.user.main.table,

@@ -213,8 +213,14 @@ class Query {
 
 
     static #_table(table, db) {
+        let asTable
+
+        if (Array.isArray(table))
+            [ table, asTable ] = table
+
         if (db) table = `${db}.${table}`
         if (db === false && table.indexOf('.') > -1) table = table.split('.')[1]
+        if (asTable) table += `${table} AS ${asTable}`
 
         return table
     }
@@ -665,9 +671,10 @@ class Query {
             let { db, table, fields, match, search, sort, group } = cluster
             const { join } = cluster
 
-            let joiner
+            let joiner, asTable
 
             if (!db) db = primaryDb
+            if (Array.isArray(table)) asTable = table[1]
             if (!fields) fields = []
             else if (!Array.isArray(fields)) fields = [ fields ]
 
@@ -693,7 +700,7 @@ class Query {
                     joiner.type = type
 
                 joiner.table = table
-                joiner.links[0] = `${Query.#_table(table, false)}.${id} = ${foreignTable}.${foreignId}`
+                joiner.links[0] = `${asTable || Query.#_table(table, false)}.${id} = ${foreignTable}.${foreignId}`
 
                 if (max || min) {
                     const purpose = max || min
@@ -711,7 +718,7 @@ class Query {
                             }
                     }
 
-                    joiner.links[0] += `\nAND ${Query.#_table(table, false)}.${field} = (`
+                    joiner.links[0] += `\nAND ${asTable || Query.#_table(table, false)}.${field} = (`
                     joiner.links[0] += `\nSELECT ${func}(${subTable}.${field}) `
                     joiner.links[0] += `FROM ${db}.${Query.#_table(table, false)} AS ${subTable}`
                     joiner.links[0] += `\nWHERE ${subTable}.${id} = ${foreignTable}.${foreignId}${match}\n)`
@@ -752,7 +759,7 @@ class Query {
                 }
 
                 else if (foreignMatch)
-                    joiner.table =`(SELECT * FROM ${table}\nWHERE ${Query.#match(foreignMatch)}) AS ${Query.#_table(table, false)}`
+                    joiner.table =`(SELECT * FROM ${table}\nWHERE ${Query.#match(foreignMatch)}) AS ${asTable || Query.#_table(table, false)}`
                 // else joiner.table = table
 
                 if (Array.isArray(join[3])) {
@@ -768,7 +775,7 @@ class Query {
                             foreignTable = tables[param3]
                         else foreignTable = primaryTable
 
-                        joiner.links[i + 1] = `${Query.#_table(table, false)}.${field} = ${foreignTable}.${foreignField}`
+                        joiner.links[i + 1] = `${asTable || Query.#_table(table, false)}.${field} = ${foreignTable}.${foreignField}`
                     })
                 }
             }

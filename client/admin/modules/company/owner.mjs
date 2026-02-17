@@ -14,7 +14,7 @@ const lastNameId = TS.lastName
 const suffixId = SS.suffix
 const genderId = SS.gender
 const dobId = TS.dob
-const ssnId = TS.ssn
+// const ssnId = TS.ssn
 const updateSinceId = TS.nameSince
 
 const $modal = {
@@ -63,7 +63,7 @@ nameEvent(firstNameId)
 nameEvent(middleNameId)
 nameEvent(lastNameId, { sfxId: suffixId })
 selectEvent(genderId, { fill: true })
-ssnEvent(ssnId)
+// ssnEvent(ssnId)
 
 inputEvent(dobId, {
     datepicker: { maxDate: '-21y' },
@@ -97,7 +97,7 @@ $trigger.option.click(() => {
                     $(suffixId).val(suffix)
                     $(genderId).val(gender).find('option[value=""]').remove()
                     $(dobId).val(reformatDateString(dob, 'us'))
-                    if (ssn) $(ssnId).val(formatSsn(ssn))
+                    // if (ssn) $(ssnId).val(formatSsn(ssn))
 
                     $submit.addClass('is-success').html('Modify')
                     $card.options.hide()
@@ -134,7 +134,7 @@ export const closeModals = () => {
     $title.all.html(null)
     $card.all.hide()
     $field.update.hide()
-    $field.upsert.show().find(`input:not(${ssnId}), select`).prop('disabled', false) //! TEMPORARILY KEEP SSN DISABLED
+    // $field.upsert.show().find(`input:not(${ssnId}), select`).prop('disabled', false) //! TEMPORARILY KEEP SSN DISABLED
     $trigger.option.prop('disabled', true).removeClass('is-link is-danger')
     $submit.removeClass('is-success is-link').html(null)
     $form.owner.attr('action', action.default)

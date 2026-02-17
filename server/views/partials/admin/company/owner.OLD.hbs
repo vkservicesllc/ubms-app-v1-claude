@@ -65,9 +65,7 @@
                             {{{ownerForm.suffix.select.input}}}
                         </div>
                     </div>
-                </div>
-                <div class="columns">
-                    <div class="column is-4 owner-upsert-field">
+                    <div class="column is-3 owner-upsert-field">
                         {{!-- {{{label.ownerGender}}} --}}
                         {{{ownerForm.gender.select.label}}}
                         <div class="select is-fullwidth">
@@ -75,7 +73,9 @@
                             {{{ownerForm.gender.select.input}}}
                         </div>
                     </div>
-                    <div class="column is-4 owner-upsert-field">
+                </div>
+                <div class="columns">
+                    <div class="column is-5 owner-upsert-field">
                         {{!-- {{{label.ownerDob}}} --}}
                         {{{ownerForm.dob.text.label}}}
                         <div class="control has-icons-left">
@@ -85,6 +85,18 @@
                                 <i class="fas fa-calendar-days"></i>
                             </span>
                         </div>
+                    </div>
+                    <div class="column is-7 owner-upsert-field">
+                        {{!-- {{{label.ownerSsn}}} --}}
+                        {{{ownerForm.ssn.text.label}}}
+                        <div class="control has-icons-left">
+                            {{!-- {{{input.ownerSsn}}} --}}
+                            {{{ownerForm.ssn.text.input}}}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-fingerprint"></i>
+                            </span>
+                        </div>
+                        <p class="help is-info" id="owner-ssn-tip">Not public; encrypted <span class="has-text-danger">(Temporarily unavailable)</span></p>
                     </div>
                 </div>
             </form>
