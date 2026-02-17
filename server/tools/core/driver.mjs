@@ -357,9 +357,9 @@ class Application {
         this.address = new Address(data)
 
         if (this?.address?.zip) {
-            // this.address.complete = !!data.addrComplete
-            // this.address.enough = !!data.addrEnough
-            // this.address.livedAbroad = bool(data.livedAbroad)
+            this.address.complete = !!data.addrComplete
+            this.address.enough = !!data.addrEnough
+            this.address.livedAbroad = bool(data.livedAbroad)
             this.address.since = data.addrSince
             this.address.country = data.prevCountry
         }
@@ -549,10 +549,11 @@ class Application {
                 } = body
                 const { ssn, dob } = this.lead
                 const since = dob
-                let step
-                const { enough: addrEnough } = address
+                let step, addrComplete = false
+                const { enough } = address
                 delete address.enough
-                if (!addrEnough) step = 0
+                if (!enough) step = 0
+                else addrComplete = true
 
                 let person = await Individual.fetch(this.session, { ssn }) //? Technically it is checked before in create
                 if (!person) {
@@ -575,17 +576,13 @@ class Application {
                 if (!driver) throw new Error('Failed to create driver')
 
                 const driverId = driver.id
-                await this.update({ driverId, addrEnough, step, public: true }) //! REMOVE addrSince from applications
+                await this.update({ driverId, step, public: true })
                 await this.update('matcher', {
                     personId, driverId,
                     nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
                     phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
                 }, {}, { skipLog: true })
-                await this.add('addresses', {
-                    personId: person.id,
-                    since: person.comparator.address,
-                    enough: addrEnough, //! REMOVE addrSince from applications
-                })
+                await this.add('addresses', { personId: person.id, since: person.comparator.address, enough })
 
                 const application = await Application.fetch(this.session, { id: this.id })
                 await application.welcome()
@@ -1006,9 +1003,7 @@ class Application {
                     'condition',
                     'step',
                     'rehire',
-                    'createdAt',
-                    'finishedAt',
-                    'reviewedAt',
+                    'addrComplete',
                     'dlDenied',
                     'dlDeniedExpl',
                     'dlRevoked',
@@ -1029,6 +1024,9 @@ class Application {
                     'activeBusiness',
                     'applicant_',
                     'recruiter_',
+                        'createdAt',
+                        'finishedAt',
+                        'reviewedAt',
                 ],
                 search: [ null, 'formId' ]
             },
@@ -1121,6 +1119,14 @@ class Application {
                 table: query.person.addresses.table,
                 fields: [ [ 'since', 'addrSince' ], 'placeId', 'address1', 'address2', 'city', 'state', 'zip' ],
                 join: [ 'personId', 'personId', 2, [ 'since', 'addrSince', 3 ] ],
+            },
+            {
+                table: query.application.addresses.table,
+                fields: [ [ 'enough', 'addrEnough' ], 'livedAbroad' ],
+                join: [
+                    'personId', 'personId', query.person.addresses.table,
+                    [ 'since', 'since', query.person.addresses.table ],
+                ],
             },
             {
                 db: db.person,
