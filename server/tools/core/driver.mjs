@@ -574,27 +574,15 @@ class Application {
                 const driver = (await Driver.create(this.session, { personId })).data
                 if (!driver) throw new Error('Failed to create driver')
 
-                // let companyId, coNameSince, coAddrSince, coPhoneSince, coFaxSince
-                // if (this._carrierId) {
-                //     const carrier = await Carrier.fetch(this.session, { id: this.carrierId || Carrier.matchIdHash(this._carrierId) })
-                //     if (carrier) {
-                //         companyId = carrier.companyId
-                //         coNameSince = carrier.comparator.name
-                //         coAddrSince = carrier.comparator.address
-                //         coPhoneSince = carrier.comparator.phone
-                //         coFaxSince = carrier.comparator.fax
-                //     }
-                // }
-
                 const driverId = driver.id
-                const application = (await this.update({ driverId, addrEnough, step, public: true })).data
+                await this.update({ driverId, addrEnough, step, public: true })
                 await this.update('matcher', {
-                    personId, driverId, // companyId,
+                    personId, driverId,
                     nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
                     phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
-                    // coNameSince, coAddrSince, coPhoneSince, coFaxSince,
                 }, {}, { skipLog: true })
 
+                const application = await Application.fetch(this.session, { id: this.id })
                 await application.welcome()
             }
 
@@ -793,7 +781,7 @@ class Application {
         db: db.carrier,
         query: query.driver_application,
         idProp: 'appId',
-        defSorts: null,
+        defSorts: [ { desc: 'id' } ],
         childSort: {
             citations: 'citedOn',
             accidents: 'date',
@@ -918,7 +906,7 @@ class Application {
             if (user && selfAssign) userId = user.id
             else if (_userSimpleId) {
                 const user = await User.fetch(session, { _simpleId: _userSimpleId }, { offline: true })
-                if (user) userId = userId
+                if (user) userId = user.id
             }
 
             body = {

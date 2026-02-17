@@ -1483,7 +1483,7 @@ class ApplicationForm {
         let fields
         const profileFields = [
             'firstName', 'middleName', 'lastName', 'suffix',
-            'gender', 'dob', // 'ssn',
+            'gender', // 'dob', // 'ssn',
             'marital', 'phone', 'email',
         ]
         const addressFields = ['address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince', 'addrEnough']
@@ -1493,16 +1493,17 @@ class ApplicationForm {
         ]
         const businessFields = ['activeLLC', 'inactiveLLC', 'llcName', 'llcState', 'llcEin']
 
+        //! NOT REHIRE (FIRST TIMER)
         switch (target) {
             case 'registration':
-                fields = [...profileFields, 'position', ...addressFields, 'status', 'statusExp']
+                fields = [...profileFields, ...addressFields, 'status', 'statusExp']
                 // fields = [...profileFields, 'status', 'statusExp']
                 break
             case 'workflow':
                 fields = ['user', 'carrier', 'condition', 'experience', 'apprPosition']
                 break
             case 'profile':
-                fields = profileFields //! consider dob based on new or rehire
+                fields = [ ...profileFields, 'dob' ]
                 break
             case 'legal':
                 fields = ['status', 'statusExp']

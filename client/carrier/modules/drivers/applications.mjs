@@ -146,7 +146,7 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             render(data, type, row) {
                 if (!data) row = row.lead
-                if (!row.firtName) return
+                if (!row.firstName) return
 
                 return new Person(row).fullFirstName()
             },
@@ -231,37 +231,31 @@ const table = $('#driver-apl-table').DataTable({
             orderable: false,
             defaultContent,
             data(row) {
-                const { busName, coType } = row
-                if (!busName || !coType) return null
-
-                return escapeHTML(`${busName}, ${coType}`)
+                return row?.carrier?.name
             },
         },
 
         {
-            data: null,
             title: 'User',
             searchable: false,
             orderable: false,
             defaultContent,
-            render(data, type, row) {
-                const { userFirstName: firstName, userLastName: lastName, userAlias: alias } = row
-                if (!lastName) return null
-                
-                return escapeHTML(new Person({ firstName, lastName, alias }).fullName('Al'))
+            data(row) {
+                return row?.user?.shortName
             },
         },
 
         {
-            data: 'teamName',
             title: 'Team',
             searchable: false,
             orderable: false,
             defaultContent,
+            data(row) {
+                return row?.team?.name
+            },
         },
 
         {
-            data: null,
             searchable: false,
             orderable: false,
             className: 'right aligned',
