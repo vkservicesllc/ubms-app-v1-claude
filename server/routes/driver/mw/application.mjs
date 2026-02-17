@@ -164,7 +164,7 @@ export const applicationRegistration = async (req, res, next) => {
             options.status.radio[prop].input.class = 'form-check-input status-radio'
             options.status.radio[prop].label.class = 'form-check-label'
         }
-
+console.log(application.carrier)
         hbs._id = application._id
         hbs.carrier = application?.carrier?.name || null
         hbs.agency = !hbs.carrier ? application?.team?.name : null

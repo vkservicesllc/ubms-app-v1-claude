@@ -93,6 +93,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
     ApplicationForm.dob.validate(),
 ], validationCheck, async (req, res) => {
     try {
+        res.session.user = { id: 1 }
         const { position, ssn, dob } = req.body
         let { form: formId } = req.query
 

@@ -378,6 +378,10 @@ class Owner extends Individual {
             props2.count[path] = data[`${path}Count`]
         }
 
+        props2.comparator = {
+            name: data.nameSince,
+        }
+
         reSuper(this, props, props2)
 
         if (single) {
@@ -516,7 +520,7 @@ class Owner extends Individual {
             {
                 db: db.person,
                 table: query.person.names.table,
-                fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix' ],
+                fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix', [ 'since', 'nameSince' ] ],
                 join: [ 'personId', 'id', {
                     table: 'individuals',
                     max: 'since',

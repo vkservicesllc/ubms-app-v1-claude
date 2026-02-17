@@ -482,7 +482,7 @@ class Application {
                 relation: data.emergRelation,
             }
 
-        if (data.coAlias)
+        if (data.coAlias) {
             this.carrier = {
                 name: `${data.coBusName}, ${data.coCoType}`,
                 alias: data.coAlias,
@@ -496,6 +496,14 @@ class Application {
                 phone: data.coPhone,
                 fax: data.coFax,
             }
+            this.owner = new Person({
+                prefix: data.ownerPrefix,
+                firstName: data.ownerFirstName,
+                middleName: data.ownerMiddleName,
+                lastName: data.ownerLastName,
+                suffix: data.ownerSuffix,
+            })
+        }
 
         if (data.userLastName) {
             const user = new Person({
@@ -686,8 +694,7 @@ class Application {
                                 if (phoneSince === this.dob) matcherData.phoneSince = dob
                                 if (emailSince === this.dob) matcherData.emailSince = dob
                             }
-console.log(body)
-console.log(this.matcher)
+
                             await person.update({ dob, gender })
                             await person.update('names', { prefix, firstName, middleName, lastName, suffix }, { since: nameSince })
                             await person.update('maritals', { status: marital }, { since: maritalSince })
@@ -885,12 +892,21 @@ console.log(this.matcher)
                 prefix, firstName, middleName, lastName, suffix, phone, email, position,
             } = body
             const ssn = unprocessAES(body.ssn)
+            const matcher = {}
 
             if (_carrierId) {
                 const carrier = await Carrier.fetch(session, { _id: _carrierId })
                 if (!carrier) throw new Error('Carrier not found')
 
                 carrierId = carrier.id
+                matcher.companyId = carrier.companyId
+                matcher.ownerId = carrier.owner.id
+                matcher.owPersonId = carrier.owner.personId
+                matcher.coNameSince = carrier.comparator.name
+                matcher.coAddrSince = carrier.comparator.address
+                matcher.coPhoneSince = carrier.comparator.phone
+                matcher.coFaxSince = carrier.comparator.fax
+                matcher.owNameSince = carrier.owner.comparator.name
             }
 
             let { team, user } = session
@@ -905,6 +921,7 @@ console.log(this.matcher)
 
             body = {
                 main: { formId, cdlRole, carrierId, teamId, userId, position },
+                matcher,
             }
 
             if (!ssn) { //* Pre-Application
@@ -1285,12 +1302,18 @@ console.log(this.matcher)
                 table: query.company_owner.main.table,
                 join: [ 'id', 'ownerId', query.company.ownerships.table ],
             },
-            // {
-            //     db: db.person,
-            //     table: [ query.person.names.table, 'owner_names' ],
-            //     fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix' ],
-            //     join: [ 'personId', 'personId', query.company_owner.main.table, [ 'since', 'owNameSince', 3 ] ],
-            // },
+            {
+                db: db.person,
+                table: [ query.person.names.table, 'owner_names' ],
+                fields: [
+                    [ 'prefix', 'ownerPrefix' ],
+                    [ 'firstName', 'ownerFirstName' ],
+                    [ 'middleName', 'ownerMiddleName' ],
+                    [ 'lastName', 'ownerLastName' ],
+                    [ 'suffix', 'ownerSuffix' ],
+                ],
+                join: [ 'personId', 'personId', query.company_owner.main.table, [ 'since', 'owNameSince', 3 ] ],
+            },
             {
                 db: db.online,
                 table: query.user.main.table,
