@@ -576,7 +576,7 @@ class Application {
                 if (!driver) throw new Error('Failed to create driver')
 
                 const driverId = driver.id
-                await this.update({ driverId, step, public: true })
+                await this.update({ driverId, step, public: true, addrComplete })
                 await this.update('matcher', {
                     personId, driverId,
                     nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
