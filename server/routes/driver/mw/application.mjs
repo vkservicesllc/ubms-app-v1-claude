@@ -164,7 +164,7 @@ export const applicationRegistration = async (req, res, next) => {
             options.status.radio[prop].input.class = 'form-check-input status-radio'
             options.status.radio[prop].label.class = 'form-check-label'
         }
-console.log(application.carrier)
+
         hbs._id = application._id
         hbs.carrier = application?.carrier?.name || null
         hbs.agency = !hbs.carrier ? application?.team?.name : null
@@ -239,7 +239,7 @@ export const applicationProgress = async (req, res) => {
 
         const { application } = session
         if (application.rehire) return next()
-
+console.log(application)
         const { formId, cdlRole, _teamId, step } = application
 
         const { application: _id } = req.session
@@ -249,8 +249,8 @@ export const applicationProgress = async (req, res) => {
             return res.redirect(`/application/${formId}`)
         }
 
-        const driver = await Driver.fetch(session, { _id: application._driverId })
-        if (!driver) return sendError.server(req, res, new Error('Unidentified Driver'))
+        // const driver = await Driver.fetch(session, { _id: application._driverId })
+        // if (!driver) return sendError.server(req, res, new Error('Unidentified Driver'))
 
         const team = _teamId ? await Team.fetch(session, { _id: _teamId }) : null
         if (_teamId && !team) return sendError.server(req, res, new Error('Unidentified Environment'))

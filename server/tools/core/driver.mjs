@@ -575,12 +575,17 @@ class Application {
                 if (!driver) throw new Error('Failed to create driver')
 
                 const driverId = driver.id
-                await this.update({ driverId, addrEnough, step, public: true })
+                await this.update({ driverId, addrEnough, step, public: true }) //! REMOVE addrSince from applications
                 await this.update('matcher', {
                     personId, driverId,
                     nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
                     phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
                 }, {}, { skipLog: true })
+                await this.add('addresses', {
+                    personId: person.id,
+                    since: person.comparator.address,
+                    enough: addrEnough, //! REMOVE addrSince from applications
+                })
 
                 const application = await Application.fetch(this.session, { id: this.id })
                 await application.welcome()
