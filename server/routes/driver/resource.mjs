@@ -126,10 +126,12 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
             const { _teamId, _carrierId } = req.params
             const { cdl: cdlRole, rec: _userSimpleId,  } = req.query
 
-            const application = (await Application.create(res.session, {
-                cdlRole, _teamId, _carrierId, _userSimpleId,
-                ssn, dob, position,
-            })).data
+            let application = await Application.fetch(res.session, { ssn })
+            if (!application)
+                application = (await Application.create(res.session, {
+                    cdlRole, _teamId, _carrierId, _userSimpleId,
+                    ssn, dob, position,
+                })).data
 
             formId = application.formId
             urlExt = extendUrl(application._id)

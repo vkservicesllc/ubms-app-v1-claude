@@ -574,26 +574,26 @@ class Application {
                 const driver = (await Driver.create(this.session, { personId })).data
                 if (!driver) throw new Error('Failed to create driver')
 
-                let companyId, coNameSince, coAddrSince, coPhoneSince, coFaxSince
-                if (this._carrierId) {
-                    const carrier = await Carrier.fetch(this.session, { id: this.carrierId || Carrier.matchIdHash(this._carrierId) })
-                    if (carrier) {
-                        companyId = carrier.companyId
-                        coNameSince = carrier.comparator.name
-                        coAddrSince = carrier.comparator.address
-                        coPhoneSince = carrier.comparator.phone
-                        coFaxSince = carrier.comparator.fax
-                    }
-                }
+                // let companyId, coNameSince, coAddrSince, coPhoneSince, coFaxSince
+                // if (this._carrierId) {
+                //     const carrier = await Carrier.fetch(this.session, { id: this.carrierId || Carrier.matchIdHash(this._carrierId) })
+                //     if (carrier) {
+                //         companyId = carrier.companyId
+                //         coNameSince = carrier.comparator.name
+                //         coAddrSince = carrier.comparator.address
+                //         coPhoneSince = carrier.comparator.phone
+                //         coFaxSince = carrier.comparator.fax
+                //     }
+                // }
 
                 const driverId = driver.id
                 const application = (await this.update({ driverId, addrEnough, step, public: true })).data
-                await this.add('matcher', {
-                    personId, driverId, companyId,
+                await this.update('matcher', {
+                    personId, driverId, // companyId,
                     nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
                     phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
-                    coNameSince, coAddrSince, coPhoneSince, coFaxSince,
-                })
+                    // coNameSince, coAddrSince, coPhoneSince, coFaxSince,
+                }, {}, { skipLog: true })
 
                 await application.welcome()
             }
@@ -605,10 +605,11 @@ class Application {
             this.fetch = (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
 
 
-            this.update = (targetOrBody, body, filter) => {
+            this.update = (targetOrBody, body, match, options) => {
                 const application = this
 
-                return classInstance.update(this, new.target, targetOrBody, body, filter, {
+                return classInstance.update(this, new.target, targetOrBody, body, match, {
+                    ...options,
                     // async final(inst, body, target) {
                     //     if (target !== 'main' || !body.ssn) return
 
@@ -906,6 +907,7 @@ class Application {
                 matcher.coAddrSince = carrier.comparator.address
                 matcher.coPhoneSince = carrier.comparator.phone
                 matcher.coFaxSince = carrier.comparator.fax
+                matcher.coOwnerSince = carrier.comparator.ownership
                 matcher.owNameSince = carrier.owner.comparator.name
             }
 

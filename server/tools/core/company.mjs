@@ -70,6 +70,7 @@ class Company {
                 gender: data.gender,
                 dob: data.dob,
                 ssn: data.ssn,
+                nameSince: data.ownerNameSince,
             }, { hideRawId, hideSensitive })
             : { _id: null }
         if (this.owner._id)
@@ -96,6 +97,7 @@ class Company {
             address: data.addrSince,
             phone: data.phoneSince,
             fax: data.faxSince,
+            ownership: data.ownershipSince,
         }
 
         if (single) {
@@ -204,6 +206,7 @@ class Company {
                 },
                 {
                     table: query.company.ownerships.table,
+                    fields: [ [ 'since', 'ownershipSince' ] ],
                     join,
                 },
                 {
@@ -220,7 +223,7 @@ class Company {
                 {
                     db: db.person,
                     table: query.person.names.table,
-                    fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix' ],
+                    fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix', [ 'since', 'ownerNameSince' ] ],
                     join: [ 'personId', 'id', {
                         table: 'individuals',
                         max: 'since',
