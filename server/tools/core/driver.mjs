@@ -34,11 +34,16 @@ class Driver extends Individual {
 
         const {
             id, _id, personId, _personId, blackListed,
-            expDate,
+            complete, prevCountry, expDate,
         } = data
         const properties = {
             first: { _id, _personId },
-            last: { expDate },
+            last: {
+                addDefs: { complete: !!complete, prevCountry, expDate },
+                comparator: {
+                    mec: data.mecUntil,
+                },
+            },
         }
         if (!hideRawId) {
             properties.first.id = id
@@ -105,7 +110,7 @@ class Driver extends Individual {
                 },
                 {
                     table: query.driver.appDef.table,
-                    fields: 'expDate',
+                    fields: [ 'complete', 'prevCountry', 'expDate' ],
                     join: [ 'driverId', 'id' ],
                 },
                 {
@@ -178,6 +183,11 @@ class Driver extends Individual {
                         table: query.person.main.table,
                         max: 'issuedOn',
                     } ],
+                },
+                {
+                    table: query.driver.mecs.table,
+                    fields: [ [ 'expiresOn', 'mecUntil' ] ],
+                    join: [ 'driverId', 'id', { max: 'expiresOn' } ],
                 },
                 //? need other props ???
             ],
@@ -583,6 +593,7 @@ class Application {
                     phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
                 }, {}, { skipLog: true })
                 await this.add('addresses', { personId: person.id, since: person.comparator.address, enough })
+                await driver.add('appDef')
 
                 const application = await Application.fetch(this.session, { id: this.id })
                 await application.welcome()
@@ -592,7 +603,52 @@ class Application {
             this.add = (target, body) => classInstance.add(this, new.target, target, body)
 
 
-            this.fetch = (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
+            this.fetch = async (target, filter, params) => {
+                const person = await Individual.fetch(this.session, { id: this.personId || Individual.matchIdHash(this._personId) })
+                if (!person) throw new Error('Person not found')
+
+                const driver = await Driver.fetch(this.session, { id: this.driverId || Driver.matchIdHash(this._driverId )})
+                if (!driver) throw new Error('Driver not found')
+
+                let single = false, batch = []
+
+                switch (target) {
+
+                    case 'addresses':
+                        {
+                            let { since } = filter
+                            if (since) single = true
+                            else since = { not: this.address.since }
+
+                            batch = [
+                                {
+                                    table: query.driver_application.addresses.table,
+                                    fields: [ 'since', 'enough', 'livedAbroad' ],
+                                    match: { appId: this.id || Application.matchIdHash(this._id), since },
+                                    sort: { desc: 'since' },
+                                },
+                                {
+                                    db: db.person,
+                                    table: query.person.addresses.table,
+                                    fields: [ 'address1', 'address2', 'city', 'state', 'zip' ],
+                                    join: [ 'personId', 'personId', 0, [ 'since', 'since' ] ],
+                                },
+                            ]
+                        }
+                        break
+
+                    case 'citations':
+                        break
+
+                    case 'accidents':
+                        break
+
+                }
+
+                const [ rows ] = await mysql.execute(Query.select(db.carrier, batch))
+
+                return single ? rows[0] : rows
+            }
 
 
             this.update = (targetOrBody, body, match, options) => {
@@ -640,11 +696,11 @@ class Application {
 
 
             this.progress = async (step, body, rehire = false) => {
-                const { branch, siteId } = this.session
-                const modifiedBy = this.session?.user?.id || null
-                let createdIn = { branch }
-                if (siteId) createdIn.siteId = siteId
-                createdIn = JSON.stringify(createdIn)
+                // const { branch, siteId } = this.session
+                // const modifiedBy = this.session?.user?.id || null
+                // let createdIn = { branch }
+                // if (siteId) createdIn.siteId = siteId
+                // createdIn = JSON.stringify(createdIn)
 
                 const vehicleRecord = async (application, body) => {
                     if (application.position !== 'OO') return await application.delete('vehicle')
@@ -705,19 +761,21 @@ class Application {
                                 const { since, enough, livedAbroad, address1, address2, city, state, zip } = address
                                 const { personId = person.id } = this
 
-                                body = {
-                                    personAddresses: [ { since, address1, address2, city, state, zip } ],
-                                    addresses: [ { personId, since, enough, livedAbroad } ],
-                                    application: { prevCountry, addrComplete: true },
-                                }
-                                if (this.step === 0) body.application.step = 1
+                                await person.update('addresses', { since, address1, address2, city, state, zip }, {
+                                    since: this.matcher.addrSince,
+                                })
+                                await this.update('addresses', { enough, livedAbroad }, { since }) //? since cascaded on update in db
 
+                                body = { prevCountry, addrComplete: true }
+                                if (this.step === 0) body.step = 1
+
+                                await person.delete('addresses', { since: { not: since } })
                                 if (addresses) {
                                     const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
                                     const count = zip.length
 
                                     for (let i = 0; i < count; i++) {
-                                        body.personAddresses.push({
+                                        await person.add('addresses', {
                                             since: since[i],
                                             address1: address1[i],
                                             address2: address2[i],
@@ -725,7 +783,7 @@ class Application {
                                             state: state[i],
                                             zip: zip[i],
                                         })
-                                        body.addresses.push({
+                                        this.add('addresses', {
                                             personId,
                                             since: since[i],
                                             enough: enough[i],
@@ -734,12 +792,7 @@ class Application {
                                     }
                                 }
 
-                                await this.delete('addresses')
-                                await person.delete('addresses')
-
-                                await person.add('addresses', body.personAddresses)
-                                await this.add('addresses', body.addresses)
-                                await this.update(body.application)
+                                await this.update(body)
                             }
                             break
 
@@ -1006,8 +1059,29 @@ class Application {
                 return body
             }
 
+
+            const person = await Individual.fetch(session, { id: driver.personId })
+
             body.main.driverId = driver.id
-            body.main.rehire = true
+            body.matcher.nameSince = person.comparator.name
+            if (driver.addDefs.complete) {
+                body.main.rehire = true //! Rehire will only copy the name at first
+            } else {
+                body.matcher.legalSince = person.comparator.legal
+                body.matcher.maritalSince = person.comparator.marital
+                body.matcher.phoneSince = person.comparator.phone
+                body.matcher.emailSince = person.comparator.email
+                body.matcher.addrSince = person.comparator.address
+                if (person.comparator.identification) {
+                    body.matcher.dlId = person.comparator.identification
+                    body.main.step = 2
+                }
+                if (driver.comparator.mec) {
+                    body.matcher.mecUntil = driver.comparator.mec
+                    body.main.step = 3
+                }
+                //! continue the list
+            }
 
             return body
             // const person = await Individual.fetch(session, { ssn })

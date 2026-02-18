@@ -20,6 +20,7 @@ logFields.push('updateLog')
 export const classInstance = {
 
 
+    //* Support only one record at a time
     add: async (inst, Cls, target, bodyOrIds, bodyCB = null) => {
         if (!target || target === 'main') throw new Error(`${Cls.name} Constructor Method Error [ADD]: Target not supplied`)
 

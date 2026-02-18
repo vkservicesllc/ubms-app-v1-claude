@@ -234,14 +234,14 @@ export const applicationLogin = async (req, res, next) => {
 }
 
 
-export const applicationProgress = async (req, res) => {
+export const applicationProgress = async (req, res, next) => {
     try {
         const { session } = res
         session.user = { id: 1 }
 
         const { application } = session
         if (application.rehire) return next()
-// console.log(application)
+
         const { formId, cdlRole, _teamId, step } = application
 
         const { application: _id } = req.session
