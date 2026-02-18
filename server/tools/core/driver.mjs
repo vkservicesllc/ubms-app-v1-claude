@@ -923,9 +923,6 @@ class Application {
                 return body
             }
 
-            const application = await Application.fetch(session, { ssn })
-            if (application) throw new Error('DAPP_LOCKED_SSN_ERROR')
-
             let driver = await Driver.fetch(session, { ssn })
 
             if (!driver) {
@@ -1121,7 +1118,7 @@ class Application {
                 join: [ 'personId', 'personId', 2, [ 'since', 'addrSince', 3 ] ],
             },
             {
-                table: query.application.addresses.table,
+                table: query.driver_application.addresses.table,
                 fields: [ [ 'enough', 'addrEnough' ], 'livedAbroad' ],
                 join: [
                     'personId', 'personId', query.person.addresses.table,

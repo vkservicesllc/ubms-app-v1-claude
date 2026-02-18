@@ -4,6 +4,8 @@ const router = require('express').Router()
 const { body } = require('express-validator')
 const sendError = require('../../tools/utils/error')
 
+import moment from 'moment'
+
 /* Tools */
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
@@ -127,52 +129,23 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
             const { cdl: cdlRole, rec: _userSimpleId,  } = req.query
 
             let application = await Application.fetch(res.session, { ssn })
-            if (!application)
-                application = (await Application.create(res.session, {
-                    cdlRole, _teamId, _carrierId, _userSimpleId,
-                    ssn, dob, position,
-                })).data
+            if (application) {
+                const error = new Error('DAPP_LOCKED_SSN_ERROR')
+                error.data = application
+
+                throw error
+            }
+
+            application = (await Application.create(res.session, {
+                cdlRole, _teamId, _carrierId, _userSimpleId,
+                ssn, dob, position,
+            })).data
 
             formId = application.formId
             urlExt = extendUrl(application._id)
         }
 
         res.redirect(`/application/${formId + urlExt}`)
-        // const person = await Individual.fetch(res.session, { ssn })
-        // if (person && dob !== person.dob) throw new Error('DAPP_DOB_MISMATCH_ERROR')
-
-        // const { _teamId, _carrierId } = req.params
-        // const { cdl: cdlRole, rec: _userSimpleId, form: formId } = req.query
-        // const filter = { formId }
-
-        // if (!formId) filter.ssn = ssn
-        // let application = await Application.fetch(res.session, filter, { hideSensitive: false })
-        // let urlExt = ''
-        // const extendUrl = _id => `/registration?id=${_id}`
-
-        // if (!application) {
-        //     application = (await Application.create(res.session, {
-        //         cdlRole, _teamId, _carrierId, _userSimpleId,
-        //         ssn, dob, position,
-        //     })).data
-        //     if (!application) throw new Error('Failed to create application')
-        //     urlExt = extendUrl(application._id)
-        // } else if (!application.driverId) {
-        //     if (application?.lead?.ssn) urlExt = extendUrl(application._id)  //* Driver never registered but started in the past
-        //     else {
-        //         let driverId, rehire
-        //         const driver = await Driver.fetch(res.session, { ssn })
-        //         if (driver) {
-        //             driverId = driver.id
-        //             rehire = true
-        //         } else urlExt = extendUrl(application._id)
-
-        //         await application.update('lead', { ssn, dob })
-        //         await application.update({ driverId, rehire, position }) //, createdAt: utcTimeStamp()
-        //     }
-        // }
-
-        // res.redirect(`/application/${application.formId + urlExt}`)
     } catch (err) {
         switch (err.message) {
             case 'DAPP_DOB_MISMATCH_ERROR':
@@ -189,8 +162,25 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
                 break
             case 'DAPP_LOCKED_SSN_ERROR':
                 {
-                    //! Return HBS with message
-                    return res.send('SSN is locked. HBS comming later...')
+                    const key = 'application.busy'
+                    let { hbs } = res
+                    hbs = hbs.set(key, { title: 'Driver Application' })
+                    hbs.bodyAttrs = ' data-bs-theme="dark"'
+
+                    const application = err.data
+                    const { formId } = application
+
+                    hbs.formId = formId
+                    hbs.agency = application?.team?.name
+                    hbs.carrier = application?.carrier?.name
+                    hbs.applicantName = application.fullName
+                    hbs.applicantPosition = application.expansion.position
+                    hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET'
+                    hbs.appUrl = `/application/${formId}`
+
+                    delete req.session.application
+
+                    return res.render('application/busy', hbs)
                 }
             default:
                 sendError.server(req, res, err)

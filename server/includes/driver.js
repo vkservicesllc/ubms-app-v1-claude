@@ -27,6 +27,15 @@ module.exports = {
         },
     },
 
+    'application.busy': {
+        external: [ ...defaults.external, 'font-awesome' ],
+        internal: {
+            css: [ ...defaults.internal.css, 'application' ],
+            js: [ ...defaults.internal.js, '^application' ],
+            mjs: [ ...defaults.internal.mjs ],
+        },
+    },
+
     'application.login': {
         external: [ ...defaults.external, 'imask', 'font-awesome' ],
         internal: {

@@ -239,7 +239,7 @@ export const applicationProgress = async (req, res) => {
 
         const { application } = session
         if (application.rehire) return next()
-console.log(application)
+// console.log(application)
         const { formId, cdlRole, _teamId, step } = application
 
         const { application: _id } = req.session
@@ -252,11 +252,11 @@ console.log(application)
         // const driver = await Driver.fetch(session, { _id: application._driverId })
         // if (!driver) return sendError.server(req, res, new Error('Unidentified Driver'))
 
-        const team = _teamId ? await Team.fetch(session, { _id: _teamId }) : null
-        if (_teamId && !team) return sendError.server(req, res, new Error('Unidentified Environment'))
+        // const team = _teamId ? await Team.fetch(session, { _id: _teamId }) : null
+        // if (_teamId && !team) return sendError.server(req, res, new Error('Unidentified Environment'))
 
-        let agency = team?.profile?.company
-        let carrier = application?.carrier?.name
+        // let agency = team?.profile?.company
+        // let carrier = application?.carrier?.name
 
         if (step === 12) return res.redirect(`/application/${formId}/agreement`)
 
@@ -933,8 +933,8 @@ console.log(application)
         hbs.form = new ApplicationForm(options)
         hbs.emplForm = new EmploymentForm(emplOptions)
         hbs.formId = formId
-        hbs.agency = agency
-        hbs.carrier = carrier
+        hbs.agency = application?.team?.name
+        hbs.carrier = application?.carrier?.name
         hbs.maskedSsn = formatSsn(application.ssn, '*')
         hbs.progress = Math.round(step / steps.length * 100)
         hbs.progressBg = hbs.progress === 100 ? 'success' : 'secondary'
@@ -946,7 +946,7 @@ console.log(application)
         hbs.position = application.position
         hbs.addrEnough = application.address.enough
         hbs.cdl = application?.dl?.commercial === true
-        hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET' //! Test time accuracy on live server
+        hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET'
         hbs.emplExpStartDate = application?.experience?.firstDate || ''
 
         res.render(key, hbs)
