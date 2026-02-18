@@ -549,7 +549,7 @@ class Application {
                 } = body
                 const { ssn, dob } = this.lead
                 const since = dob
-                let step, addrComplete = false
+                let step = 1, addrComplete = false
                 const { enough } = address
                 delete address.enough
                 if (!enough) step = 0
@@ -666,32 +666,81 @@ class Application {
                 }
 
                 if (rehire !== true) {
+                    const person = await Individual.fetch(this.session, { id: this.personId || Individual.matchHash(this._personId) })
+                    if (!person) throw new Error('Person not found')
+
+                    const driver = await Driver.fetch(this.session, { id: this.driverId || Driver.matchIdHash(this._driverId )})
+                    if (!driver) throw new Error('Driver not found')
 
                     switch (step) {
 
 
                         case 'profile':
-                            const person = await Individual.fetch(this.session, { id: this.personId || Individual.matchHash(this._personId) })
-                            if (!person) throw new Error('Person not found')
+                            {
+                                const { prefix, firstName, middleName, lastName, suffix, dob, gender, marital, phone, email } = body
+                                let { nameSince, maritalSince, phoneSince, emailSince } = this.matcher
 
-                            const { prefix, firstName, middleName, lastName, suffix, dob, gender, marital, phone, email } = body
-                            let { nameSince, maritalSince, phoneSince, emailSince } = this.matcher
+                                const matcherData = {}
 
-                            const matcherData = {}
+                                if (dob !== this.dob) {
+                                    if (nameSince === this.dob) matcherData.nameSince = dob
+                                    if (maritalSince === this.dob) matcherData.maritalSince = dob
+                                    if (phoneSince === this.dob) matcherData.phoneSince = dob
+                                    if (emailSince === this.dob) matcherData.emailSince = dob
+                                }
 
-                            if (dob !== this.dob) {
-                                if (nameSince === this.dob) matcherData.nameSince = dob
-                                if (maritalSince === this.dob) matcherData.maritalSince = dob
-                                if (phoneSince === this.dob) matcherData.phoneSince = dob
-                                if (emailSince === this.dob) matcherData.emailSince = dob
+                                await person.update({ dob, gender })
+                                await person.update('names', { prefix, firstName, middleName, lastName, suffix }, { since: nameSince })
+                                await person.update('maritals', { status: marital }, { since: maritalSince })
+                                await person.update('phones', { phone }, { since: phoneSince })
+                                await person.update('emails', { email }, { since: emailSince })
+                                if (Object.keys(matcherData).length) await this.update('matcher', matcherData)
                             }
+                            break
 
-                            await person.update({ dob, gender })
-                            await person.update('names', { prefix, firstName, middleName, lastName, suffix }, { since: nameSince })
-                            await person.update('maritals', { status: marital }, { since: maritalSince })
-                            await person.update('phones', { phone }, { since: phoneSince })
-                            await person.update('emails', { email }, { since: emailSince })
-                            if (Object.keys(matcherData).length) await this.update('matcher', matcherData)
+
+                        case 'residence':
+                            {
+                                const { address, addresses, prevCountry = null } = body
+                                const { since, enough, livedAbroad, address1, address2, city, state, zip } = address
+                                const { personId = person.id } = this
+
+                                body = {
+                                    personAddresses: [ { since, address1, address2, city, state, zip } ],
+                                    addresses: [ { personId, since, enough, livedAbroad } ],
+                                    application: { prevCountry, addrComplete: true },
+                                }
+                                if (this.step === 0) body.application.step = 1
+
+                                if (addresses) {
+                                    const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
+                                    const count = zip.length
+
+                                    for (let i = 0; i < count; i++) {
+                                        body.personAddresses.push({
+                                            since: since[i],
+                                            address1: address1[i],
+                                            address2: address2[i],
+                                            city: city[i],
+                                            state: state[i],
+                                            zip: zip[i],
+                                        })
+                                        body.addresses.push({
+                                            personId,
+                                            since: since[i],
+                                            enough: enough[i],
+                                            livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
+                                        })
+                                    }
+                                }
+
+                                await this.delete('addresses')
+                                await person.delete('addresses')
+
+                                await person.add('addresses', body.personAddresses)
+                                await this.add('addresses', body.addresses)
+                                await this.update(body.application)
+                            }
                             break
 
 
