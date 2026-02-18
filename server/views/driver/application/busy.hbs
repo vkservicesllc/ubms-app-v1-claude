@@ -23,7 +23,7 @@
                         <i class="fas fa-exclamation-triangle pe-1"></i>
                         Multiple applications are not permitted!
                     </p>
-                    <div>
+                    <div class="mb-4">
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Form ID:</small> {{formId}}</p>
                         {{#if (hv agency)}}
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Agency:</small> {{{agency}}}</p>
@@ -34,8 +34,9 @@
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Position:</small> {{applicantPosition}}</p>
                         <p class="text-start my-0 px-1"><small class="text-muted apl-label">Started at:</small> {{startedAt}}</p>
                     </div>
+                    <p class="text-start text-success message">A PIN has been sent to <i>{{{maskedEmail}}}</i>.</p>
                     <div class="d-grid gap-2 mt-4 mb-2">
-                        <a class="btn btn-primary bg-primary-subtle" href="{{appUrl}}">Resume Application</a>
+                        <a class="btn btn-primary bg-primary-subtle" href="{{{appUrl}}}">Resume Application</a>
                     </div>
                 </div>
             </div>

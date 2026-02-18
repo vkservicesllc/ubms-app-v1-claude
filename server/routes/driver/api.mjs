@@ -43,6 +43,21 @@ router.post('/login/application/:formId', validateApplicantLogin, async (req, re
 })
 
 
+router.post('/resend-pin/application/:formId', async (req, res) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.fetch({ ...res.session, user: true }, { formId })
+        if (!application) throw new Error('Application not found')
+
+        await application.pin()
+
+        res.send('OK')
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== EXPORT ==== //
 

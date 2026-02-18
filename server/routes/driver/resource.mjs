@@ -13,6 +13,7 @@ import Carrier from '../../tools/core/carrier.mjs'
 import Individual from '../../tools/core/individual.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
 import { utcTimeStamp } from '../../tools/utils/date.mjs'
+import { maskEmail } from '../../tools/utils/string.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
@@ -94,20 +95,32 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
     ApplicationForm.ssn.validate(),
     ApplicationForm.dob.validate(),
 ], validationCheck, async (req, res) => {
+    let urlExt = ''
+    const extendUrl = _id => `/registration?id=${_id}`
+
     try {
         res.session.user = { id: 1 }
+        const { _teamId, _carrierId } = req.params
+        let { cdl: cdlRole, rec: _userSimpleId, form: formId } = req.query
         const { position, ssn, dob } = req.body
-        let { form: formId } = req.query
 
         const person = await Individual.fetch(res.session, { ssn })
-        if (person && dob !== person.dob) throw new Error('DAPP_DOB_MISMATCH_ERROR')
+        if (person && dob !== person.dob) {
+            const error = new Error('DAPP_DOB_MISMATCH_ERROR')
+            error.url = `/application?env=${_teamId}&cdl=${cdlRole}`
+            if (_userSimpleId) error.url += `&rec=${_userSimpleId}`
 
-        let urlExt = ''
-        const extendUrl = _id => `/registration?id=${_id}`
+            throw error
+        }
 
         if (formId) {
             const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
-            if (!application) throw new Error('DAPP_NFOUND_ERROR')
+            if (!application) { //* Pre-Application deleted
+                const error = new Error('DAPP_NFOUND_ERROR')
+                error.body = { cdlRole, _teamId, _carrierId, _userSimpleId, ssn, dob, position }
+
+                throw error
+            }
 
             if (!application.driverId) {
                 if (application?.lead?.ssn) urlExt = extendUrl(application._id)  //* Driver never registered but started in the past
@@ -125,9 +138,6 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
                 }
             }
         } else {
-            const { _teamId, _carrierId } = req.params
-            const { cdl: cdlRole, rec: _userSimpleId,  } = req.query
-
             let application = await Application.fetch(res.session, { ssn })
             if (application) {
                 const error = new Error('DAPP_LOCKED_SSN_ERROR')
@@ -140,6 +150,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
                 cdlRole, _teamId, _carrierId, _userSimpleId,
                 ssn, dob, position,
             })).data
+            if (!application) throw new Error('Failed to create application')
 
             formId = application.formId
             urlExt = extendUrl(application._id)
@@ -150,14 +161,26 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
         switch (err.message) {
             case 'DAPP_DOB_MISMATCH_ERROR':
                 {
-                    //! Return HBS with message
-                    return res.send('DOB Mismatch Error. HBS comming later...')
+                    const key = 'application.mismatch'
+                    let { hbs } = res
+                    hbs = hbs.set(key, { title: 'Driver Application' })
+                    hbs.bodyAttrs = ' data-bs-theme="dark"'
+
+                    hbs.appUrl = err.url
+
+                    return res.render('application/mismatch', hbs)
                 }
                 break
             case 'DAPP_NFOUND_ERROR':
                 {
-                    //! Return HBS with message
-                    return res.send('Form ID Error. HBS comming later...')
+                    try {
+                        const application = (await Application.create(res.session, err.body)).data
+                        if (!application) throw new Error('Failed to create application')
+
+                        return res.redirect(`/application/${application.formId + extendUrl(application._id)}`)
+                    } catch (err) {
+                        sendError.server(req, res, err)
+                    }
                 }
                 break
             case 'DAPP_LOCKED_SSN_ERROR':
@@ -176,6 +199,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
                     hbs.applicantName = application.fullName
                     hbs.applicantPosition = application.expansion.position
                     hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET'
+                    hbs.maskedEmail = maskEmail(application.email)
                     hbs.appUrl = `/application/${formId}`
 
                     delete req.session.application

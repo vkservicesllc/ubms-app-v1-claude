@@ -41,3 +41,18 @@ export const generateRandomString = (len, patt) => {
 
     return str
 }
+
+
+export const maskEmail = email => {
+    if (!email) return
+
+    const [ local, domain ] = email.split('@')
+
+    if (local.length <= 2) return local[0] + '*@' + domain
+
+    const first = local[0]
+    const last = local[local.length - 1]
+    const masked = '*'.repeat(local.length - 2)
+
+    return `${first}${masked}${last}@${domain}`
+}

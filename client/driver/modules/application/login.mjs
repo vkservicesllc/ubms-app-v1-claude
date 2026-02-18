@@ -11,6 +11,7 @@ const $card = $('#apl-login-card')
 const $submit = $('[type=submit]')
 const $form = $('#apl-login-form')
 const $help = $('#form-help')
+const $resentModal = $('#pin-resent-modal')
 
 $(selector.class.global).val(null)
 $('label.input-required').removeClass('input-required')
@@ -44,6 +45,20 @@ inputEvent(pinId, {
         if (pin.length == length) $pin.blur()
     },
     onBlur,
+})
+
+$('#resend-pin').click(function (evt) {
+    evt.preventDefault()
+
+    const dirs = $form.attr('action').split('/')
+    const formId = dirs[dirs.length - 1]
+
+    $.ajax(`/api/resend-pin/application/${formId}`, {
+        method: 'POST',
+        success() {
+            $resentModal.modal('show')
+        },
+    })
 })
 
 

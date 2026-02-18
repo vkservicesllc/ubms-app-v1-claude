@@ -13,6 +13,7 @@ import Address from '../../../../client/global/modules/tools/core/address.us.mjs
 import Geography from '../../../../client/global/modules/tools/core/geography.mjs'
 import { respond404 } from '../../../tools/utils/response.mjs'
 import { tel as formatTel, ssn as formatSsn, ein as formatEin } from '../../../../client/global/modules/tools/utils/formatter.mjs'
+import { maskEmail } from '../../../tools/utils/string.mjs'
 
 /* Forms */
 import { ApplicationForm, EmploymentForm } from '../../../tools/form/driver.mjs'
@@ -222,6 +223,7 @@ export const applicationLogin = async (req, res, next) => {
         })
 
         hbs.firstName = application.firstName
+        hbs.maskedEmail = maskEmail(application.email)
         hbs.form = new ApplicationForm(options)
         hbs.formUrl = `/application/auth/login/${formId}`
 

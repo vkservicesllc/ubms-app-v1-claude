@@ -751,6 +751,31 @@ class Application {
             }
 
 
+            this.pin = () => {
+                if (!this.email) return
+
+                let { email } = this
+                if (email.split('@')[1] === 'bogus.xyz') email = senderParams.email
+
+                let { from } = senderParams
+                if (this?.carrier?.name) from = `"${this.carrier.name}" <${senderParams.email}>`
+                else if (this?.team?.name) from = `"${this.team.name}" <${senderParams.email}>`
+
+                const mailOpts = {
+                    from,
+                    to: email,
+                    subject: 'PIN Request',
+                    html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+                        Your requested PIN is the last four digits of your Social Security number. Keep it confidential.
+                    </div>`,
+                }
+
+                transporter.sendMail(mailOpts, error => {
+                    if (error) console.error(error)
+                })
+            }
+
+
             this.identity = async () => {
                 if (!this._personId) return
 
@@ -829,13 +854,11 @@ class Application {
 
         if (companyName) from = `"${companyName}" <${senderParams.email}>`
 
-        if (formId) url += `?form=${formId}`
-        else {
-            url += `?env=${team ? team._id : 'global'}`
-            url += `&cdl=${cdlRole}`
-            if (_userSimpleId) url += `&rec=${_userSimpleId}`
-            else if (selfAssign) url += `&rec=${user._simpleId}`
-        }
+        url += `?env=${team ? team._id : 'global'}`
+        url += `&cdl=${cdlRole}`
+        if (_userSimpleId) url += `&rec=${_userSimpleId}`
+        else if (selfAssign) url += `&rec=${user._simpleId}`
+        if (formId) url += `&form=${formId}`
 
         if (email.split('@')[1] === 'bogus.xyz') email = senderParams.email
 
