@@ -814,6 +814,12 @@ class Application {
                             }
                             break
 
+                        case 'driver-license':
+                            {
+
+                            }
+                            break
+
 
                     }
                 }
@@ -1080,7 +1086,7 @@ class Application {
             //* Application was incomplete and deleted
 
             const { id: driverId, personId } = driver
-            const person = await Individual.fetch(session, { id: personId })
+            const person = await Individual.fetch(session, { id: personId }, { hideSensitive: false })
 
             body.main.driverId = driver.id
             body.matcher.driverId = driverId
@@ -1093,6 +1099,7 @@ class Application {
 
                 body.main.step = cache.step
                 body.main.addrComplete = cache.addrComplete
+                body.lead = { ssn: processAES('ssn', person.ssn), dob: person.dob }
 
                 body.matcher.legalSince = person.comparator.legal
                 body.matcher.maritalSince = person.comparator.marital
