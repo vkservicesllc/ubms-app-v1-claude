@@ -34,12 +34,12 @@ class Driver extends Individual {
 
         const {
             id, _id, personId, _personId, blackListed,
-            complete, prevCountry, expDate,
+            complete, prevCountry, expDate, cache,
         } = data
         const properties = {
             first: { _id, _personId },
             last: {
-                addDefs: { complete: !!complete, prevCountry, expDate },
+                appDef: { complete: !!complete, prevCountry, expDate, cache },
                 comparator: {
                     mec: data.mecUntil,
                 },
@@ -110,7 +110,7 @@ class Driver extends Individual {
                 },
                 {
                     table: query.driver.appDef.table,
-                    fields: [ 'complete', 'prevCountry', 'expDate' ],
+                    fields: [ 'complete', 'prevCountry', 'expDate', 'cache' ],
                     join: [ 'driverId', 'id' ],
                 },
                 {
@@ -766,8 +766,11 @@ class Application {
                                 })
                                 await this.update('addresses', { enough, livedAbroad }, { since }) //? since cascaded on update in db
 
-                                body = { prevCountry, addrComplete: true }
-                                if (this.step === 0) body.step = 1
+                                body = {
+                                    main: { addrComplete: true },
+                                    appDef: { prevCountry },
+                                }
+                                if (this.step === 0) body.main.step = 1
 
                                 await person.delete('addresses', { since: { not: since } })
                                 if (addresses) {
@@ -792,7 +795,17 @@ class Application {
                                     }
                                 }
 
-                                await this.update(body)
+                                await this.update('appDef', body.appDef)
+                                await this.update(body.main)
+
+                                let { cache } = this
+                                if (!cache) cache = {}
+                                if (this.step === 0) cache.step = 1
+                                cache.addrComplete = true
+                                cache.livedAbroad = !!prevCountry
+                                cache = JSON.stringify(cache)
+
+                                await driver.update('appDef', { cache })
                             }
                             break
 
@@ -930,9 +943,9 @@ class Application {
         if (!session?.user?.id) return
 
         let email = data.email || data?.lead?.email
-        if (!email) return
-
         let { team, user } = session
+
+        if (!email || !user) return
         let { from } = senderParams
         let companyName, phone, url = '/application'
 
@@ -995,7 +1008,7 @@ class Application {
 
     static create = (session, body, params) => classStatic.create(this, session, body, params, {
         async split(body) {
-            let formId, found = true, carrierId, teamId, userId, personId
+            let formId, found = true, carrierId, teamId, userId
             do {
                 formId = generateRandomString(12, 'ud')
 
@@ -1050,75 +1063,63 @@ class Application {
 
             let driver = await Driver.fetch(session, { ssn })
 
-            if (!driver) {
+            if (!driver) { //* First Timer
                 const person = await Individual.fetch(session, { ssn })
 
                 body.main.public = false
-                body.lead = !person ? { ssn: processAES('ssn', ssn), dob } : { personId }
+                body.lead = !person ? { ssn: processAES('ssn', ssn), dob } : { personId: person.id }
 
                 return body
             }
 
+            //* Application was incomplete and deleted
 
-            const person = await Individual.fetch(session, { id: driver.personId })
+            const { id: driverId, personId } = driver
+            const person = await Individual.fetch(session, { id: personId })
 
             body.main.driverId = driver.id
+            body.matcher.driverId = driverId
+            body.matcher.personId = personId
             body.matcher.nameSince = person.comparator.name
-            if (driver.addDefs.complete) {
+            if (driver.appDef.complete) {
                 body.main.rehire = true //! Rehire will only copy the name at first
             } else {
+                const { cache } = driver.appDef
+
+                body.main.step = cache?.step || 1
                 body.matcher.legalSince = person.comparator.legal
                 body.matcher.maritalSince = person.comparator.marital
                 body.matcher.phoneSince = person.comparator.phone
                 body.matcher.emailSince = person.comparator.email
                 body.matcher.addrSince = person.comparator.address
+
+                body.addresses = []
+
+                const addresses = await person.fetch('addresses')
+                const addrLen = addresses.length
+
+                for (let i = 0; i < addrLen; i++) {
+                    const since = addresses[i].since
+                    let enough = false, livedAbroad = false
+                    if (i + 1 === addrLen) {
+                        //! get info from cache
+                    }
+
+                    await body.addresses.push({ personId, since, enough, livedAbroad })
+                }
+
                 if (person.comparator.identification) {
                     body.matcher.dlId = person.comparator.identification
-                    body.main.step = 2
+                    //! use cache
                 }
-                if (driver.comparator.mec) {
-                    body.matcher.mecUntil = driver.comparator.mec
-                    body.main.step = 3
-                }
-                //! continue the list
+                //* must stop at DL because no presaved data about dlDenied and dlRevoked
             }
 
             return body
-            // const person = await Individual.fetch(session, { ssn })
-
-            // if (person) {
-            //     personId = person.id
-
-            //     let driver = await Driver.fetch(session, { personId })
-
-            //     if (!driver) {
-            //         driver = (await Driver.create(session, { personId })).data
-            //         if (!driver) throw new Error('Driver could not be created')
-
-            //         const { matcher } = person
-            //         body.matcher = {
-            //             personId, driverId: driver.id,
-            //             nameSince: matcher.name, legalSince: matcher
-            //         }
-            //         // companyId,
-            //         // nameSince: since, legalSince: since, maritalSince: since,
-            //         // phoneSince: since, emailSince: since, addrSince: address.since,
-            //         // coNameSince, coAddrSince, coPhoneSince, coFaxSince,
-            //     }
-            //     else body.main.rehire = true
-
-            //     if (!driver) throw new Error('Failed to fetch or create driver')
-
-            //     body.main.driverId = driver.id
-            // } else {
-            //     body.main.public = false
-            //     body.lead = { ssn: processAES('ssn', ssn), dob }
-            // }
-
-            // return body
         },
         async final(application) {
-            await Application.invite(session, application, application.formId)
+            if (application.driverId) await application.welcome()
+            else await Application.invite(session, application, application.formId)
         },
     })
 
@@ -1214,7 +1215,7 @@ class Application {
             },
             {
                 table: query.driver.appDef.table,
-                fields: [ 'prevCountry', 'expDate' ],
+                fields: [ 'prevCountry', 'expDate', 'cache' ],
                 join: [ 'driverId', 'driverId' ],
             },
             {
