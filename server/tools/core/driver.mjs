@@ -730,6 +730,9 @@ class Application {
                     const driver = await Driver.fetch(this.session, { id: this.driverId || Driver.matchIdHash(this._driverId )})
                     if (!driver) throw new Error('Driver not found')
 
+                    let { cache } = driver.appDef
+                    if (!cache) cache = {}
+
                     switch (step) {
 
 
@@ -767,9 +770,6 @@ class Application {
                                     since: this.matcher.addrSince,
                                 })
                                 await this.update('addresses', { enough, livedAbroad }, { since }) //? since cascaded on update in db
-
-                                let { cache } = this
-                                if (!cache) cache = {}
 
                                 body = {
                                     main: { addrComplete: true },
@@ -1221,7 +1221,7 @@ class Application {
             },
             {
                 table: query.driver.appDef.table,
-                fields: [ 'prevCountry', 'expDate', 'cache' ],
+                fields: [ 'prevCountry', 'expDate' ],
                 join: [ 'driverId', 'driverId' ],
             },
             {
