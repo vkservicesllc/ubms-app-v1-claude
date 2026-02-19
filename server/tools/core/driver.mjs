@@ -1091,7 +1091,9 @@ class Application {
             } else {
                 const { cache } = driver.appDef
 
-                body.main.step = cache?.step || 1
+                body.main.step = cache.step
+                body.main.addrComplete = cache.addrComplete
+
                 body.matcher.legalSince = person.comparator.legal
                 body.matcher.maritalSince = person.comparator.marital
                 body.matcher.phoneSince = person.comparator.phone
@@ -1107,13 +1109,14 @@ class Application {
                     const since = addresses[i].since
                     let enough = false, livedAbroad = false
                     if (i + 1 === addrLen) {
-                        enough = !!cache?.addrComplete
-                        livedAbroad = !!cache?.livedAbroad
+                        enough = cache.addrEnough
+                        livedAbroad = cache.livedAbroad
                     }
 
                     await body.addresses.push({ personId, since, enough, livedAbroad })
                 }
 
+                //! ...continue when done with DL progress...
                 if (person.comparator.identification) {
                     body.matcher.dlId = person.comparator.identification
                     //! use cache
