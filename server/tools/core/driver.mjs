@@ -57,15 +57,15 @@ class Driver extends Individual {
             this.session = session
             this.config = { hideRawId, hideSensitive }
 
-            this.add = () => {}
+            this.add = (target, body) => classInstance.add(this, new.target, target, body)
 
-            this.fetch = undefined //? (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
+            this.fetch = (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
 
-            this.update = () => {}
+            this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match)
 
-            this.delete = () => {}
+            this.delete = (target, match) => classInstance.delete(this, new.target, target, match)
 
-            this.log = () => {}
+            this.log = params => classInstance.log(this, new.target, params)
         }
     }
 
@@ -780,6 +780,7 @@ class Application {
                                     cache.step = 1
                                 }
                                 cache.addrComplete = true
+                                cache.addrEnough = enough
                                 cache.livedAbroad = !!prevCountry
 
                                 await person.delete('addresses', { since: { not: since } })
@@ -802,15 +803,14 @@ class Application {
                                             enough: enough[i],
                                             livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
                                         })
-                                        cache.addrComplete = enough[i]
+                                        cache.addrEnough = enough[i]
                                     }
                                 }
 
-                                await this.update('appDef', body.appDef)
-                                await this.update(body.main)
+                                body.appDef.cache = JSON.stringify(cache)
 
-                                cache = JSON.stringify(cache)
-                                await driver.update('appDef', { cache })
+                                await this.update(body.main)
+                                await driver.update('appDef', body.appDef)
                             }
                             break
 
