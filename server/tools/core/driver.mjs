@@ -585,6 +585,8 @@ class Application {
                 const driver = (await Driver.create(this.session, { personId })).data
                 if (!driver) throw new Error('Failed to create driver')
 
+                const cache = { step, addrEnough: enough }
+
                 const driverId = driver.id
                 await this.update({ driverId, step, public: true, addrComplete })
                 await this.update('matcher', {
@@ -593,7 +595,7 @@ class Application {
                     phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
                 }, {}, { skipLog: true })
                 await this.add('addresses', { personId: person.id, since: person.comparator.address, enough })
-                await driver.add('appDef')
+                await driver.add('appDef', { cache })
 
                 const application = await Application.fetch(this.session, { id: this.id })
                 await application.welcome()
@@ -766,11 +768,19 @@ class Application {
                                 })
                                 await this.update('addresses', { enough, livedAbroad }, { since }) //? since cascaded on update in db
 
+                                let { cache } = this
+                                if (!cache) cache = {}
+
                                 body = {
                                     main: { addrComplete: true },
                                     appDef: { prevCountry },
                                 }
-                                if (this.step === 0) body.main.step = 1
+                                if (this.step === 0) {
+                                    body.main.step = 1
+                                    cache.step = 1
+                                }
+                                cache.addrComplete = true
+                                cache.livedAbroad = !!prevCountry
 
                                 await person.delete('addresses', { since: { not: since } })
                                 if (addresses) {
@@ -792,19 +802,14 @@ class Application {
                                             enough: enough[i],
                                             livedAbroad: typeof livedAbroad?.[i] === 'boolean' ? livedAbroad[i] : null,
                                         })
+                                        cache.addrComplete = enough[i]
                                     }
                                 }
 
                                 await this.update('appDef', body.appDef)
                                 await this.update(body.main)
 
-                                let { cache } = this
-                                if (!cache) cache = {}
-                                if (this.step === 0) cache.step = 1
-                                cache.addrComplete = true
-                                cache.livedAbroad = !!prevCountry
                                 cache = JSON.stringify(cache)
-
                                 await driver.update('appDef', { cache })
                             }
                             break
@@ -1102,7 +1107,8 @@ class Application {
                     const since = addresses[i].since
                     let enough = false, livedAbroad = false
                     if (i + 1 === addrLen) {
-                        //! get info from cache
+                        enough = !!cache?.addrComplete
+                        livedAbroad = !!cache?.livedAbroad
                     }
 
                     await body.addresses.push({ personId, since, enough, livedAbroad })
