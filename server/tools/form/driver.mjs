@@ -536,13 +536,13 @@ class ApplicationForm {
         selector: appSelector,
         target: 'dlDenied',
         group: 'driverLicense',
-        name: 'denied',
+        name: 'dlDenied',
     })
     static dlDenied2 = createForm({
         selector: appSelector,
         target: 'dlDenied',
         type: 'checkbox',
-        name: 'denied',
+        name: 'dlDenied',
         label: 'The license has been denied in the past',
     })
 
@@ -550,18 +550,18 @@ class ApplicationForm {
         selector: appSelector,
         target: 'dlRevoked',
         group: 'driverLicense',
-        name: 'revoked',
+        name: 'dlRevoked',
     })
     static dlRevoked2 = createForm({
         selector: appSelector,
         target: 'dlRevoked',
         type: 'checkbox',
-        name: 'revoked',
+        name: 'dlRevoked',
         label: 'The license has been revoked/suspended in the past',
     })
 
-    static dlDeniedExpl = createDlProblemExplForm('dlDeniedExpl', 'deniedExpl')
-    static dlRevokedExpl = createDlProblemExplForm('dlRevokedExpl', 'revokedExpl')
+    static dlDeniedExpl = createDlProblemExplForm('dlDeniedExpl', 'dlDeniedExpl')
+    static dlRevokedExpl = createDlProblemExplForm('dlRevokedExpl', 'dlRevokedExpl')
 
 
     /* MEDICAL CARD */

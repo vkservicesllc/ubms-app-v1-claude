@@ -77,8 +77,9 @@ export const classInstance = {
         body[idProp] = inst.id
 
         const [ result ] = await mysql.execute(query[target].insert(body))
+        const { insertId } = result
 
-        return { added: result.affectedRows > 0 }
+        return { added: result.affectedRows > 0, insertId }
     },
 
 

@@ -816,7 +816,59 @@ class Application {
 
                         case 'driver-license':
                             {
+                                if (!body.dlDenied) body.dlDeniedExpl = null
+                                if (!body.dlRevoked) body.dlRevokedExpl = null
 
+                                const { dlDenied, dlRevoked, dlDeniedExpl, dlRevokedExpl } = body
+                                delete body.dlDenied
+                                delete body.dlRevoked
+                                delete body.dlDeniedExpl
+                                delete body.dlRevokedExpl
+
+                                body = {
+                                    dl: body,
+                                    main: { dlDenied, dlRevoked, dlDeniedExpl, dlRevokedExpl },
+                                }
+
+                                let dlId
+
+                                //* Attempt to Avoid Dublicates (NOT GUARANTEED)
+                                const identifications = await person.fetch('identifications')
+                                if (identifications.length)
+                                    for (const card of identifications) {
+                                        if (!card.driver) continue
+                                        if (!!card.commercial !== !!body.dl.commercial) continue
+                                        if (card.number !== body.dl.number) continue
+                                        if (card.class !== body.dl.class) continue
+                                        if (card.state !== body.dl.state) continue
+                                        if (card.issuedOn !== body.dl.issuedOn) continue
+                                        if (card.expiresOn !== body.dl.expiresOn) continue
+                                        dlId = card.id
+                                    }
+
+                                if (!this.dl) {
+                                    if (!dlId) {
+                                        const { insertId } = await person.add('identifications', body.dl)
+                                        if (!insertId) throw new Error("Failed to add driver's license")
+
+                                        dlId = insertId
+                                    }
+                                    body.main.step = 2
+                                    cache.step = 2
+                                } else {
+                                    if (!dlId) await person.update('identifications', body.dl, { id: this.matcher.dlId })
+                                }
+
+                                await this.update('matcher', { dlId })
+                                await this.update(body.main)
+
+                                cache.dlDenied = dlDenied
+                                cache.dlRevoked = dlRevoked
+                                cache.dlDeniedExpl = dlDeniedExpl || null
+                                cache.dlRevokedExpl = dlRevokedExpl || null
+
+                                cache = JSON.stringify(cache)
+                                await driver.update('appDef', { cache })
                             }
                             break
 
