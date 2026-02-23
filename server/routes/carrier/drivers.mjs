@@ -150,7 +150,8 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
         hbs.unscoped = user.unscoped
 
         if (hbs.permissions.create) {
-            const cdl = Number(team?.settings?.carrier?.application?.cdl !== 0)
+            const settings = team ? await team.settings() : {}
+            const cdl = Number(settings?.carrier?.application?.cdl !== 0)
 
             hbs.applicationUrl = `${hbs.addrBook.driver}/application?env=`
             hbs.applicationUrl += team ? `${req.session.team}` : 'global'
