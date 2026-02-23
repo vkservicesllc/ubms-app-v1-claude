@@ -815,6 +815,7 @@ class Application {
                             }
                             break
 
+
                         case 'driver-license':
                             {
                                 if (!body.dlDenied) body.dlDeniedExpl = null
@@ -1176,12 +1177,15 @@ class Application {
                     await body.addresses.push({ personId, since, enough, livedAbroad })
                 }
 
-                //! ...continue when done with DL progress...
                 if (person.comparator.identification) {
                     body.matcher.dlId = person.comparator.identification
-                    //! use cache
+                    body.main.dlDenied = cache?.dlDenied
+                    body.main.dlDeniedExpl = cache?.dlDeniedExpl
+                    body.main.dlRevoked = cache?.dlRevoked
+                    body.main.dlRevokedExpl = cache?.dlRevokedExpl
                 }
-                //* must stop at DL because no presaved data about dlDenied and dlRevoked
+
+                //! continue restoring MED CARD
             }
 
             return body
