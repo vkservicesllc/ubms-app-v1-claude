@@ -175,10 +175,16 @@ router.get('/applications', User.mw.verify, Team.mw.verify, async (req, res) => 
             })
 
             if (user.unscoped) {
-                const teams = await Team.fetch(res.session, { scoped: false })
+                const filter = {}
+                if (!user.DS) filter.scoped = false
+
+                const teams = await Team.fetch(res.session, filter)
                 teams.forEach(team => {
-                    const { _id, name } = team
-                    teamItems += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+                    const { _id, name, scoped } = team
+                    let teamName = name
+                    if (scoped) teamName += ' <sup><i class="orange star outline icon"></i></sup>'
+
+                    teamItems += `\n${t}<div class="item" data-value="${_id}">${teamName}</div>`
                 })
             }
 

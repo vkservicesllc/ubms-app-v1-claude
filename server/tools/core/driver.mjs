@@ -191,7 +191,8 @@ class Driver extends Individual {
                 },
                 //? need other props ???
             ],
-            prepare(batch, filter) {
+            prepare(batch, filter, session) {
+                const { DS = false } = session?.user || {}
                 const {
                     id, _id, personId, _personId, ssn,
                     blackListed, teamId, _teamId,
@@ -220,7 +221,7 @@ class Driver extends Individual {
 
                     if (teamId || _teamId)
                         batch[appIdx].match = { teamId: teamId || Team.matchIdHash(_teamId) }
-                    else batch[teamIdx].match = { scoped: [ false, null ] }
+                    else if (!DS) batch[teamIdx].match = { scoped: [ false, null ] }
                 }
 
                 return { single, batch }
@@ -1547,7 +1548,8 @@ class Application {
                 join: [ 'id', 'teamId' ],
             },
         ],
-        prepare(batch, filter) {
+        prepare(batch, filter, session) {
+            const { DS = false } = session?.user || {}
             const {
                 id, _id, formId, ssn,
                 driverId, _driverId, teamId, _teamId, userId, _userId, carrierId, _carrierId,
@@ -1573,7 +1575,7 @@ class Application {
             batch[0].match = match
             if (ssn) batch[1].match = { ssn: processAES('ssn', ssn) }
 
-            if (!single && !teamId && !_teamId) {
+            if (!DS && !single && !teamId && !_teamId) {
                 const idx = batch.length - 1
                 batch[idx].match = { scoped: [ false, null ] }
             }
