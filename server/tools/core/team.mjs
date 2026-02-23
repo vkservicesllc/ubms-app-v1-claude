@@ -78,7 +78,8 @@ class Team {
             this.settings = async body => {
                 if (!this.session?.user?.id) throw new Error('Team Constructor Method Error [SETTINGS]: Session user not supplied')
 
-                const { settings = {} } = (await mysql.execute(query.team.main.select('settings', { match: { id: this.id || Team.matchIdHash(this._id) } })))[0][0]
+                let { settings } = (await mysql.execute(query.team.main.select('settings', { match: { id: this.id || Team.matchIdHash(this._id) } })))[0][0]
+                if (!settings) settings = {}
 
                 if (body && typeof body === 'object') {
                     if (!settings.carrier) settings.carrier = {}
