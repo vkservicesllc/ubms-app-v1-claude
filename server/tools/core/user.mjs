@@ -104,6 +104,7 @@ class User extends Person {
 
                 return classInstance.update(this, new.target, 'main', body, {}, {
                     async final(user, body) {
+                        user = await User.fetch(session, { _id: user._id }, { hideSensitive: false }) //* Original user does not have a username prop
                         const { status, email } = body
 
                         if (email && user.email !== email && !user.username) {

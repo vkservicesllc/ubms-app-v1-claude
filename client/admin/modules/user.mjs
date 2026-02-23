@@ -58,8 +58,11 @@ if (_id) {
 
         for (const prop of keys) {
             for (const team of teams[prop]) {
-                const { _id, name } = team
-                options[prop] += `<option value="${_id}">${name}</option>`
+                const { _id, name, scoped } = team
+                let teamName = name
+                if (scoped) teamName += ' *'
+
+                options[prop] += `<option value="${_id}">${teamName}</option>`
             }
             // optgroups[prop] = teams[prop].reduce((cat, { _id, name, category}) => {
             //     if (!cat[category]) cat[category] = []

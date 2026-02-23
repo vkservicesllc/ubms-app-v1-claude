@@ -108,7 +108,7 @@
                             <div class="columns is-vcentered">
                                 <div class="column is-two-fifths is-width-fixed">
                                     <form id="user-teams-add-form" action="/resource/jx/user/{{{data._id}}}/add/teams" method="POST">
-                                        <label class="label">Available Teams</label>
+                                        <label class="label">Available Teams <small class="has-text-weight-normal"><i>(Carrier only)</i></small></label>
                                         <div class="select is-multiple is-short is-fullwidth">
                                             <select class="scoped" id="available-teams" name="_ids" multiple>
                                                 <optgroup><option value=""></option></optgroup>
@@ -132,7 +132,7 @@
                                 </div>
                                 <div class="column is-two-fifths is-width-fixed">
                                     <form id="user-teams-delete-form" action="/resource/jx/user/{{{data._id}}}/delete/teams" method="POST">
-                                        <label class="label">User's Teams</label>
+                                        <label class="label">User's Teams <small class="has-text-weight-normal"><i>(Carrier only)</i></small></label>
                                         <div class="select is-multiple is-short is-fullwidth">
                                             <select class="scoped" id="user-teams" name="_ids" multiple>
                                                 <optgroup><option value=""></option></optgroup>
