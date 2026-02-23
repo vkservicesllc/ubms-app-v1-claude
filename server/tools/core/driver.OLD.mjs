@@ -638,7 +638,7 @@ class Application {
                             delete body.issuedOn
                             delete body.nrcme
                             delete body.mecAbsent
-                            
+
                             if (!body.underMeds) body.medList = null
                             body.medCard = !mecAbsent
                             if (this.step < 3) body.step = 3
