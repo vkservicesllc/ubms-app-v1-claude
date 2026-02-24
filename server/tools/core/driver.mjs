@@ -864,6 +864,7 @@ class Application {
                                 await this.update('matcher', { dlId })
                                 await this.update(body.main)
 
+                                cache.dlId = dlId
                                 cache.dlDenied = dlDenied
                                 cache.dlRevoked = dlRevoked
                                 cache.dlDeniedExpl = dlDeniedExpl || null
@@ -907,9 +908,101 @@ class Application {
                                 await this.update('matcher', body.matcher)
                                 await this.update(body.main)
 
+                                cache.mecUntil = expiresOn || null
                                 cache.medCard = body.main.medCard
                                 cache.underMeds = body.main.underMeds
                                 cache.medList = body.main.medList || null
+
+                                cache = JSON.stringify(cache)
+                                await driver.update('appDef', { cache })
+                            }
+                            break
+
+
+                        case 'legal-compliance':
+                            {
+                                if (!body.dui) body.duiInDecade = null
+                                if (!body.criminal) body.criminalExpl = null
+
+                                const { violation, other, citedOn, state } = body
+                                delete body.violation
+                                delete body.other
+                                delete body.citedOn
+                                delete body.state
+                                if (!violation && body.citations) body.citations = false
+
+                                if (this.step < 4) {
+                                    body.step = 4
+                                    cache.step = 4
+                                }
+
+                                cache.dui = body.dui
+                                cache.duiInDecade = body.duiInDecade
+                                cache.criminal = body.criminal
+                                cache.criminalExpl = body.criminalExpl
+                                cache.dotDat = body.dotDat
+                                cache.citations = body.citations
+                                cache.citIds = []
+
+                                if (body.citations) {
+                                    const count = violation.length
+
+                                    await driver.delete('citations') //* Cascades on delete in application citations
+                                    for (let i = 0; i < count; i++) {
+                                        const { insertId: citId } = await driver.add('citations', {
+                                            violation: violation[i],
+                                            other: violation[i] === 'other' ? other?.[i] : null,
+                                            citedOn: citedOn[i],
+                                            state: state[i],
+                                        })
+                                        if (!citId) throw new Error('Failed adding citation')
+                                        await this.add('citations', { citId })
+                                        cache.citIds.push(citId)
+                                    }
+                                }
+
+                                await this.update(body)
+
+                                cache = JSON.stringify(cache)
+                                await driver.update('appDef', { cache })
+                            }
+                            break
+
+
+                        case 'safety':
+                            {
+                                const { accidents, collision, other, date, state, injuries, fatalities } = body
+                                body = { accidents }
+                                if (!collision && body.accidents) body.accidents = false
+
+                                if (this.step < 5) {
+                                    body.step = 5
+                                    cache.step = 5
+                                }
+
+                                cache.accidents = body.accidents
+                                cache.accIds = []
+
+                                if (body.accidents) {
+                                    const count = collision.length
+
+                                    await driver.delete('accidents') //* Cascades on delete in application accidents
+                                    for (let i = 0; i < count; i++) {
+                                        const { insertId: accId } = await driver.add('accidents', {
+                                            collision: collision[i],
+                                            other: collision[i] === 'other' ? other?.[i] : null,
+                                            date: date[i],
+                                            state: state[i],
+                                            injuries: injuries[i],
+                                            fatalities: fatalities[i],
+                                        })
+                                        if (!accId) throw new Error('Failed adding accident')
+                                        await this.add('accidents', { accId })
+                                        cache.accIds.push(accId)
+                                    }
+                                }
+
+                                await this.update(body)
 
                                 cache = JSON.stringify(cache)
                                 await driver.update('appDef', { cache })
@@ -1190,7 +1283,7 @@ class Application {
             body.matcher.nameSince = person.comparator.name
             if (driver.appDef.complete) {
                 body.main.rehire = true //! Rehire will only copy the name at first
-            } else {
+            } else { //* Original Application Restoration
                 const { cache } = driver.appDef
 
                 body.main.step = cache.step
@@ -1216,18 +1309,46 @@ class Application {
                         livedAbroad = cache.livedAbroad
                     }
 
-                    await body.addresses.push({ personId, since, enough, livedAbroad })
+                    body.addresses.push({ personId, since, enough, livedAbroad })
                 }
 
-                if (person.comparator.identification) {
-                    body.matcher.dlId = person.comparator.identification
-                    body.main.dlDenied = cache?.dlDenied
-                    body.main.dlDeniedExpl = cache?.dlDeniedExpl
-                    body.main.dlRevoked = cache?.dlRevoked
-                    body.main.dlRevokedExpl = cache?.dlRevokedExpl
+                if (cache.dlId) {
+                    body.matcher.dlId = cache.dlId
+                    body.main.dlDenied = cache.dlDenied
+                    body.main.dlDeniedExpl = cache.dlDeniedExpl
+                    body.main.dlRevoked = cache.dlRevoked
+                    body.main.dlRevokedExpl = cache.dlRevokedExpl
                 }
 
-                //! continue restoring MED CARD
+                if (cache.medCard !== undefined) {
+                    body.main.medCard = cache.medCard
+                    body.main.underMeds = cache.underMeds
+                    body.main.medList = cache.medList
+                    if (cache.mecUntil) body.matcher.mecUntil = cache.mecUntil
+                }
+
+                if (cache.citations !== undefined) {
+                    body.main.dui = cache.dui
+                    body.main.duiInDecade = cache.duiInDecade
+                    body.main.criminal = cache.criminal
+                    body.main.criminalExpl = cache.criminalExpl
+                    body.main.dotDat = cache.dotDat
+                    body.main.citations = cache.citations
+                    if (cache.citIds.length) {
+                        body.citations = []
+                        cache.citIds.map(citId => body.citations.push({ citId }))
+                    }
+                }
+
+                if (cache.accidents !== undefined) {
+                    body.main.accidents = cache.accidents
+                    if (cache.accIds.length) {
+                        body.accidents = []
+                        cache.accIds.map(accId => body.citations.push({ accId }))
+                    }
+                }
+
+                //! Experience
             }
 
             return body
