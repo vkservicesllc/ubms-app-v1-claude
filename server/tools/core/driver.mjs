@@ -875,46 +875,46 @@ class Application {
                             break
 
 
-                    case 'medical-card':
-                        {
-                            const { expiresOn, issuedOn, nrcme, mecAbsent } = body
-                            delete body.expiresOn
-                            delete body.issuedOn
-                            delete body.nrcme
-                            delete body.mecAbsent
+                        case 'medical-card':
+                            {
+                                const { expiresOn, issuedOn, nrcme, mecAbsent } = body
+                                delete body.expiresOn
+                                delete body.issuedOn
+                                delete body.nrcme
+                                delete body.mecAbsent
 
-                            if (!body.underMeds) body.medList = null
-                            body.medCard = !mecAbsent
+                                if (!body.underMeds) body.medList = null
+                                body.medCard = !mecAbsent
 
-                            body = {
-                                main: body,
-                                mec: { expiresOn, issuedOn, nrcme },
-                                matcher: { mecUntil: expiresOn || null },
+                                body = {
+                                    main: body,
+                                    mec: { expiresOn, issuedOn, nrcme },
+                                    matcher: { mecUntil: expiresOn || null },
+                                }
+
+                                if (this.step < 3) {
+                                    body.main.step = 3
+                                    cache.step = 3
+                                }
+
+                                const match = { expiresOn: this.matcher.mecUntil }
+
+                                if (expiresOn) {
+                                    if (this.medCard) await driver.update('mecs', body.mec, match)
+                                    else await driver.add('mecs', body.mec)
+                                } else await driver.delete('mecs', match)
+
+                                await this.update('matcher', body.matcher)
+                                await this.update(body.main)
+
+                                cache.medCard = body.main.medCard
+                                cache.underMeds = body.main.underMeds
+                                cache.medList = body.main.medList || null
+
+                                cache = JSON.stringify(cache)
+                                await driver.update('appDef', { cache })
                             }
-
-                            if (this.step < 3) {
-                                body.main.step = 3
-                                cache.step = 3
-                            }
-
-                            const match = { expiresOn: this.matcher.mecUntil }
-
-                            if (expiresOn) {
-                                if (this.medCard) await driver.update('mecs', body.mec, match)
-                                else await driver.add('mecs', body.mec)
-                            } else await driver.delete('mecs', match)
-
-                            await this.update('matcher', body.matcher)
-                            await this.update(body.main)
-
-                            cache.medCard = body.main.medCard
-                            cache.underMeds = body.main.underMeds
-                            cache.medList = body.main.medList || null
-
-                            cache = JSON.stringify(cache)
-                            await driver.update('appDef', { cache })
-                        }
-                        break
+                            break
 
 
                     }
