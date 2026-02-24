@@ -808,7 +808,7 @@ class Application {
                                     }
                                 }
 
-                                body.appDef.cache = JSON.stringify(cache)
+                                body.appDef.cache = cache //? JSON.stringify(cache)
 
                                 await this.update(body.main)
                                 await driver.update('appDef', body.appDef)
@@ -816,7 +816,7 @@ class Application {
                             break
 
 
-                        case 'driver-license':
+                        case 'driver-license': //! NOT FULLY TESTED
                             {
                                 if (!body.dlDenied) body.dlDeniedExpl = null
                                 if (!body.dlRevoked) body.dlRevokedExpl = null
@@ -870,13 +870,13 @@ class Application {
                                 cache.dlDeniedExpl = dlDeniedExpl || null
                                 cache.dlRevokedExpl = dlRevokedExpl || null
 
-                                cache = JSON.stringify(cache)
+                                //? cache = JSON.stringify(cache)
                                 await driver.update('appDef', { cache })
                             }
                             break
 
 
-                        case 'medical-card':
+                        case 'medical-card': //! NOT FULLY TESTED
                             {
                                 const { expiresOn, issuedOn, nrcme, mecAbsent } = body
                                 delete body.expiresOn
@@ -913,13 +913,13 @@ class Application {
                                 cache.underMeds = body.main.underMeds
                                 cache.medList = body.main.medList || null
 
-                                cache = JSON.stringify(cache)
+                                //? cache = JSON.stringify(cache)
                                 await driver.update('appDef', { cache })
                             }
                             break
 
 
-                        case 'legal-compliance':
+                        case 'legal-compliance': //! NOT TESTED
                             {
                                 if (!body.dui) body.duiInDecade = null
                                 if (!body.criminal) body.criminalExpl = null
@@ -963,13 +963,13 @@ class Application {
 
                                 await this.update(body)
 
-                                cache = JSON.stringify(cache)
+                                //? cache = JSON.stringify(cache)
                                 await driver.update('appDef', { cache })
                             }
                             break
 
 
-                        case 'safety':
+                        case 'safety': //! NOT TESTED
                             {
                                 const { accidents, collision, other, date, state, injuries, fatalities } = body
                                 body = { accidents }
@@ -1004,8 +1004,56 @@ class Application {
 
                                 await this.update(body)
 
-                                cache = JSON.stringify(cache)
+                                //? cache = JSON.stringify(cache)
                                 await driver.update('appDef', { cache })
+                            }
+                            break
+
+
+                        case 'experience': //! NOT TESTED
+                            {
+                                const experience = body.noExp !== true
+                                let { cdlSchool } = body
+                                const { vehicles = {}, cmv, firstDate = null, lastDate, mileage, hours } = body
+                                const { name, phone, state, endDate, duration } = body
+                                if (cdlSchool === undefined) cdlSchool = false
+
+                                let { misc } = vehicles
+                                if (misc) {
+                                    if (!cmv) { //* VERY IMPORTANT! If other non-cmv types are added, they must be deleted also
+                                        delete misc.tandem
+                                    }
+
+                                    misc = Object.keys(misc)
+                                    vehicles.misc = misc
+                                }
+                                if (!cmv) delete vehicles.semi
+
+                                body = {
+                                    main: { experience, cdlSchool },
+                                    appDef: { expDate: firstDate },
+                                    experience: { vehicles, cmv, lastDate, mileage, hours },
+                                    school: { name, phone, state, endDate, duration },
+                                }
+
+                                if (this.step < 6) {
+                                    body.main.step = 6
+                                    cache.step = 6
+                                }
+
+                                cache.experience = experience ? body.experience : false
+                                cache.cdlSchool = cdlSchool
+
+                                body.appDef.cache = cache
+
+                                if (experience) await this[this.experience ? 'update' : 'add']('experience', body.experience)
+                                else await this.delete('experience')
+
+                                if (cdlSchool) await driver[this.cdlSchool ? 'update' : 'add']('school', body.school)
+                                else await driver.delete('school')
+
+                                await driver.update('appDef', body.appDef)
+                                await this.update(body.main)
                             }
                             break
 
