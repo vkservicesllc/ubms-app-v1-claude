@@ -229,6 +229,54 @@ router.post('/application/register/:_id', ApplicationForm.validate('registration
 })
 
 
+router.post('/application/progress/:formId/:step', dynamicValidator.applications, validationCheck, async (req, res) => {
+    try {
+        const { formId, step } = req.params
+        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
+        if (!application) throw new Error('Application not found')
+// return res.send({
+//     step,
+//     body: req.body,
+//     formId,
+//     id: application.id,
+// })
+        await application.progress(step, req.body)
+
+        res.redirect(`/application/${formId}`)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/application/submit/:formId', async (req, res) => {
+    try {
+        const { formId } = req.params
+        const application = await Application.fetch(res.session, { formId })
+        if (!application) throw new Error('Application not found')
+
+        await application.submit()
+
+        res.redirect(`/application/${formId}`)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
+// ==== EXPORT ==== //
+
+export default router
+
+export { dynamicValidator }
+
+
+
+
+
+
+
 // router.post('/OLD/application/start/:_teamId/:_carrierId?', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
 // // return res.send(req.body)
 //     try {
@@ -307,46 +355,3 @@ router.post('/application/register/:_id', ApplicationForm.validate('registration
 //         sendError.server(req, res, err)
 //     }
 // })
-
-
-router.post('/application/progress/:formId/:step', dynamicValidator.applications, validationCheck, async (req, res) => {
-    try {
-        const { formId, step } = req.params
-        const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
-        if (!application) throw new Error('Application not found')
-return res.send({
-    step,
-    body: req.body,
-    formId,
-    id: application.id,
-})
-        await application.progress(step, req.body)
-
-        res.redirect(`/application/${formId}`)
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
-
-router.post('/application/submit/:formId', async (req, res) => {
-    try {
-        const { formId } = req.params
-        const application = await Application.fetch(res.session, { formId })
-        if (!application) throw new Error('Application not found')
-
-        await application.submit()
-
-        res.redirect(`/application/${formId}`)
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
-
-
-// ==== EXPORT ==== //
-
-export default router
-
-export { dynamicValidator }

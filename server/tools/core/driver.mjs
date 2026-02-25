@@ -961,7 +961,7 @@ class Application {
                             break
 
 
-                        case 'legal-compliance': //! NOT TESTED
+                        case 'legal-compliance': //! NOT FULLY TESTED
                             {
                                 if (!body.dui) body.duiInDecade = null
                                 if (!body.criminal) body.criminalExpl = null
@@ -1011,7 +1011,7 @@ class Application {
                             break
 
 
-                        case 'safety': //! NOT TESTED
+                        case 'safety': //! NOT FULLY TESTED
                             {
                                 const { accidents, collision, other, date, state, injuries, fatalities } = body
                                 body = { accidents }
@@ -1058,7 +1058,7 @@ class Application {
                                 let { cdlSchool } = body
                                 const { vehicles = {}, cmv, firstDate = null, lastDate, mileage, hours } = body
                                 const { name, phone, state, endDate, duration } = body
-                                if (cdlSchool === undefined) cdlSchool = false
+                                if (cdlSchool === undefined) cdlSchool = null
 
                                 let { misc } = vehicles
                                 if (misc) {
@@ -1089,7 +1089,10 @@ class Application {
                                 body.appDef.cache = cache
 
                                 if (experience) await this[this.experience ? 'update' : 'add']('experience', body.experience)
-                                else await this.delete('experience')
+                                else {
+                                    await this.delete('experience')
+                                    await driver.update('appDef', { expDate: null })
+                                }
 
                                 if (cdlSchool) await driver[this.cdlSchool ? 'update' : 'add']('school', body.school)
                                 else await driver.delete('school')
@@ -1439,11 +1442,16 @@ class Application {
                     body.main.accidents = cache.accidents
                     if (cache.accIds.length) {
                         body.accidents = []
-                        cache.accIds.map(accId => body.citations.push({ accId }))
+                        cache.accIds.map(accId => body.accidents.push({ accId }))
                     }
                 }
 
-                //! Experience
+                if (cache.experience !== undefined) {
+                    body.main.experience = cache.experience
+                    body.main.cdlSchool = cache.cdlSchool
+
+                    //
+                }
             }
 
             return body
