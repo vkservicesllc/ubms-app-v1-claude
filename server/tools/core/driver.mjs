@@ -606,7 +606,7 @@ class Application {
             this.add = (target, body) => classInstance.add(this, new.target, target, body)
 
 
-            this.fetch = async (target, filter, params) => {
+            this.fetch = async (target, filter = {}, { hideRawId = true } = {}) => {
                 const person = await Individual.fetch(this.session, { id: this.personId || Individual.matchIdHash(this._personId) })
                 if (!person) throw new Error('Person not found')
 
@@ -641,9 +641,51 @@ class Application {
                         break
 
                     case 'citations':
+                        {
+                            batch = [
+                                {
+                                    table: query.driver_application.citations.table,
+                                    match: { appId: this.id || Application.matchIdHash(this._id) },
+                                },
+                                {
+                                    table: query.driver.citations.table,
+                                    fields: [ hash('id'), 'violation', 'other', 'citedOn', 'state' ],
+                                    join: [ 'id', 'citId' ],
+                                    sort: { desc: 'citedOn' },
+                                },
+                            ]
+                            if (!hideRawId) batch[1].fields.unshift('id')
+
+                            const { id, _id } = filter
+                            if (id || _id) {
+                                single = true
+                                batch[1].match = { id: id || matchHash(_id) }
+                            }
+                        }
                         break
 
                     case 'accidents':
+                        {
+                            batch = [
+                                {
+                                    table: query.driver_application.accidents.table,
+                                    match: { appId: this.id || Application.matchIdHash(this._id) },
+                                },
+                                {
+                                    table: query.driver.accidents.table,
+                                    fields: [ hash('id'), 'collision', 'other', 'date', 'state', 'injuries', 'fatalities' ],
+                                    join: [ 'id', 'accId' ],
+                                    sort: { desc: 'date' },
+                                },
+                            ]
+                            if (!hideRawId) batch[1].fields.unshift('id')
+
+                            const { id, _id } = filter
+                            if (id || _id) {
+                                single = true
+                                batch[1].match = { id: id || matchHash(_id) }
+                            }
+                        }
                         break
 
                 }
@@ -1177,14 +1219,14 @@ class Application {
         query: query.driver_application,
         idProp: 'appId',
         defSorts: [ { desc: 'id' } ],
-        childSort: {
-            citations: 'citedOn',
-            accidents: 'date',
-        },
-        childIdHash: {
-            citations: 'MD5',
-            accidents: 'MD5',
-        },
+        // childSort: {
+        //     citations: 'citedOn',
+        //     accidents: 'date',
+        // },
+        // childIdHash: {
+        //     citations: 'MD5',
+        //     accidents: 'MD5',
+        // },
         childExclude: {
             addresses: [ 'since', 'address' ],
         },

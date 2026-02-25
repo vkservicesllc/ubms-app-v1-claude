@@ -153,7 +153,7 @@ function drawCitationForms() {
                     state: null,
                 })
             else {
-                data = sortArrayByObjectKey(data, 'citedOn', false)
+                // data = sortArrayByObjectKey(data, 'citedOn', false)
                 data.forEach(row => row.citedOn = moment(row.citedOn).format('MM/DD/YYYY'))
             }
 
