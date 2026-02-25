@@ -1083,7 +1083,7 @@ class Application {
                                     cache.step = 6
                                 }
 
-                                cache.experience = experience ? body.experience : false
+                                cache.experience = experience ? { ...body.experience } : false
                                 cache.cdlSchool = cdlSchool
 
                                 body.appDef.cache = cache
@@ -1091,14 +1091,15 @@ class Application {
                                 if (experience) await this[this.experience ? 'update' : 'add']('experience', body.experience)
                                 else {
                                     await this.delete('experience')
-                                    await driver.update('appDef', { expDate: null })
+                                    body.appDef.expDate = null
                                 }
 
                                 if (cdlSchool) await driver[this.cdlSchool ? 'update' : 'add']('school', body.school)
                                 else await driver.delete('school')
 
-                                await driver.update('appDef', body.appDef)
                                 await this.update(body.main)
+console.log(body.appDef)
+                                await driver.update('appDef', body.appDef)
                             }
                             break
 
@@ -1446,11 +1447,10 @@ class Application {
                     }
                 }
 
-                if (cache.experience !== undefined) {
-                    body.main.experience = cache.experience
+                if (cache.experience !== undefined) { //! NOT TESTED
+                    body.main.experience = cache.experience ? true : false
                     body.main.cdlSchool = cache.cdlSchool
-
-                    //
+                    if (!!cache.experience) body.experience = cache.experience
                 }
             }
 
