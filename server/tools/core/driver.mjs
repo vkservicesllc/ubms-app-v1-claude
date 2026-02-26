@@ -1057,6 +1057,7 @@ class Application {
                         case 'experience': //! NOT FULLY TESTED
                             {
                                 const experience = body.noExp !== true
+                                const prevEmployed = experience === true ? true : this.prevEmployed
                                 let { cdlSchool } = body
                                 const { cmv, vehicles = {}, firstDate = null, lastDate, mileage, hours } = body
                                 const { name, phone, state, endDate, duration } = body
@@ -1074,7 +1075,7 @@ class Application {
                                 if (!cmv) delete vehicles.semi
 
                                 body = {
-                                    main: { experience, cdlSchool },
+                                    main: { experience, cdlSchool, prevEmployed },
                                     appDef: { expDate: firstDate },
                                     experience: { cmv, vehicles, lastDate, mileage, hours },
                                     school: { name, phone, state, endDate, duration },
@@ -1087,6 +1088,7 @@ class Application {
 
                                 cache.experience = experience ? { ...body.experience } : false
                                 cache.cdlSchool = cdlSchool
+                                cache.prevEmployed
 
                                 body.appDef.cache = cache
 
@@ -2267,7 +2269,6 @@ class Employment {
                         'driverId',
                         Employment.hashId(),
                         Driver.hashId('driverId'),
-                        'status',
                         'employer',
                         'phone',
                         'address1',
@@ -2296,7 +2297,7 @@ class Employment {
                 },
                 {
                     table: query.driver.main.table,
-                    join: [ 'driverId', 'driverId', 1 ],
+                    join: [ 'id', 'driverId', 1 ],
                 },
                 {
                     table: query.driver_application.matcher.table,

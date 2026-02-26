@@ -698,8 +698,10 @@ export const applicationProgress = async (req, res, next) => {
         if (step >= 6) { /* PREVIOUS EMPLOYMENT */
             hbs.button.five = buttonProps.save
             hbs.accordion.five = accordionProps.finished
+            hbs.employedDisplay = ''
 
             if (application.experience) {
+                hbs.employedDisplay = ' style="display: none;"'
                 noExp = false
                 const firstDate = moment(application.experience.firstDate)
                 const appliedOn = moment(application.appliedOn)
