@@ -292,6 +292,7 @@ class Application {
                 addrSince: data.matchAddrSince,
                 dlId: data.matchDlId,
                 mecUntil: data.matchMecUntil,
+                busId: data.matchBusId,
             }
 
         this.cdlRole = data.cdlRole
@@ -456,6 +457,7 @@ class Application {
         if (this.activeBusiness) {
             this.business = {
                 busName: data.ownBusName,
+                coType: data.ownCoType,
                 state: data.busState,
             }
             if (!hideSensitive) this.business.ein = stringifyBuffer(data.busEin)
@@ -748,23 +750,28 @@ class Application {
                 // if (siteId) createdIn.siteId = siteId
                 // createdIn = JSON.stringify(createdIn)
 
-                const vehicleRecord = async (application, body) => {
-                    if (application.position !== 'OO') return await application.delete('vehicle')
-                    // if (!body.type) return
+                const vehicleRecord = async (application, body, cache = {}) => {
+                    if (application.position !== 'OO') {
+                        await application.delete('vehicle')
+                        delete cache.vehicle
+                    } else {
+                        if (body.mmt) {
+                            if (body.mmt !== 'other') {
+                                body.type = null
+                                body.make = null
+                                body.model = null
 
-                    if (body.mmt) {
-                        if (body.mmt !== 'other') {
-                            body.type = null
-                            body.make = null
-                            body.model = null
-
-                            if (body.mmt.split(':')[0] !== 'straightBox') body.length = null
-                        } else {
-                            if (body.type !== 'straightBox') body.length = null
+                                if (body.mmt.split(':')[0] !== 'straightBox') body.length = null
+                            } else {
+                                if (body.type !== 'straightBox') body.length = null
+                            }
                         }
+                        cache.vehicle = { ...body }
+
+                        await application[application.vehicle ? 'update' : 'add']('vehicle', body)
                     }
 
-                    await application[application.vehicle ? 'update' : 'add']('vehicle', body)
+                    return cache
                 }
 
                 if (rehire !== true) {
@@ -1107,9 +1114,123 @@ class Application {
                             break
 
 
-                        case 'prev-employment': //! NOT TESTED
-                            //? RESTORATION MUST CONTINUE AT last date, mileage and last hours in case it occurs later
-                            {}
+                        case 'prev-employment': //! NOT FULLY TESTED
+                            {
+                                delete body.explGap
+                                if (this.step < 7) {
+                                    body.step = 7
+                                    cache.step = 7
+                                }
+                                cache.prevEmployed = body.prevEmployed
+
+                                if (!body.prevEmployed) await mysql.execute(query.driver_employment.main.delete({ driverId: driver.id }))
+                                await this.update(body)
+                                await driver.update('appDef', { cache })
+                            }
+                            break
+
+
+                        case 'preference':
+                            {
+                                if (body.operType === 's' || !this.cdlRole) {
+                                    body.teamName = null
+                                    body.teamPhone = null
+                                }
+
+                                if (!this.cdlRole) {
+                                    body.haulRegion = null
+                                    body.equipment = null
+                                }
+                                cache.preference = { ...body }
+
+                                await this[this.preference ? 'update' : 'add']('preference', body)
+
+                                if (this.step < 8) {
+                                    await this.update({ step: 8 })
+                                    cache.step = 8
+                                }
+
+                                await driver.update('appDef', { cache })
+                            }
+                            break
+
+
+                        case 'business': //! NOT TESTED
+                            {
+                                let { activeLLC } = body
+                                const {
+                                    inactiveLLC, busName, state, ein,
+                                    mmt, type, make, model, year, length,
+                                } = body
+                                if (inactiveLLC) activeLLC = false
+                                else if (activeLLC === undefined) activeLLC = true
+
+                                body = { activeBusiness: activeLLC }
+                                if (this.step < 9) {
+                                    body.step = 9
+                                    cache.step = 9
+                                }
+
+                                // if (activeLLC) await this[this.activeBusiness ? 'update' : 'add']('business', { busName, state, ein })
+                                // else await this.delete('business')
+                                let busId = this.matcher.busId
+                                if (activeLLC) {
+                                    const busBody = { busName, state, ein }
+                                    if (!this.activeBusiness) {
+                                        const { insertId } = await driver.add('businesses', busBody)
+                                        if (!insertId) throw new Error("Failed to add driver's business")
+
+                                        busId = insertId
+                                    } else await driver.update('businesses', busBody, { id: busId })
+                                } else {
+                                    await driver.delete('businesses', { id: busId }) //* No need to filter since it is not rehire
+                                    busId = null
+                                }
+
+                                //* Driver Application only (when type is defined)
+                                cache = await vehicleRecord(this, { mmt, type, make, model, year, length }, cache)
+
+                                await this.update(body)
+                                await this.update('matcher', { busId })
+                                await driver.update('appDef', { cache })
+                            }
+                            break
+
+
+                        case 'beneficiary':
+                            {
+                                if (body.relation !== 'Other') body.otherRel = null
+
+                                cache.beneficiary = { ...body }
+                                if (!this.beneficiary) {
+                                    await this.add('beneficiary', body)
+                                    await this.update({ step: 10 })
+                                    cache.step = 10
+                                } else await this.update('beneficiary', body)
+
+                                await driver.update('appDef', { cache })
+                            }
+                            break
+
+
+                        case 'misc':
+                            {
+                                cache.emergency = { ...body }
+                                if (!this.emergency) {
+                                    await this.add('emergency', body)
+                                    await this.update({ step: 11 })
+                                    cache.step = 10
+                                } else await this.update('emergency', body)
+
+                                await driver.update('appDef', { cache })
+                            }
+                            break
+
+
+                        case 'certify':
+                            {
+                                if (this.step < 12) await this.update({ step: 12 })
+                            }
                             break
 
 
@@ -1585,6 +1706,7 @@ class Application {
                     [ 'addrSince', 'matchAddrSince' ],
                     [ 'dlId', 'matchDlId' ],
                     [ 'mecUntil', 'matchMecUntil' ],
+                    [ 'busId', 'matchBusId' ],
                 ],
                 join: [ 'appId', 'id' ],
             },
@@ -1660,7 +1782,8 @@ class Application {
                     [ 'endorsement', 'dlEndors' ],
                     [ 'restriction', 'dlRestr' ],
                 ],
-                join: [ 'personId', 'personId', 2, [ 'id', 'dlId', 3 ] ],
+                join: [ 'id', 'dlId', 3 ],
+                // join: [ 'personId', 'personId', 2, [ 'id', 'dlId', 3 ] ],
             },
             {
                 table: query.driver.mecs.table,
@@ -1706,13 +1829,14 @@ class Application {
                 join: [ 'appId', 'id' ],
             },
             {
-                table: query.driver_application.business.table,
+                table: query.driver.businesses.table,
                 fields: [
                     [ 'busName', 'ownBusName' ],
+                    [ 'coType', 'ownCoType' ],
                     [ 'state', 'busState' ],
                     [ selectAES('ein'), 'busEin' ],
                 ],
-                join: [ 'appId', 'id' ],
+                join: [ 'id', 'busId', 3 ],
             },
             {
                 table: query.driver_application.vehicle.table,
@@ -2136,7 +2260,7 @@ class Employment {
             this.driverId = data.driverId
             this.appId = data.appId
         }
-        this.status = data.status
+        this.locked = data.locked
         this.employer = data.employer
         this.phone = data.phone
         this.address = new Address(data)
@@ -2210,13 +2334,21 @@ class Employment {
         enforceLocation: true,
         db: db.carrier,
         query: query.driver_employment,
+        idProp: 'emplId',
         defSorts: [ null, { desc: 'startedOn' }, { desc: 'createdAt' } ],
     })
 
 
     static create = (session, body, params) => classStatic.create(this, session, body, params, {
         async split(body) {
-            //
+            const { appId } = body
+            delete body.appId
+
+            body = {
+                main: body,
+                verifications: { appId },
+            }
+
             return body
         },
     })
@@ -2269,6 +2401,7 @@ class Employment {
                         'driverId',
                         Employment.hashId(),
                         Driver.hashId('driverId'),
+                        'locked',
                         'employer',
                         'phone',
                         'address1',

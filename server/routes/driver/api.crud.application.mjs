@@ -102,16 +102,16 @@ router.post('/:formId/:target', dynamicValidator, validationCheck, async (req, r
         if (target === 'employers') {
             delete req.body._id
             req.body.driverId = application.driverId
+            req.body.appId = application.id
 
             const result = await Employment.create(res.session, req.body)
             created = result.created
 
-            if (created) {
-                const { insertId: emplId } = result
-                //
-            }
-
             await application.update({ prevEmployed: true })
+            const driver = await Driver.fetch(res.session, { id: application.driverId })
+            const { cache = {} } = driver.appDef
+            cache.prevEmployed = true
+            await driver.update('appDef', { cache })
         } else {
             const result = await application.add(target, req.body)
             created = result.added

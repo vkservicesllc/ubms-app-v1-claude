@@ -46,6 +46,7 @@ const $deleteEmplDesc = $('#delete-prevempl-desc')
 const $leftOnContainer = $('#termination-date-field')
 
 const appliedOn = $(appSelector.id.hidden.appliedOn).val()
+const expStartDate = $('#empl-exp-start-date').val()
 
 let selected = false
 
@@ -171,7 +172,17 @@ dateMask(TS.startDate, {
                     if (end && start.isAfter(end)) {
                         $start.addClass('is-invalid')
                         $help.text('* Started after left')
-                    } else $start.addClass('is-valid')
+                    } else {
+                        if (expStartDate) {
+                            const expStart = moment(expStartDate)
+                            const diff = today.diff(expStart, 'years')
+
+                            if (diff >= 3 && start.isBefore(expStart)) {
+                                $start.addClass('is-invalid')
+                                $help.html(`* Started before reported <b>${expStart.format('ll').replaceAll(' ', '&nbsp;')}</b>`)
+                            } else $start.addClass('is-valid')
+                        } else $start.addClass('is-valid')
+                    }
                 }
             }
         }
@@ -275,11 +286,8 @@ inputEvent(TS.rfl, {
 
 dateMask(TS.endDate, {
     pattern: 'us',
-    onAccept(mask, $date) {
-        $date
-            .removeClass('is-invalid')
-            .next()
-                .removeClass('text-danger')
+    onAccept(mask, $end) {
+        $end.removeClass('is-invalid').next().text(null)
     },
     onComplete(mask, $end) {
         let end = mask.value
