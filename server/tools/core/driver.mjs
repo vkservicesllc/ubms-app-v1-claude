@@ -1084,7 +1084,7 @@ class Application {
                                     cache.step = 6
                                 }
 
-                                cache.experience = experience ? { cmv, vehicles } : false
+                                cache.experience = experience ? { ...body.experience } : false
                                 cache.cdlSchool = cdlSchool
 
                                 body.appDef.cache = cache
@@ -1099,7 +1099,6 @@ class Application {
                                 else await driver.delete('school')
 
                                 await this.update(body.main)
-console.log(body.appDef)
                                 await driver.update('appDef', body.appDef)
                             }
                             break
@@ -1463,7 +1462,11 @@ console.log(body.appDef)
                 if (cache.experience !== undefined) { //! NOT FULLY TESTED
                     body.main.experience = cache.experience ? true : false
                     body.main.cdlSchool = cache.cdlSchool
-                    if (!!cache.experience) body.experience = cache.experience
+                    if (!!cache.experience) {
+                        body.experience = cache.experience
+
+                        //! compare today and cache.appliedAt, remove lastDate, hours and possibly mileage if restored later
+                    }
                 }
 
                 body.main.step = step
@@ -1472,6 +1475,13 @@ console.log(body.appDef)
             return body
         },
         async final(application) {
+            const driver = await Driver.fetch(session, { id: application.driverId })
+            let { cache } = driver.appDef
+            if (!cache) cache = {}
+
+            cache.appliedAt = application.appliedAt
+            await driver.update('appDef', { cache })
+
             if (application.driverId) await application.welcome()
             else await Application.invite(session, application, application.formId)
         },
