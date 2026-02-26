@@ -151,7 +151,7 @@ function drawAccidentForms() {
                     fatalities: null,
                 })
             else {
-                data = sortArrayByObjectKey(data, 'date', false)
+                // data = sortArrayByObjectKey(data, 'date', false)
                 data.forEach(row => row.date = moment(row.date).format('MM/DD/YYYY'))
             }
 

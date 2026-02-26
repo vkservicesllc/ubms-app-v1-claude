@@ -99,7 +99,7 @@ export const query = {
         decision: new Query(db.carrier, 'application_decisions'),
     },
     driver_employment: {
-        main: new Query(db.carrier, 'prev_employments'),
+        main: new Query(db.carrier, 'driver_employments'),
         verifications: new Query(db.carrier, 'application_employments'),
     },
 

@@ -2094,11 +2094,11 @@ class Employment {
 
         this._id = data._id
         this._driverId = data._driverId
-        // this._appId = data._appId
+        this._appId = data._appId
         if (!hideRawId) {
             this.id = data.id
             this.driverId = data.driverId
-            // this.appId = data.appId
+            this.appId = data.appId
         }
         this.status = data.status
         this.employer = data.employer
@@ -2146,6 +2146,16 @@ class Employment {
             }
         }
 
+        this.verififcation = {
+            verify: !!data.verify,
+            //! continue
+            signature: {
+                inquirer1: data.inquirer1_,
+                inquirer2: data.inquirer2_,
+                inquirer3: data.inquirer3_,
+            },
+        }
+
         if (single) {
             this.session = session
             this.config = { hideRawId, hideSensitive }
@@ -2181,13 +2191,46 @@ class Employment {
         return classStatic.fetch(this, session, filter, { hideRawId, sorts, limit, mode }, {
             batch: [
                 {
+                    table: query.driver_employment.verifications.table,
+                    fields: [
+                        'appId',
+                        Application.hashId('appId'),
+                        'verify',
+                        'status',
+                        'method1',
+                        'inquiredBy1',
+                        'inquiredOn1',
+                        'inquirer1_',
+                        'response1',
+                        'inquiredBy2',
+                        'inquiredOn2',
+                        'inquirer2_',
+                        'response2',
+                        'inquiredBy3',
+                        'inquiredOn3',
+                        'inquirer3_',
+                        'response3',
+                        'comment',
+                        'correct',
+                        'driver',
+                        'safe',
+                        'accidents',
+                        'termType',
+                        'vehicles',
+                        'alcohol',
+                        'drugs',
+                        'datRefusal',
+                        'otherDat',
+                        'followup',
+                    ],
+                },
+                {
                     table: query.driver_employment.main.table,
                     fields: [
                         'id',
-                        // 'appId',
                         'driverId',
                         Employment.hashId(),
-                        // Application.hashId('appId'),
+                        Driver.hashId('driverId'),
                         'status',
                         'employer',
                         'phone',
@@ -2205,16 +2248,17 @@ class Employment {
                         'leftOn',
                         'gapExpl',
                     ],
+                    join: [ 'id', 'emplId' ],
                 },
                 {
                     table: query.driver.main.table,
-                    join: [ 'driverId', 'id' ],
+                    join: [ 'driverId', 'id', 1 ],
                 },
                 {
                     db: db.person,
                     table: query.person.main.table,
                     fields: [ 'dob', 'gender', selectAES('ssn') ],
-                    join: [ 'id', 'personId', 1 ],
+                    join: [ 'id', 'personId', 2 ],
                 },
                 {
                     db: db.person,
