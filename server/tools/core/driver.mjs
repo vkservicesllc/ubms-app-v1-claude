@@ -4,7 +4,7 @@ import db, { query } from '../../settings/mysql.mjs'
 
 /* Tools */
 // import moment from 'moment'
-import { utc2tz, utcTimeStamp } from '../utils/date.mjs'
+import { utc2tz, tz2utc, utcTimeStamp } from '../utils/date.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Individual from './individual.mjs'
@@ -297,6 +297,7 @@ class Application {
         this.cdlRole = data.cdlRole
         this.position = data.position
         this.condition = data.condition
+        this.locked = data.locked
         this.step = data.step
         this.rehire = data.rehire
 
@@ -586,7 +587,7 @@ class Application {
                 const driver = (await Driver.create(this.session, { personId })).data
                 if (!driver) throw new Error('Failed to create driver')
 
-                const cache = { step, addrEnough: enough }
+                const cache = { appliedAt: tz2utc(this.appliedAt), step, addrEnough: enough }
 
                 const driverId = driver.id
                 await this.update({ driverId, step, public: true, addrComplete })
@@ -1105,7 +1106,6 @@ class Application {
 
 
                         case 'prev-employment': //! NOT TESTED
-                            //? DO NOT CACHE STEPS ANYMORE
                             //? RESTORATION MUST CONTINUE AT last date, mileage and last hours in case it occurs later
                             {}
                             break
@@ -1434,7 +1434,7 @@ class Application {
                         body.matcher.mecUntil = cache.mecUntil
 
                         const mecUntil = moment(cache.mecUntil)
-                        if (mecUntil.isSameOrBefore(today) && step > 2) step = 3
+                        if (mecUntil.isSameOrBefore(today) && step > 3) step = 3
                     }
                 }
 
@@ -1465,7 +1465,13 @@ class Application {
                     if (!!cache.experience) {
                         body.experience = cache.experience
 
-                        //! compare today and cache.appliedAt, remove lastDate, hours and possibly mileage if restored later
+                        const appliedOn = moment(cache.appliedAt.split(' ')[0])
+                        if (appliedOn.isBefore(today)) {
+                            delete body.experience.lastDate
+                            delete body.experience.mileage
+                            delete body.experience.hours
+                            if (step > 6) step = 6
+                        }
                     }
                 }
 
@@ -1475,12 +1481,14 @@ class Application {
             return body
         },
         async final(application) {
-            const driver = await Driver.fetch(session, { id: application.driverId })
-            let { cache } = driver.appDef
-            if (!cache) cache = {}
+            if (application.driverId) {
+                const driver = await Driver.fetch(session, { id: application.driverId })
+                let { cache } = driver.appDef
+                if (!cache) cache = {}
 
-            cache.appliedAt = application.appliedAt
-            await driver.update('appDef', { cache })
+                cache.appliedAt = tz2utc(application.appliedAt)
+                await driver.update('appDef', { cache })
+            }
 
             if (application.driverId) await application.welcome()
             else await Application.invite(session, application, application.formId)
@@ -1510,6 +1518,7 @@ class Application {
                     'position',
                     'condition',
                     'step',
+                    'locked',
                     'rehire',
                     'addrComplete',
                     'dlDenied',
@@ -2203,7 +2212,12 @@ class Employment {
     })
 
 
-    static create = (session, body, params) => classStatic.create(this, session, body, params)
+    static create = (session, body, params) => classStatic.create(this, session, body, params, {
+        async split(body) {
+            //
+            return body
+        },
+    })
 
 
     static fetch = (session, filter = {}, { hideRawId = false, sorts = Employment.config().defSorts, limit, mode } = {}) => {

@@ -101,10 +101,15 @@ router.post('/:formId/:target', dynamicValidator, validationCheck, async (req, r
 
         if (target === 'employers') {
             delete req.body._id
-            req.body.appId = application.id
+            req.body.driverId = application.driverId
 
             const result = await Employment.create(res.session, req.body)
             created = result.created
+
+            if (created) {
+                const { insertId: emplId } = result
+                //
+            }
 
             await application.update({ prevEmployed: true })
         } else {

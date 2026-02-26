@@ -69,11 +69,11 @@ import application, { dropdownEvent } from './hub.mjs'
             $mileage.val(miles)
         },
         onBlur(miles, $mileage) {
-            miles = (+miles).toLocaleString()
+            miles = (+miles).toLocaleString('en-US')
     
             $mileage.val(miles)
         },
-        value: experience?.mileage ?(+experience.mileage).toLocaleString() : null,
+        value: experience?.mileage ?(+experience.mileage).toLocaleString('en-US') : null,
     })
 
     let totalHr = 0

@@ -282,12 +282,12 @@ const table = $('#driver-apl-table').DataTable({
 
                 const { access } = row.actions.file
 
-                if (condition != 'p') {
+                if (condition !== 'p') {
                     if (modify) {
                         panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form" title="Manage Application"><i class="dark green edit outline icon"></i></a>`
                         // panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`
                     }
-                    if (condition != 'c' && access) panel += `<a class="apl-files" data-id="${_id}" href=""><i class="black folder outline icon"></i></a>`
+                    if (condition !== 'c' && access) panel += `<a class="apl-files" data-id="${_id}" href=""><i class="black folder outline icon"></i></a>`
                     if (comment) panel += `<a class="comment-apl" title="Comment"><i class="purple comment outline icon"></i></a>`
                 } else {
                     if (modify) {
@@ -295,7 +295,7 @@ const table = $('#driver-apl-table').DataTable({
                         panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank" title="External Form"><i class="blue external alternate icon"></i></a>`
                     }
                 }
-                if (remove && ['p', 'c'].includes(condition))
+                if (remove && ['p', 'c'].includes(condition) && !row.locked)
                     panel += `<a class="delete-apl" data-id="${_id}" href="" title="Delete Application"><i class="red trash alternate outline icon"></i></a>`
 
                 return panel

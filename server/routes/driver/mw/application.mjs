@@ -327,7 +327,7 @@ export const applicationProgress = async (req, res, next) => {
                 },
             },
         }
-        let emplOptions = {}
+        let emplOptions = {}, expDate, noExp = true
 
         {
             const { firstName, middleName, lastName, suffix, email } = application
@@ -699,6 +699,15 @@ export const applicationProgress = async (req, res, next) => {
             hbs.button.five = buttonProps.save
             hbs.accordion.five = accordionProps.finished
 
+            if (application.experience) {
+                noExp = false
+                const firstDate = moment(application.experience.firstDate)
+                const appliedOn = moment(application.appliedOn)
+                const expYears = appliedOn.diff(firstDate, 'years')
+
+                if (expYears < 10) expDate = firstDate.format('ll')
+            }
+
             options.prevEmployed = { radio: {} }
             emplOptions.FMCSR = { radio: {} }
             emplOptions.dotDat = { radio: {} }
@@ -948,6 +957,8 @@ export const applicationProgress = async (req, res, next) => {
         hbs.position = application.position
         hbs.addrEnough = application.address.enough
         hbs.cdl = application?.dl?.commercial === true
+        hbs.noExp = noExp
+        hbs.expDate = expDate
         hbs.startedAt = moment(application.appliedAt).format('MMM D, YYYY hh:mm A') + ' ET'
         hbs.emplExpStartDate = application?.experience?.firstDate || ''
 
