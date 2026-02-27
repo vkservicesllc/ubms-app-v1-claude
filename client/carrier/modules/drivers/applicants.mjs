@@ -7,7 +7,7 @@ import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 
 const interval = 300000
 
-const table = $('#driver-aplicants-table').DataTable({
+const table = $('#driver-applicants-table').DataTable({
 
     ajax: {
         url: '/api/resource/drivers/applicants/query',
@@ -49,8 +49,8 @@ const table = $('#driver-aplicants-table').DataTable({
         },
 
         {
-            data: null,
             title: `Legal Name ${searchTag}`,
+            orderable: false,
             render(data, type, row) {
                 return new Person(row).fullName('FMLs')
             },
@@ -60,6 +60,7 @@ const table = $('#driver-aplicants-table').DataTable({
             data: 'gender',
             title: 'Gender',
             searchable: false,
+            orderable: false,
             render(data) {
                 if (data === null) return
                 return { 'M': 'Male', 'F': 'Female' }[data]
@@ -70,6 +71,7 @@ const table = $('#driver-aplicants-table').DataTable({
             data: 'dob',
             title: 'Date of Birth',
             searchable: false,
+            orderable: false,
             render(data) {
                 return moment(data).format('ll')
             },
@@ -78,6 +80,7 @@ const table = $('#driver-aplicants-table').DataTable({
         {
             data: 'phone',
             title: `Phone ${searchTag}`,
+            orderable: false,
             render(data) {
                 return formatTel(data)
             },
@@ -87,12 +90,14 @@ const table = $('#driver-aplicants-table').DataTable({
             data: 'email',
             title: 'Email',
             searchable: false,
+            orderable: false,
         },
 
         {
             data: null,
             title: 'Address',
             searchable: false,
+            orderable: false,
             render(data, type, row) {
                 return new Address(row).html()
             },
@@ -102,6 +107,7 @@ const table = $('#driver-aplicants-table').DataTable({
             data: 'dlState',
             title: 'DL State',
             searchable: false,
+            orderable: false,
             render(data) {
                 return Address.list.state[data]
             },
@@ -111,6 +117,7 @@ const table = $('#driver-aplicants-table').DataTable({
             data: 'dlExpiresOn',
             title: 'DL Expires on',
             searchable: false,
+            orderable: false,
             render(data, type, row) {
                 if (!data) return
 
@@ -126,6 +133,7 @@ const table = $('#driver-aplicants-table').DataTable({
             data: 'dlStatus',
             title: 'DL Status',
             searchable: false,
+            orderable: false,
             render(data, type, row) {
                 if (!data) return
 

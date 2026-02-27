@@ -259,7 +259,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         const { formId } = req.params
         const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
 
-        if (!application || application.condition === 'h') return res.redirect(aplUrl)
+        if (!application || application.condition === 'h' || application.rehire) return res.redirect(aplUrl)
         if (team && application._teamId !== team._id) return res.redirect(aplUrl)
 
         const identity = await application.identity(res.session)
@@ -401,7 +401,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             for (let user of teamUsers) {
                 user = await User.fetch(res.session, { _id: user._id })
                 _ids.push(user._id)
-                userId.push(await user.id())
+                userId.push(user.id)
             }
 
             const permissions = [] //! await Role.userPermissions(res.session, userId)

@@ -18,7 +18,7 @@ const conditions = {
 const positions = $.ajax('/api/enum/driver?filter=positions', { async: false }).responseJSON
 const defaultContent = '<i style="color: pink; font-size: .9em;">Unassigned</i>'
 
-const table = $('#driver-apl-table').DataTable({
+const table = $('#driver-applications-table').DataTable({
 
     ajax: {
         url: '/api/resource/drivers/applications/query',
