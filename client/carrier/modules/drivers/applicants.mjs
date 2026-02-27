@@ -16,15 +16,17 @@ const table = $('#driver-aplicants-table').DataTable({
             const today = moment()
 
             data.map(row => {
-                const dlExpiresOn = moment(row.dlExpiresOn)
-                row.dlStatus = 'Valid'
+                if (row.dlExpiresOn) {
+                    const dlExpiresOn = moment(row.dlExpiresOn)
+                    row.dlStatus = 'Valid'
 
-                if (today.isSameOrAfter(dlExpiresOn)) row.dlStatus = 'Expired'
-                else {
-                    const dlDiff = dlExpiresOn.diff(today, 'days')
-                    if (dlDiff < 30) {
-                        row.dlStatus = 'Expires Soon'
-                        row.dlDiff = dlDiff
+                    if (today.isSameOrAfter(dlExpiresOn)) row.dlStatus = 'Expired'
+                    else {
+                        const dlDiff = dlExpiresOn.diff(today, 'days')
+                        if (dlDiff < 30) {
+                            row.dlStatus = 'Expires Soon'
+                            row.dlDiff = dlDiff
+                        }
                     }
                 }
             })
@@ -110,6 +112,8 @@ const table = $('#driver-aplicants-table').DataTable({
             title: 'DL Expires on',
             searchable: false,
             render(data, type, row) {
+                if (!data) return
+
                 let warning = ''
                 if (row.dlStatus === 'Expired') warning = ' <i class="dark red exclamation triangle icon"></i>'
                 if (row.dlStatus === 'Expires Soon') warning = ' <i class="dark orange exclamation circle icon"></i>'
@@ -123,6 +127,8 @@ const table = $('#driver-aplicants-table').DataTable({
             title: 'DL Status',
             searchable: false,
             render(data, type, row) {
+                if (!data) return
+
                 let style = ' green'
                 if (data === 'Expired') style = ' red'
                 if (data === 'Expires Soon') {

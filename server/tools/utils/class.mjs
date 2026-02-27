@@ -75,7 +75,7 @@ export const classInstance = {
         }
 
         body[idProp] = inst.id
-
+console.log(query[target].insert(body))
         const [ result ] = await mysql.execute(query[target].insert(body))
         const { insertId } = result
 

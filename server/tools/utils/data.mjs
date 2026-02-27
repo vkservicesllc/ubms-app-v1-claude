@@ -138,25 +138,23 @@ function processValue(value) {
         if (value === '') value = null
         else value = value.replace(/"/g, '\\"')
     }
-
     return value
 }
 
 
 export function selectAES(target, field) {
     if (!field) field = target
-
     return { aes: [ field, secret[target] ] }
 }
 
 
 export function processAES(target, value) {
-    if (value && !value?.aes) value = { aes: [ value, secret[target] ] }
+    if (!value?.aes) value = { aes: [ value, secret[target] ] }
     return value
 }
 
 
 export function unprocessAES(value) {
-    if (value && value?.aes) value = value.aes[0]
+    if (value?.aes) value = value.aes[0]
     return value
 }

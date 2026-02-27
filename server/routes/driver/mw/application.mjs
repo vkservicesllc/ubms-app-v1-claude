@@ -1134,7 +1134,7 @@ export const applicationSummary = async (req, res) => {
         hbs.application.beneficiary.phone = formatTel(application.beneficiary.phone)
         hbs.application.beneficiary.ssn = application.beneficiary.ssn ? formatSsn(application.beneficiary.ssn) : na('N/A')
 
-        if (application.vehicle) {
+        if (application.vehicle) {console.log(application.vehicle)
             if (application?.vehicle?.mmt && application?.vehicle?.mmt !== 'other') {
                 const [ type, make, model ] = application.vehicle.mmt.split(':')
 
@@ -1142,7 +1142,7 @@ export const applicationSummary = async (req, res) => {
                 hbs.application.vehicle.make = make
                 hbs.application.vehicle.model = model
             }
-            hbs.application.vehicle.type = { van: 'Cargo Van', straightBox: 'Box Truck' }[application.vehicle.type]
+            hbs.application.vehicle.type = Application.list.vhlType[application.cdlRole][application.vehicle.type]
         }
 
         res.render('application/summary', hbs)

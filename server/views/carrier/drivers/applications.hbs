@@ -15,6 +15,15 @@
                 font-weight: bold;
             }
             th { padding-top: 5px !important; padding-bottom: 5px !important; }
+            .ui.label.experience-label {
+                padding: .4em;
+                margin-right: .4em;
+            }
+            .ui.label.experience-label span,
+            .ui.label.experience-label i.icon {
+                text-align: middle;
+                margin: 0;
+            }
         </style>
         <table class="ui compact table" id="driver-apl-table" style="width: 100%;"></table>
         {{#if (eq permissions.create true)}}

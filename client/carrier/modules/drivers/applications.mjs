@@ -55,15 +55,35 @@ const table = $('#driver-apl-table').DataTable({
             searchable: false,
             orderable: false,
             data(row) {
+                if (!row._driverId && !row?.lead?.dob) return '<div class="ui inverted grey label">Pre-Application</div>'
+
                 const { step, stepLen } = row
                 let { condition } = row
                 const progress = condition === 'p' ? ` ${step < stepLen ? Math.round(step / stepLen * 100) : 100}%` : ''
                 condition = conditions[condition]
 
-                let data = `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`
+                let data = ''
 
-                if (!row._driverId && !row?.lead?.dob)
-                    return data + ' <div class="ui inverted grey label">Pre-Application</div>'
+                if (step > 5) {
+                    let style = 'green', icon = 'green smile outline', title = 'Driving Experience'
+                    switch (true) {
+                        case row.experience === false:
+                            style = 'red'
+                            icon = 'red frown outline'
+                            title = 'No Experience'
+                            break
+                        case row?.experience?.cmv === true:
+                            icon = 'green truck'
+                            title = 'CMV Experience'
+                            break
+
+                    }
+                    data += `<div class="ui inverted dark ${style} label experience-label">`
+                    data += `<span title="${title}"><i class="inverted ${icon} icon"></i></span>`
+                    data += '</div>'
+                } else data += '<div class="ui label experience-label"><span title="Unknown Experience"><i class="question icon"></i></span></div>'
+
+                data += `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`
 
                 // if (row.dob !== row.originalDob || row.sex !== row.originalSex)
                 //     data += `<span title="Identity Error: False DOB or Gender"><i class="ui red exclamation triangle icon"></i></span>`
@@ -107,6 +127,10 @@ const table = $('#driver-apl-table').DataTable({
                 if (step > 4) {
                     if (row.accidents)
                         data += `<span title="Warning: Had Accidents"><i class="ui orange car crash icon"></i></span>`
+                }
+
+                if (step > 6) {
+                    if (row.prevEmployed === false) data += `<span title="Red Flag: Previously Never Employed"><i class="ui red ban icon"></i></span>`
                 }
 
                 if (step > 8 && !row.activeBusiness)
@@ -175,15 +199,17 @@ const table = $('#driver-apl-table').DataTable({
         },
 
         {
-            data: 'state',
             title: 'State',
             searchable: false,
             orderable: false,
             render(data, type, row) {
-                const { dlState } = row
-                if (dlState && data !== dlState) data += ` <small>(${dlState})</small>`
+                let state = row?.address?.state
+                if (!state) return
 
-                return data
+                const { state: dlState } = row?.dl || {}
+                if (dlState && state !== dlState) state += ` <small>(${dlState})</small>`
+
+                return state
             },
         },
 
@@ -209,7 +235,7 @@ const table = $('#driver-apl-table').DataTable({
             type: 'string',
             render(data, type, row) {
                 if (!row._driverId && !row?.lead?.dob) return
-                return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
+                return type == 'display' ? `<span title="${moment(row.appliedAt).format('MMM D, YYYY HH:mm')}">${moment(data).format('ll')}</span>` : data
             },
         },
 
@@ -221,7 +247,7 @@ const table = $('#driver-apl-table').DataTable({
             defaultContent: '<i style="color: pink; font-size: .9em;">...pending</i>',
             type: 'string',
             render(data, type) {
-                return type == 'display' && data ? moment(data, 'YYYY-MM-DD').format('ll') : data
+                return type == 'display' && data ? `<span title="${moment(data).format('MMM D, YYYY HH:mm')}">${moment(data).format('ll')}</span>` : data
             },
         },
 
@@ -344,7 +370,7 @@ const table = $('#driver-apl-table').DataTable({
         const dropdown = {
             condition: filterDropdown('condition-filter', 'Status', { multiple: true, clearable: true, element: 'div', short: true }),
             position: filterDropdown('position-filter', 'Position', { multiple: true, clearable: true, element: 'div', short: true }),
-            carrier: filterDropdown('carrier-filter', 'Carrier', { multiple: true, clearable: true, element: 'div' }),
+            carrier: filterDropdown('carrier-filter', 'Company', { multiple: true, clearable: true, element: 'div' }),
             user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
         }
 
