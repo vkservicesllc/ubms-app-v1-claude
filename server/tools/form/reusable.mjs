@@ -307,13 +307,13 @@ export const createSsnForm = (props = {}) => createForm({
 
 export const createYesNoForm = (props = {}, optional = false, type = 'radio') => createForm({
     type,
-    data: { 'Y': 'Yes', 'N': 'No' },
+    data: { 'Y': 'Yes', 'N': 'No', '-': null },
     required,
     requiredLabel: false,
     ...props,
     keys: ['yes', 'no'],
     validator: {
-        sanitizer: value => value === 'Y' || value === '1' || value === 'on',
+        sanitizer: value => value !== '-' ? value === 'Y' || value === '1' || value === 'on' : null,
         optional,
     },
 })

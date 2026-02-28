@@ -1245,6 +1245,19 @@ class Application {
             }
 
 
+            this.sign = async (target = 'applicant') => {
+                let signature = null
+
+                switch (target) {
+                    case 'applicant':
+                        signature = new Person(this).fullName()
+                        break
+                }
+
+                await this.update({ [`${target}_`]: signature })
+            }
+
+
             this.welcome = async () => {
                 if (!this._driverId) return
 

@@ -517,6 +517,7 @@ $form.employer.submit(function(evt) {
         url += `/${data._id}`
         method = 'PUT'
     }
+    if (data.fmcsr === undefined) data.fmcsr = '-'
 
     $.ajax({
         url, method, data,

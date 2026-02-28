@@ -33,7 +33,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     const applicant = application?.lastName ? new Person(application) : {}
     const title = applicant.lastName ? `${applicant.fullName()} - Driver Application` : 'Driver Application Blank'
     pdfDoc.setTitle(title)
-    const signature = applicant.lastName ? applicant.fullName() : ''
+    const { signature } = application // applicant.lastName ? applicant.fullName() : ''
 
     const { width, height, marginX, marginY } = pdfParams.letter
     let y = height - marginY, vLineX, vLineXOffsets, text, textWidth, lines
@@ -454,7 +454,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x, y,
                 font: font.label, size: size.label * 1.4, color: color.section,
             })
-            coverPage.drawText(signature, {
+            coverPage.drawText(signature.applicant || '', {
                 x: x + textWidth + gap + 2, y: y + 2,
                 font: font.signature, size: size.signature * 1.1, color: color.signature,
             })
@@ -1854,8 +1854,8 @@ export default async (carrier, application, addresses, violations, accidents, em
 
     /* Section 8 */
     {
-        const  { cdlSchool = {} } = application
-        const { name, phone, state, endDate, duration } = cdlSchool
+        const  { cdlSchool } = application
+        const { name, phone, state, endDate, duration } = cdlSchool || {}
         y -= fieldHeight / 2
         page2.drawLine({
             start: { x: marginX, y },
@@ -2634,7 +2634,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     /* Section 11 */
     //! If EXPEDITE should have other types, will need to combine
     {
-        const vhlTypes = Application.list.vhlType.truckLoad
+        const vhlTypes = Application.list.vhlType[1] //! Contains the same type as [0] pluss 2 more
         let mmt, type, make, model, year, length
         if (application.vehicle) ({ mmt, type, make, model, year, length } = application.vehicle)
         if (mmt && mmt !== 'other') [ type, make, model ] = mmt.split(':')
@@ -3035,7 +3035,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     })
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     vLineX += padding + textWidth
-    page5.drawText(signature, {
+    page5.drawText(signature.applicant || '', {
         x: marginX + vLineX + padding, y: y + 2,
         font: font.signature, size: size.signature, color: color.signature,
     })

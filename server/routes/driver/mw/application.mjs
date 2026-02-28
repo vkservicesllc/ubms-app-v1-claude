@@ -1098,12 +1098,14 @@ export const applicationSummary = async (req, res) => {
             }
         }
 
-        if (application.cdlSchool !== false) {
-            hbs.application.cdlSchool.phone = formatTel(application.cdlSchool.phone)
-            hbs.application.cdlSchool.state = Address.list.state[application.cdlSchool.state]
-            hbs.application.cdlSchool.duration = Application.list.schoolDuration[application.cdlSchool.duration]
-            hbs.application.cdlSchool.endDate = moment(application.cdlSchool.endDate).format('ll')
-        } else hbs.application.cdlSchool = { name: 'Never attended' }
+        if (application.cdlSchool !== null) {
+            if (application.cdlSchool !== false) {
+                hbs.application.cdlSchool.phone = formatTel(application.cdlSchool.phone)
+                hbs.application.cdlSchool.state = Address.list.state[application.cdlSchool.state]
+                hbs.application.cdlSchool.duration = Application.list.schoolDuration[application.cdlSchool.duration]
+                hbs.application.cdlSchool.endDate = moment(application.cdlSchool.endDate).format('ll')
+            } else hbs.application.cdlSchool = { name: 'Never attended' }
+        }
 
         // hbs.application.preference.operType = { s: 'Solo', t: 'Team' }[application.preference.operType]
         hbs.application.preference.teamName = application.preference.teamName || na()

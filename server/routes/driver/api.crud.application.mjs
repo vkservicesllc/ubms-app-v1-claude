@@ -94,6 +94,7 @@ const updateResource = async (req, res) => {
 router.post('/:formId/:target', dynamicValidator, validationCheck, async (req, res) => {
     try {
         const { formId, target } = req.params
+
         const application = await Application.fetch(res.session, { formId })
         if (!application) throw new Error('Application not found')
 
