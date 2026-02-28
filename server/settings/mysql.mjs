@@ -48,7 +48,7 @@ export const query = {
         addresses: new Query(db.person, 'addresses'),  //* 1-to-many
         emails: new Query(db.person, 'emails'),  //* 1-to-many
         identifications: new Query(db.person, 'identifications'),  //* 1-to-many
-        //! ...Add more if needed
+        //? ...Add more if needed
     },
 
     company: {
@@ -60,7 +60,7 @@ export const query = {
         phones: new Query(db.business, 'company_phones'),  //* 1-to-many
         faxes: new Query(db.business, 'company_faxes'),  //* 1-to-many
         emails: new Query(db.business, 'company_emails'),  //* 1-to-many
-        //! ...Add more if needed
+        //? ...Add more if needed
     },
     company_owner: {
         main: new Query(db.business, 'owners'),
@@ -90,7 +90,6 @@ export const query = {
         accidents: new Query(db.carrier, 'application_accidents'),  //* 1-to-many
         experience: new Query(db.carrier, 'application_experiences'),
         preference: new Query(db.carrier, 'application_preferences'),
-        // business: new Query(db.carrier, 'application_businesses'),
         vehicle: new Query(db.carrier, 'application_vehicles'),
         beneficiary: new Query(db.carrier, 'application_beneficiaries'),
         emergency: new Query(db.carrier, 'application_emergencies'),

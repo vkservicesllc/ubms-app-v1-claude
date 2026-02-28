@@ -61,7 +61,7 @@ $template.removeAttr('id').find('[name="_aplId[]"]').remove()
     $.ajax(`/api/resource/drivers/applications/${_id}/employments`, {
         success(response) {
             const { data } = response
-console.log(data)
+
             // data = sortArrayByObjectKey(data, 'startedOn', false)
             let len = data.length
 

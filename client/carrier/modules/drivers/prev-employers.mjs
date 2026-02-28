@@ -21,7 +21,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
                 if (carrier) row.group += ` <small class="bull">•</small> ${carrier}`
                 row.group += ` <small class="bull">•</small> ${moment(finishedAt).format('ll')} <small class="bull">•</small> ${formId}</small>`
             })
-
+console.log(data)
             return data
         },
     },
@@ -141,8 +141,8 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             searchable: false,
             orderable: false,
             className: 'right aligned',
-            render() {
-                return '<a class="empl-edit" href=""><i class="dark green text edit outline icon"></i></a>' 
+            render(data, type, row) {
+                return `<a class="manage-empl" data-id="${row._id}" href=""><i class="dark green business time icon"></i></a>` 
             },
         },
 
@@ -197,3 +197,6 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
 setInterval(() => {
     dtFnFilterData(table)
 }, interval)
+
+
+export default table

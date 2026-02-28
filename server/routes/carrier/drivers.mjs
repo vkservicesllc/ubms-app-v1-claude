@@ -936,7 +936,7 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
 
         const privs = ['modify', 'update']
         hbs.permissions = {}
-        privs.forEach(priv => hbs.permissions[priv] = withPrivileges('d:drv/empl', priv, permissions, DS))
+        privs.forEach(priv => hbs.permissions[priv] = withPrivileges('d:drv/emp', priv, permissions, DS))
 
         if (hbs.permissions.modify || hbs.permissions.update) {
             if (hbs.permissions.modify) {

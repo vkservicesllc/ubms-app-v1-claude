@@ -1,12 +1,102 @@
 {{> carrier/nav.alpha}}
 
-    <style>
-        .dtrg-group th { color: rgb(59, 118, 155); }
-        .bull {
-            padding: 0 5px;
-        }
-    </style>
-    <table class="ui compact table" id="driver-apl-prev-employers-table" style="width: 100%;"></table>
-    <script type="module" src="/modules/drivers/applications.prev-employers.mjs"></script>
+        <style>
+            .dtrg-group th { color: rgb(59, 118, 155); }
+            .bull {
+                padding: 0 5px;
+            }
+            .empl-side-th {
+                width: 100px;
+                font-weight: bold;
+            }
+            .ui.horizontal.list {
+                display: flex;
+                align-items: flex-start;
+            }
+            .ui.horizontal.list .header {
+                margin-top: .4em;
+                margin-bottom: .2em;
+                font-size: 1.2em;
+            }
+        </style>
+        <table class="ui compact table" id="driver-apl-prev-employers-table" style="width: 100%;"></table>
+        {{#if (
+            or
+                (eq permissions.modify true)
+                (eq permissions.update true)
+        )}}
+        <div class="ui modal" id="empl-manage-card-modal">
+            <div class="ui header">Employment Verification</div>
+            <div class="content">
+                {{!-- <table class="ui very basic compact table">
+                    <tbody>
+                        <tr>
+                            <td class="empl-side-th"><span class="ui grey text">Applicant:</span></td>
+                            <td>
+                                <strong class="empl-data" id="apl-id-card:fullName" style="font-size: 1.1em;">John Doe</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="empl-side-th"><span class="ui grey text">Form ID:</span></td>
+                            <td class="empl-data" id="apl-id-card:formId">ABC123</td>
+                        </tr>
+                        <tr>
+                            <td class="empl-side-th"><span class="ui grey text">Applied on:</span></td>
+                            <td class="empl-data" id="apl-id-card:appliedOn">Feb 28, 2026</td>
+                        </tr>
+                    </tbody>
+                </table> --}}
+                <div class="ui relaxed horizontal list">
+                    <div class="item">
+                        <span class="ui text purple">Employer:</span>
+                        <div class="header">Rochester Trucking, Inc</div>
+                        <span>(736) 533-7684</span><br/>
+                        <span>3411 Jermantown Rd, Fairfax, VA 22030</span><br/>
+                        <small>Oct 1, 2020 - Still Employed</small>
+                    </div>
+                    <div class="item">
+                        <span class="ui text purple">Applicant:</span>
+                        <div class="header">Vincent S. Jefferson, Jr</div>
+                        <span>(014) 785-2369</span><br/>
+                        <span>RO0YX2JN0DKX</span><br/>
+                        <small>Feb 28, 2026</small>
+                    </div>
+                    <div class="item">
+                        <span class="ui text purple">Hiring Carrier:</span>
+                    </div>
+                </div>
+                <div class="ui secondary pointing menu">
+                    {{# if (eq permissions.update true)}}
+                    <a class="item active">
+                        Inquiries
+                    </a>
+                    <a class="item">
+                        Phone Verification
+                    </a>
+                    <a class="item">
+                        Written Verification
+                    </a>
+                    {{/if}}
+                    {{#if (eq permissions.modify true)}}
+                    <a class="item{{# if (eq permissions.update false)}} active{{/if}}">
+                        Employer Modification
+                    </a>
+                    {{/if}}
+                    {{#if (eq permissions.update true)}}
+                    <div class="right menu">
+                        <div class="item">
+                            <a href="" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui cancel button">Close</div>
+            </div>
+            <script type="module" src="/modules/drivers/prev-employer.verification.mjs"></script>
+        </div>
+        {{/if}}
+        <script type="module" src="/modules/drivers/prev-employers.mjs"></script>
 
 {{> carrier/nav.omega}}

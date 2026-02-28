@@ -30,16 +30,16 @@
                 <label class="form-label fw-normal text-warning mt-3 mb-0" id="employment-message" style="display: none;">
                     <small>
                         <i class="fas fa-circle-exclamation"></i>
-                        List all jobs from the past 3 years
+                        List all jobs from the past 3 years{{#if (eq noExp true)}},{{/if}}
                         {{#if (eq noExp false)}}
                         and all commercial driving experience
                         {{#if (hv expDate)}}
-                        since {{expDate}}
+                        since {{expDate}},
                         {{else}}
-                        from the past 10 years
+                        from the past 10 years,
                         {{/if}}
                         {{/if}}
-                        , starting with the most recent
+                        starting with the most recent
                     </small>
                 </label>
                 <div id="prev-employments" style="display: none;">

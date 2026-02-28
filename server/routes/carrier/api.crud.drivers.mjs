@@ -5,7 +5,7 @@ const sendError = require('../../tools/utils/error')
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
-import { withPrivileges } from '../../tools/core/user/permissions.mjs'
+import permissions, { withPrivileges } from '../../tools/core/user/permissions.mjs'
 
 /* Import: Validators */
 import validationCheck from '../../tools/form/validator.mjs'
@@ -33,10 +33,20 @@ const hideRawId = true
 
 router.get('/applications/prev-employments', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
+        const sessionUser = res.session.user
+        const { DS } = sessionUser
+        const permissions = await sessionUser.permissions() || {}
         const _teamId = res.session?.team?._id
-        //! temp
-        // return res.json({ data: [] })
-        res.json({ data: await Employment.fetch(res.session, { condition: 'c', _teamId }, { hideRawId }) })
+
+        res.json({
+            data: await Employment.fetch(res.session, { condition: 'c', _teamId, verify: true }, { hideRawId }),
+            actions: {
+                data: {
+                    modify: DS || permissions?.['d:drv/emp'].includes('3'),
+                    update: DS || permissions?.['d:drv/emp'].includes('4'),
+                },
+            },
+        })
     } catch (err) {
         sendError.server(req, res, err)
     }

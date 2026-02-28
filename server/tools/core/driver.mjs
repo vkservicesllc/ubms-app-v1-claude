@@ -3,7 +3,7 @@ import { addrBook } from '../../../config.mjs'
 import db, { query } from '../../settings/mysql.mjs'
 
 /* Tools */
-// import moment from 'moment'
+import moment from 'moment'
 import { utc2tz, tz2utc, utcTimeStamp } from '../utils/date.mjs'
 import Person from '../../../client/global/modules/tools/core/person.mjs'
 import Address from '../../../client/global/modules/tools/core/address.us.mjs'
@@ -609,7 +609,7 @@ class Application {
             this.add = (target, body) => classInstance.add(this, new.target, target, body)
 
 
-            this.fetch = async (target, filter = {}, { hideRawId = true } = {}) => {
+            this.fetch = async (target, filter = {}, { hideRawId = false } = {}) => {
                 const person = await Individual.fetch(this.session, { id: this.personId || Individual.matchIdHash(this._personId) })
                 if (!person) throw new Error('Person not found')
 
@@ -679,6 +679,40 @@ class Application {
                                     fields: [ hash('id'), 'collision', 'other', 'date', 'state', 'injuries', 'fatalities' ],
                                     join: [ 'id', 'accId' ],
                                     sort: { desc: 'date' },
+                                },
+                            ]
+                            if (!hideRawId) batch[1].fields.unshift('id')
+
+                            const { id, _id } = filter
+                            if (id || _id) {
+                                single = true
+                                batch[1].match = { id: id || matchHash(_id) }
+                            }
+                        }
+                        break
+
+                    case 'employments':
+                        {
+                            batch = [
+                                {
+                                    table: query.driver_employment.verifications.table,
+                                    fields: [
+                                        'verify', 'status',
+                                        //! decide if more fields needed
+                                        //? this may be enough for this fetch
+                                    ],
+                                    match: { appId: this.id || Application.matchIdHash(this._id) },
+                                },
+                                {
+                                    table: query.driver_employment.main.table,
+                                    fields: [
+                                        Employment.hashId(), 'locked',
+                                        'employer', 'phone',
+                                        'address1', 'address2', 'city', 'state', 'zip',
+                                        'startedOn', 'position', 'earnings', 'fmcsr', 'dotDat',
+                                        'rfl', 'leftOn', 'gapExpl',
+                                    ],
+                                    join: [ 'id', 'emplId' ],
                                 },
                             ]
                             if (!hideRawId) batch[1].fields.unshift('id')
@@ -1240,6 +1274,21 @@ class Application {
 
 
             this.submit = async () => {
+                const employments = await this.fetch('employments')
+                const today = moment()
+                const appId = this.id
+
+                for (const employment of employments) {
+                    const { id: emplId } = employment
+                    let { leftOn } = employment
+
+                    leftOn = moment(leftOn || undefined)
+                    const diff = today.diff(leftOn, 'years')
+                    const verify = diff <= 3
+
+                    await mysql.execute(query.driver_employment.verifications.update({ verify }, { emplId, appId }))
+                }
+
                 if (this.condition === 'p' && this.step === 12)
                     await this.update({ condition: 'c', finishedAt: utcTimeStamp() })
             }
@@ -2511,11 +2560,11 @@ class Employment {
             prepare(batch, filter) {
                 const {
                     id, _id,
-                    appId, _appId, driverId, _driverId, teamId, _teamId, carrierId, _carrierId, condition,
+                    appId, _appId, driverId, _driverId, teamId, _teamId, carrierId, _carrierId, condition, verify,
                 } = filter
                 const single = !!id || !!_id
 
-                batch[0].match = { appId }
+                batch[0].match = { appId, verify }
                 batch[1].match = { id }
                 batch[2].match = { driverId, teamId, carrierId, condition }
                 if (_appId) batch[0].match.appId = Application.matchIdHash(_appId)
