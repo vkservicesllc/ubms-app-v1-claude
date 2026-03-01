@@ -24,7 +24,7 @@ export default class Address {
         let { inline, singleLine, fullState } = options
         if (inline === undefined || typeof inline !== 'boolean') inline = true
         if (singleLine === undefined || typeof singleLine !== 'boolean') singleLine = true
-        if (fullState === undefined || typeof singleLine !== 'boolean') singleLine = false
+        if (fullState === undefined && typeof singleLine !== 'boolean') singleLine = false //? kinda makes no sense
 
         if (fullState) state = expansion.state
 

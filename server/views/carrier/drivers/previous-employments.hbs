@@ -14,9 +14,12 @@
                 align-items: flex-start;
             }
             .ui.horizontal.list .header {
-                margin-top: .4em;
-                margin-bottom: .2em;
+                margin-top: .5em;
+                margin-bottom: .3em;
                 font-size: 1.2em;
+            }
+            .form-block {
+                padding: .4em 1.2em;
             }
         </style>
         <table class="ui compact table" id="driver-apl-prev-employers-table" style="width: 100%;"></table>
@@ -26,59 +29,44 @@
                 (eq permissions.update true)
         )}}
         <div class="ui modal" id="empl-manage-card-modal">
+            <i class="close icon"></i>
             <div class="ui header">Employment Verification</div>
             <div class="content">
-                {{!-- <table class="ui very basic compact table">
-                    <tbody>
-                        <tr>
-                            <td class="empl-side-th"><span class="ui grey text">Applicant:</span></td>
-                            <td>
-                                <strong class="empl-data" id="apl-id-card:fullName" style="font-size: 1.1em;">John Doe</strong>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="empl-side-th"><span class="ui grey text">Form ID:</span></td>
-                            <td class="empl-data" id="apl-id-card:formId">ABC123</td>
-                        </tr>
-                        <tr>
-                            <td class="empl-side-th"><span class="ui grey text">Applied on:</span></td>
-                            <td class="empl-data" id="apl-id-card:appliedOn">Feb 28, 2026</td>
-                        </tr>
-                    </tbody>
-                </table> --}}
                 <div class="ui relaxed horizontal list">
                     <div class="item">
-                        <span class="ui text purple">Employer:</span>
-                        <div class="header">Rochester Trucking, Inc</div>
-                        <span>(736) 533-7684</span><br/>
-                        <span>3411 Jermantown Rd, Fairfax, VA 22030</span><br/>
-                        <small>Oct 1, 2020 - Still Employed</small>
+                        <span class="ui text purple">Previous Employer:</span>
+                        <div class="header employer-data" id="employer-data"></div>
+                        <span class="employer-data" id="employer-address-data"></span><br/>
+                        <span class="employer-data" id="employer-phone-data"></span><br/>
+                        <small class="employer-data" id="employer-period-data"></small>
                     </div>
                     <div class="item">
                         <span class="ui text purple">Applicant:</span>
-                        <div class="header">Vincent S. Jefferson, Jr</div>
-                        <span>(014) 785-2369</span><br/>
-                        <span>RO0YX2JN0DKX</span><br/>
-                        <small>Feb 28, 2026</small>
+                        <div class="header applicant-data" id="applicant-data"></div>
+                        <span class="applicant-data" id="applicant-address-data"></span><br/>
+                        <span class="applicant-data" id="applicant-phone-data"></span><br/>
+                        <span class="applicant-data" id="applicant-form-data"></span>
+                        <small class="applicant-data" id="applicant-submission-data"></small>
                     </div>
                     <div class="item">
                         <span class="ui text purple">Hiring Carrier:</span>
+                        <div class="header carrier-data" id="carrier-data"></div>
                     </div>
                 </div>
                 <div class="ui secondary pointing menu">
                     {{# if (eq permissions.update true)}}
-                    <a class="item active">
+                    <a class="item form-item active" id="inquiries-item">
                         Inquiries
                     </a>
-                    <a class="item">
+                    <a class="item form-item" id="phone-verify-item">
                         Phone Verification
                     </a>
-                    <a class="item">
+                    <a class="item form-item" id="write-verify-item">
                         Written Verification
                     </a>
                     {{/if}}
                     {{#if (eq permissions.modify true)}}
-                    <a class="item{{# if (eq permissions.update false)}} active{{/if}}">
+                    <a class="item form-item{{# if (eq permissions.update false)}} active{{/if}}" id="modification-item">
                         Employer Modification
                     </a>
                     {{/if}}
@@ -90,9 +78,22 @@
                     </div>
                     {{/if}}
                 </div>
-            </div>
-            <div class="actions">
-                <div class="ui cancel button">Close</div>
+                {{# if (eq permissions.update true)}}
+                <div class="form-block" id="inquiries-block">
+                    INQUIRIES
+                </div>
+                <div class="form-block" id="phone-verify-block" style="display: none;">
+                    PHONE VERIFICATION
+                </div>
+                <div class="form-block" id="write-verify-block" style="display: none;">
+                    WRITTEN VERIFICATION
+                </div>
+                {{/if}}
+                {{#if (eq permissions.modify true)}}
+                <div class="form-block" id="modification-block"{{# if (eq permissions.update true)}} style="display: none;"{{/if}}>
+                    EMPLOYER MODIFICATION
+                </div>
+                {{/if}}
             </div>
             <script type="module" src="/modules/drivers/prev-employer.verification.mjs"></script>
         </div>

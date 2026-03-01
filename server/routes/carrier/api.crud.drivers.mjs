@@ -31,12 +31,17 @@ router.post('/applicants/query', User.mw.verify, Team.mw.verify, dtDriverList)
 const hideRawId = true
 
 
-router.get('/applications/prev-employments', User.mw.verify, Team.mw.verify, async (req, res) => {
+router.get('/applications/prev-employments/:_id?', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const sessionUser = res.session.user
         const { DS } = sessionUser
         const permissions = await sessionUser.permissions() || {}
+        if (!withPrivileges('d:drv/emp', 'view', permissions, DS)) return sendError.auth(req, res)
+
+        const { _id } = req.params
         const _teamId = res.session?.team?._id
+
+        if (_id) return res.json({ data: await Employment.fetch(res.session, { _id }, { hideRawId, hideSensitive: false }) })
 
         res.json({
             data: await Employment.fetch(res.session, { condition: 'c', _teamId, verify: true }, { hideRawId }),

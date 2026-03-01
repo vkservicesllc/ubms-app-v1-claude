@@ -21,7 +21,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
                 if (carrier) row.group += ` <small class="bull">•</small> ${carrier}`
                 row.group += ` <small class="bull">•</small> ${moment(finishedAt).format('ll')} <small class="bull">•</small> ${formId}</small>`
             })
-console.log(data)
+
             return data
         },
     },
