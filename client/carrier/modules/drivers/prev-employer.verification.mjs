@@ -33,6 +33,8 @@ const $emplData = {
     carrier: {
         all: $('.carrier-data'),
         name: $('#carrier-data'),
+        phone: $('#carrier-phone-data'),
+        address: $('#carrier-address-data'),
     },
 }
 
@@ -68,12 +70,19 @@ table.on('draw', function() {
                     $emplData.employer.phone.text(formatTel(phone))
                     $emplData.employer.address.html(new Address(address).html({ inline: false, singleLine: true }))
                     $emplData.employer.period.text(period)
-                    $emplData.applicant.name.html(new Person(application).fullName() + ` <small style="font-weight: normal; font-size: .7em !important;">(***-**-${application.ssn.slice(-4)})`)
+                    $emplData.applicant.name.html(
+                        new Person(application).fullName()
+                        + ` <small style="font-weight: normal; font-size: .7em !important;">(***-**-${application.ssn.slice(-4)})`
+                    )
                     $emplData.applicant.phone.text(formatTel(application.phone))
                     $emplData.applicant.address.html(new Address(application).html({ inline: false, singleLine: true }))
                     $emplData.applicant.form.text(application.formId)
                     $emplData.applicant.submission.text(`(${moment(application.finishedAt).format('ll')})`)
                     $emplData.carrier.name.html(application.carrier || '<span class="ui red text" style="font-weight: normal;"><small><i>Undetermined</i></small></span>')
+                    if (application.carrier) {
+                        $emplData.carrier.phone.text(formatTel(application.carrierPhone))
+                        $emplData.carrier.address.html(new Address(application.carrierAddress).html({ inline: false, singleLine: true }))
+                    }
 
                     $modal.manage.modal({
                         autofocus: false,

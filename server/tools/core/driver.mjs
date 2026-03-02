@@ -2353,8 +2353,6 @@ class Employment {
                 zip: data.driverZip,
                 createdAt: utc2tz(data.createdAt),
                 finishedAt: utc2tz(data.finishedAt),
-                carrier: data.busName ? `${data.busName}, ${data.coType}` : null,
-                carrierAlias: data.companyAlias,
                 _carrierId: data._carrierId,
                 _teamId: data._teamId,
             }
@@ -2366,6 +2364,14 @@ class Employment {
             if (data._carrierId) {
                 this.application.carrier = `${data.coBusName}, ${data.coCoType}`
                 this.application.carrierAlias = data.coAlias
+                this.application.carrierPhone = data.coPhone
+                this.application.carrierAddress = new Address({
+                    address1: data.coAddress1,
+                    address2: data.coAddress2,
+                    city: data.coCity,
+                    state: data.coState,
+                    zip: data.coZip,
+                })
             }
             if (data._teamId) this.application.team = data.teamName
         }
@@ -2565,6 +2571,30 @@ class Employment {
                     join: [
                         'companyId', 'id', query.company.main.table,
                         [ 'since', 'coNameSince', query.driver_application.matcher.table ],
+                    ],
+                },
+                {
+                    db: db.business,
+                    table: query.company.phones.table,
+                    fields: [ [ 'phone', 'coPhone' ] ],
+                    join: [
+                        'companyId', 'id', query.company.main.table,
+                        [ 'since', 'coPhoneSince', query.driver_application.matcher.table ],
+                    ],
+                },
+                {
+                    db: db.business,
+                    table: query.company.addresses.table,
+                    fields: [
+                        [ 'address1', 'coAddress1' ],
+                        [ 'address2', 'coAddress2' ],
+                        [ 'city', 'coCity' ],
+                        [ 'state', 'coState' ],
+                        [ 'zip', 'coZip' ],
+                    ],
+                    join: [
+                        'companyId', 'id', query.company.main.table,
+                        [ 'since', 'coAddrSince', query.driver_application.matcher.table ],
                     ],
                 },
                 {
