@@ -939,6 +939,8 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
         privs.forEach(priv => hbs.permissions[priv] = withPrivileges('d:drv/emp', priv, permissions, DS))
 
         if (hbs.permissions.modify || hbs.permissions.update) {
+            let options = {}, dropdown = {}, t = `\t`.repeat(9)
+
             if (hbs.permissions.modify) {
                 // make the form
             } else {
@@ -946,11 +948,20 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
             }
 
             if (hbs.permissions.update) {
-                // make form for inquiries
+                dropdown.inquirer1 = ''
+                dropdown.inquirer2 = ''
+                dropdown.inquirer3 = ''
+                dropdown.inquiryMethod1 = ''
+                dropdown.inquiryMethod2 = ''
+                dropdown.inquiryMethod3 = ''
+
                 if (withPrivileges('f:drv/apl', 'download', permissions, DS)) {
                     // show link to prev-employment file
                 }
             }
+
+            hbs.form = new EmploymentForm(options)
+            hbs.dropdown = dropdown
         }
 
         res.render(key.replace('.', '/'), hbs)

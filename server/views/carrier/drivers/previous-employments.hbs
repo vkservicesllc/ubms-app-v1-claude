@@ -28,7 +28,7 @@
                 (eq permissions.modify true)
                 (eq permissions.update true)
         )}}
-        <div class="ui modal" id="empl-manage-card-modal">
+        <div class="ui modal" id="empl-manage-card-modal" style="min-width: 840px;">
             <i class="close icon"></i>
             <div class="ui header">Employment Verification</div>
             <div class="content">
@@ -57,15 +57,9 @@
                 </div>
                 <div class="ui secondary pointing menu">
                     {{# if (eq permissions.update true)}}
-                    <a class="item form-item active" id="inquiries-item">
-                        Inquiries
-                    </a>
-                    <a class="item form-item" id="phone-verify-item">
-                        Phone Verification
-                    </a>
-                    <a class="item form-item" id="write-verify-item">
-                        Written Verification
-                    </a>
+                    <a class="item form-item active" id="inquiries-item">Inquiries</a>
+                    <a class="item form-item" id="phone-verify-item">Phone Verification</a>
+                    <a class="item form-item" id="write-verify-item">Written Verification</a>
                     {{/if}}
                     {{#if (eq permissions.modify true)}}
                     <a class="item form-item{{# if (eq permissions.update false)}} active{{/if}}" id="modification-item">
@@ -82,7 +76,48 @@
                 </div>
                 {{# if (eq permissions.update true)}}
                 <div class="form-block" id="inquiries-block">
-                    INQUIRIES
+                    <form class="ui form" id="verification-inquiry-form" action="" autocomplete="off">
+                        <div class="ui three column grid">
+                            <div class="column">
+                                <h4 class="ui teal text dividing header">Inquiry #1</h4>
+                                <div class="field">
+                                    {{{form.inquirer1.select.label}}}
+                                    <div class="ui fluid selection dropdown" id="inquirer-dropdown-1">
+                                        {{{form.inquirer1.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.inquirer1}}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    {{{form.inquiryDate1.text.label}}}
+                                    <div class="ui calendar" id="inquiry-date-calendar-1">
+                                        <div class="ui fluid input left icon">
+                                            {{{form.inquiryDate1.text.input}}}
+                                            <i class="calendar icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    {{{form.inquiryMethod1.select.label}}}
+                                    <div class="ui fluid selection dropdown" id="inquiry-method-dropdown-1">
+                                        {{{form.inquiryMethod1.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.inquiryMethod1}}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <h4 class="ui teal text dividing header">Inquiry #2</h4>
+                            </div>
+                            <div class="column">
+                                <h4 class="ui teal text dividing header">Inquiry #3</h4>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="form-block" id="phone-verify-block" style="display: none;">
                     PHONE VERIFICATION

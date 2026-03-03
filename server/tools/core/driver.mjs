@@ -2630,6 +2630,8 @@ class Employment {
 
         inquiryMethod: { p: 'Phone', f: 'Fax', e: 'Email', m: 'Mail' },
 
+        verifStatus: { p: 'In progress', c: 'Complete', u: 'Unobtainable' },
+
     }
 
 

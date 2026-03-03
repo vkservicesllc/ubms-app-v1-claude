@@ -1577,13 +1577,29 @@ class ApplicationForm {
 }
 
 
+const createInquirer = n => createForm({
+    selector: appSelector,
+    target: `inquirer${n}`,
+    group: 'inquirer',
+    type: 'select',
+    name: `_inquiredBy${n}`,
+    label: 'Inquirer',
+    validator: {
+        sanitizer: value => value || null,
+    },
+})
+
+
 const createInquiryMethod = n => createForm({
     selector: appEmplSelector,
     target: `inquiryMethod${n}`,
     group: 'inquiryMethod',
+    type: 'select',
     name: `method${n}`,
     data: Employment.list.inquiryMethod,
-    label: `Inquiry Method ${n}`,
+    emptyOpt,
+    // label: `Inquiry Method ${n}`,
+    label: 'Method',
 })
 
 
@@ -1592,7 +1608,20 @@ const createInquiryDate = n => createDateForm({
     target: `inquiryDate${n}`,
     group: 'inquiryDate',
     name: `inquiredOn${n}`,
-    label: `Inquiry Date ${n}`,
+    // label: `Inquiry Date ${n}`,
+    label: 'Date',
+})
+
+
+const createInquiryResponse = n => createForm({
+    selector: appEmplSelector,
+    target: `inquiryResponse${n}`,
+    group: 'inquiryResponse',
+    type: 'textarea',
+    name: `response${n}`,
+    maxLength: 75,
+    // label: `Inquiry Response ${n}`,
+    label: 'Response',
 })
 
 
@@ -1768,6 +1797,10 @@ class EmploymentForm {
     })
 
 
+    static inquirer1 = createInquirer(1)
+    static inquirer2 = createInquirer(2)
+    static inquirer3 = createInquirer(3)
+
     static inquiryMethod1 = createInquiryMethod(1)
     static inquiryMethod2 = createInquiryMethod(2)
     static inquiryMethod3 = createInquiryMethod(3)
@@ -1775,6 +1808,27 @@ class EmploymentForm {
     static inquiryDate1 = createInquiryDate(1)
     static inquiryDate2 = createInquiryDate(2)
     static inquiryDate3 = createInquiryDate(3)
+
+    static inquiryResponse1 = createInquiryResponse(1)
+    static inquiryResponse2 = createInquiryResponse(2)
+    static inquiryResponse3 = createInquiryResponse(3)
+
+    static verifComment = createForm({
+        selector: appEmplSelector,
+        target: 'verifComment',
+        type: 'textarea',
+        name: 'comment',
+        maxLength: 100,
+    })
+
+    static verifStatus = createForm({
+        selector: appEmplSelector,
+        target: 'verifStatus',
+        type: 'select',
+        name: 'status',
+        data: Employment.list.verifStatus,
+        label: 'Verification Status',
+    })
 
 
     static validate = () => validate(EmploymentForm, () => [
