@@ -23,7 +23,7 @@ import { createBusNameForm, createEinForm } from './company.mjs'
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
 import appEmplSelector from '../../../client/global/modules/registry/selectors/driver-application-employment.mjs'
-import Driver, { Application } from '../core/driver.mjs'
+import Driver, { Application, Employment } from '../core/driver.mjs'
 import { Truck, Van } from '../core/vehicle.mjs'
 import Geography from '../../../client/global/modules/tools/core/geography.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
@@ -1577,11 +1577,31 @@ class ApplicationForm {
 }
 
 
+const createInquiryMethod = n => createForm({
+    selector: appEmplSelector,
+    target: `inquiryMethod${n}`,
+    group: 'inquiryMethod',
+    name: `method${n}`,
+    data: Employment.list.inquiryMethod,
+    label: `Inquiry Method ${n}`,
+})
+
+
+const createInquiryDate = n => createDateForm({
+    selector: appEmplSelector,
+    target: `inquiryDate${n}`,
+    group: 'inquiryDate',
+    name: `inquiredOn${n}`,
+    label: `Inquiry Date ${n}`,
+})
+
+
 class EmploymentForm {
     constructor(options = {}) {
         getStaticProps(EmploymentForm)
             .forEach(target => this[target] = constructForm(EmploymentForm, target, options))
     }
+
 
     static id = createIdForm({ selector: appEmplSelector })
 
@@ -1747,10 +1767,21 @@ class EmploymentForm {
         label: 'Reason for Employment Gap',
     })
 
+
+    static inquiryMethod1 = createInquiryMethod(1)
+    static inquiryMethod2 = createInquiryMethod(2)
+    static inquiryMethod3 = createInquiryMethod(3)
+
+    static inquiryDate1 = createInquiryDate(1)
+    static inquiryDate2 = createInquiryDate(2)
+    static inquiryDate3 = createInquiryDate(3)
+
+
     static validate = () => validate(EmploymentForm, () => [
         'employer', 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
         'startDate', 'position', 'earnings', 'FMCSR', 'dotDat', 'RFL', 'endDate',
     ])
+
 
 }
 

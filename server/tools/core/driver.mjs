@@ -2626,6 +2626,13 @@ class Employment {
     }
 
 
+    static list = {
+
+        inquiryMethod: { p: 'Phone', f: 'Fax', e: 'Email', m: 'Mail' },
+
+    }
+
+
 }
 
 

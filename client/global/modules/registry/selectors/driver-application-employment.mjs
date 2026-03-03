@@ -21,9 +21,11 @@ const selector = {
             endDate: 'employment-end-date',
             rfl: 'employment-reason-for-leaving',
             gapExpl: 'employment-gap-explanation',
+            inquiryDate: 'employment-verification-date',
         },
         select: {
             addrState: 'employer-address-state',
+            inquiryMethod: 'employment-verification-method',
         },
         radio: {
             fmcsr: 'employment-subject-to-fmcsr',
@@ -52,9 +54,15 @@ const selector = {
             endDate: 'employment-end-date',
             rfl: 'employment-reason-for-leaving',
             gapExpl: 'employment-gap-explanation',
+            inquiryDate1: 'employment-verification-date-1',
+            inquiryDate2: 'employment-verification-date-2',
+            inquiryDate3: 'employment-verification-date-3',
         },
         select: {
             addrState: 'employer-address-state',
+            inquiryMethod1: 'employment-verification-method-1',
+            inquiryMethod2: 'employment-verification-method-2',
+            inquiryMethod3: 'employment-verification-method-3',
         },
         radio: {
             fmcsr: {
