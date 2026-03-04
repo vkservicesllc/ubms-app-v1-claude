@@ -1784,6 +1784,14 @@ class EmploymentForm {
         label: 'Termination Date',
     }, true)
 
+    static endDate2 = createDateForm({
+        selector: appEmplSelector,
+        target: 'endDate',
+        group: 'endDate',
+        name: 'leftOn',
+        label: 'Left on',
+    })
+
     static gapExpl = createForm({
         selector: appEmplSelector,
         target: 'gapExpl',

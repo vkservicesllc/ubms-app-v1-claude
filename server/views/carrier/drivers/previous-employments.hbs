@@ -149,7 +149,7 @@
                 {{/if}}
                 {{#if (eq permissions.modify true)}}
                 <div class="form-block" id="modification-block"{{# if (eq permissions.update true)}} style="display: none;"{{/if}}>
-                    <form class="ui form" id="employer-form" autocomplete="off">
+                    <form class="ui form" id="employer-form" autocomplete="off" style="margin-top: 1em;">
                         {{{form.id.hidden.input}}}
                         <div class="ui grid">
                             <div class="twelve wide column">
@@ -168,16 +168,21 @@
                                         </div>
                                     </div>
                                     <div class="four wide field">
-                                        {{{form.endDate.text.label}}}
+                                        {{{form.endDate2.text.label}}}
                                         <div class="ui calendar empl-end-calendar">
                                             <div class="ui fluid input left icon">
-                                                {{{form.endDate.text.input}}}
+                                                {{{form.endDate2.text.input}}}
                                                 <i class="calendar icon"></i>
                                             </div>
                                         </div>
+                                        <p class="help">
+                                            <small>
+                                                <span class="ui teal text">Blank if still employed</span>
+                                            </small>
+                                        </p>
                                     </div>
                                 </div>
-                                <div class="ui compact grid">
+                                <div class="ui compact grid" style="margin-top: 1.2em;">
                                     <div class="five wide field">
                                         {{{form.phone.text.label}}}
                                         {{{form.phone.text.input}}}
@@ -210,6 +215,21 @@
                                                 <div class="menu">{{{dropdown.addrState}}}
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ui divider"></div>
+                                <div class="inline fields">
+                                    <div class="field">
+                                        <div class="ui checkbox">
+                                            {{{form.FMCSR2.checkbox.input}}}
+                                            {{{form.FMCSR2.checkbox.label}}}
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="ui checkbox">
+                                            {{{form.dotDat2.checkbox.input}}}
+                                            {{{form.dotDat2.checkbox.label}}}
                                         </div>
                                     </div>
                                 </div>

@@ -787,7 +787,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
 
                 let emplOptions = {}
                 const fields = [
-                    'employer', 'startDate', 'endDate', 
+                    'employer', 'startDate', 'endDate2', 
                     'phone', 'address1', 'address2', 'addrZip', 'addrCity', [ 'addrState', 'hidden' ],
                     'position', 'earnings', 'RFL', //'gapExpl',
                 ]
@@ -798,7 +798,6 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
 
                     emplOptions[field] = { [prop]: { input: { disabled: false } } }
                 })
-                emplOptions.endDate.text.label = { content: 'Left on' }
                 emplOptions.RFL.text.input.rows = 2,
                 emplOptions.RFL.text.input.placeholder = ' '
 
@@ -946,7 +945,7 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
                 for (const state in Address.list.state)
                     dropdown.addrState += `\n${t}<div class="item" data-value="${state}">${Address.list.state[state]}</div>`
                 const fields = [
-                    'employer', 'startDate', 'endDate', 
+                    'employer', 'startDate', 'endDate2', 
                     'phone', 'address1', 'address2', 'addrZip', 'addrCity', [ 'addrState', 'hidden' ],
                     'position', 'earnings', 'RFL', //'gapExpl',
                 ]
@@ -957,8 +956,7 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
 
                     options[field] = { [prop]: { input: { disabled: false } } }
                 })
-                options.endDate.text.label = { content: 'Left on' }
-                options.RFL.text.input.rows = 2,
+                options.RFL.text.input.rows = 3,
                 options.RFL.text.input.placeholder = ' '
             } else {
                 // make html info only
