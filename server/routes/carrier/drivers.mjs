@@ -942,7 +942,24 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
             let options = {}, dropdown = {}, t = `\t`.repeat(9)
 
             if (hbs.permissions.modify) {
-                // make the form
+                dropdown.addrState = ''
+                for (const state in Address.list.state)
+                    dropdown.addrState += `\n${t}<div class="item" data-value="${state}">${Address.list.state[state]}</div>`
+                const fields = [
+                    'employer', 'startDate', 'endDate', 
+                    'phone', 'address1', 'address2', 'addrZip', 'addrCity', [ 'addrState', 'hidden' ],
+                    'position', 'earnings', 'RFL', //'gapExpl',
+                ]
+                fields.forEach(field => {
+                    let prop = 'text'
+                    if (Array.isArray(field))
+                        [ field, prop ] = field
+
+                    options[field] = { [prop]: { input: { disabled: false } } }
+                })
+                options.endDate.text.label = { content: 'Left on' }
+                options.RFL.text.input.rows = 2,
+                options.RFL.text.input.placeholder = ' '
             } else {
                 // make html info only
             }

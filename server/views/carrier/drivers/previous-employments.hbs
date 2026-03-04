@@ -19,7 +19,7 @@
                 font-size: 1.2em;
             }
             .form-block {
-                padding: .4em 1.2em;
+                padding: .4em 1em;
             }
         </style>
         <table class="ui compact table" id="driver-apl-prev-employers-table" style="width: 100%;"></table>
@@ -28,7 +28,7 @@
                 (eq permissions.modify true)
                 (eq permissions.update true)
         )}}
-        <div class="ui modal" id="empl-manage-card-modal" style="min-width: 840px;">
+        <div class="ui modal" id="empl-manage-card-modal" style="width: 960px !important; height: 640px;">
             <i class="close icon"></i>
             <div class="ui header">Employment Verification</div>
             <div class="content">
@@ -55,7 +55,27 @@
                         <span class="carrier-data" id="carrier-address-data"></span>
                     </div>
                 </div>
+                <div class="ui divider"></div>
                 <div class="ui secondary pointing menu">
+                    {{# if (eq permissions.update true)}}
+                    <a class="item form-item active" id="inquiry-item-1">Inquiry #1</a>
+                    <a class="item form-item disabled" id="inquiry-item-2">Inquiry #2</a>
+                    <a class="item form-item disabled" id="inquiry-item-3">Inquiry #3</a>
+                    {{/if}}
+                    {{#if (eq permissions.modify true)}}
+                    <a class="item form-item{{# if (eq permissions.update false)}} active{{/if}}" id="modification-item">
+                        Employer Modification
+                    </a>
+                    {{/if}}
+                    {{#if (eq permissions.update true)}}
+                    <div class="right menu">
+                        <div class="item">
+                            <a href="" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                        </div>
+                    </div>
+                    {{/if}}
+                </div>
+                {{!-- <div class="ui secondary pointing menu">
                     {{# if (eq permissions.update true)}}
                     <a class="item form-item active" id="inquiries-item">Inquiries</a>
                     <a class="item form-item" id="phone-verify-item">Phone Verification</a>
@@ -73,10 +93,10 @@
                         </div>
                     </div>
                     {{/if}}
-                </div>
+                </div> --}}
                 {{# if (eq permissions.update true)}}
                 <div class="form-block" id="inquiries-block">
-                    <form class="ui form" id="verification-inquiry-form" action="" autocomplete="off">
+                    {{!-- <form class="ui form" id="verification-inquiry-form" action="" autocomplete="off">
                         <div class="ui three column grid">
                             <div class="column">
                                 <h4 class="ui teal text dividing header">Inquiry #1</h4>
@@ -117,18 +137,111 @@
                                 <h4 class="ui teal text dividing header">Inquiry #3</h4>
                             </div>
                         </div>
-                    </form>
+                    </form> --}}
+                    INQUIRY #1
                 </div>
                 <div class="form-block" id="phone-verify-block" style="display: none;">
-                    PHONE VERIFICATION
+                    INQUIRY #2
                 </div>
                 <div class="form-block" id="write-verify-block" style="display: none;">
-                    WRITTEN VERIFICATION
+                    INQUIRY #3
                 </div>
                 {{/if}}
                 {{#if (eq permissions.modify true)}}
                 <div class="form-block" id="modification-block"{{# if (eq permissions.update true)}} style="display: none;"{{/if}}>
-                    EMPLOYER MODIFICATION
+                    <form class="ui form" id="employer-form" autocomplete="off">
+                        {{{form.id.hidden.input}}}
+                        <div class="ui grid">
+                            <div class="twelve wide column">
+                                <div class="ui compact grid">
+                                    <div class="eight wide field">
+                                        {{{form.employer.text.label}}}
+                                        {{{form.employer.text.input}}}
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.startDate.text.label}}}
+                                        <div class="ui calendar empl-start-calendar">
+                                            <div class="ui fluid input left icon">
+                                                {{{form.startDate.text.input}}}
+                                                <i class="calendar icon"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.endDate.text.label}}}
+                                        <div class="ui calendar empl-end-calendar">
+                                            <div class="ui fluid input left icon">
+                                                {{{form.endDate.text.input}}}
+                                                <i class="calendar icon"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ui compact grid">
+                                    <div class="five wide field">
+                                        {{{form.phone.text.label}}}
+                                        {{{form.phone.text.input}}}
+                                    </div>
+                                    <div class="seven wide field">
+                                        {{{form.address1.text.label}}}
+                                        {{{form.address1.text.input}}}
+                                    </div>
+                                    <div class="four wide field">
+                                        {{{form.address2.text.label}}}
+                                        {{{form.address2.text.input}}}
+                                    </div>
+                                </div>
+                                <div class="ui compact grid">
+                                    <div class="four wide field">
+                                        {{{form.addrZip.text.label}}}
+                                        {{{form.addrZip.text.input}}}
+                                    </div>
+                                    <div class="seven wide field">
+                                        {{{form.addrCity.text.label}}}
+                                        {{{form.addrCity.text.input}}}
+                                    </div>
+                                    <div class="five wide field">
+                                        <div class="field">
+                                            {{{form.addrState.select.label}}}
+                                            <div class="ui fluid selection required dropdown empl-addr-state-dropdown">
+                                                {{{form.addrState.hidden.input}}}
+                                                <i class="dropdown icon"></i>
+                                                <div class="default text"></div>
+                                                <div class="menu">{{{dropdown.addrState}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="four wide column">
+                                <div class="ui compact grid">
+                                    <div class="fifteen wide field" style="width: 100%;">
+                                        {{{form.position.text.label}}}
+                                        {{{form.position.text.input}}}
+                                    </div>
+                                    <div class="one wide field" style="width: 0;"></div>
+                                </div>
+                                <div class="ui compact grid">
+                                    <div class="fifteen wide field" style="width: 100%;">
+                                        {{{form.earnings.text.label}}}
+                                        <div class="ui left icon input">
+                                            <i class="dollar icon"></i>
+                                            {{{form.earnings.text.input}}}
+                                        </div>
+                                    </div>
+                                    <div class="one wide field" style="width: 0;"></div>
+                                </div>
+                                <div class="ui compact grid">
+                                    <div class="fifteen wide field" style="width: 100%;">
+                                        {{{form.RFL.text.label}}}
+                                        {{{form.RFL.text.input}}}
+                                    </div>
+                                    <div class="one wide field" style="width: 0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 {{/if}}
             </div>
