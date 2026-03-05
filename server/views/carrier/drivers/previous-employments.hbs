@@ -149,8 +149,9 @@
                 {{/if}}
                 {{#if (eq permissions.modify true)}}
                 <div class="form-block" id="modification-block"{{# if (eq permissions.update true)}} style="display: none;"{{/if}}>
-                    <form class="ui form" id="employer-form" autocomplete="off" style="margin-top: 1em;">
+                    <form class="ui form" id="employer-form" action="/resource/drivers/prev-employments/modify" method="POST" autocomplete="off" style="margin-top: 1em;">
                         {{{form.id.hidden.input}}}
+                        <input type="hidden" name="cdlRole" id="employment-cdl-role" />
                         <div class="ui grid">
                             <div class="twelve wide column">
                                 <div class="ui compact grid">

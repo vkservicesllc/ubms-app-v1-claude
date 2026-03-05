@@ -2338,6 +2338,7 @@ class Employment {
         if (data.formId) {
             this.application = {
                 formId: data.formId,
+                cdlRole: data.cdlRole,
                 prefix: data.driverPrefix,
                 firstName: data.driverFirstName,
                 middleName: data.driverMiddleName,
@@ -2497,7 +2498,7 @@ class Employment {
                 {
                     table: query.driver_application.main.table,
                     fields: [
-                        'teamId', Team.hashId('teamId'), 'carrierId', Carrier.hashId('carrierId'), 'formId',
+                        'teamId', Team.hashId('teamId'), 'carrierId', Carrier.hashId('carrierId'), 'formId', 'cdlRole',
                         'createdAt', 'finishedAt',
                     ],
                     join: [ 'id', 'appId' ],

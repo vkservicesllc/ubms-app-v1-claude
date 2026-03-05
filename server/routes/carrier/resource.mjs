@@ -8,7 +8,7 @@ import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Company from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
-import Driver, { Application } from '../../tools/core/driver.mjs'
+import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 import { ApplicationForm, EmploymentForm } from '../../tools/form/driver.mjs'
 import { inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 
@@ -143,6 +143,34 @@ router.post('/drivers/delete/application', User.mw.verify, Team.mw.verify, async
         await application.delete()
 
         res.redirect('/drivers/applications')
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/drivers/prev-employments/modify', User.mw.verify, Team.mw.verify, EmploymentForm.validate('employer', true), validationCheck, async (req, res) => {
+    try {
+        const { user } = res.session
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('d:drv/empl', 'modify', permissions, user.DS)) return sendError.auth(req, res)
+
+        const { _id, cdlRole } = req.body
+        delete req.body.id
+        delete req.body.cdlRole
+
+        if (cdlRole === '0') req.body.fmcsr = null
+        if (!req.body.fmcsr) {
+            if (cdlRole === '1') req.body.fmcsr = false
+        }
+        if (!req.body.dotDat) req.body.dotDat = false
+
+        const employment = await Employment.fetch(res.session, { _id })
+        if (!employment) throw new Error('Employment not found')
+
+        await employment.update(req.body)
+
+        res.redirect('/drivers/previous-employments')
     } catch (err) {
         sendError.server(req, res, err)
     }

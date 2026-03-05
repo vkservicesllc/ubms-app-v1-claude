@@ -1839,10 +1839,24 @@ class EmploymentForm {
     })
 
 
-    static validate = () => validate(EmploymentForm, () => [
-        'employer', 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
-        'startDate', 'position', 'earnings', 'FMCSR', 'dotDat', 'RFL', 'endDate',
-    ])
+    static validate = (target = 'employer', checkbox = false) => validate(EmploymentForm, () => {
+        let fields = []
+
+        switch (target) {
+            case 'employer':
+                fields = [
+                    'employer', 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
+                    'startDate', 'position', 'earnings', 'RFL', 'endDate', 'FMCSR', 'dotDat',
+                ]
+                if (checkbox) {
+                    fields.splice(-2)
+                    fields.push('FMCSR2', 'dotDat2')
+                }
+                break
+        }
+
+        return fields
+    })
 
 
 }

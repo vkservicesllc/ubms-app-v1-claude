@@ -11,6 +11,8 @@ import patterns from '/modules/registry/patterns.mjs'
 import selector from '/modules/registry/selectors/driver-application-employment.mjs'
 
 const TS = selector.id.text, CS = selector.id.checkbox
+const $id = $(selector.id.hidden.id)
+const $cdlRole = $('#employment-cdl-role')
 const $employer = $(TS.employer)
 const $startDate = $(TS.startDate)
 const $endDate = $(TS.endDate)
@@ -148,6 +150,8 @@ table.on('draw', function() {
         $('.manage-empl').on('click', function(evt) {
             evt.preventDefault()
             const _id = $(this).data('id')
+            $calendar.startDate.calendar('destroy')
+            $calendar.endDate.calendar('destroy')
 
             $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}`, {
                 success(response) {
@@ -173,17 +177,10 @@ table.on('draw', function() {
                         $emplData.carrier.address.html(new Address(application.carrierAddress).html({ inline: false, singleLine: true }))
                     }
 
-                    const calOpts = {
-                        ...calSettings,
-                        minDate: moment(application.finishedAt).subtract(10, 'years').toDate(),
-                        maxDate: moment(application.finishedAt).toDate(),
-                    }
+                    const { _id, position, earnings, rfl, fmcsr, dotDat } = response.data
 
-                    $calendar.startDate.calendar(calOpts)
-                    $calendar.endDate.calendar(calOpts)
-
-                    const { position, earnings, rfl, fmcsr, dotDat } = response.data
-
+                    $id.val(_id)
+                    $cdlRole.val(application.cdlRole)
                     $employer.val(employer)
                     $startDate.val(moment(startedOn).format('ll'))
                     if (leftOn) $endDate.val(moment(leftOn).format('ll'))
@@ -200,6 +197,15 @@ table.on('draw', function() {
                     $dotDat.prop('checked', dotDat)
                     if (application.cdlRole === 0) $fmcsr.parent().parent().hide()
 
+                    const calOpts = {
+                        ...calSettings,
+                        minDate: moment(application.finishedAt).subtract(10, 'years').toDate(),
+                        maxDate: moment(application.finishedAt).toDate(),
+                    }
+
+                    $calendar.startDate.calendar(calOpts)
+                    $calendar.endDate.calendar(calOpts)
+
                     $modal.manage.modal({
                         autofocus: false,
                         closable: false,
@@ -208,6 +214,8 @@ table.on('draw', function() {
                             $emplData.applicant.all.html(null)
                             $emplData.carrier.all.html(null)
 
+                            $id.val(null)
+                            $cdlRole.val(null)
                             $employer.val(null)
                             $startDate.val(null)
                             $endDate.val(null)

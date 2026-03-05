@@ -307,7 +307,7 @@ export const createSsnForm = (props = {}) => createForm({
 
 export const createYesNoForm = (props = {}, optional = false, type = 'radio') => createForm({
     type,
-    data: { 'Y': 'Yes', 'N': 'No', '-': null },
+    data: { 'Y': 'Yes', 'N': 'No', '-': null, 'on': undefined },
     required,
     requiredLabel: false,
     ...props,
