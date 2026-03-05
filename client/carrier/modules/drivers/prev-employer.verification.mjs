@@ -8,6 +8,33 @@ import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/add
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import patterns from '/modules/registry/patterns.mjs'
+import selector from '/modules/registry/selectors/driver-application-employment.mjs'
+
+const TS = selector.id.text, CS = selector.id.checkbox
+const $employer = $(TS.employer)
+const $startDate = $(TS.startDate)
+const $endDate = $(TS.endDate)
+const $phone = $(TS.phone)
+const $address1 = $(TS.address1)
+const $address2 = $(TS.address2)
+const $addrZip = $(TS.addrZip)
+const $addrCity = $(TS.addrCity)
+const $position = $(TS.position)
+const $earnings = $(TS.earnings)
+const $rfl = $(TS.rfl)
+const $fmcsr = $(CS.fmcsr)
+const $dotDat = $(CS.dotDat)
+
+const $dropdown = {
+    //
+    addrState: $('#empl-add-state-dropdown'),
+}
+
+const $calendar = {
+    //
+    startDate: $('#empl-start-date-calendar'),
+    endDate: $('#empl-end-date-calendar'),
+}
 
 
 const $modal = {
@@ -50,6 +77,68 @@ $formItem.click(function() {
     $(this).addClass('active')
 })
 
+busNameEvent(TS.employer, true, {
+    onChange(busName, coType, $busName) {
+        if (coType) $busName.val(`${busName}, ${coType}`)
+    },
+})
+
+telEvent(TS.phone)
+
+addr1Event(TS.address1, {
+    onChange(addr1, $addr1) {
+        const $addr2 = $addr1.parent().next().find(TS.address2)
+        const addr2Patt = patterns.match.addr2
+        let addr2 = addr2Patt.test(addr1)
+            ? addr2Patt.exec(addr1)[0].toUpperCase()
+            : null
+
+        addr1 = addr1.replace(addr2Patt, '').trim()
+        if (addr2) addr2 = patterns.replace(addr2, 'addr2')
+        $addr1.val(addr1)
+        $addr2.val(addr2)
+    },
+})
+
+addr2Event(TS.address2)
+
+$dropdown.addrState.dropdown()
+
+zipEvent(TS.addrZip, {
+    onChange(zip, $zip, city, state) {
+        if (city && state) {
+            const $city = $zip.parent().parent().find(TS.addrCity)
+
+            $city.val(city)
+            $dropdown.addrState.dropdown('set selected', state)
+        }
+    },
+})
+
+cityEvent(TS.addrCity)
+
+inputEvent(TS.position, {
+    capitalize: 'each',
+    strip: true,
+    word: true,
+})
+
+inputEvent(TS.earnings, {
+    onFocus(amount, $amount) {
+        if (amount) $amount.val(Number(amount.replace(/,/g, '')))
+    },
+    onInput(amount, $amount) {
+        amount = amount.replace(/\D/g, '')
+        $amount.val(amount)
+    },
+    onBlur(amount, $amount) {
+        amount = (+amount).toLocaleString('en-US')
+        $amount.val(amount)
+    },
+})
+
+inputEvent(TS.rfl, { capitalize: 'first', strip: true, word: true })
+
 
 table.on('draw', function() {
     const { actions } = table.ajax.json()
@@ -84,6 +173,33 @@ table.on('draw', function() {
                         $emplData.carrier.address.html(new Address(application.carrierAddress).html({ inline: false, singleLine: true }))
                     }
 
+                    const calOpts = {
+                        ...calSettings,
+                        minDate: moment(application.finishedAt).subtract(10, 'years').toDate(),
+                        maxDate: moment(application.finishedAt).toDate(),
+                    }
+
+                    $calendar.startDate.calendar(calOpts)
+                    $calendar.endDate.calendar(calOpts)
+
+                    const { position, earnings, rfl, fmcsr, dotDat } = response.data
+
+                    $employer.val(employer)
+                    $startDate.val(moment(startedOn).format('ll'))
+                    if (leftOn) $endDate.val(moment(leftOn).format('ll'))
+                    $phone.val(formatTel(phone))
+                    $address1.val(address.address1)
+                    $address2.val(address.address2)
+                    $addrZip.val(address.zip)
+                    $addrCity.val(address.city)
+                    $dropdown.addrState.dropdown('set selected', address.state)
+                    $position.val(position)
+                    $earnings.val((+earnings).toLocaleString('en-US'))
+                    $rfl.val(rfl)
+                    $fmcsr.prop('checked', fmcsr)
+                    $dotDat.prop('checked', dotDat)
+                    if (application.cdlRole === 0) $fmcsr.parent().parent().hide()
+
                     $modal.manage.modal({
                         autofocus: false,
                         closable: false,
@@ -91,6 +207,23 @@ table.on('draw', function() {
                             $emplData.employer.all.html(null)
                             $emplData.applicant.all.html(null)
                             $emplData.carrier.all.html(null)
+
+                            $employer.val(null)
+                            $startDate.val(null)
+                            $endDate.val(null)
+                            $phone.val(null)
+                            $address1.val(null)
+                            $address2.val(null)
+                            $addrZip.val(null)
+                            $addrCity.val(null)
+                            $dropdown.addrState.dropdown('clear')
+                            $position.val(null)
+                            $earnings.val(null)
+                            $rfl.val(null)
+                            $fmcsr.prop('checked', false)
+                            $dotDat.prop('checked', false)
+                            $fmcsr.parent().parent().show()
+
                             $formItem.removeClass('active').first().addClass('active')
                             $formBlock.hide().first().show()
                         },

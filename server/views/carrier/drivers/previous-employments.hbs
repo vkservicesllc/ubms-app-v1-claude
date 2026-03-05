@@ -160,7 +160,7 @@
                                     </div>
                                     <div class="four wide field">
                                         {{{form.startDate.text.label}}}
-                                        <div class="ui calendar empl-start-calendar">
+                                        <div class="ui calendar empl-start-calendar" id="empl-start-date-calendar">
                                             <div class="ui fluid input left icon">
                                                 {{{form.startDate.text.input}}}
                                                 <i class="calendar icon"></i>
@@ -169,7 +169,7 @@
                                     </div>
                                     <div class="four wide field">
                                         {{{form.endDate2.text.label}}}
-                                        <div class="ui calendar empl-end-calendar">
+                                        <div class="ui calendar empl-end-calendar" id="empl-end-date-calendar">
                                             <div class="ui fluid input left icon">
                                                 {{{form.endDate2.text.input}}}
                                                 <i class="calendar icon"></i>
@@ -208,7 +208,7 @@
                                     <div class="five wide field">
                                         <div class="field">
                                             {{{form.addrState.select.label}}}
-                                            <div class="ui fluid selection required dropdown empl-addr-state-dropdown">
+                                            <div class="ui fluid selection required dropdown empl-addr-state-dropdown" id="empl-add-state-dropdown">
                                                 {{{form.addrState.hidden.input}}}
                                                 <i class="dropdown icon"></i>
                                                 <div class="default text"></div>
@@ -258,6 +258,9 @@
                                         {{{form.RFL.text.input}}}
                                     </div>
                                     <div class="one wide field" style="width: 0;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: flex-end; margin-top: .5em;">
+                                    <button type="submit" class="ui green circular button">Save Changes</button>
                                 </div>
                             </div>
                         </div>
