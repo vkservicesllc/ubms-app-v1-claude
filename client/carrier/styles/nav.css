@@ -1,6 +1,6 @@
 .ui.pusher {
     z-index: 0 !important;
-    padding: 20px;
+    padding: 1.4rem;
 }
 
 .ui.sidebar {
@@ -11,7 +11,7 @@
 #team-item {
     align-items: center;
     justify-content: center;
-    padding: 0 15px !important;
+    padding: 0 1.07rem !important;
     font-size: 1.2em;
     color: yellowgreen;
 }

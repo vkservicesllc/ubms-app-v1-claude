@@ -1,0 +1,5 @@
+@media (max-width: 1920px) {
+    html {
+        font-size: clamp(11px, calc(14px * (100vw / 1920)), 14px);
+    }
+}
