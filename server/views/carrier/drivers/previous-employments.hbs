@@ -15,8 +15,13 @@
             }
             .ui.horizontal.list .header {
                 margin-top: .5em;
-                margin-bottom: .3em;
+                margin-bottom: .2em;
                 font-size: 1.2em;
+                {{!-- outline: 1px dotted red; --}}
+            }
+            .address-data {
+                display: inline-block;
+                margin-bottom: .3em;
             }
             .form-block {
                 padding: .4em 1em;
@@ -36,23 +41,28 @@
                     <div class="item">
                         <span class="ui text purple">Previous Employer:</span>
                         <div class="header employer-data" id="employer-data"></div>
+                        <span class="employer-data address-data" id="employer-address-data"></span><br/>
+                        <small>Phone:</small>
                         <span class="employer-data" id="employer-phone-data"></span><br/>
-                        <span class="employer-data" id="employer-address-data"></span><br/>
-                        <small class="employer-data" id="employer-period-data"></small>
+                        <small>Period:</small>
+                        <span class="employer-data" id="employer-period-data"></span>
                     </div>
                     <div class="item">
                         <span class="ui text purple">Applicant:</span>
                         <div class="header applicant-data" id="applicant-data"></div>
+                        <span class="applicant-data address-data" id="applicant-address-data"></span><br/>
+                        <small>Phone:</small>
                         <span class="applicant-data" id="applicant-phone-data"></span><br/>
-                        <span class="applicant-data" id="applicant-address-data"></span><br/>
+                        <small>Application:</small>
                         <span class="applicant-data" id="applicant-form-data"></span>
-                        <small class="applicant-data" id="applicant-submission-data"></small>
+                        <span class="applicant-data" id="applicant-submission-data"></span>
                     </div>
                     <div class="item">
                         <span class="ui text purple">Hiring Carrier:</span>
                         <div class="header carrier-data" id="carrier-data"></div>
-                        <span class="carrier-data" id="carrier-phone-data"></span><br/>
-                        <span class="carrier-data" id="carrier-address-data"></span>
+                        <span class="carrier-data address-data" id="carrier-address-data"></span><br/>
+                        <small class="carrier-label" style="display: none;">Phone:</small>
+                        <span class="carrier-data" id="carrier-phone-data"></span>
                     </div>
                 </div>
                 <div class="ui divider"></div>
@@ -95,55 +105,45 @@
                     {{/if}}
                 </div> --}}
                 {{# if (eq permissions.update true)}}
-                <div class="form-block" id="inquiries-block">
-                    {{!-- <form class="ui form" id="verification-inquiry-form" action="" autocomplete="off">
-                        <div class="ui three column grid">
-                            <div class="column">
-                                <h4 class="ui teal text dividing header">Inquiry #1</h4>
-                                <div class="field">
-                                    {{{form.inquirer1.select.label}}}
-                                    <div class="ui fluid selection dropdown" id="inquirer-dropdown-1">
-                                        {{{form.inquirer1.hidden.input}}}
-                                        <i class="dropdown icon"></i>
-                                        <div class="default text"></div>
-                                        <div class="menu">{{{dropdown.inquirer1}}}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    {{{form.inquiryDate1.text.label}}}
-                                    <div class="ui calendar" id="inquiry-date-calendar-1">
-                                        <div class="ui fluid input left icon">
-                                            {{{form.inquiryDate1.text.input}}}
-                                            <i class="calendar icon"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="field">
-                                    {{{form.inquiryMethod1.select.label}}}
-                                    <div class="ui fluid selection dropdown" id="inquiry-method-dropdown-1">
-                                        {{{form.inquiryMethod1.hidden.input}}}
-                                        <i class="dropdown icon"></i>
-                                        <div class="default text"></div>
-                                        <div class="menu">{{{dropdown.inquiryMethod1}}}
-                                        </div>
+                <div class="form-block" id="inquiry-block-1">
+                    <form class="ui form" id="verification-form-1" action="" method="POST" autocomplete="off">
+                        <div class="ui compact grid">
+                            <div class="five wide field">
+                                {{{form.inquirer1.select.label}}}
+                                <div class="ui fluid selection dropdown" id="inquirer-dropdown-1">
+                                    {{{form.inquirer1.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.inquirer1}}}
                                     </div>
                                 </div>
                             </div>
-                            <div class="column">
-                                <h4 class="ui teal text dividing header">Inquiry #2</h4>
+                            <div class="three wide field">
+                                {{{form.inquiryDate1.text.label}}}
+                                <div class="ui calendar" id="inquiry-date-calendar-1">
+                                    <div class="ui fluid input left icon">
+                                        {{{form.inquiryDate1.text.input}}}
+                                        <i class="calendar icon"></i>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="column">
-                                <h4 class="ui teal text dividing header">Inquiry #3</h4>
+                            <div class="three wide field">
+                                {{{form.inquiryMethod1.select.label}}}
+                                <div class="ui fluid selection dropdown" id="inquiry-method-dropdown-1">
+                                    {{{form.inquiryMethod1.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.inquiryMethod1}}}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </form> --}}
-                    INQUIRY #1
+                    </form>
                 </div>
-                <div class="form-block" id="phone-verify-block" style="display: none;">
+                <div class="form-block" id="inquiry-block-2" style="display: none;">
                     INQUIRY #2
                 </div>
-                <div class="form-block" id="write-verify-block" style="display: none;">
+                <div class="form-block" id="inquiry-block-3" style="display: none;">
                     INQUIRY #3
                 </div>
                 {{/if}}

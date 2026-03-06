@@ -165,7 +165,7 @@ table.on('draw', function() {
                     $emplData.employer.period.text(period)
                     $emplData.applicant.name.html(
                         new Person(application).fullName()
-                        + ` <small style="font-weight: normal; font-size: .7em !important;">(***-**-${application.ssn.slice(-4)})`
+                        + ''// ` <small style="font-weight: normal; font-size: .6em !important;">(***-**-${application.ssn.slice(-4)})`
                     )
                     $emplData.applicant.phone.text(formatTel(application.phone))
                     $emplData.applicant.address.html(new Address(application).html({ inline: false, singleLine: true }))
@@ -175,6 +175,7 @@ table.on('draw', function() {
                     if (application.carrier) {
                         $emplData.carrier.phone.text(formatTel(application.carrierPhone))
                         $emplData.carrier.address.html(new Address(application.carrierAddress).html({ inline: false, singleLine: true }))
+                        $('.carrier-label').show()
                     }
 
                     const { _id, position, earnings, rfl, fmcsr, dotDat } = response.data
@@ -231,6 +232,7 @@ table.on('draw', function() {
                             $fmcsr.prop('checked', false)
                             $dotDat.prop('checked', false)
                             $fmcsr.parent().parent().show()
+                            $('.carrier-label').hide()
 
                             $formItem.removeClass('active').first().addClass('active')
                             $formBlock.hide().first().show()
