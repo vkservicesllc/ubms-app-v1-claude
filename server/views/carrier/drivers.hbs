@@ -1,13 +1,20 @@
 {{> carrier/nav.alpha}}
 
+        <style>
+            .ui.chart.card {
+                min-width: 20rem !important;
+                font-size: 1rem;
+            }
+        </style>
+
         {{#if (eq permissions.applications true)}}
         <div class="ui container" style="margin: 1em;">
-            <div class="ui card" style="width: 18.3rem;">
+            <div class="ui chart card" style="width: 18.3rem;">
                 <div class="content">
                     <div class="header">Applications <small><span class="ui grey text">by Status</span></small></div>
                 </div>
                 <div class="content">
-                    <canvas id="application-conditions-doughnut-chart" style="max-height: 13.7rem;"></canvas>
+                    <canvas id="application-conditions-doughnut-chart" style="height: 13.7rem; font-size: .8rem;"></canvas>
                 </div>
                 <div class="content">
                     <i class="address book outline icon"></i>

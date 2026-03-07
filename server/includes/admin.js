@@ -78,7 +78,7 @@ module.exports = {
     'companies': {
         external: [ ...online.external, 'datatables.bulma', 'datatables.bulma.row-group', 'moment' ],
         internal: {
-            css: [ ...online.internal.css ],
+            css: [ ...online.internal.css, 'datatables' ],
             js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs, '^companies' ],
         },
@@ -105,7 +105,7 @@ module.exports = {
     'owners': {
         external: [ ...online.external, 'jquery.masked-input', 'bulma.checkradio', 'datatables.bulma', 'moment' ],
         internal: {
-            css: [ ...online.internal.css, 'form' ],
+            css: [ ...online.internal.css, 'datatables', 'form' ],
             js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs, '^owners' ],
         },
@@ -132,7 +132,7 @@ module.exports = {
     'users': {
         external: [ ...online.external, 'jquery.masked-input', 'moment', 'datatables.bulma', 'bulma.switch' ],
         internal: {
-            css: [ ...online.internal.css, 'form', 'tabs' ],
+            css: [ ...online.internal.css, 'datatables', 'form', 'tabs' ],
             js: [ ...online.internal.js, '^tabs' ],
             mjs: [ ...online.internal.mjs, '^users' ],
         },

@@ -4,5 +4,3 @@ update not only in child tables, but also find initial logo file and update its 
 When a regular admin is unscoped, they can create unscoped users,
 but when they are scoped, they must only be able to invite scoped users and assign them teams and have available only
 that are available to them.
-
-set min table width everywhere in datatables.

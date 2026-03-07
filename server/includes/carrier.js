@@ -96,7 +96,16 @@ module.exports = {
     'drivers.applications': {
         external: [ ...online.external, 'jquery.masked-input', 'datatables.fomantic-ui', 'moment' ],
         internal: {
-            css: [ ...online.internal.css ],
+            css: [ ...online.internal.css, 'datatables' ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs ],
+        },
+    },
+
+    'drivers.applicants': {
+        external: [ ...online.external, 'datatables.fomantic-ui', 'moment' ],
+        internal: {
+            css: [ ...online.internal.css, 'datatables' ],
             js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs ],
         },
@@ -150,16 +159,7 @@ module.exports = {
     'drivers.previous-employments': {
         external: [ ...online.external, 'jquery.masked-input', 'datatables.fomantic-ui', 'datatables.fomantic-ui.row-group', 'moment' ],
         internal: {
-            css: [ ...online.internal.css ],
-            js: [ ...online.internal.js ],
-            mjs: [ ...online.internal.mjs ],
-        },
-    },
-
-    'drivers.applicants': {
-        external: [ ...online.external, 'datatables.fomantic-ui', 'moment' ],
-        internal: {
-            css: [ ...online.internal.css ],
+            css: [ ...online.internal.css, 'datatables' ],
             js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs ],
         },
@@ -168,7 +168,7 @@ module.exports = {
     'drivers.hired': {
         external: [ ...online.external ],
         internal: {
-            css: [ ...online.internal.css ],
+            css: [ ...online.internal.css, 'datatables' ],
             js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs ],
         },
@@ -177,7 +177,7 @@ module.exports = {
     'drivers.pay-agreements': {
         external: [ ...online.external ],
         internal: {
-            css: [ ...online.internal.css ],
+            css: [ ...online.internal.css, 'datatables' ],
             js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs ],
         },
@@ -186,7 +186,7 @@ module.exports = {
     'drivers.leaving': {
         external: [ ...online.external ],
         internal: {
-            css: [ ...online.internal.css ],
+            css: [ ...online.internal.css, 'datatables' ],
             js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs ],
         },
@@ -195,7 +195,7 @@ module.exports = {
     'drivers.former': {
         external: [ ...online.external ],
         internal: {
-            css: [ ...online.internal.css ],
+            css: [ ...online.internal.css, 'datatables' ],
             js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs ],
         },
