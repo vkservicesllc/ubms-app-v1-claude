@@ -243,29 +243,29 @@
             {{#if (hv data.lastLogo)}}
             <style>
                 figure.image {
-                    max-width: 240px;
+                    max-width: 17.14rem;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     overflow: hidden;
                     flex-direction: column; /* allows caption under the image */
-                    padding: 5px;
+                    padding: .35rem;
                 }
                 figure.image img {
-                    border: 1px dashed gainsboro;
+                    border: .07rem dashed gainsboro;
                     max-width: 100%;
                     max-height: 100%;
                     width: auto;
                     height: auto;
                 }
                 figure.image figcaption {
-                    margin-bottom: 5px;
+                    margin-bottom: .35rem;
                     font-size: 0.85rem;
                     color: #555;
                     word-break: break-word;
                 }
             </style>
-            <div class="is-flex is-gap-1 is-align-items-flex-start" id="company-logo-list" style="background: white; padding: 15px; border-radius: 5px; flex-wrap: wrap;">{{{logoList}}}
+            <div class="is-flex is-gap-1 is-align-items-flex-start" id="company-logo-list" style="background: white; padding: 1.07rem; border-radius: .35rem; flex-wrap: wrap;">{{{logoList}}}
             </div>
             {{else}}
             <div class="is-flex is-justify-content-center is-align-items-center">
@@ -276,7 +276,7 @@
 
         <style>
             .column.is-width-fixed {
-                min-width: 472px;
+                min-width: 33.71rem;
             }
             .select.is-multiple select {
                 min-height: {{css.multiSelect.minHeight}};
@@ -287,7 +287,7 @@
         <section class="company-card-content" id="users-card-content" style="display: none;">
             <style>
                 .select.is-multiple select option {
-                    padding: 4px 9px 0;
+                    padding: .28rem .64rem 0;
                 }
             </style>
             <div class="columns">
@@ -390,11 +390,11 @@
                 </div>
             </div>
             {{/if}}
-            <div class="box has-text-centered" id="company-log-droparea" style="border: 2px dashed #ccc; padding: 2rem; cursor: pointer;">
+            <div class="box has-text-centered" id="company-log-droparea" style="border: .14rem dashed #ccc; padding: 2rem; cursor: pointer;">
                 <p>Drag & drop an image here or click to select</p>
                 <input type="file" id="company-logo-file-input" accept="image/*" hidden />
             </div>
-            <div id="company-logo-cropper" style="display: none; margin-top: 1rem; max-height: 240px;">
+            <div id="company-logo-cropper" style="display: none; margin-top: 1rem; max-height: 17.14rem;">
                 <img id="company-logo" style="max-width: 100%;" />
             </div>
         </section>
@@ -410,7 +410,7 @@
 
 <div class="modal" id="company-highlight-modal">
     <div class="modal-background"></div>
-    {{!-- <div class="modal-content p-6" style="width: 480px;">
+    {{!-- <div class="modal-content p-6" style="width: 34.28rem;">
         <form>
             <input type="hidden" id="company-highlight-id" value="{{data._companyId}}" />
             <input type="hidden" class="color-picker" id="company-background-color" value="{{data.style.background}}">

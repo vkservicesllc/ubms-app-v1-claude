@@ -10,12 +10,12 @@ input[type=number] {
 }
 
 input, select {
-    border: 1px solid lightpink !important;
+    border: .07rem solid lightpink !important;
 }
 
 input:disabled,
 select:disabled {
-    border: 1px solid #eee !important;
+    border: .07rem solid #eee !important;
 }
 
 .label.input-required::after {

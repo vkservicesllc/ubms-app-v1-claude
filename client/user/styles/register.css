@@ -4,8 +4,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    max-width: 480px !important;
-    min-width: 360px !important;
+    max-width: 34.28rem !important;
+    min-width: 25.71rem !important;
 }
 .ui.container .header {
     margin-bottom: .2em;
@@ -14,10 +14,10 @@
     font-weight: normal;
 }
 .help {
-    margin-top: 5px;
+    margin-top: .35rem;
     font-size: .85em;
     text-align: right;
 }
 #failed-reg-body section:not(:last-child) {
-    margin-bottom: 10px;
+    margin-bottom: .71rem;
 }

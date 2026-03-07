@@ -137,7 +137,7 @@ module.exports = {
             ],
             js: [
                 '<script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/semantic.min.js" integrity="sha512-gnoBksrDbaMnlE0rhhkcx3iwzvgBGz6mOEj4/Y5ZY09n55dYddx6+WYc72A55qEesV8VX2iMomteIwobeGK1BQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>',
-                '<script src="/scripts/fomantic-ui.js"></script>',
+                // '<script src="/scripts/fomantic-ui.js"></script>',
             ],
         },
 
