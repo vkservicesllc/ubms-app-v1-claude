@@ -28,7 +28,7 @@ const online = {
 }
 
 
-module.exports = {
+const includes = {
 
     'init': {
         external: [ ...offline.external ],
@@ -175,3 +175,9 @@ module.exports = {
     },
 
 }
+
+for (const target in includes)
+    includes[target].internal.js.push('scale')
+
+
+module.exports = includes
