@@ -142,7 +142,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
             orderable: false,
             className: 'right aligned',
             render(data, type, row) {
-                return `<a class="manage-empl" data-id="${row._id}" href=""><i class="dark green business time icon"></i></a>` 
+                return `<a class="manage-empl" data-id="${row._id}" data-app-id="${row._appId}" href=""><i class="dark green business time icon"></i></a>` 
             },
         },
 

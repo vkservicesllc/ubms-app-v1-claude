@@ -67,6 +67,10 @@ const $emplData = {
     },
 }
 
+const $a = {
+    verifPdf: $('#verification-pdf-url'),
+}
+
 const $formItem = $('.form-item')
 const $formBlock = $('.form-block')
 
@@ -150,10 +154,11 @@ table.on('draw', function() {
         $('.manage-empl').on('click', function(evt) {
             evt.preventDefault()
             const _id = $(this).data('id')
+            const _appId = $(this).data('app-id')
             $calendar.startDate.calendar('destroy')
             $calendar.endDate.calendar('destroy')
 
-            $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}`, {
+            $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}?app=${_appId}`, {
                 success(response) {
                     const { employer, phone, address, startedOn, leftOn, application } = response.data
                     let period = `${moment(startedOn).format('ll')} – `
@@ -178,7 +183,7 @@ table.on('draw', function() {
                         $('.carrier-label').show()
                     }
 
-                    const { _id, position, earnings, rfl, fmcsr, dotDat } = response.data
+                    const { _id, _appId, position, earnings, rfl, fmcsr, dotDat } = response.data
 
                     $id.val(_id)
                     $cdlRole.val(application.cdlRole)
@@ -207,6 +212,8 @@ table.on('draw', function() {
                     $calendar.startDate.calendar(calOpts)
                     $calendar.endDate.calendar(calOpts)
 
+                    $a.verifPdf.attr('href', `/drivers/previous-employments/files/verification?emp=${_id}&app=${_appId}`)
+
                     $modal.manage.modal({
                         autofocus: false,
                         closable: false,
@@ -233,6 +240,7 @@ table.on('draw', function() {
                             $dotDat.prop('checked', false)
                             $fmcsr.parent().parent().show()
                             $('.carrier-label').hide()
+                            $a.verifPdf.attr('href', null)
 
                             $formItem.removeClass('active').first().addClass('active')
                             $formBlock.hide().first().show()

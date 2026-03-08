@@ -14,6 +14,7 @@ import Geography from '../../../../../client/global/modules/tools/core/geography
 import Individual from '../../../../tools/core/individual.mjs'
 // import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools/utils/sorter.mjs'
 import { calculateYearAge } from '../../../../../client/global/modules/tools/utils/date.mjs'
+import { drawCheckBox } from './components.mjs'
 
 
 export default async (carrier, application, addresses, violations, accidents, employers) => {
@@ -67,26 +68,26 @@ export default async (carrier, application, addresses, violations, accidents, em
         valueY: 27,
     }
 
-    const drawCheckBox = (page, x, y, checked, size = 10) => {
-        page.drawRectangle({
-            x, y, width: size, height: size,
-            color: rgb(1, 1, 1),
-            borderWidth: 1, borderColor: color.line,
-        })
+    // const drawCheckBox = (page, x, y, checked, size = 10) => {
+    //     page.drawRectangle({
+    //         x, y, width: size, height: size,
+    //         color: rgb(1, 1, 1),
+    //         borderWidth: 1, borderColor: color.line,
+    //     })
 
-        if (checked === true || checked === 1) {
-            page.drawLine({
-                start: { x: x + 2, y: y + size / 2 },
-                end: { x: x + size * .4, y: y + 1.5 },
-                color: color.value,
-            })
-            page.drawLine({
-                start: { x: x + size * .4, y: y + 1.5 },
-                end: { x: x + size * .8, y: y + size * .85 },
-                color: color.value,
-            })
-        }
-    }
+    //     if (checked === true || checked === 1) {
+    //         page.drawLine({
+    //             start: { x: x + 2, y: y + size / 2 },
+    //             end: { x: x + size * .4, y: y + 1.5 },
+    //             color: color.value,
+    //         })
+    //         page.drawLine({
+    //             start: { x: x + size * .4, y: y + 1.5 },
+    //             end: { x: x + size * .8, y: y + size * .85 },
+    //             color: color.value,
+    //         })
+    //     }
+    // }
 
     const wrapText = (text, font, fontSize, xGap = 0) => {
         const maxWidth = width - marginX * 2 - padding * 2 - xGap * 2
@@ -434,7 +435,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             const { position } = application
             let i = 0
             for (const p in positions) {
-                drawCheckBox(coverPage, x + textWidth + gap, y - 3, position === p, 15)
+                drawCheckBox(coverPage, x + textWidth + gap, y - 3, position === p, color, 15)
                 coverPage.drawText(positions[p], {
                     x: x + textWidth + gap + 25, y,
                     font: font.label, size: size.label * 1.4, color: color.section,
@@ -823,7 +824,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         y -= fieldHeight / 1.7
         text = 'Previously lived outside the U.S.'
         textWidth = font.label.widthOfTextAtSize(text, size.label)
-        drawCheckBox(page1, marginX + padding, y, !!country)
+        drawCheckBox(page1, marginX + padding, y, !!country, color)
         page1.drawText(text, {
             x: marginX + padding + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -889,7 +890,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
             vLineX += gap
             text = statuses[0]
-            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 0)
+            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 0, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
@@ -897,7 +898,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + gap
             text = statuses[1]
-            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 1)
+            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 1, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
@@ -905,7 +906,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + gap
             text = statuses[2]
-            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 2)
+            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, legalStatus[0] === 2, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
@@ -956,7 +957,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             })
             vLineX += gap
             text = 'Commercial'
-            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, commercial)
+            drawCheckBox(page1, marginX + vLineX, y - fieldHeight / 1.5, commercial, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
@@ -1113,7 +1114,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             })
             vLineX += width - marginX - offsetX
             text = 'Yes'
-            drawCheckBox(page1, marginX + vLineX, y, denied === true)
+            drawCheckBox(page1, marginX + vLineX, y, denied === true, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -1121,7 +1122,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + padding
             text = 'No'
-            drawCheckBox(page1, marginX + vLineX + 2, y, denied === false)
+            drawCheckBox(page1, marginX + vLineX + 2, y, denied === false, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15 + 2, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -1153,7 +1154,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             })
             vLineX += width - marginX - offsetX
             text = 'Yes'
-            drawCheckBox(page1, marginX + vLineX, y, revoked === true)
+            drawCheckBox(page1, marginX + vLineX, y, revoked === true, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -1161,7 +1162,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + padding
             text = 'No'
-            drawCheckBox(page1, marginX + vLineX + 2, y, revoked === false)
+            drawCheckBox(page1, marginX + vLineX + 2, y, revoked === false, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15 + 2, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -1193,7 +1194,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             })
             vLineX += width - marginX - offsetX
             text = 'Yes'
-            drawCheckBox(page1, marginX + vLineX, y, underMeds === true)
+            drawCheckBox(page1, marginX + vLineX, y, underMeds === true, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -1201,7 +1202,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 15 + textWidth + padding
             text = 'No'
-            drawCheckBox(page1, marginX + vLineX + 2, y, underMeds === false)
+            drawCheckBox(page1, marginX + vLineX + 2, y, underMeds === false, color)
             page1.drawText(text, {
                 x: marginX + vLineX + 15 + 2, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -1253,7 +1254,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         })
         vLineX += width - marginX - offsetX
         text = 'Yes'
-        drawCheckBox(page1, marginX + vLineX, y, dui === true)
+        drawCheckBox(page1, marginX + vLineX, y, dui === true, color)
         page1.drawText(text, {
             x: marginX + vLineX + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -1261,7 +1262,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += 15 + textWidth + padding
         text = 'No'
-        drawCheckBox(page1, marginX + vLineX + 2, y, dui === false)
+        drawCheckBox(page1, marginX + vLineX + 2, y, dui === false, color)
         page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -1275,7 +1276,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         })
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += textWidth + gap
-        drawCheckBox(page1, marginX + vLineX + 2, y, dui && duiInDecade)
+        drawCheckBox(page1, marginX + vLineX + 2, y, dui && duiInDecade, color)
         text = 'Within the past 10 years'
         page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
@@ -1283,7 +1284,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         })
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += textWidth + gap + 15 + 2
-        drawCheckBox(page1, marginX + vLineX + 2, y, dui && !duiInDecade)
+        drawCheckBox(page1, marginX + vLineX + 2, y, dui && !duiInDecade, color)
         text = 'More than 10 years ago'
         page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
@@ -1297,7 +1298,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         })
         vLineX += width - marginX - offsetX
         text = 'Yes'
-        drawCheckBox(page1, marginX + vLineX, y, criminal === true)
+        drawCheckBox(page1, marginX + vLineX, y, criminal === true, color)
         page1.drawText(text, {
             x: marginX + vLineX + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -1305,7 +1306,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += 15 + textWidth + padding
         text = 'No'
-        drawCheckBox(page1, marginX + vLineX + 2, y, criminal === false)
+        drawCheckBox(page1, marginX + vLineX + 2, y, criminal === false, color)
         page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -1342,7 +1343,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         })
         vLineX += width - marginX - offsetX
         text = 'Yes'
-        drawCheckBox(page1, marginX + vLineX, y, dotDat === true)
+        drawCheckBox(page1, marginX + vLineX, y, dotDat === true, color)
         page1.drawText(text, {
             x: marginX + vLineX + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -1350,7 +1351,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         textWidth = font.label.widthOfTextAtSize(text, size.label)
         vLineX += 15 + textWidth + padding
         text = 'No'
-        drawCheckBox(page1, marginX + vLineX + 2, y, dotDat === false)
+        drawCheckBox(page1, marginX + vLineX + 2, y, dotDat === false, color)
         page1.drawText(text, {
             x: marginX + vLineX + 15 + 2, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -1548,7 +1549,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
 
             text = 'Injuries'
-            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, injuries === 'Yes')
+            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, injuries === 'Yes', color)
             page2.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
@@ -1556,7 +1557,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX += 25 + textWidth + gap
             text = 'Fatalities'
-            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, fatalities === 'Yes')
+            drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, fatalities === 'Yes', color)
             page2.drawText(text, {
                 x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                 font: font.label, size: size.label, color: color.label,
@@ -1624,7 +1625,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             font: font.section, size: size.section, color: color.section,
         })
         y -= fieldHeight / 1.7
-        drawCheckBox(page2, marginX + padding, y, experience?.cmv === true)
+        drawCheckBox(page2, marginX + padding, y, experience?.cmv === true, color)
         page2.drawText('Previously operated a Commercial Motor Vehicle (CMV)', {
             x: marginX + padding + 15, y: y + 1,
             font: font.label, size: size.label, color: color.label,
@@ -1660,7 +1661,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             for (const vhl in semi) {
                 vLineX += gap
                 text = semi[vhl]
-                drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, vehicles.semi.includes(vhl))
+                drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, vehicles.semi.includes(vhl), color)
                 page2.drawText(text, {
                     x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                     font: font.label, size: size.label, color: color.label,
@@ -1707,7 +1708,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             for (const vhl in straight) {
                 vLineX += gap
                 text = straight[vhl] + ' Truck'
-                drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, vehicles.straight.includes(vhl))
+                drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, vehicles.straight.includes(vhl), color)
                 page2.drawText(text, {
                     x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                     font: font.label, size: size.label, color: color.label,
@@ -1754,7 +1755,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             for (const vhl in misc) {
                 vLineX += gap
                 text = misc[vhl]
-                drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, vehicles.misc.includes(vhl))
+                drawCheckBox(page2, marginX + vLineX, y - fieldHeight / 1.5, vehicles.misc.includes(vhl), color)
                 page2.drawText(text, {
                     x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                     font: font.label, size: size.label, color: color.label,
@@ -2111,12 +2112,12 @@ export default async (carrier, application, addresses, violations, accidents, em
                 font: font.value, size: size.value, color: color.value,
             })
             vLineX += 140
-            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 2, fmcsr)
+            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 2, fmcsr, color)
             emplPages[page].drawText("Subject to FMCSR's?", {
                 x: vLineX + padding * 2 + 15, y: y - offset.labelY - 2,
                 font: font.label, size: size.label * .9, color: color.label,
             })
-            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 15, dotDat)
+            drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 15, dotDat, color)
             emplPages[page].drawText('Subject to drug/alcohol testing requirements per 49 CFR Part 40', {
                 x: vLineX + padding * 2 + 15, y: y - offset.labelY - 15,
                 font: font.label, size: size.label * .9, color: color.label,
@@ -2318,12 +2319,12 @@ export default async (carrier, application, addresses, violations, accidents, em
         //     vLineX 
         //     y -= fieldHeight
         //     y += 1
-        //     drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2, fmcsr)
+        //     drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2, fmcsr, color)
         //     emplPages[page].drawText("Subject to FMCSR's?", {
         //         x: vLineX + padding * 2 + 15, y: y - offset.labelY,
         //         font: font.label, size: size.label * .9, color: color.label,
         //     })
-        //     drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 13, dotDat)
+        //     drawCheckBox(emplPages[page], vLineX + padding * 2, y - offset.labelY - 2 - 13, dotDat, color)
         //     emplPages[page].drawText('Subject to drug/alcohol testing requirements per 49 CFR Part 40', {
         //         x: vLineX + padding * 2 + 15, y: y - offset.labelY - 13,
         //         font: font.label, size: size.label * .9, color: color.label,
@@ -2427,7 +2428,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             for (const p in positions) {
                 vLineX += gap
                 text = positions[p]
-                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, position === p)
+                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, position === p, color)
                 page5.drawText(text, {
                     x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                     font: font.label, size: size.label, color: color.label,
@@ -2475,7 +2476,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             for (const region in haulRegions) {
                 vLineX += gap
                 text = haulRegions[region]
-                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, haulRegion.includes(region))
+                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, haulRegion.includes(region), color)
                 page5.drawText(text, {
                     x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                     font: font.label, size: size.label, color: color.label,
@@ -2527,7 +2528,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
                 vLineX += gap
                 text = semiList[type]
-                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, equipmentType.includes(type))
+                drawCheckBox(page5, marginX + vLineX, y - fieldHeight / 1.5, equipmentType.includes(type), color)
                 page5.drawText(text, {
                     x: marginX + vLineX + 15, y: y - fieldHeight / 1.65,
                     font: font.label, size: size.label, color: color.label,
@@ -2553,7 +2554,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         {
             const { operType, teamName, teamPhone } = application.preference
             y -= fieldHeight / 1.6
-            drawCheckBox(page5, marginX + padding, y, operType === 's')
+            drawCheckBox(page5, marginX + padding, y, operType === 's', color)
             text = 'Solo'
             page5.drawText(text, {
                 x: marginX + padding + 15, y: y + 1,
@@ -2561,7 +2562,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             })
             textWidth = font.label.widthOfTextAtSize(text, size.label)
             vLineX = padding + textWidth + 15 + gap * .8
-            drawCheckBox(page5, marginX + vLineX, y, operType === 't')
+            drawCheckBox(page5, marginX + vLineX, y, operType === 't', color)
             text = 'Team'
             page5.drawText(text, {
                 x: marginX + vLineX + 15, y: y + 1,
@@ -2619,7 +2620,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             for (const sp in startPrefs) {
                 vLineX += gap
                 text = startPrefs[sp]
-                drawCheckBox(page5, marginX + vLineX, y, startPref === sp)
+                drawCheckBox(page5, marginX + vLineX, y, startPref === sp, color)
                 page5.drawText(text, {
                     x: marginX + vLineX + 15, y: y + 1,
                     font: font.label, size: size.label, color: color.label,
@@ -2673,7 +2674,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         for (const vt in vhlTypes) {
             vLineX += gap
             text = vhlTypes[vt]
-            drawCheckBox(page5, marginX + vLineX, y, type === vt)
+            drawCheckBox(page5, marginX + vLineX, y, type === vt, color)
             page5.drawText(text, {
                 x: marginX + vLineX + 15, y: y + 1,
                 font: font.label, size: size.label, color: color.label,
@@ -2768,7 +2769,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             font: font.section, size: size.section, color: color.section,
         })
         // y -= fieldHeight / 1.7
-        // drawCheckBox(page5, marginX + padding, y, activeBusiness)
+        // drawCheckBox(page5, marginX + padding, y, activeBusiness, color)
         // page5.drawText('Currently operating an active LLC', {
         //     x: marginX + padding + 15, y: y + 1,
         //     font: font.label, size: size.label, color: color.label,

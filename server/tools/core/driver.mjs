@@ -2610,7 +2610,7 @@ class Employment {
                     id, _id,
                     appId, _appId, driverId, _driverId, teamId, _teamId, carrierId, _carrierId, condition, verify,
                 } = filter
-                const single = !!id || !!_id
+                const single = (!!id && !!appId) || (!!_id && !!_appId)
 
                 batch[0].match = { appId, verify }
                 batch[1].match = { id }

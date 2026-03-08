@@ -15,6 +15,7 @@ import Carrier from '../../tools/core/carrier.mjs'
 import Company from '../../tools/core/company.mjs'
 import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 import createApplicationPdf from './mw/pdf/driver-application.mjs'
+import createEmplVerifPdf from './mw/pdf/prev-employment-verification.mjs'
 import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 import { sortObjectByKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 import Query from '../../tools/utils/query.mjs'
@@ -106,7 +107,7 @@ router.get('/files/application/:route?', fileLoggedOut, Team.mw.verify, async (r
 
         let carrier
         if (route) {
-            const company = await Company.fetch(res.session, { route }, { hideRawId: false })
+            const company = await Company.fetch(res.session, { route })
             const { name, address, phone, fax, lastLogo } = company
 
             carrier = { name, address, phone, fax, lastLogo }
@@ -991,6 +992,15 @@ router.get('/previous-employments/files/verification', fileLoggedOut, Team.mw.ve
         const permissions = await user.permissions(res.session)
         if (!withPrivileges('f:drv/emp', 'download', permissions, DS))
             return res.redirect(aplUrl)
+
+        const { emp: _id , app: _appId } = req.query
+        const employment = await Employment.fetch(res.session, { _id, _appId })
+
+        const pdfBytes = await createEmplVerifPdf(employment)
+
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
     }

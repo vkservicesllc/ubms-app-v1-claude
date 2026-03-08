@@ -8,9 +8,9 @@ import fontkit from '@pdf-lib/fontkit'
 import pdfParams, { CustomFonts } from '../../../../settings/pdf-lib.mjs'
 
 
-export default async () => {
+export default async (employment = {}) => {
     const pdfDoc = await PDFDocument.create()
     pdfDoc.registerFontkit(fontkit)
-
+console.log(employment)
     return await pdfDoc.save()
 }

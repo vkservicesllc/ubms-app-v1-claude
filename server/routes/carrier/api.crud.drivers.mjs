@@ -39,9 +39,11 @@ router.get('/applications/prev-employments/:_id?', User.mw.verify, Team.mw.verif
         if (!withPrivileges('d:drv/emp', 'view', permissions, DS)) return sendError.auth(req, res)
 
         const { _id } = req.params
-        const _teamId = res.session?.team?._id
+        const { app: _appId } = req.query
 
-        if (_id) return res.json({ data: await Employment.fetch(res.session, { _id }, { hideRawId, hideSensitive: false }) })
+        if (_id) return res.json({ data: await Employment.fetch(res.session, { _id, _appId }, { hideRawId, hideSensitive: false }) })
+
+        const _teamId = res.session?.team?._id
 
         res.json({
             data: await Employment.fetch(res.session, { condition: 'c', _teamId, verify: true }, { hideRawId }),
