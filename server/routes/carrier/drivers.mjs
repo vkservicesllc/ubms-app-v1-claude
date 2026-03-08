@@ -27,6 +27,9 @@ import { navBuilder } from './tools.mjs'
 import { updateFormOptions } from '../../tools/form/builder.mjs'
 import DriverForm, { ApplicationForm, EmploymentForm, currentExpediteVhlMMTData, descYears } from '../../tools/form/driver.mjs'
 
+/* Other */
+import { fileLoggedOut } from '../carrier.mjs'
+
 
 // ==== SETUP ==== //
 
@@ -90,7 +93,7 @@ router.get('/', User.mw.verify, Team.mw.verify, async (req, res) => {
 })
 
 
-router.get('/files/application/:route?', User.mw.verify, Team.mw.verify, async (req, res) => {
+router.get('/files/application/:route?', fileLoggedOut, Team.mw.verify, async (req, res) => {
     try {
         const { user } = res.session
         const { DS } = user
@@ -832,13 +835,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
 })
 
 
-router.get('/application/:formId/files/application', async (req, res, next) => {
-    const user = await User.mw.verify(req, res)
-    if (!user) return res.send('Your session has expired, so you can no longer view this file.<br/>Please log in using another tab and refresh this page to regain access.')
-
-    res.session.user = user
-    next()
-}, Team.mw.verify, async (req, res) => {
+router.get('/application/:formId/files/application', fileLoggedOut, Team.mw.verify, async (req, res) => {
     const { formId } = req.params
 
     try {
@@ -980,6 +977,20 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
         }
 
         res.render(key.replace('.', '/'), hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.get('/previous-employments/files/verification', fileLoggedOut, Team.mw.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('f:drv/emp', 'download', permissions, DS))
+            return res.redirect(aplUrl)
     } catch (err) {
         sendError.server(req, res, err)
     }
