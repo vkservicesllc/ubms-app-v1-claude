@@ -50,6 +50,7 @@ const $emplData = {
         phone: $('#employer-phone-data'),
         address: $('#employer-address-data'),
         period: $('#employer-period-data'),
+        usdot: $('#employer-usdot-data'),
     },
     applicant: {
         all: $('.applicant-data'),
@@ -58,6 +59,7 @@ const $emplData = {
         address: $('#applicant-address-data'),
         form: $('#applicant-form-data'),
         submission: $('#applicant-submission-data'),
+        // ssn: $('#applicant-ssn-data'),
     },
     carrier: {
         all: $('.carrier-data'),
@@ -160,7 +162,7 @@ table.on('draw', function() {
 
             $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}?app=${_appId}`, {
                 success(response) {
-                    const { employer, phone, address, startedOn, leftOn, application } = response.data
+                    const { employer, phone, address, startedOn, leftOn, usdot, application } = response.data
                     let period = `${moment(startedOn).format('ll')} – `
                     period += leftOn ? moment(leftOn).format('ll') : ' Still Employed'
 
@@ -168,6 +170,7 @@ table.on('draw', function() {
                     $emplData.employer.phone.text(formatTel(phone))
                     $emplData.employer.address.html(new Address(address).html({ inline: false, singleLine: true }))
                     $emplData.employer.period.text(period)
+                    $emplData.employer.usdot.html(usdot || '<span class="ui dark red text"><small><i>N/A</i></small></span>')
                     $emplData.applicant.name.html(
                         new Person(application).fullName()
                         + ''// ` <small style="font-weight: normal; font-size: .6em !important;">(***-**-${application.ssn.slice(-4)})`
@@ -176,6 +179,7 @@ table.on('draw', function() {
                     $emplData.applicant.address.html(new Address(application).html({ inline: false, singleLine: true }))
                     $emplData.applicant.form.text(application.formId)
                     $emplData.applicant.submission.text(`(${moment(application.finishedAt).format('ll')})`)
+                    // $emplData.applicant.ssn.text(`***-**-${application.ssn.slice(-4)}`)
                     $emplData.carrier.name.html(application.carrier || '<span class="ui red text" style="font-weight: normal;"><small><i>Undetermined</i></small></span>')
                     if (application.carrier) {
                         $emplData.carrier.phone.text(formatTel(application.carrierPhone))

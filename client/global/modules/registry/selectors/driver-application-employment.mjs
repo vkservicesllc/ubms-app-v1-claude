@@ -10,6 +10,7 @@ const selector = {
         },
         text: {
             employer: 'employer',
+            usdot: 'us-dot',
             phone: 'employer-phone',
             address1: 'employer-address-1',
             address2: 'employer-address-2',
@@ -45,6 +46,7 @@ const selector = {
         },
         text: {
             employer: 'employer',
+            usdot: 'us-dot',
             phone: 'employer-phone',
             address1: 'employer-address-1',
             address2: 'employer-address-2',

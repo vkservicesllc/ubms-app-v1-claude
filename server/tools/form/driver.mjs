@@ -1636,7 +1636,10 @@ class EmploymentForm {
     static id = createIdForm({ selector: appEmplSelector })
 
     static usdot = createNumberForm('usdot', {
-        label: 'US-DOT <small>(If applicable)</small>',
+        selector: appEmplSelector,
+        target: 'usdot',
+        group: 'usdot',
+        label: 'US-DOT #',
     })
 
     static employer = createForm({
@@ -1851,7 +1854,7 @@ class EmploymentForm {
             case 'employer':
                 fields = [
                     'employer', 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
-                    'startDate', 'position', 'earnings', 'RFL', 'endDate', 'FMCSR', 'dotDat',
+                    'startDate', 'position', 'earnings', 'RFL', 'endDate', 'FMCSR', 'dotDat', 'usdot',
                 ]
                 if (checkbox) {
                     fields.splice(-2)

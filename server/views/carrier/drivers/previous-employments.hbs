@@ -33,7 +33,7 @@
                 (eq permissions.modify true)
                 (eq permissions.update true)
         )}}
-        <div class="ui modal" id="empl-manage-card-modal" style="width: 68.5rem !important; height: 45.7rem;">
+        <div class="ui modal" id="empl-manage-card-modal" style="width: 68.5rem !important; height: 47rem;">
             <i class="close icon"></i>
             <div class="ui header">Employment Verification</div>
             <div class="content">
@@ -45,7 +45,9 @@
                         <small>Phone:</small>
                         <span class="employer-data" id="employer-phone-data"></span><br/>
                         <small>Period:</small>
-                        <span class="employer-data" id="employer-period-data"></span>
+                        <span class="employer-data" id="employer-period-data"></span><br/>
+                        <small><sup><i class="search icon"></i></sup>USDOT:</small>
+                        <span class="employer-data" id="employer-usdot-data"></span>
                     </div>
                     <div class="item">
                         <span class="ui text purple">Applicant:</span>
@@ -207,31 +209,41 @@
                                         {{{form.addrCity.text.input}}}
                                     </div>
                                     <div class="five wide field">
-                                        <div class="field">
-                                            {{{form.addrState.select.label}}}
-                                            <div class="ui fluid selection required dropdown empl-addr-state-dropdown" id="empl-add-state-dropdown">
-                                                {{{form.addrState.hidden.input}}}
-                                                <i class="dropdown icon"></i>
-                                                <div class="default text"></div>
-                                                <div class="menu">{{{dropdown.addrState}}}
-                                                </div>
+                                        {{{form.addrState.select.label}}}
+                                        <div class="ui fluid selection required dropdown empl-addr-state-dropdown" id="empl-add-state-dropdown">
+                                            {{{form.addrState.hidden.input}}}
+                                            <i class="dropdown icon"></i>
+                                            <div class="default text"></div>
+                                            <div class="menu">{{{dropdown.addrState}}}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="ui divider"></div>
-                                <div class="inline fields">
-                                    <div class="field">
-                                        <div class="ui checkbox">
-                                            {{{form.FMCSR2.checkbox.input}}}
-                                            {{{form.FMCSR2.checkbox.label}}}
+                                <div class="ui compact grid">
+                                    <div class="twelve wide field">
+                                        <div class="inline fields">
+                                            <div class="field">
+                                                <div class="ui checkbox">
+                                                    {{{form.FMCSR2.checkbox.input}}}
+                                                    {{{form.FMCSR2.checkbox.label}}}
+                                                </div>
+                                            </div>
+                                            <div class="field">
+                                                <div class="ui checkbox">
+                                                    {{{form.dotDat2.checkbox.input}}}
+                                                    {{{form.dotDat2.checkbox.label}}}
+                                                </div>
+                                            </div>
+                                            {{!-- <div class="seven wide field">
+                                                {{{form.usdot.text.label}}}
+                                                {{{form.usdot.text.input}}}
+                                            </div> --}}
                                         </div>
                                     </div>
-                                    <div class="field">
-                                        <div class="ui checkbox">
-                                            {{{form.dotDat2.checkbox.input}}}
-                                            {{{form.dotDat2.checkbox.label}}}
-                                        </div>
+                                    <div class="four wide disabled field">
+                                        {{{form.usdot.text.label}}}
+                                        {{{form.usdot.text.input}}}
                                     </div>
                                 </div>
                             </div>
@@ -260,7 +272,7 @@
                                     </div>
                                     <div class="one wide field" style="width: 0;"></div>
                                 </div>
-                                <div style="display: flex; justify-content: flex-end; margin-top: .5em;">
+                                <div style="display: flex; justify-content: flex-end; margin-top: 2.2em;">
                                     <button type="submit" class="ui green circular button">Save Changes</button>
                                 </div>
                             </div>

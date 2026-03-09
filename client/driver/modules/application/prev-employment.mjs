@@ -329,6 +329,20 @@ dateMask(TS.endDate, {
     },
 })
 
+$(RS.fmcsr.yes).on('click', function() {
+    $(TS.usdot).parent().show()
+})
+$(RS.fmcsr.no).on('click', function() {
+    $(TS.usdot).parent().hide()
+})
+
+inputEvent(TS.usdot, {
+    onInput(usdot, $usdot) {
+        $usdot.val(usdot.replace(/\D/g, ''))
+    },
+})
+
+
 $deleteModal
     .on('hide.bs.modal', () => {
         $('.btn').blur()
@@ -414,7 +428,7 @@ function openAddForm(cancel = true) {
 }
 
 function openUpdateForm(data) {
-    const { _id, employer, startedOn, phone, address, position, earnings, fmcsr, dotDat, leftOn, rfl } = data
+    const { _id, employer, startedOn, phone, address, position, earnings, fmcsr, dotDat, usdot, leftOn, rfl } = data
 
     $(HS.id).val(_id)
     $(TS.employer).val(employer).addClass('is-valid')
@@ -429,6 +443,7 @@ function openUpdateForm(data) {
     $(TS.earnings).val(earnings.toLocaleString('en-US')).addClass('is-valid')
     $(RS.fmcsr[fmcsr ? 'yes' : 'no']).prop('checked', true)
     $(RS.dotDat[dotDat ? 'yes' : 'no']).prop('checked', true)
+    if (fmcsr) $(TS.usdot).val(usdot).parent().show()
     $(TS.rfl).val(rfl).addClass('is-valid')
     if (leftOn) $(TS.endDate).val(moment(leftOn).format('MM/DD/YYYY')).addClass('is-valid')
     else {
@@ -447,6 +462,7 @@ function closeForm() {
     $form.employer.find('input:not([type=radio]):not([type=checkbox]), select, textarea').val(null).removeClass('is-valid is-invalid')
     $form.employer.find('[type=radio], [type=checkbox]').prop('checked', false)
     $form.employer.find('.form-text').text(null)
+    $(TS.usdot).parent().hide()
     $('#termination-date-field').show().find('input').prop('disabled', false)
     $submit.employer.removeClass('btn-primary bg-primary-subtle btn-success bg-success-subtle').text(null)
     // $btnContainer.employment.show()
@@ -517,7 +533,7 @@ $form.employer.submit(function(evt) {
         url += `/${data._id}`
         method = 'PUT'
     }
-    if (data.fmcsr === undefined) data.fmcsr = '-'
+    if (data.fmcsr === undefined) data.fmcsr = '-' //? may become redundant (was mistakenly intended earlier for non-cdl drivers only)
 
     $.ajax({
         url, method, data,

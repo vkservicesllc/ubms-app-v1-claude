@@ -125,7 +125,7 @@
                         </div>
                     </div>
                     <div class="row g-3 my-1">
-                        {{#if (eq cdl true)}}
+                        {{!-- {{#if (eq cdl true)}} --}}
                         <label class="form-label mb-0">
                             During this employment, were you subject to any of the following?
                         </label>
@@ -144,7 +144,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <label class="form-label">
                                 &bull; DOT Drug/Alcohol Testing
                             </label>
@@ -159,7 +159,11 @@
                                 </div>
                             </div>
                         </div>
-                        {{else}}
+                        <div class="col-md-6" style="display: none;">
+                            {{{emplForm.usdot.text.label}}}
+                            {{{emplForm.usdot.text.input}}}
+                        </div>
+                        {{!-- {{else}}
                         <div class="col-md-12">
                             <label class="form-label">
                                 Were you subject to DOT Drug/Alcohol Testing during this employment?
@@ -175,7 +179,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{/if}}
+                        {{/if}} --}}
                     </div>
                     <div class="row g-3 my-1">
                         <div class="col">

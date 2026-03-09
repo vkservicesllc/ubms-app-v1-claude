@@ -724,7 +724,7 @@ export const applicationProgress = async (req, res, next) => {
             const fields = [
                 'employer', 'startDate',
                 'phone', 'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
-                'position', 'earnings', 'endDate', 'RFL', 'gapExpl',
+                'position', 'earnings', 'usdot', 'endDate', 'RFL', 'gapExpl',
             ]
             emplOptions = updateFormOptions(emplOptions, EmploymentForm, fields, { ...formInstr, tabs: 7 })
             

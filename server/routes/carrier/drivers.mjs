@@ -945,7 +945,7 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
                 const fields = [
                     'employer', 'startDate', 'endDate2', 
                     'phone', 'address1', 'address2', 'addrZip', 'addrCity', [ 'addrState', 'hidden' ],
-                    'position', 'earnings', 'RFL', //'gapExpl',
+                    'position', 'earnings', 'RFL', 'usdot',  //'gapExpl',
                 ]
                 fields.forEach(field => {
                     let prop = 'text'

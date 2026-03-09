@@ -70,7 +70,7 @@ const updateResource = async (req, res) => {
         let result
 
         if (target === 'employers') {
-            const employer = await Employment.fetch(res.session, { _id })
+            const employer = await Employment.fetch(res.session, { _id, _appId: application._id })
             if (!employer) throw new Error('Employer not found')
 
             result = await employer.update(req.body)

@@ -2322,6 +2322,7 @@ class Employment {
             this.driverId = data.driverId
             this.appId = data.appId
         }
+        this.usdot = data.usdot
         this.locked = data.locked
         this.employer = data.employer
         this.phone = data.phone
@@ -2392,7 +2393,11 @@ class Employment {
             this.session = session
             this.config = { hideRawId, hideSensitive }
 
-            this.update = body => classInstance.update(this, new.target, body)
+            this.update = body => {
+                if (!body.fmcsr) body.usdot = null
+
+                return classInstance.update(this, new.target, body)
+            }
 
             this.delete = () => classInstance.delete(this, new.target)
 
@@ -2476,6 +2481,7 @@ class Employment {
                         'driverId',
                         Employment.hashId(),
                         Driver.hashId('driverId'),
+                        'usdot',
                         'locked',
                         'employer',
                         'phone',
