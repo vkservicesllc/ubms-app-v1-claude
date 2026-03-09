@@ -46,8 +46,10 @@
                         <span class="employer-data" id="employer-phone-data"></span><br/>
                         <small>Period:</small>
                         <span class="employer-data" id="employer-period-data"></span><br/>
-                        <small><sup><i class="search icon"></i></sup>USDOT:</small>
-                        <span class="employer-data" id="employer-usdot-data"></span>
+                        <span style="display: inline-block; margin-top: .4em;">
+                            <small><sup><i class="search icon"></i></sup>USDOT:</small>
+                            <span class="employer-data" id="employer-usdot-data"></span>
+                        </span>
                     </div>
                     <div class="item">
                         <span class="ui text purple">Applicant:</span>
@@ -153,7 +155,8 @@
                 <div class="form-block" id="modification-block"{{# if (eq permissions.update true)}} style="display: none;"{{/if}}>
                     <form class="ui form" id="employer-form" action="/resource/drivers/prev-employments/modify" method="POST" autocomplete="off" style="margin-top: 1em;">
                         {{{form.id.hidden.input}}}
-                        <input type="hidden" name="cdlRole" id="employment-cdl-role" />
+                        {{{form.appId.hidden.input}}}
+                        {{!-- <input type="hidden" name="cdlRole" id="employment-cdl-role" /> --}}
                         <div class="ui grid">
                             <div class="twelve wide column">
                                 <div class="ui compact grid">

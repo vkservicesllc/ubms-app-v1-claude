@@ -12,7 +12,8 @@ import selector from '/modules/registry/selectors/driver-application-employment.
 
 const TS = selector.id.text, CS = selector.id.checkbox
 const $id = $(selector.id.hidden.id)
-const $cdlRole = $('#employment-cdl-role')
+const $appId = $(selector.id.hidden.appId)
+// const $cdlRole = $('#employment-cdl-role')
 const $employer = $(TS.employer)
 const $startDate = $(TS.startDate)
 const $endDate = $(TS.endDate)
@@ -26,6 +27,7 @@ const $earnings = $(TS.earnings)
 const $rfl = $(TS.rfl)
 const $fmcsr = $(CS.fmcsr)
 const $dotDat = $(CS.dotDat)
+const $usdot = $(TS.usdot)
 
 const $dropdown = {
     //
@@ -147,6 +149,10 @@ inputEvent(TS.earnings, {
 
 inputEvent(TS.rfl, { capitalize: 'first', strip: true, word: true })
 
+$fmcsr.on('click', function() {
+    $usdot.parent()[($(this).prop('checked') ? 'remove' : 'add') + 'Class']('disabled')
+})
+
 
 table.on('draw', function() {
     const { actions } = table.ajax.json()
@@ -170,7 +176,7 @@ table.on('draw', function() {
                     $emplData.employer.phone.text(formatTel(phone))
                     $emplData.employer.address.html(new Address(address).html({ inline: false, singleLine: true }))
                     $emplData.employer.period.text(period)
-                    $emplData.employer.usdot.html(usdot || '<span class="ui dark red text"><small><i>N/A</i></small></span>')
+                    $emplData.employer.usdot.html(usdot ? `<span class="ui dark green text"><b>${usdot}</b></small>` : '<span class="ui red text"><small><i>N/A</i></small></span>')
                     $emplData.applicant.name.html(
                         new Person(application).fullName()
                         + ''// ` <small style="font-weight: normal; font-size: .6em !important;">(***-**-${application.ssn.slice(-4)})`
@@ -190,7 +196,8 @@ table.on('draw', function() {
                     const { _id, _appId, position, earnings, rfl, fmcsr, dotDat } = response.data
 
                     $id.val(_id)
-                    $cdlRole.val(application.cdlRole)
+                    $appId.val(_appId)
+                    // $cdlRole.val(application.cdlRole)
                     $employer.val(employer)
                     $startDate.val(moment(startedOn).format('ll'))
                     if (leftOn) $endDate.val(moment(leftOn).format('ll'))
@@ -205,7 +212,8 @@ table.on('draw', function() {
                     $rfl.val(rfl)
                     $fmcsr.prop('checked', fmcsr)
                     $dotDat.prop('checked', dotDat)
-                    if (application.cdlRole === 0) $fmcsr.parent().parent().hide()
+                    if (fmcsr) $usdot.val(usdot).parent().removeClass('disabled')
+                    // if (application.cdlRole === 0) $fmcsr.parent().parent().hide()
 
                     const calOpts = {
                         ...calSettings,
@@ -227,7 +235,8 @@ table.on('draw', function() {
                             $emplData.carrier.all.html(null)
 
                             $id.val(null)
-                            $cdlRole.val(null)
+                            $appId.val(null)
+                            // $cdlRole.val(null)
                             $employer.val(null)
                             $startDate.val(null)
                             $endDate.val(null)
@@ -243,6 +252,7 @@ table.on('draw', function() {
                             $fmcsr.prop('checked', false)
                             $dotDat.prop('checked', false)
                             $fmcsr.parent().parent().show()
+                            $usdot.parent().addClass('disabled')
                             $('.carrier-label').hide()
                             $a.verifPdf.attr('href', null)
 

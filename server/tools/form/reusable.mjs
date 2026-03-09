@@ -21,9 +21,9 @@ const addrField = (prop, mail) => mail !== null
 
 export const createIdForm = (props = {}, arr = false) => createForm({
     target: 'id',
+    name: '_id' + (arr ? '[]' : ''),
     ...props,
     type : 'hidden',
-    name: '_id' + (arr ? '[]' : ''),
 })
 
 

@@ -76,6 +76,12 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
         },
 
         {
+            data: 'usdot',
+            title: 'US-DOT',
+            orderable: false,
+        },
+
+        {
             data: 'phone',
             title: 'Phone',
             orderable: false,

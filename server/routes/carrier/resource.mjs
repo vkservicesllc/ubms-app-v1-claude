@@ -155,17 +155,18 @@ router.post('/drivers/prev-employments/modify', User.mw.verify, Team.mw.verify, 
         const permissions = await user.permissions(res.session)
         if (!withPrivileges('d:drv/empl', 'modify', permissions, user.DS)) return sendError.auth(req, res)
 
-        const { _id, cdlRole } = req.body
+        const { _id, _appId } = req.body
         delete req.body.id
-        delete req.body.cdlRole
+        // delete req.body.cdlRole
 
-        if (cdlRole === '0') req.body.fmcsr = null
-        if (!req.body.fmcsr) {
-            if (cdlRole === '1') req.body.fmcsr = false
-        }
+        // if (cdlRole === '0') req.body.fmcsr = null
+        // if (!req.body.fmcsr) {
+        //     if (cdlRole === '1') req.body.fmcsr = false
+        // }
+        if (!req.body.fmcsr) req.body.fmcsr = false
         if (!req.body.dotDat) req.body.dotDat = false
 
-        const employment = await Employment.fetch(res.session, { _id })
+        const employment = await Employment.fetch(res.session, { _id, _appId })
         if (!employment) throw new Error('Employment not found')
 
         await employment.update(req.body)
