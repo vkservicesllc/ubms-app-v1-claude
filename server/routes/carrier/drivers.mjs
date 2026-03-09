@@ -994,7 +994,7 @@ router.get('/previous-employments/files/verification', fileLoggedOut, Team.mw.ve
             return res.redirect(aplUrl)
 
         const { emp: _id , app: _appId } = req.query
-        const employment = await Employment.fetch(res.session, { _id, _appId })
+        const employment = await Employment.fetch(res.session, { _id, _appId }, { hideSensitive: false })
 
         const pdfBytes = await createEmplVerifPdf(employment)
 

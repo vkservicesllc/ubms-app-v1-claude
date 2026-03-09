@@ -23,3 +23,24 @@ export const drawCheckBox = (page, x, y, checked, color = {}, size = 10) => {
         })
     }
 }
+
+
+export const wrapText = (text, width, font, fontSize, marginX, padding, xGap = 0) => {
+    const maxWidth = width - marginX * 2 - padding * 2 - xGap * 2
+    const words = text.split(' ')
+    const lines = []
+    let line = ''
+
+    for (const word of words) {
+        const testLine = line ? `${line} ${word}` : word
+        const width = font.widthOfTextAtSize(testLine, fontSize)
+        if (width < maxWidth) line = testLine
+        else {
+            lines.push(line)
+            line = word
+        }
+    }
+    if (line) lines.push(line)
+
+    return lines
+}

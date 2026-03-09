@@ -14,7 +14,7 @@ import Geography from '../../../../../client/global/modules/tools/core/geography
 import Individual from '../../../../tools/core/individual.mjs'
 // import { sortArrayByObjectKey } from '../../../../../client/global/modules/tools/utils/sorter.mjs'
 import { calculateYearAge } from '../../../../../client/global/modules/tools/utils/date.mjs'
-import { drawCheckBox } from './components.mjs'
+import { drawCheckBox, wrapText } from './components.mjs'
 
 
 export default async (carrier, application, addresses, violations, accidents, employers) => {
@@ -89,25 +89,25 @@ export default async (carrier, application, addresses, violations, accidents, em
     //     }
     // }
 
-    const wrapText = (text, font, fontSize, xGap = 0) => {
-        const maxWidth = width - marginX * 2 - padding * 2 - xGap * 2
-        const words = text.split(' ')
-        const lines = []
-        let line = ''
+    // const wrapText = (text, font, fontSize, xGap = 0) => {
+    //     const maxWidth = width - marginX * 2 - padding * 2 - xGap * 2
+    //     const words = text.split(' ')
+    //     const lines = []
+    //     let line = ''
 
-        for (const word of words) {
-            const testLine = line ? `${line} ${word}` : word
-            const width = font.widthOfTextAtSize(testLine, fontSize)
-            if (width < maxWidth) line = testLine
-            else {
-                lines.push(line)
-                line = word
-            }
-        }
-        if (line) lines.push(line)
+    //     for (const word of words) {
+    //         const testLine = line ? `${line} ${word}` : word
+    //         const width = font.widthOfTextAtSize(testLine, fontSize)
+    //         if (width < maxWidth) line = testLine
+    //         else {
+    //             lines.push(line)
+    //             line = word
+    //         }
+    //     }
+    //     if (line) lines.push(line)
 
-        return lines
-    }
+    //     return lines
+    // }
 
     const totalPages = 5
 
@@ -280,7 +280,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             text += 'Please complete the following application accurately and in full. '
             text += 'This information is essential for evaluating your qualifications and ensuring compliance with applicable regulations. '
             text += 'All statements will be held in strict confidence.'
-            lines = wrapText(text, font.label, size.label * 1.55, gap)
+            lines = wrapText(text, width, font.label, size.label * 1.55, marginX, padding, gap)
             lines.forEach((line, i) => {
                 coverPage.drawText(line, {
                     x: marginX + gap * 2 + (!i ? gap * 2 : 0), y,
@@ -291,7 +291,7 @@ export default async (carrier, application, addresses, violations, accidents, em
             y -= 2
             text = 'We are committed to hiring safe, reliable, and responsible drivers who uphold '
             text += 'the highest standards of professionalism and safety on the road.'
-            lines = wrapText(text, font.label, size.label * 1.55, gap * 3)
+            lines = wrapText(text, width, font.label, size.label * 1.55, marginX, padding, gap * 3)
             lines.forEach((line, i) => {
                 coverPage.drawText(line, {
                     x: marginX + gap * 2 + (!i ? gap * 2 : 0), y,
@@ -2982,7 +2982,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
     y -= fieldHeight / 2
     text = 'I certify that all information provided in this application is true and complete to the best of my knowledge.'
-    lines = wrapText(text, font.label, size.label)
+    lines = wrapText(text, width, font.label, size.label, marginX, padding)
     lines.forEach(line => {
         page5.drawText(line, {
             x: marginX + padding, y,
@@ -2993,7 +2993,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     y -= gap / 1.8
     text = 'I authorize the employer to verify all statements made in this application, including but not limited to employment history, references, '
     text += 'and personal records such as Motor Vehicle Reports (MVRs), Safety Performance History, and other records required under DOT or FMCSA regulations.'
-    lines = wrapText(text, font.label, size.label)
+    lines = wrapText(text, width, font.label, size.label, marginX, padding)
     lines.forEach(line => {
         page5.drawText(line, {
             x: marginX + padding, y,
@@ -3006,7 +3006,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     text += 'meaning I may resign at any time, and the company may terminate my employment at any time, with or without cause or notice. '
     text += 'I further understand that no supervisor, recruiter, or manager has authority to alter this employment relationship '
     text += 'except through a written agreement signed by an authorized company executive.'
-    lines = wrapText(text, font.label, size.label)
+    lines = wrapText(text, width, font.label, size.label, marginX, padding)
     lines.forEach(line => {
         page5.drawText(line, {
             x: marginX + padding, y,
@@ -3018,7 +3018,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     text = 'If employed, I agree to comply with all company policies, safety protocols, and DOT/FMCSA regulations. '
     text += 'I understand that any false, misleading, or incomplete information provided during the application or '
     text += 'interview process may result in disqualification or immediate termination of employment.'
-    lines = wrapText(text, font.label, size.label)
+    lines = wrapText(text, width, font.label, size.label, marginX, padding)
     lines.forEach(line => {
         page5.drawText(line, {
             x: marginX + padding, y,
