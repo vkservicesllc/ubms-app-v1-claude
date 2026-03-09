@@ -30,7 +30,7 @@ export const wrapText = (text, width, font, fontSize, marginX, padding, xGap = 0
     const words = text.split(' ')
     const lines = []
     let line = ''
-
+console.log({ width, marginX, padding, xGap })
     for (const word of words) {
         const testLine = line ? `${line} ${word}` : word
         const width = font.widthOfTextAtSize(testLine, fontSize)
