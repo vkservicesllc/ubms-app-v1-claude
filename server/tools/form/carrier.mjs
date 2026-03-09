@@ -113,3 +113,4 @@ CarrierForm.validate = () => validate(CarrierForm, () => {
 })
 
 export default CarrierForm
+export { createNumberForm }

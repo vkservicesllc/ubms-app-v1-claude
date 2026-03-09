@@ -19,6 +19,7 @@ import {
     createYesNoForm,
 } from './reusable.mjs'
 import { createBusNameForm, createEinForm } from './company.mjs'
+import { createNumberForm } from './carrier.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
@@ -1633,6 +1634,10 @@ class EmploymentForm {
 
 
     static id = createIdForm({ selector: appEmplSelector })
+
+    static usdot = createNumberForm('usdot', {
+        label: 'US-DOT <small>(If applicable)</small>',
+    })
 
     static employer = createForm({
         selector: appEmplSelector,
