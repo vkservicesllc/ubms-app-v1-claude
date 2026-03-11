@@ -74,7 +74,7 @@ $template.removeAttr('id').find('[name="_aplId[]"]').remove()
 
                 const $column = $('<div class="seven wide column"></div>')
                 const $card = $('<div class="ui card" style="width: 100%;"><div class="content"></div></div>')
-                $card.find('.content').html(`<div class="header">Previous Employer <small># ${len--}</small>${tag}</div>`)
+                $card.find('.content').html(`<div class="header" style="font-size: 1.5rem;">Previous Employer <small># ${len--}</small>${tag}</div>`)
                 $card.append('<div class="content card-form"></div>')
                 const $form = $template.clone()
                 const formId = `employer-form-${i}`
@@ -83,7 +83,7 @@ $template.removeAttr('id').find('[name="_aplId[]"]').remove()
                 const $footer = $('<div class="content"></div>')
                 $footer.append(`<button class="ui red circular delete button" data-id="${_id}">Delete</button>`)
                 $footer.append(`<button type="submit" form="${formId}" class="ui right floated dark green circular button" disabled>Save</button>`)
-                $footer.append('<span class="right floated unsaved-changes" style="display: none; margin-right: 10px;"><i class="red exclamation triangle icon"></i></span>')
+                $footer.append('<span class="right floated unsaved-changes" style="display: none; margin-right: .71rem;"><i class="red exclamation triangle icon"></i></span>')
 
                 $form.find(selector.class.hidden.id).removeAttr('id').val(_id)
                 $form.find(TS.employer).removeAttr('id').val(employer)
