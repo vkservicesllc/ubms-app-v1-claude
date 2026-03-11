@@ -33,7 +33,7 @@
                 (eq permissions.modify true)
                 (eq permissions.update true)
         )}}
-        <div class="ui modal" id="empl-manage-card-modal" style="width: 68.5rem !important; height: 47rem;">
+        <div class="ui modal" id="empl-manage-card-modal" style="width: 68.5rem !important; height: 48.2rem;">
             <i class="close icon"></i>
             <div class="ui header">Employment Verification</div>
             <div class="content">
@@ -72,9 +72,9 @@
                 <div class="ui divider"></div>
                 <div class="ui secondary pointing menu">
                     {{# if (eq permissions.update true)}}
-                    <a class="item form-item active" id="inquiry-item-1">Inquiry #1</a>
-                    <a class="item form-item disabled" id="inquiry-item-2">Inquiry #2</a>
-                    <a class="item form-item disabled" id="inquiry-item-3">Inquiry #3</a>
+                    <a class="item form-item active" id="inquiries-item">Inquiry Attempts</a>
+                    <a class="item form-item" id="verification-item">Verification</a>
+                    {{!-- <a class="item form-item disabled" id="inquiry-item-3">Response Upload</a> --}}
                     {{/if}}
                     {{#if (eq permissions.modify true)}}
                     <a class="item form-item{{# if (eq permissions.update false)}} active{{/if}}" id="modification-item">
@@ -109,8 +109,9 @@
                     {{/if}}
                 </div> --}}
                 {{# if (eq permissions.update true)}}
-                <div class="form-block" id="inquiry-block-1">
-                    <form class="ui form" id="verification-form-1" action="" method="POST" autocomplete="off">
+                <div class="form-block" id="inquiries-block">
+                    <form class="ui form" id="inquiries-form" action="" method="POST" autocomplete="off">
+                        <h5 class="ui blue text header">Attempt #1</h5>
                         <div class="ui compact grid">
                             <div class="five wide field">
                                 {{{form.inquirer1.select.label}}}
@@ -144,12 +145,12 @@
                         </div>
                     </form>
                 </div>
-                <div class="form-block" id="inquiry-block-2" style="display: none;">
-                    INQUIRY #2
+                <div class="form-block" id="verification-block" style="display: none;">
+                    VERIFICATION
                 </div>
-                <div class="form-block" id="inquiry-block-3" style="display: none;">
+                {{!-- <div class="form-block" id="inquiry-block-3" style="display: none;">
                     INQUIRY #3
-                </div>
+                </div> --}}
                 {{/if}}
                 {{#if (eq permissions.modify true)}}
                 <div class="form-block" id="modification-block"{{# if (eq permissions.update true)}} style="display: none;"{{/if}}>
