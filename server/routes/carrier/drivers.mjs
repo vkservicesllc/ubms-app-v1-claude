@@ -396,59 +396,67 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             dropdown.condition = ''
             dropdown.experience = ''
 
-            const teamUsers = team ? (await team.fetch('jx.users')) : []
-            const allUsers = await User.fetch(res.session)
-            const users = []
-            const userId = []
-            const _ids = []
+            // const teamUsers = team ? (await team.fetch('jx.users')) : []
+            // const allUsers = await User.fetch(res.session)
+            // const users = []
+            // const userId = []
+            // const _ids = []
 
-            for (let user of teamUsers) {
-                user = await User.fetch(res.session, { _id: user._id })
-                _ids.push(user._id)
-                userId.push(user.id)
-            }
+            // for (let user of teamUsers) {
+            //     user = await User.fetch(res.session, { _id: user._id })
+            //     _ids.push(user._id)
+            //     userId.push(user.id)
+            // }
 
-            const permissions = [] //! await Role.userPermissions(res.session, userId)
-            allUsers.forEach(user => {
-                const { _id, DS, name } = user
+            // const permissions = [] //! await Role.userPermissions(res.session, userId)
+            // allUsers.forEach(user => {
+            //     const { _id, DS, name } = user
 
-                if (DS && _id === application._userId) users.push({ _id, name })
-                else if (_ids.includes(_id)) {
-                    /* Accesses Team Users */
-                    permissions.forEach(row => {
-                        const { permissions: perms } = row
-                        const permIdx = perms['d:drv/apl']
+            //     if (DS && _id === application._userId) users.push({ _id, name })
+            //     else if (_ids.includes(_id)) {
+            //         /* Accesses Team Users */
+            //         permissions.forEach(row => {
+            //             const { permissions: perms } = row
+            //             const permIdx = perms['d:drv/apl']
 
-                        if (permIdx && [3, 4, '3', '4'].some(val => perms['d:drv/apl'].includes(val)))
-                            users.push({ _id, name })
-                    })
-                }
-            })
-            users.forEach(user => {
-                const { _id, name } = user
-                dropdown.user += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
-            })
+            //             if (permIdx && [3, 4, '3', '4'].some(val => perms['d:drv/apl'].includes(val)))
+            //                 users.push({ _id, name })
+            //         })
+            //     }
+            // })
+            // users.forEach(user => {
+            //     const { _id, name } = user
+            //     dropdown.user += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+            // })
             if (application._userId)
                 options.user = { hidden: { input: { value: application._userId } } }
 
-            const carriers = (await user.fetch('jx.companies', { filter: { category: 'crr' } })) //! await team.data(res.session, 'carriers')
-
-            carriers.forEach(carrier => { //! This list will not include the current carrier if it was removed from the team
-                const { _carrierId: _id, name } = carrier
-                dropdown.carrier += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
-            })
+            if (DS) {
+                const carriers = await Carrier.fetch(res.session)
+                carriers.forEach(carrier => {
+                    const { _id, name } = carrier
+                    dropdown.carrier += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+                })
+            } else {
+                const carriers = await user.fetch('jx.companies', { category: 'crr '})
+                carriers.forEach(carrier => {
+                    const { _carrierId: _id, name } = carrier
+                    dropdown.carrier += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+                })
+            }
             if (application._carrierId)
                 options.carrier = { hidden: { input: { value: application._carrierId } } }
 
             if (unscoped) {
-                const teams = await Team.fetch(res.session)
+                const teams = await Team.fetch(res.session, { scoped: false })
+
                 for (const team of teams) {
                     const { _id, name } = team
                     dropdown.team += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
                 }
-                if (application._teamId)
-                    options.team = { hidden: { input: { value: application._teamId } } }
             }
+            if (application._teamId)
+                options.team = { hidden: { input: { value: application._teamId } } }
 
 
             const conditions = {

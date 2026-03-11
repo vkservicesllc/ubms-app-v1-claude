@@ -5,40 +5,40 @@
             visibility: hidden;
         }
         .ui.header:not(.first) {
-            margin-top: 10px !important;
+            margin-top: .71rem !important;
         }
         .ui.message {
-            width: 640px !important;
+            width: 45.71rem !important;
         }
         .file-actions {
-            margin-left: 5px;
+            margin-left: .35rem;
         }
         .list .item {
-            margin-bottom: 5px;
+            margin-bottom: .35rem;
         }
 
         /* Lock border behavior for active vertical tabs ??? */
         .ui.vertical.tabular.menu .item.active {
             border-right: none !important;
-            margin-right: -1px !important; /* fixes any small gap */
+            margin-right: -.71rem !important; /* fixes any small gap */
             box-shadow: none !important;   /* prevent any shadow making it look like a border */
         }
         .actions > div {
             float: right;
         }
         .unsaved-changes {
-            margin-right: 10px;
+            margin-right: .71rem;
         }
         .tabular.menu .item {
-            padding-right: 30px !important;
+            padding-right: 2.14rem !important;
         }
         .tabular.menu .active.item {
             background-color: rgb(240, 240, 480) !important;
         }
     </style>
 
-    <div style="margin-left: 20px;">
-        <div class="ui relaxed horizontal list" style="margin-bottom: 15px; min-width: 1440px;">
+    <div style="margin-left: 1.43rem;">
+        <div class="ui relaxed horizontal list" style="margin-bottom: 1.07rem; min-width: 102.85rem;">
             <div class="item">
                 <div class="content">
                 <h5 class="ui header"><span class="ui grey text">Applicant:</span></h5>
@@ -93,8 +93,8 @@
             </div>
         </div>
 
-        <div class="ui grid" style="width: 1080px;">
-            <div class="three wide column" style="margin-right: 0; padding-right: 0; height: 750px !important;">
+        <div class="ui grid" style="width: 77.14rem;">
+            <div class="three wide column" style="margin-right: 0; padding-right: 0; height: 53.57rem !important;">
                 <div class="ui vertical tabular menu" id="section-menu">
                     <a class="active item" data-tab="workflow">Workflow</a>
                     {{#if (eq fileTab true)}}
@@ -116,14 +116,14 @@
                     <a class="item" data-tab="misc">{{idx steps 10}}</a>
                 </div>
             </div>
-            <div class="thirteen wide stretched column" style="margin-left: 0; padding-left: 0; height: 750px;">
-                <div class="ui right attached segment" id="sections" style="padding: 20px;">
+            <div class="thirteen wide stretched column" style="margin-left: 0; padding-left: 0; height: 53.57rem;">
+                <div class="ui right attached segment" id="sections" style="padding: 1.43rem;">
                     <input type="hidden" id="id" value="{{_id}}" />
 
                     <div class="ui active tab" data-tab="workflow">
                         <form class="ui loading form" id="assign-form" action="{{actionUrl.workflow}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Checklist</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     <div class="ui list">
                                         <div class="item">
@@ -173,8 +173,8 @@
                                 </div>
                             </div>
                             <h5 class="ui blue text first header">Assignment</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
-                                <div class="six wide disabled field">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
+                                <div class="six wide field">
                                     {{{form.user.select.label}}}
                                     <div class="ui fluid selection dropdown" id="user-dropdown">
                                         {{{form.user.hidden.input}}}
@@ -208,14 +208,14 @@
                                 {{/if}}
                             </div>
                             <h5 class="ui blue text header">Decision</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     {{{form.condition.select.label}}}
                                     <div class="ui fluid clearable selection dropdown" id="condition-dropdown">
                                         {{{form.condition.hidden.input}}}
                                         <i class="dropdown icon"></i>
                                         <div class="default text" style="white-space: nowrap;">
-                                            <i class="clock icon" style="margin-right: 5px;"></i>New Application
+                                            <i class="clock icon" style="margin-right: .35rem;"></i>New Application
                                         </div>
                                         <div class="menu">{{{dropdown.condition}}}
                                         </div>
@@ -361,7 +361,7 @@
                     <div class="ui tab" data-tab="profile">
                         <form class="ui loading form" id="profile-form" action="{{actionUrl.profile}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Legal Name</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="five wide field">
                                     {{{form.firstName.text.label}}}
                                     {{{form.firstName.text.input}}}
@@ -387,7 +387,7 @@
                             </div>
                             {{#if (eq nameMismatch true)}}
                             <div id="identity-name-mismatch">
-                                <div class="ui inverted nag" style="margin: 5px 0 10px;">
+                                <div class="ui inverted nag" style="margin: .35rem 0 .71rem;">
                                     <div class="title">
                                         <i class="ui dark orange text id badge outline icon"></i>
                                         The system has identified that the provided SSN is associated with a different name!
@@ -410,7 +410,7 @@
                             </div>
                             {{/if}}
                             <h5 class="ui blue text header">Personal Information</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     {{{form.dob.text.label}}}
                                     <div class="ui calendar" id="dob-calendar">
@@ -446,7 +446,7 @@
                                 </div>
                             </div>
                             <h5 class="ui blue text header">Contacts</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     {{{form.phone.text.label}}}
                                     {{{form.phone.text.input}}}
@@ -472,7 +472,7 @@
                     <div class="ui tab" data-tab="legal-status">
                         <form class="ui loading form" id="status-form" action="{{actionUrl.status}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Legal Presence</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="five wide field">
                                     {{{form.status.radio.label}}}
                                     <div class="ui fluid selection required dropdown" id="legal-status-dropdown">
@@ -506,7 +506,7 @@
                     <div class="ui tab" data-tab="position">
                         <form class="ui loading form" id="position-form" action="{{actionUrl.position}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Desired Position</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="five wide field">
                                     <div class="ui fluid selection required dropdown" id="position-dropdown">
                                         {{{form.position.hidden.input}}}
@@ -521,7 +521,7 @@
                             <div id="vehicle-section" style="display: none;">
                                 <h5 class="ui blue text header">Motor Vehicle</h5>
                                 {{#if (eq cdlRole 1)}}
-                                <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="ui compact grid" style="margin-top: .35rem;">
                                     <div class="four wide field">
                                         {{{form.currentVhlType.select.label}}}
                                         <div class="ui fluid selection required dropdown" id="vehicle-type-dropdown">
@@ -536,7 +536,7 @@
                                 </div>
                                 {{/if}}
                                 {{#if (eq cdlRole 0)}}
-                                <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="ui compact grid" style="margin-top: .35rem;">
                                     <div class="five wide field">
                                         {{{form.currentVhlMMT.select.label}}}
                                         <div class="ui fluid selection required dropdown" id="vehicle-mmt-dropdown">
@@ -558,7 +558,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="ui compact grid" style="margin-top: 5px;">
+                                <div class="ui compact grid" style="margin-top: .35rem;">
                                     <div class="four wide field">
                                         {{{form.currentVhlType.select.label}}}
                                         <div class="ui fluid selection required dropdown" id="vehicle-type-dropdown">
@@ -604,7 +604,7 @@
                         <form class="ui loading form" id="residence-form" action="{{actionUrl.residence}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Current Address</h5>
                             <p><span class="ui red text">UNFINISHED... Work in progress...</span></p>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="five wide field">
                                     {{{form.address1.text.label}}}
                                     {{{form.address1.text.input}}}
@@ -614,7 +614,7 @@
                                     {{{form.address2.text.input}}}
                                 </div>
                             </div>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="three wide field">
                                     {{{form.addrZip.text.label}}}
                                     {{{form.addrZip.text.input}}}
@@ -634,7 +634,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     {{{form.addrSince.text.label}}}
                                     <div class="ui calendar" id="addr-since-calendar">
@@ -683,7 +683,7 @@
                     <div class="ui tab" data-tab="driver-license">
                         <form class="ui loading form" id="dl-form" action="{{actionUrl.dl}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Driver's License</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     <label></label>
                                     <div class="ui checkbox">
@@ -710,7 +710,7 @@
                                     {{{form.dlClass.text.input}}}
                                 </div>
                             </div>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     {{{form.dlIss.text.label}}}
                                     <div class="ui calendar" id="dl-issued-calendar">
@@ -740,7 +740,7 @@
                                 <div class="one wide field"></div>
                             </div>
                             <h5 class="ui blue text header">Adverse Actions</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="seven wide field">
                                     <div class="ui checkbox">
                                         {{{form.dlDenied2.checkbox.input}}}
@@ -753,7 +753,7 @@
                                 </div>
                                 <div class="one wide field"></div>
                             </div>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="seven wide field">
                                     <div class="ui checkbox">
                                         {{{form.dlRevoked2.checkbox.input}}}
@@ -813,7 +813,7 @@
                                 </div>
                             </div>
                             <h5 class="ui blue text header">Medical Fitness</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="five wide field">
                                     <div class="ui checkbox">
                                         {{{form.underMeds2.checkbox.input}}}
@@ -839,7 +839,7 @@
                     <div class="ui tab" data-tab="legal-compliance">
                         <form class="ui loading form" id="legal-form" action="{{actionUrl.legal}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Legal Compliance</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="inline fields" id="dui-details">
                                     <div class="field">
                                         <div class="ui checkbox">
@@ -861,7 +861,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="seven wide field">
                                     <div class="ui checkbox">
                                         {{{form.criminal2.checkbox.input}}}
@@ -874,7 +874,7 @@
                                 </div>
                                 <div class="one wide field"></div>
                             </div>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="eight wide field">
                                     <div class="ui checkbox">
                                         {{{form.dotDat2.checkbox.input}}}
@@ -914,12 +914,12 @@
                     <div class="ui tab" data-tab="experience">
                         <style>
                             .vhl-experience-label {
-                                width: 130px;
+                                width: 9.28rem;
                             }
                         </style>
                         <form class="ui loading form" id="experience-form" action="{{actionUrl.experience}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Driving Experience</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="five wide field">
                                     <div class="ui checkbox">
                                         {{{form.noExp.checkbox.input}}}
@@ -952,7 +952,7 @@
                                 <div class="one wide field"></div>
                                 {{/if}}
                             </div>
-                            <div class="ui compact grid experience-details" style="margin-top: 5px;">
+                            <div class="ui compact grid experience-details" style="margin-top: .35rem;">
                                 <div class="inline fields">
                                     <div class="field vhl-experience-label">
                                         {{{form.straightExp.checkbox.label}}}
@@ -1065,7 +1065,7 @@
                                     {{/if}}
                                 </div>
                             </div>
-                            <div class="ui compact grid experience-details" style="margin-top: 5px;">
+                            <div class="ui compact grid experience-details" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     {{{form.expStartDate.text.label}}}
                                     <div class="ui calendar" id="exp-start-date-calendar">
@@ -1093,7 +1093,7 @@
                             </div>
                             {{#if (eq cdlRole 1)}}
                             <h5 class="ui blue text header experience-details">Hours Driven for the Past 7 Days</h5>
-                            <div class="ui compact grid experience-details" style="margin-top: 5px;">
+                            <div class="ui compact grid experience-details" style="margin-top: .35rem;">
                                 <div class="two wide field">
                                     {{{form.expHours1.text.label}}}
                                     {{{form.expHours1.text.input}}}
@@ -1134,7 +1134,7 @@
                                     (eq cdl true)
                             )}}
                             <h5 class="ui blue text header">CDL School</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="five wide field">
                                     <div class="ui checkbox">
                                         {{{form.cdlSchool2.checkbox.input}}}
@@ -1143,14 +1143,14 @@
                                 </div>
                                 <div class="one wide field"></div>
                             </div>
-                            <div class="ui compact grid cdl-school" style="margin-top: 5px;">
+                            <div class="ui compact grid cdl-school" style="margin-top: .35rem;">
                                 <div class="five wide field">
                                     {{{form.schName.text.label}}}
                                     {{{form.schName.text.input}}}
                                 </div>
                                 <div class="one wide field"></div>
                             </div>
-                            <div class="ui compact grid cdl-school" style="margin-top: 5px;">
+                            <div class="ui compact grid cdl-school" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     {{{form.schPhone.text.label}}}
                                     {{{form.schPhone.text.input}}}
@@ -1274,7 +1274,7 @@
                             </div>
                             {{#if (eq cdlRole 1)}}
                             <h5 class="ui blue text header">Hauling Regions</h5>
-                            <div class="inline fields" style="margin-bottom: 25px;">
+                            <div class="inline fields" style="margin-bottom: 1.78rem;">
                                 <div class="field">
                                     <div class="ui checkbox">
                                         {{{form.haulRegion.checkbox.loc.input}}}
@@ -1301,7 +1301,7 @@
                                 </di>
                             </div>
                             <h5 class="ui blue text header">Equipment types</h5>
-                            <div class="inline fields" style="margin-bottom: 25px;">
+                            <div class="inline fields" style="margin-bottom: 1.78rem;">
                                 <div class="field">
                                     <div class="ui checkbox">
                                         {{{form.equipmentType.checkbox.van.input}}}
@@ -1329,7 +1329,7 @@
                             </div>
                             {{/if}}
                             <h5 class="ui blue text header">Desired Start Time</h5>
-                            <div class="inline fields" style="margin-bottom: 25px;">
+                            <div class="inline fields" style="margin-bottom: 1.78rem;">
                                 <div class="field">
                                     <div class="ui radio checkbox">
                                         {{{form.startPref.radio.zero.input}}}
@@ -1419,7 +1419,7 @@
                     <div class="ui tab" data-tab="beneficiary">
                         <form class="ui loading form" id="beneficiary-form" action="{{actionUrl.beneficiary}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Beneficiary</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="five wide field">
                                     {{{form.benefFirstName.text.label}}}
                                     {{{form.benefFirstName.text.input}}}
@@ -1443,7 +1443,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     {{{form.benefRelation.select.label}}}
                                     <div class="ui fluid selection required dropdown" id="beneficiary-relationship-dropdown">
@@ -1480,7 +1480,7 @@
                     <div class="ui tab" data-tab="misc">
                         <form class="ui loading form" id="misc-form" action="{{actionUrl.misc}}" method="POST" autocomplete="off">
                             <h5 class="ui blue text first header">Emergency Contact</h5>
-                            <div class="ui compact grid" style="margin-top: 5px;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     {{{form.emergPhone.text.label}}}
                                     {{{form.emergPhone.text.input}}}
