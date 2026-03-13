@@ -40,9 +40,17 @@ const $calendar = {
     endDate: $('#empl-end-date-calendar'),
 }
 
-
 const $modal = {
     manage: $('#empl-manage-card-modal'),
+}
+const $item = {
+    verification: $('#verification-item'),
+}
+const $form = {
+    inquiries: $('#inquiries-form'),
+}
+const $message = {
+    noCarrier: $('#no-carrier-message'),
 }
 
 const $emplData = {
@@ -72,7 +80,11 @@ const $emplData = {
 }
 
 const $a = {
-    verifPdf: $('#verification-pdf-url'),
+    verifPdf: $('.verification-pdf-url'),
+    phoneVerifPdf: $('#phone-verification-pdf-url'),
+    faxVerifPdf: $('#fax-verification-pdf-url'),
+    emailVerifPdf: $('#email-verification-pdf-url'),
+    mailVerifPdf: $('#mail-verification-pdf-url'),
 }
 
 const $formItem = $('.form-item')
@@ -194,8 +206,8 @@ table.on('draw', function() {
                     }
 
                     if (!application.carrier) {
-                        $('#inquiries-form').hide()
-                        $('#no-carrier-message').show()
+                        $form.inquiries.hide()
+                        $message.noCarrier.show()
                     }
 
                     const { _id, _appId, position, earnings, rfl, fmcsr, dotDat } = response.data
@@ -229,7 +241,10 @@ table.on('draw', function() {
                     $calendar.startDate.calendar(calOpts)
                     $calendar.endDate.calendar(calOpts)
 
-                    $a.verifPdf.attr('href', `/drivers/previous-employments/files/verification?emp=${_id}&app=${_appId}`)
+                    $a.verifPdf.each(function() {
+                        const href = $(this).attr('href')
+                        $(this).attr('href', `${href}?emp=${_id}&app=${_appId}`)
+                    })
 
                     $modal.manage.modal({
                         autofocus: false,
@@ -239,8 +254,9 @@ table.on('draw', function() {
                             $emplData.applicant.all.html(null)
                             $emplData.carrier.all.html(null)
 
-                            $('#inquiries-form').show()
-                            $('#no-carrier-message').hide()
+                            $form.inquiries.show()
+                            $message.noCarrier.hide()
+                            $item.verification.addClass('disabled')
 
                             $id.val(null)
                             $appId.val(null)
@@ -262,7 +278,10 @@ table.on('draw', function() {
                             $fmcsr.parent().parent().show()
                             $usdot.parent().addClass('disabled')
                             $('.carrier-label').hide()
-                            $a.verifPdf.attr('href', null)
+                            $a.verifPdf.each(function() {
+                                const href = $(this).attr('href').split('?')[0]
+                                $(this).attr('href', href)
+                            })
 
                             $formItem.removeClass('active').first().addClass('active')
                             $formBlock.hide().first().show()

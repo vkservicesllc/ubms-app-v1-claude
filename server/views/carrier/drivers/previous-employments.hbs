@@ -26,6 +26,9 @@
             .form-block {
                 padding: .4em 1em;
             }
+            .inquiry-item {
+                padding: 1.2rem .45rem !important;
+            }
         </style>
         <table class="ui compact table" id="driver-apl-prev-employers-table" style="width: 100%;"></table>
         {{#if (
@@ -73,7 +76,7 @@
                 <div class="ui secondary pointing menu">
                     {{# if (eq permissions.update true)}}
                     <a class="item form-item active" id="inquiries-item">Inquiry Attempts</a>
-                    <a class="item form-item" id="verification-item">Verification</a>
+                    <a class="item form-item disabled" id="verification-item">Verification</a>
                     {{!-- <a class="item form-item disabled" id="inquiry-item-3">Response Upload</a> --}}
                     {{/if}}
                     {{#if (eq permissions.modify true)}}
@@ -84,7 +87,9 @@
                     {{#if (eq permissions.update true)}}
                     <div class="right menu">
                         <div class="item">
-                            <a id="verification-pdf-url" href="" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                            <a class="verification-pdf-url" href="/drivers/files/previous-employment/verification" target="_blank" title="Form Blank" style="font-size: 1.2em;">
+                                <i class="black file pdf outline icon"></i>
+                            </a>
                         </div>
                     </div>
                     {{/if}}
@@ -110,12 +115,53 @@
                 </div> --}}
                 {{# if (eq permissions.update true)}}
                 <div class="form-block" id="inquiries-block">
-                    <div class="ui negative message" id="no-carrier-message" style="display: none;">
-                        <div class="header">Carrier not selected</div>
-                        <p>In order to proceed with employment verification, you must be operating under a hiring carrier</p>
+                    <div class="ui negative icon message" id="no-carrier-message" style="display: none;">
+                        <i class="ban icon"></i>
+                        <div class="content">
+                            <div class="header">Carrier undetermined</div>
+                            <p>In order to proceed with employment verification, you must be operating under a hiring carrier</p>
+                        </div>
                     </div>
                     <form class="ui form" id="inquiries-form" action="" method="POST" autocomplete="off">
-                        <h5 class="ui blue text header">Phone Inquiry</h5>
+                        <div class="ui relaxed divided list">
+                            <div class="item inquiry-item">
+                                <a href=""><i class="plus middle aligned icon"></i></a>
+                            </div>
+                            <div class="item inquiry-item">
+                                <i class="large phone middle aligned icon"></i>
+                                <div class="content">
+                                    <span class="right floated">
+                                        <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/phone" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="item inquiry-item">
+                                <i class="large fax middle aligned icon"></i>
+                                <div class="content">
+                                    <span class="right floated">
+                                        <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/fax" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="item inquiry-item">
+                                <i class="large at middle aligned icon"></i>
+                                <div class="content">
+                                    <span class="right floated">
+                                        <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/email" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="item inquiry-item">
+                                <i class="large envelope middle aligned icon"></i>
+                                <div class="content">
+                                    <span class="right floated">
+                                        <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/mail" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="item inquiry-item"></div>
+                        </div>
+                        {{!-- <h5 class="ui blue text header">Phone Inquiry</h5>
                         <div class="ui compact grid">
                             <div class="five wide field">
                                 {{{form.inquirer1.select.label}}}
@@ -146,7 +192,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </form>
                 </div>
                 <div class="form-block" id="verification-block" style="display: none;">

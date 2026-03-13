@@ -126,6 +126,30 @@ router.get('/files/application/:route?', fileLoggedOut, Team.mw.verify, async (r
 })
 
 
+router.get('/files/previous-employment/verification', fileLoggedOut, Team.mw.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('f:drv/emp', 'download', permissions, DS))
+            return res.redirect(aplUrl)
+
+        const { emp: _id , app: _appId } = req.query
+        const employment = await Employment.fetch(res.session, { _id, _appId }, { hideSensitive: false })
+        if (team && employment.application._teamId !== team._id) return respond404(res)
+
+        const pdfBytes = await createEmplVerifPdf(employment)
+
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.send(Buffer.from(pdfBytes))
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== APPLICATION ROUTES ==== //
 
@@ -992,7 +1016,7 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
 })
 
 
-router.get('/previous-employments/files/verification', fileLoggedOut, Team.mw.verify, async (req, res) => {
+router.get('/previous-employments/files/verification/:method', fileLoggedOut, Team.mw.verify, async (req, res) => {
     try {
         const { user, team } = res.session
         const { DS } = user
@@ -1001,10 +1025,13 @@ router.get('/previous-employments/files/verification', fileLoggedOut, Team.mw.ve
         if (!withPrivileges('f:drv/emp', 'download', permissions, DS))
             return res.redirect(aplUrl)
 
+        const { method } = req.params
         const { emp: _id , app: _appId } = req.query
         const employment = await Employment.fetch(res.session, { _id, _appId }, { hideSensitive: false })
+        if (!employment.application.carrier) return respond404(res)
+        if (team && employment.application._teamId !== team._id) return respond404(res)
 
-        const pdfBytes = await createEmplVerifPdf(employment)
+        const pdfBytes = await createEmplVerifPdf(employment, method)
 
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')

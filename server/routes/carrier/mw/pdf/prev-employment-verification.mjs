@@ -11,7 +11,7 @@ import { ssn as formatSsn } from '../../../../../client/global/modules/tools/uti
 import { drawCheckBox, wrapText } from './components.mjs'
 
 
-export default async (employment = {}) => {
+export default async (employment = {}, method) => {
 
 //console.log(employment) //! TEMP
     const { employer, phone, address, application, carrier = {} } = employment
