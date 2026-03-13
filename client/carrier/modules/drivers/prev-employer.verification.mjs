@@ -193,6 +193,11 @@ table.on('draw', function() {
                         $('.carrier-label').show()
                     }
 
+                    if (!application.carrier) {
+                        $('#inquiries-form').hide()
+                        $('#no-carrier-message').show()
+                    }
+
                     const { _id, _appId, position, earnings, rfl, fmcsr, dotDat } = response.data
 
                     $id.val(_id)
@@ -233,6 +238,9 @@ table.on('draw', function() {
                             $emplData.employer.all.html(null)
                             $emplData.applicant.all.html(null)
                             $emplData.carrier.all.html(null)
+
+                            $('#inquiries-form').show()
+                            $('#no-carrier-message').hide()
 
                             $id.val(null)
                             $appId.val(null)

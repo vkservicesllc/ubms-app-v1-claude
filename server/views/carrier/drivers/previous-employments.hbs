@@ -110,8 +110,12 @@
                 </div> --}}
                 {{# if (eq permissions.update true)}}
                 <div class="form-block" id="inquiries-block">
+                    <div class="ui negative message" id="no-carrier-message" style="display: none;">
+                        <div class="header">Carrier not selected</div>
+                        <p>In order to proceed with employment verification, you must be operating under a hiring carrier</p>
+                    </div>
                     <form class="ui form" id="inquiries-form" action="" method="POST" autocomplete="off">
-                        <h5 class="ui blue text header">Attempt #1</h5>
+                        <h5 class="ui blue text header">Phone Inquiry</h5>
                         <div class="ui compact grid">
                             <div class="five wide field">
                                 {{{form.inquirer1.select.label}}}
