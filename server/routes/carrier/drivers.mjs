@@ -462,10 +462,10 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                     dropdown.carrier += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
                 })
             } else {
-                const carriers = await user.fetch('jx.companies', { category: 'crr '})
-                carriers.forEach(carrier => {
-                    const { _carrierId: _id, name } = carrier
-                    dropdown.carrier += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
+                const companies = await user.fetch('jx.companies', { category: 'crr' })
+                companies.forEach(company => {
+                    const { name, externalId } = company
+                    dropdown.carrier += `\n${t}<div class="item" data-value="${externalId._carrierId}">${name}</div>`
                 })
             }
             if (application._carrierId)

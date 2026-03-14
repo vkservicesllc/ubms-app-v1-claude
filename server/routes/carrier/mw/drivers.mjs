@@ -68,24 +68,27 @@ export const dtApplicationList = async (req, res) => {
             teamId = team.id
         }
 
-        if (DS) {
-            carriers = await Carrier.fetch(res.session)
-            carriers.forEach((carrier, i) => {
-                const { _id, name, alias } = carrier
-                carriers[i] = { _id, name, alias }
-            })
-        } else {
-            carriers = await sessionUser.fetch('jx.companies', { category: 'crr '})
-            carriers.forEach((carrier, i) => {
-                const { _carrierId: _id, name, alias } = carrier
-                carriers[i] = { _id, name, alias }
-            })
-        }
-
         const { draw, start, length, search, filter = {} } = req.body
         let { archived } = req.query
         archived = archived === 'true'
         //* As of Archived it is never unfiltered
+
+        filter.carrierId = [ null ]
+        if (DS) {
+            carriers = await Carrier.fetch(res.session)
+            carriers.forEach((carrier, i) => {
+                const { id, _id, name, alias } = carrier
+                filter.carrierId.push(id)
+                carriers[i] = { _id, name, alias }
+            })
+        } else {
+            carriers = await sessionUser.fetch('jx.companies', { category: 'crr' })
+            carriers.forEach((carrier, i) => {
+                const { name, alias, externalId } = carrier
+                filter.carrierId.push(externalId.carrierId)
+                carriers[i] = { _id: externalId._carrierId, name, alias }
+            })
+        }
 
         for (const prop of ['condition', 'position']) {
             if (!filter[prop]) filter[prop] = undefined

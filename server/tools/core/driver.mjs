@@ -1293,31 +1293,31 @@ class Application {
                         case 'workflow': //* Carrier UI only
                             {
                                 const { _userId, _carrierId, _teamId, condition, experience, position } = body
-                                console.log(body)
                                 body = { main: {}, matcher: {}, decision: {} }
-                                console.log(body)
 
-                                if (_carrierId) {
+                                if (_carrierId && _carrierId !== this._carrierId) {
                                     const carrier = await Carrier.fetch(this.session, { _id: _carrierId })
                                     if (!carrier) throw new Error('Carrier not found')
 
-                                    if (carrier.id !== this.carrierId) {
-                                        body.main.carrierId = carrier.id
-                                        body.matcher.companyId = carrier.companyId
-                                        body.matcher.ownerId = carrier.owner.id
-                                        body.matcher.owPersonId = carrier.owner.personId
-                                        body.matcher.coNameSince = carrier.comparator.name
-                                        body.matcher.coAddrSince = carrier.comparator.address
-                                        body.matcher.coPhoneSince = carrier.comparator.phone
-                                        body.matcher.coFaxSince = carrier.comparator.fax
-                                        body.matcher.coOwnerSince = carrier.comparator.ownership
-                                        body.matcher.owNameSince = carrier.owner.comparator.name
-
-                                        //! TEMP
-                                        await this.update(body.main)
-                                        await this.update('matcher', body.matcher)
-                                    }
+                                    body.main.carrierId = carrier.id
+                                    body.matcher.companyId = carrier.companyId
+                                    body.matcher.ownerId = carrier.owner.id
+                                    body.matcher.owPersonId = carrier.owner.personId
+                                    body.matcher.coNameSince = carrier.comparator.name
+                                    body.matcher.coAddrSince = carrier.comparator.address
+                                    body.matcher.coPhoneSince = carrier.comparator.phone
+                                    body.matcher.coFaxSince = carrier.comparator.fax
+                                    body.matcher.coOwnerSince = carrier.comparator.ownership
+                                    body.matcher.owNameSince = carrier.owner.comparator.name
                                 }
+
+                                if (_teamId && _teamId !== this._teamId) {
+                                    const team = await Team.fetch(this.session, { _id: _teamId })
+                                    body.main.teamId = team.id
+                                }
+
+                                await this.update(body.main)
+                                await this.update('matcher', body.matcher)
                             }
                             break
 
