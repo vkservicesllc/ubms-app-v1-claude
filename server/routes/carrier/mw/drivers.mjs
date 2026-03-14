@@ -62,10 +62,24 @@ export const dtApplicationList = async (req, res) => {
 
         if (!DS && !('d:drv/apl' in permissions)) return sendError.auth(req, res)
 
-        let team, teamId
+        let team, teamId, carriers = [], users = []
         if (req.session.team) {
             team = await Team.fetch(res.session, { _id: req.session.team })
             teamId = team.id
+        }
+
+        if (DS) {
+            carriers = await Carrier.fetch(res.session)
+            carriers.forEach((carrier, i) => {
+                const { _id, name, alias } = carrier
+                carriers[i] = { _id, name, alias }
+            })
+        } else {
+            carriers = await sessionUser.fetch('jx.companies', { category: 'crr '})
+            carriers.forEach((carrier, i) => {
+                const { _carrierId: _id, name, alias } = carrier
+                carriers[i] = { _id, name, alias }
+            })
         }
 
         const { draw, start, length, search, filter = {} } = req.body
@@ -76,6 +90,10 @@ export const dtApplicationList = async (req, res) => {
         for (const prop of ['condition', 'position']) {
             if (!filter[prop]) filter[prop] = undefined
             else if (filter[prop].includes(',')) filter[prop] = filter[prop].split(',')
+        }
+        if (filter.carrier) {
+            delete filter.carrier //! TEMP
+            //? find raw ids and apply to filter
         }
         //! carrier and user must be either null, undefined or string
 
@@ -94,6 +112,7 @@ export const dtApplicationList = async (req, res) => {
             recordsTotal,
             recordsFiltered,
             data,
+            supData: { carriers, users },  //* Supportive Data
             actions: {
                 data: {
                     comment: DS || permissions?.['d:drv/apl'].includes('1'),

@@ -26,7 +26,7 @@ const table = $('#driver-applications-table').DataTable({
             body.filter = {
                 condition: $('#condition-filter').val(),
                 position: $('#position-filter').val(),
-                // carrier: $('#carrier-filter').val(),
+                carrier: $('#carrier-filter').val(),
                 // user: $('#user-filter').val(),
             }
         },
@@ -363,8 +363,10 @@ const table = $('#driver-applications-table').DataTable({
         headerOffset: $('#top-nav').height(),
     },
 
-    initComplete(settings, data) {
+    initComplete(settings, response) {
         styleSearch()
+
+        const { carriers, users } = response.supData
 
         const toolbar = $('<div class="custom-dt-toolbar"></div>')
         const dropdown = {
@@ -389,67 +391,97 @@ const table = $('#driver-applications-table').DataTable({
             dropdown.position.find('.menu').append(`<div class="item" data-value="${value}" data-text="${value}">${option}</div>`)
         }
 
-        $.ajax('/api/lists?filter=driver-applications', {
-            method: 'POST',
-            success(lists) {
-                const { carriers = [], users = [] } = lists
-
-                carriers.forEach(carrier => {
-                    const { _carrierId, active, until, alias } = carrier
-                    let { name } = carrier
-                    let color = 'green'
-
-                    if (until) color = 'red'
-                    else if (!active) color = 'blue'
-
-                    dropdown.carrier.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
-                })
-
-                users.forEach(user => {
-                    const { firstName, lastName, alias } = user
-                    const person = new Person({ firstName, lastName, alias })
-
-                    user.name = person.fullName('AL')
-                    user.shortName = person.fullName('Al')
-                })
-
-                const self = users.filter(user => user.self === true)[0]
-                const others = sortArrayByObjectKey(users.filter(user => user.self === false), 'name')
-
-                if (self)
-                    dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="<span class='ui dark blue text'><i><b>My Applicants</b></i></span>">${self.name} <small>(self)</small></div>`)
-                others.forEach(user => {
-                    const { _id, name, shortName } = user
-
-                    dropdown.user.find('.menu').append(`<div class="item" data-value="${_id}" data-text="<small>Assigned to</small> <b>${shortName}</b>">${name}</div>`)
-                })
-
-                toolbar.append(dropdown.condition)
-                toolbar.append(dropdown.position)
-                toolbar.append(dropdown.carrier)
-                toolbar.append(dropdown.user)
-                toolbar.append('<button class="ui button" id="other-filters"><i class="filter icon"></i></button>')
-
-                $('.dt-length').after(toolbar)
-
-                $('.custom-dt-dropdown')
-                    .dropdown()
-                    .on('change', function() {
-                        const length = $(this).dropdown('get value').length
-                        $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue')
-
-                        $(this).blur()
-                        table.ajax.reload()
-                    })
-
-                $('#dt-search-0')
-                    .on('input', function() {
-                        $(this).val($(this).val().replace(/\W/gi, ''))
-                    })
-
-                $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
-            },
+        carriers.map(carrier => {
+            const { _id, name, alias } = carrier
+            dropdown.carrier.find('.menu').append(`<div class="item" data-value="${_id}" data-text="${alias}">${name}</div>`)
         })
+
+        toolbar.append(dropdown.condition)
+        toolbar.append(dropdown.position)
+        toolbar.append(dropdown.carrier)
+        toolbar.append(dropdown.user)
+        toolbar.append('<button class="ui button" id="other-filters"><i class="filter icon"></i></button>')
+
+        $('.dt-length').after(toolbar)
+
+        $('.custom-dt-dropdown')
+            .dropdown()
+            .on('change', function() {
+                const length = $(this).dropdown('get value').length
+                $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue')
+
+                $(this).blur()
+                table.ajax.reload()
+            })
+
+        $('#dt-search-0')
+            .on('input', function() {
+                $(this).val($(this).val().replace(/\W/gi, ''))
+            })
+
+        $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
+
+        // $.ajax('/api/lists?filter=driver-applications', {
+        //     method: 'POST',
+        //     success(lists) {
+        //         const { carriers = [], users = [] } = lists
+
+        //         carriers.forEach(carrier => {
+        //             const { _carrierId, active, until, alias } = carrier
+        //             let { name } = carrier
+        //             let color = 'green'
+
+        //             if (until) color = 'red'
+        //             else if (!active) color = 'blue'
+
+        //             dropdown.carrier.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
+        //         })
+
+        //         users.forEach(user => {
+        //             const { firstName, lastName, alias } = user
+        //             const person = new Person({ firstName, lastName, alias })
+
+        //             user.name = person.fullName('AL')
+        //             user.shortName = person.fullName('Al')
+        //         })
+
+        //         const self = users.filter(user => user.self === true)[0]
+        //         const others = sortArrayByObjectKey(users.filter(user => user.self === false), 'name')
+
+        //         if (self)
+        //             dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="<span class='ui dark blue text'><i><b>My Applicants</b></i></span>">${self.name} <small>(self)</small></div>`)
+        //         others.forEach(user => {
+        //             const { _id, name, shortName } = user
+
+        //             dropdown.user.find('.menu').append(`<div class="item" data-value="${_id}" data-text="<small>Assigned to</small> <b>${shortName}</b>">${name}</div>`)
+        //         })
+
+        //         toolbar.append(dropdown.condition)
+        //         toolbar.append(dropdown.position)
+        //         toolbar.append(dropdown.carrier)
+        //         toolbar.append(dropdown.user)
+        //         toolbar.append('<button class="ui button" id="other-filters"><i class="filter icon"></i></button>')
+
+        //         $('.dt-length').after(toolbar)
+
+        //         $('.custom-dt-dropdown')
+        //             .dropdown()
+        //             .on('change', function() {
+        //                 const length = $(this).dropdown('get value').length
+        //                 $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue')
+
+        //                 $(this).blur()
+        //                 table.ajax.reload()
+        //             })
+
+        //         $('#dt-search-0')
+        //             .on('input', function() {
+        //                 $(this).val($(this).val().replace(/\W/gi, ''))
+        //             })
+
+        //         $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
+        //     },
+        // })
     },
 
     language: {
