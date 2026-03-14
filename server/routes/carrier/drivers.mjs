@@ -472,16 +472,20 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                 options.carrier = { hidden: { input: { value: application._carrierId } } }
 
             if (unscoped) {
-                const teams = await Team.fetch(res.session, { scoped: false })
+                const filter = {}
+                if (!user.DS) filter.scoped = false
 
-                for (const team of teams) {
-                    const { _id, name } = team
-                    dropdown.team += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
-                }
+                const teams = await Team.fetch(res.session, filter)
+                teams.forEach(team => {
+                    const { _id, name, scoped } = team
+                    let teamName = name
+                    if (scoped) teamName += ' <sup><i class="orange star outline icon"></i></sup>'
+
+                    dropdown.team += `\n${t}<div class="item" data-value="${_id}">${teamName}</div>`
+                })
             }
             if (application._teamId)
                 options.team = { hidden: { input: { value: application._teamId } } }
-
 
             const conditions = {
                 a: '<span class="ui dark green text"><i class="thumbs up icon"></i> Approved</span>',

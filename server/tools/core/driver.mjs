@@ -1268,6 +1268,44 @@ class Application {
                             break
 
 
+                        case 'legal-status': //* Carrier UI only (no step)
+                            {
+                                const { legalSince } = this.matcher
+                                if (body.legalStatus < 2) body.legalExpiration = null
+
+                                const { legalStatus: status, legalExpiration: expiresOn } = body
+                                await person.update('legal', { status, expiresOn }, { since: legalSince })
+                            }
+                            break
+
+
+                        case 'position': //* Carrier UI only (no step)
+                            {
+                                const { position, mmt, type, make, model, year, length } = body
+
+                                await this.update({ position })
+                                this.position = position
+                                await vehicleRecord(this, { mmt, type, make, model, year, length })
+                            }
+                            break
+
+
+                        case 'workflow': //* Carrier UI only
+                            {
+                                const { _userId, _carrierId, _teamId, condition, experience, position } = body
+                                console.log(body)
+                                body = { main: {}, decision: {} }
+                                console.log(body)
+
+                                if (_carrierId) {
+                                    const carrier = await Carrier.fetch(this.session, { _id: _carrierId })
+                                    if (!carrier) throw new Error('Carrier not found')
+                                        console.log(carrier)
+                                }
+                            }
+                            break
+
+
                     }
                 }
             }

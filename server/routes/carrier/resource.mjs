@@ -179,7 +179,7 @@ router.post('/drivers/prev-employments/modify', User.mw.verify, Team.mw.verify, 
 
 
 router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.verify,
-    dynamicApplicantValidator.applications, //! validationCheck, // validationCheck returns error when checkbox is unchecked
+    dynamicApplicantValidator.applications, validationCheck, // validationCheck returns error when checkbox is unchecked
     async (req, res) => {
         try {
             const { user } = res.session
