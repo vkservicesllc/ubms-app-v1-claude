@@ -222,7 +222,7 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 data: null,
                 searchable: false,
                 orderable: false,
-                width: '30px',
+                width: '2.14rem',
                 render(data, type, row) {
                     if (row.self || row.status === 'D' || (adminStatus === 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
                     if (row.events.declinedAt) return '<i class="fas fa-user-times has-text-dark"></i>'
@@ -249,12 +249,12 @@ $.when(statusReq, locationReq).done((statusRes, locationRes) => {
                 data: null,
                 searchable: false,
                 orderable: false,
-                width: '35px',
+                width: '2.5rem',
                 render(data, type, row) {
                     return `<img src="${row.avaSrc}" />`
                 },
                 createdCell(cell) {
-                    $(cell).css('padding', '5px 5px 0 0')
+                    $(cell).css('padding', '.35rem .35rem 0 0')
                 },
             },
 

@@ -232,12 +232,12 @@ const displayTeams = () => {
 
                 if (i === 0) html += '<div class="columns">'
 
-                html += '<div class="column is-one-quarter" style="min-width: 420px;">'
-                html += '<div class="card" style="min-height: 150px;">'
+                html += '<div class="column is-one-quarter" style="min-width: 30rem;">'
+                html += '<div class="card" style="min-height: 10.7rem;">'
                 html += '<div class="card-content">'
 
                 html += `<p class="title mb-2"><a class="team-edit" data-team-id="${_id}" style="font-size: .85em;">${escapeHTML(name)}</a>`
-                if (scoped) html += '<sup style="margin-left: 5px; font-size: .4em;"><i class="fas fa-star has-text-warning-45" title="Scoped users only"></i></sup>'
+                if (scoped) html += '<sup style="margin-left: .35rem; font-size: .4em;"><i class="fas fa-star has-text-warning-45" title="Scoped users only"></i></sup>'
                 html += '</p>'
                 if (description) html += `<p class="subtitle has-text-primary-30 mb-3" style="font-size: .95em;">${escapeHTML(description)}</p>`
 

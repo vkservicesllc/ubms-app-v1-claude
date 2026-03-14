@@ -78,7 +78,7 @@ $.when(statusReq).done(statusRes => {
                 data: 'active',
                 searchable: false,
                 orderable: false,
-                width: '120px',
+                width: '8.57rem',
                 render(data, type, row) {
                     if (row.until) return `<small class="has-text-danger-55" title="Permanently closed on ${moment(row.until).format('ll')}">Closed</small>`
                     if (!row.confirmed) return '<i class="fa fa-hourglass-half has-text-primary"></i>'
@@ -124,7 +124,7 @@ $.when(statusReq).done(statusRes => {
                 data: 'since',
                 title: 'Launch Date',
                 searchable: false,
-                width: '150px',
+                width: '10.7rem',
                 className: 'has-text-left',
                 render(data, type) {
                     return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data

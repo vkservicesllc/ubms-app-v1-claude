@@ -1,1 +1,6 @@
 .dt-container { min-width: 120rem; }
+.dt-action {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: .35rem;
+}
