@@ -2111,9 +2111,9 @@ class Application {
             if (!single) match.public = true
             if (!id) match.id = Application.matchIdHash(_id)
             if (!driverId) match.driverId = Driver.matchIdHash(_driverId)
-            if (!teamId) match.teamId = Team.matchIdHash(_teamId)
-            if (!userId) match.userId = User.matchIdHash(_userId)
-            if (!carrierId) match.carrierId = Carrier.matchIdHash(_carrierId)
+            if (!teamId && teamId !== null) match.teamId = Team.matchIdHash(_teamId)
+            if (!userId && userId !== null) match.userId = User.matchIdHash(_userId)
+            if (!carrierId && carrierId !== null) match.carrierId = Carrier.matchIdHash(_carrierId)
             if (typeof archived === 'boolean') {
                 match.archivedAt = archived ? { not: null } : null
             }

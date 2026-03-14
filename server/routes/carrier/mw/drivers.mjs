@@ -91,11 +91,29 @@ export const dtApplicationList = async (req, res) => {
             if (!filter[prop]) filter[prop] = undefined
             else if (filter[prop].includes(',')) filter[prop] = filter[prop].split(',')
         }
+
         if (filter.carrier) {
-            delete filter.carrier //! TEMP
-            //? find raw ids and apply to filter
+            let { carrier: _carrierId } = filter
+
+            if (_carrierId === 'null') filter.carrierId = null
+            else if (_carrierId.includes(',')) {
+                _carrierId = _carrierId.split(',')
+                const nIdx = _carrierId.indexOf('null')
+                if (nIdx > -1) _carrierId.splice(nIdx, 1)
+
+                filter.carrierId = []
+                for (const _id of _carrierId) {
+                    const carrier = await Carrier.fetch(res.session, { _id })
+                    filter.carrierId.push(carrier.id)
+                }
+                if (nIdx > -1) filter.carrierId.push(null)
+            } else {
+                const carrier = await Carrier.fetch(res.session, { _id: _carrierId })
+                filter.carrierId = carrier.id
+            }
         }
-        //! carrier and user must be either null, undefined or string
+        delete filter.carrier
+        //! user must be either null, undefined or string
 
         filter.teamId = teamId
         filter.archived = archived
