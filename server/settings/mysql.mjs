@@ -99,6 +99,8 @@ export const query = {
     driver_employment: {
         main: new Query(db.carrier, 'driver_employments'),
         verifications: new Query(db.carrier, 'application_employments'),
+        attempts: new Query(db.carrier, 'application_employment_inquiries'),
+        phoneVerifications: new Query(db.carrier, 'application_employment_verifications'),
     },
 
     jx: {
