@@ -455,7 +455,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x, y,
                 font: font.label, size: size.label * 1.4, color: color.section,
             })
-            coverPage.drawText(signature.applicant || '', {
+            coverPage.drawText(signature?.applicant || '', {
                 x: x + textWidth + gap + 2, y: y + 2,
                 font: font.signature, size: size.signature * 1.1, color: color.signature,
             })
@@ -3034,9 +3034,9 @@ export default async (carrier, application, addresses, violations, accidents, em
         x: marginX + vLineX, y: y + 1,
         font: font.label, size: size.label, color: color.label,
     })
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
-    vLineX += padding + textWidth
-    page5.drawText(signature.applicant || '', {
+    const sigTextWidth = font.label.widthOfTextAtSize(text, size.label)
+    vLineX += padding + sigTextWidth
+    page5.drawText(signature?.applicant || '', {
         x: marginX + vLineX + padding, y: y + 2,
         font: font.signature, size: size.signature, color: color.signature,
     })
@@ -3046,13 +3046,13 @@ export default async (carrier, application, addresses, violations, accidents, em
         color: color.line,
     })
     vLineX += 250 + gap
-    text = 'Application Date'
+    text = 'Application Date:'
     page5.drawText(text, {
         x: marginX + vLineX, y: y + 1,
         font: font.label, size: size.label, color: color.label,
     })
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
-    vLineX += padding + textWidth
+    const dateTextWidth = font.label.widthOfTextAtSize(text, size.label)
+    vLineX += padding + dateTextWidth
     page5.drawText(application.finishedAt ? moment(application.finishedAt).format(dateFormat) : '', {
         x: marginX + vLineX + padding, y: y + 2,
         font: font.value, size: size.value, color: color.value,
@@ -3062,6 +3062,40 @@ export default async (carrier, application, addresses, violations, accidents, em
         end: { x: marginX + vLineX + 100, y: y - 1 },
         color: color.line,
     })
+
+    vLineX = padding
+    y -= fieldHeight * 1.2
+    text = "Recruiter's Signature:"
+    page5.drawText(text, {
+        x: marginX + vLineX, y: y + 1,
+        font: font.label, size: size.label, color: color.label,
+    })
+    vLineX += padding + sigTextWidth
+    page5.drawText(signature?.recruiter || '', {
+        x: marginX + vLineX + padding, y: y + 2,
+        font: font.signature, size: size.signature, color: color.signature,
+    })
+    page5.drawLine({
+        start: { x: marginX + vLineX, y: y - 1 },
+        end: { x: marginX + vLineX + 250, y: y - 1 },
+        color: color.line,
+    })
+    vLineX += 250 + gap
+    text = 'Decision Date:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    vLineX += dateTextWidth - textWidth
+    page5.drawText(text, {
+        x: marginX + vLineX, y: y + 1,
+        font: font.label, size: size.label, color: color.label,
+    })
+    vLineX += padding + textWidth
+    //! Insert decision date (MISSING)
+    page5.drawLine({
+        start: { x: marginX + vLineX, y: y - 1 },
+        end: { x: marginX + vLineX + 100, y: y - 1 },
+        color: color.line,
+    })
+
 
 
     return await pdfDoc.save()
