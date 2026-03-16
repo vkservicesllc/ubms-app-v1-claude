@@ -2435,6 +2435,7 @@ class Employment {
         this.verififcation = {
             verify: !!data.verify,
             status: data.status,
+            comment: data.comments,
             //! continue,
             // signature: {
             //     inquirer1: data.inquirer1_,
@@ -2446,6 +2447,36 @@ class Employment {
         if (single) {
             this.session = session
             this.config = { hideRawId, hideSensitive }
+
+            this.fetch = async (target, filter = {}, { hideRawId = false } = {}) => {
+                if (!this.session?.user?.id) throw new Error('Employment Constructor Method Error [FETCH]: Session user not supplied')
+            
+                switch (target) {
+                    case 'attempts':
+                        {
+                            const batch = [
+                                {
+                                    table: query.driver_employment.attempts.table,
+                                    fields: [
+                                        Employment.hashId('emplId'),
+                                        Application.hashId('appId'),
+                                        User.hashId('inquiredBy'),
+                                        'method',
+                                        'inquiredOn',
+                                        'response',
+                                        'note',
+                                        'inquirer_',
+                                    ],
+                                    match: {
+                                        emplId: this.id || Employment.matchIdHash(this._id),
+                                        appId: this.appId || Application.matchIdHash(this._appId),
+                                    },
+                                },
+                            ]
+                        }
+                        break
+                }
+            }
 
             this.update = body => {
                 if (!body.fmcsr) body.usdot = null
@@ -2501,31 +2532,7 @@ class Employment {
                         Application.hashId('appId'),
                         'verify',
                         'status',
-                        // 'method1',
-                        // 'inquiredBy1',
-                        // 'inquiredOn1',
-                        // 'inquirer1_',
-                        // 'response1',
-                        // 'inquiredBy2',
-                        // 'inquiredOn2',
-                        // 'inquirer2_',
-                        // 'response2',
-                        // 'inquiredBy3',
-                        // 'inquiredOn3',
-                        // 'inquirer3_',
-                        // 'response3',
-                        // 'comment',
-                        // 'correct',
-                        // 'driver',
-                        // 'safe',
-                        // 'accidents',
-                        // 'termType',
-                        // 'vehicles',
-                        // 'alcohol',
-                        // 'drugs',
-                        // 'datRefusal',
-                        // 'otherDat',
-                        // 'followup',
+                        'comment',
                     ],
                 },
                 {
