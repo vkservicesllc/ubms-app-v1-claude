@@ -997,12 +997,27 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
             }
 
             if (hbs.permissions.update) {
-                dropdown.inquirer1 = ''
-                dropdown.inquirer2 = ''
-                dropdown.inquirer3 = ''
-                dropdown.inquiryMethod1 = ''
-                dropdown.inquiryMethod2 = ''
-                dropdown.inquiryMethod3 = ''
+                dropdown.inquiryMethod = ''
+                dropdown.inquiryResponse = ''
+
+                const methods = Employment.list.inquiryMethod, responses = Employment.list.inquiryResponse
+                for (const prop in methods)
+                    dropdown.inquiryMethod += `<div class="item" data-value="${prop}">${methods[prop]}</div>`
+                for (const prop in responses)
+                    dropdown.inquiryResponse += `<div class="item" data-value="${prop}">${responses[prop]}</div>`
+
+                const fields = [
+                    [ 'inquiryMethod', 'hidden' ],
+                    [ 'inquiryResponse', 'hidden' ],
+                    'fax', 'email', 'inquryNote',
+                ]
+                fields.forEach(field => {
+                    let prop = 'text'
+                    if (Array.isArray(field))
+                        [ field, prop ] = field
+
+                    options[field] = { [prop]: { input: { disabled: false } } }
+                })
 
                 if (withPrivileges('f:drv/apl', 'download', permissions, DS)) {
                     // show link to prev-employment file

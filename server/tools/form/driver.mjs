@@ -1578,54 +1578,6 @@ class ApplicationForm {
 }
 
 
-const createInquirer = n => createForm({
-    selector: appSelector,
-    target: `inquirer${n}`,
-    group: 'inquirer',
-    type: 'select',
-    name: `_inquiredBy${n}`,
-    label: 'Inquirer',
-    validator: {
-        sanitizer: value => value || null,
-    },
-})
-
-
-const createInquiryMethod = n => createForm({
-    selector: appEmplSelector,
-    target: `inquiryMethod${n}`,
-    group: 'inquiryMethod',
-    type: 'select',
-    name: `method${n}`,
-    data: Employment.list.inquiryMethod,
-    emptyOpt,
-    // label: `Inquiry Method ${n}`,
-    label: 'Method',
-})
-
-
-const createInquiryDate = n => createDateForm({
-    selector: appEmplSelector,
-    target: `inquiryDate${n}`,
-    group: 'inquiryDate',
-    name: `inquiredOn${n}`,
-    // label: `Inquiry Date ${n}`,
-    label: 'Date',
-})
-
-
-const createInquiryResponse = n => createForm({
-    selector: appEmplSelector,
-    target: `inquiryResponse${n}`,
-    group: 'inquiryResponse',
-    type: 'textarea',
-    name: `response${n}`,
-    maxLength: 75,
-    // label: `Inquiry Response ${n}`,
-    label: 'Response',
-})
-
-
 class EmploymentForm {
     constructor(options = {}) {
         getStaticProps(EmploymentForm)
@@ -1813,22 +1765,63 @@ class EmploymentForm {
         label: 'Reason for Employment Gap',
     })
 
+    static fax = createPhoneForm({
+        selector: appEmplSelector,
+        target: 'fax',
+        name: 'fax',
+        required,
+        label: 'Fax',
+    })
 
-    static inquirer1 = createInquirer(1)
-    static inquirer2 = createInquirer(2)
-    static inquirer3 = createInquirer(3)
+    static email = createEmailForm({
+        selector: appSelector,
+        target: 'email',
+        required,
+        label: 'Email',
+    })
 
-    static inquiryMethod1 = createInquiryMethod(1)
-    static inquiryMethod2 = createInquiryMethod(2)
-    static inquiryMethod3 = createInquiryMethod(3)
+    static inquiryMethod =  createForm({
+        selector: appEmplSelector,
+        target: `inquiryMethod`,
+        // group: 'inquiryMethod',
+        type: 'select',
+        name: `method`,
+        data: Employment.list.inquiryMethod,
+        emptyOpt,
+        required,
+        label: 'Contact Method',
+    })
 
-    static inquiryDate1 = createInquiryDate(1)
-    static inquiryDate2 = createInquiryDate(2)
-    static inquiryDate3 = createInquiryDate(3)
+    // static inquiryDate = createDateForm({
+    //     selector: appEmplSelector,
+    //     target: `inquiryDate`,
+    //     // group: 'inquiryDate',
+    //     name: `inquiredOn`,
+    //     required,
+    //     label: 'Date',
+    // })
 
-    static inquiryResponse1 = createInquiryResponse(1)
-    static inquiryResponse2 = createInquiryResponse(2)
-    static inquiryResponse3 = createInquiryResponse(3)
+    static inquiryResponse = createForm({
+        selector: appEmplSelector,
+        target: 'inquiryResponse',
+        // group: 'inquiryResponse',
+        type: 'select',
+        name: 'response',
+        data: Employment.list.inquiryResponse,
+        emptyOpt,
+        required,
+        label: 'Response',
+    })
+
+    static inquiryNote = createForm({
+        selector: appEmplSelector,
+        target: `inquiryNote`,
+        // group: 'inquiryNote',
+        // type: 'textarea',
+        name: `note`,
+        maxLength: 75,
+        label: 'Note',
+    })
 
     static verifComment = createForm({
         selector: appEmplSelector,

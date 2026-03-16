@@ -2380,6 +2380,7 @@ class Employment {
         this.locked = data.locked
         this.employer = data.employer
         this.phone = data.phone
+        this.fax = data.fax
         this.address = new Address(data)
         this.startedOn = data.startedOn
         this.leftOn = data.leftOn
@@ -2450,10 +2451,13 @@ class Employment {
 
             this.fetch = async (target, filter = {}, { hideRawId = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Employment Constructor Method Error [FETCH]: Session user not supplied')
-            
+
                 switch (target) {
+
                     case 'attempts':
                         {
+                            const { method, inquiredOn } = filter
+                            const single = method && inquiredOn
                             const batch = [
                                 {
                                     table: query.driver_employment.attempts.table,
@@ -2470,9 +2474,87 @@ class Employment {
                                     match: {
                                         emplId: this.id || Employment.matchIdHash(this._id),
                                         appId: this.appId || Application.matchIdHash(this._appId),
+                                        method, inquiredOn,
                                     },
                                 },
+                                {
+                                    db: db.online,
+                                    table: query.user.main.table,
+                                    fields: [ 'firstName', 'lastName', 'alias', 'email' ],
+                                    join: [ 'id', 'inquiredBy' ],
+                                },
                             ]
+                            if (!hideRawId) batch[0].fields.unshift('emplId', 'appId', 'inquiredBy')
+
+                            const [ rows ] = await mysql.execute(Query.select(db.carrier, batch))
+                            return single ? rows[0] : rows
+                        }
+                        break
+
+                    case 'phoneVerification':
+                        {
+                            const batch = [
+                                {
+                                    table: query.driver_employment.phoneVerification.table,
+                                    fields: [
+                                        Employment.hashId('emplId'),
+                                        Application.hashId('appId'),
+                                        'correct',
+                                        'driver',
+                                        'safe',
+                                        'accidents',
+                                        'termType',
+                                        'vehicles',
+                                        'alcohol',
+                                        'drugs',
+                                        'datRefusal',
+                                        'otherDat',
+                                        'followup',
+                                    ],
+                                    match: {
+                                        emplId: this.id || Employment.matchIdHash(this._id),
+                                        appId: this.appId || Application.matchIdHash(this._appId),
+                                    },
+                                },
+                                {
+                                    table: query.driver_employment.attempts.table,
+                                    fields: [
+                                        User.hashId('inquiredBy'),
+                                        'method',
+                                        'inquiredOn',
+                                        'response',
+                                        'note',
+                                        'inquirer_',
+                                    ],
+                                    join: [
+                                        'emplId', 'emplId', 0, [
+                                            [ 'appId', 'appId' ],
+                                            [ 'inquiredOn', 'inquiredOn' ],
+                                        ],
+                                    ],
+                                },
+                                {
+                                    db: db.online,
+                                    table: query.user.main.table,
+                                    fields: [ 'firstName', 'lastName', 'alias', 'email' ],
+                                    join: [ 'id', 'inquiredBy', 1 ],
+                                },
+                            ]
+
+                            const [ rows ] = await mysql.execute(Query.select(db.carrier, batch))
+                            rows.map(row => {
+                                row.correct = bool(row.correct)
+                                row.driver = bool(row.driver)
+                                row.safe = bool(row.safe)
+                                row.accidents = bool(row.accidents)
+                                row.alcohol = bool(row.alcohol)
+                                row.drugs = bool(row.drugs)
+                                row.datRefusal = bool(row.datRefusal)
+                                row.otherDat = bool(row.otherDat)
+                                row.followup = bool(row.followup)
+                            })
+
+                            return rows[0]
                         }
                         break
                 }
@@ -2546,6 +2628,8 @@ class Employment {
                         'locked',
                         'employer',
                         'phone',
+                        'fax',
+                        'email',
                         'address1',
                         'address2',
                         'city',
@@ -2696,9 +2780,13 @@ class Employment {
 
     static list = {
 
+        verifStatus: { p: 'In progress', c: 'Complete', u: 'Unobtainable' },
+
         inquiryMethod: { p: 'Phone', f: 'Fax', e: 'Email', m: 'Mail' },
 
-        verifStatus: { p: 'In progress', c: 'Complete', u: 'Unobtainable' },
+        inquiryResponse: { pu: 'Picked up', nr: 'No Response', vm: 'Left Voicemail', cb: 'Called back' },
+
+        termType: { r: 'Resigned', l: 'Laid off', d: 'Discharged' },
 
     }
 

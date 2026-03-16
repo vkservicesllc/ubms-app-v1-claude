@@ -100,7 +100,7 @@ export const query = {
         main: new Query(db.carrier, 'driver_employments'),
         verifications: new Query(db.carrier, 'application_employments'),
         attempts: new Query(db.carrier, 'application_employment_inquiries'),  //* 1-to-many
-        phoneVerifications: new Query(db.carrier, 'application_employment_verifications'),
+        phoneVerification: new Query(db.carrier, 'application_employment_verifications'),
     },
 
     jx: {
