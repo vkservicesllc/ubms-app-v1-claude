@@ -1328,7 +1328,7 @@ class Application {
 
 
             this.submit = async () => {
-                const employments = await this.fetch('employments')
+                const employments = await Employment.fetch(this.session, { appId: this.id })
                 const today = moment()
                 const appId = this.id
 
