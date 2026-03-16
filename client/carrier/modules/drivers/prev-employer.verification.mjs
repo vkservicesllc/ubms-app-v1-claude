@@ -29,13 +29,17 @@ const $fmcsr = $(CS.fmcsr)
 const $dotDat = $(CS.dotDat)
 const $usdot = $(TS.usdot)
 
+const $inqAdd = $('#add-inquiry')
+const $inqCancel = $('#cancel-inquiry')
+const $inqSubmit = $('#submit-inquiry')
+
 const $dropdown = {
-    //
+    inqMethod: $('#empl-inquiry-method-dropdown'),
+    inqResponse: $('#empl-inquiry-response-dropdown'),
     addrState: $('#empl-addr-state-dropdown'),
 }
 
 const $calendar = {
-    //
     startDate: $('#empl-start-date-calendar'),
     endDate: $('#empl-end-date-calendar'),
 }
@@ -47,7 +51,7 @@ const $item = {
     verification: $('#verification-item'),
 }
 const $form = {
-    inquiries: $('#inquiries-form'),
+    inquiry: $('#inquiry-form'),
 }
 const $message = {
     noCarrier: $('#no-carrier-message'),
@@ -98,6 +102,17 @@ $formItem.click(function() {
     $formItem.removeClass('active')
     $(this).addClass('active')
 })
+
+$inqAdd.click(function(evt) {
+    evt.preventDefault()
+
+    $inqSubmit.addClass('blue')
+    $(this).hide()
+    $form.inquiry.parent().show()
+})
+
+$dropdown.inqMethod.dropdown()
+$dropdown.inqResponse.dropdown()
 
 busNameEvent(TS.employer, true, {
     onChange(busName, coType, $busName) {
@@ -206,7 +221,6 @@ table.on('draw', function() {
                     }
 
                     if (!application.carrier) {
-                        $form.inquiries.hide()
                         $message.noCarrier.show()
                     }
 
@@ -254,7 +268,6 @@ table.on('draw', function() {
                             $emplData.applicant.all.html(null)
                             $emplData.carrier.all.html(null)
 
-                            $form.inquiries.show()
                             $message.noCarrier.hide()
                             $item.verification.addClass('disabled')
 

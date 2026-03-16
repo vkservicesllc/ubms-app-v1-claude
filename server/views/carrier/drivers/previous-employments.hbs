@@ -103,131 +103,94 @@
                             <p>In order to proceed with employment verification, you must be operating under a hiring carrier</p>
                         </div>
                     </div>
-                    <form class="ui form" id="inquiries-form" action="" method="POST" autocomplete="off">
-                        <div class="ui relaxed divided list">
-                            <div class="item inquiry-item">
-                                {{!-- <a href=""><i class="plus middle aligned icon"></i></a> --}}
-                                <div class="content">
-                                    <form class="ui form" id="inquiry-form" action="" autocomplete="off">
-                                        <div class="fields">
-                                            <div class="three wide field">
-                                                {{{form.inquiryMethod.select.label}}}
-                                                <div class="ui fluid selection required dropdown" id="empl-inquiry-method-dropdown">
-                                                    {{{form.inquiryMethod.hidden.input}}}
-                                                    <i class="dropdown icon"></i>
-                                                    <div class="default text"></div>
-                                                    <div class="menu">{{{dropdown.inquiryMethod}}}
-                                                    </div>
+                    <div class="ui relaxed divided list">
+                        <div class="item inquiry-item">
+                            <a id="add-inquiry" href=""><i class="plus middle aligned icon"></i></a>
+                            <div class="content" style="display: none;">
+                                <form class="ui form" id="inquiry-form" action="" autocomplete="off">
+                                    <div class="fields">
+                                        <div class="three wide field">
+                                            {{{form.inquiryMethod.select.label}}}
+                                            <div class="ui fluid selection required dropdown" id="empl-inquiry-method-dropdown">
+                                                {{{form.inquiryMethod.hidden.input}}}
+                                                <i class="dropdown icon"></i>
+                                                <div class="default text"></div>
+                                                <div class="menu">{{{dropdown.inquiryMethod}}}
                                                 </div>
                                             </div>
-                                            <div class="three wide field" style="display: none;">
-                                                {{{form.inquiryResponse.select.label}}}
-                                                <div class="ui fluid selection required dropdown" id="empl-inquiry-response-dropdown">
-                                                    {{{form.inquiryResponse.hidden.input}}}
-                                                    <i class="dropdown icon"></i>
-                                                    <div class="default text"></div>
-                                                    <div class="menu">{{{dropdown.inquiryResponse}}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="three wide field" style="display: none;">
-                                                {{{form.fax.text.label}}}
-                                                {{{form.fax.text.input}}}
-                                            </div>
-                                            <div class="five wide field" style="display: none;">
-                                                {{{form.email.text.label}}}
-                                                {{{form.email.text.input}}}
-                                            </div>
-                                            <div class="five wide field" style="display: none;">
-                                                {{{form.inquiryNote.text.label}}}
-                                                {{{form.inquiryNote.text.input}}}
-                                            </div>
-                                            <span class="right floated field">
-                                                <label></label>
-                                                <div class="ui buttons">
-                                                    <button class="ui button">Cancel</button>
-                                                    <div class="or"></div>
-                                                    <button class="ui blue button">Save</button>
-                                                </div>
-                                            </span>
                                         </div>
-                                    </form>
-                                </div>
+                                        <div class="three wide field" style="display: none;">
+                                            {{{form.inquiryResponse.select.label}}}
+                                            <div class="ui fluid selection required dropdown" id="empl-inquiry-response-dropdown">
+                                                {{{form.inquiryResponse.hidden.input}}}
+                                                <i class="dropdown icon"></i>
+                                                <div class="default text"></div>
+                                                <div class="menu">{{{dropdown.inquiryResponse}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="three wide field" style="display: none;">
+                                            {{{form.fax.text.label}}}
+                                            {{{form.fax.text.input}}}
+                                        </div>
+                                        <div class="five wide field" style="display: none;">
+                                            {{{form.email.text.label}}}
+                                            {{{form.email.text.input}}}
+                                        </div>
+                                        <div class="five wide field" style="display: none;">
+                                            {{{form.inquiryNote.text.label}}}
+                                            {{{form.inquiryNote.text.input}}}
+                                        </div>
+                                        <span class="right floated field">
+                                            <label></label>
+                                            <div class="ui buttons">
+                                                <button class="ui button" id="cancel-inquiry">Cancel</button>
+                                                <div class="or"></div>
+                                                <button type="submit" class="ui button" id="submit-inquiry">Save</button>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="item inquiry-item">
-                                <i class="large phone middle aligned icon"></i>
-                                <div class="content">
-                                    <span class="right floated">
-                                        <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/phone" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="item inquiry-item">
-                                <i class="large fax middle aligned icon"></i>
-                                <div class="content">
-                                    <span class="right floated">
-                                        <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/fax" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="item inquiry-item">
-                                <i class="large at middle aligned icon"></i>
-                                <div class="content">
-                                    <span class="right floated">
-                                        <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/email" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="item inquiry-item">
-                                <i class="large envelope middle aligned icon"></i>
-                                <div class="content">
-                                    <span class="right floated">
-                                        <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/mail" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="item inquiry-item"></div>
                         </div>
-                        {{!-- <h5 class="ui blue text header">Phone Inquiry</h5>
-                        <div class="ui compact grid">
-                            <div class="five wide field">
-                                {{{form.inquirer1.select.label}}}
-                                <div class="ui fluid selection dropdown" id="inquirer-dropdown-1">
-                                    {{{form.inquirer1.hidden.input}}}
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text"></div>
-                                    <div class="menu">{{{dropdown.inquirer1}}}
-                                    </div>
-                                </div>
+                        <div class="item inquiry-item">
+                            <i class="large phone middle aligned icon"></i>
+                            <div class="content">
+                                <span class="right floated">
+                                    <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/phone" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                </span>
                             </div>
-                            <div class="three wide field">
-                                {{{form.inquiryDate1.text.label}}}
-                                <div class="ui calendar" id="inquiry-date-calendar-1">
-                                    <div class="ui fluid input left icon">
-                                        {{{form.inquiryDate1.text.input}}}
-                                        <i class="calendar icon"></i>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="item inquiry-item">
+                            <i class="large fax middle aligned icon"></i>
+                            <div class="content">
+                                <span class="right floated">
+                                    <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/fax" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                </span>
                             </div>
-                            <div class="three wide field">
-                                {{{form.inquiryMethod1.select.label}}}
-                                <div class="ui fluid selection dropdown" id="inquiry-method-dropdown-1">
-                                    {{{form.inquiryMethod1.hidden.input}}}
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text"></div>
-                                    <div class="menu">{{{dropdown.inquiryMethod1}}}
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="item inquiry-item">
+                            <i class="large at middle aligned icon"></i>
+                            <div class="content">
+                                <span class="right floated">
+                                    <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/email" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                </span>
                             </div>
-                        </div> --}}
-                    </form>
+                        </div>
+                        <div class="item inquiry-item">
+                            <i class="large envelope middle aligned icon"></i>
+                            <div class="content">
+                                <span class="right floated">
+                                    <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/mail" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="item inquiry-item"></div>
+                    </div>
                 </div>
                 <div class="form-block" id="verification-block" style="display: none;">
                     VERIFICATION
                 </div>
-                {{!-- <div class="form-block" id="inquiry-block-3" style="display: none;">
-                    INQUIRY #3
-                </div> --}}
                 {{/if}}
                 {{#if (eq permissions.modify true)}}
                 <div class="form-block" id="modification-block"{{# if (eq permissions.update true)}} style="display: none;"{{/if}}>
@@ -316,10 +279,6 @@
                                                     {{{form.dotDat2.checkbox.label}}}
                                                 </div>
                                             </div>
-                                            {{!-- <div class="seven wide field">
-                                                {{{form.usdot.text.label}}}
-                                                {{{form.usdot.text.input}}}
-                                            </div> --}}
                                         </div>
                                     </div>
                                     <div class="four wide disabled field">
