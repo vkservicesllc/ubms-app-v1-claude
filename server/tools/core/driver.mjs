@@ -2381,6 +2381,7 @@ class Employment {
         this.employer = data.employer
         this.phone = data.phone
         this.fax = data.fax
+        this.email = data.email
         this.address = new Address(data)
         this.startedOn = data.startedOn
         this.leftOn = data.leftOn
