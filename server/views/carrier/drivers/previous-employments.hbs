@@ -36,7 +36,7 @@
                 (eq permissions.modify true)
                 (eq permissions.update true)
         )}}
-        <div class="ui modal" id="empl-manage-card-modal" style="width: 68.5rem !important; height: 51.2rem;">
+        <div class="ui modal" id="empl-manage-card-modal" style="width: 68.5rem !important; height: 52.4rem;">
             <i class="close icon"></i>
             <div class="ui header">Employment Verification</div>
             <div class="content">
@@ -107,6 +107,8 @@
                         <div class="item inquiry-item">
                             <a id="add-inquiry" href=""><i class="plus middle aligned icon"></i></a>
                             <div class="content" style="display: none;">
+                                <input type="hidden" id="inquiry-saved-fax" />
+                                <input type="hidden" id="inquiry-saved-email" />
                                 <form class="ui form" id="inquiry-form" action="" autocomplete="off">
                                     <div class="fields">
                                         <div class="three wide field">
@@ -143,10 +145,10 @@
                                         </div>
                                         <span class="right floated field">
                                             <label></label>
-                                            <div class="ui buttons">
+                                            <div class="ui">
                                                 <button class="ui button" id="cancel-inquiry">Cancel</button>
-                                                <div class="or"></div>
-                                                <button type="submit" class="ui button" id="submit-inquiry">Save</button>
+                                                <div class="or inquiry-action" style="display: none;"></div>
+                                                <button type="submit" class="ui inquiry-action button" id="submit-inquiry" style="display: none;">Save</button>
                                             </div>
                                         </span>
                                     </div>

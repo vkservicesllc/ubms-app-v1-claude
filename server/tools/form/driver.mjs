@@ -1774,7 +1774,7 @@ class EmploymentForm {
     })
 
     static email = createEmailForm({
-        selector: appSelector,
+        selector: appEmplSelector,
         target: 'email',
         required,
         label: 'Email',

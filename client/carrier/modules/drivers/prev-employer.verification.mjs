@@ -18,6 +18,8 @@ const $employer = $(TS.employer)
 const $startDate = $(TS.startDate)
 const $endDate = $(TS.endDate)
 const $phone = $(TS.phone)
+const $fax = $(TS.fax)
+const $email = $(TS.email)
 const $address1 = $(TS.address1)
 const $address2 = $(TS.address2)
 const $addrZip = $(TS.addrZip)
@@ -28,10 +30,13 @@ const $rfl = $(TS.rfl)
 const $fmcsr = $(CS.fmcsr)
 const $dotDat = $(CS.dotDat)
 const $usdot = $(TS.usdot)
+const $inqNote = $(TS.inquiryNote)
 
 const $inqAdd = $('#add-inquiry')
 const $inqCancel = $('#cancel-inquiry')
 const $inqSubmit = $('#submit-inquiry')
+const $inqSavedFax = $('#inquiry-saved-fax')
+const $inqSavedEmail = $('#inquiry-saved-email')
 
 const $dropdown = {
     inqMethod: $('#empl-inquiry-method-dropdown'),
@@ -103,6 +108,48 @@ $formItem.click(function() {
     $(this).addClass('active')
 })
 
+$dropdown.inqMethod.dropdown({
+    onChange(value) {
+        $dropdown.inqResponse.parent().hide()
+        $fax.parent().hide()
+        $email.parent().hide()
+        $inqNote.parent().show()
+        $inqSubmit.text('Save')
+        $('.inquiry-action').show().parent().addClass('buttons')
+
+        switch (value) {
+            case 'p':
+                $dropdown.inqResponse.parent().show()
+                break
+            case 'f':
+                const fax = $inqSavedFax.val()
+                if (fax) $fax.val(formatTel(fax))
+                $fax.parent().show()
+                break
+            case 'e':
+                const email = $inqSavedEmail.val()
+                if (email) $email.val(email)
+                $email.parent().show()
+                $inqSubmit.text('Email & Save')
+                break
+        }
+    },
+})
+$dropdown.inqResponse.dropdown()
+
+telEvent(TS.fax)
+
+const closeInquiryForm = () => {
+    $form.inquiry.parent().hide()
+    $dropdown.inqMethod.dropdown('clear')
+    $dropdown.inqResponse.dropdown('clear').parent().hide()
+    $fax.val(null).parent().hide()
+    $email.val(null).parent().hide()
+    $inqNote.val(null).parent().hide()
+    $('.inquiry-action').hide().parent().removeClass('buttons')
+    $inqAdd.show()
+}
+
 $inqAdd.click(function(evt) {
     evt.preventDefault()
 
@@ -111,8 +158,7 @@ $inqAdd.click(function(evt) {
     $form.inquiry.parent().show()
 })
 
-$dropdown.inqMethod.dropdown()
-$dropdown.inqResponse.dropdown()
+$inqCancel.click(closeInquiryForm)
 
 busNameEvent(TS.employer, true, {
     onChange(busName, coType, $busName) {
@@ -195,7 +241,7 @@ table.on('draw', function() {
 
             $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}?app=${_appId}`, {
                 success(response) {
-                    const { employer, phone, address, startedOn, leftOn, usdot, application } = response.data
+                    const { employer, phone, fax, email, address, startedOn, leftOn, usdot, application } = response.data
                     let period = `${moment(startedOn).format('ll')} – `
                     period += leftOn ? moment(leftOn).format('ll') : ' Still Employed'
 
@@ -223,6 +269,9 @@ table.on('draw', function() {
                     if (!application.carrier) {
                         $message.noCarrier.show()
                     }
+
+                    if (fax) $inqSavedFax.val(fax)
+                    if (email) $inqSavedEmail.val(email)
 
                     const { _id, _appId, position, earnings, rfl, fmcsr, dotDat } = response.data
 
@@ -270,6 +319,11 @@ table.on('draw', function() {
 
                             $message.noCarrier.hide()
                             $item.verification.addClass('disabled')
+
+                            closeInquiryForm()
+                            $inqSavedFax.val(null)
+                            $inqSavedEmail.val(null)
+                            //! remove inquiry list
 
                             $id.val(null)
                             $appId.val(null)
