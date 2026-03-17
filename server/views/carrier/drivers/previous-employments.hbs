@@ -36,7 +36,7 @@
                 (eq permissions.modify true)
                 (eq permissions.update true)
         )}}
-        <div class="ui modal" id="empl-manage-card-modal" style="width: 68.5rem !important; height: 52.4rem;">
+        <div class="ui modal" id="empl-manage-card-modal" style="width: 68.5rem !important; height: 54.2rem;">
             <i class="close icon"></i>
             <div class="ui header">Employment Verification</div>
             <div class="content">
@@ -158,7 +158,27 @@
                         <div class="item inquiry-item">
                             <i class="large phone middle aligned icon"></i>
                             <div class="content">
-                                <span class="right floated">
+                                <div class="ui horizontal left floated list" id="phone-inquiry-list">
+                                    <div class="item">
+                                        <div class="content" style="font-size: .9em;">
+                                            <div class="header">Jane D. <small>(Mar 15, 2026)</small></div>
+                                            <span class="ui red text">Left Voicemail</span>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="content" style="font-size: .9em;">
+                                            <div class="header">Jane D. <small>(Mar 16, 2026)</small></div>
+                                            <span class="ui red text">No Response</span>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="content" style="font-size: .9em;">
+                                            <div class="header">Jane D. <small>(Mar 17, 2026)</small></div>
+                                            <span class="ui dark green text">Picked up</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="right floated" style="display: none!;">
                                     <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/phone" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
                                 </span>
                             </div>
@@ -166,24 +186,24 @@
                         <div class="item inquiry-item">
                             <i class="large fax middle aligned icon"></i>
                             <div class="content">
-                                <span class="right floated">
-                                    <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/fax" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                <span class="right floated" style="display: none;">
+                                    <a class="verification-pdf-url" id="fax-verification-pdf-url" href="/drivers/previous-employments/files/verification/fax" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
                                 </span>
                             </div>
                         </div>
                         <div class="item inquiry-item">
                             <i class="large at middle aligned icon"></i>
                             <div class="content">
-                                <span class="right floated">
-                                    <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/email" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                <span class="right floated" style="display: none;">
+                                    <a class="verification-pdf-url" id="email-verification-pdf-url" href="/drivers/previous-employments/files/verification/email" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
                                 </span>
                             </div>
                         </div>
                         <div class="item inquiry-item">
                             <i class="large envelope middle aligned icon"></i>
                             <div class="content">
-                                <span class="right floated">
-                                    <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/mail" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                <span class="right floated" style="display: none;">
+                                    <a class="verification-pdf-url" id="mail-verification-pdf-url" href="/drivers/previous-employments/files/verification/mail" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
                                 </span>
                             </div>
                         </div>

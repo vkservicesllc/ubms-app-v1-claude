@@ -226,6 +226,16 @@ $fmcsr.on('click', function() {
     $usdot.parent()[($(this).prop('checked') ? 'remove' : 'add') + 'Class']('disabled')
 })
 
+const listInquires = (inquires = []) => {
+    //
+}
+
+const refreshInquiries = (_id, _appId) => {
+    $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}/inquiries?app=${_appId}`, {
+        success(response) { listInquires(response.data) },
+    })
+}
+
 
 table.on('draw', function() {
     const { actions } = table.ajax.json()
@@ -242,6 +252,8 @@ table.on('draw', function() {
             $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}?app=${_appId}`, {
                 success(response) {
                     const { employer, phone, fax, email, address, startedOn, leftOn, usdot, application } = response.data
+                    const { inquires } = response.supData
+
                     let period = `${moment(startedOn).format('ll')} – `
                     period += leftOn ? moment(leftOn).format('ll') : ' Still Employed'
 
@@ -268,7 +280,7 @@ table.on('draw', function() {
 
                     if (!application.carrier) {
                         $message.noCarrier.show()
-                    }
+                    } else listInquires(inquires)
 
                     if (fax) $inqSavedFax.val(fax)
                     if (email) $inqSavedEmail.val(email)
@@ -354,7 +366,7 @@ table.on('draw', function() {
                             $formBlock.hide().first().show()
                         },
                     }).modal('show')
-                }
+                },
             })
         })
     }

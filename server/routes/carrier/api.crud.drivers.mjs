@@ -31,22 +31,36 @@ router.post('/applicants/query', User.mw.verify, Team.mw.verify, dtDriverList)
 const hideRawId = true
 
 
-router.get('/applications/prev-employments/:_id?', User.mw.verify, Team.mw.verify, async (req, res) => {
+router.get('/applications/prev-employments/:_id?/:target?', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const sessionUser = res.session.user
         const { DS } = sessionUser
         const permissions = await sessionUser.permissions() || {}
         if (!withPrivileges('d:drv/emp', 'view', permissions, DS)) return sendError.auth(req, res)
 
-        const { _id } = req.params
+        const { _id, target } = req.params
         const { app: _appId } = req.query
 
-        if (_id) return res.json({ data: await Employment.fetch(res.session, { _id, _appId }, { hideRawId, hideSensitive: false }) })
+        if (_id) {
+            const employment = await Employment.fetch(res.session, { _id, _appId }, { hideRawId, hideSensitive: false })
+            const inquiries = await employment.fetch('attempts', {}, { hideRawId })
+
+            if (target !== 'inquiries')
+                return res.json({
+                    data: employment,
+                    supData: { inquiries },
+                })
+
+            return res.json({ data: inquiries })
+        }
 
         const _teamId = res.session?.team?._id
 
         res.json({
             data: await Employment.fetch(res.session, { condition: 'c', _teamId, verify: true }, { hideRawId }),
+            supData: {
+                inquiries: null, // await employment.fetch('attempts', {}, { hideRawId })
+            },
             actions: {
                 data: {
                     modify: DS || permissions?.['d:drv/emp'].includes('3'),
