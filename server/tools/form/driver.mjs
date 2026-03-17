@@ -1769,7 +1769,7 @@ class EmploymentForm {
         selector: appEmplSelector,
         target: 'fax',
         name: 'fax',
-        required,
+        disabled,
         label: 'Fax',
     })
 
@@ -1777,6 +1777,7 @@ class EmploymentForm {
         selector: appEmplSelector,
         target: 'email',
         required,
+        disabled,
         label: 'Email',
     })
 
@@ -1810,6 +1811,7 @@ class EmploymentForm {
         data: Employment.list.inquiryResponse,
         emptyOpt,
         required,
+        disabled,
         label: 'Response',
     })
 

@@ -1006,18 +1006,11 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
                 for (const prop in responses)
                     dropdown.inquiryResponse += `<div class="item" data-value="${prop}">${responses[prop]}</div>`
 
-                const fields = [
-                    [ 'inquiryMethod', 'hidden' ],
-                    [ 'inquiryResponse', 'hidden' ],
-                    'fax', 'email', 'inquryNote',
-                ]
-                fields.forEach(field => {
-                    let prop = 'text'
-                    if (Array.isArray(field))
-                        [ field, prop ] = field
-
-                    options[field] = { [prop]: { input: { disabled: false } } }
-                })
+                // const fields = [
+                //     // [ 'inquiryMethod', 'hidden' ],
+                //     // [ 'inquiryResponse', 'hidden' ],
+                //     'fax', 'email', 'inquryNote',
+                // ]
 
                 if (withPrivileges('f:drv/apl', 'download', permissions, DS)) {
                     // show link to prev-employment file

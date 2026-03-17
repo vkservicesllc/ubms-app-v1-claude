@@ -68,6 +68,7 @@ router.use((req, res, next) => {
             for (const prop of props)
                 hbs.user[prop] = user[prop]
             hbs.user.name = user.fullName('AL')
+            hbs.user.flag = `<i class="${user.location.toLowerCase()} flag"></i>`
 
             const permissions = await user.permissions()
             const { DS } = user

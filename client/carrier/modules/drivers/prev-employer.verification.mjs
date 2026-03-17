@@ -111,8 +111,9 @@ $formItem.click(function() {
 $dropdown.inqMethod.dropdown({
     onChange(value) {
         $dropdown.inqResponse.parent().hide()
-        $fax.parent().hide()
-        $email.parent().hide()
+        $dropdown.inqResponse.find('input[type="hidden"]').prop('disabled', true)
+        $fax.prop('disabled', true).parent().hide()
+        $email.prop('disabled', true).parent().hide()
         $inqNote.parent().show()
         $inqSubmit.text('Save')
         $('.inquiry-action').show().parent().addClass('buttons')
@@ -120,16 +121,17 @@ $dropdown.inqMethod.dropdown({
         switch (value) {
             case 'p':
                 $dropdown.inqResponse.parent().show()
+                $dropdown.inqResponse.find('input[type="hidden"]').prop('disabled', false)
                 break
             case 'f':
                 const fax = $inqSavedFax.val()
                 if (fax) $fax.val(formatTel(fax))
-                $fax.parent().show()
+                $fax.prop('disabled', false).parent().show()
                 break
             case 'e':
                 const email = $inqSavedEmail.val()
                 if (email) $email.val(email)
-                $email.parent().show()
+                $email.prop('disabled', false).parent().show()
                 $inqSubmit.text('Email & Save')
                 break
         }
@@ -143,8 +145,9 @@ const closeInquiryForm = () => {
     $form.inquiry.parent().hide()
     $dropdown.inqMethod.dropdown('clear')
     $dropdown.inqResponse.dropdown('clear').parent().hide()
-    $fax.val(null).parent().hide()
-    $email.val(null).parent().hide()
+    $dropdown.inqResponse.find('input[type="hidden"]').prop('disabled', true)
+    $fax.val(null).prop('disabled', true).parent().hide()
+    $email.val(null).prop('disabled', true).parent().hide()
     $inqNote.val(null).parent().hide()
     $('.inquiry-action').hide().parent().removeClass('buttons')
     $inqAdd.show()
@@ -321,10 +324,18 @@ table.on('draw', function() {
                         $(this).attr('href', `${href}?emp=${_id}&app=${_appId}`)
                     })
 
+                    $form.inquiry.on('submit', function(evt) {
+                        evt.preventDefault()
+
+                        console.log('tried to submit...')
+                        refreshInquiries(_id, _appId)
+                    })
+
                     $modal.manage.modal({
                         autofocus: false,
                         closable: false,
                         onHidden() {
+                            $form.inquiry.off('submit')
                             $emplData.employer.all.html(null)
                             $emplData.applicant.all.html(null)
                             $emplData.carrier.all.html(null)
