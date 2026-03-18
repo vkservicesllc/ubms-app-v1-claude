@@ -327,8 +327,22 @@ table.on('draw', function() {
                     $form.inquiry.on('submit', function(evt) {
                         evt.preventDefault()
 
-                        console.log('tried to submit...')
-                        refreshInquiries(_id, _appId)
+                        const data = {}
+                        $.each($(this).serializeArray(), function () {
+                            data[this.name] = this.value
+                        })
+
+                        if (data.method && !data.response) return alert('Response must be selected!')
+console.log(data)
+                        $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}/${_appId}/inquiries`, {
+                            method: 'POST', data,
+                            success(response) {
+                                if (response.status === 'OK') {
+                                    closeInquiryForm()
+                                    refreshInquiries(_id, _appId)
+                                }
+                            },
+                        })
                     })
 
                     $modal.manage.modal({

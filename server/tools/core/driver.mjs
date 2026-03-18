@@ -2450,6 +2450,8 @@ class Employment {
             this.session = session
             this.config = { hideRawId, hideSensitive }
 
+            this.add = (target, body) => classInstance.add(this, new.target, target, body)
+
             this.fetch = async (target, filter = {}, { hideRawId = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Employment Constructor Method Error [FETCH]: Session user not supplied')
 
@@ -2538,6 +2540,7 @@ class Employment {
                                     join: [
                                         'emplId', 'emplId', 0, [
                                             [ 'appId', 'appId' ],
+                                            [ 'method', 'method' ],
                                             [ 'inquiredOn', 'inquiredOn' ],
                                         ],
                                     ],

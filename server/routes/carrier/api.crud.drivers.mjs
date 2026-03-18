@@ -151,6 +151,17 @@ const dynamicValidator = (req, res, next) => {
 }
 
 
+router.post('/applications/prev-employments/:_id/:_appId/inquiries', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { _id, _appId } = req.params
+        const employment = await Employment.fetch(res.session, { _id, _appId })
+console.log(req.body)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/applications/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { _id, target } = req.params
