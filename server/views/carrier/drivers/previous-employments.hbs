@@ -78,13 +78,13 @@
                 <div class="ui divider"></div>
                 <div class="ui secondary pointing menu">
                     {{# if (eq permissions.update true)}}
-                    <a class="item form-item active" id="inquiries-item">Inquiry Attempts</a>
-                    <a class="item form-item disabled" id="verification-item">Verification</a>
+                    <a class="item form-item active" id="inquiries-item">Inquiries</a>
+                    {{!-- <a class="item form-item disabled" id="verification-item">Verification</a> --}}
                     {{!-- <a class="item form-item disabled" id="inquiry-item-3">Response Upload</a> --}}
                     {{/if}}
                     {{#if (eq permissions.modify true)}}
                     <a class="item form-item{{# if (eq permissions.update false)}} active{{/if}}" id="modification-item">
-                        Employer Modification
+                        Employer Revision
                     </a>
                     {{/if}}
                     {{#if (eq permissions.update true)}}
@@ -237,9 +237,9 @@
                         <div class="item inquiry-item"></div>
                     </div>
                 </div>
-                <div class="form-block" id="verification-block" style="display: none;">
+                {{!-- <div class="form-block" id="verification-block" style="display: none;">
                     VERIFICATION
-                </div>
+                </div> --}}
                 {{/if}}
                 {{#if (eq permissions.modify true)}}
                 <div class="form-block" id="modification-block"{{# if (eq permissions.update true)}} style="display: none;"{{/if}}>
