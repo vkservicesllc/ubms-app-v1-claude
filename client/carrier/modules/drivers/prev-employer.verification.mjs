@@ -432,7 +432,7 @@ table.on('draw', function() {
                             $('.inquiry-list').html(null)
                             $dropdown.inqMethod.find(`.item`).removeClass('disabled')
                             $dropdown.inqResponse.find(`.item`).removeClass('disabled')
-                            $button.phoneVerif.parent().hide()
+                            $button.phoneVerif.html(null).parent().hide()
 
                             $id.val(null)
                             $appId.val(null)
