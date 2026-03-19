@@ -44,15 +44,16 @@ router.get('/applications/prev-employments/:_id?/:target?', User.mw.verify, Team
         if (_id) {
             const employment = await Employment.fetch(res.session, { _id, _appId }, { hideRawId, hideSensitive: false })
             const inquiries = await employment.fetch('attempts', {}, { hideRawId })
+            const phoneVerification = await employment.fetch('phoneVerification', {}, { hideRawId })
             const responseList = Employment.list.inquiryResponse
 
             if (target !== 'inquiries')
                 return res.json({
                     data: employment,
-                    supData: { inquiries, responseList },
+                    supData: { inquiries, phoneVerification, responseList },
                 })
 
-            return res.json({ data: inquiries, supData: { responseList } })
+            return res.json({ data: inquiries, supData: { phoneVerification, responseList } })
         }
 
         const _teamId = res.session?.team?._id

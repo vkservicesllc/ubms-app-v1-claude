@@ -64,6 +64,7 @@ const $message = {
 }
 const $section = {
     inquiries: $('#inquiry-section'),
+    phoneVerif: $('#phone-verification-section'),
 }
 
 const $emplData = {
@@ -236,14 +237,20 @@ $fmcsr.on('click', function() {
     $usdot.parent()[($(this).prop('checked') ? 'remove' : 'add') + 'Class']('disabled')
 })
 
-const listInquiries = (inquiries = [], responseList = {}) => {
+const listInquiries = (inquiries = [], responseList = {}, phoneVerification) => {
     const keys = { p: 'phone', f: 'fax', e: 'email', m: 'mail' }
     const list = { p: [], f: [], e: [], m: [] }
     inquiries.map(inquiry => list[inquiry.method].push(inquiry))
 
     for (const method in list) {
-        let html = '' //, i = 0, l= list[method].length
+        let html = '', i = 0, l = list[method].length, m4 = false
         for (const inquiry of list[method]) {
+            const n = ++i
+            if (l - 4 >= n) {
+                m4 = true
+                continue
+            }
+
             const { firstName, lastName, alias, inquiredOn } = inquiry
 
             let header = `<div class="header">${new Person({ firstName, lastName, alias }).fullName('Al')} <small>(${moment(inquiredOn).format('ll')})</small>`
@@ -256,12 +263,17 @@ const listInquiries = (inquiries = [], responseList = {}) => {
                 else if (response === 'nr') style = 'red'
 
                 desc = `<span class="ui ${style} text">${responseList[response]}</span>`
-                // if (++i === l)
-                //     header += ` &nbsp;<a href="" style="font-weight: normal; font-size: .9em;"><i class="green pen icon"></i></a>`
+                if (n === l)
+                    header += ` &nbsp;<a href="" style="font-weight: normal; font-size: .8em;"><i class="green pen icon"></i></a>`
 
                 if (inquiredOn === moment().format('YYYY-MM-DD'))
                     $dropdown.inqResponse.find(`.item[data-value="${response}"]`).addClass('disabled')
-                if (response === 'pu' || response === 'cb') $button.phoneVerif.parent().show()
+                if (response === 'pu' || response === 'cb') {
+                    const button = phoneVerification
+                        ? '<div class="ui right green icon inverted label">Phone Verification <i class="checkmark icon"></i></div>'
+                        : '<i class="red phone volume icon"></i>'
+                    $button.phoneVerif.html(button).parent().show()
+                }
             } else {
                 if (inquiredOn === moment().format('YYYY-MM-DD'))
                     $dropdown.inqMethod.find(`.item[data-value="${method}"]`).addClass('disabled')
@@ -274,15 +286,22 @@ const listInquiries = (inquiries = [], responseList = {}) => {
             html += `${header + desc}</div></div>`
         }
 
+        if (m4) html = `<div class="item"><div class="content inquiry-list-content">...</div></div>${html}`
         $(`#${keys[method]}-inquiry-list`).html(html)
     }
 }
 
 const refreshInquiries = (_id, _appId) => {
     $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}/inquiries?app=${_appId}`, {
-        success(response) { listInquiries(response.data, response.supData.responseList) },
+        success(response) { listInquiries(response.data, response.supData.responseList, response.supData.phoneVerification) },
     })
 }
+
+$button.phoneVerif.click(function(evt) {
+    evt.preventDefault()
+    $section.inquiries.hide()
+    $section.phoneVerif.show()
+})
 
 
 table.on('draw', function() {
@@ -300,7 +319,7 @@ table.on('draw', function() {
             $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}?app=${_appId}`, {
                 success(response) {
                     const { employer, phone, fax, email, address, startedOn, leftOn, usdot, application } = response.data
-                    const { inquiries, responseList } = response.supData
+                    const { inquiries, phoneVerification, responseList } = response.supData
 
                     let period = `${moment(startedOn).format('ll')} – `
                     period += leftOn ? moment(leftOn).format('ll') : ' Still Employed'
@@ -404,6 +423,7 @@ table.on('draw', function() {
 
                             $message.noCarrier.hide()
                             $section.inquiries.show()
+                            $section.phoneVerif.hide()
                             $item.verification.addClass('disabled')
 
                             closeInquiryForm()

@@ -2519,7 +2519,7 @@ class Employment {
                                         appId: this.appId || Application.matchIdHash(this._appId),
                                         method, inquiredOn,
                                     },
-                                    sort: 'inquiredOn',
+                                    sort: 'createdAt',
                                 },
                                 {
                                     db: db.online,
@@ -2587,6 +2587,10 @@ class Employment {
                                     join: [ 'id', 'inquiredBy', 1 ],
                                 },
                             ]
+                            if (!hideRawId) {
+                                batch[0].fields.unshift('emplId', 'appId')
+                                batch[1].fields.unshift('inquiredBy')
+                            }
 
                             const [ rows ] = await mysql.execute(Query.select(db.carrier, batch))
                             rows.map(row => {
