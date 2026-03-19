@@ -1,6 +1,7 @@
 import table from './prev-employers.mjs'
 import Person from '/modules/tools/core/person.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
+import strip from '/modules/tools/utils/formatter.mjs'
 import { inputEvent } from '/modules/events/form.mjs'
 import { busNameEvent } from '/modules/events/company.mjs'
 import { telEvent } from '/modules/events/contacts.mjs'
@@ -61,6 +62,9 @@ const $form = {
 const $message = {
     noCarrier: $('#no-carrier-message'),
 }
+const $section = {
+    inquiries: $('#inquiry-section'),
+}
 
 const $emplData = {
     employer: {
@@ -94,6 +98,9 @@ const $a = {
     faxVerifPdf: $('#fax-verification-pdf-url'),
     emailVerifPdf: $('#email-verification-pdf-url'),
     mailVerifPdf: $('#mail-verification-pdf-url'),
+}
+const $button = {
+    phoneVerif: $('#phone-verification-button')
 }
 
 const $formItem = $('.form-item')
@@ -229,13 +236,51 @@ $fmcsr.on('click', function() {
     $usdot.parent()[($(this).prop('checked') ? 'remove' : 'add') + 'Class']('disabled')
 })
 
-const listInquires = (inquires = []) => {
-    //
+const listInquiries = (inquiries = [], responseList = {}) => {
+    const keys = { p: 'phone', f: 'fax', e: 'email', m: 'mail' }
+    const list = { p: [], f: [], e: [], m: [] }
+    inquiries.map(inquiry => list[inquiry.method].push(inquiry))
+
+    for (const method in list) {
+        let html = '' //, i = 0, l= list[method].length
+        for (const inquiry of list[method]) {
+            const { firstName, lastName, alias, inquiredOn } = inquiry
+
+            let header = `<div class="header">${new Person({ firstName, lastName, alias }).fullName('Al')} <small>(${moment(inquiredOn).format('ll')})</small>`
+            let desc = '<span class="ui dark orange text">Waiting for response...</span>'
+
+            if (method === 'p') {
+                const { response } = inquiry
+                let style = 'dark green'
+                if (response === 'vm') style = 'dark orange'
+                else if (response === 'nr') style = 'red'
+
+                desc = `<span class="ui ${style} text">${responseList[response]}</span>`
+                // if (++i === l)
+                //     header += ` &nbsp;<a href="" style="font-weight: normal; font-size: .9em;"><i class="green pen icon"></i></a>`
+
+                if (inquiredOn === moment().format('YYYY-MM-DD'))
+                    $dropdown.inqResponse.find(`.item[data-value="${response}"]`).addClass('disabled')
+                if (response === 'pu' || response === 'cb') $button.phoneVerif.parent().show()
+            } else {
+                if (inquiredOn === moment().format('YYYY-MM-DD'))
+                    $dropdown.inqMethod.find(`.item[data-value="${method}"]`).addClass('disabled')
+                $a[`${keys[method]}VerifPdf`].parent().show()
+            }
+
+            header += '</div>'
+
+            html += '<div class="item"><div class="content inquiry-list-content">'
+            html += `${header + desc}</div></div>`
+        }
+
+        $(`#${keys[method]}-inquiry-list`).html(html)
+    }
 }
 
 const refreshInquiries = (_id, _appId) => {
     $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}/inquiries?app=${_appId}`, {
-        success(response) { listInquires(response.data) },
+        success(response) { listInquiries(response.data, response.supData.responseList) },
     })
 }
 
@@ -255,7 +300,7 @@ table.on('draw', function() {
             $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}?app=${_appId}`, {
                 success(response) {
                     const { employer, phone, fax, email, address, startedOn, leftOn, usdot, application } = response.data
-                    const { inquires } = response.supData
+                    const { inquiries, responseList } = response.supData
 
                     let period = `${moment(startedOn).format('ll')} – `
                     period += leftOn ? moment(leftOn).format('ll') : ' Still Employed'
@@ -283,7 +328,8 @@ table.on('draw', function() {
 
                     if (!application.carrier) {
                         $message.noCarrier.show()
-                    } else listInquires(inquires)
+                        $section.inquiries.hide()
+                    } else listInquiries(inquiries, responseList)
 
                     if (fax) $inqSavedFax.val(fax)
                     if (email) $inqSavedEmail.val(email)
@@ -332,12 +378,14 @@ table.on('draw', function() {
                             data[this.name] = this.value
                         })
 
-                        if (data.method && !data.response) return alert('Response must be selected!')
-console.log(data)
+                        if (data.method === 'p' && !data.response) return alert('Response must be selected!')
+                        if (data.method === 'f' && data.fax) data.fax = strip(data.fax)
+                        let method = 'POST', resProp = 'added'
+
                         $.ajax(`/api/resource/drivers/applications/prev-employments/${_id}/${_appId}/inquiries`, {
-                            method: 'POST', data,
+                            method, data,
                             success(response) {
-                                if (response.status === 'OK') {
+                                if (response[resProp]) {
                                     closeInquiryForm()
                                     refreshInquiries(_id, _appId)
                                 }
@@ -355,12 +403,16 @@ console.log(data)
                             $emplData.carrier.all.html(null)
 
                             $message.noCarrier.hide()
+                            $section.inquiries.show()
                             $item.verification.addClass('disabled')
 
                             closeInquiryForm()
                             $inqSavedFax.val(null)
                             $inqSavedEmail.val(null)
-                            //! remove inquiry list
+                            $('.inquiry-list').html(null)
+                            $dropdown.inqMethod.find(`.item`).removeClass('disabled')
+                            $dropdown.inqResponse.find(`.item`).removeClass('disabled')
+                            $button.phoneVerif.parent().hide()
 
                             $id.val(null)
                             $appId.val(null)

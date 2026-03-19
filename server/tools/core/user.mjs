@@ -420,6 +420,9 @@ class User extends Person {
             }
 
 
+            this.sign = () => this.fullName('AL')
+
+
             this.log = params => classInstance.log(this, new.target, params)
         }
     }

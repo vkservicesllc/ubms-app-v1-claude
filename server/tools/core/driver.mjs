@@ -2450,7 +2450,39 @@ class Employment {
             this.session = session
             this.config = { hideRawId, hideSensitive }
 
-            this.add = (target, body) => classInstance.add(this, new.target, target, body)
+
+            this.add = async (target, body) => {
+                if (!this.session?.user?.id) throw new Error('Employment Constructor Method Error [ADD]: Session user not supplied')
+                const { branch, siteId } = this.session
+
+                let added = false
+                switch (target) {
+
+                    case 'attempts':
+                        {
+                            body.emplId = this.id
+                            body.appId = this.appId
+                            body.inquiredOn = moment().utc().format('YYYY-MM-DD')
+                            body.inquiredBy = this.session.user.id
+                            body.inquirer_ = this.session.user.signature_
+                            body.createdIn = JSON.stringify({ branch, siteId })
+
+                            const [ result ] = await mysql.execute(query.driver_employment.attempts.insert(body))
+                            added = result.affectedRows > 0
+                        }
+                        break
+
+                    case 'phoneVerification':
+                        {
+                            //! to be addeds
+                        }
+                        break
+
+                }
+
+                return { added }
+            }
+
 
             this.fetch = async (target, filter = {}, { hideRawId = false } = {}) => {
                 if (!this.session?.user?.id) throw new Error('Employment Constructor Method Error [FETCH]: Session user not supplied')
@@ -2487,6 +2519,7 @@ class Employment {
                                         appId: this.appId || Application.matchIdHash(this._appId),
                                         method, inquiredOn,
                                     },
+                                    sort: 'inquiredOn',
                                 },
                                 {
                                     db: db.online,
@@ -2510,6 +2543,7 @@ class Employment {
                                     fields: [
                                         Employment.hashId('emplId'),
                                         Application.hashId('appId'),
+                                        'response',
                                         'correct',
                                         'driver',
                                         'safe',
@@ -2541,6 +2575,7 @@ class Employment {
                                         'emplId', 'emplId', 0, [
                                             [ 'appId', 'appId' ],
                                             [ 'method', 'method' ],
+                                            [ 'response', 'response' ],
                                             [ 'inquiredOn', 'inquiredOn' ],
                                         ],
                                     ],
@@ -2572,11 +2607,13 @@ class Employment {
                 }
             }
 
+
             this.update = body => {
                 if (!body.fmcsr) body.usdot = null
 
                 return classInstance.update(this, new.target, body)
             }
+
 
             this.delete = () => classInstance.delete(this, new.target)
 

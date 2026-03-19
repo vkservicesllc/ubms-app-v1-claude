@@ -431,9 +431,10 @@ export const classStatic = {
 
 function setSession(user = {}, branch, siteId = null) {
     const { id, DS, DSA, status, location, unscoped } = user
+    const signature_ = user.sign ? user.sign() : null
 
     return {
-        user: { id, DS, DSA, status, location, unscoped },
+        user: { id, DS, DSA, status, location, unscoped, signature_ },
         branch, siteId,
     }
 }

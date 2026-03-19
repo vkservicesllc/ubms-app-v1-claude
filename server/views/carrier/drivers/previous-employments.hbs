@@ -106,7 +106,7 @@
                             <p>In order to proceed with employment verification, you must be operating under a hiring carrier</p>
                         </div>
                     </div>
-                    <div class="ui relaxed divided list">
+                    <div class="ui relaxed divided list" id="inquiry-section">
                         <div class="item inquiry-item">
                             <a id="add-inquiry" href="" style="display: inline-block; margin-bottom: 1.5rem !important;"><i class="plus middle aligned icon"></i></a>
                             <div class="content" style="display: none;">
@@ -149,7 +149,7 @@
                                         <span class="right floated field">
                                             <label></label>
                                             <div class="ui">
-                                                <button class="ui button" id="cancel-inquiry">Cancel</button>
+                                                <button type="button" class="ui button" id="cancel-inquiry">Cancel</button>
                                                 <div class="or inquiry-action" style="display: none;"></div>
                                                 <button type="submit" class="ui inquiry-action button" id="submit-inquiry" style="display: none;">Save</button>
                                             </div>
@@ -161,8 +161,8 @@
                         <div class="item inquiry-item">
                             <i class="large phone middle aligned icon"></i>
                             <div class="content">
-                                <div class="ui horizontal left floated list" id="phone-inquiry-list">
-<div class="item">
+                                <div class="ui horizontal left floated list inquiry-list" id="phone-inquiry-list">
+{{!-- <div class="item">
     <div class="content inquiry-list-content">
         <div class="header">Jane D. <small>(Mar 15, 2026)</small></div>
         <span class="ui dark orange text">Left Voicemail</span>
@@ -179,58 +179,62 @@
         <div class="header">Jane D. <small>(Mar 17, 2026)</small></div>
         <span class="ui dark green text">Picked up</span>
     </div>
-</div>
+</div> --}}
                                 </div>
-                                <span class="right floated" style="display: none!;">
-                                    <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/phone" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                <span class="right floated" style="display: none;">
+                                    {{!-- <a class="verification-pdf-url" id="phone-verification-pdf-url" href="/drivers/previous-employments/files/verification/phone" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a> --}}
+                                    <a id="phone-verification-button" href="" style="font-size: 1.4em;"><i class="red phone volume icon"></i></a>
                                 </span>
                             </div>
                         </div>
                         <div class="item inquiry-item">
                             <i class="large fax middle aligned icon"></i>
                             <div class="content">
-                                <div class="ui horizontal left floated list" id="fax-inquiry-list">
-<div class="item">
+                                <div class="ui horizontal left floated list inquiry-list" id="fax-inquiry-list">
+{{!-- <div class="item">
     <div class="content inquiry-list-content">
         <div class="header">Mary S. <small>(Mar 14, 2026)</small></div>
         <span class="ui dark orange text">Waiting for response...</span>
     </div>
-</div>
+</div> --}}
                                 </div>
                                 <span class="right floated" style="display: none;">
                                     <a class="verification-pdf-url" id="fax-verification-pdf-url" href="/drivers/previous-employments/files/verification/fax" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                    <a class="verification-upload-button" id="fax-verification-upload-button" href="" style="font-size: 1.2em;"><i class="blue upload icon"></i></a>
                                 </span>
                             </div>
                         </div>
                         <div class="item inquiry-item">
                             <i class="large at middle aligned icon"></i>
                             <div class="content">
-                                <div class="ui horizontal left floated list" id="email-inquiry-list">
-<div class="item">
+                                <div class="ui horizontal left floated list inquiry-list" id="email-inquiry-list">
+{{!-- <div class="item">
     <div class="content inquiry-list-content">
         <div class="header">Stacy S. <small>(Mar 14, 2026)</small></div>
         <span class="ui dark orange text">Waiting for response...</span>
     </div>
-</div>
+</div> --}}
                                 </div>
                                 <span class="right floated" style="display: none;">
                                     <a class="verification-pdf-url" id="email-verification-pdf-url" href="/drivers/previous-employments/files/verification/email" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                    <a class="verification-upload-button" id="email-verification-upload-button" href="" style="font-size: 1.2em;"><i class="blue upload icon"></i></a>
                                 </span>
                             </div>
                         </div>
                         <div class="item inquiry-item">
                             <i class="large envelope middle aligned icon"></i>
                             <div class="content">
-                                <div class="ui horizontal left floated list" id="mail-inquiry-list">
-<div class="item">
+                                <div class="ui horizontal left floated list inquiry-list" id="mail-inquiry-list">
+{{!-- <div class="item">
     <div class="content inquiry-list-content">
         <div class="header">Becca H. <small>(Mar 14, 2026)</small></div>
         <span class="ui dark orange text">Waiting for response...</span>
     </div>
-</div>
+</div> --}}
                                 </div>
                                 <span class="right floated" style="display: none;">
                                     <a class="verification-pdf-url" id="mail-verification-pdf-url" href="/drivers/previous-employments/files/verification/mail" target="_blank" style="font-size: 1.2em;"><i class="black file pdf outline icon"></i></a>
+                                    <a class="verification-upload-button" id="mail-verification-upload-button" href="" style="font-size: 1.2em;"><i class="blue upload icon"></i></a>
                                 </span>
                             </div>
                         </div>

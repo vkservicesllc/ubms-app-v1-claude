@@ -44,14 +44,15 @@ router.get('/applications/prev-employments/:_id?/:target?', User.mw.verify, Team
         if (_id) {
             const employment = await Employment.fetch(res.session, { _id, _appId }, { hideRawId, hideSensitive: false })
             const inquiries = await employment.fetch('attempts', {}, { hideRawId })
+            const responseList = Employment.list.inquiryResponse
 
             if (target !== 'inquiries')
                 return res.json({
                     data: employment,
-                    supData: { inquiries },
+                    supData: { inquiries, responseList },
                 })
 
-            return res.json({ data: inquiries })
+            return res.json({ data: inquiries, supData: { responseList } })
         }
 
         const _teamId = res.session?.team?._id
@@ -154,8 +155,11 @@ const dynamicValidator = (req, res, next) => {
 router.post('/applications/prev-employments/:_id/:_appId/inquiries', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
         const { _id, _appId } = req.params
+
         const employment = await Employment.fetch(res.session, { _id, _appId })
-console.log(req.body)
+        const { added } = await employment.add('attempts', req.body)
+
+        res.json({ added })
     } catch (err) {
         sendError.server(req, res, err)
     }
