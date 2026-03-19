@@ -952,7 +952,7 @@ router.get('/applicants', User.mw.verify, Team.mw.verify, async (req, res) => {
 
 router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
-        const { user, team } = res.session
+        const { user } = res.session
         const { DS } = user
         const permissions = await user.permissions(res.session)
         if (!inPEnvironment('d:drv/emp', permissions, DS))

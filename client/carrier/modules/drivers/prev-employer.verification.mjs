@@ -4,7 +4,7 @@ import Address from '/modules/tools/core/address.us.mjs'
 import strip from '/modules/tools/utils/formatter.mjs'
 import { inputEvent } from '/modules/events/form.mjs'
 import { busNameEvent } from '/modules/events/company.mjs'
-import { telEvent } from '/modules/events/contacts.mjs'
+import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
@@ -148,6 +148,10 @@ $dropdown.inqMethod.dropdown({
 $dropdown.inqResponse.dropdown()
 
 telEvent(TS.fax)
+
+emailEvent(TS.email)
+
+inputEvent(TS.inquiryNote, { word: true, capitalize: 'first' })
 
 const closeInquiryForm = () => {
     $form.inquiry.parent().hide()

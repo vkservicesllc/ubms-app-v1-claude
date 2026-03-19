@@ -5,7 +5,7 @@ const sendError = require('../../tools/utils/error')
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
-import permissions, { withPrivileges } from '../../tools/core/user/permissions.mjs'
+import permissions, { inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 
 /* Import: Validators */
 import validationCheck from '../../tools/form/validator.mjs'
@@ -155,10 +155,19 @@ const dynamicValidator = (req, res, next) => {
 
 router.post('/applications/prev-employments/:_id/:_appId/inquiries', User.mw.verify, Team.mw.verify, async (req, res) => {
     try {
+        const { user } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('d:drv/emp', 'update', permissions, DS))
+            return sendError.auth(req, res)
+
         const { _id, _appId } = req.params
 
         const employment = await Employment.fetch(res.session, { _id, _appId })
         const { added } = await employment.add('attempts', req.body)
+
+        const { fax, email } = req.body
+        await employment.update({ fax, email })
 
         res.json({ added })
     } catch (err) {
