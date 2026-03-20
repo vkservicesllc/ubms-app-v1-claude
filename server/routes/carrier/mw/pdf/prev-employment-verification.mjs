@@ -14,14 +14,14 @@ import { drawCheckBox, wrapText } from './components.mjs'
 export default async (employment = {}, method) => {
 
 //console.log(employment) //! TEMP
-    const { employer, phone, address, application, carrier = {} } = employment
+    const { employer, position, startedOn, leftOn, phone, address, application, carrier = {} } = employment
     const { phone: appPhone, ssn: appSsn, finishedAt } = application
 
     const pdfDoc = await PDFDocument.create()
     pdfDoc.registerFontkit(fontkit)
 
     const applicant = new Person(application).fullName()
-    pdfDoc.setTitle(`${applicant} - Employment Verification`)
+    pdfDoc.setTitle(`${applicant} - Employment Verification (${employer})`)
 
     const { width, height, marginX, marginY } = pdfParams.letter
     let x = marginX, y = height - marginY, text, textWidth, lines
@@ -38,7 +38,7 @@ export default async (employment = {}, method) => {
         title: 14,
         section: 9.5,
         label: 9.4,
-        value: 11.7,
+        value: 11.2,
         signature: 20,
     }
     const color = {
@@ -86,7 +86,7 @@ export default async (employment = {}, method) => {
         end: { x: width - marginX, y: y - 1 },
         color: color.line,
     })
-    page.drawText(formatSsn(appSsn), {
+    page.drawText(formatSsn(appSsn, 'x'), {
         x: x + 2, y: y + 2,
         font: font.value, size: size.value,
     })
@@ -123,6 +123,71 @@ export default async (employment = {}, method) => {
     page.drawText('Federal Regulations (49 CFR Parts 40, 382, and 391) require prior employers to respond to this inquiry.', {
         x, y, font: font.label, size: size.label, color: color.label,
     })
+
+    x = marginX
+    y -= fieldHeight * 1.2
+
+    page.drawText('The above-named applicant has submitted an application for a driver position with our company and has indicated that they were', {
+        x, y, font: font.label, size: size.label, color: color.label,
+    })
+    x = marginX
+    y -= gap * 1.7
+    text = 'employed by your organization as a'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: x + 150, y: y - 1 },
+        color: color.line,
+    })
+    page.drawText(position, {
+        x: x + 2, y: y + 2,
+        font: font.value, size: size.value,
+    })
+    x += 150 + gap / 2
+    text = 'from'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: x + 75, y: y - 1 },
+        color: color.line,
+    })
+    page.drawText(moment(startedOn).format('MM/DD/YYYY'), {
+        x: x + 2, y: y + 2,
+        font: font.value, size: size.value,
+    })
+    x += 75 + gap / 2
+    text = 'to'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: x + 75, y: y - 1 },
+        color: color.line,
+    })
+    page.drawText(leftOn ? moment(leftOn).format('MM/DD/YYYY') : 'Present Day', {
+        x: x + 2, y: y + 2,
+        font: font.value, size: size.value,
+    })
+    x += 75 + 2
+    page.drawText('.', { x, y, font: font.label, size: size.label })
+
+
+
+
+    // text = 'The above-named applicant has submitted an application for a driver position with our company and has indicated that they were employed by your organization as a '
+    // lines = wrapText(text, width, font.label, size.label, marginX, padding)
+    // lines.forEach(line => {
+    //     page.drawText(line, {
+    //         x: marginX, y,
+    //         font: font.label, size: size.label, color: color.label,
+    //     })
+    //     y -= gap * 1.2
+    // })
 
 
     return await pdfDoc.save()
