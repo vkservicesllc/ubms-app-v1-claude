@@ -4,6 +4,7 @@ const sendError = require('../../tools/utils/error')
 /* Import: Tools */
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
+import Carrier from '../../tools/core/carrier.mjs'
 import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 import permissions, { inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 
@@ -57,12 +58,20 @@ router.get('/applications/prev-employments/:_id?/:target?', User.mw.verify, Team
         }
 
         const _teamId = res.session?.team?._id
+        const carrierId = [ null ]
+
+        if (DS) {
+            const carriers = await Carrier.fetch(res.session)
+            carriers.map(carrier => carrierId.push(carrier.id))
+        } else {
+            const companies = await sessionUser.fetch('jx.companies', { category: 'crr' })
+            companies.map(company => carrierId.push(company.externalId.carrierId))
+        }
+
+        //! Carriers
 
         res.json({
-            data: await Employment.fetch(res.session, { condition: 'c', _teamId, verify: true }, { hideRawId }),
-            supData: {
-                inquiries: null, // await employment.fetch('attempts', {}, { hideRawId })
-            },
+            data: await Employment.fetch(res.session, { condition: 'c', _teamId, carrierId, verify: true }, { hideRawId }),
             actions: {
                 data: {
                     modify: DS || permissions?.['d:drv/emp'].includes('3'),
