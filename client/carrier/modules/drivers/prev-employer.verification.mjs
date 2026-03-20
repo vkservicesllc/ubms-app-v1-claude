@@ -101,7 +101,8 @@ const $a = {
     mailVerifPdf: $('#mail-verification-pdf-url'),
 }
 const $button = {
-    phoneVerif: $('#phone-verification-button')
+    phoneVerif: $('#phone-verification-button'),
+    inquries: $('#inquries-link'),
 }
 
 const $formItem = $('.form-item')
@@ -255,10 +256,12 @@ const listInquiries = (inquiries = [], responseList = {}, phoneVerification) => 
                 continue
             }
 
-            const { firstName, lastName, alias, inquiredOn } = inquiry
+            const { firstName, lastName, alias, inquiredOn, note } = inquiry
 
             let header = `<div class="header">${new Person({ firstName, lastName, alias }).fullName('Al')} <small>(${moment(inquiredOn).format('ll')})</small>`
-            let desc = '<span class="ui dark orange text">Waiting for response...</span>'
+            let desc = '<span class="ui dark orange text"'
+            if (note) desc += ` title="${note}" `
+            desc += '>Waiting for response...</span>'
 
             if (method === 'p') {
                 const { response } = inquiry
@@ -266,7 +269,9 @@ const listInquiries = (inquiries = [], responseList = {}, phoneVerification) => 
                 if (response === 'vm') style = 'dark orange'
                 else if (response === 'nr') style = 'red'
 
-                desc = `<span class="ui ${style} text">${responseList[response]}</span>`
+                desc = `<span class="ui ${style} text"`
+                if (note) desc += ` title="${note}" `
+                desc += `>${responseList[response]}</span>`
                 if (n === l)
                     header += ` &nbsp;<a href="" style="font-weight: normal; font-size: .8em;"><i class="green pen icon"></i></a>`
 
@@ -305,6 +310,11 @@ $button.phoneVerif.click(function(evt) {
     evt.preventDefault()
     $section.inquiries.hide()
     $section.phoneVerif.show()
+})
+$button.inquries.click(function(evt) {
+    evt.preventDefault()
+    $section.phoneVerif.hide()
+    $section.inquiries.show()
 })
 
 
