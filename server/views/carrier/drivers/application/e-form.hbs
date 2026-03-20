@@ -122,8 +122,71 @@
 
                     <div class="ui active tab" data-tab="workflow">
                         <form class="ui loading form" id="assign-form" action="{{actionUrl.workflow}}" method="POST" autocomplete="off">
-                            <h5 class="ui blue text first header">Checklist</h5>
-                            <div class="ui compact grid" style="margin-top: .35rem;">
+                            {{!-- <h5 class="ui blue text first header">Checklist</h5> --}}
+                            <div class="ui circular steps" style="outline: 0 dotted red; margin: .65rem .2rem 3.5rem !important;">
+                                <div class="completed step">
+                                    <div class="content">
+                                        <div class="title">Application Form</div>
+                                        <div class="description">Electronic & PDF</div>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="content">
+                                        <div class="title">Legal Documents</div>
+                                        <div class="description">US Passport (Card)<br/>Social Security Card</div>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="content">
+                                        <div class="title">Driver's License</div>
+                                        <div class="description">Non-CDL</div>
+                                    </div>
+                                </div>
+                                <div class="step">
+                                    <div class="content">
+                                        <div class="title">Medical Card</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{!-- <div class="ui grid">
+                                <div class="four wide column">
+                                    <div class="ui circular vertical steps">
+                                        <div class="completed step">
+                                            <div class="content">
+                                                <div class="title">Application Form</div>
+                                                <div class="description">Electronic & PDF</div>
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div class="content">
+                                                <div class="title">Legal Documents</div>
+                                                <div class="description">Passport</div>
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div class="content">
+                                                <div class="title">Social Security Card</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="four wide column">
+                                    <div class="ui circular vertical steps">
+                                        <div class="step">
+                                            <div class="content">
+                                                <div class="title">Driver's License</div>
+                                                <div class="description">Non-CDL</div>
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div class="content">
+                                                <div class="title">Medical Card</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> --}}
+                            {{!-- <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     <div class="ui list">
                                         <div class="item">
@@ -171,7 +234,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <h5 class="ui blue text first header">Assignment</h5>
                             <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="six wide field">
