@@ -7,6 +7,7 @@ import Team from '../../tools/core/team.mjs'
 import Individual from '../../tools/core/individual.mjs'
 import Company, { Owner } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
+import { Application as DriverApplication } from '../../tools/core/driver.mjs'
 
 /* Import: Validators */
 import validationCheck from '../../tools/form/validator.mjs'
@@ -304,6 +305,8 @@ router.post('/companies/:_id/:target', User.mw.verify, User.mw.superAdminOnly, d
         const resource = await Company.fetch(res.session, { _id }, { hideRawId })
         const { route: newRoute } = resource
 
+        await DriverApplication.calibrate(res.session, target)
+
         res.json({ added, data, props: { oldRoute, newRoute } })
     } catch (err) {
         sendError.server(req, res, err)
@@ -324,6 +327,8 @@ router.put('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminO
         const data = await company.fetch(target)
         const resource = await Company.fetch(res.session, { _id }, { hideRawId })
         const { route: newRoute } = resource
+
+        await DriverApplication.calibrate(res.session, target)
 
         res.json({ updated, data, props: { oldRoute, newRoute } })
     } catch (err) {
@@ -376,7 +381,7 @@ router.delete('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdm
 
         const { route: oldRoute } = company
         const { deleted } = await company.delete(target, { since })
-        const data = await company.fetch(target, { hideRawId })
+        const data = await company.fetch(target, {}, { hideRawId })
         const resource = await Company.fetch(res.session, { _id }, { hideRawId })
         const { route: newRoute } = resource
 

@@ -120,7 +120,7 @@ export default async (carrier, application, addresses, violations, accidents, em
         const { name, address } = carrier
         const { address1, address2, city, state, zip } = address
         const addrLine1 = address1 + (address2 ? `, ${address2}` : '')
-        const addrLine2 = `${city}, ${state[0]} ${zip}`
+        const addrLine2 = `${city}, ${state} ${zip}`
         let { phone, fax } = carrier
         phone = formatTel(phone)
         if (fax) fax = formatTel(fax)

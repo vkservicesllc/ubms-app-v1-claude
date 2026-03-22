@@ -95,8 +95,10 @@ class Company {
         this.comparator = {
             name: data.nameSince,
             address: data.addrSince,
+            mail: data.mailSince,
             phone: data.phoneSince,
             fax: data.faxSince,
+            email: data.emailSince,
             ownership: data.ownershipSince,
         }
 
@@ -241,6 +243,7 @@ class Company {
                 {
                     table: query.company.mail.table,
                     fields: [
+                        [ 'since', 'mailSince' ],
                         [ 'address1', 'mailAddress1' ],
                         [ 'address2', 'mailAddress2' ],
                         [ 'city', 'mailCity' ],
@@ -261,7 +264,7 @@ class Company {
                 },
                 {
                     table: query.company.emails.table,
-                    fields: 'email',
+                    fields: [ [ 'since', 'emailSince' ], 'email' ],
                     join,
                 },
                 //* External IDs based on category

@@ -7,15 +7,16 @@ import Person from '../../../../../client/global/modules/tools/core/person.mjs'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import pdfParams, { CustomFonts } from '../../../../settings/pdf-lib.mjs'
-import { ssn as formatSsn } from '../../../../../client/global/modules/tools/utils/formatter.mjs'
+import { ssn as formatSsn, tel as formatTel } from '../../../../../client/global/modules/tools/utils/formatter.mjs'
 import { drawCheckBox, wrapText } from './components.mjs'
 
 
 export default async (employment = {}, method) => {
 
 //console.log(employment) //! TEMP
-    const { employer, position, startedOn, leftOn, phone, address, application, carrier = {} } = employment
+    const { employer, position, startedOn, leftOn, phone, address, application } = employment
     const { phone: appPhone, ssn: appSsn, finishedAt } = application
+    const { carrier, carrierPhone, carrierFax, carrierAddress } = application
 
     const pdfDoc = await PDFDocument.create()
     pdfDoc.registerFontkit(fontkit)
@@ -36,6 +37,7 @@ export default async (employment = {}, method) => {
 
     const size = {
         title: 14,
+        subtitle: 12,
         section: 9.5,
         label: 9.4,
         value: 11.2,
@@ -59,6 +61,27 @@ export default async (employment = {}, method) => {
         x: width / 2 - textWidth / 2, y,
         font: font.title, size: size.title, color: color.title,
     })
+    y -= fieldHeight
+
+    page.drawText(carrier, { x, y, font: font.title, size: size.title * 1.2, color: color.title })
+    y -= 20
+    text = carrierAddress.address1
+    if (carrierAddress.address2) text += `, ${carrierAddress.address2}`
+    page.drawText(text, { x, y, font: font.title, size: size.title, color: color.title })
+    y -= 20
+    page.drawText(`${carrierAddress.city}, ${carrierAddress.state} ${carrierAddress.zip}`, {
+        x, y, font: font.title, size: size.title, color: color.title
+    })
+    y -= 20
+    text = 'Phone:'
+    textWidth = font.title.widthOfTextAtSize(text, size.subtitle)
+    page.drawText(text, { x, y, font: font.title, size: size.subtitle, color: color.title })
+    page.drawText(formatTel(carrierPhone), { x: x + textWidth + gap / 2, y, font: font.title, size: size.title, color: color.title })
+    y -= 20
+    text = 'Fax:'
+    page.drawText(text, { x, y, font: font.title, size: size.subtitle, color: color.title })
+    page.drawText(carrierFax ? formatTel(carrierPhone) : '', { x: x + textWidth + gap / 2, y, font: font.title, size: size.title, color: color.title })
+
     y -= fieldHeight
 
     text = "Applicant's Full Name:"
@@ -155,7 +178,7 @@ export default async (employment = {}, method) => {
         end: { x: x + 75, y: y - 1 },
         color: color.line,
     })
-    page.drawText(moment(startedOn).format('MM/DD/YYYY'), {
+    page.drawText(moment(startedOn).format(dateFormat), {
         x: x + 2, y: y + 2,
         font: font.value, size: size.value,
     })
@@ -169,7 +192,7 @@ export default async (employment = {}, method) => {
         end: { x: x + 75, y: y - 1 },
         color: color.line,
     })
-    page.drawText(leftOn ? moment(leftOn).format('MM/DD/YYYY') : 'Present Day', {
+    page.drawText(leftOn ? moment(leftOn).format(dateFormat) : 'Present Day', {
         x: x + 2, y: y + 2,
         font: font.value, size: size.value,
     })

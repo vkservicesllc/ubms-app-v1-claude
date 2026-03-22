@@ -301,6 +301,7 @@ class Application {
         this.locked = data.locked
         this.step = data.step
         this.rehire = data.rehire
+        this.cloud = data.cloud
 
         if (data.leadLastName || data.leadSsn) {
             this.lead = {
@@ -509,6 +510,7 @@ class Application {
                 }),
                 phone: data.coPhone,
                 fax: data.coFax,
+                email: data.coEmail,
             }
             this.owner = new Person({
                 prefix: data.ownerPrefix,
@@ -1305,8 +1307,10 @@ class Application {
                                     body.matcher.owPersonId = carrier.owner.personId
                                     body.matcher.coNameSince = carrier.comparator.name
                                     body.matcher.coAddrSince = carrier.comparator.address
+                                    body.matcher.coMailSince = carrier.comparator.mail
                                     body.matcher.coPhoneSince = carrier.comparator.phone
                                     body.matcher.coFaxSince = carrier.comparator.fax
+                                    body.matcher.coEmailSince = carrier.comparator.email
                                     body.matcher.coOwnerSince = carrier.comparator.ownership
                                     body.matcher.owNameSince = carrier.owner.comparator.name
                                 }
@@ -1573,8 +1577,10 @@ class Application {
                 matcher.owPersonId = carrier.owner.personId
                 matcher.coNameSince = carrier.comparator.name
                 matcher.coAddrSince = carrier.comparator.address
+                matcher.coMailSince = carrier.comparator.mail
                 matcher.coPhoneSince = carrier.comparator.phone
                 matcher.coFaxSince = carrier.comparator.fax
+                matcher.coEmailSince = carrier.comparator.email
                 matcher.coOwnerSince = carrier.comparator.ownership
                 matcher.owNameSince = carrier.owner.comparator.name
             }
@@ -1759,6 +1765,7 @@ class Application {
                     'step',
                     'locked',
                     'rehire',
+                    'cloud',
                     'addrComplete',
                     'dlDenied',
                     'dlDeniedExpl',
@@ -2054,6 +2061,12 @@ class Application {
             },
             {
                 db: db.business,
+                table: query.company.emails.table,
+                fields: [ [ 'email', 'coEmail' ] ],
+                join: [ 'companyId', 'id', query.company.main.table, [ 'since', 'coEmailSince', 3 ] ],
+            },
+            {
+                db: db.business,
                 table: query.company.ownerships.table,
                 join: [ 'companyId', 'id', query.company.main.table, [ 'since', 'coOwnerSince', 3 ] ],
             },
@@ -2198,6 +2211,16 @@ class Application {
         })
 
         return data
+    }
+
+
+    //! NEEDED VERY MUCH
+    static calibrate = async (session, target) => {
+        //* Get all application matchers based on target
+        //* Get all company addresses, mail, phones, faxes, emails (by target only)
+        //* Run comparisons and get most appropriated since values
+        //* Selectively update matchers
+        //* If offline content is saved, delete it and leave online option only
     }
 
 
@@ -2423,6 +2446,8 @@ class Employment {
                 this.application.carrier = `${data.coBusName}, ${data.coCoType}`
                 this.application.carrierAlias = data.coAlias
                 this.application.carrierPhone = data.coPhone
+                this.application.carrierFax = data.coFax
+                this.application.carrierEmail = data.coEmail
                 this.application.carrierAddress = new Address({
                     address1: data.coAddress1,
                     address2: data.coAddress2,
@@ -2788,6 +2813,24 @@ class Employment {
                     join: [
                         'companyId', 'id', query.company.main.table,
                         [ 'since', 'coPhoneSince', query.driver_application.matcher.table ],
+                    ],
+                },
+                {
+                    db: db.business,
+                    table: query.company.faxes.table,
+                    fields: [ [ 'fax', 'coFax' ] ],
+                    join: [
+                        'companyId', 'id', query.company.main.table,
+                        [ 'since', 'coFaxSince', query.driver_application.matcher.table ],
+                    ],
+                },
+                {
+                    db: db.business,
+                    table: query.company.emails.table,
+                    fields: [ [ 'email', 'coEmail' ] ],
+                    join: [
+                        'companyId', 'id', query.company.main.table,
+                        [ 'since', 'coEmailSince', query.driver_application.matcher.table ],
                     ],
                 },
                 {

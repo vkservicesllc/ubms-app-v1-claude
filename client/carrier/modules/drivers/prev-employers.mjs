@@ -54,7 +54,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
                     case 'c':
                         icon = 'dark green check circle outline'
                         break
-                    case 'r':
+                    case 'u':
                         icon = 'red ban'
                         break
                     default:
@@ -157,7 +157,7 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
     createdRow(tr, row) {
         let bgc = 'lightyellow'
         if (row.status === 'c') bgc = 'palegreen'
-        if (row.status === 'r') bgc = 'lightpink'
+        if (row.status === 'u') bgc = 'lightpink'
 
         $(tr).css('background-color', bgc)
     },
