@@ -14,7 +14,7 @@ import { drawCheckBox, wrapText } from './components.mjs'
 export default async (employment = {}, method) => {
 
 //console.log(employment) //! TEMP
-    const { employer, position, startedOn, leftOn, phone, address, application } = employment
+    const { employer, position, startedOn, leftOn, phone, address, application = {} } = employment
     const { phone: appPhone, ssn: appSsn, finishedAt } = application
     const { carrier, carrierPhone, carrierFax, carrierAddress } = application
 

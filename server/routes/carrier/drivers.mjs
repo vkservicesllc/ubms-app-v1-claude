@@ -137,6 +137,7 @@ router.get('/files/previous-employment/verification', fileLoggedOut, Team.mw.ver
 
         const { emp: _id , app: _appId } = req.query
         const employment = await Employment.fetch(res.session, { _id, _appId }, { hideSensitive: false })
+        if (!employment?.application || !employment.application.carrier) return respond404(res)
         if (team && employment.application._teamId !== team._id) return respond404(res)
 
         const pdfBytes = await createEmplVerifPdf(employment)
