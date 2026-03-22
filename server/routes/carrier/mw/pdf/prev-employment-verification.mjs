@@ -80,7 +80,7 @@ export default async (employment = {}, method) => {
     y -= 20
     text = 'Fax:'
     page.drawText(text, { x, y, font: font.title, size: size.subtitle, color: color.title })
-    page.drawText(carrierFax ? formatTel(carrierPhone) : '', { x: x + textWidth + gap / 2, y, font: font.title, size: size.title, color: color.title })
+    page.drawText(carrierFax ? formatTel(carrierFax) : '', { x: x + textWidth + gap / 2, y, font: font.title, size: size.title, color: color.title })
 
     y -= fieldHeight
 
