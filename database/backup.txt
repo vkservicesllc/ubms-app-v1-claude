@@ -1,7 +1,7 @@
 # Ubuntu / MacOS
-mysqldump -u root -p --databases app_online app_person app_business app_carrier > ubms-app-YYYYMMDD.sql
-mysql -u root -p < ubms-app-YYYYMMDD.sql
+mysqldump -u root -p --databases app_online app_person app_business app_carrier > ubms-backup-YYYYMMDD.sql
+mysql -u root -p < ubms-backup-YYYYMMDD.sql
 
 # Windows
-"C:\Program Files\MySQL\MySQL Server 8.4\bin\mysqldump.exe" -u root -p --databases app_online app_person app_business app_carrier > ubms-app-YYYYMMDD.sql
-"C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u root -p < ubms-app-YYYYMMDD.sql
+"C:\Program Files\MySQL\MySQL Server 8.4\bin\mysqldump.exe" -u root -p --databases app_online app_person app_business app_carrier > ubms-backup-YYYYMMDD.sql
+"C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u root -p < ubms-backup-YYYYMMDD.sql
