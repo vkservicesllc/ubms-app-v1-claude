@@ -1,0 +1,131 @@
+-- SET GLOBAL sql_mode = (SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY','')); -- Remove ONLY_FULL_GROUP_BY
+-- SET GLOBAL sql_mode = (SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY')); -- Add ONLY_FULL_GROUP_BY
+
+
+SELECT 'Dropping databases and user...';
+DROP DATABASE IF EXISTS app_registration;
+DROP DATABASE IF EXISTS app_insurance;
+-- other company types
+DROP DATABASE IF EXISTS app_school;
+DROP DATABASE IF EXISTS app_carrier;
+DROP DATABASE IF EXISTS app_business;
+DROP DATABASE IF EXISTS app_office;
+DROP DATABASE IF EXISTS app_vehicle;
+DROP DATABASE IF EXISTS app_person;
+DROP DATABASE IF EXISTS app_online;
+DROP DATABASE IF EXISTS app_store;
+DROP DATABASE IF EXISTS app_public;
+DROP USER IF EXISTS '{USER}'@'{HOST}';
+
+
+SELECT 'Creating user...';
+CREATE USER IF NOT EXISTS '{USER}'@'{HOST}'
+    IDENTIFIED WITH caching_sha2_password BY '{PASS}';
+
+
+SELECT 'Creating database `app_public` and granting permissions...';
+CREATE DATABASE IF NOT EXISTS app_public;
+GRANT SELECT, INSERT, UPDATE, DELETE ON app_public.* TO '{USER}'@'{HOST}';
+
+
+USE app_public;
+SOURCE {PATH}/ubms-app-v1/database/schema/public/us-zips.sql
+
+
+SELECT 'Creating database `app_store` and granting permissions...';
+CREATE DATABASE IF NOT EXISTS app_store;
+GRANT SELECT, INSERT, UPDATE, DELETE ON app_store.* TO '{USER}'@'{HOST}';
+USE app_store;
+
+
+SELECT 'Creating table `app_store`.`sessions`...';
+CREATE TABLE IF NOT EXISTS `sessions` (
+  `session_id` varchar(128) COLLATE utf8mb4_bin NOT NULL,
+  `expires` int(11) unsigned NOT NULL,
+  `data` mediumtext COLLATE utf8mb4_bin,
+  PRIMARY KEY (`session_id`)
+) ENGINE=InnoDB;
+
+
+SELECT 'Creating database `app_online` and granting permissions...';
+CREATE DATABASE IF NOT EXISTS app_online;
+GRANT SELECT, INSERT, UPDATE, DELETE ON app_online.* TO '{USER}'@'{HOST}';
+
+
+USE app_online;
+SOURCE {PATH}/ubms-app-v1/database/schema/app/online.sql;
+
+
+SELECT 'Creating database `app_person` and granting permissions...';
+CREATE DATABASE IF NOT EXISTS app_person;
+GRANT SELECT, INSERT, UPDATE, DELETE ON app_person.* TO '{USER}'@'{HOST}';
+
+
+USE app_person;
+SOURCE {PATH}/ubms-app-v1/database/schema/app/person.sql;
+
+
+SELECT 'Creating database `app_vehicle` and granting permissions...';
+CREATE DATABASE IF NOT EXISTS app_vehicle;
+GRANT SELECT, INSERT, UPDATE, DELETE ON app_vehicle.* TO '{USER}'@'{HOST}';
+
+
+USE app_vehicle;
+SOURCE {PATH}/ubms-app-v1/database/schema/app/vehicle.sql;
+
+
+SELECT 'Creating database `app_office` and granting permissions...';
+CREATE DATABASE IF NOT EXISTS app_office;
+GRANT SELECT, INSERT, UPDATE, DELETE ON app_office.* TO '{USER}'@'{HOST}';
+
+
+USE app_office;
+SOURCE {PATH}/ubms-app-v1/database/schema/app/office.sql;
+
+
+SELECT 'Creating database `app_business` and granting permissions...';
+CREATE DATABASE IF NOT EXISTS app_business;
+GRANT SELECT, INSERT, UPDATE, DELETE ON app_business.* TO '{USER}'@'{HOST}';
+
+
+USE app_business;
+SOURCE {PATH}/ubms-app-v1/database/schema/app/business.sql;
+
+
+SELECT 'Creating database `app_carrier` and granting permissions...';
+CREATE DATABASE IF NOT EXISTS app_carrier;
+GRANT SELECT, INSERT, UPDATE, DELETE ON app_carrier.* TO '{USER}'@'{HOST}';
+
+
+USE app_carrier;
+SOURCE {PATH}/ubms-app-v1/database/schema/app/carrier.sql;
+
+
+SELECT 'Creating database `app_school` and granting permissions...';
+CREATE DATABASE IF NOT EXISTS app_school;
+GRANT SELECT, INSERT, UPDATE, DELETE ON app_school.* TO '{USER}'@'{HOST}';
+
+
+USE app_school;
+SOURCE {PATH}/ubms-app-v1/database/schema/app/school.sql;
+
+
+-- other company types
+
+
+-- SELECT 'Creating database `app_insurance` and granting permissions...';
+-- CREATE DATABASE IF NOT EXISTS app_insurance;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON app_insurance.* TO '{USER}'@'{HOST}';
+
+
+-- USE app_insurance;
+-- SOURCE {PATH}/ubms-app-v1/database/schema/app/insurance.sql;
+
+
+-- SELECT 'Creating database `app_registration` and granting permissions...';
+-- CREATE DATABASE IF NOT EXISTS app_registration;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON app_registration.* TO '{USER}'@'{HOST}';
+
+
+-- USE app_registration;
+-- SOURCE {PATH}/ubms-app-v1/database/schema/app/registration.sql;
