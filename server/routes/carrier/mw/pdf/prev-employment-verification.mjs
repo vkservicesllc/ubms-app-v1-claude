@@ -3,6 +3,7 @@ dir += '/uploads/business/company/logo/'
 
 import fs from 'fs'
 import moment from 'moment'
+import { Employment } from '../../../../tools/core/driver.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
@@ -26,7 +27,7 @@ export default async (employment = {}, method) => {
 
     const { width, height, marginX, marginY } = pdfParams.letter
     let x = marginX, y = height - marginY, text, textWidth, lines
-    const fieldHeight = 33, gap = 9, padding = 5.7, dateFormat = 'MM/DD/YYYY', outsideBorder = true
+    const fieldHeight = 27, gap = 9, padding = 5.7, dateFormat = 'MM/DD/YYYY', outsideBorder = true
     const font = {
         title: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
@@ -40,7 +41,7 @@ export default async (employment = {}, method) => {
         subtitle: 12,
         section: 9.5,
         label: 9.4,
-        value: 11.2,
+        value: 11.7,
         signature: 20,
     }
     const color = {
@@ -85,9 +86,9 @@ export default async (employment = {}, method) => {
     y -= fieldHeight
 
     text = "Applicant's Full Name:"
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    let colTextWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
-    x += textWidth + gap - 4
+    x += colTextWidth + gap - 4
     page.drawLine({
         start: { x, y: y - 1 },
         end: { x: x + 275, y: y - 1 },
@@ -103,7 +104,6 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap - 4
-    //
     page.drawLine({
         start: { x, y: y - 1 },
         end: { x: width - marginX, y: y - 1 },
@@ -113,42 +113,34 @@ export default async (employment = {}, method) => {
         x: x + 2, y: y + 2,
         font: font.value, size: size.value,
     })
-    // page.drawText(moment(finishedAt).format(dateFormat), {
-    //     x: x + 2, y: y + 2,
-    //     font: font.value, size: size.value,
-    // })
 
-    // x = marginX
-    // y -= fieldHeight
-
-    // text = "Applicant's SSN"
-    // textWidth = font.label.widthOfTextAtSize(text, size.label)
-
-
+    x = marginX
+    y -= gap * 2.4
+    page.drawText('Former Employer:', { x, y, font: font.label, size: size.label })
+    x += colTextWidth + gap - 4
+    page.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: x + 275, y: y - 1 },
+        color: color.line,
+    })
+    page.drawText(employer, {
+        x: x + 2, y: y + 2,
+        font: font.value, size: size.value,
+    })
+    x = marginX + colTextWidth + gap - 4
+    y -= gap * 2.4
+    page.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: x + 275, y: y - 1 },
+        color: color.line,
+    })
+    page.drawText(`${address.city}, ${address.state}`, {
+        x: x + 2, y: y + 2,
+        font: font.value, size: size.value,
+    })
 
     x = marginX
     y -= fieldHeight
-
-    text = 'I authorize the release of information regarding my employment, including services performed, '
-    text += 'character, conduct, and drug and alcohol testing records, to the company named above. '
-    text += 'I release my former employer and its representatives from any and all liability '
-    text += 'that may result from providing such information.'
-    // text = 'Federal Regulations (49 CFR Parts 40, 382, and 391) require prior employers to respond to this inquiry.'
-    lines = wrapText(text, width, font.label, size.label, marginX, padding)
-    lines.forEach(line => {
-        page.drawText(line, {
-            x: marginX, y,
-            font: font.label, size: size.label, color: color.label,
-        })
-        y -= gap * 1.2
-    })
-    y -= gap / 2
-    page.drawText('Federal Regulations (49 CFR Parts 40, 382, and 391) require prior employers to respond to this inquiry.', {
-        x, y, font: font.label, size: size.label, color: color.label,
-    })
-
-    x = marginX
-    y -= fieldHeight * 1.2
 
     page.drawText('The above-named applicant has submitted an application for a driver position with our company and has indicated that they were', {
         x, y, font: font.label, size: size.label, color: color.label,
@@ -199,18 +191,114 @@ export default async (employment = {}, method) => {
     x += 75 + 2
     page.drawText('.', { x, y, font: font.label, size: size.label })
 
+    x = marginX
+    y -= fieldHeight
+
+    text = "Is the employment record listed above accurate according to your company's records?"
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap * 1.2
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'No'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x = marginX
+    y -= fieldHeight / 1.5
+    text = 'If "NO", provide correct details.'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap
+    text = 'Start Date:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: x + 70, y: y - 1 },
+        color: color.line,
+    })
+    x += 70 + gap
+    text = 'End Date:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: x + 70, y: y - 1 },
+        color: color.line,
+    })
+    x += 70 + gap
+    text = 'Position:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: width - marginX, y: y - 1 },
+        color: color.line,
+    })
+
+    x = marginX
+    y -= fieldHeight
+    const { termType } = Employment.list
+    text = 'Reason for Leaving:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = termType.r
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = termType.l
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = termType.d
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+
+    x  = marginX
+    y - fieldHeight
 
 
+    //! FORM
 
-    // text = 'The above-named applicant has submitted an application for a driver position with our company and has indicated that they were employed by your organization as a '
-    // lines = wrapText(text, width, font.label, size.label, marginX, padding)
-    // lines.forEach(line => {
-    //     page.drawText(line, {
-    //         x: marginX, y,
-    //         font: font.label, size: size.label, color: color.label,
-    //     })
-    //     y -= gap * 1.2
-    // })
+    x = marginX
+    y -= fieldHeight * 3
+
+    text = 'I authorize the release of information regarding my employment, including services performed, '
+    text += 'character, conduct, and drug and alcohol testing records, to the company named above. '
+    text += 'I release my former employer and its representatives from any and all liability '
+    text += 'that may result from providing such information.'
+    // text = 'Federal Regulations (49 CFR Parts 40, 382, and 391) require prior employers to respond to this inquiry.'
+    lines = wrapText(text, width, font.label, size.label, marginX, padding)
+    lines.forEach(line => {
+        page.drawText(line, {
+            x: marginX, y,
+            font: font.label, size: size.label, color: color.label,
+        })
+        y -= gap * 1.2
+    })
+    y -= gap / 2
+    page.drawText('Federal Regulations (49 CFR Parts 40, 382, and 391) require prior employers to respond to this inquiry.', {
+        x, y, font: font.label, size: size.label, color: color.label,
+    })
+
+    x = marginX
+    y -= fieldHeight * 1.2
 
 
     return await pdfDoc.save()
