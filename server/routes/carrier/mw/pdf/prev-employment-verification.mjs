@@ -152,7 +152,7 @@ export default async (employment = {}, method) => {
     })
     let emplAddress = address.address1
     if (address.address2) emplAddress += ', ' + address.address2
-    page.drawText(`${emplAddress}, ${address.city}, ${address.state}`, {
+    page.drawText(`${emplAddress}, ${address.city}, ${address.state} ${address.zip}`, {
         x: x + 2, y: y + 2,
         font: font.value, size: size.value,
     })
@@ -217,7 +217,7 @@ export default async (employment = {}, method) => {
     x = marginX
     y -= fieldHeight
 
-    text = "Is the employment record listed above accurate according to your company's records?"
+    text = "Is the employment information listed above accurate according to your company's records?"
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
@@ -316,6 +316,52 @@ export default async (employment = {}, method) => {
     y -= fieldHeight
 
     text = 'Was the employee required to operate a motor vehicle as part of their job duties?'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap * 1.2
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'No'
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x = marginX
+    y -= fieldHeight / 1.5
+    text = 'If "YES", complete the remaining sections of the form.'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+
+    x = marginX
+    y -= fieldHeight / 2.5
+    page.drawLine({
+        start: { x, y },
+        end: { x: width - marginX, y },
+        color: color.line,
+    })
+    y -= fieldHeight / 1.2
+
+    text = 'Subject to FMCSR?'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap * 1.2
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'No'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap * 1.2
+
+    text = 'Subject to DOT Drug & Alcohol Test?'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
