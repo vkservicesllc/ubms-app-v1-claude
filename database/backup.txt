@@ -1,1 +1,1 @@
-CMD
+mysqldump -u root -p --databases app_online app_person app_business app_carrier > ubms-app-YYYYMMDD.sql
