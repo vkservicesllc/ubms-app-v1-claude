@@ -10,6 +10,7 @@ import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Individual from './individual.mjs'
 import Team from './team.mjs'
 import User from './user.mjs'
+import Company from './company.mjs'
 import Carrier from './carrier.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import { classInstance, classStatic } from '../utils/class.mjs'
@@ -2319,8 +2320,9 @@ class Application {
                 box: 'Box',
                 cube: 'Cube',
                 dump: 'Dump',
-                rollback: 'Rollback',
-                pickup: 'Heavy-Duty Pickup',
+                rollback: 'Rollback/Flatbed',
+                // pickup: 'Heavy-Duty Pickup',
+                service: 'Utility/Service',
             },
             semi: {
                 van: 'Dry Van',
@@ -2330,6 +2332,11 @@ class Application {
                 tanker: 'Tanker',
                 lowboy: 'Lowboy',
                 carhaul: 'Car Hauler',
+            },
+            misc: {
+                van: 'Cargo Van',
+                hotshot: 'Hotshot',
+                tandem: 'Tandem Semi Tractor/Trailer',
             },
         },
 
@@ -2435,11 +2442,13 @@ class Employment {
                 createdAt: utc2tz(data.createdAt),
                 finishedAt: utc2tz(data.finishedAt),
                 _carrierId: data._carrierId,
+                _carrierCompanyId: data._companyId,
                 _teamId: data._teamId,
             }
             if (!hideSensitive) this.application.ssn = stringifyBuffer(data.ssn)
             if (!hideRawId) {
                 this.application.carrierId = data.carrierId
+                this.application.carrierCompanyId = data.companyId
                 this.application.teamId = data.teamId
             }
             if (data._carrierId) {
@@ -2455,6 +2464,7 @@ class Employment {
                     state: data.coState,
                     zip: data.coZip,
                 })
+                this.application.carrierLogo = !!data.lastLogo
             }
             if (data._teamId) this.application.team = data.teamName
         }
@@ -2790,11 +2800,13 @@ class Employment {
                 },
                 {
                     table: query.carrier.main.table,
+                    fields: [ 'companyId', Company.hashId('companyId') ],
                     join: [ 'id', 'carrierId', 2 ],
                 },
                 {
                     db: db.business,
                     table: query.company.main.table,
+                    fields: 'lastLogo',
                     join: [ 'id', 'companyId', query.carrier.main.table ],
                 },
                 {

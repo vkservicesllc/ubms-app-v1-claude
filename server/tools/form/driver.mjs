@@ -860,7 +860,7 @@ class ApplicationForm {
         type: 'checkbox',
         data: Application.list.vehicle.semi,
         name: 'vehicles[semi]',
-        label: 'Semi Tractor/Trailer',
+        label: 'Trailer (Semi)',
     })
 
     static tandemExp = createForm({
@@ -869,6 +869,14 @@ class ApplicationForm {
         type: 'checkbox',
         name: 'vehicles[misc][tandem]',
         label: 'Tandem Tractor/Trailer',
+    })
+
+    static hotshotExp = createForm({
+        selector: appSelector,
+        target: 'tandemExp',
+        type: 'checkbox',
+        name: 'vehicles[misc][hotshot]',
+        label: 'Hotshot',
     })
 
     static vanExp = createForm({

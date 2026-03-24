@@ -360,6 +360,7 @@ const selector = {
                 // other: 'other-trailer-experience',
             },
             tandemExp: 'tandem-experience',
+            hotshotExp: 'hotshot-experience',
             vanExp: 'cargo-van-experience',
             cdlSchool: 'attended-cdl-school',
             // emplFmcsr: 'employment-subject-to-fmcsr',

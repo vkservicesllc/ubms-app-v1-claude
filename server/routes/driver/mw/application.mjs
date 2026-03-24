@@ -627,6 +627,10 @@ export const applicationProgress = async (req, res, next) => {
                 input: { ...checkProps.input, disabled, checked: application?.experience?.vehicles?.misc?.includes('van') },
                 label: { ...checkProps.label },
             }}
+            options.hotshotExp = { checkbox: {
+                input: { ...checkProps.input, disabled, checked: application?.experience?.vehicles?.misc?.includes('hotshot') },
+                label: { ...checkProps.label },
+            }}
             options.tandemExp = { checkbox: {
                 input: {
                     ...checkProps.input,
@@ -1068,7 +1072,7 @@ export const applicationSummary = async (req, res) => {
 
             hbs.application.experience.vehicleList = na()
             if (application.experience.vehicles) {
-                const miscList = { van: 'Cargo Van', tandem: 'Tandem Semi Tractor/Trailer' }
+                const miscList = Application.list.vehicle.misc // { van: 'Cargo Van', tandem: 'Tandem Semi Tractor/Trailer' }
                 const groups = { straight: 'Straight Truck', semi: 'Semi Trailer', misc: null }
                 const { vehicles } = application.experience
                 let html = ''

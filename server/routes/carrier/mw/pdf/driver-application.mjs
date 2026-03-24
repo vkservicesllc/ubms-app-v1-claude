@@ -1,5 +1,5 @@
 let { DIR__PATH: dir } = Bun.env
-dir += '/uploads/business/company/logo/'
+dir += '/uploads/business/company/'
 
 import fs from 'fs'
 import moment from 'moment'
@@ -171,7 +171,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Carrier */
         {
-            const path = dir + carrier.companyId
+            const path = dir + carrier.companyId + '/logo/'
             const files = await getFiles(path, false)
             let filename
 
@@ -197,7 +197,7 @@ export default async (carrier, application, addresses, violations, accidents, em
                 const imgWidth = img.width
                 const imgHeight = img.height
                 const maxWidth = 180
-                const maxHeight = 90
+                const maxHeight = 100
                 const widthRatio = maxWidth / imgWidth
                 const heightRatio = maxHeight / imgHeight
                 const scale = Math.min(widthRatio, heightRatio, 1)
@@ -1648,9 +1648,15 @@ export default async (carrier, application, addresses, violations, accidents, em
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText('Semi Tractor/Trailer', {
+            text = 'Trailer'
+            textWidth = font.section.widthOfTextAtSize(text, size.section)
+            page2.drawText(text, {
                 x: marginX + padding, y: y - fieldHeight / 1.65,
                 font: font.section, size: size.section, color: color.section,
+            })
+            page2.drawText('(Semi)', {
+                x: marginX + padding + textWidth + 4, y: y - fieldHeight / 1.65,
+                font: font.label, size: size.label, color: color.section,
             })
             vLineX = (width - marginX * 2) / 5
             page2.drawLine({
@@ -1733,7 +1739,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Row 3 */
         {
-            const misc = { van: 'Cargo Van', tandem: 'Tandem Semi Tractor/Trailer' }
+            const { misc}  = Application.list.vehicle
             let { vehicles } = experience
             if (!vehicles?.misc) vehicles = { misc: [] }
             if (outsideBorder)

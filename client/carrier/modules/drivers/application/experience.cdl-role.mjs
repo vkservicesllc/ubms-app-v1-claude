@@ -80,7 +80,7 @@ import application, { dropdownEvent } from './hub.mjs'
     if (experience?.hours)
         experience.hours.forEach((hr, i) => {
             $(`[name="hours[${i}]"]`).val(hr)
-            totalHr += hr
+            totalHr += +hr
         })
     $totalHr.val(totalHr)
 

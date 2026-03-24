@@ -1,10 +1,11 @@
 let { DIR__PATH: dir } = Bun.env
-dir += '/uploads/business/company/logo/'
+dir += '/uploads/business/company/'
 
 import fs from 'fs'
 import moment from 'moment'
 import { Employment } from '../../../../tools/core/driver.mjs'
 import Person from '../../../../../client/global/modules/tools/core/person.mjs'
+import { getFiles } from '../../../../tools/utils/fs.mjs'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import pdfParams, { CustomFonts } from '../../../../settings/pdf-lib.mjs'
@@ -17,7 +18,7 @@ export default async (employment = {}, method) => {
 //console.log(employment) //! TEMP
     const { employer, position, startedOn, leftOn, phone, address, application = {} } = employment
     const { phone: appPhone, ssn: appSsn, finishedAt } = application
-    const { carrier, carrierPhone, carrierFax, carrierAddress } = application
+    const { carrierCompanyId, carrier, carrierPhone, carrierFax, carrierAddress, carrierLogo } = application
 
     const pdfDoc = await PDFDocument.create()
     pdfDoc.registerFontkit(fontkit)
@@ -55,6 +56,7 @@ export default async (employment = {}, method) => {
         valueY: 27,
     }
 
+
     const page = pdfDoc.addPage([width, height])
     text = 'Employment Verification'
     textWidth = font.title.widthOfTextAtSize(text, size.title)
@@ -65,6 +67,43 @@ export default async (employment = {}, method) => {
     y -= fieldHeight
 
     page.drawText(carrier, { x, y, font: font.title, size: size.title * 1.2, color: color.title })
+
+    
+    //* Company Logo
+    const path = dir + carrierCompanyId + '/logo/'
+    const files = await getFiles(path, false)
+    let filename
+console.log({ cond: carrierLogo && files.length, carrierLogo, lenght: files.length })
+    if (carrierLogo && files.length) {
+        const finishedOn = finishedAt.split(' ')[0]
+        let x = 0
+
+        for (let i = 0; i < files.length; i++) {
+            const date = files[i].split(' ')[0]
+            if (finishedOn < date) continue
+            x = i
+            break
+        }
+
+        filename = files[x]
+        const imgBytes = fs.readFileSync(`${path}/${filename}`)
+        const img = await pdfDoc.embedPng(imgBytes)
+        const imgWidth = img.width
+        const imgHeight = img.height
+        const maxWidth = 180
+        const maxHeight = 100
+        const widthRatio = maxWidth / imgWidth
+        const heightRatio = maxHeight / imgHeight
+        const scale = Math.min(widthRatio, heightRatio, 1)
+        const drawWidth = imgWidth * scale
+        const drawHeight = imgHeight * scale
+        page.drawImage(img, {
+            x: width - marginX - drawWidth, y: y - drawHeight + gap * 1.75,
+            width: drawWidth,
+            height: drawHeight,
+        })
+    }
+
     y -= 20
     text = carrierAddress.address1
     if (carrierAddress.address2) text += `, ${carrierAddress.address2}`
@@ -83,7 +122,7 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.title, size: size.subtitle, color: color.title })
     page.drawText(carrierFax ? formatTel(carrierFax) : '', { x: x + textWidth + gap / 2, y, font: font.title, size: size.title, color: color.title })
 
-    y -= fieldHeight
+    y -= fieldHeight * 1.2
 
     text = "Applicant's Full Name:"
     let colTextWidth1 = font.label.widthOfTextAtSize(text, size.label)
