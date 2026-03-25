@@ -31,7 +31,7 @@ export default async (employment = {}, method) => {
     const fieldHeight = 27, gap = 9, padding = 5.7, dateFormat = 'MM/DD/YYYY', outsideBorder = true
     const font = {
         title: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
-        section: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
+        section: await pdfDoc.embedFont(StandardFonts.HelveticaBoldOblique),
         label: await pdfDoc.embedFont(StandardFonts.Helvetica),
         value: await pdfDoc.embedFont(StandardFonts.Helvetica),
         signature: await pdfDoc.embedFont(CustomFonts.MrsSaintDelafield),
@@ -40,7 +40,7 @@ export default async (employment = {}, method) => {
     const size = {
         title: 14,
         subtitle: 12,
-        section: 9.5,
+        section: 10,
         label: 9.4,
         value: 11.7,
         signature: 20,
@@ -330,7 +330,7 @@ export default async (employment = {}, method) => {
     text = termType.d
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
-    x += textWidth + gap * 1.4
+    x += textWidth + gap * 1.5
     text = 'Eligible for rehire?'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
@@ -381,9 +381,73 @@ export default async (employment = {}, method) => {
         end: { x: width - marginX, y },
         color: color.line,
     })
+
+    x = marginX
+    y -= fieldHeight
+
+    page.drawText('Experience', { x, y, font: font.section, size: size.section })
+
+    x = marginX
     y -= fieldHeight / 1.2
 
-    text = 'Subject to FMCSR?'
+    text = 'Vehicle Types:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap * 1.2
+    for (const t in Employment.list.vehicle.type) {
+        const type = Employment.list.vehicle.type[t]
+
+        drawCheckBox(page, x, y - 2, false, color, 12)
+        x += 16
+        textWidth = font.value.widthOfTextAtSize(type, size.value * .9 )
+        page.drawText(type, { x, y, font: font.value, size: size.value * .9 })
+        x += textWidth + gap
+    }
+    text = 'Other'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y },
+        end: { x: x + 110, y },
+        color: color.line,
+    })
+
+    x = marginX
+    y -= fieldHeight / 1.2
+
+    text = 'Trailer Types:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap * 1.2
+    for (const st in Employment.list.vehicle.semiTrailer) {
+        const trailer = Employment.list.vehicle.semiTrailer[st]
+
+        drawCheckBox(page, x, y - 2, false, color, 12)
+        x += 16
+        textWidth = font.value.widthOfTextAtSize(trailer, size.value * .9 )
+        page.drawText(trailer, { x, y, font: font.value, size: size.value * .9 })
+        x += textWidth + gap
+    }
+    text = 'Other'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y },
+        end: { x: x + 110, y },
+        color: color.line,
+    })
+
+    x = marginX
+    y -= fieldHeight
+
+    page.drawText('Safety & Compliance', { x, y, font: font.section, size: size.section })
+
+    x = marginX
+    y -= fieldHeight / 1.2
+
+    text = 'Safe and efficient driver:'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
@@ -397,10 +461,29 @@ export default async (employment = {}, method) => {
     x += 16
     text = 'No'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap * 1.5
+
+    text = 'Responsible for maintaining logs:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap * 1.2
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'No'
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap * 1.2
 
-    text = 'Subject to DOT Drug & Alcohol Test?'
+    x = marginX
+    y -= fieldHeight / 1.2
+
+    text = 'Subject to FMCSR:'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
@@ -413,7 +496,29 @@ export default async (employment = {}, method) => {
     drawCheckBox(page, x, y - 2, false, color, 12)
     x += 16
     text = 'No'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap * 1.5
+
+    text = 'Subject to DOT Drug & Alcohol Testing:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap * 1.2
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'No'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+
+    x = marginX
+    y -= fieldHeight / 1.2
+
 
 
     //! FORM continues

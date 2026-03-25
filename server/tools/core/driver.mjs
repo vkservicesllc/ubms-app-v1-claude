@@ -2909,6 +2909,22 @@ class Employment {
 
         termType: { r: 'Resigned', l: 'Laid off', d: 'Discharged' },
 
+        vehicle: {
+            type: {
+                semi: 'Semi Truck',
+                straightBox: 'Box Truck',
+                van: 'Cargo Van',
+                hotshot: 'Hotshot',
+            },
+            semiTrailer: {
+                van: 'Dry Van',
+                reefer: 'Reefer',
+                tanker: 'Tanker',
+                flat: 'Flatbed',
+                carhaul: 'Car Hauler',
+            },
+        },
+
     }
 
 
