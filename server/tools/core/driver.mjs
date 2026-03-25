@@ -2587,6 +2587,7 @@ class Employment {
                                         'driver',
                                         'fmcsr',
                                         'dotDat',
+                                        'logs',
                                         'vehicles',
                                         'haulRegion',
                                         'safe',
@@ -2637,19 +2638,24 @@ class Employment {
                             const [ rows ] = await mysql.execute(Query.select(db.carrier, batch))
                             rows.map(row => {
                                 row.correct = bool(row.correct)
+                                row.rehire = bool(row.rehire)
                                 row.driver = bool(row.driver)
+                                row.fmcsr = bool(row.fmcsr)
+                                row.dotDat = bool(row.dotDat)
+                                row.logs = bool(row.logs)
                                 row.safe = bool(row.safe)
                                 row.accidents = bool(row.accidents)
                                 row.alcohol = bool(row.alcohol)
                                 row.drugs = bool(row.drugs)
                                 row.datRefusal = bool(row.datRefusal)
                                 row.otherDat = bool(row.otherDat)
-                                row.followup = bool(row.followup)
+                                row.rtd = bool(row.rtd)
                             })
 
                             return rows[0]
                         }
                         break
+
                 }
             }
 

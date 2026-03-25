@@ -616,6 +616,7 @@ CREATE TABLE application_employment_verifications (  -- PHONE INTERVIEW
     driver      BOOLEAN              NOT NULL,
     fmcsr       BOOLEAN              DEFAULT NULL,
     dotDat      BOOLEAN              DEFAULT NULL,
+    logs        BOOLEAN              DEFAULT NULL,
     vehicles    JSON                 DEFAULT NULL,
     haulRegion  JSON                 DEFAULT NULL,
     safe        BOOLEAN              DEFAULT NULL,
