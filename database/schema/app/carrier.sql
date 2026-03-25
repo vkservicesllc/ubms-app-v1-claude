@@ -555,6 +555,7 @@ CREATE TABLE application_employments (
     createdBy    SMALLINT UNSIGNED         DEFAULT NULL,  -- NULL when self registered
     createdAt    TIMESTAMP                 NOT NULL DEFAULT CURRENT_TIMESTAMP,
     createdIn    JSON                      NOT NULL,
+    updateLog    JSON                      DEFAULT NULL,
 
     FOREIGN KEY (emplId) REFERENCES driver_employments(id) ON DELETE CASCADE,
     FOREIGN KEY (appId) REFERENCES applications(id) ON DELETE CASCADE,
@@ -589,6 +590,7 @@ CREATE TABLE application_employment_inquiries (
     createdBy   SMALLINT UNSIGNED                  DEFAULT NULL,  -- NULL when self registered
     createdAt   TIMESTAMP                          NOT NULL DEFAULT CURRENT_TIMESTAMP,
     createdIn   JSON                               NOT NULL,
+    updateLog   JSON                               DEFAULT NULL,
 
     FOREIGN KEY (emplId, appId) REFERENCES application_employments(emplId, appId) ON DELETE CASCADE,
     FOREIGN KEY (inquiredBy) REFERENCES app_online.users(id),
@@ -608,23 +610,27 @@ CREATE TABLE application_employment_verifications (  -- PHONE INTERVIEW
     inquiredOn  DATE                 NOT NULL,
 
     -- Verification
-    correct     BOOLEAN              DEFAULT NULL,
-    driver      BOOLEAN              DEFAULT NULL,
-    safe        BOOLEAN              DEFAULT NULL,
-    accidents   BOOLEAN              DEFAULT NULL,
-    termType    ENUM('r', 'l', 'd')  DEFAULT NULL,  -- 'Resigned', 'Laid off', 'Discharged'
+    correct     BOOLEAN              NOT NULL,
+    termType    ENUM('r', 'l', 'd')  NOT NULL,  -- 'Resigned', 'Laid off', 'Discharged'
+    rehire      BOOLEAN              NOT NULL,
+    driver      BOOLEAN              NOT NULL,
+    fmcsr       BOOLEAN              DEFAULT NULL,
+    dotDat      BOOLEAN              DEFAULT NULL,
     vehicles    JSON                 DEFAULT NULL,
-
-    -- VERIFICATION UNCERTAIN AT THIS POINT
+    haulRegion  JSON                 DEFAULT NULL,
+    safe        BOOLEAN              DEFAULT NULL,
+    accidents   JSON                 DEFAULT NULL,
     alcohol     BOOLEAN              DEFAULT NULL,
     drugs       BOOLEAN              DEFAULT NULL,
     datRefusal  BOOLEAN              DEFAULT NULL,
     otherDat    BOOLEAN              DEFAULT NULL,
-    followup    BOOLEAN              DEFAULT NULL,
+    rtd         BOOLEAN              DEFAULT NULL,  -- Return-to-duty process (follow-up)
+    remarks     VARCHAR(75)          DEFAULT NULL,
 
     createdBy   SMALLINT UNSIGNED    DEFAULT NULL,  -- NULL when self registered
     createdAt   TIMESTAMP            NOT NULL DEFAULT CURRENT_TIMESTAMP,
     createdIn   JSON                 NOT NULL,
+    updateLog   JSON                 DEFAULT NULL,
 
     FOREIGN KEY (emplId, appId, method, response, inquiredOn) REFERENCES application_employment_inquiries(emplId, appId, method, response, inquiredOn),
     FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
