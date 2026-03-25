@@ -73,7 +73,7 @@ export default async (employment = {}, method) => {
     const path = dir + carrierCompanyId + '/logo/'
     const files = await getFiles(path, false)
     let filename
-console.log({ cond: carrierLogo && files.length, carrierLogo, lenght: files.length })
+
     if (carrierLogo && files.length) {
         const finishedOn = finishedAt.split(' ')[0]
         let x = 0
