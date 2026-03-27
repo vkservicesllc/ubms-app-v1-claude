@@ -519,7 +519,21 @@ export default async (employment = {}, method) => {
     x = marginX
     y -= fieldHeight / 1.2
 
-
+    text = 'Was the employee involved in any accidents within the past three years?'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap * 1.2
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, 12)
+    x += 16
+    text = 'No'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
 
     //! FORM continues
 
