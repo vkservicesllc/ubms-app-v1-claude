@@ -28,7 +28,7 @@ export default async (employment = {}, method) => {
 
     const { width, height, marginX, marginY } = pdfParams.letter
     let x = marginX, y = height - marginY, text, textWidth, lines
-    const fieldHeight = 24, gap = 9, padding = 5.7, dateFormat = 'MM/DD/YYYY', outsideBorder = true
+    const fieldHeight = 22.4, gap = 9, padding = 5.7, dateFormat = 'MM/DD/YYYY', outsideBorder = true
     const font = {
         title: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBoldOblique),
@@ -143,7 +143,7 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     let text2 = 'Application Date:'
     let colTextWidth2 = font.label.widthOfTextAtSize(text2, size.label)
-    page.drawText(text, { x: x + (colTextWidth2 - textWidth), y, font: font.label, size: size.label })
+    page.drawText(text, { x, y, font: font.label, size: size.label })
     x += colTextWidth2 + gap - 4
     page.drawLine({
         start: { x, y: y - 1 },
@@ -159,7 +159,7 @@ export default async (employment = {}, method) => {
     y -= gap * 2.4
     text = 'Former Employer:'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
-    page.drawText(text, { x: x + (colTextWidth1 - textWidth), y, font: font.label, size: size.label })
+    page.drawText(text, { x, y, font: font.label, size: size.label })
     x += colTextWidth1 + gap - 4
     page.drawLine({
         start: { x, y: y - 1 },
@@ -183,19 +183,20 @@ export default async (employment = {}, method) => {
         font: font.value, size: size.value,
     })
 
-    x = marginX + colTextWidth1 + gap - 4
-    y -= gap * 2.4
-    page.drawLine({
-        start: { x, y: y - 1 },
-        end: { x: width - marginX, y: y - 1 },
-        color: color.line,
-    })
-    let emplAddress = address.address1
-    if (address.address2) emplAddress += ', ' + address.address2
-    page.drawText(`${emplAddress}, ${address.city}, ${address.state} ${address.zip}`, {
-        x: x + 2, y: y + 2,
-        font: font.value, size: size.value,
-    })
+    // x = marginX + colTextWidth1 + gap - 4
+    // y -= gap * 2.4
+    // page.drawLine({
+    //     start: { x, y: y - 1 },
+    //     end: { x: width - marginX, y: y - 1 },
+    //     color: color.line,
+    // })
+    // let emplAddress = address.address1
+    // if (address.address2) emplAddress += ', ' + address.address2
+    // page.drawText(`${emplAddress}, ${address.city}, ${address.state} ${address.zip}`, {
+    //     x: x + 2, y: y + 2,
+    //     font: font.value, size: size.value,
+    // })
+
     x = marginX
     y -= fieldHeight
     page.drawText('Federal Regulations (49 CFR Parts 40, 382, and 391) require prior employers to respond to this inquiry.', {
@@ -619,7 +620,7 @@ export default async (employment = {}, method) => {
 
     y -= fieldHeight / 1.4
 
-    const lText = 'If you answered “Yes” to any of the above, did the employee complete the return-to-duty process?'
+    const lText = 'If you answered "Yes" to any of the above, did the employee complete the return-to-duty process?'
     const lTextWidth = font.label.widthOfTextAtSize(text, size.label)
     const numWidth = 12
 
@@ -723,9 +724,6 @@ export default async (employment = {}, method) => {
     x = marginX
     y -= fieldHeight / 1.5
 
-
-    //! FORM continues
-
     page.drawText('6.', { x, y, font: font.label, size: size.label })
     x += numWidth
     page.drawText(lText, {
@@ -743,6 +741,19 @@ export default async (employment = {}, method) => {
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+
+    x = marginX
+    y -= fieldHeight / 1.2
+    page.drawText('Note:', { x, y, font: font.label, size: size.label * .9 })
+    y -= fieldHeight / 1.65
+    page.drawText(`• If you answered "Yes" to item 5, please provide the previous employer's report.`, {
+        x, y, font: font.label, size: size.label * .9,
+    })
+    y -= fieldHeight / 1.75
+    page.drawText('• If you answered "Yes" to item 6, please provide the corresponding return-to-duty documentation (e.g., SAP report(s), follow-up testing records).', {
+        x, y, font: font.label, size: size.label * .9,
+    })
+
 
     // x = marginX
     // y -= fieldHeight * 3
