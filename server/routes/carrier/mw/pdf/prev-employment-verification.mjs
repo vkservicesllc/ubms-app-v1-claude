@@ -611,10 +611,138 @@ export default async (employment = {}, method) => {
     text = '(to be accompanied by an appropriate drug and alcohol release)'
     page.drawText(text, { x, y, font: font.subsection, size: size.section * .9 })
 
+    x = marginX
+    y -= fieldHeight
 
+    text = "In the three years prior to the employee's signature date on this release, for DOT-regulated testing:"
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+
+    y -= fieldHeight / 1.4
+
+    const lText = 'If you answered “Yes” to any of the above, did the employee complete the return-to-duty process?'
+    const lTextWidth = font.label.widthOfTextAtSize(text, size.label)
+    const numWidth = 12
+
+    page.drawText('1.', { x, y, font: font.label, size: size.label })
+    x += numWidth
+    page.drawText('Did the employee have any alcohol tests with a result of 0.04 or higher?', {
+        x, y, font: font.label, size: size.label,
+    })
+    x += lTextWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'No'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x = marginX
+    y -= fieldHeight / 1.5
+
+    page.drawText('2.', { x, y, font: font.label, size: size.label })
+    x += numWidth
+    page.drawText('Did the employee have any verified positive drug tests?', {
+        x, y, font: font.label, size: size.label,
+    })
+    x += lTextWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'No'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x = marginX
+    y -= fieldHeight / 1.5
+
+    page.drawText('3.', { x, y, font: font.label, size: size.label })
+    x += numWidth
+    page.drawText('Did the employee refuse to submit to a required test?', {
+        x, y, font: font.label, size: size.label,
+    })
+    x += lTextWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'No'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x = marginX
+    y -= fieldHeight / 1.5
+
+    page.drawText('4.', { x, y, font: font.label, size: size.label })
+    x += numWidth
+    page.drawText('Did the employee commit any other violations of DOT drug and alcohol testing regulations?', {
+        x, y, font: font.label, size: size.label,
+    })
+    x += lTextWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'No'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x = marginX
+    y -= fieldHeight / 1.5
+
+    page.drawText('5.', { x, y, font: font.label, size: size.label })
+    x += numWidth
+    page.drawText('Did a previous employer report a drug or alcohol rule violation regarding this employee?', {
+        x, y, font: font.label, size: size.label,
+    })
+    x += lTextWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'No'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x = marginX
+    y -= fieldHeight / 1.5
 
 
     //! FORM continues
+
+    page.drawText('6.', { x, y, font: font.label, size: size.label })
+    x += numWidth
+    page.drawText(lText, {
+        x, y, font: font.label, size: size.label,
+    })
+    x += lTextWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'Yes'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawRadio(page, x, y - 2, false, color, 11)
+    x += 16
+    text = 'No'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
 
     // x = marginX
     // y -= fieldHeight * 3
