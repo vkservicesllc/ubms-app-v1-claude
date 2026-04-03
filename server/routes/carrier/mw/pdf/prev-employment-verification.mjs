@@ -797,7 +797,7 @@ export default async (employment = {}, method) => {
     })
 
     x = marginX
-    y -= fieldHeight * 1.2``
+    y -= fieldHeight * 1.2
 
     text = 'Comments:'
     textWidth = font.label.widthOfTextAtSize(text, size.label * .9)
