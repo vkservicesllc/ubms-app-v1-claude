@@ -28,7 +28,7 @@ export default async (employment = {}, method) => {
 
     const { width, height, marginX, marginY } = pdfParams.letter
     let x = marginX, y = height - marginY, text, textWidth, lines
-    const fieldHeight = 22.4, gap = 9, padding = 5.7, dateFormat = 'MM/DD/YYYY', outsideBorder = true
+    const fieldHeight = 21, gap = 8, padding = 5.4, dateFormat = 'MM/DD/YYYY', outsideBorder = true
     const font = {
         title: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBoldOblique),
@@ -39,12 +39,13 @@ export default async (employment = {}, method) => {
     }
 
     const size = {
-        title: 14,
-        subtitle: 12,
-        section: 10,
-        label: 9.4,
-        value: 11.7,
-        signature: 20,
+        title: 13.2,
+        subtitle: 11.4,
+        section: 9.7,
+        label: 9,
+        value: 11,
+        check: 10.8,
+        signature: 12,
     }
     const color = {
         title: rgb(0, 0, 0),
@@ -60,10 +61,10 @@ export default async (employment = {}, method) => {
 
     const page = pdfDoc.addPage([width, height])
     text = 'Employment Verification'
-    textWidth = font.title.widthOfTextAtSize(text, size.title)
+    textWidth = font.title.widthOfTextAtSize(text, size.title * .9)
     page.drawText(text, {
         x: width / 2 - textWidth / 2, y,
-        font: font.title, size: size.title, color: color.title,
+        font: font.title, size: size.title * .9, color: color.title,
     })
     y -= fieldHeight
 
@@ -262,13 +263,13 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -315,19 +316,19 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = termType.r
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = termType.l
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = termType.d
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
@@ -337,19 +338,19 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     page.drawText('Review', { x, y, font: font.value, size: size.value * .9 })
 
@@ -360,13 +361,13 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -399,7 +400,7 @@ export default async (employment = {}, method) => {
     for (const t in Employment.list.vehicle.type) {
         const type = Employment.list.vehicle.type[t]
 
-        drawCheckBox(page, x, y - 2, false, color, 11)
+        drawCheckBox(page, x, y - 2, false, color, size.check)
         x += 16
         textWidth = font.value.widthOfTextAtSize(type, size.value * .9 )
         page.drawText(type, { x, y, font: font.value, size: size.value * .9 })
@@ -425,7 +426,7 @@ export default async (employment = {}, method) => {
     for (const st in Employment.list.vehicle.semiTrailer) {
         const trailer = Employment.list.vehicle.semiTrailer[st]
 
-        drawCheckBox(page, x, y - 2, false, color, 11)
+        drawCheckBox(page, x, y - 2, false, color, size.check)
         x += 16
         textWidth = font.value.widthOfTextAtSize(trailer, size.value * .9 )
         page.drawText(trailer, { x, y, font: font.value, size: size.value * .9 })
@@ -453,13 +454,13 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
@@ -470,13 +471,13 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -489,13 +490,13 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
@@ -506,13 +507,13 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
@@ -525,13 +526,13 @@ export default async (employment = {}, method) => {
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
@@ -613,7 +614,7 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.subsection, size: size.section * .9 })
 
     x = marginX
-    y -= fieldHeight
+    y -= fieldHeight / 1.2
 
     text = "In the three years prior to the employee's signature date on this release, for DOT-regulated testing:"
     page.drawText(text, { x, y, font: font.label, size: size.label })
@@ -621,7 +622,7 @@ export default async (employment = {}, method) => {
     y -= fieldHeight / 1.4
 
     const lText = 'If you answered "Yes" to any of the above, did the employee complete the return-to-duty process?'
-    const lTextWidth = font.label.widthOfTextAtSize(text, size.label)
+    const lTextWidth = font.label.widthOfTextAtSize(text, size.label) + 7
     const numWidth = 12
 
     page.drawText('1.', { x, y, font: font.label, size: size.label })
@@ -630,13 +631,13 @@ export default async (employment = {}, method) => {
         x, y, font: font.label, size: size.label,
     })
     x += lTextWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
@@ -650,13 +651,13 @@ export default async (employment = {}, method) => {
         x, y, font: font.label, size: size.label,
     })
     x += lTextWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
@@ -670,13 +671,13 @@ export default async (employment = {}, method) => {
         x, y, font: font.label, size: size.label,
     })
     x += lTextWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
@@ -690,13 +691,13 @@ export default async (employment = {}, method) => {
         x, y, font: font.label, size: size.label,
     })
     x += lTextWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
@@ -710,13 +711,13 @@ export default async (employment = {}, method) => {
         x, y, font: font.label, size: size.label,
     })
     x += lTextWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
@@ -730,13 +731,13 @@ export default async (employment = {}, method) => {
         x, y, font: font.label, size: size.label,
     })
     x += lTextWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
-    drawRadio(page, x, y - 2, false, color, 11)
+    drawRadio(page, x, y - 2, false, color, size.check)
     x += 16
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
@@ -754,9 +755,59 @@ export default async (employment = {}, method) => {
         x, y, font: font.label, size: size.label * .9,
     })
 
+    x = marginX
+    y -= fieldHeight + size.value + gap * 1.2
 
-    // x = marginX
-    // y -= fieldHeight * 3
+    page.drawText('Printed Name', { x: x + 2, y, font: font.label, size: size.label * .9 })
+    page.drawLine({
+        start: { x, y: y + 9 },
+        end: { x: x + 240, y: y + 9 },
+        color: color.line,
+    })
+    x += 240 + gap
+    page.drawText('Signature', { x: x + 2, y, font: font.label, size: size.label * .9 })
+    page.drawLine({
+        start: { x, y: y + 9 },
+        end: { x: x + 200, y: y + 9 },
+        color: color.line,
+    })
+    x += 200 + gap
+    page.drawText('Date', { x: x + 2, y, font: font.label, size: size.label * .9 })
+    page.drawLine({
+        start: { x, y: y + 9 },
+        end: { x: width - marginX, y: y + 9 },
+        color: color.line,
+    })
+
+    x = marginX
+    y -= fieldHeight * 1.4
+
+    page.drawText('Title, Phone, Email', { x: x + 2, y, font: font.label, size: size.label * .9 })
+    page.drawLine({
+        start: { x, y: y + 9 },
+        end: { x: x + 240 + gap + 200, y: y + 9 },
+        color: color.line,
+    })
+    x += 240 + gap + 200 + gap
+    page.drawText('USDOT', { x: x + 2, y, font: font.label, size: size.label * .9 })
+    page.drawLine({
+        start: { x, y: y + 9 },
+        end: { x: width - marginX, y: y + 9 },
+        color: color.line,
+    })
+
+    x = marginX
+    y -= fieldHeight * 1.2
+
+    text = 'Comments:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label * .9)
+    page.drawText(text, { x: x + 2, y, font: font.label, size: size.label * .9 })
+    page.drawLine({
+        start: { x: x + textWidth + gap, y },
+        end: { x: width - marginX, y },
+        color: color.line,
+    })
+
 
     // text = 'I authorize the release of information regarding my employment, including services performed, '
     // text += 'character, conduct, and drug and alcohol testing records, to the company named above. '
