@@ -66,6 +66,8 @@ const selector = {
             addrState: 'employer-address-state',
             inquiryMethod: 'employment-verification-method',
             verifStatus: 'employment-verification-status',
+            pvTermType: 'employment-phone-verification-termination-type',
+            pvRehire: 'employment-phone-verification-rehire',
         },
         radio: {
             fmcsr: {
@@ -80,6 +82,7 @@ const selector = {
         checkbox: {
             fmcsr: 'employment-subject-to-fmcsr',
             dotDat: 'employment-subject-to-dot-drug-alcohol-test',
+            pvIncorrect: 'employment-phone-verification-incorrect-info',
         },
     },
 }

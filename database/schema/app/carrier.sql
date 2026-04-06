@@ -612,7 +612,7 @@ CREATE TABLE application_employment_verifications (  -- PHONE INTERVIEW
     -- Verification
     correct     BOOLEAN              NOT NULL,
     termType    ENUM('r', 'l', 'd')  NOT NULL,  -- 'Resigned', 'Laid off', 'Discharged'
-    rehire      BOOLEAN              NOT NULL,
+    rehire      ENUM('y', 'n', 'r')  NOT NULL,  -- 'Yes', 'No', 'Review'
     driver      BOOLEAN              NOT NULL,
     fmcsr       BOOLEAN              DEFAULT NULL,
     dotDat      BOOLEAN              DEFAULT NULL,

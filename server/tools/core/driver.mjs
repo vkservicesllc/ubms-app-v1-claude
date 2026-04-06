@@ -2909,6 +2909,8 @@ class Employment {
 
         termType: { r: 'Resigned', l: 'Laid off', d: 'Discharged' },
 
+        rehire: { y: 'Yes', n: 'No', r: 'Review' },
+
         vehicle: {
             type: {
                 semi: 'Semi Truck',

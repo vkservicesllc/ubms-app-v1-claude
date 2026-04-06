@@ -203,7 +203,37 @@
                     <div id="phone-verification-section" style="display: none;">
                         <a id="inquries-link" href=""><< Back to Inquiries</a>
                         <form class="ui form" action="" method="POST" autocomplete="off" style="margin-top: 1rem;">
-                            PHONE VERIFICATION FORM
+                            <div class="ui compact grid" style="margin-top: .35rem;">
+                                <div class="seven wide field">
+                                    <div class="ui checkbox">
+                                        {{{form.pvIncorrect.checkbox.input}}}
+                                        {{{form.pvIncorrect.checkbox.label}}}
+                                    </div>
+                                </div>
+                                <div class="one wide field"></div>
+                            </div>
+                            <div class="ui compact grid" style="margin-top: .35rem;">
+                                <div class="three wide field">
+                                    {{{form.pvTermType.select.label}}}
+                                    <div class="ui fluid selection required dropdown" id="pv-termtype-dropdown">
+                                        {{{form.pvTermType.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.phoneVerifTermType}}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="three wide field">
+                                    {{{form.pvRehire.select.label}}}
+                                    <div class="ui fluid selection required dropdown" id="pv-termtype-dropdown">
+                                        {{{form.pvRehire.hidden.input}}}
+                                        <i class="dropdown icon"></i>
+                                        <div class="default text"></div>
+                                        <div class="menu">{{{dropdown.phoneVerifRehire}}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>

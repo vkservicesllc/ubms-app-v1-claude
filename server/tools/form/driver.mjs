@@ -1851,6 +1851,35 @@ class EmploymentForm {
     })
 
 
+    static pvIncorrect = createForm({
+        selector: appEmplSelector,
+        target: 'pvIncorrect',
+        type: 'checkbox',
+        name: 'incorrect',
+        label: 'Incorrect Info',
+    })
+
+
+    static pvTermType = createForm({
+        selector: appEmplSelector,
+        target: 'pvTermType',
+        type: 'select',
+        name: 'termType',
+        data: Employment.list.termType,
+        label: 'Termination Type',
+    })
+
+
+    static pvRehire = createForm({
+        selector: appEmplSelector,
+        target: 'pvRehire',
+        type: 'select',
+        name: 'rehire',
+        data: Employment.list.rehire,
+        label: 'Eligible for Rehire',
+    })
+
+
     static validate = (target = 'employer', checkbox = false) => validate(EmploymentForm, () => {
         let fields = []
 

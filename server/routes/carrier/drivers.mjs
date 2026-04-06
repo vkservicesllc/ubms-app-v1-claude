@@ -1000,12 +1000,20 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
             if (hbs.permissions.update) {
                 dropdown.inquiryMethod = ''
                 dropdown.inquiryResponse = ''
+                dropdown.phoneVerifTermType = ''
+                dropdown.phoneVerifRehire = ''
 
                 const methods = Employment.list.inquiryMethod, responses = Employment.list.inquiryResponse
                 for (const prop in methods)
                     dropdown.inquiryMethod += `<div class="item" data-value="${prop}">${methods[prop]}</div>`
                 for (const prop in responses)
                     dropdown.inquiryResponse += `<div class="item" data-value="${prop}">${responses[prop]}</div>`
+
+                const termTypes = Employment.list.termType, rehireTypes = Employment.list.rehire
+                for (const type in termTypes)
+                    dropdown.phoneVerifTermType += `<div class="item" data-value="${type}">${termTypes[type]}</div>`
+                for (const type in rehireTypes)
+                    dropdown.phoneVerifRehire += `<div class="item" data-value="${type}">${rehireTypes[type]}</div>`
 
                 // const fields = [
                 //     // [ 'inquiryMethod', 'hidden' ],
