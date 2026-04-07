@@ -93,7 +93,7 @@ export default async (employment = {}, method) => {
         const imgWidth = img.width
         const imgHeight = img.height
         const maxWidth = 180
-        const maxHeight = 100
+        const maxHeight = 90
         const widthRatio = maxWidth / imgWidth
         const heightRatio = maxHeight / imgHeight
         const scale = Math.min(widthRatio, heightRatio, 1)
@@ -541,67 +541,73 @@ export default async (employment = {}, method) => {
     x = marginX
     y -= fieldHeight / 1.2
 
-    text = '# Preventable'
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
-    page.drawText(text, { x, y, font: font.label, size: size.label })
-    x += textWidth + gap / 2
-    page.drawLine({
-        start: { x, y },
-        end: { x: x + 22, y },
-        color: color.line,
-    })
-    x += 22 + gap
-    text = '# Non-Preventable'
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
-    page.drawText(text, { x, y, font: font.label, size: size.label })
-    x += textWidth + gap / 2
-    page.drawLine({
-        start: { x, y },
-        end: { x: x + 22, y },
-        color: color.line,
-    })
-    x += 22 + gap
-    text = '# DOT Reportable'
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
-    page.drawText(text, { x, y, font: font.label, size: size.label })
-    x += textWidth + gap / 2
-    page.drawLine({
-        start: { x, y },
-        end: { x: x + 22, y },
-        color: color.line,
-    })
-    x += 22 + gap
-    text = '# Injuries'
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
-    page.drawText(text, { x, y, font: font.label, size: size.label })
-    x += textWidth + gap / 2
-    page.drawLine({
-        start: { x, y },
-        end: { x: x + 22, y },
-        color: color.line,
-    })
-    x += 22 + gap
-    text = '# Fatalities'
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
-    page.drawText(text, { x, y, font: font.label, size: size.label })
-    x += textWidth + gap / 2
-    page.drawLine({
-        start: { x, y },
-        end: { x: x + 22, y },
-        color: color.line,
-    })
-    x += 22 + gap
-    text = '# Hazmat'
-    textWidth = font.label.widthOfTextAtSize(text, size.label)
-    page.drawText(text, { x, y, font: font.label, size: size.label })
-    x += textWidth + gap / 2
-    page.drawLine({
-        start: { x, y },
-        end: { x: x + 22, y },
-        color: color.line,
-    })
+
+
+    // text = '# Preventable'
+    // textWidth = font.label.widthOfTextAtSize(text, size.label)
+    // page.drawText(text, { x, y, font: font.label, size: size.label })
+    // x += textWidth + gap / 2
+    // page.drawLine({
+    //     start: { x, y },
+    //     end: { x: x + 22, y },
+    //     color: color.line,
+    // })
+    // x += 22 + gap
+    // text = '# Non-Preventable'
+    // textWidth = font.label.widthOfTextAtSize(text, size.label)
+    // page.drawText(text, { x, y, font: font.label, size: size.label })
+    // x += textWidth + gap / 2
+    // page.drawLine({
+    //     start: { x, y },
+    //     end: { x: x + 22, y },
+    //     color: color.line,
+    // })
+    // x += 22 + gap
+    // text = '# DOT Reportable'
+    // textWidth = font.label.widthOfTextAtSize(text, size.label)
+    // page.drawText(text, { x, y, font: font.label, size: size.label })
+    // x += textWidth + gap / 2
+    // page.drawLine({
+    //     start: { x, y },
+    //     end: { x: x + 22, y },
+    //     color: color.line,
+    // })
+    // x += 22 + gap
+    // text = '# Injuries'
+    // textWidth = font.label.widthOfTextAtSize(text, size.label)
+    // page.drawText(text, { x, y, font: font.label, size: size.label })
+    // x += textWidth + gap / 2
+    // page.drawLine({
+    //     start: { x, y },
+    //     end: { x: x + 22, y },
+    //     color: color.line,
+    // })
+    // x += 22 + gap
+    // text = '# Fatalities'
+    // textWidth = font.label.widthOfTextAtSize(text, size.label)
+    // page.drawText(text, { x, y, font: font.label, size: size.label })
+    // x += textWidth + gap / 2
+    // page.drawLine({
+    //     start: { x, y },
+    //     end: { x: x + 22, y },
+    //     color: color.line,
+    // })
+    // x += 22 + gap
+    // text = '# Hazmat'
+    // textWidth = font.label.widthOfTextAtSize(text, size.label)
+    // page.drawText(text, { x, y, font: font.label, size: size.label })
+    // x += textWidth + gap / 2
+    // page.drawLine({
+    //     start: { x, y },
+    //     end: { x: x + 22, y },
+    //     color: color.line,
+    // })
+
+
 
     //! ACCIDENT LIST
+
+
 
     x = marginX
     y -= fieldHeight

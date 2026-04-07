@@ -118,7 +118,7 @@ router.get('/files/application/:route?', fileLoggedOut, Team.mw.verify, async (r
         const pdfBytes = await createApplicationPdf(carrier)
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.setHeader('Content-Disposition', 'inline; filename="application.pdf"')
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
@@ -143,7 +143,7 @@ router.get('/files/previous-employment/verification', fileLoggedOut, Team.mw.ver
         const pdfBytes = await createEmplVerifPdf(employment)
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.setHeader('Content-Disposition', 'inline; filename="verification.pdf"')
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
@@ -910,7 +910,7 @@ router.get('/application/:formId/files/application', fileLoggedOut, Team.mw.veri
         const pdfBytes = await createApplicationPdf(carrier, application, addresses, violations, accidents, employers)
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.setHeader('Content-Disposition', 'inline; filename="application.pdf"')
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
@@ -1055,7 +1055,7 @@ router.get('/previous-employments/files/verification/:method', fileLoggedOut, Te
         const pdfBytes = await createEmplVerifPdf(employment, method)
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', 'inline; filename=application.pdf"')
+        res.setHeader('Content-Disposition', 'inline; filename="verification.pdf"')
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
