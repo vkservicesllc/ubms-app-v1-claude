@@ -39,13 +39,13 @@ export default async (employment = {}, method) => {
     }
 
     const size = {
-        title: 13.2,
-        subtitle: 11.4,
-        section: 9.7,
+        title: 12.8,
+        subtitle: 11.2,
+        section: 9.4,
         label: 9,
-        value: 11,
-        check: 10.8,
-        signature: 12,
+        value: 10.7,
+        check: 10,
+        signature: 11,
     }
     const color = {
         title: rgb(0, 0, 0),
@@ -333,7 +333,19 @@ export default async (employment = {}, method) => {
     text = termType.d
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
-    x += textWidth + gap * 1.5
+    x += textWidth + 2
+    text = '(Explain)'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: width - marginX, y: y - 1 },
+        color: color.line,
+    })
+
+    x = marginX
+    y -= fieldHeight
     text = 'Eligible for rehire?'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
@@ -393,7 +405,7 @@ export default async (employment = {}, method) => {
     x = marginX
     y -= fieldHeight / 1.2
 
-    text = 'Vehicle Types:'
+    text = 'Vehicles:'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
@@ -412,14 +424,14 @@ export default async (employment = {}, method) => {
     x += textWidth + gap / 2
     page.drawLine({
         start: { x, y },
-        end: { x: x + 110, y },
+        end: { x: x + 100, y },
         color: color.line,
     })
 
     x = marginX
     y -= fieldHeight / 1.2
 
-    text = 'Trailer Types:'
+    text = 'Trailers:'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
@@ -438,9 +450,40 @@ export default async (employment = {}, method) => {
     x += textWidth + gap / 2
     page.drawLine({
         start: { x, y },
-        end: { x: x + 110, y },
+        end: { x: x + 100, y },
         color: color.line,
     })
+    x += 100 + gap
+    text = 'Length:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y },
+        end: { x: x + 35, y },
+        color: color.line,
+    })
+    x += 36
+    text = 'ft'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+
+    x = marginX
+    y -= fieldHeight / 1.2
+
+    text = 'Haul Regions:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap * 1.2
+    for (const prop in Employment.list.haulRegion) {
+        const trailer = Employment.list.haulRegion[prop]
+
+        drawCheckBox(page, x, y - 2, false, color, size.check)
+        x += 16
+        textWidth = font.value.widthOfTextAtSize(trailer, size.value * .9 )
+        page.drawText(trailer, { x, y, font: font.value, size: size.value * .9 })
+        x += textWidth + gap
+    }
 
     x = marginX
     y -= fieldHeight
@@ -749,17 +792,17 @@ export default async (employment = {}, method) => {
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
 
-    x = marginX
-    y -= fieldHeight / 1.2
-    page.drawText('Note:', { x, y, font: font.label, size: size.label * .9 })
-    y -= fieldHeight / 1.65
-    page.drawText(`• If you answered "Yes" to item 5, please provide the previous employer's report.`, {
-        x, y, font: font.label, size: size.label * .9,
-    })
-    y -= fieldHeight / 1.75
-    page.drawText('• If you answered "Yes" to item 6, please provide the corresponding return-to-duty documentation (e.g., SAP report(s), follow-up testing records).', {
-        x, y, font: font.label, size: size.label * .9,
-    })
+    // x = marginX
+    // y -= fieldHeight / 1.2
+    // page.drawText('Note:', { x, y, font: font.label, size: size.label * .9 })
+    // y -= fieldHeight / 1.65
+    // page.drawText(`• If you answered "Yes" to item 5, please provide the previous employer's report.`, {
+    //     x, y, font: font.label, size: size.label * .9,
+    // })
+    // y -= fieldHeight / 1.75
+    // page.drawText('• If you answered "Yes" to item 6, please provide the corresponding return-to-duty documentation (e.g., SAP report(s), follow-up testing records).', {
+    //     x, y, font: font.label, size: size.label * .9,
+    // })
 
     x = marginX
     y -= fieldHeight + size.value + gap * 1.2
