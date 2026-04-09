@@ -28,7 +28,7 @@ export default async (employment = {}, method) => {
 
     const { width, height, marginX, marginY } = pdfParams.letter
     let x = marginX, y = height - marginY, text, textWidth, lines
-    const fieldHeight = 21, gap = 8, padding = 5.4, dateFormat = 'MM/DD/YYYY', outsideBorder = true
+    const fieldHeight = 21, gap = 8, checkGap = 14, padding = 5.4, dateFormat = 'MM/DD/YYYY', outsideBorder = true
     const font = {
         title: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBoldOblique),
@@ -61,10 +61,10 @@ export default async (employment = {}, method) => {
 
     const page = pdfDoc.addPage([width, height])
     text = 'Employment Verification'
-    textWidth = font.title.widthOfTextAtSize(text, size.title * .9)
+    textWidth = font.title.widthOfTextAtSize(text, size.title * .85)
     page.drawText(text, {
         x: width / 2 - textWidth / 2, y,
-        font: font.title, size: size.title * .9, color: color.title,
+        font: font.title, size: size.title * .85, color: color.title,
     })
     y -= fieldHeight
 
@@ -93,7 +93,7 @@ export default async (employment = {}, method) => {
         const imgWidth = img.width
         const imgHeight = img.height
         const maxWidth = 180
-        const maxHeight = 90
+        const maxHeight = 80
         const widthRatio = maxWidth / imgWidth
         const heightRatio = maxHeight / imgHeight
         const scale = Math.min(widthRatio, heightRatio, 1)
@@ -106,20 +106,20 @@ export default async (employment = {}, method) => {
         })
     }
 
-    y -= 20
+    y -= 16
     text = carrierAddress.address1
     if (carrierAddress.address2) text += `, ${carrierAddress.address2}`
     page.drawText(text, { x, y, font: font.title, size: size.title, color: color.title })
-    y -= 20
+    y -= 16
     page.drawText(`${carrierAddress.city}, ${carrierAddress.state} ${carrierAddress.zip}`, {
         x, y, font: font.title, size: size.title, color: color.title
     })
-    y -= 20
+    y -= 16
     text = 'Phone:'
     textWidth = font.title.widthOfTextAtSize(text, size.subtitle)
     page.drawText(text, { x, y, font: font.title, size: size.subtitle, color: color.title })
     page.drawText(formatTel(carrierPhone), { x: x + textWidth + gap / 2, y, font: font.title, size: size.title, color: color.title })
-    y -= 20
+    y -= 16
     text = 'Fax:'
     page.drawText(text, { x, y, font: font.title, size: size.subtitle, color: color.title })
     page.drawText(carrierFax ? formatTel(carrierFax) : '', { x: x + textWidth + gap / 2, y, font: font.title, size: size.title, color: color.title })
@@ -132,14 +132,14 @@ export default async (employment = {}, method) => {
     x += colTextWidth1 + gap - 4
     page.drawLine({
         start: { x, y: y - 1 },
-        end: { x: x + 280, y: y - 1 },
+        end: { x: x + 300, y: y - 1 },
         color: color.line,
     })
     page.drawText(applicant, {
         x: x + 2, y: y + 2,
         font: font.title, size: size.value * 1.05,
     })
-    x += 280 + 10
+    x += 300 + 10
     text = "Applicant's SSN:"
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     let text2 = 'Application Date:'
@@ -164,14 +164,14 @@ export default async (employment = {}, method) => {
     x += colTextWidth1 + gap - 4
     page.drawLine({
         start: { x, y: y - 1 },
-        end: { x: x + 280, y: y - 1 },
+        end: { x: x + 300, y: y - 1 },
         color: color.line,
     })
     page.drawText(employer, {
         x: x + 2, y: y + 2,
         font: font.title, size: size.value * 1.05,
     })
-    x += 280 + 10
+    x += 300 + 10
     page.drawText(text2, { x, y, font: font.label, size: size.label })
     x += colTextWidth2 + gap - 4
     page.drawLine({
@@ -232,28 +232,28 @@ export default async (employment = {}, method) => {
     x += textWidth + gap / 2
     page.drawLine({
         start: { x, y: y - 1 },
-        end: { x: x + 75, y: y - 1 },
+        end: { x: x + 65, y: y - 1 },
         color: color.line,
     })
     page.drawText(moment(startedOn).format(dateFormat), {
         x: x + 2, y: y + 2,
         font: font.value, size: size.value,
     })
-    x += 75 + gap / 2
+    x += 65 + gap / 2
     text = 'to'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap / 2
     page.drawLine({
         start: { x, y: y - 1 },
-        end: { x: x + 75, y: y - 1 },
+        end: { x: x + 65, y: y - 1 },
         color: color.line,
     })
     page.drawText(leftOn ? moment(leftOn).format(dateFormat) : 'Present Day', {
         x: x + 2, y: y + 2,
         font: font.value, size: size.value,
     })
-    x += 75 + 2
+    x += 65 + 2
     page.drawText('.', { x, y, font: font.label, size: size.label })
 
     x = marginX
@@ -264,13 +264,13 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x = marginX
@@ -285,20 +285,20 @@ export default async (employment = {}, method) => {
     x += textWidth + gap / 2
     page.drawLine({
         start: { x, y: y - 1 },
-        end: { x: x + 70, y: y - 1 },
+        end: { x: x + 65, y: y - 1 },
         color: color.line,
     })
-    x += 70 + gap
+    x += 65 + gap
     text = 'End Date:'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap / 2
     page.drawLine({
         start: { x, y: y - 1 },
-        end: { x: x + 70, y: y - 1 },
+        end: { x: x + 65, y: y - 1 },
         color: color.line,
     })
-    x += 70 + gap
+    x += 65 + gap
     text = 'Position:'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
@@ -317,19 +317,19 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = termType.r
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = termType.l
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = termType.d
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -351,19 +351,19 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     page.drawText('Review', { x, y, font: font.value, size: size.value * .9 })
 
     x = marginX
@@ -374,18 +374,18 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x = marginX
     y -= fieldHeight / 1.5
-    text = 'If "YES", complete the remaining sections of the form.'
+    text = 'If "YES", please complete the remaining sections of the form.'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.label, size: size.label })
 
@@ -413,7 +413,7 @@ export default async (employment = {}, method) => {
         const type = Employment.list.vehicle.type[t]
 
         drawCheckBox(page, x, y - 2, false, color, size.check)
-        x += 16
+        x += checkGap
         textWidth = font.value.widthOfTextAtSize(type, size.value * .9 )
         page.drawText(type, { x, y, font: font.value, size: size.value * .9 })
         x += textWidth + gap
@@ -439,7 +439,7 @@ export default async (employment = {}, method) => {
         const trailer = Employment.list.vehicle.semiTrailer[st]
 
         drawCheckBox(page, x, y - 2, false, color, size.check)
-        x += 16
+        x += checkGap
         textWidth = font.value.widthOfTextAtSize(trailer, size.value * .9 )
         page.drawText(trailer, { x, y, font: font.value, size: size.value * .9 })
         x += textWidth + gap
@@ -479,7 +479,7 @@ export default async (employment = {}, method) => {
         const trailer = Employment.list.haulRegion[prop]
 
         drawCheckBox(page, x, y - 2, false, color, size.check)
-        x += 16
+        x += checkGap
         textWidth = font.value.widthOfTextAtSize(trailer, size.value * .9 )
         page.drawText(trailer, { x, y, font: font.value, size: size.value * .9 })
         x += textWidth + gap
@@ -498,13 +498,13 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -515,13 +515,13 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap * 1.2
@@ -534,13 +534,13 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.label.widthOfTextAtSize(text, size.label)
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -551,13 +551,13 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -570,21 +570,94 @@ export default async (employment = {}, method) => {
     page.drawText(text, { x, y, font: font.label, size: size.label })
     x += textWidth + gap * 1.2
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
 
     x = marginX
+    y -= fieldHeight / 1.5
+    text = 'If "YES", please report the accident by completing the information below.'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+
+    x = marginX
     y -= fieldHeight / 1.2
+    text = 'Date:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y },
+        end: { x: x + 65, y },
+        color: color.line,
+    })
+    x += 65 + gap * 1.5
+    text = 'Description:'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y },
+        end: { x: width - marginX, y },
+        color: color.line,
+    })
 
-
+    x = marginX
+    y -= fieldHeight / 1.2
+    drawCheckBox(page, x, y - 2, false, color, size.check)
+    x += checkGap
+    text = 'DOT Reportable'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, size.check)
+    x += checkGap
+    text = 'Preventable'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    drawCheckBox(page, x, y - 2, false, color, size.check)
+    x += checkGap
+    text = 'HazMat'
+    textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
+    page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
+    x += textWidth + gap
+    text = '# Injuries'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y },
+        end: { x: x + 40, y },
+        color: color.line,
+    })
+    x += 40 + gap * 1.5
+    text = '# Fatalities'
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y },
+        end: { x: x + 40, y },
+        color: color.line,
+    })
+    x += 40 + gap * 1.5
+    text = '# Vehicles Towed '
+    textWidth = font.label.widthOfTextAtSize(text, size.label)
+    page.drawText(text, { x, y, font: font.label, size: size.label })
+    x += textWidth + gap / 2
+    page.drawLine({
+        start: { x, y },
+        end: { x: x + 40, y },
+        color: color.line,
+    })
 
     // text = '# Preventable'
     // textWidth = font.label.widthOfTextAtSize(text, size.label)
@@ -651,7 +724,6 @@ export default async (employment = {}, method) => {
     //! ACCIDENT LIST
 
 
-
     x = marginX
     y -= fieldHeight
 
@@ -681,13 +753,13 @@ export default async (employment = {}, method) => {
     })
     x += lTextWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -701,13 +773,13 @@ export default async (employment = {}, method) => {
     })
     x += lTextWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -721,13 +793,13 @@ export default async (employment = {}, method) => {
     })
     x += lTextWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -741,13 +813,13 @@ export default async (employment = {}, method) => {
     })
     x += lTextWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -761,13 +833,13 @@ export default async (employment = {}, method) => {
     })
     x += lTextWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
@@ -781,13 +853,13 @@ export default async (employment = {}, method) => {
     })
     x += lTextWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'Yes'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
     x += textWidth + gap
     drawRadio(page, x, y - 2, false, color, size.check)
-    x += 16
+    x += checkGap
     text = 'No'
     textWidth = font.value.widthOfTextAtSize(text, size.value * .9 )
     page.drawText(text, { x, y, font: font.value, size: size.value * .9 })
