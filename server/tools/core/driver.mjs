@@ -2469,13 +2469,13 @@ class Employment {
             if (data._teamId) this.application.team = data.teamName
         }
 
-        this.verififcation = {
+        this.verification = {
             verify: !!data.verify,
             status: data.status,
             comment: data.comments,
-            // signature: {
-            //     applicant: data.applicant_,
-            // },
+            signature: {
+                applicant: data.applicant_,
+            },
             //! continue,
             // signature: {
             //     inquirer1: data.inquirer1_,
@@ -2751,7 +2751,7 @@ class Employment {
                     table: query.driver_application.main.table,
                     fields: [
                         'teamId', Team.hashId('teamId'), 'carrierId', Carrier.hashId('carrierId'), 'formId', 'cdlRole',
-                        'createdAt', 'finishedAt',
+                        'applicant_', 'createdAt', 'finishedAt',
                     ],
                     join: [ 'id', 'appId' ],
                 },

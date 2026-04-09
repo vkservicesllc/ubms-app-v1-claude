@@ -14,9 +14,10 @@ import { drawCheckBox, drawRadio, wrapText } from './components.mjs'
 
 
 export default async (employment = {}, method) => {
-    const { employer, position, startedOn, leftOn, application = {} } = employment
+    const { employer, position, startedOn, leftOn, application = {}, verification } = employment
     const { ssn: appSsn, finishedAt } = application
     const { carrierCompanyId, carrier, carrierPhone, carrierFax, carrierAddress, carrierLogo } = application
+    const { signature } = verification
 
     const pdfDoc = await PDFDocument.create()
     pdfDoc.registerFontkit(fontkit)
@@ -41,9 +42,10 @@ export default async (employment = {}, method) => {
         subtitle: 11.2,
         section: 9.4,
         label: 9,
+        text: 10,
         value: 10.7,
         check: 10,
-        signature: 11,
+        signature: 20,
     }
     const color = {
         title: rgb(0, 0, 0),
@@ -52,8 +54,138 @@ export default async (employment = {}, method) => {
         signature: rgb(0, 0, 1),
     }
 
+    const consentPage = pdfDoc.addPage([width, height])
+    text = 'Former Employee Consent for Release of'
+    textWidth = font.title.widthOfTextAtSize(text, size.title * .85)
+    consentPage.drawText(text, {
+        x: width / 2 - textWidth / 2, y,
+        font: font.title, size: size.title * .85, color: color.title,
+    })
+    y -= fieldHeight / 1.5
+    text = 'Prior Employment and Drug & Alcohol Testing Records'
+    textWidth = font.title.widthOfTextAtSize(text, size.title * .85)
+    consentPage.drawText(text, {
+        x: width / 2 - textWidth / 2, y,
+        font: font.title, size: size.title * .85, color: color.title,
+    })
+
+    x = marginX
+    y -= fieldHeight + size.value + gap * 3.6
+    consentPage.drawText(applicant, {
+        x: x + 2, y,
+        font: font.value, size: size.value * 1.15,
+    })
+    x += 240 + gap
+    consentPage.drawText(formatSsn(appSsn, 'x'), {
+        x: x + 2, y,
+        font: font.value, size: size.value * 1.15,
+    })
+    x = marginX
+    y -= size.value * 1.5
+    consentPage.drawText('Printed Name (First, MI, Last)', { x: x + 2, y, font: font.label, size: size.label * .9 })
+    consentPage.drawLine({
+        start: { x, y: y + 9 },
+        end: { x: x + 240, y: y + 9 },
+        color: color.line,
+    })
+    x += 240 + gap
+    consentPage.drawText('Social Security Number', { x: x + 2, y, font: font.label, size: size.label * .9 })
+    consentPage.drawLine({
+        start: { x, y: y + 9 },
+        end: { x: x + 120, y: y + 9 },
+        color: color.line,
+    })
+
+    x = marginX
+    y -= fieldHeight * 1.6
+    consentPage.drawText(signature?.applicant || '', {
+        x: x + 2, y,
+        font: font.signature, size: size.signature, color: color.signature,
+    })
+    x += 240 + gap
+    consentPage.drawText(moment(finishedAt).format(dateFormat), {
+        x: x + 2, y,
+        font: font.value, size: size.value * 1.15,
+    })
+    x = marginX
+    y -= size.value * 1.5
+    consentPage.drawText('Signature', { x: x + 2, y, font: font.label, size: size.label * .9 })
+    consentPage.drawLine({
+        start: { x, y: y + 9 },
+        end: { x: x + 240, y: y + 9 },
+        color: color.line,
+    })
+    x += 240 + gap
+    consentPage.drawText('Date', { x: x + 2, y, font: font.label, size: size.label * .9 })
+    consentPage.drawLine({
+        start: { x, y: y + 9 },
+        end: { x: x + 120, y: y + 9 },
+        color: color.line,
+    })
+
+    x = marginX
+    y -= fieldHeight * 2.4
+
+    text = 'I, the above-mentioned signer, hereby authorize'
+    textWidth = font.label.widthOfTextAtSize(text, size.text)
+    consentPage.drawText(text, { x, y, font: font.label, size: size.text })
+    x += textWidth + gap / 1.5
+    consentPage.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: x + 300, y: y - 1 },
+        color: color.line,
+    })
+    consentPage.drawText(employer, {
+        x: x + 2, y: y + 2,
+        font: font.value, size: size.value,
+    })
+    x = marginX
+    y -= fieldHeight / 1.4
+    consentPage.drawText(
+        '(Previous Employer/Carrier) to release and forward, in accordance with applicable regulations, all known information',
+        { x, y, font: font.label, size: size.text }
+    )
+    y -= fieldHeight / 1.4
+    consentPage.drawText(
+        'pertaining to my alcohol and controlled substances testing and training records, as well as my employment records,',
+        { x, y, font: font.label, size: size.text }
+    )
+    y -= fieldHeight / 1.4
+    text = 'to'
+    textWidth = font.label.widthOfTextAtSize(text, size.text)
+    consentPage.drawText(text, { x, y, font: font.label, size: size.text })
+    x += textWidth + gap / 1.5
+    consentPage.drawLine({
+        start: { x, y: y - 1 },
+        end: { x: x + 300, y: y - 1 },
+        color: color.line,
+    })
+    consentPage.drawText(carrier, {
+        x: x + 2, y: y + 2,
+        font: font.value, size: size.value,
+    })
+    x += 300 + gap / 1.5
+    consentPage.drawText(
+        '(hereinafter referred to as "Carrier").',
+        { x, y, font: font.label, size: size.text }
+    )
+    // I, the above-mentioned signer, hereby authorize _________________________________________ (Previous
+    // Employer/Carrier) to release and forward, in accordance with applicable regulations, all known information pertaining to
+    // my alcohol and controlled substances testing and training records, as well as my employment records,
+    // to _________________________________________ (hereinafter referred
+    // to as "Carrier").
+
+
+
+
+
+
+
 
     const verifPage = pdfDoc.addPage([width, height])
+    y = height - marginY
+    x = marginX
+
     text = 'Employment Verification'
     textWidth = font.title.widthOfTextAtSize(text, size.title * .85)
     verifPage.drawText(text, {
