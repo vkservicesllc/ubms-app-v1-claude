@@ -2929,8 +2929,8 @@ class Employment {
 
         haulRegion: {
             otr: 'OTR (Long Haul)',
-            loc: 'Local',
             reg: 'Regional',
+            loc: 'Local',
         },
 
     }
