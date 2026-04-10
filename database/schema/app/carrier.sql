@@ -549,6 +549,7 @@ CREATE TABLE application_employments (
     emplId       INT UNSIGNED              NOT NULL,
     appId        MEDIUMINT UNSIGNED        NOT NULL,
     verify       BOOLEAN                   DEFAULT NULL,
+    unreported   BOOLEAN                   DEFAULT FALSE,
     status       ENUM('p', 'c', 'u')       DEFAULT 'p',  -- In Progress / Completed / Unobtainable
     comment      VARCHAR(100)              DEFAULT NULL,
 

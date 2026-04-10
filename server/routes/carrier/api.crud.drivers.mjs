@@ -74,6 +74,7 @@ router.get('/applications/prev-employments/:_id?/:target?', User.mw.verify, Team
             data: await Employment.fetch(res.session, { condition: 'c', _teamId, carrierId, verify: true }, { hideRawId }),
             actions: {
                 data: {
+                    create: DS || permissions?.['d:drv/emp'].includes('2'),
                     modify: DS || permissions?.['d:drv/emp'].includes('3'),
                     update: DS || permissions?.['d:drv/emp'].includes('4'),
                 },
@@ -123,7 +124,7 @@ router.get('/applications/:_id/:target/:_targetId?', User.mw.verify, Team.mw.ver
         const { _id, target } = req.params
 
         if (target === 'employments') {
-            const employers = await Employment.fetch(res.session, { _appId: _id })
+            const employers = await Employment.fetch(res.session, { _appId: _id, unreported: false })
 
             return res.json({ data: employers })
         }

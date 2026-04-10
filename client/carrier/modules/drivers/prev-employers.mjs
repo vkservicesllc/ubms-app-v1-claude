@@ -11,15 +11,20 @@ const table = $('#driver-apl-prev-employers-table').DataTable({
         url: '/api/resource/drivers/applications/prev-employments',
         method: 'GET',
         dataSrc(response) {
-            const { data } = response
+            const { data, actions } = response
+            const { create } = actions.data
 
             data.forEach(row => {
                 const { formId, phone, carrier, finishedAt } = row.application
 
                 row.order = finishedAt + ' ' + row.startedOn
-                row.group = new Person(row.application).fullName() + ` <small><small class="bull">•</small> ${formatTel(phone)}`
+                row.group = '<div style="display: flex; justify-content: space-between;"><span>'
+                row.group += new Person(row.application).fullName() + ` <small><small class="bull">•</small> ${formatTel(phone)}`
                 if (carrier) row.group += ` <small class="bull">•</small> ${carrier}`
-                row.group += ` <small class="bull">•</small> ${moment(finishedAt).format('ll')} <small class="bull">•</small> ${formId}</small>`
+                row.group += ` <small class="bull">•</small> ${moment(finishedAt).format('ll')} <small class="bull">•</small> ${formId}</small></span>`
+                if (create)
+                    row.group += `<a class="add-empl" data-app-id="${row._appId}" href="" title="Add Unreported Employer"><i class="blue plus icon"></i></a>`
+                row.group += '</div>'
             })
 
             return data

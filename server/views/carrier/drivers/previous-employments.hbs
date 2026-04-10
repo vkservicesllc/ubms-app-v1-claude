@@ -370,6 +370,18 @@
             <script type="module" src="/modules/drivers/prev-employer.verification.mjs"></script>
         </div>
         {{/if}}
+        {{#if (eq permissions.create true)}}
+        <div class="ui modal" id="empl-add-card-modal" style="width: 52.5rem;">
+            <i class="close icon"></i>
+            <div class="ui header">Unreported Employer Registration</div>
+            <div class="content">
+                <form class="ui form" id="new-employer-form" autocomplete="off">
+                    {{> carrier/drivers/application.employer.fields}}
+                </form>
+            </div>
+            <script type="module" src="/modules/drivers/prev-employer.registration.mjs"></script>
+        </div>
+        {{/if}}
         <script type="module" src="/modules/drivers/prev-employers.mjs"></script>
 
 {{> carrier/nav.omega}}

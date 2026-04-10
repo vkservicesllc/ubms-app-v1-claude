@@ -17,7 +17,7 @@ export default {
             },
             'emp': {
                 name: 'Previous Employments',
-                privileges: [ 0, 3, 4 ],
+                privileges: [ 0, 2, 3, 4 ],
             },
             'agr': {
                 name: 'Pay Agreements',

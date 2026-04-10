@@ -86,7 +86,8 @@
             <form class="ui form" id="new-employer-form" autocomplete="off">
                 {{{emplForm.id.hidden.input}}}
                 <input type="hidden" name="_aplId[]" value="{{_id}}" />
-                <div class="ui compact grid">
+                {{> carrier/drivers/application.employer.fields}}
+                {{!-- <div class="ui compact grid">
                     <div class="eight wide field">
                         {{{emplForm.employer.text.label}}}
                         {{{emplForm.employer.text.input}}}
@@ -183,7 +184,7 @@
                             {{{emplForm.dotDat2.checkbox.label}}}
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </form>
         </div>
         <div class="actions">

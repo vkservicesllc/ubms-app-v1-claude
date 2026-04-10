@@ -905,7 +905,7 @@ router.get('/application/:formId/files/application', fileLoggedOut, Team.mw.veri
         const addresses = await application.fetch('addresses')
         const violations = await application.fetch('citations')
         const accidents = await application.fetch('accidents')
-        const employers = await Employment.fetch(res.session, { appId: application.id })
+        const employers = await Employment.fetch(res.session, { appId: application.id, unreported: false })
 
         const pdfBytes = await createApplicationPdf(carrier, application, addresses, violations, accidents, employers)
 
@@ -968,14 +968,14 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 1))
 
-        const privs = ['modify', 'update']
+        const privs = ['create', 'modify', 'update']
         hbs.permissions = {}
         privs.forEach(priv => hbs.permissions[priv] = withPrivileges('d:drv/emp', priv, permissions, DS))
 
-        if (hbs.permissions.modify || hbs.permissions.update) {
-            let options = {}, dropdown = {}, t = `\t`.repeat(9)
+        if (hbs.permissions.create || hbs.permissions.modify || hbs.permissions.update) {
+            let options = {}, emplOptions = {}, dropdown = {}, t = `\t`.repeat(9)
 
-            if (hbs.permissions.modify) {
+            if (hbs.permissions.create || hbs.permissions.modify) {
                 dropdown.addrState = ''
                 for (const state in Address.list.state)
                     dropdown.addrState += `\n${t}<div class="item" data-value="${state}">${Address.list.state[state]}</div>`
@@ -990,9 +990,12 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
                         [ field, prop ] = field
 
                     options[field] = { [prop]: { input: { disabled: false } } }
+                    emplOptions[field] = { [prop]: { input: { disabled: false } } }
                 })
                 options.RFL.text.input.rows = 3,
                 options.RFL.text.input.placeholder = ' '
+                emplOptions.RFL.text.input.rows = 2,
+                emplOptions.RFL.text.input.placeholder = ' '
             } else {
                 // make html info only
             }
@@ -1027,6 +1030,8 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
             }
 
             hbs.form = new EmploymentForm(options)
+            hbs.emplForm = new EmploymentForm(emplOptions)
+            hbs.cdl = true
             hbs.dropdown = dropdown
         }
 

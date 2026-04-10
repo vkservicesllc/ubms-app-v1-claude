@@ -2471,6 +2471,7 @@ class Employment {
 
         this.verification = {
             verify: !!data.verify,
+            unreported: !!data.unreported,
             status: data.status,
             comment: data.comments,
             signature: {
@@ -2714,6 +2715,7 @@ class Employment {
                         'appId',
                         Application.hashId('appId'),
                         'verify',
+                        'unreported',
                         'status',
                         'comment',
                     ],
@@ -2880,11 +2882,11 @@ class Employment {
             prepare(batch, filter) {
                 const {
                     id, _id,
-                    appId, _appId, driverId, _driverId, teamId, _teamId, carrierId, _carrierId, condition, verify,
+                    appId, _appId, driverId, _driverId, teamId, _teamId, carrierId, _carrierId, condition, verify, unreported,
                 } = filter
                 const single = (!!id && !!appId) || (!!_id && !!_appId)
 
-                batch[0].match = { appId, verify }
+                batch[0].match = { appId, verify, unreported }
                 batch[1].match = { id }
                 batch[2].match = { driverId, teamId, carrierId, condition }
                 if (_appId) batch[0].match.appId = Application.matchIdHash(_appId)
