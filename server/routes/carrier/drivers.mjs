@@ -355,6 +355,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         hbs.formId = formId
         hbs.cdlRole = cdlRole
         hbs.position = application.expansion.position
+        hbs.posProp = application.position
         hbs.positionRole = cdlRole ? 'CDL Only' : 'Non-CDL'
         hbs.cdl = application.dl.commercial
         hbs.applicant = `<strong style="font-size: 1.2em;">${new Person(application).fullName('FMLs')}</strong>`
@@ -386,10 +387,17 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         const checkList = {
             application: checkMark.checked,
-            legalDox: checkMark.unchecked,
-            ssc: checkMark.unchecked,
-            dl: checkMark.unchecked,
-            mec: checkMark.unchecked,
+            personalDox: checkMark.unchecked,
+            mvrPsp: checkMark.unchecked,
+            clearinghouse: checkMark.unchecked,
+            vehicleDox: checkMark.unchecked,
+            // ssc: checkMark.unchecked,
+            // dl: checkMark.unchecked,
+            // mec: checkMark.unchecked,
+            drugTest: checkMark.unchecked,
+            orientation: checkMark.unchecked,
+            leaseAgreement: checkMark.unchecked,
+            sta: checkMark.unchecked,
             prevEmployers: checkMark.unchecked,
         }
 

@@ -122,8 +122,8 @@
 
                     <div class="ui active tab" data-tab="workflow">
                         <form class="ui loading form" id="assign-form" action="{{actionUrl.workflow}}" method="POST" autocomplete="off">
-                            {{!-- <h5 class="ui blue text first header">Checklist</h5> --}}
-                            <div class="ui circular steps" style="outline: 0 dotted red; margin: .65rem .2rem 3.5rem !important;">
+                            <h5 class="ui blue text first header">Checklist</h5>
+                            {{!-- <div class="ui circular steps" style="outline: 0 dotted red; margin: .65rem .2rem 3.5rem !important;">
                                 <div class="completed step">
                                     <div class="content">
                                         <div class="title">Application Form</div>
@@ -147,7 +147,7 @@
                                         <div class="title">Medical Card</div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             {{!-- <div class="ui grid">
                                 <div class="four wide column">
                                     <div class="ui circular vertical steps">
@@ -186,22 +186,44 @@
                                     </div>
                                 </div>
                             </div> --}}
-                            {{!-- <div class="ui compact grid" style="margin-top: .35rem;">
+                            <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="four wide field">
                                     <div class="ui list">
                                         <div class="item">
                                             <i class="ui {{checkList.application}} icon"></i>
                                             <div class="content">
-                                                Application Form
+                                                Application and Consents
                                             </div>
                                         </div>
                                         <div class="item">
-                                            <i class="ui {{checkList.legalDox}} icon"></i>
+                                            <i class="ui {{checkList.personalDox}} icon"></i>
                                             <div class="content">
-                                                Legal Document
+                                                Personal Documents
                                             </div>
                                         </div>
                                         <div class="item">
+                                            <i class="ui {{checkList.mvrPsp}} icon"></i>
+                                            <div class="content">
+                                                MVR/PSP
+                                            </div>
+                                        </div>
+                                        {{#if (eq cdl true)}}
+                                        <div class="item">
+                                            <i class="ui {{checkList.clearinghouse}} icon"></i>
+                                            <div class="content">
+                                                Clearinghouse
+                                            </div>
+                                        </div>
+                                        {{/if}}
+                                        {{#if (eq posProp 'OO')}}
+                                        <div class="item">
+                                            <i class="ui {{checkList.vehicleDox}} icon"></i>
+                                            <div class="content">
+                                                Vehicle Documents
+                                            </div>
+                                        </div>
+                                        {{/if}}
+                                        {{!-- <div class="item">
                                             <i class="ui {{checkList.ssc}} icon"></i>
                                             <div class="content">
                                                 Social Security Card
@@ -218,23 +240,46 @@
                                             <div class="content">
                                                 Medical Card
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
                                 <div class="four wide field">
                                     <div class="ui list">
+                                        <div class="item">
+                                            <i class="ui {{checkList.drugTest}} icon"></i>
+                                            <div class="content">
+                                                Drug Test
+                                            </div>
+                                        </div>
+                                        {{#if (eq posProp 'OO')}}
+                                        <div class="item">
+                                            <i class="ui {{checkList.leaseAgreement}} icon"></i>
+                                            <div class="content">
+                                                Lease Agreement
+                                            </div>
+                                        </div>
+                                        {{/if}}
+                                        <div class="item">
+                                            <i class="ui {{checkList.orientation}} icon"></i>
+                                            <div class="content">
+                                                Orientation
+                                            </div>
+                                        </div>
+                                        <div class="item">
+                                            <i class="ui {{checkList.sta}} icon"></i>
+                                            <div class="content">
+                                                STA
+                                            </div>
+                                        </div>
                                         <div class="item">
                                             <i class="ui {{checkList.prevEmployers}} icon"></i>
                                             <div class="content">
                                                 Previous Employments
                                             </div>
                                         </div>
-                                        <div class="item">
-                                            <span class="ui red text">... more items to be added</span>
-                                        </div>
                                     </div>
                                 </div>
-                            </div> --}}
+                            </div>
                             <h5 class="ui blue text first header">Assignment</h5>
                             <div class="ui compact grid" style="margin-top: .35rem;">
                                 <div class="six wide field">
@@ -328,18 +373,38 @@
                                 <div class="content">
                                     <div class="header">DQ Files</div>
                                     <div class="list">
-                                        {{#if (eq filePerms.application true)}}
                                         <div class="item">
-                                            <i class="pdf file outline icon"></i>
+                                            <i class="dark orange folder icon"></i>
                                             <div class="content">
-                                                <div class="header">
-                                                    <a onclick="window.open('{{addrBook.carrier}}/drivers/application/{{formId}}/files/application', '_blank'); return false;">
-                                                        <span class="ui dark blue text">Application</span>
-                                                    </a>
+                                                <div class="header">Initial Documents</div>
+                                                <div class="content">
+                                                    <div class="list">
+                                                        {{#if (eq filePerms.application true)}}
+                                                        <div class="item">
+                                                            <i class="pdf file outline icon"></i>
+                                                            <div class="content">
+                                                                <div class="header">
+                                                                    <a onclick="window.open('{{addrBook.carrier}}/drivers/application/{{formId}}/files/application', '_blank'); return false;">
+                                                                        <span class="ui dark blue text">Application</span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="item">
+                                                            <i class="pdf file outline icon"></i>
+                                                            <div class="content">
+                                                                <div class="header">
+                                                                    <a onclick="window.open('{{addrBook.carrier}}/drivers/application/{{formId}}/files/application', '_blank'); return false;">
+                                                                        <span class="ui dark blue text">MVR/PSP Consent</span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {{/if}}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        {{/if}}
                                         <div class="item">
                                             <i class="dark orange folder icon"></i>
                                             <div class="content">
