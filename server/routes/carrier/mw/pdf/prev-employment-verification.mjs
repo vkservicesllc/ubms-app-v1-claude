@@ -27,7 +27,7 @@ export default async (employment = {}, method) => {
 
     const { width, height, marginX, marginY } = pdfParams.letter
     let x = marginX, y = height - marginY, text, textWidth, lines
-    const fieldHeight = 21, gap = 8, checkGap = 14, dateFormat = 'MM/DD/YYYY'
+    const fieldHeight = 21, gap = 8, checkGap = 14, padding = 5.7, dateFormat = 'MM/DD/YYYY'
     const font = {
         title: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         section: await pdfDoc.embedFont(StandardFonts.HelveticaBoldOblique),
@@ -169,15 +169,30 @@ export default async (employment = {}, method) => {
         '(hereinafter referred to as "Carrier").',
         { x, y, font: font.label, size: size.text }
     )
-    // I, the above-mentioned signer, hereby authorize _________________________________________ (Previous
-    // Employer/Carrier) to release and forward, in accordance with applicable regulations, all known information pertaining to
-    // my alcohol and controlled substances testing and training records, as well as my employment records,
-    // to _________________________________________ (hereinafter referred
-    // to as "Carrier").
 
+    y -= fieldHeight * 2.4
+    text = 'Disclosure and Authorization'
+    text = text.toUpperCase()
+    textWidth = font.label.widthOfTextAtSize(text, size.title * .9)
+    consentPage.drawText(text, {
+        x: width / 2 - textWidth / 2, y,
+        font: font.label, size: size.title * .9, color: color.title,
+    })
 
+    y -= fieldHeight * 1.6
+    x = marginX
 
-
+    text = 'Pursuant to 49 CFR Part 391.23, I hereby authorize the release of information from my DOT-regulated drug and alcohol testing '
+    text += 'records by the carriers (company/school) listed above to Carrier, or to its designated agents, '
+    text += 'including HireRight and DriverFacts, for the sole purpose of transmitting such records to Carrier.'
+    lines = wrapText(text, width, font.label, size.text, marginX, 0, gap * 3)
+    lines.forEach((line, i) => {
+        consentPage.drawText(line, {
+            x, y,
+            font: font.label, size: size.text, color: color.section,
+        })
+        y -= gap * 2
+    })
 
 
 
