@@ -5,6 +5,11 @@ const $modal = {
     add: $('#empl-add-card-modal'),
 }
 
+const $dropdown = {
+    addrState: $('#urempl-addr-state-dropdown'),
+}
+
+$dropdown.addrState.dropdown()
 
 table.on('draw', function() {
     const { actions } = table.ajax.json()
@@ -21,7 +26,7 @@ table.on('draw', function() {
                 autofocus: false,
                 closable: false,
                 onHidden() {
-                    //* Clear Form
+                    $dropdown.addrState.dropdown('clear')
                 },
             }).modal('show')
         })

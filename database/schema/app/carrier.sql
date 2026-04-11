@@ -232,15 +232,15 @@ CREATE TABLE driver_employments (
     city       VARCHAR(30)          NOT NULL,
     `state`    CHAR(2)              NOT NULL,
     zip        VARCHAR(10)          NOT NULL,
-    startedOn  DATE                 NOT NULL,
+    startedOn  DATE                 DEFAULT NULL,
 
-    position   VARCHAR(20)          NOT NULL,
-    earnings   SMALLINT             NOT NULL,  -- Monthly
+    position   VARCHAR(20)          DEFAULT NULL,
+    earnings   SMALLINT             DEFAULT NULL,  -- Monthly
 
     fmcsr      BOOLEAN              DEFAULT NULL,
-    dotDat     BOOLEAN              NOT NULL,
+    dotDat     BOOLEAN              DEFAULT NULL,
 
-    rfl        VARCHAR(75)          NOT NULL,  -- Reason for Leaving
+    rfl        VARCHAR(75)          DEFAULT NULL,  -- Reason for Leaving
     leftOn     DATE                 DEFAULT NULL,
     gapExpl    VARCHAR(75)          DEFAULT NULL,  -- Explanation of unemployment gap between the leftOn and the next date if exists
 

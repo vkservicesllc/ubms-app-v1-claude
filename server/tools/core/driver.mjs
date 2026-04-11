@@ -1333,23 +1333,24 @@ class Application {
 
 
             this.submit = async () => {
-                const employments = await Employment.fetch(this.session, { appId: this.id })
-                const today = moment()
-                const appId = this.id
+                if (this.condition === 'p' && this.step === 12) {
+                    const employments = await Employment.fetch(this.session, { appId: this.id })
+                    const today = moment()
+                    const appId = this.id
 
-                for (const employment of employments) {
-                    const { id: emplId } = employment
-                    let { leftOn } = employment
+                    for (const employment of employments) {
+                        const { id: emplId } = employment
+                        let { leftOn } = employment
 
-                    leftOn = moment(leftOn || undefined)
-                    const diff = today.diff(leftOn, 'years')
-                    const verify = diff <= 3
+                        leftOn = moment(leftOn || undefined)
+                        const diff = today.diff(leftOn, 'years')
+                        const verify = diff <= 3
 
-                    await mysql.execute(query.driver_employment.verifications.update({ verify }, { emplId, appId }))
+                        await mysql.execute(query.driver_employment.verifications.update({ verify }, { emplId, appId }))
+                    }
+
+                    await this.update({ condition: 'c', applicant_: this.name, finishedAt: utcTimeStamp() })
                 }
-
-                if (this.condition === 'p' && this.step === 12)
-                    await this.update({ condition: 'c', finishedAt: utcTimeStamp() })
             }
 
 

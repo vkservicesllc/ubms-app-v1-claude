@@ -981,7 +981,7 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
         privs.forEach(priv => hbs.permissions[priv] = withPrivileges('d:drv/emp', priv, permissions, DS))
 
         if (hbs.permissions.create || hbs.permissions.modify || hbs.permissions.update) {
-            let options = {}, emplOptions = {}, dropdown = {}, t = `\t`.repeat(9)
+            let options = {}, dropdown = {}, t = `\t`.repeat(9)
 
             if (hbs.permissions.create || hbs.permissions.modify) {
                 dropdown.addrState = ''
@@ -991,6 +991,7 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
                     'employer', 'startDate', 'endDate2', 
                     'phone', 'address1', 'address2', 'addrZip', 'addrCity', [ 'addrState', 'hidden' ],
                     'position', 'earnings', 'RFL', 'usdot',  //'gapExpl',
+                    'urEmployer', 'urUsdot', 'urPhone', 'urAddress1', 'urAddress2', 'urAddZip', 'urAddrCity', [ 'urAddrState', 'hidden' ],
                 ]
                 fields.forEach(field => {
                     let prop = 'text'
@@ -998,12 +999,9 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
                         [ field, prop ] = field
 
                     options[field] = { [prop]: { input: { disabled: false } } }
-                    emplOptions[field] = { [prop]: { input: { disabled: false } } }
                 })
                 options.RFL.text.input.rows = 3,
                 options.RFL.text.input.placeholder = ' '
-                emplOptions.RFL.text.input.rows = 2,
-                emplOptions.RFL.text.input.placeholder = ' '
             } else {
                 // make html info only
             }
@@ -1038,7 +1036,6 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
             }
 
             hbs.form = new EmploymentForm(options)
-            hbs.emplForm = new EmploymentForm(emplOptions)
             hbs.cdl = true
             hbs.dropdown = dropdown
         }

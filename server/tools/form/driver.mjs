@@ -1603,6 +1603,12 @@ class EmploymentForm {
         label: 'US-DOT #',
     })
 
+    static urUsdot = createNumberForm('usdot', {
+        selector: appEmplSelector,
+        target: 'urUsdot',
+        label: 'US-DOT #',
+    })
+
     static employer = createForm({
         selector: appEmplSelector,
         target: 'employer',
@@ -1613,10 +1619,27 @@ class EmploymentForm {
         label: 'Company/Employer Name',
     })
 
+    static urEmployer = createForm({
+        selector: appEmplSelector,
+        target: 'urEmployer',
+        name: 'employer',
+        maxLength: 40,
+        required,
+        label: 'Company/Employer Name',
+    })
+
     static phone = createPhoneForm({
         selector: appEmplSelector,
         target: 'phone',
         group: 'phone',
+        name: 'phone',
+        required,
+        label: 'Phone',
+    })
+
+    static urPhone = createPhoneForm({
+        selector: appEmplSelector,
+        target: 'urPhone',
         name: 'phone',
         required,
         label: 'Phone',
@@ -1654,6 +1677,36 @@ class EmploymentForm {
         selector: appEmplSelector,
         target: 'addrState',
         group: 'addrState',
+        name: 'state',
+    })
+
+    static urAddress1 = createAddressForm({
+        selector: appEmplSelector,
+        target: 'urAddress1',
+        name: 'address1',
+    })
+
+    static urAddress2 = createAddressForm({
+        selector: appEmplSelector,
+        target: 'urAddress2',
+        name: 'address2',
+    }, { idx: 2, business: true })
+
+    static urAddrZip = createAddrZipForm({
+        selector: appEmplSelector,
+        target: 'urAddrZip',
+        name: 'zip',
+    })
+
+    static urAddrCity = createAddrCityForm({
+        selector: appEmplSelector,
+        target: 'urAddrCity',
+        name: 'city',
+    })
+
+    static urAddrState = createAddrStateForm({
+        selector: appEmplSelector,
+        target: 'urAddrState',
         name: 'state',
     })
 

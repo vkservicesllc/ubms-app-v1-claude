@@ -376,7 +376,52 @@
             <div class="ui header">Unreported Employer Registration</div>
             <div class="content">
                 <form class="ui form" id="new-employer-form" autocomplete="off">
-                    {{> carrier/drivers/application.employer.fields}}
+                    <div class="ui compact grid">
+                        <div class="eight wide field">
+                            {{{form.urEmployer.text.label}}}
+                            {{{form.urEmployer.text.input}}}
+                        </div>
+                        <div class="four wide field">
+                            {{{form.urUsdot.text.label}}}
+                            {{{form.urUsdot.text.input}}}
+                        </div>
+                    </div>
+                    <div class="ui compact grid">
+                        <div class="five wide field">
+                            {{{form.urPhone.text.label}}}
+                            {{{form.urPhone.text.input}}}
+                        </div>
+                        <div class="seven wide field">
+                            {{{form.urAddress1.text.label}}}
+                            {{{form.urAddress1.text.input}}}
+                        </div>
+                        <div class="four wide field">
+                            {{{form.urAddress2.text.label}}}
+                            {{{form.urAddress2.text.input}}}
+                        </div>
+                    </div>
+                    <div class="ui compact grid">
+                        <div class="four wide field">
+                            {{{form.urAddrZip.text.label}}}
+                            {{{form.urAddrZip.text.input}}}
+                        </div>
+                        <div class="seven wide field">
+                            {{{form.urAddrCity.text.label}}}
+                            {{{form.urAddrCity.text.input}}}
+                        </div>
+                        <div class="five wide field">
+                            <div class="field">
+                                {{{form.urAddrState.select.label}}}
+                                <div class="ui fluid selection required dropdown empl-addr-state-dropdown"  id="urempl-addr-state-dropdown">
+                                    {{{form.urAddrState.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text"></div>
+                                    <div class="menu">{{{dropdown.addrState}}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
             <script type="module" src="/modules/drivers/prev-employer.registration.mjs"></script>
