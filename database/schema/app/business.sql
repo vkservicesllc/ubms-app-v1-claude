@@ -175,7 +175,7 @@ CREATE TABLE user_company_map (
 SELECT 'Creating table `app_business`.`referral_sources`...';
 CREATE TABLE referral_sources (
 
-    id         SMALLINT UNSIGNED   AUTO_INCREMENT PRIMARY KEY,
+    id         SMALLINT UNSIGNED  AUTO_INCREMENT PRIMARY KEY,
     companyId  SMALLINT UNSIGNED  NOT NULL,
 
     name       VARCHAR(30)        NOT NULL,
