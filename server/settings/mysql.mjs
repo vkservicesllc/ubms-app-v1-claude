@@ -51,6 +51,10 @@ export const query = {
         //? ...Add more if needed
     },
 
+    business: {
+        refSrc: new Query(db.business, 'referral_sources'),
+    },
+
     company: {
         main: new Query(db.business, 'companies'),
         names: new Query(db.business, 'company_names'),  //* 1-to-many

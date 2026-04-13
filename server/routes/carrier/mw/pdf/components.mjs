@@ -55,7 +55,7 @@ export const drawRadio = (page, x, y, checked, color = {}, size = 10) => {
 }
 
 
-export const wrapText = (text, width, font, fontSize, marginX, padding, xGap = 0) => {
+export const wrapText = (text, width, font, fontSize, marginX, padding = 0, xGap = 0, testLog = false) => {
     const maxWidth = width - marginX * 2 - padding * 2 - xGap * 2
     const words = text.split(' ')
     const lines = []
@@ -64,6 +64,7 @@ export const wrapText = (text, width, font, fontSize, marginX, padding, xGap = 0
     for (const word of words) {
         const testLine = line ? `${line} ${word}` : word
         const width = font.widthOfTextAtSize(testLine, fontSize)
+
         if (width < maxWidth) line = testLine
         else {
             lines.push(line)

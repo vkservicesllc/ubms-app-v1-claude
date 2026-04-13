@@ -2988,7 +2988,7 @@ export default async (carrier, application, addresses, violations, accidents, em
 
     y -= fieldHeight / 2
     text = 'I certify that all information provided in this application is true and complete to the best of my knowledge.'
-    lines = wrapText(text, width, font.label, size.label, marginX, padding)
+    lines = wrapText(text, width, font.label, size.label, marginX)
     lines.forEach(line => {
         page5.drawText(line, {
             x: marginX + padding, y,
@@ -2999,7 +2999,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     y -= gap / 1.8
     text = 'I authorize the employer to verify all statements made in this application, including but not limited to employment history, references, '
     text += 'and personal records such as Motor Vehicle Reports (MVRs), Safety Performance History, and other records required under DOT or FMCSA regulations.'
-    lines = wrapText(text, width, font.label, size.label, marginX, padding)
+    lines = wrapText(text, width, font.label, size.label, marginX)
     lines.forEach(line => {
         page5.drawText(line, {
             x: marginX + padding, y,
@@ -3012,7 +3012,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     text += 'meaning I may resign at any time, and the company may terminate my employment at any time, with or without cause or notice. '
     text += 'I further understand that no supervisor, recruiter, or manager has authority to alter this employment relationship '
     text += 'except through a written agreement signed by an authorized company executive.'
-    lines = wrapText(text, width, font.label, size.label, marginX, padding)
+    lines = wrapText(text, width, font.label, size.label, marginX)
     lines.forEach(line => {
         page5.drawText(line, {
             x: marginX + padding, y,
@@ -3024,7 +3024,7 @@ export default async (carrier, application, addresses, violations, accidents, em
     text = 'If employed, I agree to comply with all company policies, safety protocols, and DOT/FMCSA regulations. '
     text += 'I understand that any false, misleading, or incomplete information provided during the application or '
     text += 'interview process may result in disqualification or immediate termination of employment.'
-    lines = wrapText(text, width, font.label, size.label, marginX, padding)
+    lines = wrapText(text, width, font.label, size.label, marginX)
     lines.forEach(line => {
         page5.drawText(line, {
             x: marginX + padding, y,

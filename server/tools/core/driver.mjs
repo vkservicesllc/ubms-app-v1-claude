@@ -273,6 +273,7 @@ class Application {
         this._teamId = data._teamId
         this._userId = data._userId
         this._carrierId = data._carrierId
+        this._refSrcId = data._refSrcId
         if (!hideRawId) {
             this.id = data.id
             this.driverId = data.driverId
@@ -280,6 +281,7 @@ class Application {
             this.teamId = data.teamId
             this.userId = data.userId
             this.carrierId = data.carrierId
+            this.refSrcId = data.refSrcId
         }
         this.formId = data.formId
 
@@ -1756,11 +1758,13 @@ class Application {
                     'teamId',
                     'userId',
                     'carrierId',
+                    'refSrcId',
                     Application.hashId(),
                     Driver.hashId('driverId'),
                     Team.hashId('teamId'),
                     User.hashId('userId'),
                     Carrier.hashId('carrierId'),
+                    hash('refSrcId'),
                     'cdlRole',
                     'position',
                     'condition',
@@ -2107,6 +2111,12 @@ class Application {
                 table: query.team.main.table,
                 fields: [ [ 'name', 'teamName' ] ],
                 join: [ 'id', 'teamId' ],
+            },
+            {
+                db: db.business,
+                table: query.business.refSrc.table,
+                fields: [ [ 'name', 'refSrc' ] ],
+                join: [ 'id', 'refSrcId' ],
             },
         ],
         prepare(batch, filter, session) {

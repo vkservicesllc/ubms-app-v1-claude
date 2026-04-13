@@ -170,3 +170,21 @@ CREATE TABLE user_company_map (
     PRIMARY KEY (userId, companyId)
 
 );
+
+
+SELECT 'Creating table `app_business`.`referral_sources`...';
+CREATE TABLE referral_sources (
+
+    id         SMALLINT UNSIGNED   AUTO_INCREMENT PRIMARY KEY,
+    companyId  SMALLINT UNSIGNED  NOT NULL,
+
+    name       VARCHAR(30)        NOT NULL,
+
+    -- Created in ADMIN only; Not updated
+    createdBy  SMALLINT UNSIGNED  NOT NULL,
+    createdAt  TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (companyId) REFERENCES companies(id) ON DELETE CASCADE,
+    FOREIGN KEY (createdBy) REFERENCES app_online.users(id)
+
+);
