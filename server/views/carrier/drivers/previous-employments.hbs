@@ -375,7 +375,7 @@
             <i class="close icon"></i>
             <div class="ui header">Unreported Employer Registration</div>
             <div class="content">
-                <form class="ui form" id="new-employer-form" autocomplete="off">
+                <form class="ui form" id="new-employer-form" action="" method="POST" autocomplete="off">
                     <div class="ui compact grid">
                         <div class="eight wide field">
                             {{{form.urEmployer.text.label}}}
@@ -423,6 +423,11 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="actions">
+                <button type="submit" form="new-employer-form" class="ui blue button">
+                    Register
+                </button>
             </div>
             <script type="module" src="/modules/drivers/prev-employer.registration.mjs"></script>
         </div>

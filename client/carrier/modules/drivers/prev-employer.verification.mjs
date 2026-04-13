@@ -238,6 +238,14 @@ inputEvent(TS.earnings, {
 
 inputEvent(TS.rfl, { capitalize: 'first', strip: true, word: true })
 
+inputEvent(TS.usdot, {
+    strip: true,
+    onInput(usdot, $usdot) {
+        usdot = usdot.replace(/\D/g, '')
+        $usdot.val(usdot)
+    },
+})
+
 $fmcsr.on('click', function() {
     $usdot.parent()[($(this).prop('checked') ? 'remove' : 'add') + 'Class']('disabled')
 })
