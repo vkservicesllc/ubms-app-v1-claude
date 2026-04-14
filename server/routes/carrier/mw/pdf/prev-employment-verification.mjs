@@ -196,9 +196,48 @@ export default async (employment = {}, method) => {
             y -= gap * 2
         })
 
+        y -= fieldHeight * .5
+        x = marginX
+
+        const numIdent = 15
+        text = 'This authorization includes the release of information concerning the following within the past three (3) years:'
+        consentPage.drawText('This authorization includes the release of information concerning the following within the past three (3) years:', {
+            x, y,
+            font: font.label, size: size.text, color: color.section,
+        })
+        x = marginX + gap * 2
+        y -= fieldHeight * .75
+        consentPage.drawText('1.', { x, y, font: font.label, size: size.text, color: color.section })
+        x += numIdent
+        consentPage.drawText('Alcohol test results of 0.04 or higher', { x, y, font: font.label, size: size.text, color: color.section })
+        x = marginX + gap * 2
+        y -= fieldHeight * .75
+        consentPage.drawText('2.', { x, y, font: font.label, size: size.text, color: color.section })
+        x += numIdent
+        consentPage.drawText('Verified positive drug test results', { x, y, font: font.label, size: size.text, color: color.section })
+        x = marginX + gap * 2
+        y -= fieldHeight * .75
+        consentPage.drawText('3.', { x, y, font: font.label, size: size.text, color: color.section })
+        x += numIdent
+        consentPage.drawText('Refusals to be tested (including adulterated or substituted results)', { x, y, font: font.label, size: size.text, color: color.section })
+        x = marginX + gap * 2
+        y -= fieldHeight * .75
+        consentPage.drawText('4.', { x, y, font: font.label, size: size.text, color: color.section })
+        x += numIdent
+        consentPage.drawText('Other violations of DOT drug and alcohol testing regulations', { x, y, font: font.label, size: size.text, color: color.section })
+        x = marginX + gap * 2
+        y -= fieldHeight * .75
+        consentPage.drawText('5.', { x, y, font: font.label, size: size.text, color: color.section })
+        x += numIdent
+        consentPage.drawText('Information obtained from previous employers regarding drug and alcohol violations', { x, y, font: font.label, size: size.text, color: color.section })
+        x = marginX + gap * 2
+        y -= fieldHeight * .75
+        consentPage.drawText('6.', { x, y, font: font.label, size: size.text, color: color.section })
+        x += numIdent
+        consentPage.drawText('Documentation of completion of the return-to-duty process, if applicable', { x, y, font: font.label, size: size.text, color: color.section })
+
 
     }
-
 
 
     const verifPage = pdfDoc.addPage([width, height])
