@@ -54,6 +54,11 @@ export default async (employment = {}, method) => {
         signature: rgb(0, 0, 1),
     }
 
+    /* Cover Sheet */
+    if (method) {
+        //
+    }
+
     /* Consent Page */
     {
         const consentPage = pdfDoc.addPage([width, height])
@@ -288,7 +293,6 @@ export default async (employment = {}, method) => {
             y -= gap * 2
         })
     }
-
 
     const verifPage = pdfDoc.addPage([width, height])
     y = height - marginY
