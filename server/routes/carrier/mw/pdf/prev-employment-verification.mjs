@@ -175,10 +175,10 @@ export default async (employment = {}, method) => {
         y -= fieldHeight * 2.4
         text = 'Disclosure and Authorization'
         text = text.toUpperCase()
-        textWidth = font.label.widthOfTextAtSize(text, size.title * .9)
+        textWidth = font.title.widthOfTextAtSize(text, size.title * .9)
         consentPage.drawText(text, {
             x: width / 2 - textWidth / 2, y,
-            font: font.label, size: size.title * .9, color: color.title,
+            font: font.title, size: size.title * .9, color: color.title,
         })
 
         y -= fieldHeight * 1.6
@@ -200,7 +200,6 @@ export default async (employment = {}, method) => {
         x = marginX
 
         const numIdent = 15
-        text = 'This authorization includes the release of information concerning the following within the past three (3) years:'
         consentPage.drawText('This authorization includes the release of information concerning the following within the past three (3) years:', {
             x, y,
             font: font.label, size: size.text, color: color.section,
@@ -237,6 +236,57 @@ export default async (employment = {}, method) => {
         consentPage.drawText('Documentation of completion of the return-to-duty process, if applicable', { x, y, font: font.label, size: size.text, color: color.section })
 
 
+        y -= fieldHeight
+        x = marginX
+
+        consentPage.drawText('I further authorize the release of:', {
+            x, y,
+            font: font.label, size: size.text, color: color.section,
+        })
+        x = marginX + gap * 2
+        y -= fieldHeight * .75
+        consentPage.drawText('•', { x, y, font: font.label, size: size.text, color: color.section })
+        x += numIdent
+        consentPage.drawText('Dates of negative drug and/or alcohol test results and tests below 0.04', { x, y, font: font.label, size: size.text, color: color.section })
+        x = marginX + gap * 2
+        y -= fieldHeight * .75
+        consentPage.drawText('•', { x, y, font: font.label, size: size.text, color: color.section })
+        x += numIdent
+        consentPage.drawText('The name and contact information of any Substance Abuse Professional who evaluated me within', { x, y, font: font.label, size: size.text, color: color.section })
+        y -= fieldHeight * .75
+        x = marginX + gap * 2 + numIdent
+        consentPage.drawText('the past three (3) years', { x, y, font: font.label, size: size.text, color: color.section })
+        x = marginX + gap * 2
+        y -= fieldHeight * .75
+        consentPage.drawText('•', { x, y, font: font.label, size: size.text, color: color.section })
+        x += numIdent
+        consentPage.drawText('Employment-related information including previous employers, dates of employment, reasons for', { x, y, font: font.label, size: size.text, color: color.section })
+        y -= fieldHeight * .75
+        x = marginX + gap * 2 + numIdent
+        consentPage.drawText('termination, work history, accidents, academic history, and professional credentials', { x, y, font: font.label, size: size.text, color: color.section })
+
+        y -= fieldHeight * 2
+        text = 'Consumer Report Disclosure'
+        textWidth = font.title.widthOfTextAtSize(text, size.title * .9)
+        consentPage.drawText(text, {
+            x: width / 2 - textWidth / 2, y,
+            font: font.title, size: size.title * .9, color: color.title,
+        })
+
+        y -= fieldHeight * 1.2
+        x = marginX
+
+        text = 'I understand that, in connection with my application for employment or continued employment (including contract services) with Carrier, '
+        text += 'consumer reports may be requested from HireRight and DriverFacts. These reports may include information such as employment history, driving records, '
+        text += "criminal records, credit history, workers' compensation claims, and other public record information maintained by federal, state, and other agencies."
+        lines = wrapText(text, width, font.label, size.text, marginX, padding)
+        lines.forEach((line, i) => {
+            consentPage.drawText(line, {
+                x, y,
+                font: font.label, size: size.text, color: color.section,
+            })
+            y -= gap * 2
+        })
     }
 
 
