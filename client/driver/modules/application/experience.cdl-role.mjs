@@ -18,8 +18,8 @@ const schEndDateId = TS.schEndDate
 const schDurationId = SS.schDuration
 
 const $expDetails = $('#experience-details')
-const $hours = $(expHoursCls)
-const $totalHours = $('#total-weekly-experience-hours')
+// const $hours = $(expHoursCls)
+// const $totalHours = $('#total-weekly-experience-hours')
 const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 const $form = $('#experience-form')
@@ -28,19 +28,19 @@ const $help = {
     form: $('#exp-form-help'),
 }
 
-const calculateHours = () => {
-    let total = 0
+// const calculateHours = () => {
+//     let total = 0
 
-    $hours.each(function() {
-        const hours = +$(this).val() || 0
-        total += hours
-    })
+//     $hours.each(function() {
+//         const hours = +$(this).val() || 0
+//         total += hours
+//     })
 
-    $totalHours.val(total)
-}
+//     $totalHours.val(total)
+// }
 
 
-calculateHours()
+// calculateHours()
 
 if ($(cdlSchoolId.yes).prop('checked')) $(cdlSchoolCls).prop('disabled', false)
 
@@ -109,24 +109,24 @@ inputEvent(mileageId, {
 })
 
 
-inputEvent(expHoursCls, {
-    onInput(hours, $hours) {
-        hours = +hours
-        if (hours < 0) hours = 0
+// inputEvent(expHoursCls, {
+//     onInput(hours, $hours) {
+//         hours = +hours
+//         if (hours < 0) hours = 0
 
-        $hours.val(hours)
-        calculateHours()
-    },
-    onChange,
-    onBlur(hours, $hours) {
-        if (!hours) hours = '0'
-        if (hours > 12) hours = 12
+//         $hours.val(hours)
+//         calculateHours()
+//     },
+//     onChange,
+//     onBlur(hours, $hours) {
+//         if (!hours) hours = '0'
+//         if (hours > 12) hours = 12
 
-        $hours.val(hours)
-        calculateHours()
-        onBlur(hours, $hours)
-    },
-})
+//         $hours.val(hours)
+//         calculateHours()
+//         onBlur(hours, $hours)
+//     },
+// })
 
 
 inputEvent(`${cdlSchoolId.yes}, ${cdlSchoolId.no}`, {

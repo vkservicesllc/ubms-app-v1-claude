@@ -37,6 +37,7 @@ const checkProps = {
 export const applicationStart = async (req, res, next) => {
     try {
         const { env, cdl, rec: _userId, form: formId } = req.query
+
         const application = await Application.fetch(res.session, { formId })
         if ((formId && !application) || application?._driverId) return res.redirect(`/application/${formId}`)
 
@@ -369,7 +370,7 @@ export const applicationProgress = async (req, res, next) => {
                 country: null,
             }
             fields.forEach(field => values[field] = null)
-    
+
             if (application.address.enough === false) {
                 hbs.priorResidenceDisplay = ''
 
@@ -650,9 +651,9 @@ export const applicationProgress = async (req, res, next) => {
                 expStartDate: application?.experience?.firstDate
                     ? moment(application.experience.firstDate).format('MM/DD/YYYY')
                     : null,
-                expEndDate: application?.experience?.lastDate
-                    ? moment(application.experience.lastDate).format('MM/DD/YYYY')
-                    : null,
+                // expEndDate: application?.experience?.lastDate
+                //     ? moment(application.experience.lastDate).format('MM/DD/YYYY')
+                //     : null,
                 expMileage: application?.experience?.mileage?.toLocaleString(),
                 schName: application?.cdlSchool?.name,
                 schPhone: application?.cdlSchool?.phone
@@ -668,27 +669,27 @@ export const applicationProgress = async (req, res, next) => {
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, disabled, tabs: 8 })
             options.schState.select.input.options = { valOpt: true }
 
-            const appliedOn = moment(application.appliedOn)
-            let j = 8
-            for (let i = 0; i < 7; i++) {
-                const content = `<small>${appliedOn.clone().subtract(--j, 'days').format('dddd/MMM D, YYYY')}</small>`.replace('/', '<br/>')
-                let hours = application?.experience?.hours?.[i]
-                if (hours === 0) hours = `${hours}`
+            // const appliedOn = moment(application.appliedOn)
+            // let j = 8
+            // for (let i = 0; i < 7; i++) {
+            //     const content = `<small>${appliedOn.clone().subtract(--j, 'days').format('dddd/MMM D, YYYY')}</small>`.replace('/', '<br/>')
+            //     let hours = application?.experience?.hours?.[i]
+            //     if (hours === 0) hours = `${hours}`
 
-                options[`expHours${i + 1}`] = {
-                    text: {
-                        input: {
-                            class: formInstr.textClass,
-                            value: hours || null,
-                            disabled,
-                        },
-                        label: {
-                            class: formInstr.labelClassRequired,
-                            content,
-                        },
-                    },
-                }
-            }
+            //     options[`expHours${i + 1}`] = {
+            //         text: {
+            //             input: {
+            //                 class: formInstr.textClass,
+            //                 value: hours || null,
+            //                 disabled,
+            //             },
+            //             label: {
+            //                 class: formInstr.labelClassRequired,
+            //                 content,
+            //             },
+            //         },
+            //     }
+            // }
 
             if (!!application.cdlSchool) hbs.schoolDisplay = ''
             if (application?.experience?.cmv === false) hbs.cmvExpDisplay = ' style="display: none;"'
@@ -1065,7 +1066,7 @@ export const applicationSummary = async (req, res) => {
         if (application.experience !== false) {
             let { firstDate, lastDate } = application.experience
             firstDate = moment(firstDate).format('ll')
-            lastDate = moment(lastDate).format('ll')
+            // lastDate = moment(lastDate).format('ll')
 
             if (application.experience.cmv !== null)
                 hbs.application.experience.cmv = application.experience.cmv ? 'Yes' : 'No'
@@ -1092,7 +1093,8 @@ export const applicationSummary = async (req, res) => {
                 hbs.application.experience.vehicleList = html
             }
 
-            hbs.application.experience.period = `${firstDate} — ${lastDate}`
+            // hbs.application.experience.period = `${firstDate} — ${lastDate}`
+            hbs.application.experience.firstDate = firstDate
             if (application.experience.mileage)
                 hbs.application.experience.mileage = application.experience.mileage.toLocaleString()
             if (application.experience.hours) {

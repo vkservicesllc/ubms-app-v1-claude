@@ -50,6 +50,12 @@
                             {{{form.llcEin.text.input}}}
                         </div>
                     </div>
+                    <label class="form-label fw-normal text-danger mt-3 mb-0">
+                        <small>
+                            <i class="fas fa-circle-exclamation"></i>
+                            Your business account information will be collected if you are hired
+                        </small>
+                    </label>
                 </div>
                 {{!-- <div id="business-assistance"{{{llcAssistanceDisplay}}}>
                     <div class="row g-3 my-1">
@@ -75,12 +81,6 @@
                         </div>
                     </div>
                 </div> --}}
-                <label class="form-label fw-normal text-danger mt-3 mb-0">
-                    <small>
-                        <i class="fas fa-circle-exclamation"></i>
-                        Your business account information will be collected if you are hired
-                    </small>
-                </label>
                 {{#if (eq position 'OO')}}
                 <div class="border-top mt-4 pt-3">
                     <label class="form-label text-secondary">Motor Vehicle Owned</label>

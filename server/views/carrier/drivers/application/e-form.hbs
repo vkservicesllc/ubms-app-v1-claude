@@ -47,8 +47,8 @@
             color: #A32222 !important;
         }
         .ui.circular.vertical.steps .step::after {
-            left: calc((2.2em / (2.2 * 2)) + .145rem);
-            top: calc((2.2em / (2.2 * 2)) + .145em);
+            left: calc((2.2em / (2.2 * 2)) + .142rem);
+            top: calc((2.2em / (2.2 * 2)) + .142em);
         }
         .step .content .title {
             margin-bottom: .5;
@@ -1232,7 +1232,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="four wide field">
+                                        {{!-- <div class="four wide field">
                                             {{{form.expEndDate.text.label}}}
                                             <div class="ui calendar" id="exp-end-date-calendar">
                                                 <div class="ui fluid input left icon">
@@ -1240,15 +1240,16 @@
                                                     <i class="calendar icon"></i>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         {{#if (eq cdlRole 1)}}
                                         <div class="four wide field">
                                             {{{form.expMileage.text.label}}}
                                             {{{form.expMileage.text.input}}}
                                         </div>
                                         {{/if}}
+                                        <div class="one wide field"></div>
                                     </div>
-                                    {{#if (eq cdlRole 1)}}
+                                    {{!-- {{#if (eq cdlRole 1)}}
                                     <h5 class="ui blue text header experience-details">Hours Driven for the Past 7 Days</h5>
                                     <div class="ui compact grid experience-details" style="margin-top: .35rem;">
                                         <div class="two wide field">
@@ -1284,7 +1285,7 @@
                                             <input type="text" id="total-weekly-experience-hours" readonly />
                                         </div>
                                     </div>
-                                    {{/if}}
+                                    {{/if}} --}}
                                     {{#if (
                                         and
                                             (eq cdlRole 1)
@@ -1669,12 +1670,12 @@
             </div>
             <div class="six wide column">
                 <div class="ui circular vertical steps">
-                    <div class="completed step">
+                    {{!-- <div class="completed step">
                         <div class="content">
                             <div class="title">Initial Documents</div>
                             <div class="description">Application / Signed Consents</div>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="active step">
                         <div class="content">
                             <div class="title">Personal Documents</div>
@@ -1762,6 +1763,19 @@
                     <div class="step">
                         <div class="content">
                             <div class="title">Drug Test</div>
+                            <div class="description">
+                                <div class="ui horizontal list">
+                                    <div class="item">
+                                        <div class="header">Results</div>
+                                        <small><i class="red close icon"></i> <span class="ui dark red text">Pending</span></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="content">
+                            <div class="title">Orientation</div>
                             <div class="description">
                                 <div class="ui horizontal list">
                                     <div class="item">

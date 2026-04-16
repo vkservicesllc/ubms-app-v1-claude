@@ -896,13 +896,13 @@ class ApplicationForm {
         label: 'Started Driving on',
     }, true)
 
-    static expEndDate = createDateForm({
-        selector: appSelector,
-        target: 'expEndDate',
-        name: 'lastDate',
-        required,
-        label: 'Last Driven on',
-    }, true)
+    // static expEndDate = createDateForm({
+    //     selector: appSelector,
+    //     target: 'expEndDate',
+    //     name: 'lastDate',
+    //     required,
+    //     label: 'Last Driven on',
+    // }, true)
 
     static expMileage = createForm({
         selector: appSelector,
@@ -1551,7 +1551,7 @@ class ApplicationForm {
                 break
             case 'experience':
                 fields = [
-                    'noExp', 'cmvExp', 'expStartDate', 'expEndDate', 'expMileage',
+                    'noExp', 'cmvExp', 'expStartDate', 'expMileage', // 'expEndDate',
                     'cdlSchool', 'schName', 'schPhone', 'schState', 'schEndDate', 'schDuration',
                 ]
                 break

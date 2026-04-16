@@ -422,9 +422,9 @@ class Application {
                 cmv: bool(data.cmvExp),
                 vehicles: data.expVehicles,
                 firstDate: data.expDate,
-                lastDate: data.expLastDate,
+                // lastDate: data.expLastDate,
                 mileage: data.expMileage,
-                hours: data.expHours,
+                // hours: data.expHours,
             }
 
         this.cdlSchool = bool(data.cdlSchool)
@@ -1928,9 +1928,9 @@ class Application {
                 fields: [
                     [ 'cmv', 'cmvExp' ],
                     [ 'vehicles', 'expVehicles' ],
-                    [ 'lastDate', 'expLastDate' ],
+                    // [ 'lastDate', 'expLastDate' ],
                     [ 'mileage', 'expMileage' ],
-                    [ 'hours', 'expHours' ],
+                    // [ 'hours', 'expHours' ],
                 ],
                 join: [ 'appId', 'id' ],
             },
@@ -2112,12 +2112,12 @@ class Application {
                 fields: [ [ 'name', 'teamName' ] ],
                 join: [ 'id', 'teamId' ],
             },
-            {
-                db: db.business,
-                table: query.business.refSrc.table,
-                fields: [ [ 'name', 'refSrc' ] ],
-                join: [ 'id', 'refSrcId' ],
-            },
+            // {
+            //     db: db.business,
+            //     table: query.business.refSrc.table,
+            //     fields: [ [ 'name', 'refSrc' ] ],
+            //     join: [ 'id', 'refSrcId' ],
+            // },
         ],
         prepare(batch, filter, session) {
             const { DS = false } = session?.user || {}

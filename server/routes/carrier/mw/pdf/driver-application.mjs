@@ -1786,17 +1786,18 @@ export default async (carrier, application, addresses, violations, accidents, em
 
         /* Row 4 */
         {
-            const { firstDate, lastDate, mileage, hours } = experience
-            let totalHours = 0
-            if (hours) hours.forEach(hr => totalHours += +hr)
-            if (totalHours) totalHours = totalHours + ''
+            // const { firstDate, lastDate, mileage, hours } = experience
+            // let totalHours = 0
+            // if (hours) hours.forEach(hr => totalHours += +hr)
+            // if (totalHours) totalHours = totalHours + ''
+            const { firstDate, mileage } = experience
             if (outsideBorder)
                 page2.drawLine({
                     start: { x: marginX, y },
                     end: { x: marginX, y: y - fieldHeight },
                     color: color.line,
                 })
-            page2.drawText('OTR Experience', {
+            page2.drawText('Driving History', {
                 x: marginX + padding, y: y - fieldHeight / 1.65,
                 font: font.section, size: size.section, color: color.section,
             })
@@ -1815,15 +1816,15 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: marginX + vLineX + gap, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX += 80
-            page2.drawText('Last Driven on', {
-                x: marginX + vLineX + gap, y: y - offset.labelY,
-                font: font.label, size: size.label, color: color.label,
-            })
-            page2.drawText(lastDate ? moment(lastDate).format(dateFormat) : '', {
-                x: marginX + vLineX + gap, y: y - offset.valueY,
-                font: font.value, size: size.value, color: color.value,
-            })
+            // vLineX += 80
+            // page2.drawText('Last Driven on', {
+            //     x: marginX + vLineX + gap, y: y - offset.labelY,
+            //     font: font.label, size: size.label, color: color.label,
+            // })
+            // page2.drawText(lastDate ? moment(lastDate).format(dateFormat) : '', {
+            //     x: marginX + vLineX + gap, y: y - offset.valueY,
+            //     font: font.value, size: size.value, color: color.value,
+            // })
             vLineX += 80
             page2.drawText('Total Mileage', {
                 x: marginX + vLineX + gap, y: y - offset.labelY,
@@ -1833,15 +1834,15 @@ export default async (carrier, application, addresses, violations, accidents, em
                 x: marginX + vLineX + gap, y: y - offset.valueY,
                 font: font.value, size: size.value, color: color.value,
             })
-            vLineX += 70
-            page2.drawText('Hours driven in the last 7 days', {
-                x: marginX + vLineX + gap, y: y - offset.labelY,
-                font: font.label, size: size.label, color: color.label,
-            })
-            page2.drawText(totalHours || '', {
-                x: marginX + vLineX + gap, y: y - offset.valueY,
-                font: font.value, size: size.value, color: color.value,
-            })
+            // vLineX += 70
+            // page2.drawText('Hours driven in the last 7 days', {
+            //     x: marginX + vLineX + gap, y: y - offset.labelY,
+            //     font: font.label, size: size.label, color: color.label,
+            // })
+            // page2.drawText(totalHours || '', {
+            //     x: marginX + vLineX + gap, y: y - offset.valueY,
+            //     font: font.value, size: size.value, color: color.value,
+            // })
             
             if (outsideBorder)
                 page2.drawLine({

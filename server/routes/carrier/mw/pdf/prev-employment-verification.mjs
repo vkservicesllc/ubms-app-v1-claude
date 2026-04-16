@@ -106,7 +106,7 @@ export default async (employment = {}, method) => {
         x = marginX
         y -= fieldHeight * 1.6
         consentPage.drawText(signature?.applicant || '', {
-            x: x + 2, y,
+            x: x + 2, y: y - 2,
             font: font.signature, size: size.signature, color: color.signature,
         })
         x += 240 + gap

@@ -529,9 +529,9 @@ CREATE TABLE application_experiences (
 
     cmv        BOOLEAN             DEFAULT NULL,
     vehicles   JSON                DEFAULT NULL,
-    lastDate   DATE                NOT NULL,
+    -- lastDate   DATE                NOT NULL,
     mileage    INT UNSIGNED        DEFAULT NULL,
-    hours      JSON                DEFAULT NULL,
+    -- hours      JSON                DEFAULT NULL,
 
     createdBy  SMALLINT UNSIGNED   DEFAULT NULL,  -- NULL when self registered
     createdAt  TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,

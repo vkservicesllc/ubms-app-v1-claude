@@ -341,21 +341,26 @@
                                             {{{application.experience.vehicleList}}}
                                         </td>
                                     </tr>
-                                    <tr>
+                                    {{!-- <tr>
                                         <th class="text-secondary">Driving Period:</th>
                                         <td>
                                             {{{application.experience.period}}}
                                         </td>
+                                    </tr> --}}
+                                    <th class="text-secondary">Started Driving on:</th>
+                                        <td>
+                                            {{{application.experience.firstDate}}}
+                                        </td>
                                     </tr>
                                     {{#if (hv application.experience.mileage)}}
                                     <tr>
-                                        <th class="text-secondary">Total Mileage:</th>
+                                        <th class="text-secondary">Mileage Driven:</th>
                                         <td>
                                             {{{application.experience.mileage}}} mi
                                         </td>
                                     </tr>
                                     {{/if}}
-                                    {{#if (hv application.experience.hours)}}
+                                    {{!-- {{#if (hv application.experience.hours)}}
                                     <tr>
                                         <th class="text-secondary">Hours on Road:</th>
                                         <td>
@@ -363,7 +368,7 @@
                                             {{{application.experience.hourList}}}
                                         </td>
                                     </tr>
-                                    {{/if}}
+                                    {{/if}} --}}
                                     {{/if}}
                                 </tbody>
                                 {{#if (hv application.cdlSchool.name)}}

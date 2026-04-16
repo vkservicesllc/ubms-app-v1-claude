@@ -342,6 +342,7 @@ table.on('draw', function() {
                 success(response) {
                     const { employer, phone, fax, email, address, startedOn, leftOn, usdot, application } = response.data
                     const { inquiries, phoneVerification, responseList } = response.supData
+                    const $mainDoc = $('#verification-main-document')
 
                     let period = `${moment(startedOn).format('ll')} – `
                     period += leftOn ? moment(leftOn).format('ll') : ' Still Employed'
@@ -370,6 +371,7 @@ table.on('draw', function() {
                     if (!application.carrier) {
                         $message.noCarrier.show()
                         $section.inquiries.hide()
+                        $mainDoc.hide()
                     } else listInquiries(inquiries, responseList)
 
                     if (fax) $inqSavedFax.val(fax)
@@ -443,6 +445,7 @@ table.on('draw', function() {
                             $emplData.applicant.all.html(null)
                             $emplData.carrier.all.html(null)
 
+                            $mainDoc.show()
                             $message.noCarrier.hide()
                             $section.inquiries.show()
                             $section.phoneVerif.hide()
