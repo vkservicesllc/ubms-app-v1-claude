@@ -29,6 +29,10 @@ export default {
         alias: { max: 6 },
     },
 
+    refSrc: {
+        name: { min: 2, max: 30 },
+    },
+
     team: {
         name: { min: 2, max: 12 },
         desc: { max: 50 },

@@ -111,14 +111,23 @@ const includes = {
         },
     },
 
-    'branches': {
+    'advertisement': {
         external: [ ...online.external ],
         internal: {
-            css: [ ...online.internal.css, 'tabs' ],
-            js: [ ...online.internal.js, '^tabs' ],
+            css: [ ...online.internal.css ],
+            js: [ ...online.internal.js ],
             mjs: [ ...online.internal.mjs ],
         },
     },
+
+    // 'branches': {
+    //     external: [ ...online.external ],
+    //     internal: {
+    //         css: [ ...online.internal.css, 'tabs' ],
+    //         js: [ ...online.internal.js, '^tabs' ],
+    //         mjs: [ ...online.internal.mjs ],
+    //     },
+    // },
 
     'domains': {
         external: [ ...online.external ],

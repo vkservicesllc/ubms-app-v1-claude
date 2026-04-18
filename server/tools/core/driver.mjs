@@ -2368,13 +2368,14 @@ class Application {
 
         vhlType: [
             {
-                van: 'Cargo Van',
                 straightBox: 'Box Truck',
+                hotshot: 'Hotshot',
+                van: 'Cargo Van',
             },
             {
                 semiTR: 'Semi Tractor',
-                hotshot: 'Hotshot',
                 straightBox: 'Box Truck',
+                hotshot: 'Hotshot',
                 van: 'Cargo Van',
             },
         ],

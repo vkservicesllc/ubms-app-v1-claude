@@ -298,6 +298,14 @@ class ApplicationForm {
         type: 'hidden',
     })
 
+    static refSrc = createForm({
+        selector: appSelector,
+        target: 'refSrc',
+        type: 'select',
+        name: '_refSrcId',
+        label: 'How did you hear about us?',
+    })
+
     static firstName = createPersonNameForm('first', { selector: appSelector, group: 'name' })
     static middleName = createPersonNameForm('middle', { selector: appSelector, group: 'name' })
     static lastName = createPersonNameForm('last', { selector: appSelector, group: 'name' })
@@ -1982,13 +1990,17 @@ export { ApplicationForm, EmploymentForm }
 
 export function currentExpediteVhlMMTData() {
     let vehicles = {
-        van: {
-            group: 'Cargo Van',
-            data: Van.list.cargoMakeModel,
-        },
         straightBox: {
             group: 'Box Truck',
             data: Truck.list.straightBoxMakeModel,
+        },
+        hotshot: {
+            group: 'Pickup (Hotshot)',
+            data: Truck.list.pickupMakeModel,
+        },
+        van: {
+            group: 'Cargo Van',
+            data: Van.list.cargoMakeModel,
         },
     }
 

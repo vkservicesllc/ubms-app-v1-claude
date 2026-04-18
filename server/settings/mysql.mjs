@@ -69,6 +69,9 @@ export const query = {
     company_owner: {
         main: new Query(db.business, 'owners'),
     },
+    ref_source: {
+        main: new Query(db.business, 'refsources'),
+    },
 
     carrier: {
         main: new Query(db.carrier, 'carriers'),
@@ -111,6 +114,7 @@ export const query = {
         users_roles: new Query(db.online, 'user_role_map'),
         users_teams: new Query(db.online, 'user_team_map'),
         users_companies: new Query(db.business, 'user_company_map'),
+        companies_refSrc: new Query(db.business, 'company_refsource_map'),
     },
 
 }

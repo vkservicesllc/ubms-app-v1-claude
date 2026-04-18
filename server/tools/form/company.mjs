@@ -20,6 +20,7 @@ import {
 import Company from '../core/company.mjs'
 import companySelector from '../../../client/global/modules/registry/selectors/company.mjs'
 import ownerSelector from '../../../client/global/modules/registry/selectors/company-owner.mjs'
+import refSrcSelector from '../../../client/global/modules/registry/selectors/company-refsource.mjs'
 import length from '../../../client/global/modules/registry/length.mjs'
 import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
 import strip from '../../../client/global/modules/tools/utils/formatter.mjs'
@@ -261,5 +262,37 @@ class OwnerForm {
 }
 
 
+class RefSourceForm {
+    constructor(options = {}) {
+        getStaticProps(RefSourceForm)
+            .forEach(target => this[target] = constructForm(RefSourceForm, target, options))
+    }
+
+    static id = createIdForm({ selector: refSrcSelector })
+    static deleteId = createIdForm({ selector: refSrcSelector, target: 'deleteId' })
+
+    //* "name" can not be used as an own property
+    static srcName = createForm({
+        selector: refSrcSelector,
+        target: 'name',
+        name: 'name',
+        maxLength: length.refSrc.name.max,
+        required,
+        label: 'Name',
+        validator: {
+            length: { min: length.refSrc.name.min },
+            sanitizer: value => value.replace('&amp;', '&').replace('&#x27;', "'"),
+        },
+    })
+
+    static validate = () => validate(RefSourceForm, () => {
+        const fields = ['srcName']
+
+        return fields
+    })
+
+}
+
+
 export default CompanyForm
-export { OwnerForm, createCategoryForm, createBusNameForm, createCoTypeForm, createEinForm }
+export { OwnerForm, RefSourceForm, createCategoryForm, createBusNameForm, createCoTypeForm, createEinForm }

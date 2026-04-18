@@ -45,6 +45,7 @@ const selector = {
             prevAddrCity: 'prev-address-city',
         },
         select: {
+            refSrc: 'referral-source',
             gender: 'gender',
             marital: 'marital-status',
             citReason: 'citation-reason',

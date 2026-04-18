@@ -356,7 +356,7 @@ CREATE TABLE applications (
     FOREIGN KEY (teamId) REFERENCES app_online.teams(id),
     FOREIGN KEY (userId) REFERENCES app_online.users(id),
     FOREIGN KEY (carrierId) REFERENCES carriers(id),
-    FOREIGN KEY (refSrcId) REFERENCES app_business.referral_source(id),
+    FOREIGN KEY (refSrcId) REFERENCES app_business.refsources(id),
     FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
     FOREIGN KEY (reviewedBy) REFERENCES app_online.users(id),
     FOREIGN KEY (archivedBy) REFERENCES app_online.users(id),

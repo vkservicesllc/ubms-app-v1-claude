@@ -589,11 +589,131 @@ class Owner extends Individual {
 }
 
 
+class RefSource {
+    constructor(data = {}, { single = true, session, hideRawId = false, custom = {} }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid RefSource Data')
+
+        const { offline = false } = custom
+        this._id = data._id
+        if (!hideRawId) this.id = data.id
+        this.name = data.name
+
+        this.count = {
+            companies: data.companyCount,
+        }
+
+        if (single) {
+            this.session = session || {}
+            this.session.offline = offline
+            this.config = { hideRawId }
+
+
+            this.add = (target, ids) => {
+                if (!this.session?.user?.id) throw new Error('RefSource Constructor Method Error [ADD]: Session user not supplied')
+
+                return classInstance.add(this, new.target, target, ids)
+            }
+
+
+            this.fetch = (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
+
+
+            this.update = (body) => {
+                if (!session?.user?.id) throw new Error('RefSource Constructor Method Error [UPDATE]: Session user not supplied')
+
+                return classInstance.update(this, new.target, body)
+            }
+
+
+            this.delete = (target, ids) => {
+                if (!this.session?.user?.id) throw new Error('RefSource Constructor Method Error [DELETE]: Session user not supplied')
+
+                return classInstance.delete(this, new.target, target, ids)
+            }
+
+
+            this.log = params => classInstance.log(this, new.target, params)
+        }
+    }
+
+    static #algorithm = 'MD5'
+    static hashId = (field = 'id') => hash(field, RefSource.#algorithm)
+    static matchIdHash = value => matchHash(value, RefSource.#algorithm)
+
+    static config = () => ({
+        enforceUser: false,
+        db: db.business,
+        query: query.ref_source,
+        idProp: 'refSrcId',
+        jxTargets: jxTargets('refSrc'),
+        defSorts: [ 'name' ],
+        logFile: 'referral-sources',
+    })
+
+
+    static create = (session, body, params) => {
+        if (!session?.user?.id) throw new Error('RefSource Static Method Error [CREATE]: Session user not supplied')
+
+        return classStatic.create(this, session, body, params, {
+            async find(body, hideRawId) {
+                const { name } = body
+                const data = await RefSource.fetch(session, { name }, { hideRawId })
+
+                return { found: !!data, data }
+            },
+        })
+    }
+
+
+    static fetch = (session, filter, { hideRawId = false, offline = false, sorts = RefSource.config().defSorts, limit, mode } = {}) => {
+        if (!offline && !session?.user?.id) throw new Error('RefSource Static Method Error [FETCH]: Session user not supplied')
+
+        return classStatic.fetch(this, session, filter, { hideRawId, sorts, limit, mode }, {
+            batch: [
+                {
+                    table: query.ref_source.main.table,
+                    fields: [ 'id', RefSource.hashId(), 'name' ],
+                    group: 'id',
+                },
+                {
+                    table: query.jx.companies_refSrc.table,
+                    fields: { countDist: [ 'companyId', 'companyCount' ] },
+                    join: [ 'refSrcId', 'id' ],
+                },
+            ],
+            prepare(batch, filter) {
+                const {
+                    id, _id, name,
+                    ids, _ids,
+                } = filter
+                const single = !!id || !!_id || !!name
+
+                const match = { id, name }
+                if (!id) {
+                    if (ids) match.id = ids
+                    else match.id = RefSource.matchIdHash(_id || _ids)
+                }
+
+                batch[0].match = match
+
+                return { single, batch, custom: { offline } }
+            },
+        })
+    }
+
+
+}
+
+
 
 function jxTargets(src, target = null) {
     const targets =  {
         company: {
             users: [ query.jx.users_companies, 'userId', User ],
+            refSrc: [ query.jx.companies_refSrc, 'refSrcId', RefSource ],
+        },
+        refSrc: {
+            companies: [ query.jx.companies_refSrc, 'companyId', Company ],
         },
     }[src]
 
@@ -603,4 +723,4 @@ function jxTargets(src, target = null) {
 
 
 export default Company
-export { Owner }
+export { Owner, RefSource }

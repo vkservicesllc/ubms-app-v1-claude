@@ -86,11 +86,15 @@ export const applicationStart = async (req, res, next) => {
 
         const positionList = Driver.list.position
 
+        hbs.refSrcDisplay = ''
         let options = {}
-        const fields = [ 'position', 'ssn', 'dob' ] // 'ssnConf' ]
+        const fields = [ 'position', 'ssn', 'dob', 'refSrc' ] // 'ssnConf' ]
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tab: 8 })
         options.position.select.label.content = 'Desired Position'
         options.ssn.text.label.content = 'Social Security Number'
+
+//! IF DISCOVERY SOURCE IS NOT AVAILABLE MAKE THEM HIDDEN
+hbs.refSrcDisplay = ' style="display: none;"'
 
         const t = `\t\t\t\t\t\t\t`
         const positionDesc = {
@@ -464,6 +468,7 @@ export const applicationProgress = async (req, res, next) => {
             hbs.accordion.one = accordionProps.finished
             hbs.medCard = application.dl.commercial === false
             hbs.medCardDisplay = ''
+            hbs.noMecDisplay = ' style="display: none;"'
             hbs.medListDisplay = ' style="display: none;"'
 
             const values = {
@@ -491,6 +496,7 @@ export const applicationProgress = async (req, res, next) => {
                     options[prop].text.input.disabled = true
                 })
                 options.noMec.checkbox.input.checked = true
+                hbs.noMecDisplay = ''
             } else
                 fields.forEach(prop => options[prop].text.input.disabled = false)
             if (values.medList) {

@@ -45,7 +45,7 @@ router.get('/:category/:route', User.mw.verify, User.mw.superAdminOnly, companyB
 router.get('/:category/:route/management', User.mw.verify, User.mw.superAdminOnly, companyManagement)
 
 
-router.get('/company-owners', User.mw.verify, (req, res) => {
+router.get('/company-owners', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
     try {
         const key = 'owners'
         let { hbs } = res
@@ -72,9 +72,9 @@ router.get('/company-owners', User.mw.verify, (req, res) => {
 })
 
 
-router.get('/branches', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
+router.get('/advertisement', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
     try {
-        const key = 'branches'
+        const key = 'advertisement'
         let { hbs } = res
         hbs = hbs.set(key)
 
@@ -83,6 +83,19 @@ router.get('/branches', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
         sendError.server(req, res, err)
     }
 })
+
+
+// router.get('/branches', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
+//     try {
+//         const key = 'branches'
+//         let { hbs } = res
+//         hbs = hbs.set(key)
+
+//         res.render(key, hbs)
+//     } catch (err) {
+//         sendError.server(req, res, err)
+//     }
+// })
 
 
 

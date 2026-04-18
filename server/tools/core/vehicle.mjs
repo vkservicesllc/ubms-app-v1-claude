@@ -33,6 +33,15 @@ class Truck extends Vehicle {
 
     static list = {
 
+        pickupMakeModel: {
+            'Ford': ['F-250', 'F-350', 'F-450'],
+            'Ram': ['2500', '3500', '4500'],
+            'Chevrolet': ['Silverado 2500HD', 'Silverado 3500HD'],
+            'GMC': ['Sierra 2500HD', 'Sierra 3500HD'],
+            'Nissan': ['Titan XD'],
+            'Toyota': ['Tundra'],
+        },
+
         straightBoxMakeModel: {
             'Ford': ['F-650 Box', 'F-750 Box'],
             'Chevrolet': ['LCF 6500XD'],

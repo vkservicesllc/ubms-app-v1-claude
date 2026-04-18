@@ -18,6 +18,7 @@ const $help = {
     form: $('#mec-form-help'),
 }
 const $mecRow = $('#driver-med-card-fields')
+const $noMecMsg = $('#no-mec-msg')
 const $submit = $('#mec-submit')
 const $form = $('#mec-form')
 
@@ -28,14 +29,16 @@ const appliedOn = $(selector.id.hidden.appliedOn).val()
 
 $(noMecId).on('change', function() {
     const checked = $(this).prop('checked')
-    let action = 'show', disabled = false
+    let action = 'show', msgAction = 'hide', disabled = false
 
     if (checked) {
         action = 'hide'
+        msgAction = 'show'
         disabled = true
     }
 
     $mecRow[action]().find('input').prop('disabled', disabled)
+    $noMecMsg[msgAction]()
 })
 
 dateMask(mecIssId, {
