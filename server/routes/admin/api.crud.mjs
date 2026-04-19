@@ -178,7 +178,7 @@ router.get('/company-owners/:_id', User.mw.verify, User.mw.superAdminOnly, async
 router.get('/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { src, _id, target } = req.params
-        const [ PriSrc ] = { roles: [ Role ], teams: [ Team ], companies: [ Company ] }[src]
+        const [ PriSrc ] = { roles: [ Role ], teams: [ Team ], companies: [ Company ], refsources: [ RefSource ] }[src]
         if (!PriSrc) throw new Error('Invalid data requested')
 
         const inst = await PriSrc.fetch(res.session, { _id }, { hideRawId })

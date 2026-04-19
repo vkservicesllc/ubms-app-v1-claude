@@ -192,6 +192,7 @@ const closeUpsert = () => {
 
     $modal.all.removeClass('is-active')
     $(selector.class.global).val(null)
+    $id.main.val(null)
     $currentName.val(null)
     setTip.default('name')
     $button.delete.hide()

@@ -33,6 +33,23 @@
                         </footer>
                     </div>
                 </div>
+                <div class="modal" id="refsrc-delete-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title has-text-danger" id="refsrc-delete-title">Delete Source</p>
+                            <button class="delete"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <p>Are you sure you want to delete the following discovery source?</p>
+                            <span class="subtitle has-text-info" id="refsrc-delete-name"></span>
+                            <form id="refsrc-delete-form" action="" method="POST"></form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button type="submit" form="refsrc-delete-form" class="button is-danger">Delete</button>
+                        </footer>
+                    </div>
+                </div>
 
                 <div id="refsrc-list"></div>
 
