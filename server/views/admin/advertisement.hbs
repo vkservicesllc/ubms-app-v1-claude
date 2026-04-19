@@ -1,4 +1,39 @@
 {{> admin/nav.alpha}}
-                <span class="subtitle is-5">Advertisement</span>
-                <p class="has-text-danger mt-4"><i>Work in progress... Will be available in the future</i></p>
+
+                <h2 class="subtitle">Discovery Sources</h2>
+                <div class="mb-5">
+                    <button class="button" id="refsrc-add-button"><i class="fa fa-plus"></i></button>
+                </div>
+                <div class="modal" id="refsrc-upsert-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card" style="width: 25rem;">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title" id="refsrc-upsert-title"></p>
+                            <button class="delete"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <form id="refsrc-upsert-form" action="/resource/upsert/refsource" method="POST" autocomplete="off">
+                                {{{form.id.hidden.input}}}
+                                {{{form.hiddenSrcName.hidden.input}}}
+                                <div class="columns">
+                                    <div class="column">
+                                        <div class="field">
+                                            {{{form.srcName.text.label}}}
+                                            <div class="control">
+                                                {{{form.srcName.text.input}}}
+                                            </div>
+                                            <p class="help" id="refsrc-name-tip"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <button type="submit" form="refsrc-upsert-form" class="button" id="refsrc-upsert-button"></button>
+                        </footer>
+                    </div>
+                </div>
+
+                <div id="refsrc-list"></div>
+
 {{> admin/nav.omega}}

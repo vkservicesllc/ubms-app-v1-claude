@@ -8,7 +8,7 @@ import User from '../../tools/core/user.mjs'
 
 /* Forms */
 import { updateFormOptions } from '../../tools/form/builder.mjs'
-import { OwnerForm } from '../../tools/form/company.mjs'
+import { OwnerForm, RefSourceForm } from '../../tools/form/company.mjs'
 
 /* Middleware */
 import { companyById, companyByCategoryAndRoute, companyManagement } from './mw/company.mjs'
@@ -77,6 +77,17 @@ router.get('/advertisement', User.mw.verify, User.mw.superAdminOnly, (req, res) 
         const key = 'advertisement'
         let { hbs } = res
         hbs = hbs.set(key)
+
+        const fields = [
+            'srcName',
+        ]
+        const options = updateFormOptions({}, RefSourceForm, fields, {
+            labelClass,
+            labelClassRequired,
+            textClass: 'input',
+        })
+
+        hbs.form = new RefSourceForm(options)
 
         res.render(key, hbs)
     } catch (err) {

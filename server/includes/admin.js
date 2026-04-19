@@ -114,9 +114,9 @@ const includes = {
     'advertisement': {
         external: [ ...online.external ],
         internal: {
-            css: [ ...online.internal.css ],
+            css: [ ...online.internal.css, 'form' ],
             js: [ ...online.internal.js ],
-            mjs: [ ...online.internal.mjs ],
+            mjs: [ ...online.internal.mjs, '^advertisement' ],
         },
     },
 

@@ -7,14 +7,14 @@ const sendError = require('../../tools/utils/error')
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Individual from '../../tools/core/individual.mjs'
-import Company, { Owner } from '../../tools/core/company.mjs'
+import Company, { Owner, RefSource } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
 import UserForm, { RoleForm } from '../../tools/form/user.mjs'
 import TeamForm from '../../tools/form/team.mjs'
-import CompanyForm, { OwnerForm } from '../../tools/form/company.mjs'
+import CompanyForm, { OwnerForm, RefSourceForm } from '../../tools/form/company.mjs'
 import CarrierForm from '../../tools/form/carrier.mjs'
 
 
@@ -47,6 +47,7 @@ const source = {
     'team': [ Team, '/online/teams' ],
     'company': [ Company, '/business/companies', '/business/company/' ],
     'company-owner': [ Owner, '/business/company-owners' ],
+    'refsource': [ RefSource, '/business/advertisement' ],
 
     ext(src, inst) {
         let ext = ''
@@ -214,6 +215,26 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, Own
         }
 
         res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][1])
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/upsert/refsource', User.mw.verify, User.mw.superAdminOnly, RefSourceForm.validate(), validationCheck, async (req, res) => {
+    try {
+        let refSrc
+        const { _id } = req.body
+        delete req.body._id
+
+        if (_id) {
+            refSrc = await RefSource.fetch(res.session, { _id })
+            if (!refSrc) throw new Error('Source not found')
+
+            await refSrc.update(req.body)
+        } else refSrc = (await RefSource.create(res.session, req.body)).data
+
+        res.redirect(source.refsource[1])
     } catch (err) {
         sendError.server(req, res, err)
     }

@@ -9,6 +9,7 @@ const selector = {
         hidden: {
             id: 'id',
             deleteId: 'delete-id',
+            name: 'current-name',
         },
         text: {
             name: 'name',

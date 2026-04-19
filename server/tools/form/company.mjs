@@ -271,6 +271,12 @@ class RefSourceForm {
     static id = createIdForm({ selector: refSrcSelector })
     static deleteId = createIdForm({ selector: refSrcSelector, target: 'deleteId' })
 
+    static hiddenSrcName = createForm({
+        selector: refSrcSelector,
+        target: 'name',
+        type: 'hidden',
+    })
+
     //* "name" can not be used as an own property
     static srcName = createForm({
         selector: refSrcSelector,

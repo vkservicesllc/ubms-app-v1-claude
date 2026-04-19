@@ -7,7 +7,7 @@ const sendError = require('../tools/utils/error')
 import Individual from '../tools/core/individual.mjs'
 import User, { Role } from '../tools/core/user.mjs'
 import Team from '../tools/core/team.mjs'
-import Company, { Owner as CompanyOwner } from '../tools/core/company.mjs'
+import Company, { Owner as CompanyOwner, RefSource } from '../tools/core/company.mjs'
 import Carrier from '../tools/core/carrier.mjs'
 import Driver, { Application as DriverApplication } from '../tools/core/driver.mjs'
 
@@ -121,6 +121,7 @@ router.post('/unique/:src', User.mw.verify, async (req, res) => {
             'individual': Individual,
             'company': Company,
             'company-owner': CompanyOwner,
+            'refsource': RefSource,
             'carrier': Carrier,
         }[src]
 

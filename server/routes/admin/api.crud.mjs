@@ -5,7 +5,7 @@ const sendError = require('../../tools/utils/error')
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Individual from '../../tools/core/individual.mjs'
-import Company, { Owner } from '../../tools/core/company.mjs'
+import Company, { Owner, RefSource } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import { Application as DriverApplication } from '../../tools/core/driver.mjs'
 
@@ -123,7 +123,7 @@ router.get('/roles', User.mw.verify, User.mw.superAdminOnly, async (req, res) =>
 router.get('/:src', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { src } = req.params
-        const Src = { teams: Team, 'company-owners': Owner }[src]
+        const Src = { teams: Team, 'company-owners': Owner, refsources: RefSource }[src]
 
         res.json({ data: await Src.fetch(res.session, {}, { hideRawId }) })
     } catch(err) {

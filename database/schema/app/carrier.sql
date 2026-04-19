@@ -287,7 +287,7 @@ CREATE TABLE applications (
     teamId           TINYINT UNSIGNED                    DEFAULT NULL,
     userId           SMALLINT UNSIGNED                   DEFAULT NULL,
     carrierId        SMALLINT UNSIGNED                   DEFAULT NULL,
-    refSrcId         TINYINT                             DEFAULT NULL,
+    refSrcId         SMALLINT UNSIGNED                   DEFAULT NULL,
 
     -- Properties
     cdlRole          BOOLEAN                             NOT NULL,

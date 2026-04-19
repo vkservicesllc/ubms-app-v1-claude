@@ -165,7 +165,6 @@ CREATE TABLE refsources (
     createdBy  SMALLINT UNSIGNED  NOT NULL,
     createdAt  TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (companyId) REFERENCES companies(id) ON DELETE CASCADE,
     FOREIGN KEY (createdBy) REFERENCES app_online.users(id)
 
 );
