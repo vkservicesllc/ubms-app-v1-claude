@@ -10,7 +10,7 @@ import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Individual from './individual.mjs'
 import Team from './team.mjs'
 import User from './user.mjs'
-import Company from './company.mjs'
+import Company, { RefSource } from './company.mjs'
 import Carrier from './carrier.mjs'
 import Query, { hash, matchHash } from '../utils/query.mjs'
 import { classInstance, classStatic } from '../utils/class.mjs'
@@ -1565,7 +1565,7 @@ class Application {
             } while (found)
 
             const {
-                _carrierId, _teamId, _userSimpleId, selfAssign, cdlRole, dob,
+                _carrierId, _teamId, _refSrcId, _userSimpleId, selfAssign, cdlRole, dob,
                 prefix, firstName, middleName, lastName, suffix, phone, email, position,
             } = body
             const ssn = unprocessAES(body.ssn)
@@ -1599,8 +1599,14 @@ class Application {
                 if (user) userId = user.id
             }
 
+            let refSrcId
+            if (_refSrcId) {
+                const refSrc = await RefSource.fetch(res.session, { _id: _refSrcId })
+                if (refSrc?.id) refSrcId = refSrc.id
+            }
+
             body = {
-                main: { formId, cdlRole, carrierId, teamId, userId, position },
+                main: { formId, cdlRole, carrierId, teamId, userId, refSrcId, position },
                 matcher,
             }
 

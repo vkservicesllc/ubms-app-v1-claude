@@ -9,6 +9,7 @@ import moment from 'moment'
 /* Tools */
 import User from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
+import { RefSource } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Individual from '../../tools/core/individual.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
@@ -94,6 +95,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
     ApplicationForm.position.validate(),
     ApplicationForm.ssn.validate(),
     ApplicationForm.dob.validate(),
+    ApplicationForm.refSrc.validate(),
 ], validationCheck, async (req, res) => {
     let urlExt = ''
     const extendUrl = _id => `/registration?id=${_id}`
@@ -102,7 +104,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
         res.session.user = { id: 1 }
         const { _teamId, _carrierId } = req.params
         let { cdl: cdlRole, rec: _userSimpleId, form: formId } = req.query
-        const { position, ssn, dob } = req.body
+        const { position, ssn, dob, _refSrcId } = req.body
 
         const person = await Individual.fetch(res.session, { ssn })
         if (person && dob !== person.dob) {
@@ -117,7 +119,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
             const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
             if (!application) { //* Pre-Application deleted
                 const error = new Error('DAPP_NFOUND_ERROR')
-                error.body = { cdlRole, _teamId, _carrierId, _userSimpleId, ssn, dob, position }
+                error.body = { cdlRole, _teamId, _carrierId, _refSrcId, _userSimpleId, ssn, dob, position }
 
                 throw error
             }
@@ -133,8 +135,14 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
                         req.session.application = application._id
                     } else urlExt = extendUrl(application._id)
 
+                    let refSrcId = null
+                    if (_refSrcId) {
+                        const refSrc = await RefSource.fetch(res.session, { _id: _refSrcId })
+                        if (refSrc?.id) refSrcId = refSrc.id
+                    }
+
                     await application.update('lead', { ssn, dob })
-                    await application.update({ driverId, rehire, position }) //, createdAt: utcTimeStamp()
+                    await application.update({ driverId, refSrcId, rehire, position }) //, createdAt: utcTimeStamp()
                 }
             }
         } else {
@@ -147,7 +155,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
             }
 
             application = (await Application.create(res.session, {
-                cdlRole, _teamId, _carrierId, _userSimpleId,
+                cdlRole, _teamId, _carrierId, _refSrcId, _userSimpleId,
                 ssn, dob, position,
             })).data
             if (!application) throw new Error('Failed to create application')

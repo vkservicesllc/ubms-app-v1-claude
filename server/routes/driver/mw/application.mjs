@@ -5,6 +5,7 @@ import moment from 'moment'
 /* Tools */
 import User from '../../../tools/core/user.mjs'
 import Team from '../../../tools/core/team.mjs'
+import Company, { RefSource } from '../../../tools/core/company.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
 import Individual from '../../../tools/core/individual.mjs'
 import Driver, { Application } from '../../../tools/core/driver.mjs'
@@ -58,9 +59,11 @@ export const applicationStart = async (req, res, next) => {
         hbs = hbs.set(key, { title: 'Driver Application' })
         hbs.bodyAttrs = ' data-bs-theme="dark"'
         hbs.company = false
+        hbs.refSrcDisplay = ''
 
         const { param: route } = req.params
         let _carrierId
+        let refSrc = await RefSource.fetch(res.session)
 
         if (route) {
             const carrier = await Carrier.fetch(session, { route })
@@ -72,6 +75,9 @@ export const applicationStart = async (req, res, next) => {
                 address: carrier.address.physical.html({ inline: false }),
                 phone: formatTel(carrier.phone),
             }
+
+            const company = await Company.fetch(res.session, { _id: carrier._companyId })
+            refSrc = await company.fetch('jx.refsources')
         } else if (team?.profile) 
             hbs.company = {
                 name: team.profile.company,
@@ -86,15 +92,16 @@ export const applicationStart = async (req, res, next) => {
 
         const positionList = Driver.list.position
 
-        hbs.refSrcDisplay = ''
         let options = {}
+        const refSrcData = {}
+        refSrc.map(src => refSrcData[src._id] = src.name)
+        if (!refSrc.length) hbs.refSrcDisplay = ' style="display: none;"'
+
         const fields = [ 'position', 'ssn', 'dob', 'refSrc' ] // 'ssnConf' ]
         options = updateFormOptions(options, ApplicationForm, fields, { ...formInstr, tab: 8 })
         options.position.select.label.content = 'Desired Position'
         options.ssn.text.label.content = 'Social Security Number'
-
-//! IF DISCOVERY SOURCE IS NOT AVAILABLE MAKE THEM HIDDEN
-hbs.refSrcDisplay = ' style="display: none;"'
+        options.refSrc.select.input.data = refSrcData
 
         const t = `\t\t\t\t\t\t\t`
         const positionDesc = {

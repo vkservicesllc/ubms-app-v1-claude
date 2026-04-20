@@ -7,6 +7,7 @@ const $sections = $('.company-card-content')
 const $content = {
     logo: $('#logo-card-content'),
     users: $('#users-card-content'),
+    refSrc: $('#sources-card-content'),
 }
 const urlParams = new URLSearchParams(window.location.search)
 const timeout = 250
@@ -66,6 +67,42 @@ if ($content.users.length) {
             if (urlParams.has('users')) {
                 $('[data-section=users]').addClass('is-active')
                 $content.users.fadeIn(timeout)
+            }
+        },
+    })
+}
+
+
+if ($content.refSrc.length) {
+    if (urlParams.has('sources')) {
+        $tabs.removeClass('is-active')
+        $sections.hide()
+        history.replaceState(null, '', window.location.href.split('?')[0])
+    }
+
+    const _id = $(selector.id.hidden.id).val()
+    const $sources = {
+        available: $('#available-refsources'),
+        applied: $('#current-refsources'),
+    }
+
+    $.ajax(`/api/resource/companies/${_id}/refsources`, {
+        success(response) {
+            const { data: sources } = response
+            const options = { available: '', applied: '' }
+            const option = '<option value=""></option>'
+
+            for (const prop of ['available', 'applied']) {
+                sources[prop] = sortArrayByObjectKey(sources[prop], 'name')
+                sources[prop].forEach(src => options[prop] += `<option value="${src._id}">${src.name}</option>`)
+            }
+
+            $sources.available.html(options.available || option)
+            $sources.applied.html(options.applied || option)
+
+            if (urlParams.has('sources')) {
+                $('[data-section=sources]').addClass('is-active')
+                $content.refSrc.fadeIn(timeout)
             }
         },
     })

@@ -406,17 +406,18 @@ const displayTeams = () => {
                         const { data, resource: team } = response
                         const { _id, name } = team
                         $title.relationship.html(`<small>Assign ${capitalizeFirst(relType)} to</small> <strong>${escapeHTML(name)}</strong>`)
-
-                        const appliedIds = data.applied.map(item => item._id)
                         data.all = data.all.filter(item => !item.unscoped)
 
                         if (!data.all.length) {
-                            $relationship.html('<i class="has-text-danger-65">No users to assign</i>')
+                            $relationship.html(`<i class="has-text-danger-65">No ${relType} to assign</i>`)
                             return $modal.relationship.addClass('is-active')
                         }
 
+                        const appliedIds = data.applied.map(item => item._id)
+
                         data.all.map(item => {
-                            item.name = new Person(item).fullName('AL') + ` <small>(${item.email}) - ${item.expansion.status} in ${item.expansion.location}</small>`
+                            if (relType === 'users')
+                                item.name = new Person(item).fullName('AL') + ` <small>(${item.email}) - ${item.expansion.status} in ${item.expansion.location}</small>`
                             item.applied = appliedIds.includes(item._id)
                         })
                         data.all = sortArrayByObjectKey(data.all, 'name')

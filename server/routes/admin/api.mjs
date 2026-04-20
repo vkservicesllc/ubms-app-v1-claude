@@ -3,7 +3,7 @@
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Individual from '../../tools/core/individual.mjs'
-import Company, { Owner } from '../../tools/core/company.mjs'
+import Company, { Owner, RefSource } from '../../tools/core/company.mjs'
 
 const router = require('express').Router()
 const sendError = require('../../tools/utils/error')
@@ -16,7 +16,7 @@ const sendError = require('../../tools/utils/error')
 router.post('/update/:src/:_id/:action/:target/:_relId', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { src, _id, action, target, _relId } = req.params
-        const Src = { team: Team, role: Role }[src]
+        const Src = { team: Team, role: Role, refsource: RefSource }[src]
 
         const inst = await Src.fetch(res.session, { _id })
         if (!inst) throw new Error(`${Src.name} not found`)

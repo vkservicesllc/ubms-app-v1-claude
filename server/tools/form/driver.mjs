@@ -303,6 +303,7 @@ class ApplicationForm {
         target: 'refSrc',
         type: 'select',
         name: '_refSrcId',
+        emptyOpt,
         label: 'How did you hear about us?',
     })
 

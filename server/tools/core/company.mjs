@@ -645,7 +645,7 @@ class RefSource {
         db: db.business,
         query: query.ref_source,
         idProp: 'refSrcId',
-        jxTargets: jxTargets('refSrc'),
+        jxTargets: jxTargets('refsources'),
         defSorts: [ 'name' ],
         logFile: 'referral-sources',
     })
@@ -710,9 +710,9 @@ function jxTargets(src, target = null) {
     const targets =  {
         company: {
             users: [ query.jx.users_companies, 'userId', User ],
-            refSrc: [ query.jx.companies_refSrc, 'refSrcId', RefSource ],
+            refsources: [ query.jx.companies_refSrc, 'refSrcId', RefSource ],
         },
-        refSrc: {
+        refsources: {
             companies: [ query.jx.companies_refSrc, 'companyId', Company ],
         },
     }[src]

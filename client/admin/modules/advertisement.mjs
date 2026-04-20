@@ -1,6 +1,8 @@
 import Tip from './tools/tip.mjs'
 import { inputEvent } from '/modules/events/form.mjs'
 import escapeHTML from '/modules/tools/utils/html.mjs'
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+import { capitalizeFirst } from '/modules/tools/utils/string.mjs'
 import selector from '/modules/registry/selectors/company-refsource.mjs'
 
 const interval = 30000
@@ -14,9 +16,11 @@ const $modal = {
     all: $('.modal'),
     upsert: $('#refsrc-upsert-modal'),
     delete: $('#refsrc-delete-modal'),
+    relationship: $('#refsrc-relationship-modal'),
 }
 const $title = {
     upsert: $('#refsrc-upsert-title'),
+    relationship: $('#refsrc-relationship-title'),
 }
 const $tip = {
     name: $('#refsrc-name-tip'),
@@ -178,6 +182,68 @@ const displaySources = () => {
                     },
                 })
             })
+
+            $('.refsrc-relationship').on('click', function() {
+                const relType = $(this).data('relationship')
+                const _id = $(this).data('refsrc-id')
+                $('.modify-refsrc-relationship').off('change')
+
+                $.ajax({
+                    url: `/api/resource/refsources/${_id}/${relType}`,
+                    success(response) {
+                        const { data, resource: refSrc } = response
+                        const { _id, name } = refSrc
+                        $title.relationship.html(`<small>Assign ${capitalizeFirst(relType)} to</small> <strong>${escapeHTML(name)}</strong>`)
+
+                        if (!data.all.length) {
+                            $relationship.html(`<i class="has-text-danger-65">No ${relType} to assign</i>`)
+                            return $modal.relationship.addClass('is-active')
+                        }
+
+                        const appliedIds = data.applied.map(item => item._id)
+
+                        data.all.map(item => {
+                            // item.name = new Person(item).fullName('AL') + ` <small>(${item.email}) - ${item.expansion.status} in ${item.expansion.location}</small>`
+                            item.applied = appliedIds.includes(item._id)
+                        })
+                        data.all = sortArrayByObjectKey(data.all, 'name')
+
+                        let list = '<div class="field">'
+                        data.all.forEach(item => {
+                            let attr = ` data-type="${relType}" data-id="${item._id}"`
+                            if (item.applied) attr += ' checked'
+                            list += '<div class="control"><label class="checkbox">'
+                            list += `<input type="checkbox" class="modify-refsrc-relationship"${attr} />&nbsp; ${item.name}`
+                            list += '</label></div>'
+                        })
+                        list += '</div>'
+
+                        $relationship.html(list)
+
+                        $('.modify-refsrc-relationship').on('change', function() {
+                            const $checkbox = $(this)
+                            const relType = $checkbox.data('type')
+                            const _relId = $checkbox.data('id')
+                            const checked = $checkbox.prop('checked')
+                            const action = checked ? 'add' : 'delete'
+
+                            $.ajax(`/api/update/refsource/${_id}/${action}/${relType}/${_relId}`, {
+                                method: 'POST',
+                                success(response) {
+                                    const { done } = response
+                                    if (!done) alert('Oops! Something went wrong!')
+                                },
+                                error(err) {
+                                    console.error(err)
+                                    alert(err.responseJSON.message)
+                                },
+                            })
+                        })
+
+                        $modal.relationship.addClass('is-active')
+                    },
+                })
+            })
         },
     })
 }
@@ -192,6 +258,15 @@ $button.add.click(() => {
     $title.upsert.html('<small>New Source</small>')
     $button.upsert.html('Create').addClass('is-link')
     $modal.upsert.addClass('is-active')
+})
+
+$button.closeRel.click(() => {
+    $('.modify-refsrc-relationship').off('change')
+    $modal.relationship.removeClass('is-active')
+    $title.relationship.html(null)
+    $relationship.html(null)
+
+    displaySources() //? location.reload()
 })
 
 

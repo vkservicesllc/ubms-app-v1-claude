@@ -282,17 +282,15 @@
             .select.is-multiple select {
                 min-height: {{css.multiSelect.minHeight}};
             }
+            .select.is-multiple select option {
+                padding: .28rem .64rem 0;
+            }
         </style>
         {{{form.id.hidden.input}}}
 
         <section class="company-card-content" id="users-card-content" style="display: none;">
-            <style>
-                .select.is-multiple select option {
-                    padding: .28rem .64rem 0;
-                }
-            </style>
             <div class="columns">
-                <div class="column is-half">
+                <div class="column is-half px-5">
                     <div class="columns is-vcentered">
                         <div class="column is-two-fifths is-width-fixed">
                             <form id="company-users-add-form" action="/resource/jx/company/{{{_id}}}/add/users?tab=users" method="POST">
@@ -324,7 +322,36 @@
         </section>
 
         <section class="company-card-content" id="sources-card-content" style="display: none;">
-            DISCOVERY SOURCES
+            <div class="columns">
+                <div class="column is-half px-5">
+                    <div class="columns is-vcentered">
+                        <div class="column is-two-fifths is-width-fixed">
+                            <form id="company-refsources-add-form" action="/resource/jx/company/{{{_id}}}/add/refsources?tab=sources" method="POST">
+                                <label class="label">Available Sources</label>
+                                <div class="select is-multiple is-fullwidth">
+                                    <select id="available-refsources" name="_ids" multiple size="8"><option value=""></option></select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="column is-one-fifth">
+                            <button type="submit" class="button is-fullwidth is-success" form="company-refsources-add-form">
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
+                            <button type="submit" class="button is-fullwidth is-danger mt-2" form="company-refsources-delete-form">
+                                <i class="fa fa-arrow-left"></i>
+                            </button>
+                        </div>
+                        <div class="column is-two-fifths is-width-fixed">
+                            <form id="company-refsources-delete-form" action="/resource/jx/company/{{{_id}}}/delete/refsources?tab=sources" method="POST">
+                                <label class="label">Current Sources</label>
+                                <div class="select is-multiple is-fullwidth">
+                                    <select id="current-refsources" name="_ids" multiple size="8"><option value=""></option></select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         {{!-- <section class="company-card-content" id="teams-card-content" style="display: none;">
