@@ -200,7 +200,7 @@ CREATE TABLE company_refsource_map (
 
     FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
     FOREIGN KEY (companyId) REFERENCES companies(id) ON DELETE CASCADE,
-    FOREIGN KEY (refSrcId) REFERENCES app_online.users(id) ON DELETE CASCADE,
+    FOREIGN KEY (refSrcId) REFERENCES refsources(id) ON DELETE CASCADE,
     PRIMARY KEY (companyId, refSrcId)
 
 );
