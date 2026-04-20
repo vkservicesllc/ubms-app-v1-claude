@@ -1601,7 +1601,7 @@ class Application {
 
             let refSrcId
             if (_refSrcId) {
-                const refSrc = await RefSource.fetch(res.session, { _id: _refSrcId })
+                const refSrc = await RefSource.fetch(session, { _id: _refSrcId })
                 if (refSrc?.id) refSrcId = refSrc.id
             }
 
