@@ -285,18 +285,18 @@ class Application {
         }
         this.formId = data.formId
 
-        // if (data.matchNameSince)
-        //     this.matcher = {
-        //         nameSince: data.matchNameSince,
-        //         legalSince: data.matchLegalSince,
-        //         maritalSince: data.matchMaritalSince,
-        //         phoneSince: data.matchPhoneSince,
-        //         emailSince: data.matchEmailSince,
-        //         addrSince: data.matchAddrSince,
-        //         dlId: data.matchDlId,
-        //         mecUntil: data.matchMecUntil,
-        //         busId: data.matchBusId,
-        //     }
+        if (data.matchNameSince)
+            this.matcher = {
+                nameSince: data.matchNameSince,
+                legalSince: data.matchLegalSince,
+                maritalSince: data.matchMaritalSince,
+                phoneSince: data.matchPhoneSince,
+                emailSince: data.matchEmailSince,
+                addrSince: data.matchAddrSince,
+                dlId: data.matchDlId,
+                mecUntil: data.matchMecUntil,
+                busId: data.matchBusId,
+            }
 
         this.cdlRole = data.cdlRole
         this.position = data.position
@@ -598,11 +598,11 @@ class Application {
 
                 const driverId = driver.id
                 await this.update({ driverId, step, public: true, addrComplete })
-                // await this.update('matcher', {
-                //     personId, driverId,
-                //     nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
-                //     phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
-                // }, {}, { skipLog: true })
+                await this.update('matcher', {
+                    personId, driverId,
+                    nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
+                    phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
+                }, {}, { skipLog: true })
                 await this.add('addresses', { personId: person.id, since: person.comparator.address, enough })
                 await driver.add('appDef', { cache })
 
@@ -829,23 +829,23 @@ class Application {
                         case 'profile':
                             {
                                 const { prefix, firstName, middleName, lastName, suffix, dob, gender, marital, phone, email } = body
-                                // let { nameSince, maritalSince, phoneSince, emailSince } = this.matcher
+                                let { nameSince, maritalSince, phoneSince, emailSince } = this.matcher
 
-                                // const matcherData = {}
+                                const matcherData = {}
 
-                                // if (dob !== this.dob) {
-                                //     if (nameSince === this.dob) matcherData.nameSince = dob
-                                //     if (maritalSince === this.dob) matcherData.maritalSince = dob
-                                //     if (phoneSince === this.dob) matcherData.phoneSince = dob
-                                //     if (emailSince === this.dob) matcherData.emailSince = dob
-                                // }
+                                if (dob !== this.dob) {
+                                    if (nameSince === this.dob) matcherData.nameSince = dob
+                                    if (maritalSince === this.dob) matcherData.maritalSince = dob
+                                    if (phoneSince === this.dob) matcherData.phoneSince = dob
+                                    if (emailSince === this.dob) matcherData.emailSince = dob
+                                }
 
                                 await person.update({ dob, gender })
                                 await person.update('names', { prefix, firstName, middleName, lastName, suffix }, { since: nameSince })
                                 await person.update('maritals', { status: marital }, { since: maritalSince })
                                 await person.update('phones', { phone }, { since: phoneSince })
                                 await person.update('emails', { email }, { since: emailSince })
-                                // if (Object.keys(matcherData).length) await this.update('matcher', matcherData)
+                                if (Object.keys(matcherData).length) await this.update('matcher', matcherData)
                             }
                             break
 

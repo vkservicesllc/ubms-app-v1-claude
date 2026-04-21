@@ -288,6 +288,8 @@ CREATE TABLE applications (
     userId           SMALLINT UNSIGNED                   DEFAULT NULL,
     carrierId        SMALLINT UNSIGNED                   DEFAULT NULL,
     refSrcId         SMALLINT UNSIGNED                   DEFAULT NULL,
+    dlId             MEDIUMINT UNSIGNED                  DEFAULT NULL,
+    busId            MEDIUMINT UNSIGNED                  DEFAULT NULL,
 
     -- Properties
     cdlRole          BOOLEAN                             NOT NULL,
@@ -357,6 +359,8 @@ CREATE TABLE applications (
     FOREIGN KEY (userId) REFERENCES app_online.users(id),
     FOREIGN KEY (carrierId) REFERENCES carriers(id),
     FOREIGN KEY (refSrcId) REFERENCES app_business.refsources(id),
+    FOREIGN KEY (dlId) REFERENCES app_person.identifications(id),
+    FOREIGN KEY (busId) REFERENCES driver_businesses(id),
     FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
     FOREIGN KEY (reviewedBy) REFERENCES app_online.users(id),
     FOREIGN KEY (archivedBy) REFERENCES app_online.users(id),
@@ -399,64 +403,64 @@ CREATE TABLE pre_applications (
 );
 
 
-SELECT 'Creating table `carrier_app`.`application_matchers`';
-CREATE TABLE application_matchers (
+-- SELECT 'Creating table `carrier_app`.`application_matchers`';
+-- CREATE TABLE application_matchers (
 
-    -- Identification
-    appId         MEDIUMINT UNSIGNED  NOT NULL,
-    personId      MEDIUMINT UNSIGNED  DEFAULT NULL,
-    driverId      MEDIUMINT UNSIGNED  DEFAULT NULL,
-    companyId     SMALLINT UNSIGNED   DEFAULT NULL,
-    ownerId       SMALLINT UNSIGNED   DEFAULT NULL,
-    owPersonId    MEDIUMINT UNSIGNED  DEFAULT NULL,
+--     -- Identification
+--     appId         MEDIUMINT UNSIGNED  NOT NULL,
+--     personId      MEDIUMINT UNSIGNED  DEFAULT NULL,
+--     driverId      MEDIUMINT UNSIGNED  DEFAULT NULL,
+--     companyId     SMALLINT UNSIGNED   DEFAULT NULL,
+--     ownerId       SMALLINT UNSIGNED   DEFAULT NULL,
+--     owPersonId    MEDIUMINT UNSIGNED  DEFAULT NULL,
 
-    nameSince     DATE                DEFAULT NULL,
-    legalSince    DATE                DEFAULT NULL,
-    maritalSince  DATE                DEFAULT NULL,
-    phoneSince    DATE                DEFAULT NULL,
-    emailSince    DATE                DEFAULT NULL,
-    addrSince     DATE                DEFAULT NULL,
-    dlId          MEDIUMINT UNSIGNED  DEFAULT NULL,
-    mecUntil      DATE                DEFAULT NULL,
-    busId         MEDIUMINT UNSIGNED  DEFAULT NULL,
+--     -- nameSince     DATE                DEFAULT NULL,
+--     -- legalSince    DATE                DEFAULT NULL,
+--     -- maritalSince  DATE                DEFAULT NULL,
+--     -- phoneSince    DATE                DEFAULT NULL,
+--     -- emailSince    DATE                DEFAULT NULL,
+--     -- addrSince     DATE                DEFAULT NULL,
+--     dlId          MEDIUMINT UNSIGNED  DEFAULT NULL,
+--     -- mecUntil      DATE                DEFAULT NULL,
+--     busId         MEDIUMINT UNSIGNED  DEFAULT NULL,
 
-    coNameSince   DATE                DEFAULT NULL,
-    coAddrSince   DATE                DEFAULT NULL,
-    coMailSince   DATE                DEFAULT NULL,
-    coPhoneSince  DATE                DEFAULT NULL,
-    coFaxSince    DATE                DEFAULT NULL,
-    coEmailSince  DATE                DEFAULT NULL,
-    coOwnerSince  DATE                DEFAULT NULL,
-    owNameSince   DATE                DEFAULT NULL,
+--     -- coNameSince   DATE                DEFAULT NULL,
+--     -- coAddrSince   DATE                DEFAULT NULL,
+--     -- coMailSince   DATE                DEFAULT NULL,
+--     -- coPhoneSince  DATE                DEFAULT NULL,
+--     -- coFaxSince    DATE                DEFAULT NULL,
+--     -- coEmailSince  DATE                DEFAULT NULL,
+--     -- coOwnerSince  DATE                DEFAULT NULL,
+--     -- owNameSince   DATE                DEFAULT NULL,
 
-    -- Create/Update location required
-    createdBy     SMALLINT UNSIGNED   DEFAULT NULL,  -- NULL when self registered
-    createdAt     TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    createdIn     JSON                NOT NULL,
-    updateLog     JSON                DEFAULT NULL,
+--     -- Create/Update location required
+--     createdBy     SMALLINT UNSIGNED   DEFAULT NULL,  -- NULL when self registered
+--     createdAt     TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--     createdIn     JSON                NOT NULL,
+--     updateLog     JSON                DEFAULT NULL,
 
-    FOREIGN KEY (appId) REFERENCES applications(id) ON DELETE CASCADE,
-    FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
-    FOREIGN KEY (personId, nameSince) REFERENCES app_person.names(personId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (personId, legalSince) REFERENCES app_person.legal_presence(personId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (personId, maritalSince) REFERENCES app_person.maritals(personId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (personId, phoneSince) REFERENCES app_person.phones(personId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (personId, emailSince) REFERENCES app_person.emails(personId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (personId, addrSince) REFERENCES app_person.addresses(personId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (dlId) REFERENCES app_person.identifications(id),
-    FOREIGN KEY (driverId, mecUntil) REFERENCES driver_medcards(driverId, expiresOn) ON UPDATE CASCADE,
-    FOREIGN KEY (busId) REFERENCES driver_businesses(id),
-    FOREIGN KEY (companyId, coNameSince) REFERENCES app_business.company_names(companyId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (companyId, coAddrSince) REFERENCES app_business.company_addresses(companyId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (companyId, coMailSince) REFERENCES app_business.company_mail(companyId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (companyId, coPhoneSince) REFERENCES app_business.company_phones(companyId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (companyId, coFaxSince) REFERENCES app_business.company_faxes(companyId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (companyId, coEmailSince) REFERENCES app_business.company_emails(companyId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (companyId, ownerId, coOwnerSince) REFERENCES app_business.company_ownerships(companyId, ownerId, since) ON UPDATE CASCADE,
-    FOREIGN KEY (owPersonId, owNameSince) REFERENCES app_person.names(personId, since) ON UPDATE CASCADE,
-    PRIMARY KEY (appId)
+--     FOREIGN KEY (appId) REFERENCES applications(id) ON DELETE CASCADE,
+--     FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
+--     FOREIGN KEY (personId, nameSince) REFERENCES app_person.names(personId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (personId, legalSince) REFERENCES app_person.legal_presence(personId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (personId, maritalSince) REFERENCES app_person.maritals(personId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (personId, phoneSince) REFERENCES app_person.phones(personId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (personId, emailSince) REFERENCES app_person.emails(personId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (personId, addrSince) REFERENCES app_person.addresses(personId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (dlId) REFERENCES app_person.identifications(id),
+--     FOREIGN KEY (driverId, mecUntil) REFERENCES driver_medcards(driverId, expiresOn) ON UPDATE CASCADE,
+--     FOREIGN KEY (busId) REFERENCES driver_businesses(id),
+--     FOREIGN KEY (companyId, coNameSince) REFERENCES app_business.company_names(companyId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (companyId, coAddrSince) REFERENCES app_business.company_addresses(companyId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (companyId, coMailSince) REFERENCES app_business.company_mail(companyId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (companyId, coPhoneSince) REFERENCES app_business.company_phones(companyId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (companyId, coFaxSince) REFERENCES app_business.company_faxes(companyId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (companyId, coEmailSince) REFERENCES app_business.company_emails(companyId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (companyId, ownerId, coOwnerSince) REFERENCES app_business.company_ownerships(companyId, ownerId, since) ON UPDATE CASCADE,
+--     FOREIGN KEY (owPersonId, owNameSince) REFERENCES app_person.names(personId, since) ON UPDATE CASCADE,
+--     PRIMARY KEY (appId)
 
-);
+-- );
 
 
 SELECT 'Creating table `app_carrier`.`addresses`...';

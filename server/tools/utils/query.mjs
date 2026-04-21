@@ -731,12 +731,13 @@ class Query {
                         else maxField += `${primaryTable}.${asOfMax[1]}, `
 
                         maxField += 'CURRENT_DATE())'
-
-                        joiner.links[0] += `\nAND ${asTable}.${field} = (`
-                        joiner.links[0] += `\nSELECT MAX(${asTable}.${field}) `
-                        joiner.links[0] += `FROM ${db}.${table}`
-                        joiner.links[0] += `\NWHERE ${asTable}.${field} <= ${maxField}\n)`
                     }
+
+                    joiner.links[0] += `\nAND ${asTable}.${field} = (`
+                    joiner.links[0] += `\nSELECT MAX(${asTable}.${field}) `
+                    joiner.links[0] += `FROM ${db}.${table}`
+                    joiner.links[0] += `\nWHERE ${asTable}.${id} = ${foreignTable}.${foreignId} AND`
+                    joiner.links[0] += `\n${asTable}.${field} <= ${maxField}\n)`
                 }
 
                 else if (foreignMatch)

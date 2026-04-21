@@ -91,7 +91,7 @@ export const query = {
     driver_application: {
         main: new Query(db.carrier, 'applications'),
         lead: new Query(db.carrier, 'pre_applications'),
-        matcher: new Query(db.carrier, 'application_matchers'),
+        // matcher: new Query(db.carrier, 'application_matchers'),
         addresses: new Query(db.carrier, 'application_addresses'),  //* 1-to-many
         citations: new Query(db.carrier, 'application_citations'),  //* 1-to-many
         accidents: new Query(db.carrier, 'application_accidents'),  //* 1-to-many

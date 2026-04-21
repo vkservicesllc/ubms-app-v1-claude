@@ -1,23 +1,20 @@
 import Query from './server/tools/utils/query.mjs'
 
 
-let join
-
-//* CURRENT
-join = [
-    'personId', 'id', {
-        table: query.person.main.table,
-        max: 'since',
+const batch = [
+    {
+        table: 'applications',
+        fields: 'id',
     },
-]
-
-//* DATE BASED
-join = [
-    'personId', 'id', {
-        table: query.person.main.table,
-        asOfMax: [
-            'since',
-            [ 'finishedAt', 'createdAt' ],
+    {
+        db: 'app_person',
+        table: 'names',
+        join: [
+            'personId', 'personId', {
+                asOfMax: ['since', ['finishedAt', 'createdAt']],
+            },
         ],
     },
 ]
+
+console.log(Query.select('app_carrier', batch))
