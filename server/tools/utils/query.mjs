@@ -679,14 +679,14 @@ class Query {
             if (primaryTable && join) {
                 joiner = { table: '', links: [ '' ], type: 'left' }
                 const [ id, foreignId, param3 ] = join
-                let foreignTable, foreignMatch, min, max, type
+                let foreignTable, foreignMatch, min, max, asOfMax, type
 
                 if (typeof param3 === 'string')
                     foreignTable = param3
                 else if (typeof param3 === 'number')
                     foreignTable = tables[param3]
                 else if (typeof param3 === 'object')
-                    ({ min, max, match: foreignMatch, table: foreignTable, type } = param3)
+                    ({ min, max, asOfMax, match: foreignMatch, table: foreignTable, type } = param3)
 
                 if (!foreignTable) foreignTable = primaryTable
                 foreignTable = Query.#_table(foreignTable, false)
@@ -718,6 +718,25 @@ class Query {
                     joiner.links[0] += `\nSELECT ${func}(${subTable}.${field}) `
                     joiner.links[0] += `FROM ${db}.${table} AS ${subTable}`
                     joiner.links[0] += `\nWHERE ${subTable}.${id} = ${foreignTable}.${foreignId}${match}\n)`
+                }
+
+                //! NOT TESTED
+                else if (asOfMax) {
+                    let field = asOfMax, maxField = 'CURRENT_DATE()'
+
+                    if (Array.isArray(asOfMax)) {
+                        field = asOfMax[0]
+                        maxField = 'COALESCE('
+                        if (Array.isArray(asOfMax[1])) asOfMax[1].map(field => maxField += `${primaryTable}.${field}, `)
+                        else maxField += `${primaryTable}.${asOfMax[1]}, `
+
+                        maxField += 'CURRENT_DATE())'
+
+                        joiner.links[0] += `\nAND ${asTable}.${field} = (`
+                        joiner.links[0] += `\nSELECT MAX(${asTable}.${field}) `
+                        joiner.links[0] += `FROM ${db}.${table}`
+                        joiner.links[0] += `\NWHERE ${asTable}.${field} <= ${maxField}\n)`
+                    }
                 }
 
                 else if (foreignMatch)
