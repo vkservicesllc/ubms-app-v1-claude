@@ -481,6 +481,7 @@ export const applicationProgress = async (req, res, next) => {
             hbs.medListDisplay = ' style="display: none;"'
 
             const values = {
+                mecCurrentExp: application?.mec?.expiresOn || null,
                 mecExp: application?.mec?.expiresOn ? moment(application.mec.expiresOn).format('MM/DD/YYYY') : null,
                 mecIss: application?.mec?.issuedOn ? moment(application.mec.issuedOn).format('MM/DD/YYYY') : null,
                 mecNumber: application?.mec?.nrcme,

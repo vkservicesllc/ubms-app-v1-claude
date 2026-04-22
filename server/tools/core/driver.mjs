@@ -853,11 +853,11 @@ class Application {
                         case 'residence':
                             {
                                 const { address, addresses, prevCountry = null } = body
-                                const { since, enough, livedAbroad, address1, address2, city, state, zip } = address
+                                const { since, currentSince, enough, livedAbroad, address1, address2, city, state, zip } = address
                                 const { personId = person.id } = this
 
                                 await person.update('addresses', { since, address1, address2, city, state, zip }, {
-                                    since: this.matcher.addrSince,
+                                    since: currentSince, // this.matcher.addrSince,
                                 })
                                 await this.update('addresses', { enough, livedAbroad }, { since }) //? since cascaded on update in db
 
@@ -947,10 +947,10 @@ class Application {
                                     body.main.step = 2
                                     cache.step = 2
                                 } else {
-                                    if (!dlId) await person.update('identifications', body.dl, { id: this.matcher.dlId })
+                                    if (!dlId) await person.update('identifications', body.dl, { id: this.dlId })
                                 }
 
-                                await this.update('matcher', { dlId })
+                                // await this.update('matcher', { dlId })
                                 await this.update(body.main)
 
                                 cache.dlId = dlId
@@ -968,7 +968,8 @@ class Application {
 
                         case 'medical-card': //! NOT FULLY TESTED
                             {
-                                const { expiresOn, issuedOn, nrcme, mecAbsent } = body
+                                const { currentUntil, expiresOn, issuedOn, nrcme, mecAbsent } = body
+                                delete body.currentUntil
                                 delete body.expiresOn
                                 delete body.issuedOn
                                 delete body.nrcme
@@ -980,7 +981,7 @@ class Application {
                                 body = {
                                     main: body,
                                     mec: { expiresOn, issuedOn, nrcme },
-                                    matcher: { mecUntil: expiresOn || null },
+                                    // matcher: { mecUntil: expiresOn || null },
                                 }
 
                                 if (this.step < 3) {
@@ -988,14 +989,14 @@ class Application {
                                     cache.step = 3
                                 }
 
-                                const match = { expiresOn: this.matcher.mecUntil }
+                                const match = { expiresOn: currentUntil }
 
                                 if (expiresOn) {
                                     if (this.medCard) await driver.update('mecs', body.mec, match)
                                     else await driver.add('mecs', body.mec)
                                 } else await driver.delete('mecs', match)
 
-                                await this.update('matcher', body.matcher)
+                                // await this.update('matcher', body.matcher)
                                 await this.update(body.main)
 
                                 cache.mecUntil = expiresOn || null
@@ -1212,7 +1213,7 @@ class Application {
 
                                 // if (activeLLC) await this[this.activeBusiness ? 'update' : 'add']('business', { busName, state, ein })
                                 // else await this.delete('business')
-                                let busId = this.matcher.busId
+                                let busId = this.busId
                                 if (activeLLC) {
                                     const busBody = { busName, state, ein }
                                     if (!this.activeBusiness) {
@@ -1230,7 +1231,7 @@ class Application {
                                 cache = await vehicleRecord(this, { mmt, type, make, model, year, length }, cache)
 
                                 await this.update(body)
-                                await this.update('matcher', { busId })
+                                // await this.update('matcher', { busId })
                                 await driver.update('appDef', { cache })
                             }
                             break
@@ -1305,17 +1306,17 @@ class Application {
                                     if (!carrier) throw new Error('Carrier not found')
 
                                     body.main.carrierId = carrier.id
-                                    body.matcher.companyId = carrier.companyId
-                                    body.matcher.ownerId = carrier.owner.id
-                                    body.matcher.owPersonId = carrier.owner.personId
-                                    body.matcher.coNameSince = carrier.comparator.name
-                                    body.matcher.coAddrSince = carrier.comparator.address
-                                    body.matcher.coMailSince = carrier.comparator.mail
-                                    body.matcher.coPhoneSince = carrier.comparator.phone
-                                    body.matcher.coFaxSince = carrier.comparator.fax
-                                    body.matcher.coEmailSince = carrier.comparator.email
-                                    body.matcher.coOwnerSince = carrier.comparator.ownership
-                                    body.matcher.owNameSince = carrier.owner.comparator.name
+                                    // body.matcher.companyId = carrier.companyId
+                                    // body.matcher.ownerId = carrier.owner.id
+                                    // body.matcher.owPersonId = carrier.owner.personId
+                                    // body.matcher.coNameSince = carrier.comparator.name
+                                    // body.matcher.coAddrSince = carrier.comparator.address
+                                    // body.matcher.coMailSince = carrier.comparator.mail
+                                    // body.matcher.coPhoneSince = carrier.comparator.phone
+                                    // body.matcher.coFaxSince = carrier.comparator.fax
+                                    // body.matcher.coEmailSince = carrier.comparator.email
+                                    // body.matcher.coOwnerSince = carrier.comparator.ownership
+                                    // body.matcher.owNameSince = carrier.owner.comparator.name
                                 }
 
                                 if (_teamId && _teamId !== this._teamId) {
@@ -1324,7 +1325,7 @@ class Application {
                                 }
 
                                 await this.update(body.main)
-                                await this.update('matcher', body.matcher)
+                                // await this.update('matcher', body.matcher)
                             }
                             break
 

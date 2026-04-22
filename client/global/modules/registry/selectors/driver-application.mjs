@@ -91,6 +91,7 @@ const selector = {
             addrEnough: 'address-enough',
             prevAddrSince: 'prev-address-since',
             prevAddrEnough: 'prev-address-enough',
+            mecExp: 'med-card-expiration-date',
             // emplId: 'employment-id',
         },
         text: {

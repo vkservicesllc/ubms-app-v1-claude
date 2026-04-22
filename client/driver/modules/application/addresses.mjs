@@ -117,8 +117,9 @@ function drawAddressForms() {
 
             if (!data.length)
                 data.push({
-                    since: null,
                     enough: null,
+                    currentSince: null,
+                    since: null,
                     address1: null,
                     address2: null,
                     city: null,
@@ -126,7 +127,10 @@ function drawAddressForms() {
                     zip: null,
                     livedAbroad: null,
                 })
-            else data.forEach(row => row.since = moment(row.since).format('MM/DD/YYYY'))
+            else data.forEach(row => {
+                row.currentSince = row.since
+                row.since = moment(row.since).format('MM/DD/YYYY')
+            })
 
             const count = data.length
             for (let i = 0; i < count; i++) $addrList.append(cloneAddrForm(i, data))
