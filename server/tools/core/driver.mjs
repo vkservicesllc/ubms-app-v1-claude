@@ -603,7 +603,11 @@ class Application {
                 //     nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
                 //     phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
                 // }, {}, { skipLog: true })
-                await this.add('addresses', { personId: person.id, since: person.comparator.address, enough })
+                await this.add('addresses', {
+                    personId: person.id,
+                    since: person.comparator.address, //! PAY ATTENTION
+                    enough
+                })
                 await driver.add('appDef', { cache })
 
                 const application = await Application.fetch(this.session, { id: this.id })

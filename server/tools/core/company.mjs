@@ -92,15 +92,15 @@ class Company {
         this.fax = data.fax
         this.email = data.email
 
-        this.comparator = {
-            name: data.nameSince,
-            address: data.addrSince,
-            mail: data.mailSince,
-            phone: data.phoneSince,
-            fax: data.faxSince,
-            email: data.emailSince,
-            ownership: data.ownershipSince,
-        }
+        // this.comparator = {
+        //     name: data.nameSince,
+        //     address: data.addrSince,
+        //     mail: data.mailSince,
+        //     phone: data.phoneSince,
+        //     fax: data.faxSince,
+        //     email: data.emailSince,
+        //     ownership: data.ownershipSince,
+        // }
 
         if (single) {
             this.session = session
@@ -384,9 +384,9 @@ class Owner extends Individual {
             props2.count[path] = data[`${path}Count`]
         }
 
-        props2.comparator = {
-            name: data.nameSince,
-        }
+        // props2.comparator = {
+        //     name: data.nameSince,
+        // }
 
         reSuper(this, props, props2)
 

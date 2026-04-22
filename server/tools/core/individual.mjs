@@ -53,15 +53,15 @@ class Individual extends Person {
         const props2 = { legal, phone, email, marital, address, identification }
         if (count) props2.count = count
 
-        props2.comparator = {
-            name: data.nameSince,
-            legal: data.legalSince,
-            marital: data.maritalSince,
-            address: data.addrSince,
-            phone: data.phoneSince,
-            email: data.emailSince,
-            identification: data.identId,
-        }
+        // props2.comparator = {
+        //     name: data.nameSince,
+        //     legal: data.legalSince,
+        //     marital: data.maritalSince,
+        //     address: data.addrSince,
+        //     phone: data.phoneSince,
+        //     email: data.emailSince,
+        //     identification: data.identId,
+        // }
 
         reSuper(this, props, props2)
 
