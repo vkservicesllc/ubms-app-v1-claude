@@ -351,6 +351,13 @@ class ApplicationForm {
         label: 'Living since',
     })
 
+    static addrCurrentSince = createForm({
+        selector: appSelector,
+        target: 'addrSince',
+        name: 'address[currentSince]',
+        type: 'hidden',
+    })
+
     static address1 = createAddressForm({
         selector: appSelector,
         target: 'address1',
@@ -425,6 +432,13 @@ class ApplicationForm {
         name: 'addresses[since][]',
         disabled,
         label: 'Lived since'
+    })
+
+    static _addrCurrentSince = createForm({
+        selector: appSelector,
+        target: 'prevAddrSince',
+        name: 'addresses[currentSince]',
+        type: 'hidden',
     })
 
     static _addrEnough = createForm({

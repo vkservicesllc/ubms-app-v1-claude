@@ -27,11 +27,11 @@ export const createIdForm = (props = {}, arr = false) => createForm({
 })
 
 
-export const createMatchForm = (field, value) => createForm({
-    type: 'hidden',
-    name: `match[${field}]`,
-    value,
-})
+// export const createMatchForm = (field, value) => createForm({
+//     type: 'hidden',
+//     name: `match[${field}]`,
+//     value,
+// })
 
 
 export const createPersonNameForm = (flag, props = {}) => {

@@ -356,6 +356,7 @@ export const applicationProgress = async (req, res, next) => {
                 addrState: application.address.state,
                 addrSince: moment(application.address.since).format('MM/DD/YYYY'),
                 addrEnough: application.address.enough ? '1' : '0',
+                addrCurrentSince: application.address.since,
             }
 
             options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 12 })
@@ -398,6 +399,7 @@ export const applicationProgress = async (req, res, next) => {
             updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 13 })
             options._addrState.select.input.options = { valOpt: true }
             options._addrEnough = { hidden: { input: { class: 'driver-application-prev-addr-enough-hidden-input' } } }
+            options._addrCurrentSince = { hidden: { input: { class: 'driver-application-prev-addr-since-hidden-input' } } }
 
             if (values.country) {
                 hbs.countryDisplay = ''
