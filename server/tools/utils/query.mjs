@@ -723,12 +723,17 @@ class Query {
                 //! NOT TESTED
                 else if (asOfMax) {
                     let field = asOfMax, maxField = 'CURRENT_DATE()'
+                    let asOfTable = primaryTable
 
                     if (Array.isArray(asOfMax)) {
                         field = asOfMax[0]
+                        if (asOfMax[2]) {
+                            if (typeof asOfMax[2] === 'number') asOfTable = tables[asOfMax[2]]
+                            else asOfTable = asOfMax[2]
+                        }
                         maxField = 'COALESCE('
-                        if (Array.isArray(asOfMax[1])) asOfMax[1].map(field => maxField += `${primaryTable}.${field}, `)
-                        else maxField += `${primaryTable}.${asOfMax[1]}, `
+                        if (Array.isArray(asOfMax[1])) asOfMax[1].map(field => maxField += `${asOfTable}.${field}, `)
+                        else maxField += `${asOfTable}.${asOfMax[1]}, `
 
                         maxField += 'CURRENT_DATE())'
                     }

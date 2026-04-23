@@ -285,19 +285,6 @@ class Application {
         }
         this.formId = data.formId
 
-        // if (data.matchNameSince)
-        //     this.matcher = {
-        //         nameSince: data.matchNameSince,
-        //         legalSince: data.matchLegalSince,
-        //         maritalSince: data.matchMaritalSince,
-        //         phoneSince: data.matchPhoneSince,
-        //         emailSince: data.matchEmailSince,
-        //         addrSince: data.matchAddrSince,
-        //         dlId: data.matchDlId,
-        //         mecUntil: data.matchMecUntil,
-        //         busId: data.matchBusId,
-        //     }
-
         this.cdlRole = data.cdlRole
         this.position = data.position
         this.condition = data.condition
@@ -567,7 +554,7 @@ class Application {
                     phone, email, address, marital, legalStatus: status, legalExpiration: expiresOn,
                 } = body
                 const { ssn, dob } = this.lead
-                const since = dob
+                const since = tz2utc(this.appliedOn)
                 let step = 1, addrComplete = false
                 const { enough } = address
                 delete address.enough
@@ -598,14 +585,9 @@ class Application {
 
                 const driverId = driver.id
                 await this.update({ driverId, step, public: true, addrComplete })
-                // await this.update('matcher', {
-                //     personId, driverId,
-                //     nameSince: person.comparator.name, legalSince: person.comparator.legal, maritalSince: person.comparator.marital,
-                //     phoneSince: person.comparator.phone, emailSince: person.comparator.email, addrSince: person.comparator.address,
-                // }, {}, { skipLog: true })
                 await this.add('addresses', {
                     personId: person.id,
-                    since: person.comparator.address, //! PAY ATTENTION
+                    since: address.since,
                     enough
                 })
                 await driver.add('appDef', { cache })
@@ -833,23 +815,13 @@ class Application {
                         case 'profile':
                             {
                                 const { prefix, firstName, middleName, lastName, suffix, dob, gender, marital, phone, email } = body
-                                // let { nameSince, maritalSince, phoneSince, emailSince } = this.matcher
-
-                                // const matcherData = {}
-
-                                // if (dob !== this.dob) {
-                                //     if (nameSince === this.dob) matcherData.nameSince = dob
-                                //     if (maritalSince === this.dob) matcherData.maritalSince = dob
-                                //     if (phoneSince === this.dob) matcherData.phoneSince = dob
-                                //     if (emailSince === this.dob) matcherData.emailSince = dob
-                                // }
+                                const since = tz2utc(this.appliedOn)
 
                                 await person.update({ dob, gender })
-                                await person.update('names', { prefix, firstName, middleName, lastName, suffix }, { since: nameSince })
-                                await person.update('maritals', { status: marital }, { since: maritalSince })
-                                await person.update('phones', { phone }, { since: phoneSince })
-                                await person.update('emails', { email }, { since: emailSince })
-                                // if (Object.keys(matcherData).length) await this.update('matcher', matcherData)
+                                await person.update('names', { prefix, firstName, middleName, lastName, suffix }, { since: this.dob })
+                                await person.update('maritals', { status: marital }, { since })
+                                await person.update('phones', { phone }, { since })
+                                await person.update('emails', { email }, { since })
                             }
                             break
 
@@ -860,10 +832,8 @@ class Application {
                                 const { since, currentSince, enough, livedAbroad, address1, address2, city, state, zip } = address
                                 const { personId = person.id } = this
 
-                                await person.update('addresses', { since, address1, address2, city, state, zip }, {
-                                    since: currentSince, // this.matcher.addrSince,
-                                })
-                                await this.update('addresses', { enough, livedAbroad }, { since }) //? since cascaded on update in db
+                                await person.update('addresses', { since, address1, address2, city, state, zip }, { since: currentSince })
+                                await this.update('addresses', { enough, livedAbroad }, { since: currentSince })
 
                                 body = {
                                     main: { addrComplete: true },
@@ -909,7 +879,7 @@ class Application {
                             break
 
 
-                        case 'driver-license': //! NOT FULLY TESTED
+                        case 'driver-license':
                             {
                                 if (!body.dlDenied) body.dlDeniedExpl = null
                                 if (!body.dlRevoked) body.dlRevokedExpl = null
@@ -954,7 +924,6 @@ class Application {
                                     if (!dlId) await person.update('identifications', body.dl, { id: this.dlId })
                                 }
 
-                                // await this.update('matcher', { dlId })
                                 await this.update(body.main)
 
                                 cache.dlId = dlId
@@ -970,7 +939,7 @@ class Application {
                             break
 
 
-                        case 'medical-card': //! NOT FULLY TESTED
+                        case 'medical-card':
                             {
                                 const { currentUntil, expiresOn, issuedOn, nrcme, mecAbsent } = body
                                 delete body.currentUntil
@@ -985,7 +954,6 @@ class Application {
                                 body = {
                                     main: body,
                                     mec: { expiresOn, issuedOn, nrcme },
-                                    // matcher: { mecUntil: expiresOn || null },
                                 }
 
                                 if (this.step < 3) {
@@ -1000,7 +968,6 @@ class Application {
                                     else await driver.add('mecs', body.mec)
                                 } else await driver.delete('mecs', match)
 
-                                // await this.update('matcher', body.matcher)
                                 await this.update(body.main)
 
                                 cache.mecUntil = expiresOn || null
@@ -1014,7 +981,7 @@ class Application {
                             break
 
 
-                        case 'legal-compliance': //! NOT FULLY TESTED
+                        case 'legal-compliance':
                             {
                                 if (!body.dui) body.duiInDecade = null
                                 if (!body.criminal) body.criminalExpl = null
@@ -1064,7 +1031,7 @@ class Application {
                             break
 
 
-                        case 'safety': //! NOT FULLY TESTED
+                        case 'safety':
                             {
                                 const { accidents, collision, other, date, state, injuries, fatalities } = body
                                 body = { accidents }
@@ -1105,12 +1072,16 @@ class Application {
                             break
 
 
-                        case 'experience': //! NOT FULLY TESTED
+                        case 'experience':
                             {
                                 const experience = body.noExp !== true
                                 const prevEmployed = experience === true ? true : this.prevEmployed
                                 let { cdlSchool } = body
-                                const { cmv, vehicles = {}, firstDate = null, lastDate, mileage, hours } = body
+                                const { cmv, vehicles = {}, firstDate = null,
+                                    // lastDate,
+                                    mileage,
+                                    // hours,
+                                } = body
                                 const { name, phone, state, endDate, duration } = body
                                 if (cdlSchool === undefined) cdlSchool = null
 
@@ -1128,7 +1099,12 @@ class Application {
                                 body = {
                                     main: { experience, cdlSchool, prevEmployed },
                                     appDef: { expDate: firstDate },
-                                    experience: { cmv, vehicles, lastDate, mileage, hours },
+                                    experience: {
+                                        cmv, vehicles,
+                                        // lastDate,
+                                        mileage,
+                                        // hours,
+                                    },
                                     school: { name, phone, state, endDate, duration },
                                 }
 
@@ -1158,7 +1134,7 @@ class Application {
                             break
 
 
-                        case 'prev-employment': //! NOT FULLY TESTED
+                        case 'prev-employment':
                             {
                                 delete body.explGap
                                 if (this.step < 7) {
@@ -1199,7 +1175,7 @@ class Application {
                             break
 
 
-                        case 'business': //! NOT TESTED
+                        case 'business':
                             {
                                 let { activeLLC } = body
                                 const {
@@ -1215,8 +1191,6 @@ class Application {
                                     cache.step = 9
                                 }
 
-                                // if (activeLLC) await this[this.activeBusiness ? 'update' : 'add']('business', { busName, state, ein })
-                                // else await this.delete('business')
                                 let busId = this.busId
                                 if (activeLLC) {
                                     const busBody = { busName, state, ein }
@@ -1235,7 +1209,6 @@ class Application {
                                 cache = await vehicleRecord(this, { mmt, type, make, model, year, length }, cache)
 
                                 await this.update(body)
-                                // await this.update('matcher', { busId })
                                 await driver.update('appDef', { cache })
                             }
                             break
@@ -1280,11 +1253,10 @@ class Application {
 
                         case 'legal-status': //* Carrier UI only (no step)
                             {
-                                const { legalSince } = this.matcher
                                 if (body.legalStatus < 2) body.legalExpiration = null
 
                                 const { legalStatus: status, legalExpiration: expiresOn } = body
-                                await person.update('legal', { status, expiresOn }, { since: legalSince })
+                                await person.update('legal', { status, expiresOn }, { since: tz2utc(this.appliedOn) })
                             }
                             break
 
@@ -1303,24 +1275,13 @@ class Application {
                         case 'workflow': //* Carrier UI only
                             {
                                 const { _userId, _carrierId, _teamId, condition, experience, position } = body
-                                body = { main: {}, matcher: {}, decision: {} }
+                                body = { main: {}, decision: {} }
 
                                 if (_carrierId && _carrierId !== this._carrierId) {
                                     const carrier = await Carrier.fetch(this.session, { _id: _carrierId })
                                     if (!carrier) throw new Error('Carrier not found')
 
                                     body.main.carrierId = carrier.id
-                                    // body.matcher.companyId = carrier.companyId
-                                    // body.matcher.ownerId = carrier.owner.id
-                                    // body.matcher.owPersonId = carrier.owner.personId
-                                    // body.matcher.coNameSince = carrier.comparator.name
-                                    // body.matcher.coAddrSince = carrier.comparator.address
-                                    // body.matcher.coMailSince = carrier.comparator.mail
-                                    // body.matcher.coPhoneSince = carrier.comparator.phone
-                                    // body.matcher.coFaxSince = carrier.comparator.fax
-                                    // body.matcher.coEmailSince = carrier.comparator.email
-                                    // body.matcher.coOwnerSince = carrier.comparator.ownership
-                                    // body.matcher.owNameSince = carrier.owner.comparator.name
                                 }
 
                                 if (_teamId && _teamId !== this._teamId) {
@@ -1329,7 +1290,6 @@ class Application {
                                 }
 
                                 await this.update(body.main)
-                                // await this.update('matcher', body.matcher)
                             }
                             break
 
@@ -1357,6 +1317,7 @@ class Application {
                     }
 
                     await this.update({ condition: 'c', applicant_: this.name, finishedAt: utcTimeStamp() })
+                    await this.sign()
                 }
             }
 
@@ -1574,24 +1535,12 @@ class Application {
                 prefix, firstName, middleName, lastName, suffix, phone, email, position,
             } = body
             const ssn = unprocessAES(body.ssn)
-            const matcher = {}
 
             if (_carrierId) {
                 const carrier = await Carrier.fetch(session, { _id: _carrierId })
                 if (!carrier) throw new Error('Carrier not found')
 
                 carrierId = carrier.id
-                matcher.companyId = carrier.companyId
-                matcher.ownerId = carrier.owner.id
-                matcher.owPersonId = carrier.owner.personId
-                matcher.coNameSince = carrier.comparator.name
-                matcher.coAddrSince = carrier.comparator.address
-                matcher.coMailSince = carrier.comparator.mail
-                matcher.coPhoneSince = carrier.comparator.phone
-                matcher.coFaxSince = carrier.comparator.fax
-                matcher.coEmailSince = carrier.comparator.email
-                matcher.coOwnerSince = carrier.comparator.ownership
-                matcher.owNameSince = carrier.owner.comparator.name
             }
 
             let { team, user } = session
@@ -1612,7 +1561,6 @@ class Application {
 
             body = {
                 main: { formId, cdlRole, carrierId, teamId, userId, refSrcId, position },
-                matcher,
             }
 
             if (!ssn) { //* Pre-Application
@@ -1639,23 +1587,17 @@ class Application {
             const person = await Individual.fetch(session, { id: personId }, { hideSensitive: false })
 
             body.main.driverId = driver.id
-            body.matcher.driverId = driverId
-            body.matcher.personId = personId
-            body.matcher.nameSince = person.comparator.name
+
             if (driver.appDef.complete) {
-                body.main.rehire = true //! Rehire will only copy the name at first
+                body.main.rehire = true
+                //! Rehire will only copy the name at first...
+                //? Consider what's next
             } else { //* Original Application Restoration
                 const { cache } = driver.appDef
                 let { step } = cache
 
                 body.main.addrComplete = cache.addrComplete
                 body.lead = { ssn: processAES('ssn', person.ssn), dob: person.dob }
-
-                body.matcher.legalSince = person.comparator.legal
-                body.matcher.maritalSince = person.comparator.marital
-                body.matcher.phoneSince = person.comparator.phone
-                body.matcher.emailSince = person.comparator.email
-                body.matcher.addrSince = person.comparator.address
 
                 body.addresses = []
 
@@ -1675,7 +1617,6 @@ class Application {
                 }
 
                 if (cache.dlId) { //! NOT FULLY TESTED
-                    body.matcher.dlId = cache.dlId
                     body.main.dlDenied = cache.dlDenied
                     body.main.dlDeniedExpl = cache.dlDeniedExpl
                     body.main.dlRevoked = cache.dlRevoked
@@ -1691,8 +1632,6 @@ class Application {
                     body.main.medList = cache.medList
 
                     if (cache.mecUntil) {
-                        body.matcher.mecUntil = cache.mecUntil
-
                         const mecUntil = moment(cache.mecUntil)
                         if (mecUntil.isSameOrBefore(today) && step > 3) step = 3
                     }
@@ -1734,6 +1673,8 @@ class Application {
                         }
                     }
                 }
+
+                //! INCOMPLETE RESTORATION...
 
                 body.main.step = step
             }
@@ -1835,21 +1776,6 @@ class Application {
                 fields: [ 'personId', Individual.hashId('personId') ],
                 join: [ 'id', 'driverId' ],
             },
-            // {
-            //     table: query.driver_application.matcher.table,
-            //     fields: [
-            //         [ 'nameSince', 'matchNameSince' ],
-            //         [ 'legalSince', 'matchLegalSince' ],
-            //         [ 'maritalSince', 'matchMaritalSince' ],
-            //         [ 'phoneSince', 'matchPhoneSince' ],
-            //         [ 'emailSince', 'matchEmailSince' ],
-            //         [ 'addrSince', 'matchAddrSince' ],
-            //         [ 'dlId', 'matchDlId' ],
-            //         [ 'mecUntil', 'matchMecUntil' ],
-            //         [ 'busId', 'matchBusId' ],
-            //     ],
-            //     join: [ 'appId', 'id' ],
-            // },
             {
                 table: query.driver.appDef.table,
                 fields: [ 'prevCountry', 'expDate' ],
@@ -2295,16 +2221,6 @@ class Application {
         })
 
         return data
-    }
-
-
-    //! NEEDED VERY MUCH
-    static calibrate = async (session, target) => {
-        //* Get all application matchers based on target
-        //* Get all company addresses, mail, phones, faxes, emails (by target only)
-        //* Run comparisons and get most appropriated since values
-        //* Selectively update matchers
-        //* If offline content is saved, delete it and leave online option only
     }
 
 
@@ -2846,10 +2762,6 @@ class Employment {
                     join: [ 'id', 'driverId', 1 ],
                 },
                 {
-                    table: query.driver_application.matcher.table,
-                    join: [ 'appId', 'appId' ],
-                },
-                {
                     db: db.person,
                     table: query.person.main.table,
                     fields: [ 'dob', 'gender', selectAES('ssn') ],
@@ -2865,19 +2777,19 @@ class Employment {
                         [ 'lastName', 'driverLastName' ],
                         [ 'suffix', 'driverSuffix' ],
                     ],
-                    join: [
-                        'personId', 'id', query.person.main.table,
-                        [ 'since', 'nameSince', query.driver_application.matcher.table ],
-                    ],
+                    join: [ 'personId', 'id', {
+                        table: query.person.main.table,
+                        asOfMax: [ 'since', [ 'finishedAt', 'createdAt' ], 2 ],
+                    } ],
                 },
                 {
                     db: db.person,
                     table: query.person.phones.table,
                     fields: [ [ 'phone', 'driverPhone' ] ],
-                    join: [
-                        'personId', 'id', query.person.main.table,
-                        [ 'since', 'phoneSince', query.driver_application.matcher.table ],
-                    ],
+                    join: [ 'personId', 'id', {
+                        table: query.person.main.table,
+                        asOfMax: [ 'since', [ 'finishedAt', 'createdAt' ], 2 ],
+                    } ],
                 },
                 {
                     db: db.person,
@@ -2889,10 +2801,10 @@ class Employment {
                         [ 'state', 'driverState' ],
                         [ 'zip', 'driverZip' ],
                     ],
-                    join: [
-                        'personId', 'id', query.person.main.table,
-                        [ 'since', 'addrSince', query.driver_application.matcher.table ],
-                    ],
+                    join: [ 'personId', 'id', {
+                        table: query.person.main.table,
+                        asOfMax: [ 'since', [ 'finishedAt', 'createdAt' ], 2 ],
+                    } ],
                 },
                 {
                     table: query.carrier.main.table,
@@ -2909,37 +2821,37 @@ class Employment {
                     db: db.business,
                     table: query.company.names.table,
                     fields: [ [ 'busName', 'coBusName' ], [ 'coType', 'coCoType' ], [ 'alias', 'coAlias' ] ],
-                    join: [
-                        'companyId', 'id', query.company.main.table,
-                        [ 'since', 'coNameSince', query.driver_application.matcher.table ],
-                    ],
+                    join: [ 'companyId', 'id', {
+                        table: query.company.main.table,
+                        asOfMax: [ 'since', [ 'finishedAt', 'createdAt' ], 2 ],
+                    } ],
                 },
                 {
                     db: db.business,
                     table: query.company.phones.table,
                     fields: [ [ 'phone', 'coPhone' ] ],
-                    join: [
-                        'companyId', 'id', query.company.main.table,
-                        [ 'since', 'coPhoneSince', query.driver_application.matcher.table ],
-                    ],
+                    join: [ 'companyId', 'id', {
+                        table: query.company.main.table,
+                        asOfMax: [ 'since', [ 'finishedAt', 'createdAt' ], 2 ],
+                    } ],
                 },
                 {
                     db: db.business,
                     table: query.company.faxes.table,
                     fields: [ [ 'fax', 'coFax' ] ],
-                    join: [
-                        'companyId', 'id', query.company.main.table,
-                        [ 'since', 'coFaxSince', query.driver_application.matcher.table ],
-                    ],
+                    join: [ 'companyId', 'id', {
+                        table: query.company.main.table,
+                        asOfMax: [ 'since', [ 'finishedAt', 'createdAt' ], 2 ],
+                    } ],
                 },
                 {
                     db: db.business,
                     table: query.company.emails.table,
                     fields: [ [ 'email', 'coEmail' ] ],
-                    join: [
-                        'companyId', 'id', query.company.main.table,
-                        [ 'since', 'coEmailSince', query.driver_application.matcher.table ],
-                    ],
+                    join: [ 'companyId', 'id', {
+                        table: query.company.main.table,
+                        asOfMax: [ 'since', [ 'finishedAt', 'createdAt' ], 2 ],
+                    } ],
                 },
                 {
                     db: db.business,
@@ -2951,10 +2863,10 @@ class Employment {
                         [ 'state', 'coState' ],
                         [ 'zip', 'coZip' ],
                     ],
-                    join: [
-                        'companyId', 'id', query.company.main.table,
-                        [ 'since', 'coAddrSince', query.driver_application.matcher.table ],
-                    ],
+                    join: [ 'companyId', 'id', {
+                        table: query.company.main.table,
+                        asOfMax: [ 'since', [ 'finishedAt', 'createdAt' ], 2 ],
+                    } ],
                 },
                 {
                     db: db.online,

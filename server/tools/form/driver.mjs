@@ -354,8 +354,8 @@ class ApplicationForm {
     static addrCurrentSince = createForm({
         selector: appSelector,
         target: 'addrSince',
-        name: 'address[currentSince]',
         type: 'hidden',
+        name: 'address[currentSince]',
     })
 
     static address1 = createAddressForm({

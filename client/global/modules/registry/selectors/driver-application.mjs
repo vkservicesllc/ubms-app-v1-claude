@@ -87,6 +87,7 @@ const selector = {
             leadId: 'lead-id',
             deleteId: 'delete-id',
             appliedOn: 'applied-on',
+            statusSince: 'legal-status-since',
             addrSince: 'address-since',
             addrEnough: 'address-enough',
             prevAddrSince: 'prev-address-since',
