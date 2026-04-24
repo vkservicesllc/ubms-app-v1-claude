@@ -924,6 +924,7 @@ class Application {
                                     if (!dlId) await person.update('identifications', body.dl, { id: this.dlId })
                                 }
 
+                                body.main.dlId = dlId
                                 await this.update(body.main)
 
                                 cache.dlId = dlId

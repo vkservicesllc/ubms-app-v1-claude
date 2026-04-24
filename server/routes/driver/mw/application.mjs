@@ -475,6 +475,7 @@ export const applicationProgress = async (req, res, next) => {
         if (step >= 2) { /* MEDICAL CARD */
             hbs.button.one = buttonProps.save
             hbs.accordion.one = accordionProps.finished
+console.log(application.dl)
             hbs.medCard = application.dl.commercial === false
             hbs.medCardDisplay = ''
             hbs.noMecDisplay = ' style="display: none;"'

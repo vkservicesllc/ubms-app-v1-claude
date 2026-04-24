@@ -51,13 +51,18 @@ export default {
                 privileges: '*',
             },
             'ssc': {
-                name: [ 'SSC', 'Social Security Card' ],
+                name: 'Social Security Card',
                 format: '.pdf, .jpeg, .png',
                 privileges: '*',
             },
-            'cdl': {
-                name: [ 'CDL', 'Driver License' ],
+            'dl': {
+                name: "Driver's License",
                 format: '.pdf, .jpeg, .png',
+                privileges: '*',
+            },
+            'med': {
+                name: 'Medical Certificate',
+                format: '.pdf',
                 privileges: '*',
             },
             'mvr': {
@@ -70,21 +75,11 @@ export default {
                 format: '.pdf',
                 privileges: '*',
             },
-            'rec': {
-                name: 'Driving Record',
-                format: '.pdf',
-                privileges: '*',
-            },
-            'tst': {
-                name: 'Road Test',
-                format: '.pdf',
-                privileges: '*',
-            },
-            'med': {
-                name: 'Medical/Physical Record',
-                format: '.pdf',
-                privileges: '*',
-            },
+            // 'tst': {
+            //     name: 'Road Test',
+            //     format: '.pdf',
+            //     privileges: '*',
+            // },
             'drg': {
                 name: 'Drug Test',
                 format: '.pdf',
