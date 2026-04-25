@@ -45,8 +45,8 @@ export default {
                 format: '.pdf (automatic)',
                 privileges: [ 0 ],
             },
-            'leg': {
-                name: [ 'US Legal ID', 'US Passport / Green Card' ],
+            'dl': {
+                name: "Driver's License",
                 format: '.pdf, .jpeg, .png',
                 privileges: '*',
             },
@@ -55,8 +55,8 @@ export default {
                 format: '.pdf, .jpeg, .png',
                 privileges: '*',
             },
-            'dl': {
-                name: "Driver's License",
+            'leg': {
+                name: [ 'US Legal ID', 'US Passport / Green Card' ],
                 format: '.pdf, .jpeg, .png',
                 privileges: '*',
             },

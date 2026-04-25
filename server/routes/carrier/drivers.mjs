@@ -14,7 +14,8 @@ import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Company from '../../tools/core/company.mjs'
 import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
-import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
+import { privileges, inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
+import carrierPrivs from '../../tools/core/user/permissions.carrier.mjs'
 import { respond404 } from '../../tools/utils/response.mjs'
 import { calculateYearAge } from '../../../client/global/modules/tools/utils/date.mjs'
 import { navBuilder } from './tools.mjs'
@@ -453,9 +454,29 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         /* FILES */
         {
             hbs.fileTab = inPGroup('f:drv', permissions, DS)
-            hbs.filePerms = {
-                application: withPrivileges('f:drv/apl', 'download', permissions, DS),
+            hbs.filePerms = {}
+
+            for (const prop in carrierPriv['f:drv'].groups) {
+                hbs.filePerms[prop] = {}
+                const privs = carrierPriv['f:drv'].groups[prop].privileges
+
+                if (privs === '*')
+                    privileges.file.forEach(priv => hbs.filePerms[prop][priv] = withPrivileges(`f:drv/${prop}`, priv, permissions, DS))
+                else privs.forEach(idx => {
+                    const priv = privileges[idx]
+                    hbs.filePerms[prop][priv] = withPrivileges(`f:drv/${prop}`, priv, permissions, DS)
+                })
             }
+            console.log(hbs.filePerms)
+            // hbs.filePerms = {
+            //     application: {
+            //         download: withPrivileges('f:drv/apl', 'download', permissions, DS),
+            //     },
+            //     legal: {
+            //         download: withPrivileges('f:drv/leg', 'download', permissions, DS),
+            //         upload: withPrivileges('f:drv/leg', 'upload', permissions, DS),
+            //     },
+            // }
         }
 
         /* PROFILE */
