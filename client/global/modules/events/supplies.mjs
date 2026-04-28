@@ -51,8 +51,8 @@ export const word = str => {
 }
 
 
-export const strip = str => {
+export const strip = (str, useSlim) => {
     if (!str) return ''
-
-    return slim(str).trim().replace(/^[\p{P}\p{S}]+|[\p{P}\p{S}]+$/gu, '')
+    if (useSlim) str = slim(str)
+    return str.trim().replace(/^[\p{P}\p{S}]+|[\p{P}\p{S}]+$/gu, '')
 }

@@ -1,13 +1,13 @@
 /* jQuery required; jQuery Caret, jQuery Masked Input & jQuery UI optional */
 import { capitalizeEach, capitalizeFirst } from '../tools/utils/string.mjs'
-import { slim, strip as _strip, word as _word, english } from './supplies.mjs'
+import { slim as _slim, strip as _strip, word as _word, english } from './supplies.mjs'
 
 
 export const inputEvent = (selector, options = {}) => {
     if (!selector) return
 
     const $input = $(selector)
-    const { onFocus, onKeydown, onKeyup, onBlur, mask, onCompleted, strip, word, value } = options
+    const { onFocus, onKeydown, onKeyup, onBlur, mask, onCompleted, slim = true, strip, word, value } = options
     let { placeholder, caret, lower, upper, datepicker, capitalize } = options
     if (!['each', 'first'].includes(capitalize)) capitalize = false
 
@@ -31,7 +31,8 @@ export const inputEvent = (selector, options = {}) => {
             $input
                 .off('keydown')
                 .on('keydown', function() { //? not sure about this method...
-                    const value = slim(english($(this).val()))
+                    let value = english($(this).val())
+                    if (slim) value = _slim(value)
 
                     onInput(value, $(this))
                 })
@@ -86,7 +87,8 @@ export const inputEvent = (selector, options = {}) => {
         .off('input')
         .on('input', function() {
             const { onInput } = options
-            let value = slim(english($(this).val()))
+            let value = english($(this).val())
+            if (slim) value = _slim(value)
             if (lower) value = value.toLowerCase()
             if (upper) value = value.toUpperCase()
             if (capitalize === 'each') value = capitalizeEach(value)
@@ -100,7 +102,7 @@ export const inputEvent = (selector, options = {}) => {
             const { onChange } = options
             let value = $(this).val()
             if (word) value = _word(value)
-            if (strip) value = _strip(value)
+            if (strip) value = _strip(value, slim)
 
             $(this).val(value)
             if (onChange) onChange(value, $(this))

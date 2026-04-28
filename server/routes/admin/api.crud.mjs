@@ -305,8 +305,6 @@ router.post('/companies/:_id/:target', User.mw.verify, User.mw.superAdminOnly, d
         const resource = await Company.fetch(res.session, { _id }, { hideRawId })
         const { route: newRoute } = resource
 
-        await DriverApplication.calibrate(res.session, target)
-
         res.json({ added, data, props: { oldRoute, newRoute } })
     } catch (err) {
         sendError.server(req, res, err)
@@ -327,8 +325,6 @@ router.put('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminO
         const data = await company.fetch(target)
         const resource = await Company.fetch(res.session, { _id }, { hideRawId })
         const { route: newRoute } = resource
-
-        await DriverApplication.calibrate(res.session, target)
 
         res.json({ updated, data, props: { oldRoute, newRoute } })
     } catch (err) {

@@ -56,9 +56,10 @@ const $id = {
 const setTip = new Tip($tip, tipDefs, message)
 
 inputEvent(nameId, {
+    slim: false,
     strip: true,
     word: true,
-    capitalize: 'each',
+    capitalize: 'first',
     onInput() {
         setTip.default('name')
         $button.upsert.prop('disabled', false)
