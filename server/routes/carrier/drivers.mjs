@@ -953,6 +953,88 @@ router.get('/previous-employments', User.mw.verify, Team.mw.verify, async (req, 
 })
 
 
+// ==== HIRED DRIVERS ROUTES ==== //
+
+
+router.get('/hired', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!inPEnvironment('d:drv/drv', permissions, DS))
+            return res.redirect(res.session.defUrl)
+
+        const key = 'drivers.hired'
+        let { hbs } = res
+        hbs = await hbs.set(key, { titlePfx: 'Hired Contractors' })
+
+        const { active } = hbs.nav
+        hbs.nav.left.drivers = active
+
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 2))
+
+        res.render(key.replace('.', '/'), hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+// ==== DRIVER PAY AGREEMENTS ROUTES ==== //
+
+
+router.get('/pay-agreements', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!inPEnvironment('d:drv/drv', permissions, DS))
+            return res.redirect(res.session.defUrl)
+
+        const key = 'drivers.pay-agreements'
+        let { hbs } = res
+        hbs = await hbs.set(key, { titlePfx: 'Driver Pay Agreements' })
+
+        const { active } = hbs.nav
+        hbs.nav.left.drivers = active
+
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 3))
+
+        res.render(key.replace('.', '/'), hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+// ==== LEAVING DRIVERS ROUTES ==== //
+
+
+router.get('/leaving', User.mw.verify, Team.mw.verify, async (req, res) => {
+    try {
+        const { user, team } = res.session
+        const { DS } = user
+        const permissions = await user.permissions(res.session)
+        if (!inPEnvironment('d:drv/drv', permissions, DS))
+            return res.redirect(res.session.defUrl)
+
+        const key = 'drivers.leaving'
+        let { hbs } = res
+        hbs = await hbs.set(key, { titlePfx: 'Leaving Contractors' })
+
+        const { active } = hbs.nav
+        hbs.nav.left.drivers = active
+
+        hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 4))
+
+        res.render(key.replace('.', '/'), hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+
 
 // ==== EXPORT ==== //
 
