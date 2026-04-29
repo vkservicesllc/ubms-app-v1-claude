@@ -126,6 +126,7 @@ SELECT 'Creating table `app_carrier`.`driver_medcards`...';
 CREATE TABLE driver_medcards (
 
     -- Identification
+    id         MEDIUMINT UNSIGNED  AUTO_INCREMENT PRIMARY KEY,
     driverId   MEDIUMINT UNSIGNED  NOT NULL,
 
     expiresOn  DATE                NOT NULL,
@@ -139,8 +140,7 @@ CREATE TABLE driver_medcards (
     updateLog  JSON                DEFAULT NULL,
 
     FOREIGN KEY (driverId) REFERENCES drivers(id) ON DELETE CASCADE,
-    FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
-    PRIMARY KEY (driverId, expiresOn)
+    FOREIGN KEY (createdBy) REFERENCES app_online.users(id)
 
 );
 
@@ -289,6 +289,7 @@ CREATE TABLE applications (
     carrierId        SMALLINT UNSIGNED                   DEFAULT NULL,
     refSrcId         SMALLINT UNSIGNED                   DEFAULT NULL,
     dlId             MEDIUMINT UNSIGNED                  DEFAULT NULL,
+    mecId            MEDIUMINT UNSIGNED                  DEFAULT NULL,
     busId            MEDIUMINT UNSIGNED                  DEFAULT NULL,
 
     -- Properties
@@ -360,6 +361,7 @@ CREATE TABLE applications (
     FOREIGN KEY (carrierId) REFERENCES carriers(id),
     FOREIGN KEY (refSrcId) REFERENCES app_business.refsources(id),
     FOREIGN KEY (dlId) REFERENCES app_person.identifications(id),
+    FOREIGN KEY (mecId) REFERENCES driver_medcards(id),
     FOREIGN KEY (busId) REFERENCES driver_businesses(id),
     FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
     FOREIGN KEY (reviewedBy) REFERENCES app_online.users(id),

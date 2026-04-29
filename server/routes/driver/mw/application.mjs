@@ -473,6 +473,7 @@ export const applicationProgress = async (req, res, next) => {
         }
 
         if (step >= 2) { /* MEDICAL CARD */
+console.log(application.mec)
             hbs.button.one = buttonProps.save
             hbs.accordion.one = accordionProps.finished
             hbs.medCard = application.dl.commercial === false
