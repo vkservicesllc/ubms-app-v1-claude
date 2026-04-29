@@ -105,6 +105,7 @@ CREATE TABLE driver_appdefs (
     -- Identification
     driverId     MEDIUMINT UNSIGNED  NOT NULL,
 
+    appCount     TINYINT UNSIGNED    DEFAULT 1,
     complete     BOOLEAN             DEFAULT FALSE,
     prevCountry  VARCHAR(2)          DEFAULT NULL,
     expDate      DATE                DEFAULT NULL,
@@ -293,6 +294,7 @@ CREATE TABLE applications (
     busId            MEDIUMINT UNSIGNED                  DEFAULT NULL,
 
     -- Properties
+    count            TINYINT UNSIGNED                    DEFAULT 1,
     cdlRole          BOOLEAN                             NOT NULL,
     position         ENUM('CD', 'OO', 'OD', 'LP')        DEFAULT NULL,  -- 'Company Driver', 'Owner Operator', 'Driver for Owner', 'Lease Purachser'
     `condition`      ENUM('p', 'c', 'a', 'r', 'b', 'h')  NOT NULL DEFAULT 'p',  -- 'pending', 'complete', 'approved', 'rejected', 'blacklisted', 'hired'
