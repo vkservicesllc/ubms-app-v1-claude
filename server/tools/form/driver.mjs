@@ -601,13 +601,6 @@ class ApplicationForm {
         },
     })
 
-    static mecCurrentExp = createForm({
-        selector: appSelector,
-        target: 'mecExp',
-        type: 'hidden',
-        name: 'currentUntil',
-    })
-
     static mecExp = createMecExpForm({ selector: appSelector, disabled })
     static mecIss = createMecIssForm({ selector: appSelector })
     static mecNumber = createMecNumberForm({ selector: appSelector })

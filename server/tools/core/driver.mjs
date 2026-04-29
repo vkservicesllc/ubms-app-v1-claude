@@ -282,6 +282,9 @@ class Application {
             this.userId = data.userId
             this.carrierId = data.carrierId
             this.refSrcId = data.refSrcId
+            this.dlId = data.dlId
+            this.mecId = data.mecId
+            this.busId = data.busId
         }
         this.formId = data.formId
 
@@ -942,8 +945,7 @@ class Application {
 
                         case 'medical-card':
                             {
-                                const { currentUntil, expiresOn, issuedOn, nrcme, mecAbsent } = body
-                                delete body.currentUntil
+                                const { expiresOn, issuedOn, nrcme, mecAbsent } = body
                                 delete body.expiresOn
                                 delete body.issuedOn
                                 delete body.nrcme
@@ -962,11 +964,12 @@ class Application {
                                     cache.step = 3
                                 }
 
-                                const match = { expiresOn: currentUntil }
+                                const match = { id: this.mecId }
 
                                 if (expiresOn) {
                                     if (this.medCard) await driver.update('mecs', body.mec, match)
-                                    else await driver.add('mecs', body.mec)
+                                    else await driver.add('mecs', body.mec) //! GET INSERT ID and add to main body
+                                    //! think about removing medCard from database
                                 } else await driver.delete('mecs', match)
 
                                 await this.update(body.main)
@@ -1712,6 +1715,9 @@ class Application {
                     'userId',
                     'carrierId',
                     'refSrcId',
+                    'dlId',
+                    'mecId',
+                    'busId',
                     Application.hashId(),
                     Driver.hashId('driverId'),
                     Team.hashId('teamId'),
@@ -1884,12 +1890,13 @@ class Application {
                     [ 'issuedOn', 'mecIssuedOn' ],
                     'nrcme',
                 ],
+                join: [ 'id', 'mecId' ],
                 // join: [ 'driverId', 'driverId', 0, [ 'expiresOn', 'mecUntil', 3 ] ],
-                join: [
-                    'driverId', 'driverId', {
-                        asOfMax: [ 'expiresOn', [ 'finishedAt', 'createdAt' ] ],
-                    },
-                ],
+                // join: [
+                //     'driverId', 'driverId', {
+                //         asOfMax: [ 'expiresOn', [ 'finishedAt', 'createdAt' ] ],
+                //     },
+                // ],
             },
             {
                 table: query.driver_application.experience.table,
