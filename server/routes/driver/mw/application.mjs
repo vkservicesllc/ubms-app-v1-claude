@@ -447,10 +447,10 @@ export const applicationProgress = async (req, res, next) => {
                 options.dlCommercial.radio.no.input.disabled = true
                 options.dlCommercial.radio.yes.input.checked = true
             } else {
-                if (application.medCard === false) {
+                if (!application.mecId) {
                     options.dlCommercial.radio.yes.input.disabled = true
                     options.dlCommercial.radio.no.input.disabled = true
-                    options.dlCommercial.radio[application.medCard ? 'yes' : 'no'].input.checked = true
+                    options.dlCommercial.radio[application.mecId ? 'yes' : 'no'].input.checked = true
                 } else if (application?.experience?.cmv || application?.experience?.cdlSchool) {
                     options.dlCommercial.radio.yes.input.disabled = true
                     options.dlCommercial.radio.no.input.disabled = true
@@ -497,7 +497,7 @@ export const applicationProgress = async (req, res, next) => {
             options.medList.text.label.content = 'List medications <small>(names only)</small>'
 
             const fields = Object.keys(values).filter(key => !['medList'].includes(key))
-            if (hbs.medCard && application.medCard === false) {
+            if (hbs.medCard && !application.mecId) {
                 hbs.medCardDisplay = ' style="display: none;"'
 
                 fields.forEach(prop => {
@@ -1061,14 +1061,13 @@ export const applicationSummary = async (req, res) => {
         if (!application.dl.deniedExpl) hbs.application.dl.deniedExpl = 'Never'
         if (!application.dl.revokedExpl) hbs.application.dl.revokedExpl = 'Never'
 
-        if (application.medCard) {
+        if (application.mecId) {
             if (application.mec.expiresOn)
                 hbs.application.mec.expiresOn = moment(application.mec.expiresOn).format('ll')
             hbs.application.mec.issuedOn = application.mec.issuedOn ? moment(application.mec.issuedOn).format('ll') : na('N/A')
             if (!application.mec.nrcme) hbs.application.mec.nrcme = na('N/A')
         }
         if (!application.medList) hbs.application.medList = na()
-        // hbs.application.medCard = application.medCard ? 'Yes' : 'No'
 
         hbs.application.dui = !application.dui
             ? 'Never'

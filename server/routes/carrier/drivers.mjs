@@ -456,18 +456,18 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             hbs.fileTab = inPGroup('f:drv', permissions, DS)
             hbs.filePerms = {}
 
-            for (const prop in carrierPriv['f:drv'].groups) {
+            for (const prop in carrierPrivs['f:drv'].groups) {
                 hbs.filePerms[prop] = {}
-                const privs = carrierPriv['f:drv'].groups[prop].privileges
+                const privs = carrierPrivs['f:drv'].groups[prop].privileges
 
                 if (privs === '*')
                     privileges.file.forEach(priv => hbs.filePerms[prop][priv] = withPrivileges(`f:drv/${prop}`, priv, permissions, DS))
                 else privs.forEach(idx => {
-                    const priv = privileges[idx]
+                    const priv = privileges.file[idx]
                     hbs.filePerms[prop][priv] = withPrivileges(`f:drv/${prop}`, priv, permissions, DS)
                 })
             }
-            console.log(hbs.filePerms)
+            //! console.log(hbs.filePerms)
             // hbs.filePerms = {
             //     application: {
             //         download: withPrivileges('f:drv/apl', 'download', permissions, DS),

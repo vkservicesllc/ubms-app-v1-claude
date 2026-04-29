@@ -141,7 +141,7 @@ $.ajax(`/api/resource/application/${formId}/accidents`, {
 
 
 $.ajax(`/api/resource/application/${formId}/employers`, {
-    success(response) {console.log(response)
+    success(response) {
         const { data, error } = response
         if (error) return alert(error)
 
@@ -150,7 +150,7 @@ $.ajax(`/api/resource/application/${formId}/employers`, {
         if (length) {
             let html = ''
 
-            data.forEach((row, i) => {console.log(row)
+            data.forEach((row, i) => {
                 const address = new Address(row.address)
                 let label = 'Employer'
                 if (length > 1) label += ` ${i + 1}`
