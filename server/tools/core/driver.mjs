@@ -371,7 +371,7 @@ class Application {
             this.address.country = data.prevCountry
         }
 
-        if (data.dlNumber)
+        if (this.dlId)
             this.dl = {
                 number: data.dlNumber,
                 commercial: !!data.dlCommercial,
@@ -387,8 +387,7 @@ class Application {
                 revokedExpl: data.dlRevokedExpl,
             }
 
-        this.medCard = bool(data.medCard)
-        if (this.medCard && data.mecExpiresOn)
+        if (this.mecId)
             this.mec = {
                 nrcme: data.nrcme,
                 issuedOn: data.mecIssuedOn,
@@ -952,7 +951,7 @@ class Application {
                                 delete body.mecAbsent
 
                                 if (!body.underMeds) body.medList = null
-                                body.medCard = !mecAbsent
+                                if (mecAbsent) body.mecId = null
 
                                 body = {
                                     main: body,
@@ -964,18 +963,22 @@ class Application {
                                     cache.step = 3
                                 }
 
-                                const match = { id: this.mecId }
-
                                 if (expiresOn) {
-                                    if (this.medCard) await driver.update('mecs', body.mec, match)
-                                    else await driver.add('mecs', body.mec) //! GET INSERT ID and add to main body
-                                    //! think about removing medCard from database
-                                } else await driver.delete('mecs', match)
+                                    if (this.mecId) await driver.update('mecs', body.mec, { id: this.mecId })
+                                    else {
+                                        const { insertId } = await driver.add('mecs', body.mec)
+                                        if (!insertId) throw new Error('Failed to add medical card')
+
+                                        body.main.mecId = insertId
+                                    }
+                                } else {
+                                    await driver.delete('mecs', { id: this.mecId })
+                                    body.main.mecId = null
+                                }
 
                                 await this.update(body.main)
 
                                 cache.mecUntil = expiresOn || null
-                                cache.medCard = body.main.medCard
                                 cache.underMeds = body.main.underMeds
                                 cache.medList = body.main.medList || null
 
@@ -1621,6 +1624,7 @@ class Application {
                 }
 
                 if (cache.dlId) { //! NOT FULLY TESTED
+                    body.main.dlId = cache.dlId
                     body.main.dlDenied = cache.dlDenied
                     body.main.dlDeniedExpl = cache.dlDeniedExpl
                     body.main.dlRevoked = cache.dlRevoked
@@ -1630,8 +1634,8 @@ class Application {
                     if (expiresOn.isSameOrBefore(today)) step = 2
                 }
 
-                if (cache.medCard !== undefined) { //! NOT FULLY TESTED
-                    body.main.medCard = cache.medCard
+                if (cache.mecId) { //! NOT FULLY TESTED
+                    body.main.mecId = cache.mecId
                     body.main.underMeds = cache.underMeds
                     body.main.medList = cache.medList
 
@@ -1736,7 +1740,6 @@ class Application {
                     'dlDeniedExpl',
                     'dlRevoked',
                     'dlRevokedExpl',
-                    'medCard',
                     'underMeds',
                     'medList',
                     'dui',

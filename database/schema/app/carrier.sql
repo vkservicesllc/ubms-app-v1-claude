@@ -313,7 +313,6 @@ CREATE TABLE applications (
     dlRevokedExpl    VARCHAR(100)                        DEFAULT NULL,
 
     -- Fitness
-    medCard          BOOLEAN                             DEFAULT NULL,
     underMeds        BOOLEAN                             DEFAULT NULL,
     medList          VARCHAR(100)                        DEFAULT NULL,
 
