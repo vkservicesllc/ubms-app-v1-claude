@@ -287,6 +287,7 @@ class Application {
             this.busId = data.busId
         }
         this.formId = data.formId
+        this.count = data.count
 
         this.cdlRole = data.cdlRole
         this.position = data.position
@@ -1728,6 +1729,7 @@ class Application {
                     User.hashId('userId'),
                     Carrier.hashId('carrierId'),
                     hash('refSrcId'),
+                    'count',
                     'cdlRole',
                     'position',
                     'condition',

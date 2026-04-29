@@ -674,6 +674,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         hbs.checkList = checkList
         hbs.complete = complete
         hbs.unscoped = unscoped
+        hbs.appCount = application.count
 
         res.render(key.replaceAll('.', '/'), hbs)
     } catch (err) {
