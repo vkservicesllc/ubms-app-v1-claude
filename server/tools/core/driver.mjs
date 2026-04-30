@@ -1212,6 +1212,7 @@ class Application {
                                     await driver.delete('businesses', { id: busId }) //* No need to filter since it is not rehire
                                     busId = null
                                 }
+                                body.busId = busId
 
                                 //* Driver Application only (when type is defined)
                                 cache = await vehicleRecord(this, { mmt, type, make, model, year, length }, cache)

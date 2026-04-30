@@ -277,7 +277,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         }
         hbs.length = {}
         hbs.linkColor = {
-            // priorAddr: 'blue',
+            priorAddr: 'red',
             citations: 'blue',
             accidents: 'blue',
             prevEmployment: 'red',
@@ -549,6 +549,12 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             dropdown.country = ''
             for (const country in Geography.list.country) {
                 dropdown.country += `\n${t}<div class="item" data-value="${country}">${Geography.list.country[country]}</div>`
+            }
+            hbs.addrLen = (await application.fetch('addresses')).length
+            hbs.priorAddrCheck = 'close'
+            if (hbs.addrLen) {
+                hbs.linkColor.priorAddr = 'green'
+                hbs.priorAddrCheck = 'check'
             }
         }
 

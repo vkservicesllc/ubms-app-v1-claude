@@ -120,12 +120,12 @@
                 <div class="ui grid" style="width: 78rem;">
                     <div class="three wide column" style="margin-right: 0; padding-right: 0; height: 53.57rem !important;">
                         <div class="ui vertical tabular menu" id="section-menu">
-                            <a class="active item" data-tab="workflow">Workflow</a>
+                            <a class="item" data-tab="workflow">Workflow</a>
                             {{#if (eq fileTab true)}}
                             <a class="item" data-tab="files">Files</a>
                             {{/if}}
                             <a class="item" data-tab="profile">{{idx (idx steps 0) 0}}</a>
-                            <a class="item" data-tab="residence">{{idx (idx steps 0) 1}}</a>
+                            <a class="active item" data-tab="residence">{{idx (idx steps 0) 1}}</a>
                             <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
                             <a class="item" data-tab="position">{{idx (idx steps 0) 3}}</a>
                             <a class="item" data-tab="driver-license">{{idx steps 1}}</a>
@@ -144,7 +144,7 @@
                         <div class="ui right attached segment" id="sections" style="padding: 1.43rem;">
                             <input type="hidden" id="id" value="{{_id}}" />
 
-                            <div class="ui active tab" data-tab="workflow">
+                            <div class="ui tab" data-tab="workflow">
                                 <form class="ui loading form" id="assign-form" action="{{actionUrl.workflow}}" method="POST" autocomplete="off">
                                     {{!-- <h5 class="ui blue text first header">Checklist</h5> --}}
                                     {{!-- <div class="ui circular steps" style="outline: 0 dotted red; margin: .65rem .2rem 3.5rem !important;">
@@ -621,12 +621,13 @@
                                 </form>
                             </div>
 
-                            <div class="ui tab" data-tab="residence">
+                            <div class="ui active tab" data-tab="residence">
                                 <form class="ui loading form" id="residence-form" action="{{actionUrl.residence}}" method="POST" autocomplete="off">
                                     <h5 class="ui blue text first header">Current Address</h5>
                                     {{!-- <p><span class="ui red text">UNFINISHED... Work in progress...</span></p> --}}
                                     {{{form.addrEnough.hidden.input}}}
                                     {{{form.addrCurrentSince.hidden.input}}}
+                                    <input type="hidden" id="prior-addr-count" value="{{addrLen}}" />
                                     <div class="ui compact grid" style="margin-top: .35rem;">
                                         <div class="five wide field">
                                             {{{form.address1.text.label}}}
@@ -687,14 +688,18 @@
                                         <div class="one wide field"></div>
                                         <div class="five wide field" id="prior-addresses" style="display: none;">
                                             <label></label>
-                                            <a class="ui labeled basic icon button" href="{{linkUrl.priorAddr}}">
-                                                <i class="check icon"></i>
+                                            <a class="ui {{linkColor.priorAddr}} labeled basic icon button" href="{{linkUrl.priorAddr}}">
+                                                <i class="{{priorAddrCheck}} icon"></i>
                                                 <span>Prior Residence <i class="angle double right icon"></i></span>
                                             </a>
                                         </div>
                                     </div>
                                     <div class="ui divider"></div>
                                     <div class="actions">
+                                        <span class="ui red text" id="prior-addresses-warning" style="display: none;">
+                                            <i class="exclamation triangle icon"></i>
+                                            Prior Addresses will be deleted
+                                        </span>
                                         <div>
                                             <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
                                             <button type="submit" class="ui circular dark green button" disabled>Save</button>

@@ -21,6 +21,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const $priorAddr = $('#prior-addresses')
     const $enough = $(selector.id.hidden.addrEnough)
     const $currentSince = $(selector.id.hidden.addrSince)
+    const addrLen = +$('#prior-addr-count').val()
 
     $enough.val(+address.enough)
     $currentSince.val(address.since)
@@ -42,17 +43,25 @@ import application, { dropdownEvent } from './hub.mjs'
         .calendar({
             ...calSettings,
             maxDate: moment(application.finishedAt).toDate(),
-            onChange(since) {
+            onSelect(since) {
+                const $warning = $('#prior-addresses-warning')
                 const finishedOn = moment(application.finishedOn)
                 const limit = finishedOn.clone().subtract(3, 'years')
                 since = moment(since)
 
                 if (since.isBefore(limit)) {
                     $enough.val('1')
-                    //! disable and hide
+                    $dropdown.country[0].addClass('disabled').parent().hide().find('input:hidden').prop('disabled', true)
+                    $livedAbroad.prop('disabled', true).parent().parent().hide()
+                    $priorAddr.hide()
+                    if (addrLen) $warning.show()
                 } else {
                     $enough.val('0')
-                    //! enable and show
+                    $livedAbroad.prop('disabled', false).parent().parent().show()
+                    if ($livedAbroad.prop('checked'))
+                        $dropdown.country[0].removeClass('disabled').parent().show().find('input:hidden').prop('disabled', false)
+                    if (addrLen) $priorAddr.show()
+                    $warning.hide()
                 }
             },
         })
@@ -62,7 +71,9 @@ import application, { dropdownEvent } from './hub.mjs'
         const { livedAbroad } = address
 
         $livedAbroad.prop('checked', livedAbroad).parent().parent().show()
-        if (livedAbroad) $dropdown.country[0].removeClass('disabled').parent().show()
+        if (livedAbroad)
+            $dropdown.country[0].removeClass('disabled').parent().show()
+                .find('input:hidden').prop('disabled', false)
         else {
             //? need to figure out check mark and color
             //? warning for tab
@@ -73,9 +84,9 @@ import application, { dropdownEvent } from './hub.mjs'
     $livedAbroad.on('change', function() {
         if ($(this).prop('checked')) {
             $priorAddr.hide()
-            $dropdown.country[0].removeClass('disabled').parent().show()
+            $dropdown.country[0].removeClass('disabled').parent().show().find('input:hidden').prop('disabled', false)
         } else {
-            $dropdown.country[0].addClass('disabled').parent().hide()
+            $dropdown.country[0].addClass('disabled').parent().hide().find('input:hidden').prop('disabled', true)
             $priorAddr.show()
         }
     })
@@ -85,5 +96,12 @@ import application, { dropdownEvent } from './hub.mjs'
         $form.find('.unsaved-changes').show()
     })
 
-    //! warning if country is enabled and not selected
+    $form.submit(function (evt) {
+        evt.preventDefault()
+
+        if ($livedAbroad.prop('checked') && !$dropdown.country[0].dropdown('get value'))
+            return alert('Must select Country')
+
+        $form.unbind().submit()
+    })
 })()
