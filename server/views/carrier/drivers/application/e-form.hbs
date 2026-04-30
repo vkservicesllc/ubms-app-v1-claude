@@ -125,9 +125,9 @@
                             <a class="item" data-tab="files">Files</a>
                             {{/if}}
                             <a class="item" data-tab="profile">{{idx (idx steps 0) 0}}</a>
+                            <a class="item" data-tab="residence">{{idx (idx steps 0) 1}}</a>
                             <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
                             <a class="item" data-tab="position">{{idx (idx steps 0) 3}}</a>
-                            <a class="item" data-tab="residence">{{idx (idx steps 0) 1}}</a>
                             <a class="item" data-tab="driver-license">{{idx steps 1}}</a>
                             <a class="item" data-tab="medical-card">{{idx steps 2}}</a>
                             <a class="item" data-tab="legal-compliance">{{idx steps 3}}</a>
@@ -621,6 +621,88 @@
                                 </form>
                             </div>
 
+                            <div class="ui tab" data-tab="residence">
+                                <form class="ui loading form" id="residence-form" action="{{actionUrl.residence}}" method="POST" autocomplete="off">
+                                    <h5 class="ui blue text first header">Current Address</h5>
+                                    {{!-- <p><span class="ui red text">UNFINISHED... Work in progress...</span></p> --}}
+                                    {{{form.addrEnough.hidden.input}}}
+                                    {{{form.addrCurrentSince.hidden.input}}}
+                                    <div class="ui compact grid" style="margin-top: .35rem;">
+                                        <div class="five wide field">
+                                            {{{form.address1.text.label}}}
+                                            {{{form.address1.text.input}}}
+                                        </div>
+                                        <div class="three wide field">
+                                            {{{form.address2.text.label}}}
+                                            {{{form.address2.text.input}}}
+                                        </div>
+                                    </div>
+                                    <div class="ui compact grid" style="margin-top: .35rem;">
+                                        <div class="three wide field">
+                                            {{{form.addrZip.text.label}}}
+                                            {{{form.addrZip.text.input}}}
+                                        </div>
+                                        <div class="five wide field">
+                                            {{{form.addrCity.text.label}}}
+                                            {{{form.addrCity.text.input}}}
+                                        </div>
+                                        <div class="four wide field">
+                                            {{{form.addrState.select.label}}}
+                                            <div class="ui fluid selection required dropdown" id="addr-state-dropdown">
+                                                {{{form.addrState.hidden.input}}}
+                                                <i class="dropdown icon"></i>
+                                                <div class="default text"></div>
+                                                <div class="menu">{{{dropdown.addrState}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ui compact grid" style="margin-top: .35rem;">
+                                        <div class="four wide field">
+                                            {{{form.addrSince.text.label}}}
+                                            <div class="ui calendar" id="addr-since-calendar">
+                                                <div class="ui fluid input left icon">
+                                                    {{{form.addrSince.text.input}}}
+                                                    <i class="calendar icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="three wide field" style="display: none;">
+                                            <label></label>
+                                            <div class="ui checkbox">
+                                                {{{form.livedAbroad2.checkbox.input}}}
+                                                {{{form.livedAbroad2.checkbox.label}}}
+                                            </div>
+                                        </div>
+                                        <div class="five wide field" style="display: none;">
+                                            {{{form.country.select.label}}}
+                                            <div class="ui fluid selection disabled required dropdown" id="addr-country-dropdown">
+                                                {{{form.country.hidden.input}}}
+                                                <i class="dropdown icon"></i>
+                                                <div class="default text"></div>
+                                                <div class="menu">{{{dropdown.country}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="one wide field"></div>
+                                        <div class="five wide field" id="prior-addresses" style="display: none;">
+                                            <label></label>
+                                            <a class="ui labeled basic icon button" href="{{linkUrl.priorAddr}}">
+                                                <i class="check icon"></i>
+                                                <span>Prior Residence <i class="angle double right icon"></i></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ui divider"></div>
+                                    <div class="actions">
+                                        <div>
+                                            <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
+                                            <button type="submit" class="ui circular dark green button" disabled>Save</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
                             <div class="ui tab" data-tab="legal-status">
                                 <form class="ui loading form" id="status-form" action="{{actionUrl.status}}" method="POST" autocomplete="off">
                                     <h5 class="ui blue text first header">Legal Presence</h5>
@@ -741,86 +823,6 @@
                                             </div>
                                         </div>
                                         {{/if}}
-                                    </div>
-                                    <div class="ui divider"></div>
-                                    <div class="actions">
-                                        <div>
-                                            <span class="unsaved-changes" style="display: none;"><i class="red exclamation triangle icon"></i></span>
-                                            <button type="submit" class="ui circular dark green button" disabled>Save</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <div class="ui tab" data-tab="residence">
-                                <form class="ui loading form" id="residence-form" action="{{actionUrl.residence}}" method="POST" autocomplete="off">
-                                    <h5 class="ui blue text first header">Current Address</h5>
-                                    <p><span class="ui red text">UNFINISHED... Work in progress...</span></p>
-                                    <div class="ui compact grid" style="margin-top: .35rem;">
-                                        <div class="five wide field">
-                                            {{{form.address1.text.label}}}
-                                            {{{form.address1.text.input}}}
-                                        </div>
-                                        <div class="three wide field">
-                                            {{{form.address2.text.label}}}
-                                            {{{form.address2.text.input}}}
-                                        </div>
-                                    </div>
-                                    <div class="ui compact grid" style="margin-top: .35rem;">
-                                        <div class="three wide field">
-                                            {{{form.addrZip.text.label}}}
-                                            {{{form.addrZip.text.input}}}
-                                        </div>
-                                        <div class="five wide field">
-                                            {{{form.addrCity.text.label}}}
-                                            {{{form.addrCity.text.input}}}
-                                        </div>
-                                        <div class="four wide field">
-                                            {{{form.addrState.select.label}}}
-                                            <div class="ui fluid selection required dropdown" id="addr-state-dropdown">
-                                                {{{form.addrState.hidden.input}}}
-                                                <i class="dropdown icon"></i>
-                                                <div class="default text"></div>
-                                                <div class="menu">{{{dropdown.addrState}}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="ui compact grid" style="margin-top: .35rem;">
-                                        <div class="four wide field">
-                                            {{{form.addrSince.text.label}}}
-                                            <div class="ui calendar" id="addr-since-calendar">
-                                                <div class="ui fluid input left icon">
-                                                    {{{form.addrSince.text.input}}}
-                                                    <i class="calendar icon"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="three wide field" style="display: none;">
-                                            <label></label>
-                                            <div class="ui checkbox">
-                                                {{{form.livedAbroad2.checkbox.input}}}
-                                                {{{form.livedAbroad2.checkbox.label}}}
-                                            </div>
-                                        </div>
-                                        <div class="five wide field" style="display: none;">
-                                            {{{form.country.select.label}}}
-                                            <div class="ui fluid selection disabled required dropdown" id="addr-country-dropdown">
-                                                {{{form.country.hidden.input}}}
-                                                <i class="dropdown icon"></i>
-                                                <div class="default text"></div>
-                                                <div class="menu">{{{dropdown.country}}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="one wide field"></div>
-                                        <div class="five wide field" id="prior-addresses" style="display: none;">
-                                            <label></label>
-                                            <a class="ui labeled basic icon button" href="{{linkUrl.priorAddr}}">
-                                                <i class="check icon"></i>
-                                                <span>Prior Residence <i class="angle double right icon"></i></span>
-                                            </a>
-                                        </div>
                                     </div>
                                     <div class="ui divider"></div>
                                     <div class="actions">

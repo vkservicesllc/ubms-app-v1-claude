@@ -6,7 +6,7 @@ import application, { dropdownEvent } from './hub.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { address, finishedAt } = application
+    const { address } = application
     const TS = selector.id.text, CS = selector.id.checkbox
 
     const $form = $('#residence-form')
@@ -19,6 +19,11 @@ import application, { dropdownEvent } from './hub.mjs'
     }
     const $livedAbroad = $(CS.livedAbroad1)
     const $priorAddr = $('#prior-addresses')
+    const $enough = $(selector.id.hidden.addrEnough)
+    const $currentSince = $(selector.id.hidden.addrSince)
+
+    $enough.val(+address.enough)
+    $currentSince.val(address.since)
 
     addr1Event(TS.address1, { addr2Id: TS.address2, value: address.address1 })
     addr2Event(TS.address2, { value: address.address2 })
@@ -36,8 +41,20 @@ import application, { dropdownEvent } from './hub.mjs'
     $calendar.since
         .calendar({
             ...calSettings,
-            maxDate: moment(finishedAt).toDate(),
-            //! need an event listener to make decisions based on selected period
+            maxDate: moment(application.finishedAt).toDate(),
+            onChange(since) {
+                const finishedOn = moment(application.finishedOn)
+                const limit = finishedOn.clone().subtract(3, 'years')
+                since = moment(since)
+
+                if (since.isBefore(limit)) {
+                    $enough.val('1')
+                    //! disable and hide
+                } else {
+                    $enough.val('0')
+                    //! enable and show
+                }
+            },
         })
         .calendar('set date', new Date(moment(address.since).toDate()))
 

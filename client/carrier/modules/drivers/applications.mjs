@@ -144,7 +144,8 @@ const table = $('#driver-applications-table').DataTable({
                 if (!row.lastName) return
 
                 data = new Person(row).fullLastName()
-                data += ` <sup style="color: gray; font-size: .5em; border: 1px solid gainsboro; border-radius: .25rem; padding: 0 .2rem; margin-left: .12rem;">${row.count}</sup>`
+                if (row.count)
+                    data += ` <sup style="color: gray; font-size: .5em; border: 1px solid gainsboro; border-radius: .25rem; padding: 0 .2rem; margin-left: .12rem;">${row.count}</sup>`
 
                 return data
             },

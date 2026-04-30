@@ -372,7 +372,7 @@ class Application {
             this.address.country = data.prevCountry
         }
 
-        if (this.dlId)
+        if (this._dlId)
             this.dl = {
                 number: data.dlNumber,
                 commercial: !!data.dlCommercial,
