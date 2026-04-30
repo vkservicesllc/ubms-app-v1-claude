@@ -16,9 +16,11 @@ const table = $('#driver-applicants-table').DataTable({
             const today = moment()
 
             data.map(row => {
-                if (row.dlExpiresOn) {
-                    const dlExpiresOn = moment(row.dlExpiresOn)
+                if (row.identification.expiresOn) {
+                    const dlExpiresOn = moment(row.identification.expiresOn)
+                    row.dlExpiresOn = dlExpiresOn
                     row.dlStatus = 'Valid'
+                    row.dlState = row.identification.state
 
                     if (today.isSameOrAfter(dlExpiresOn)) row.dlStatus = 'Expired'
                     else {
@@ -78,6 +80,16 @@ const table = $('#driver-applicants-table').DataTable({
         },
 
         {
+            title: 'Age',
+            searchable: false,
+            orderable: false,
+            type: 'string',
+            data(row) {
+                return new Person(row).age
+            },
+        },
+
+        {
             data: 'phone',
             title: `Phone ${searchTag}`,
             orderable: false,
@@ -99,7 +111,7 @@ const table = $('#driver-applicants-table').DataTable({
             searchable: false,
             orderable: false,
             render(data, type, row) {
-                return new Address(row).html()
+                return new Address(row.address).html()
             },
         },
 

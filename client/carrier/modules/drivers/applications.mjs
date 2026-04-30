@@ -85,41 +85,24 @@ const table = $('#driver-applications-table').DataTable({
 
                 data += `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`
 
-                // if (row.dob !== row.originalDob || row.sex !== row.originalSex)
-                //     data += `<span title="Identity Error: False DOB or Gender"><i class="ui red exclamation triangle icon"></i></span>`
-
-                // if (row.marital === 'm') {
-                //     let { sex, benefRelation, benefOtherRel } = row
-
-                //     if (benefRelation) benefRelation = benefRelation.toLowerCase().trim()
-                //     if (benefOtherRel) benefOtherRel = benefOtherRel.toLowerCase().trim()
-
-                //     switch (true) {
-                //         case sex === 0 && (benefRelation === 'wife' || benefOtherRel === 'wife'):
-                //         case sex === 1 && (benefRelation === 'husband' || benefOtherRel === 'husband'):
-                //             data += `<span title="Logical Error: Incorrect Gender"><i class="ui red exclamation triangle icon"></i></span>`
-                //             break
-                //     }
-                // }
-
-                // if (
-                //     row.firstName !== row.originalFirstName ||
-                //     row.middleName !== row.originalMiddleName ||
-                //     row.lastName !== row.originalLastName ||
-                //     row.suffix !== row.originalSuffix
-                // )
-                //     data += `<span title="Identity Warning: Name Mismatch"><i class="ui orange id badge outline icon"></i></span>`
-
-                if (step > 2 && !row.medCard)
+                if (step > 2 && !row._mecId)
                     data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`
 
                 if (step > 3) {
                     if (row.criminal)
                         data += `<span title="Red Flag: Misdemeanor/Felony in the Past"><i class="ui red skull crossbones icon"></i></span>`
-                    if (row.dui)
-                        data += `<span title="Red Flag: DUI/DWI in the Past"><i class="ui red wine bottle icon"></i></span>`
+                    if (row.dui) {
+                        let flag = 'Red Flag', msg = 'withing the past 10 years', color = 'red'
+                        if (!row.duiInDecade) {
+                            flag = 'Warning'
+                            msg = 'more than 10 years ago'
+                            color = 'orange'
+                        }
+                        data += `<span title="${flag}: DUI/DWI ${msg}">`
+                        data += `<i class="ui ${color} wine bottle icon"></i></span>`
+                    }
                     if (row.dotDat)
-                        data += `<span title="Red Flag: Refused/Failed Drug/Alcohol Test in the Past"><i class="ui red prescription bottle icon"></i></span>`
+                        data += `<span title="Attention: Refused/Failed Drug/Alcohol Test in the Past"><i class="ui red prescription bottle icon"></i></span>`
                     if (row.citations)
                         data += `<span title="Warning: Had Citations"><i class="ui orange exclamation circle icon"></i></span>`
                 }
@@ -160,7 +143,10 @@ const table = $('#driver-applications-table').DataTable({
                 if (!data) row = row.lead
                 if (!row.lastName) return
 
-                return new Person(row).fullLastName()
+                data = new Person(row).fullLastName()
+                data += ` <sup style="color: gray; font-size: .5em; border: 1px solid gainsboro; border-radius: .25rem; padding: 0 .2rem; margin-left: .12rem;">${row.count}</sup>`
+
+                return data
             },
         },
 

@@ -12,6 +12,8 @@ import { utc2tz } from '../../../tools/utils/date.mjs'
 
 const sendError = require('../../../tools/utils/error')
 
+const hideRawId = true
+
 
 
 export const dtDriverList = async (req, res) => {
@@ -36,7 +38,7 @@ export const dtDriverList = async (req, res) => {
         const limit = [ start, length ]
         filter.search = search
 
-        const data = await Driver.fetch(res.session, filter, { limit })
+        const data = await Driver.fetch(res.session, filter, { limit, hideRawId })
         const recordsFiltered = data.length
         const recordsTotal = await Driver.count(res.session, filter)
 
@@ -124,7 +126,7 @@ export const dtApplicationList = async (req, res) => {
         const limit = [ start, length ]
         filter.search = search
 
-        const data = await Application.fetch(res.session, filter, { limit })
+        const data = await Application.fetch(res.session, filter, { limit, hideRawId })
         const recordsFiltered = data.length
         const recordsTotal = await Application.count(res.session, filter)
 

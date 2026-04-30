@@ -41,9 +41,6 @@ class Driver extends Individual {
             first: { _id, _personId },
             last: {
                 appDef: { complete: !!complete, prevCountry, expDate, cache },
-                comparator: {
-                    mec: data.mecUntil,
-                },
             },
         }
         if (!hideRawId) {
@@ -274,6 +271,9 @@ class Application {
         this._userId = data._userId
         this._carrierId = data._carrierId
         this._refSrcId = data._refSrcId
+        this._dlId = data._dlId
+        this._mecId = data._mecId
+        this._busId = data._busId
         if (!hideRawId) {
             this.id = data.id
             this.driverId = data.driverId
@@ -388,7 +388,7 @@ class Application {
                 revokedExpl: data.dlRevokedExpl,
             }
 
-        if (this.mecId)
+        if (this._mecId)
             this.mec = {
                 nrcme: data.nrcme,
                 issuedOn: data.mecIssuedOn,
@@ -1729,6 +1729,9 @@ class Application {
                     User.hashId('userId'),
                     Carrier.hashId('carrierId'),
                     hash('refSrcId'),
+                    hash('dlId'),
+                    hash('mecId'),
+                    hash('busId'),
                     'count',
                     'cdlRole',
                     'position',
