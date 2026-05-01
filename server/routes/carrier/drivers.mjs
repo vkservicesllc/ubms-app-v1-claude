@@ -255,9 +255,9 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         hbs.actionUrl = {
             workflow: `${recUrl}/workflow`,
             profile: `${recUrl}/profile`,
+            address: `${recUrl}/address`,
             status: `${recUrl}/legal-status`,
             position: `${recUrl}/position`,
-            residence: `${recUrl}/residence`,
             dl: `${recUrl}/driver-license`,
             mec: `${recUrl}/medical-card`,
             legal: `${recUrl}/legal-compliance`,
@@ -500,6 +500,21 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             }
         }
 
+        /* ADDRESS */
+        {
+            dropdown.addrState = ''
+            dropdown.country = ''
+            for (const country in Geography.list.country) {
+                dropdown.country += `\n${t}<div class="item" data-value="${country}">${Geography.list.country[country]}</div>`
+            }
+            hbs.addrLen = (await application.fetch('addresses')).length
+            hbs.priorAddrCheck = 'close'
+            if (hbs.addrLen) {
+                hbs.linkColor.priorAddr = 'green'
+                hbs.priorAddrCheck = 'check'
+            }
+        }
+
         /* LEGAL STATUS */
         {
             dropdown.status = ''
@@ -540,21 +555,6 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                     const option = lenData[len].replace('(', '<small><span class="ui text grey">(').replace(')', ')</span></small>')
                     dropdown.vehicleLength += `\n${t}\t<div class="item" data-value="${len}">${option}</div>`
                 }
-            }
-        }
-
-        /* RESIDENCE */
-        {
-            dropdown.addrState = ''
-            dropdown.country = ''
-            for (const country in Geography.list.country) {
-                dropdown.country += `\n${t}<div class="item" data-value="${country}">${Geography.list.country[country]}</div>`
-            }
-            hbs.addrLen = (await application.fetch('addresses')).length
-            hbs.priorAddrCheck = 'close'
-            if (hbs.addrLen) {
-                hbs.linkColor.priorAddr = 'green'
-                hbs.priorAddrCheck = 'check'
             }
         }
 
@@ -725,7 +725,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
         hbs.finishedAt = moment(application.finishedAt).format('lll')
 
         const backLinkQuery = {
-            'prior-residence': 'residence',
+            'prior-residence': 'address',
             citations: 'legal-compliance',
             accidents: 'safety',
             'prev-employers': 'prev-employment',

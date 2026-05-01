@@ -120,12 +120,12 @@
                 <div class="ui grid" style="width: 78rem;">
                     <div class="three wide column" style="margin-right: 0; padding-right: 0; height: 53.57rem !important;">
                         <div class="ui vertical tabular menu" id="section-menu">
-                            <a class="item" data-tab="workflow">Workflow</a>
+                            <a class="active item" data-tab="workflow">Workflow</a>
                             {{#if (eq fileTab true)}}
                             <a class="item" data-tab="files">Files</a>
                             {{/if}}
                             <a class="item" data-tab="profile">{{idx (idx steps 0) 0}}</a>
-                            <a class="active item" data-tab="residence">{{idx (idx steps 0) 1}}</a>
+                            <a class="item" data-tab="address">{{idx (idx steps 0) 1}}</a>
                             <a class="item" data-tab="legal-status">{{idx (idx steps 0) 2}}</a>
                             <a class="item" data-tab="position">{{idx (idx steps 0) 3}}</a>
                             <a class="item" data-tab="driver-license">{{idx steps 1}}</a>
@@ -144,7 +144,7 @@
                         <div class="ui right attached segment" id="sections" style="padding: 1.43rem;">
                             <input type="hidden" id="id" value="{{_id}}" />
 
-                            <div class="ui tab" data-tab="workflow">
+                            <div class="ui active tab" data-tab="workflow">
                                 <form class="ui loading form" id="assign-form" action="{{actionUrl.workflow}}" method="POST" autocomplete="off">
                                     {{!-- <h5 class="ui blue text first header">Checklist</h5> --}}
                                     {{!-- <div class="ui circular steps" style="outline: 0 dotted red; margin: .65rem .2rem 3.5rem !important;">
@@ -621,8 +621,8 @@
                                 </form>
                             </div>
 
-                            <div class="ui active tab" data-tab="residence">
-                                <form class="ui loading form" id="residence-form" action="{{actionUrl.residence}}" method="POST" autocomplete="off">
+                            <div class="ui tab" data-tab="address">
+                                <form class="ui loading form" id="address-form" action="{{actionUrl.address}}" method="POST" autocomplete="off">
                                     <h5 class="ui blue text first header">Current Address</h5>
                                     {{!-- <p><span class="ui red text">UNFINISHED... Work in progress...</span></p> --}}
                                     {{{form.addrEnough.hidden.input}}}
@@ -1825,7 +1825,7 @@
         {{#if (eq cdlRole 0)}}
         <script type="module" src="/modules/drivers/application/position.non-cdl-role.mjs"></script>
         {{/if}}
-        <script type="module" src="/modules/drivers/application/residence.mjs"></script>
+        <script type="module" src="/modules/drivers/application/address.mjs"></script>
         <script type="module" src="/modules/drivers/application/driver-license.mjs"></script>
         <script type="module" src="/modules/drivers/application/medical-card.mjs"></script>
         <script type="module" src="/modules/drivers/application/legal-compliance.mjs"></script>

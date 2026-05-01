@@ -9,7 +9,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const { address } = application
     const TS = selector.id.text, CS = selector.id.checkbox
 
-    const $form = $('#residence-form')
+    const $form = $('#address-form')
     const $dropdown = {
         state: [ $('#addr-state-dropdown'), address.state ],
         country: [ $('#addr-country-dropdown'), address.country ],
@@ -48,6 +48,7 @@ import application, { dropdownEvent } from './hub.mjs'
                 const finishedOn = moment(application.finishedOn)
                 const limit = finishedOn.clone().subtract(3, 'years')
                 since = moment(since)
+                $priorAddr.removeClass('disabled')
 
                 if (since.isBefore(limit)) {
                     $enough.val('1')
@@ -60,13 +61,14 @@ import application, { dropdownEvent } from './hub.mjs'
                     $livedAbroad.prop('disabled', false).parent().parent().show()
                     if ($livedAbroad.prop('checked'))
                         $dropdown.country[0].removeClass('disabled').parent().show().find('input:hidden').prop('disabled', false)
-                    if (addrLen) $priorAddr.show()
+                    if (!addrLen) $priorAddr.addClass('disabled')
+                    $priorAddr.show()
                     $warning.hide()
                 }
             },
         })
         .calendar('set date', new Date(moment(address.since).toDate()))
-
+console.log(address)
     if (!address.enough) {
         const { livedAbroad } = address
 
@@ -74,19 +76,21 @@ import application, { dropdownEvent } from './hub.mjs'
         if (livedAbroad)
             $dropdown.country[0].removeClass('disabled').parent().show()
                 .find('input:hidden').prop('disabled', false)
-        else {
-            //? need to figure out check mark and color
-            //? warning for tab
+        else
             $priorAddr.show()
-        }
+
+        if (!addrLen && !livedAbroad) $('.item[data-tab="address"]').append('<i class="ui dark red exclamation triangle icon"></i>')
     }
 
     $livedAbroad.on('change', function() {
+        $priorAddr.removeClass('disabled')
+
         if ($(this).prop('checked')) {
             $priorAddr.hide()
             $dropdown.country[0].removeClass('disabled').parent().show().find('input:hidden').prop('disabled', false)
         } else {
             $dropdown.country[0].addClass('disabled').parent().hide().find('input:hidden').prop('disabled', true)
+            if (!addrLen) $priorAddr.addClass('disabled')
             $priorAddr.show()
         }
     })

@@ -1260,6 +1260,20 @@ class Application {
                             break
 
 
+                        case 'address': //* Carrier UI only (no step)
+                            {
+                                const { address, addresses, prevCountry = null } = body
+                                const { since, currentSince, enough, livedAbroad = false, address1, address2, city, state, zip } = address
+                                const { personId } = this
+
+                                if (enough || (livedAbroad && prevCountry)) await person.delete('addresses', { since: { not: currentSince } })
+                                await person.update('addresses', { since, address1, address2, city, state, zip }, { since: currentSince })
+                                await this.update('addresses', { enough, livedAbroad }, { since: currentSince })
+                                await driver.update('appDef', { prevCountry })
+                            }
+                            break
+
+
                         case 'legal-status': //* Carrier UI only (no step)
                             {
                                 if (body.legalStatus < 2) body.legalExpiration = null

@@ -43,6 +43,7 @@ const dynamicValidator = {
                 validators = ApplicationForm.validate('position/vehicle')
                 break
             case 'residence':
+            case 'address':
                 validators = ApplicationForm.validate('residence')
                 break
             case 'driver-license':
