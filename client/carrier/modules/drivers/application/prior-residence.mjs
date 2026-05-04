@@ -19,10 +19,7 @@ import application, { dropdownEvent } from './hub.mjs'
     let addrMaxDate = $('#addr-max-date').val() || null
     if (addrMaxDate) addrMaxDate = moment(addrMaxDate).toDate()
 
-    const  resetEvents = () => {
-        $(`${TS.prevAddress1}, ${TS.prevAddress2}, ${TS.prevAddrZip}, ${TS.prevAddrCity}`).off('input').off('change')
-        $('.addr-state-dropdown').dropdown('destroy')
-        $('.addr-date-calendar').calendar('destroy')
+    const  setEvents = () => {
 
         addr1Event(TS.prevAddress1, {
             onChange(addr1, $addr1) {
@@ -54,10 +51,6 @@ import application, { dropdownEvent } from './hub.mjs'
         })
 
         $('.addr-state-dropdown').dropdown()
-        $('.addr-date-calendar').calendar({
-            ...calSettings,
-            //! need an event listener to make decisions based on selected period
-        })
     }
 
     $.ajax(`/api/resource/drivers/applications/${_id}/addresses`, {
@@ -72,7 +65,12 @@ import application, { dropdownEvent } from './hub.mjs'
                     $row.find(TS.prevAddress2).val(address2)
                     $row.find(TS.prevAddrZip).val(zip)
                     $row.find(TS.prevAddrCity).val(city)
-                    $row.find(TS.prevAddrSince).val(moment(since).format('ll'))
+                    $row.find(TS.prevAddrSince).parent().parent()
+                        .calendar({
+                            ...calSettings,
+                            onSelect() {},
+                        })
+                        .calendar('set date', moment(since).format('ll'))
                     $row.find('.addr-state-dropdown').find('input').val(state)
                     if (!enough) {
                         if (livedAbroad) $row.find('.lived-abroad').find('[type="checkbox"]').prop('checked', true)
@@ -83,7 +81,7 @@ import application, { dropdownEvent } from './hub.mjs'
 
             })
 
-            resetEvents()
+            setEvents()
             
             if (country) {
                 $('#addr-country-dropdown').find('input').val(country)
