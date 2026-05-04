@@ -22,6 +22,8 @@ import application, { dropdownEvent } from './hub.mjs'
     const $enough = $(selector.id.hidden.addrEnough)
     const $currentSince = $(selector.id.hidden.addrSince)
     const addrLen = +$('#prior-addr-count').val()
+    let addrMinDate = $('#addr-min-date').val() || null
+    if (addrMinDate) addrMinDate = moment(addrMinDate).toDate()
 
     $enough.val(+address.enough)
     $currentSince.val(address.since)
@@ -43,6 +45,7 @@ import application, { dropdownEvent } from './hub.mjs'
         .calendar({
             ...calSettings,
             maxDate: moment(application.finishedAt).toDate(),
+            minDate: addrMinDate,
             onSelect(since) {
                 const $warning = $('#prior-addresses-warning')
                 const finishedOn = moment(application.finishedOn)
@@ -68,7 +71,7 @@ import application, { dropdownEvent } from './hub.mjs'
             },
         })
         .calendar('set date', new Date(moment(address.since).toDate()))
-console.log(address)
+
     if (!address.enough) {
         const { livedAbroad } = address
 

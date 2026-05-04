@@ -16,6 +16,9 @@ import application, { dropdownEvent } from './hub.mjs'
     const $template = $('#form-template').find('tr').clone()
     $template.find('input').each(function() { $(this).removeAttr('id') })
 
+    let addrMaxDate = $('#addr-max-date').val() || null
+    if (addrMaxDate) addrMaxDate = moment(addrMaxDate).toDate()
+
     const  resetEvents = () => {
         $(`${TS.prevAddress1}, ${TS.prevAddress2}, ${TS.prevAddrZip}, ${TS.prevAddrCity}`).off('input').off('change')
         $('.addr-state-dropdown').dropdown('destroy')
@@ -57,13 +60,11 @@ import application, { dropdownEvent } from './hub.mjs'
         })
     }
 
-    $.ajax(`/api/drivers/application/${_id}/addresses`, {
-        method: 'POST',
+    $.ajax(`/api/resource/drivers/applications/${_id}/addresses`, {
         success(response) {
-            let { data } = response
-            data = sortArrayByObjectKey(data, 'since', false)
+            const { data } = response
 
-            data.forEach(record => {
+            data.forEach((record, i) => {
                     const { address1, address2, zip, city, state, since, enough, livedAbroad } = record
                     const $row = $template.clone()
 

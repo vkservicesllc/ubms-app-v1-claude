@@ -507,9 +507,14 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             for (const country in Geography.list.country) {
                 dropdown.country += `\n${t}<div class="item" data-value="${country}">${Geography.list.country[country]}</div>`
             }
-            hbs.addrLen = (await application.fetch('addresses')).length
+
+            const addresses = await application.fetch('addresses')
+            hbs.addrLen = addresses.length
+            hbs.addrMinDate = ''
+
             hbs.priorAddrCheck = 'close'
             if (hbs.addrLen) {
+                hbs.addrMinDate = addresses[0].since
                 hbs.linkColor.priorAddr = 'green'
                 hbs.priorAddrCheck = 'check'
             }
@@ -723,6 +728,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
         hbs.applicant += ` / ***-**-${application.ssn.slice(-4)})</small>`
         hbs.appliedAt = moment(application.appliedAt).format('lll')
         hbs.finishedAt = moment(application.finishedAt).format('lll')
+        hbs.appCount = application.count
 
         const backLinkQuery = {
             'prior-residence': 'address',

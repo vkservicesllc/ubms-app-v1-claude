@@ -11,6 +11,7 @@
                 <div class="content">
                 <h5 class="ui header"><span class="ui grey text">Applicant:</span></h5>
                     {{{applicant}}}
+                    <div class="ui basic label">{{appCount}}</div>
                 </div>
             </div>
             <div class="item">
@@ -77,6 +78,7 @@
         <p style="margin-top: 1.78rem;"><span class="ui red text">UNFINISHED... Work in progress...</span></p>
         <form class="ui form" style="width: 120rem; margin-top: 1.43rem;">
             <input type="hidden" id="id" value="{{_id}}" />
+            <input type="hidden" id="addr-max-date" value="{{addrMaxDate}}" />
             <style>td { overflow: visible !important; }</style>
             <table class="ui compact grey table" style="display: none;">
                 <thead style="font-size: 1rem;">
