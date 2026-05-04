@@ -75,7 +75,6 @@
     </style>
 
     <div style="margin-left: 1.43rem;">
-        <p style="margin-top: 1.78rem;"><span class="ui red text">UNFINISHED... Work in progress...</span></p>
         <form class="ui form" style="width: 120rem; margin-top: 1.43rem;">
             <input type="hidden" id="id" value="{{_id}}" />
             <input type="hidden" id="addr-max-date" value="{{addrMaxDate}}" />
@@ -137,16 +136,16 @@
                                 </div>
                             </div>
                         </td>
-                        <td>
-                            <div class="ui checkbox lived-abroad" style="width: 17.14rem; display: none;">
-                                {{{form._livedAbroad2.checkbox.input}}}
-                                {{{form._livedAbroad2.checkbox.label}}}
-                            </div>
-                        </td>
                     </tr>
                 </tbody>
             </table>
             <div class="footer" style="display: none;">
+                <div class="field" style="width: 10.5rem;">
+                    <div class="ui checkbox" id="lived-abroad">
+                        {{{form._livedAbroad2.checkbox.input}}}
+                        {{{form._livedAbroad2.checkbox.label}}}
+                    </div>
+                </div>
                 <div class="three wide field" style="display: none;">
                     {{{form.country.select.label}}}
                     <div class="ui fluid selection disabled required dropdown" id="addr-country-dropdown">

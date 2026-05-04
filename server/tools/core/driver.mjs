@@ -973,6 +973,7 @@ class Application {
                                         body.main.mecId = insertId
                                     }
                                 } else {
+                                    await this.update({ mecId: null })
                                     await driver.delete('mecs', { id: this.mecId })
                                     body.main.mecId = null
                                 }
@@ -2408,6 +2409,7 @@ class Application {
                 '20': '20 ft (Large)',
                 '24': '24 ft (Extra Large)',
                 '26': '26 ft (Heavy Duty)',
+                '28': '28 ft (Heavy Duty)',
             },
         },
 

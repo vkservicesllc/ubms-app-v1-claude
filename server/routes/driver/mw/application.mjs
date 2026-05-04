@@ -446,20 +446,21 @@ export const applicationProgress = async (req, res, next) => {
                 options.dlCommercial.radio.yes.input.disabled = true
                 options.dlCommercial.radio.no.input.disabled = true
                 options.dlCommercial.radio.yes.input.checked = true
-            } else {
-                if (!application.mecId) {
-                    options.dlCommercial.radio.yes.input.disabled = true
-                    options.dlCommercial.radio.no.input.disabled = true
-                    options.dlCommercial.radio[application.mecId ? 'yes' : 'no'].input.checked = true
-                } else if (application?.experience?.cmv || application?.experience?.cdlSchool) {
-                    options.dlCommercial.radio.yes.input.disabled = true
-                    options.dlCommercial.radio.no.input.disabled = true
-                    options.dlCommercial.radio.yes.input.checked = true
-                } else {
-                    options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === true
-                    options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === false
-                }
             }
+            // else {
+            //     if (application._mecId) {
+            //         options.dlCommercial.radio.yes.input.disabled = true
+            //         options.dlCommercial.radio.no.input.disabled = true
+            //         options.dlCommercial.radio[application._mecId ? 'yes' : 'no'].input.checked = true
+            //     } else if (application?.experience?.cmv || application?.experience?.cdlSchool) {
+            //         options.dlCommercial.radio.yes.input.disabled = true
+            //         options.dlCommercial.radio.no.input.disabled = true
+            //         options.dlCommercial.radio.yes.input.checked = true
+            //     } else {
+            //         options.dlCommercial.radio.yes.input.checked = application?.dl?.commercial === true
+            //         options.dlCommercial.radio.no.input.checked = application?.dl?.commercial === false
+            //     }
+            // }
 
             if (options.dlCommercial.radio.yes.input.checked) options.dlEndrs.text.input.disabled = false
             options.dlDenied.radio.yes.input.checked = application?.dl?.denied === true
@@ -497,7 +498,7 @@ export const applicationProgress = async (req, res, next) => {
             options.medList.text.label.content = 'List medications <small>(names only)</small>'
 
             const fields = Object.keys(values).filter(key => !['medList'].includes(key))
-            if (hbs.medCard && !application.mecId) {
+            if (hbs.medCard && step > 2 && !application._mecId) {
                 hbs.medCardDisplay = ' style="display: none;"'
 
                 fields.forEach(prop => {

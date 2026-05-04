@@ -13,6 +13,9 @@ import application, { dropdownEvent } from './hub.mjs'
     const { _id, finishedAt, address } = application
     const { country } = address
     const TS = selector.class.text
+
+    const $livedAbroad = $('#lived-abroad')
+    const $country = $('#addr-country-dropdown')
     const $template = $('#form-template').find('tr').clone()
     $template.find('input').each(function() { $(this).removeAttr('id') })
 
@@ -51,6 +54,18 @@ import application, { dropdownEvent } from './hub.mjs'
         })
 
         $('.addr-state-dropdown').dropdown()
+
+        $livedAbroad.find('[type="checkbox"]').click(function () {
+            if ($(this).prop('checked')) {
+                $country.find('input').prop('disabled', false)
+                $country.removeClass('disabled')
+                    .parent().show()
+            } else {
+                $country.find('input').prop('disabled', true)
+                $country.addClass('disabled')
+                    .parent().hide()
+            }
+        })
     }
 
     $.ajax(`/api/resource/drivers/applications/${_id}/addresses`, {
@@ -58,36 +73,37 @@ import application, { dropdownEvent } from './hub.mjs'
             const { data } = response
 
             data.forEach((record, i) => {
-                    const { address1, address2, zip, city, state, since, enough, livedAbroad } = record
-                    const $row = $template.clone()
+                const { address1, address2, zip, city, state, since, enough, livedAbroad } = record
+                const $row = $template.clone()
 
-                    $row.find(TS.prevAddress1).val(address1)
-                    $row.find(TS.prevAddress2).val(address2)
-                    $row.find(TS.prevAddrZip).val(zip)
-                    $row.find(TS.prevAddrCity).val(city)
-                    $row.find(TS.prevAddrSince).parent().parent()
-                        .calendar({
-                            ...calSettings,
-                            onSelect() {},
-                        })
-                        .calendar('set date', moment(since).format('ll'))
-                    $row.find('.addr-state-dropdown').find('input').val(state)
-                    if (!enough) {
-                        if (livedAbroad) $row.find('.lived-abroad').find('[type="checkbox"]').prop('checked', true)
-                        $row.find('.lived-abroad').show()
-                    }
+                $row.find(TS.prevAddress1).val(address1)
+                $row.find(TS.prevAddress2).val(address2)
+                $row.find(TS.prevAddrZip).val(zip)
+                $row.find(TS.prevAddrCity).val(city)
+                $row.find(TS.prevAddrSince).parent().parent()
+                    .calendar({
+                        ...calSettings,
+                        onSelect() {},
+                    })
+                    .calendar('set date', moment(since).format('ll'))
+                $row.find('.addr-state-dropdown').find('input').val(state)
+                if (!enough) {
+                    if (livedAbroad) $livedAbroad.find('[type="checkbox"]').prop('checked', true)
+                    if (i === data.length - 1) $livedAbroad.show()
+                }
 
-                    $('#address-form').append($row)
+                $('#address-form').append($row)
 
             })
 
             setEvents()
             
             if (country) {
-                $('#addr-country-dropdown').find('input').val(country)
-                $('#addr-country-dropdown').removeClass('disabled').parent().show()
+                $country.find('input').val(country)
+                $country.removeClass('disabled').parent().show()
+                $country.find('input').prop('disabled', false)
             }
-            $('#addr-country-dropdown').dropdown()
+            $country.dropdown()
 
             $('.table, .footer').fadeIn()
         },
