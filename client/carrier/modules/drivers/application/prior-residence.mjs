@@ -71,30 +71,33 @@ import application, { dropdownEvent } from './hub.mjs'
     $.ajax(`/api/resource/drivers/applications/${_id}/addresses`, {
         success(response) {
             const { data } = response
+            const len = data.length
+            const $addrForm = $('#address-form')
 
-            data.forEach((record, i) => {
-                const { address1, address2, zip, city, state, since, enough, livedAbroad } = record
-                const $row = $template.clone()
+            if (len)
+                data.forEach((record, i) => {
+                    const { address1, address2, zip, city, state, since, enough, livedAbroad } = record
+                    const $row = $template.clone()
 
-                $row.find(TS.prevAddress1).val(address1)
-                $row.find(TS.prevAddress2).val(address2)
-                $row.find(TS.prevAddrZip).val(zip)
-                $row.find(TS.prevAddrCity).val(city)
-                $row.find(TS.prevAddrSince).parent().parent()
-                    .calendar({
-                        ...calSettings,
-                        onSelect() {},
-                    })
-                    .calendar('set date', moment(since).format('ll'))
-                $row.find('.addr-state-dropdown').find('input').val(state)
-                if (!enough) {
-                    if (livedAbroad) $livedAbroad.find('[type="checkbox"]').prop('checked', true)
-                    if (i === data.length - 1) $livedAbroad.show()
-                }
+                    $row.find(TS.prevAddress1).val(address1)
+                    $row.find(TS.prevAddress2).val(address2)
+                    $row.find(TS.prevAddrZip).val(zip)
+                    $row.find(TS.prevAddrCity).val(city)
+                    $row.find(TS.prevAddrSince).parent().parent()
+                        .calendar({
+                            ...calSettings,
+                            onSelect() {},
+                        })
+                        .calendar('set date', moment(since).format('ll'))
+                    $row.find('.addr-state-dropdown').find('input').val(state)
+                    if (!enough) {
+                        if (livedAbroad) $livedAbroad.find('[type="checkbox"]').prop('checked', true)
+                        if (i === len - 1) $livedAbroad.show()
+                    }
 
-                $('#address-form').append($row)
-
-            })
+                    $addrForm.append($row)
+                })
+                else $addrForm.append($template.clone())
 
             setEvents()
             
