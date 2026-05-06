@@ -6,7 +6,7 @@ import application from './hub.mjs'
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { medCard, underMeds, medList, finishedAt } = application
+    const { _mecId, underMeds, medList, finishedAt } = application
     const { expiresOn, issuedOn, nrcme } = application.mec || {}
     const TS = selector.id.text, TC = selector.id.checkbox
 
@@ -44,7 +44,7 @@ import application from './hub.mjs'
         },
     })
 
-    if (!medCard) {
+    if (!_mecId) {
         $('.item[data-tab="medical-card"]').append('<i class="ui dark orange first aid icon"></i>')
         $fields.hide().find('input').prop('disabled', true)
         $noMec.prop('checked', true)

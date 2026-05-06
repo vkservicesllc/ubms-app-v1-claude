@@ -575,7 +575,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         /* MEDICAL CARD */
         {
-            if (!application.medCard) {
+            if (!application._mecId) {
                 checkList.application = checkMark.halfChecked
                 hbs.style.noMecRow = visibileRow
                 hbs.style.mecDetailsRow = hiddenRow
