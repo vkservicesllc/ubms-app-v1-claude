@@ -76,6 +76,14 @@ import application, { dropdownEvent } from './hub.mjs'
             const len = data.length
             const $addrForm = $('#address-form')
 
+            const appendRow = () => {
+                const $row = $template.clone()
+
+                //! Event Listener for a new row
+
+                $addrForm.append($row)
+            }
+
             if (len)
                 data.forEach((record, i) => {
                     const { address1, address2, zip, city, state, since, enough, livedAbroad } = record
@@ -101,7 +109,7 @@ import application, { dropdownEvent } from './hub.mjs'
 
                     $addrForm.append($row)
                 })
-                else $addrForm.append($template.clone())
+            else appendRow()
 
             setEvents(validateForm)
             
