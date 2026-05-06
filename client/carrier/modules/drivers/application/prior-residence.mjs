@@ -76,15 +76,26 @@ import application, { dropdownEvent } from './hub.mjs'
             const len = data.length
             const $addrForm = $('#address-form')
 
-            const appendRow = () => {
-                const $row = $template.clone()
-
-                //! Event Listener for a new row
-
-                $addrForm.append($row)
+            const sinceCal = {
+                ...calSettings,
+                maxDate: addrMaxDate,
+                onSelect() {
+                    //! HERE I NEED TO FIGURE OUT enough and act based on that
+                    validateForm()
+                },
             }
 
-            if (len)
+            const appendRow = (evts = false) => {
+                const $row = $template.clone()
+
+                $row.find(TS.prevAddrSince).parent().parent()
+                    .calendar(sinceCal)
+
+                $addrForm.append($row)
+                setEvents(validateForm)
+            }
+
+            if (len) {
                 data.forEach((record, i) => {
                     const { address1, address2, zip, city, state, since, enough, livedAbroad } = record
                     const $row = $template.clone()
@@ -94,12 +105,7 @@ import application, { dropdownEvent } from './hub.mjs'
                     $row.find(TS.prevAddrZip).val(zip)
                     $row.find(TS.prevAddrCity).val(city)
                     $row.find(TS.prevAddrSince).parent().parent()
-                        .calendar({
-                            ...calSettings,
-                            onSelect() {
-                                validateForm()
-                            },
-                        })
+                        .calendar(sinceCal)
                         .calendar('set date', moment(since).format('ll'))
                     $row.find('.addr-state-dropdown').find('input').val(state)
                     if (!enough) {
@@ -109,9 +115,8 @@ import application, { dropdownEvent } from './hub.mjs'
 
                     $addrForm.append($row)
                 })
-            else appendRow()
-
-            setEvents(validateForm)
+                setEvents(validateForm)
+            } else appendRow()
             
             if (country) {
                 $livedAbroad.show().find('[type="checkbox"]').prop('checked', true)

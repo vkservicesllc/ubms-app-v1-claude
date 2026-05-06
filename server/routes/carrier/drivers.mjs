@@ -768,6 +768,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
                 for (const country in Geography.list.country) {
                     dropdown.country += `\n\t\t\t\t\t\t\t<div class="item" data-value="${country}">${Geography.list.country[country]}</div>`
                 }
+                hbs.addrMaxDate = application.address.since
                 break
 
             case 'citations':
