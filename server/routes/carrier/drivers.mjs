@@ -514,7 +514,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
             hbs.priorAddrCheck = 'close'
             if (hbs.addrLen) {
-                hbs.addrMinDate = addresses[0].since
+                hbs.addrMinDate = moment(addresses[0].since).clone().add(1, 'day').format('YYYY-MM-DD')
                 hbs.linkColor.priorAddr = 'green'
                 hbs.priorAddrCheck = 'check'
             }
@@ -768,7 +768,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
                 for (const country in Geography.list.country) {
                     dropdown.country += `\n\t\t\t\t\t\t\t<div class="item" data-value="${country}">${Geography.list.country[country]}</div>`
                 }
-                hbs.addrMaxDate = application.address.since
+                hbs.addrMaxDate = moment(application.address.since).clone().subtract(1, 'day').format('YYYY-MM-DD')
                 break
 
             case 'citations':

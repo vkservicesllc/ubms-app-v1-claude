@@ -19,6 +19,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const $template = $('#form-template').find('tr').clone()
     $template.find('input').each(function() { $(this).removeAttr('id') })
 
+    const minDate = moment(application.appliedOn).clone().subtract(3, 'years')
     let addrMaxDate = $('#addr-max-date').val() || null
     if (addrMaxDate) addrMaxDate = moment(addrMaxDate).toDate()
 
@@ -36,10 +37,15 @@ import application, { dropdownEvent } from './hub.mjs'
                 if (addr2) addr2 = patterns.replace(addr2, 'addr2')
                 $addr1.val(addr1)
                 $addr2.val(addr2)
+                validateForm()
             },
         })
 
-        addr2Event(TS.prevAddress2)
+        addr2Event(TS.prevAddress2, {
+            onChange() {
+                validateForm()
+            },
+        })
         
         zipEvent(TS.prevAddrZip, {
             onChange(zip, $zip, city, state) {
@@ -50,10 +56,15 @@ import application, { dropdownEvent } from './hub.mjs'
                     $city.val(city)
                     $state.dropdown('set selected', state)
                 }
+                validateForm()
             },
         })
 
-        $('.addr-state-dropdown').dropdown()
+        $('.addr-state-dropdown').dropdown({
+            onSelect() {
+                validateForm()
+            },
+        })
 
         $livedAbroad.find('[type="checkbox"]').click(function () {
             if ($(this).prop('checked')) {
@@ -79,8 +90,10 @@ import application, { dropdownEvent } from './hub.mjs'
             const sinceCal = {
                 ...calSettings,
                 maxDate: addrMaxDate,
-                onSelect() {
+                onSelect(since) {
                     //! HERE I NEED TO FIGURE OUT enough and act based on that
+                    since = moment(since)
+
                     validateForm()
                 },
             }
@@ -136,7 +149,6 @@ import application, { dropdownEvent } from './hub.mjs'
             function checkEnough() {
                 let enough = false
                 const $rows = $addrForm.children()
-                const minDate = moment(application.appliedOn).clone().subtract(3, 'years')
 
                 for (const tr of $rows) {
                     const since = moment($(tr).find('.addr-date-calendar').calendar('get date'))
