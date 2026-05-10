@@ -71,10 +71,14 @@ import application, { dropdownEvent } from './hub.mjs'
                 $country.find('input').prop('disabled', false)
                 $country.removeClass('disabled')
                     .parent().show()
+
+                //! remove redundant rows
             } else {
                 $country.find('input').prop('disabled', true)
                 $country.addClass('disabled')
                     .parent().hide()
+
+                //! add empty row
             }
 
             validateForm()
@@ -91,21 +95,26 @@ import application, { dropdownEvent } from './hub.mjs'
                 ...calSettings,
                 maxDate: addrMaxDate,
                 onSelect(since) {
-                    //! HERE I NEED TO FIGURE OUT enough and act based on that
                     since = moment(since)
+
+                    if (!checkEnough()) {
+                        $livedAbroad.show().find('[type="checkbox"]').prop('disabled', false)
+
+                        const livedAbroad = $livedAbroad.find('[type="checkbox"]').prop('checked')
+                        if (!livedAbroad) appendRow(true)
+                        else {
+                           $country.find('[type="hidden"]').prop('disabled', false)
+                            $country.removeClass('disabled').parent().show() 
+                        }
+                    } else {
+                        $livedAbroad.hide().find('[type="checkbox"]').prop('disabled', true)
+                        $country.find('[type="hidden"]').prop('disabled', true)
+                        $country.addClass('disabled').parent().hide()
+                        //! remove redundant rows
+                    }
 
                     validateForm()
                 },
-            }
-
-            const appendRow = (evts = false) => {
-                const $row = $template.clone()
-
-                $row.find(TS.prevAddrSince).parent().parent()
-                    .calendar(sinceCal)
-
-                $addrForm.append($row)
-                setEvents(validateForm)
             }
 
             if (len) {
@@ -130,12 +139,11 @@ import application, { dropdownEvent } from './hub.mjs'
                 })
                 setEvents(validateForm)
             } else appendRow()
-            
+
             if (country) {
-                $livedAbroad.show().find('[type="checkbox"]').prop('checked', true)
-                $country.find('input').val(country)
+                $livedAbroad.show().find('[type="checkbox"]').prop('checked', false)
+                $country.find('[type="hidden"]').val(country).prop('disabled', false)
                 $country.removeClass('disabled').parent().show()
-                $country.find('input').prop('disabled', false)
             }
             $country.dropdown({
                 onChange() {
@@ -146,13 +154,23 @@ import application, { dropdownEvent } from './hub.mjs'
 
             $('.table, .footer').fadeIn()
 
+            function appendRow() {
+                const $row = $template.clone()
+
+                $row.find(TS.prevAddrSince).parent().parent()
+                    .calendar(sinceCal)
+
+                $addrForm.append($row)
+                setEvents(validateForm)
+            }
+
             function checkEnough() {
                 let enough = false
                 const $rows = $addrForm.children()
 
                 for (const tr of $rows) {
                     const since = moment($(tr).find('.addr-date-calendar').calendar('get date'))
-                    if (!since.isValid()) break
+                    if (!since.isValid()) continue
 
                     if (since.isBefore(minDate)) {
                         enough = true
