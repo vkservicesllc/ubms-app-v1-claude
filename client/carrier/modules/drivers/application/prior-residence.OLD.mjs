@@ -16,7 +16,6 @@ import application, { dropdownEvent } from './hub.mjs'
 
     const $livedAbroad = $('#lived-abroad')
     const $country = $('#addr-country-dropdown')
-    const $addrForm = $('#address-form')
     const $template = $('#form-template').find('tr').clone()
     $template.find('input').each(function() { $(this).removeAttr('id') })
 
@@ -24,7 +23,7 @@ import application, { dropdownEvent } from './hub.mjs'
     let addrMaxDate = $('#addr-max-date').val() || null
     if (addrMaxDate) addrMaxDate = moment(addrMaxDate).toDate()
 
-    const setEvents = () => {
+    const setEvents = validateForm => {
 
         addr1Event(TS.prevAddress1, {
             onChange(addr1, $addr1) {
@@ -90,48 +89,12 @@ import application, { dropdownEvent } from './hub.mjs'
         success(response) {
             const { data } = response
             const len = data.length
+            const $addrForm = $('#address-form')
 
-            if (len) {
-                data.forEach((record, i) => {
-                    const { enough, livedAbroad } = record
-                    appendRow(record)
-
-                    if (!enough) {
-                        if (livedAbroad) $livedAbroad.find('[type="checkbox"]').prop('checked', true)
-                        if (i === len - 1) $livedAbroad.show()
-                    }
-                })
-                setEvents()
-            } else appendRow()
-
-            if (country) {
-                $livedAbroad.show().find('[type="checkbox"]').prop('checked', false)
-                $country.find('[type="hidden"]').val(country).prop('disabled', false)
-                $country.removeClass('disabled').parent().show()
-            }
-            $country.dropdown({
-                onChange() {
-                    validateForm()
-                },
-            })
-
-            $('.table, .footer').fadeIn()
-        },
-    })
-
-    function appendRow(data = {}) {
-        const { address1, address2, zip, city, state, since, enough, livedAbroad } = data
-        const $row = $template.clone()
-
-        $row.find(TS.prevAddress1).val(address1)
-        $row.find(TS.prevAddress2).val(address2)
-        $row.find(TS.prevAddrZip).val(zip)
-        $row.find(TS.prevAddrCity).val(city)
-        $row.find(TS.prevAddrSince).parent().parent()
-            .calendar({
+            const sinceCal = {
                 ...calSettings,
                 maxDate: addrMaxDate,
-                onChange(since) {
+                onSelect(since) {
                     since = moment(since)
 
                     if (!checkEnough()) {
@@ -152,48 +115,92 @@ import application, { dropdownEvent } from './hub.mjs'
 
                     validateForm()
                 },
-            })
-            .calendar('set date', moment(since).format('ll'))
-        $row.find('.addr-state-dropdown').find('input').val(state)
-
-        $addrForm.append($row)
-    }
-
-    function checkEnough() {
-        let enough = false
-        const $rows = $addrForm.children()
-
-        for (const tr of $rows) {
-            const since = moment($(tr).find('.addr-date-calendar').calendar('get date'))
-            if (!since.isValid()) continue
-
-            if (since.isBefore(minDate)) {
-                enough = true
-                break
             }
-        }
 
-        return enough
-    }
+            if (len) {
+                data.forEach((record, i) => {
+                    const { address1, address2, zip, city, state, since, enough, livedAbroad } = record
+                    const $row = $template.clone()
 
-    function checkCountry() {
-        const checked = $livedAbroad.find('[type="checkbox"]').prop('checked')
-        const country = $country.dropdown('get value') || null
+                    $row.find(TS.prevAddress1).val(address1)
+                    $row.find(TS.prevAddress2).val(address2)
+                    $row.find(TS.prevAddrZip).val(zip)
+                    $row.find(TS.prevAddrCity).val(city)
+                    $row.find(TS.prevAddrSince).parent().parent()
+                        .calendar(sinceCal)
+                        .calendar('set date', moment(since).format('ll'))
+                    $row.find('.addr-state-dropdown').find('input').val(state)
+                    if (!enough) {
+                        if (livedAbroad) $livedAbroad.find('[type="checkbox"]').prop('checked', true)
+                        if (i === len - 1) $livedAbroad.show()
+                    }
 
-        return checked && !!country
-    }
+                    $addrForm.append($row)
+                })
+                setEvents(validateForm)
+            } else appendRow()
 
-    function validateForm() {
-        const $submit = $('[type="submit"]')
-        const $warning = $('.unsaved-changes')
-        let disabled = true, action = 'hide'
+            if (country) {
+                $livedAbroad.show().find('[type="checkbox"]').prop('checked', false)
+                $country.find('[type="hidden"]').val(country).prop('disabled', false)
+                $country.removeClass('disabled').parent().show()
+            }
+            $country.dropdown({
+                onChange() {
+                    console.log('selected')
+                    validateForm()
+                },
+            })
 
-        if (checkEnough() || checkCountry()) {
-            disabled = false
-            action = 'show'
-        }
+            $('.table, .footer').fadeIn()
 
-        $submit.prop('disabled', disabled)
-        $warning[action]()
-    }
+            function appendRow() {
+                const $row = $template.clone()
+
+                $row.find(TS.prevAddrSince).parent().parent()
+                    .calendar(sinceCal)
+
+                $addrForm.append($row)
+                setEvents(validateForm)
+            }
+
+            function checkEnough() {
+                let enough = false
+                const $rows = $addrForm.children()
+
+                for (const tr of $rows) {
+                    const since = moment($(tr).find('.addr-date-calendar').calendar('get date'))
+                    if (!since.isValid()) continue
+
+                    if (since.isBefore(minDate)) {
+                        enough = true
+                        break
+                    }
+                }
+
+                return enough
+            }
+
+            function checkCountry() {
+                const checked = $livedAbroad.find('[type="checkbox"]').prop('checked')
+                const country = $country.dropdown('get value') || null
+
+                return checked && !!country
+            }
+
+            function validateForm() {
+                const $submit = $('[type="submit"]')
+                const $warning = $('.unsaved-changes')
+                let disabled = true, action = 'hide'
+
+                if (checkEnough() || checkCountry()) {
+                    disabled = false
+                    action = 'show'
+                }
+
+                $submit.prop('disabled', disabled)
+                $warning[action]()
+            }
+        },
+    })
 })()
