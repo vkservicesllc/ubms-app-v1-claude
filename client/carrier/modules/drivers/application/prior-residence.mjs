@@ -23,7 +23,7 @@ import application, { dropdownEvent } from './hub.mjs'
     let addrMaxDate = $('#addr-max-date').val() || null
     if (addrMaxDate) addrMaxDate = moment(addrMaxDate).toDate()
 
-    //! 
+    //! TEST
 })()
 
 
