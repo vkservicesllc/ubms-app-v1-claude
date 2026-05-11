@@ -122,7 +122,7 @@ router.get('/applications/:_id/:target/:_targetId?', User.mw.verify, Team.mw.ver
         if (!withPrivileges('d:drv/apl', 'view', permissions, DS)) return sendError.auth(req, res)
 
         const { _id, target } = req.params
-console.log({ _id, target })
+
         if (target === 'employments') {
             const employers = await Employment.fetch(res.session, { _appId: _id, unreported: false })
 
