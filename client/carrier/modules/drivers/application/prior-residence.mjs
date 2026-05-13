@@ -14,208 +14,156 @@ import application, { dropdownEvent } from './hub.mjs'
     const { country } = address
     const TS = selector.class.text
 
-    const $livedAbroad = $('#lived-abroad')
-    const $country = $('#addr-country-dropdown')
+    const $addrForm = $('#address-form')
     const $template = $('#form-template').find('tr').clone()
     $template.find('input').each(function() { $(this).removeAttr('id') })
+
+    const $country = $('#addr-country-dropdown')
 
     const minDate = moment(application.appliedOn).clone().subtract(3, 'years')
     let addrMaxDate = $('#addr-max-date').val() || null
     if (addrMaxDate) addrMaxDate = moment(addrMaxDate).toDate()
 
-    //! TEST
-})()
+    const appendRow = (record = {}, maxDate) => {
+        const $row = $template.clone()
+        const { address1, address2, zip, city, state, since, enough, livedAbroad } = record
 
+        $row.find(TS.prevAddress1).val(address1)
+        $row.find(TS.prevAddress2).val(address2)
+        $row.find(TS.prevAddrZip).val(zip)
+        $row.find(TS.prevAddrCity).val(city)
+        $row.find(TS.prevAddrSince).parent().parent()
+            .calendar({
+                ...calSettings,
+                maxDate,
+                onChange(since) {
+                    since = moment(since)
+console.log(since)
+                    //! disable and hide future rows if exist if earlier than minimum date
+                    //! or else unhide and enable future rows if exist
+                },
+            })
+            .calendar('set date', since ? moment(since).format('ll') : null)
+        $row.find('.addr-state-dropdown').find('input').val(state)
 
+        if (enough) {
+            $row.find('.lived-abroad').hide().find('[type="checkbox"]').prop('disabled', true)
+        } else if (livedAbroad) {
+            $row.find('.lived-abroad').find('[type="checkbox"]').prop('checked', true)
+        }
 
+        $addrForm.append($row)
 
-// (() => {
-//     if (!application || !Object.keys(application).length) return
+        if (since) return moment(since).clone().subtract(1, 'day').toDate()
+    }
 
-//     const { _id, finishedAt, address } = application
-//     const { country } = address
-//     const TS = selector.class.text
+    const setEvents = () => {
 
-//     const $livedAbroad = $('#lived-abroad')
-//     const $country = $('#addr-country-dropdown')
-//     const $addrForm = $('#address-form')
-//     const $template = $('#form-template').find('tr').clone()
-//     $template.find('input').each(function() { $(this).removeAttr('id') })
+        addr1Event(TS.prevAddress1, {
+            onChange(addr1, $addr1) {
+                const $addr2 = $addr1.parent().parent().next().find(TS.prevAddress2)
+                const addr2Patt = patterns.match.addr2
+                let addr2 = addr2Patt.test(addr1)
+                    ? addr2Patt.exec(addr1)[0].toUpperCase()
+                    : null
 
-//     const minDate = moment(application.appliedOn).clone().subtract(3, 'years')
-//     let addrMaxDate = $('#addr-max-date').val() || null
-//     if (addrMaxDate) addrMaxDate = moment(addrMaxDate).toDate()
+                addr1 = addr1.replace(addr2Patt, '').trim()
+                if (addr2) addr2 = patterns.replace(addr2, 'addr2')
+                $addr1.val(addr1)
+                $addr2.val(addr2)
+                validateForm()
+            },
+        })
 
-//     const setEvents = () => {
-
-//         addr1Event(TS.prevAddress1, {
-//             onChange(addr1, $addr1) {
-//                 const $addr2 = $addr1.parent().parent().next().find(TS.prevAddress2)
-//                 const addr2Patt = patterns.match.addr2
-//                 let addr2 = addr2Patt.test(addr1)
-//                     ? addr2Patt.exec(addr1)[0].toUpperCase()
-//                     : null
-
-//                 addr1 = addr1.replace(addr2Patt, '').trim()
-//                 if (addr2) addr2 = patterns.replace(addr2, 'addr2')
-//                 $addr1.val(addr1)
-//                 $addr2.val(addr2)
-//                 validateForm()
-//             },
-//         })
-
-//         addr2Event(TS.prevAddress2, {
-//             onChange() {
-//                 validateForm()
-//             },
-//         })
+        addr2Event(TS.prevAddress2, {
+            onChange() {
+                validateForm()
+            },
+        })
         
-//         zipEvent(TS.prevAddrZip, {
-//             onChange(zip, $zip, city, state) {
-//                 if (city && state) {
-//                     const $city = $zip.parent().parent().next().find(TS.prevAddrCity)
-//                     const $state = $zip.parent().parent().next().next().find('.addr-state-dropdown')
+        zipEvent(TS.prevAddrZip, {
+            onChange(zip, $zip, city, state) {
+                if (city && state) {
+                    const $city = $zip.parent().parent().next().find(TS.prevAddrCity)
+                    const $state = $zip.parent().parent().next().next().find('.addr-state-dropdown')
     
-//                     $city.val(city)
-//                     $state.dropdown('set selected', state)
-//                 }
-//                 validateForm()
-//             },
-//         })
+                    $city.val(city)
+                    $state.dropdown('set selected', state)
+                }
+                validateForm()
+            },
+        })
 
-//         $('.addr-state-dropdown').dropdown({
-//             onSelect() {
-//                 validateForm()
-//             },
-//         })
+        $('.addr-state-dropdown').dropdown({
+            onSelect() {
+                validateForm()
+            },
+        })
+    }
 
-//         $livedAbroad.find('[type="checkbox"]').click(function () {
-//             if ($(this).prop('checked')) {
-//                 $country.find('input').prop('disabled', false)
-//                 $country.removeClass('disabled')
-//                     .parent().show()
+    $.ajax(`/api/resource/drivers/applications/${_id}/addresses`, {
+        success(response) {
+            const { data } = response
+            const len = data.length
 
-//                 //! remove redundant rows
-//             } else {
-//                 $country.find('input').prop('disabled', true)
-//                 $country.addClass('disabled')
-//                     .parent().hide()
+            if (len)
+                data.forEach((record, i) => {
+                    const { enough, livedAbroad } = record
+                    addrMaxDate = appendRow(record, addrMaxDate)
+                })
+            else appendRow({}, addrMaxDate)
 
-//                 //! add empty row
-//             }
+            setEvents()
 
-//             validateForm()
-//         })
-//     }
+            if (country) {
+                $country.find('[type="hidden"]').val(country).prop('disabled', false)
+                $country.removeClass('disabled').parent().show()
+            }
+            $country.dropdown({
+                onChange() {
+                    console.log('selected')
+                    validateForm()
+                },
+            })
 
-//     $.ajax(`/api/resource/drivers/applications/${_id}/addresses`, {
-//         success(response) {
-//             const { data } = response
-//             const len = data.length
+            $('.table, .footer').fadeIn()
+        },
+    })
 
-//             if (len) {
-//                 data.forEach((record, i) => {
-//                     const { enough, livedAbroad } = record
-//                     appendRow(record)
+    function checkEnough() {
+        let enough = false
+        const $rows = $addrForm.children()
 
-//                     if (!enough) {
-//                         if (livedAbroad) $livedAbroad.find('[type="checkbox"]').prop('checked', true)
-//                         if (i === len - 1) $livedAbroad.show()
-//                     }
-//                 })
-//                 setEvents()
-//             } else appendRow()
+        for (const tr of $rows) {
+            const since = moment($(tr).find('.addr-date-calendar').calendar('get date'))
+            if (!since.isValid()) continue
 
-//             if (country) {
-//                 $livedAbroad.show().find('[type="checkbox"]').prop('checked', false)
-//                 $country.find('[type="hidden"]').val(country).prop('disabled', false)
-//                 $country.removeClass('disabled').parent().show()
-//             }
-//             $country.dropdown({
-//                 onChange() {
-//                     validateForm()
-//                 },
-//             })
+            if (since.isBefore(minDate)) {
+                enough = true
+                break
+            }
+        }
 
-//             $('.table, .footer').fadeIn()
-//         },
-//     })
+        return enough
+    }
 
-//     function appendRow(data = {}) {
-//         const { address1, address2, zip, city, state, since, enough, livedAbroad } = data
-//         const $row = $template.clone()
+    function checkCountry() {
+        const country = $country.dropdown('get value') || null
 
-//         $row.find(TS.prevAddress1).val(address1)
-//         $row.find(TS.prevAddress2).val(address2)
-//         $row.find(TS.prevAddrZip).val(zip)
-//         $row.find(TS.prevAddrCity).val(city)
-//         $row.find(TS.prevAddrSince).parent().parent()
-//             .calendar({
-//                 ...calSettings,
-//                 maxDate: addrMaxDate,
-//                 onChange(since) {
-//                     since = moment(since)
+        return checked && !!country
+    }
 
-//                     if (!checkEnough()) {
-//                         $livedAbroad.show().find('[type="checkbox"]').prop('disabled', false)
+    function validateForm() {
+        const $submit = $('[type="submit"]')
+        const $warning = $('.unsaved-changes')
+        let disabled = true, action = 'hide'
 
-//                         const livedAbroad = $livedAbroad.find('[type="checkbox"]').prop('checked')
-//                         if (!livedAbroad) appendRow(true)
-//                         else {
-//                            $country.find('[type="hidden"]').prop('disabled', false)
-//                             $country.removeClass('disabled').parent().show() 
-//                         }
-//                     } else {
-//                         $livedAbroad.hide().find('[type="checkbox"]').prop('disabled', true)
-//                         $country.find('[type="hidden"]').prop('disabled', true)
-//                         $country.addClass('disabled').parent().hide()
-//                         //! remove redundant rows
-//                     }
+        if (checkEnough() || checkCountry()) {
+            disabled = false
+            action = 'show'
+        }
 
-//                     validateForm()
-//                 },
-//             })
-//             .calendar('set date', moment(since).format('ll'))
-//         $row.find('.addr-state-dropdown').find('input').val(state)
-
-//         $addrForm.append($row)
-//     }
-
-//     function checkEnough() {
-//         let enough = false
-//         const $rows = $addrForm.children()
-
-//         for (const tr of $rows) {
-//             const since = moment($(tr).find('.addr-date-calendar').calendar('get date'))
-//             if (!since.isValid()) continue
-
-//             if (since.isBefore(minDate)) {
-//                 enough = true
-//                 break
-//             }
-//         }
-
-//         return enough
-//     }
-
-//     function checkCountry() {
-//         const checked = $livedAbroad.find('[type="checkbox"]').prop('checked')
-//         const country = $country.dropdown('get value') || null
-
-//         return checked && !!country
-//     }
-
-//     function validateForm() {
-//         const $submit = $('[type="submit"]')
-//         const $warning = $('.unsaved-changes')
-//         let disabled = true, action = 'hide'
-
-//         if (checkEnough() || checkCountry()) {
-//             disabled = false
-//             action = 'show'
-//         }
-
-//         $submit.prop('disabled', disabled)
-//         $warning[action]()
-//     }
-// })()
+        $submit.prop('disabled', disabled)
+        $warning[action]()
+    }
+})()
