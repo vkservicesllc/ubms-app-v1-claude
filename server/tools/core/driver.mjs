@@ -1263,7 +1263,7 @@ class Application {
 
                         case 'address': //* Carrier UI only (no step)
                             {
-                                const { address, addresses, prevCountry = null } = body
+                                const { address, prevCountry = null } = body
                                 const { since, currentSince, enough, livedAbroad = false, address1, address2, city, state, zip } = address
                                 const { personId } = this
 
@@ -1271,6 +1271,35 @@ class Application {
                                 await person.update('addresses', { since, address1, address2, city, state, zip }, { since: currentSince })
                                 await this.update('addresses', { enough, livedAbroad }, { since: currentSince })
                                 await driver.update('appDef', { prevCountry })
+                            }
+                            break
+
+
+                        case 'prior-addresses': //* Carrier UI only (no step)
+                            {
+                                const { maxDate, addresses, prevCountry = null } = body
+                                await person.delete('addresses', { since: { not: maxDate } })
+                                if (addresses) {
+                                    const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
+                                    const count = zip.length
+
+                                    for (let i = 0; i < count; i++) {
+                                        await person.add('addresses', {
+                                            since: since[i],
+                                            address1: address1[i],
+                                            address2: address2[i],
+                                            city: city[i],
+                                            state: state[i],
+                                            zip: zip[i],
+                                        })
+                                        this.add('addresses', {
+                                            personId,
+                                            since: since[i],
+                                            enough: enough[i],
+                                            livedAbroad: count - i === 1 ? !!prevCountry : null,
+                                        })
+                                    }
+                                }
                             }
                             break
 

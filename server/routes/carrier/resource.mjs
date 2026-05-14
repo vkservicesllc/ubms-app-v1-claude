@@ -207,8 +207,20 @@ router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.ve
 router.post('/driver/application/:formId/prior-residence', User.mw.verify, Team.mw.verify,
     ApplicationForm.validate('prior-residence'),
     validationCheck, async (req, res) => {
-        try {
 return res.send(req.body)
+        try {
+            const { user } = res.session
+            const { DS } = user
+            const permissions = await user.permissions(res.session)
+            if (!withPrivileges('d:drv/apl', 'modify', permissions, DS)) return sendError.auth(req, res)
+
+            const { formId } = req.params
+            const application = await Application.fetch(res.session, { formId })
+            if (!application) throw new Error('Application not found')
+
+            await application.progress('prior-addresses', req.body)
+
+            res.redirect(`/drivers/application/${formId}/e-form/prior-residence`)
         } catch (err) {
             sendError.server(req, res, err)
         }
