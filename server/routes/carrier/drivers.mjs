@@ -729,6 +729,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
         hbs.appliedAt = moment(application.appliedAt).format('lll')
         hbs.finishedAt = moment(application.finishedAt).format('lll')
         hbs.appCount = application.count
+        hbs.actionUrl = {}
 
         const backLinkQuery = {
             'prior-residence': 'address',
@@ -769,6 +770,7 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
                     dropdown.country += `\n\t\t\t\t\t\t\t<div class="item" data-value="${country}">${Geography.list.country[country]}</div>`
                 }
                 hbs.addrMaxDate = moment(application.address.since).clone().subtract(1, 'day').format('YYYY-MM-DD')
+                hbs.actionUrl.priorResidence = `/resource/driver/application/${formId}/prior-residence`
                 break
 
             case 'citations':

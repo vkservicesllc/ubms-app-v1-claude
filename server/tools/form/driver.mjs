@@ -1551,6 +1551,13 @@ class ApplicationForm {
                     '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
                 ]
                 break
+            case 'prior-residence':
+                fields = [
+                    'country',
+                    '_addrSince', '_addrEnough', '_address1', '_address2',
+                    '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
+                ]
+                break
             case 'license':
                 fields = [
                     'dlCommercial', 'dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp',

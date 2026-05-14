@@ -204,6 +204,18 @@ router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.ve
 )
 
 
+router.post('/driver/application/:formId/prior-residence', User.mw.verify, Team.mw.verify,
+    ApplicationForm.validate('prior-residence'),
+    validationCheck, async (req, res) => {
+        try {
+return res.send(req.body)
+        } catch (err) {
+            sendError.server(req, res, err)
+        }
+    }
+)
+
+
 // ==== EXPORT ==== //
 
 export default router
