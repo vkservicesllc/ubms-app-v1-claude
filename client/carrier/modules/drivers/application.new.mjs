@@ -1,9 +1,11 @@
 import table from './applications.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
+import { sortObjectByValue } from '/modules/tools/utils/sorter.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 
 const TS = selector.id.text
+const vhlCodeId = TS.vhlCode
 const emailId = TS.email
 
 const modalId = '#new-apl-modal'
@@ -30,12 +32,38 @@ const formAction = $form.attr('action')
 const $dropdown = {
     carrier: $('#new-apl-carrier-dropdown'),
     team: $('#new-apl-team-dropdown'),
+    vehicle: $('#new-apl-vehicle-dropdown'),
     suffix: $('#suffix-dropdown'),
     gender: $('#gender-dropdown'),
     position: $('#position-dropdown'),
 }
+const $menu = {
+    vehicle: $('#new-apl-vehicle-menu'),
+}
 const $field = {
     applicant: $('.applicant-field'),
+}
+
+const vehicleInfo = $.ajax('/api/enum/driver-application?filter=vehicle', { async: false, }).responseJSON
+const vehicleCodes = []
+for (const type of vehicleInfo.types) {
+    const { codes } = vehicleInfo
+    let data = {}
+
+    for (const prop in type) {
+        const code = Object.entries(codes).find(([k, v]) => v === prop)?.[0]
+        if (code && !data[code]) data[code] = type[prop]
+    }
+
+    data = sortObjectByValue(data)
+    vehicleCodes.push(data)
+}
+
+const vehicleMenu = cdl => {
+    let html = ''
+    for (const code in vehicleCodes[cdl])
+        html += `<div class="item" data-value="${code}">${vehicleCodes[cdl][code]}</div>`
+    return html
 }
 
 
@@ -133,9 +161,29 @@ $dropdown.carrier.dropdown().on('change', function() {
     $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''))
 })
 
+$('.position-role').on('change', function() {
+    const cdl = $(this).val()
+    $dropdown.vehicle.dropdown('clear')
+    $menu.vehicle.html(vehicleMenu(cdl))
+})
+
 $dropdown.suffix.dropdown()
 $dropdown.gender.dropdown()
 $dropdown.position.dropdown()
+$dropdown.vehicle.dropdown({
+    onChange(code) {
+        const currentUrl = $aplUrl.attr('href')
+        let [ base, query ] = currentUrl.split('?')
+        query = query.split('&')
+
+        const idx = query.findIndex(v => v.startsWith('vhl'))
+        if (idx > -1) query.splice(idx, 1)
+        if (code) query.splice(2, 0, `vhl=${code}`)
+
+        const url = `${base}?${query.join('&')}`
+        $aplUrl.text(url).attr('href', url)
+    },
+})
 
 if ($dropdown.team.length) {
     $dropdown.team.dropdown().on('change', function() {
@@ -147,7 +195,6 @@ if ($dropdown.team.length) {
         query[0] = `env=${_id}`
 
         const url = `${base}?${query.join('&')}`
-
         $aplUrl.text(url).attr('href', url)
     })
 
@@ -181,6 +228,7 @@ table.on('draw', function() {
         $('#create-apl').on('click', function() {
             const cdl = aplUrl.split('?')[1].split('&')[1].split('=')[1]
             $(`.position-role[value="${cdl}"]`).prop('checked', true)
+            $menu.vehicle.html(vehicleMenu(cdl))
 
             $modal.modal({
                 autofocus: false,
@@ -196,6 +244,8 @@ table.on('draw', function() {
                     disableApplicant()
                     $posRole.prop('checked', false)
                     if ($dropdown.team.length) $dropdown.team.dropdown('clear')
+                    $dropdown.vehicle.dropdown('clear')
+                    $menu.vehicle.html(null)
                 },
             }).modal('show')
 

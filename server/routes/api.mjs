@@ -92,6 +92,10 @@ router.get('/enum/:source/:_id?', User.mw.verify, async (req, res) => {
             result = {
                 violations: DriverApplication.list.violation,
                 accidents: DriverApplication.list.collision,
+                vehicle: {
+                    types: DriverApplication.list.vhlType,
+                    codes: DriverApplication.list.vhlCode,
+                },
             }
             break
 

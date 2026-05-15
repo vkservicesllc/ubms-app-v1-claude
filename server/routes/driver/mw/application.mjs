@@ -37,7 +37,7 @@ const checkProps = {
 
 export const applicationStart = async (req, res, next) => {
     try {
-        const { env, cdl, rec: _userId, form: formId } = req.query
+        const { env, cdl, vhl: vhlCode, rec: _userId, form: formId } = req.query
 
         const application = await Application.fetch(res.session, { formId })
         if ((formId && !application) || application?._driverId) return res.redirect(`/application/${formId}`)
@@ -129,6 +129,7 @@ export const applicationStart = async (req, res, next) => {
             hbs.formUrl += team ? `/${team._id}` : '/global'
             if (_carrierId) hbs.formUrl += `/${_carrierId}`
             hbs.formUrl += `?cdl=${cdl}`
+            if (vhlCode) hbs.formUrl += `&vhl=${vhlCode}`
             if (_userId) hbs.formUrl += `&rec=${_userId}`
         }
 

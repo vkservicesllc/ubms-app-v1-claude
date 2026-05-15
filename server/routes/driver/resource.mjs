@@ -104,13 +104,14 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
     try {
         res.session.user = { id: 1 }
         const { _teamId, _carrierId } = req.params
-        let { cdl: cdlRole, rec: _userSimpleId, form: formId } = req.query
+        let { cdl: cdlRole, vhl: vhlCode, rec: _userSimpleId, form: formId } = req.query
         const { position, ssn, dob, _refSrcId } = req.body
 
         const person = await Individual.fetch(res.session, { ssn })
         if (person && dob !== person.dob) {
             const error = new Error('DAPP_DOB_MISMATCH_ERROR')
             error.url = `/application?env=${_teamId}&cdl=${cdlRole}`
+            if (vhlCode) error.url += `&vhl=${vhlCode}`
             if (_userSimpleId) error.url += `&rec=${_userSimpleId}`
 
             throw error
@@ -156,7 +157,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
             }
 
             application = (await Application.create(res.session, {
-                cdlRole, _teamId, _carrierId, _refSrcId, _userSimpleId,
+                cdlRole, vhlCode, _teamId, _carrierId, _refSrcId, _userSimpleId,
                 ssn, dob, position,
             })).data
             if (!application) throw new Error('Failed to create application')

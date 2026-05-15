@@ -251,6 +251,13 @@ class ApplicationForm {
         },
     })
 
+    static vhlCode = createForm({
+        selector: appSelector,
+        target: 'vhlCode',
+        type: 'select',
+        name: 'vhlCode',
+    })
+
     static condition = createForm({ /* aka Status */
         selector: appSelector,
         target: 'condition',

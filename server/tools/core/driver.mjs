@@ -290,6 +290,7 @@ class Application {
         this.count = data.count
 
         this.cdlRole = data.cdlRole
+        this.vhlCode = data.vhlCode
         this.position = data.position
         this.condition = data.condition
         this.locked = data.locked
@@ -1516,7 +1517,7 @@ class Application {
         let { from } = senderParams
         let companyName, phone, url = '/application'
 
-        const { cdlRole, carrierId, _carrierId, teamId, _teamId, _userSimpleId, selfAssign } = data
+        const { cdlRole, vhlCode, carrierId, _carrierId, teamId, _teamId, _userSimpleId, selfAssign } = data
 
         if (!team && (teamId || _teamId)) team = await Team.fetch(session, { id: teamId, _id: _teamId })
 
@@ -1538,6 +1539,7 @@ class Application {
 
         url += `?env=${team ? team._id : 'global'}`
         url += `&cdl=${cdlRole}`
+        if (vhlCode) url += `&vhl=${vhlCode}`
         if (_userSimpleId) url += `&rec=${_userSimpleId}`
         else if (selfAssign) url += `&rec=${user._simpleId}`
         if (formId) url += `&form=${formId}`
@@ -1584,7 +1586,7 @@ class Application {
             } while (found)
 
             const {
-                _carrierId, _teamId, _refSrcId, _userSimpleId, selfAssign, cdlRole, dob,
+                _carrierId, _teamId, _refSrcId, _userSimpleId, selfAssign, cdlRole, vhlCode, dob,
                 prefix, firstName, middleName, lastName, suffix, phone, email, position,
             } = body
             const ssn = unprocessAES(body.ssn)
@@ -1613,7 +1615,7 @@ class Application {
             }
 
             body = {
-                main: { formId, cdlRole, carrierId, teamId, userId, refSrcId, position },
+                main: { formId, cdlRole, vhlCode, carrierId, teamId, userId, refSrcId, position },
             }
 
             if (!ssn) { //* Pre-Application
@@ -1779,6 +1781,7 @@ class Application {
                     hash('busId'),
                     'count',
                     'cdlRole',
+                    'vhlCode',
                     'position',
                     'condition',
                     'step',
@@ -2183,14 +2186,14 @@ class Application {
             const {
                 id, _id, formId, ssn,
                 driverId, _driverId, teamId, _teamId, userId, _userId, carrierId, _carrierId,
-                cdlRole, position, condition, rehire, archived,
+                cdlRole, vhlCode, position, condition, rehire, archived,
                 search = {},
             } = filter
             const single = !!id || !!_id || !!formId || !!ssn
 
             const match = {
                 id, formId, driverId, teamId, userId, carrierId,
-                cdlRole, position, condition, rehire,
+                cdlRole, vhlCode, position, condition, rehire,
             }
             if (!single) match.public = true
             if (!id) match.id = Application.matchIdHash(_id)
@@ -2224,8 +2227,8 @@ class Application {
     static count = async (session, filter = {}) => {
         if (!session?.user?.id) return 0
 
-        const { driverId, _driverId, teamId, _teamId, cdlRole, position, condition, rehire, archived } = filter
-        const match = { driverId, teamId, cdlRole, position, condition, rehire }
+        const { driverId, _driverId, teamId, _teamId, cdlRole, vhlCode, position, condition, rehire, archived } = filter
+        const match = { driverId, teamId, cdlRole, vhlCode, position, condition, rehire }
         if (!driverId) match.driverId = Driver.matchIdHash(_driverId)
         if (!teamId) match.teamId = Team.matchIdHash(_teamId)
         if (typeof archived === 'boolean') {
@@ -2429,6 +2432,14 @@ class Application {
             },
         ],
 
+        vhlCode: {
+            smt: 'semiTR',
+            stb: 'straightBox',
+            //? std: 'straightDump',
+            hst: 'hotshot',
+            cvn: 'van',
+        },
+
         vhlLength: {
             straightBox: {
                 '10': '10 ft (Small)',
@@ -2488,6 +2499,7 @@ class Employment {
             this.application = {
                 formId: data.formId,
                 cdlRole: data.cdlRole,
+                vhlCode: data.vhlCode,
                 prefix: data.driverPrefix,
                 firstName: data.driverFirstName,
                 middleName: data.driverMiddleName,
@@ -2814,7 +2826,7 @@ class Employment {
                 {
                     table: query.driver_application.main.table,
                     fields: [
-                        'teamId', Team.hashId('teamId'), 'carrierId', Carrier.hashId('carrierId'), 'formId', 'cdlRole',
+                        'teamId', Team.hashId('teamId'), 'carrierId', Carrier.hashId('carrierId'), 'formId', 'cdlRole', 'vhlCode',
                         'applicant_', 'createdAt', 'finishedAt',
                     ],
                     join: [ 'id', 'appId' ],

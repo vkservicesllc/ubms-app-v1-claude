@@ -289,6 +289,7 @@ CREATE TABLE applications (
     userId           SMALLINT UNSIGNED                   DEFAULT NULL,
     carrierId        SMALLINT UNSIGNED                   DEFAULT NULL,
     refSrcId         SMALLINT UNSIGNED                   DEFAULT NULL,
+    vhlCode          VARCHAR(3)                          DEFAULT NULL,
     dlId             MEDIUMINT UNSIGNED                  DEFAULT NULL,
     mecId            MEDIUMINT UNSIGNED                  DEFAULT NULL,
     busId            MEDIUMINT UNSIGNED                  DEFAULT NULL,

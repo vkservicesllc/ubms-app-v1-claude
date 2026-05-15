@@ -7,20 +7,20 @@
             <a id="apl-url" href="{{applicationUrl}}" target="_blank">{{applicationUrl}}</a>
             <sup><a href="" id="copy-apl-url"><i class="dark green copy outline icon"></i></a></sup>
         </p>
-        <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/drivers/invite/applicant" method="POST" autocomplete="off" style="margin-top: 5px;">
+        <form class="ui two column relaxed divided grid" id="new-apl-form" action="/resource/drivers/invite/applicant" method="POST" autocomplete="off" style="margin-top: .35rem;">
             <input type="hidden" id="recruiter-id" value="{{userSimpleId}}" />
             <div class="five wide column">
                 <div class="ui form">
                     <h5 class="ui horizontal divider grey header">
                         <i class="horizontal sliders icon"></i>Properties
                     </h5>
-                    <div class="ui icon message">
+                    <div class="ui icon tiny message">
                         <i class="truck moving icon"></i>
                         <div class="content">
                             <div class="header">Carrier</div>
                             <p>
                                 If you know which carrier is hiring the applicant, please select it below.<br/>
-                                A cover sheet will be added to the PDF blank.
+                                A cover sheet will be added.
                             </p>
                         </div>
                     </div>
@@ -63,6 +63,20 @@
                             </div>
                         </div>
                     </div>
+                    <div class="fields">
+                        <div class="twelve wide field">
+                            <div class="ui input">
+                                <div class="ui fluid clearable selection dropdown" id="new-apl-vehicle-dropdown">
+                                    {{{form.vhlCode.hidden.input}}}
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Equipment Type</div>
+                                    <div class="menu" id="new-apl-vehicle-menu">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="one wide field"></div>
+                    </div>
                     <div class="field" id="self-assign-field">
                         <div class="ui checkbox">
                             <input type="checkbox" name="selfAssign" id="self-assign" checked />
@@ -98,7 +112,7 @@
                             <label><strong>Pre-Application</strong></label>
                         </div>
                     </div>
-                    <div class="ui two column relaxed divided grid" style="margin-top: 10px;">
+                    <div class="ui two column relaxed divided grid" style="margin-top: .7rem;">
                         <div class="eleven wide column">
                             <div class="disabled fields applicant-field">
                                 <div class="eight wide field">

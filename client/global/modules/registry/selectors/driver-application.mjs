@@ -97,6 +97,7 @@ const selector = {
         },
         text: {
             pin: 'pin',
+            vhlCode: 'vehicle-code',
             firstName: 'first-name',
             leadFirstName: 'lead-first-name',
             middleName: 'middle-name',
