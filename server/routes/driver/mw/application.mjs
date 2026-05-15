@@ -17,7 +17,7 @@ import { tel as formatTel, ssn as formatSsn, ein as formatEin } from '../../../.
 import { maskEmail } from '../../../tools/utils/string.mjs'
 
 /* Forms */
-import { ApplicationForm, EmploymentForm } from '../../../tools/form/driver.mjs'
+import { ApplicationForm, EmploymentForm, vhlMMTData } from '../../../tools/form/driver.mjs'
 import { updateFormOptions } from '../../../tools/form/builder.mjs'
 
 const formInstr = {
@@ -860,11 +860,16 @@ export const applicationProgress = async (req, res, next) => {
             }
 
             if (application.position === 'OO') {
+                const  { vhlCode } = application
                 const values = {
                     currentVhlType: application?.vehicle?.type,
                 }
 
-                const vhlTypeData = Application.list.vhlType[cdlRole]
+                let vhlTypeData = Application.list.vhlType[cdlRole]
+                if (vhlCode) {
+                    const prop = Application.list.vhlCode[vhlCode]
+                    vhlTypeData = { [prop]: vhlTypeData[prop] }
+                }
 
                 if (!cdlRole) {
                     values.currentVhlMMT = application?.vehicle?.mmt
@@ -886,6 +891,10 @@ export const applicationProgress = async (req, res, next) => {
 
                 options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
                 options.currentVhlType.select.input.data = vhlTypeData
+                if (vhlCode) {
+                    options.currentVhlMMT.select.input.data = vhlMMTData(vhlCode)
+                    // options.currentVhlType.select.input.emptyOpt = null
+                }
 
                 if (!cdlRole) {
                     if (values.currentVhlMMT !== 'other') {

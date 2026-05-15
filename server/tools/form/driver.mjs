@@ -520,6 +520,7 @@ class ApplicationForm {
     static status = createForm({
         selector: appSelector,
         target: 'status',
+        group: 'status',
         type: 'select/radio',
         name: 'legalStatus',
         data: Application.list.legalStatus,
@@ -1366,7 +1367,7 @@ class ApplicationForm {
         target: 'currentVhlMMT',
         type: 'select',
         name: 'mmt',
-        data: currentExpediteVhlMMTData(),
+        data: vhlMMTData(),
         emptyOpt,
         required,
         label: 'Vehicle <small>(Make/Model)</small>',
@@ -2017,7 +2018,7 @@ export default DriverForm
 export { ApplicationForm, EmploymentForm }
 
 
-export function currentExpediteVhlMMTData() {
+export function vhlMMTData(vhlCode) {
     let vehicles = {
         straightBox: {
             group: 'Box Truck',
@@ -2034,6 +2035,10 @@ export function currentExpediteVhlMMTData() {
     }
 
     const data = {}
+    if (vhlCode) {
+        const prop = Application.list.vhlCode[vhlCode]
+        vehicles = { [prop]: vehicles[prop] }
+    }
 
     for (const type in vehicles) {
         const list = vehicles[type].data

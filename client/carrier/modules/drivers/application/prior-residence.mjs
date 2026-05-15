@@ -188,6 +188,7 @@ import application, { dropdownEvent } from './hub.mjs'
             resetEvents()
 
             if (country) enableCountry(country)
+            else disableLivedAbroad()
             $country.dropdown({
                 onChange() {
                     validateForm()

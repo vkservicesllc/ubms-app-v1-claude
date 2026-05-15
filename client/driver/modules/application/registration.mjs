@@ -34,7 +34,7 @@ const $help = {
     form: $('#form-help'),
 }
 const $gender = $(genderId)
-const $status = $('.status-radio')
+const $status = $(selector.class.radio.status)
 const $expiration = $(statusExpId)
 const $submit = $('[type=submit]')
 const $form = $('#apl-start-form')

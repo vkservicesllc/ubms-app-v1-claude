@@ -22,7 +22,7 @@ import { navBuilder } from './tools.mjs'
 
 /* Forms */
 import { updateFormOptions } from '../../tools/form/builder.mjs'
-import { ApplicationForm, EmploymentForm, currentExpediteVhlMMTData, descYears } from '../../tools/form/driver.mjs'
+import { ApplicationForm, EmploymentForm, vhlMMTData, descYears } from '../../tools/form/driver.mjs'
 
 
 // ==== SETUP ==== //
@@ -234,7 +234,8 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 0))
 
-        const { _carrierId, _userId, cdlRole } = application
+        const { _carrierId, _userId, cdlRole, vhlCode } = application
+        const vhlProp = vhlCode ? Application.list.vhlCode[vhlCode] : null
 
         if (_carrierId) {
             hbs.carrier = '<span class="ui red text"><i class="ui ban icon"></i> Failed to fetch carrier</span>'
@@ -287,6 +288,8 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         hbs.formId = formId
         hbs.cdlRole = cdlRole
         hbs.position = application.expansion.position
+        if (vhlProp)
+            hbs.position += ` <small>(${Application.list.vhlType[cdlRole][vhlProp]})</small>`
         hbs.posProp = application.position
         hbs.positionRole = cdlRole ? 'CDL Only' : 'Non-CDL'
         hbs.cdl = application.dl.commercial
@@ -533,13 +536,14 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         {
             dropdown.vehicleType = ''
 
-            const typeData = Application.list.vhlType[cdlRole]
+            let typeData = Application.list.vhlType[cdlRole]
+            if (vhlProp) typeData = { [vhlProp]: typeData[vhlProp] }
 
             for (const type in typeData)
                 dropdown.vehicleType += `\n${t}\t<div class="item" data-value="${type}">${typeData[type]}</div>`
 
             if (!cdlRole) {
-                const mmtData = currentExpediteVhlMMTData()
+                const mmtData = vhlMMTData(vhlCode)
                 const yearData = descYears()
                 const lenData = Application.list.vhlLength.straightBox
                 dropdown.vehicleMMT = ''
@@ -721,6 +725,8 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
         hbs._id = application._id
         hbs.formId = formId
         hbs.position = application.expansion.position
+        if (application.vhlCode)
+            hbs.position += ` <small>(${Application.list.vhlType[application.cdlRole][Application.list.vhlCode[application.vhlCode]]})</small>`
         hbs.positionRole = application.cdlRole ? 'CDL Only' : 'Non-CDL'
         hbs.cdl = application.dl.commercial
         hbs.applicant = `<strong style="font-size: 1.2em;">${new Person(application).fullName('FMLs')}</strong>`
