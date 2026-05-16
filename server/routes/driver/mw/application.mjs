@@ -891,7 +891,7 @@ export const applicationProgress = async (req, res, next) => {
 
                 options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
                 options.currentVhlType.select.input.data = vhlTypeData
-                if (vhlCode) {
+                if (vhlCode && !cdlRole) {
                     options.currentVhlMMT.select.input.data = vhlMMTData(vhlCode)
                     // options.currentVhlType.select.input.emptyOpt = null
                 }
