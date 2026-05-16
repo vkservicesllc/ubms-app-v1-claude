@@ -7,8 +7,8 @@
                 <h5 class="card-title text-info mb-0">Professional Driver Application</h5>
                 <p class="text-secondary fs-6 fw-light mb-1"><small>Powered by {{siteName}} <sup style="font-size: 62%;">TM</sup></small></p>
                 <div class="card-text pt-1 pb-2">
-                    <div class="text-start text-secondary px-3">
-                        <p>
+                    <div class="text-start text-warning px-3">
+                        <p style="font-size: 85%;">
                             To help us begin the hiring process faster, you can upload your driver's license and required legal documents below.
                             This allows us to verify your qualifications promptly and move forward with your application.
                         </p>
@@ -34,7 +34,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-secondary" for="dl-back">FRONT</label>
+                                <label class="form-label text-secondary" for="dl-back">BACK</label>
                                 <div class="input-group browse">
                                     <button class="btn btn-outline-secondary btn-sm" type="button" id="dl-back-btn">Browse...</button>
                                     <input type="text" class="form-control" id="dl-back-placeholder" placeholder="No file selected" readonly />
@@ -42,6 +42,21 @@
                                 <input type="file" id="dl-back" accept="image/*" style="display:none" />
                                 <div class="mt-2">
                                     <img id="dl-back-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license back preview" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container my-4">
+                        <h5 class="text-success mb-3">Upload Medical Certificate</h5>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="input-group browse">
+                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="mec-btn">Browse...</button>
+                                    <input type="text" class="form-control" id="mec-placeholder" placeholder="No file selected" readonly />
+                                </div>
+                                <input type="file" id="mec" accept="image/*" style="display:none" />
+                                <div class="mt-2">
+                                    <img id="mec-preview" class="img-fluid rounded shadow-sm d-none" alt="Medical certificate preview" />
                                 </div>
                             </div>
                         </div>
