@@ -1211,6 +1211,7 @@ export const applicationDocuments = async (req, res) => {
         let { hbs } = res
         hbs = hbs.set(key, { title: 'Driver Application Documents' })
         hbs.bodyAttrs = ' data-bs-theme="dark"'
+        hbs.formId = formId
 
         hbs.href = {
             summary: `/application/${formId}/summary`,
@@ -1218,6 +1219,9 @@ export const applicationDocuments = async (req, res) => {
         hbs.actionUrl = {
             certify: `/resource/application/progress/${formId}/certify`,
         }
+
+        hbs.uplLegal = application.legalStatus[0] === 2
+        hbs.uplRegistration = application.position === 'OO'
 
         res.render('application/documents', hbs)
     } catch (err) {

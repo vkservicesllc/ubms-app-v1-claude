@@ -259,6 +259,13 @@ router.post('/application/progress/:formId/:step', dynamicValidator.applications
 })
 
 
+router.post('/application/upload/:formId', (req, res) => {
+    try {} catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/application/submit/:formId', async (req, res) => {
     try {
         const { formId } = req.params

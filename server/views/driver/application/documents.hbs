@@ -19,51 +19,102 @@
                             <button type="submit" class="btn btn-secondary bg-secondary-subtle btn-sm px-3">Skip Upload</button>
                         </form>
                     </div>
-                    <div class="container my-4">
-                        <h5 class="text-success mb-3">Upload Driver's License</h5>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary" for="dl-front">FRONT</label>
-                                <div class="input-group browse">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="dl-front-btn">Browse...</button>
-                                    <input type="text" class="form-control" id="dl-front-placeholder" placeholder="No file selected" readonly />
+                    <form action="/resource/application/upload/{{formId}}" method="POST" enctype="multipart/form-data">
+                        <div class="container my-4">
+                            <h6 class="text-success mb-3">Upload Driver's License</h6>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary" for="dl-front">FRONT</label>
+                                    <div class="input-group browse">
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" id="dl-front-btn">Browse...</button>
+                                        <input type="text" class="form-control" id="dl-front-placeholder" placeholder="No file selected" readonly />
+                                    </div>
+                                    <input type="file" id="dl-front" accept="image/*" style="display:none" />
+                                    <div class="mt-2">
+                                        <img id="dl-front-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license front preview" />
+                                    </div>
                                 </div>
-                                <input type="file" id="dl-front" accept="image/*" style="display:none" />
-                                <div class="mt-2">
-                                    <img id="dl-front-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license front preview" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-secondary" for="dl-back">BACK</label>
-                                <div class="input-group browse">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="dl-back-btn">Browse...</button>
-                                    <input type="text" class="form-control" id="dl-back-placeholder" placeholder="No file selected" readonly />
-                                </div>
-                                <input type="file" id="dl-back" accept="image/*" style="display:none" />
-                                <div class="mt-2">
-                                    <img id="dl-back-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license back preview" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="container my-4">
-                        <h5 class="text-success mb-3">Upload Medical Certificate</h5>
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <div class="input-group browse">
-                                    <button class="btn btn-outline-secondary btn-sm" type="button" id="mec-btn">Browse...</button>
-                                    <input type="text" class="form-control" id="mec-placeholder" placeholder="No file selected" readonly />
-                                </div>
-                                <input type="file" id="mec" accept="image/*" style="display:none" />
-                                <div class="mt-2">
-                                    <img id="mec-preview" class="img-fluid rounded shadow-sm d-none" alt="Medical certificate preview" />
+                                <div class="col-md-6">
+                                    <label class="form-label text-secondary" for="dl-back">BACK</label>
+                                    <div class="input-group browse">
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" id="dl-back-btn">Browse...</button>
+                                        <input type="text" class="form-control" id="dl-back-placeholder" placeholder="No file selected" readonly />
+                                    </div>
+                                    <input type="file" id="dl-back" accept="image/*" style="display:none" />
+                                    <div class="mt-2">
+                                        <img id="dl-back-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license back preview" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div>
-                        <p class="text-danger">Work in progress... Will be available soon...</p>
-                    </div>
+                        <div class="container my-4">
+                            <h6 class="text-success mb-3">Upload Medical Certificate</h6>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="input-group browse">
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" id="mec-btn">Browse...</button>
+                                        <input type="text" class="form-control" id="mec-placeholder" placeholder="No file selected" readonly />
+                                    </div>
+                                    <input type="file" id="mec" accept="image/*" style="display:none" />
+                                    <div class="mt-2">
+                                        <img id="mec-preview" class="img-fluid rounded shadow-sm d-none" alt="Medical certificate preview" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container my-4">
+                            <h6 class="text-success mb-3">Upload Social Security Card</h6>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="input-group browse">
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" id="ssc-btn">Browse...</button>
+                                        <input type="text" class="form-control" id="ssc-placeholder" placeholder="No file selected" readonly />
+                                    </div>
+                                    <input type="file" id="ssc" accept="image/*" style="display:none" />
+                                    <div class="mt-2">
+                                        <img id="ssc-preview" class="img-fluid rounded shadow-sm d-none" alt="Social security card preview" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{#if (eq uplLegal true)}}
+                        <div class="container my-4">
+                            <h6 class="text-success mb-3">Upload Work Authorization / Visa</h6>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="input-group browse">
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" id="leg-btn">Browse...</button>
+                                        <input type="text" class="form-control" id="leg-placeholder" placeholder="No file selected" readonly />
+                                    </div>
+                                    <input type="file" id="leg" accept="image/*" style="display:none" />
+                                    <div class="mt-2">
+                                        <img id="leg-preview" class="img-fluid rounded shadow-sm d-none" alt="Social security card preview" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{#if (eq uplRegistration true)}}
+                        <div class="container my-4">
+                            <h6 class="text-success mb-3">Upload Vehicle Registration</h6>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="input-group browse">
+                                        <button class="btn btn-outline-secondary btn-sm" type="button" id="reg-btn">Browse...</button>
+                                        <input type="text" class="form-control" id="reg-placeholder" placeholder="No file selected" readonly />
+                                    </div>
+                                    <input type="file" id="reg" accept="image/*" style="display:none" />
+                                    <div class="mt-2">
+                                        <img id="reg-preview" class="img-fluid rounded shadow-sm d-none" alt="Social security card preview" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        <div class="d-grid gap-2 mb-2 mx-2">
+                            <button type="submit" class="btn btn-primary bg-primary-subtle">Upload Documents</button>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="card-footer text-secondary">
