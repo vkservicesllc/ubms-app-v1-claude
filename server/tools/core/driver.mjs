@@ -466,6 +466,7 @@ class Application {
                 year: data.vhlYear,
                 type: data.vhlType,
                 length: data.vhlLength,
+                trailer: data.vhlTrailer,
             }
 
         if (data.benefRelation) {
@@ -2019,6 +2020,7 @@ class Application {
                     [ 'year', 'vhlYear' ],
                     [ 'type', 'vhlType' ],
                     [ 'length', 'vhlLength' ],
+                    [ 'trailer', 'vhlTrailer' ],
                 ],
                 join: [ 'appId', 'id' ],
             },
@@ -2483,6 +2485,7 @@ class Application {
             '3': 'In 3 weeks',
             '4': 'In 4 weeks',
         },
+
     }
 
 

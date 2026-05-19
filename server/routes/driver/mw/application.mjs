@@ -16,6 +16,9 @@ import { respond404 } from '../../../tools/utils/response.mjs'
 import { tel as formatTel, ssn as formatSsn, ein as formatEin } from '../../../../client/global/modules/tools/utils/formatter.mjs'
 import { maskEmail } from '../../../tools/utils/string.mjs'
 
+/* Settings */
+import applicationSettings from '../../../../client/global/modules/settings/driver-application.mjs'
+
 /* Forms */
 import { ApplicationForm, EmploymentForm, vhlMMTData } from '../../../tools/form/driver.mjs'
 import { updateFormOptions } from '../../../tools/form/builder.mjs'
@@ -860,9 +863,12 @@ export const applicationProgress = async (req, res, next) => {
             }
 
             if (application.position === 'OO') {
+                hbs.vhlTrailerDisplay = ' style="display: none;"'
+
                 const  { vhlCode } = application
                 const values = {
                     currentVhlType: application?.vehicle?.type,
+                    currentVhlTrailer: application?.vehicle?.trailer,
                 }
 
                 let vhlTypeData = Application.list.vhlType[cdlRole]
@@ -887,6 +893,20 @@ export const applicationProgress = async (req, res, next) => {
                         values.currentVhlModel = model
                     }
                     if (values.currentVhlYear) values.currentVhlYear = ':' + values.currentVhlYear
+                }
+
+                const wTrailer = applicationSettings.vhlType_wTrailer.includes(application?.vehicle?.type)
+
+                for (const prop of ['yes', 'no']) {
+                    options.currentVhlTrailer.radio[prop] = {
+                        input: { ...checkProps.input, disabled: !wTrailer },
+                        label: { ...checkProps.label },
+                    }
+                }
+
+                if (wTrailer) {
+                    hbs.vhlTrailerDisplay = ''
+                    options.currentVhlTrailer.radio[application?.vehicle?.trailer ? 'yes' : 'no'].input.checked = true
                 }
 
                 options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })

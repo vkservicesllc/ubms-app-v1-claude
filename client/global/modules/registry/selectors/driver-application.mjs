@@ -67,6 +67,7 @@ const selector = {
             prevEmployed: 'previously-employed',
             // emplFmcsr: 'employment-subject-to-fmcsr',
             // emplDotDat: 'employment-subject-to-dot-drug-alcohol-test',
+            currentVhlTrailer: 'vehicle-with-trailer',
             operType: 'operating-type-preference',
             startPref: 'start-preference',
             activeLLC: 'active-llc',
@@ -316,6 +317,10 @@ const selector = {
             //     yes: 'employment-subject-to-dot-drug-alcohol-test',
             //     no: 'employment-not-subject-to-dot-drug-alcohol-test',
             // },
+            currentVhlTrailer: {
+                yes: 'vehicle-with-trailer',
+                no: 'vehicle-without-trailer',
+            },
             operType: {
                 solo: 'operating-type-solo-preference',
                 team: 'operating-type-team-preference',
@@ -385,6 +390,7 @@ const selector = {
                 step: 'stepdeck-equipment-type-preference',
             },
             inactiveLLC: 'inactive-llc',
+            currentVhlTrailer: 'vehicle-with-trailer',
         },
     },
 }

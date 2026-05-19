@@ -1,4 +1,6 @@
 import application, { dropdownEvent } from './hub.mjs'
+import selector from '/modules/registry/selectors/driver-application.mjs'
+import settings from "/modules/settings/driver-application.mjs"
 
 
 (() => {
@@ -7,9 +9,15 @@ import application, { dropdownEvent } from './hub.mjs'
     const { position, vehicle } = application
     const $form = $('#position-form')
     const $vehicle = $('#vehicle-section')
+    const { type, trailer } = vehicle
+    const $type = $(selector.id.hidden.currentVhlType)
+    const $trailer = $(selector.id.checkbox.currentVhlTrailer)
 
-    if (vehicle?.type) $vehicle.show()
+    if (type) $vehicle.show()
     else $vehicle.find('input').prop('disabled', true)
+
+    if (settings.vhlType_wTrailer.includes(type))
+        $trailer.prop('checked', trailer).parent().parent().parent().show()
 
     const $dropdown = {
         position: [
@@ -17,10 +25,14 @@ import application, { dropdownEvent } from './hub.mjs'
             position,
             value => {
                 let disabled = true, action = 'hide'
+                const type = $type
 
                 if (value === 'OO') {
                     disabled = false
                     action = 'show'
+
+                    if (settings.vhlType_wTrailer.includes(type))
+                        $trailer.parent().parent().parent().show()
                 }
 
                 $vehicle[action]().find('input').prop('disabled', disabled)
@@ -28,7 +40,15 @@ import application, { dropdownEvent } from './hub.mjs'
         ],
         vehicleType: [
             $('#vehicle-type-dropdown'),
-            vehicle?.type,
+            type,
+            value => {
+                let action = 'hide'
+
+                if (settings.vhlType_wTrailer.includes(value))
+                    action = 'show'
+
+                $trailer.parent().parent().parent()[action]()
+            },
         ],
     }
 

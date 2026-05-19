@@ -124,6 +124,21 @@
                         </div>
                     </div>
                     {{/if}}
+                    <div class="row g-3 my-1" id="own-trailer"{{{vhlTrailerDisplay}}}>
+                        <label class="form-label">
+                            Do you own a trailer?
+                        </label>
+                        <div class="col-md-4 mt-0 mb-2">
+                            <div class="form-check form-check-inline">
+                                {{{form.vhlTrailer.radio.yes.input}}}
+                                {{{form.vhlTrailer.radio.yes.label}}}
+                            </div>
+                            <div class="form-check form-check-inline">
+                                {{{form.vhlTrailer.radio.no.input}}}
+                                {{{form.vhlTrailer.radio.no.label}}}
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 {{/if}}
                 <div class="row g-3 my-2">

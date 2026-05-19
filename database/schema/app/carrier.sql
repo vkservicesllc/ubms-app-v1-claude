@@ -686,6 +686,7 @@ CREATE TABLE application_vehicles (
     `year`     YEAR                DEFAULT NULL,
     `type`     VARCHAR(20)         DEFAULT NULL,
     `length`   TINYINT             DEFAULT NULL,  -- ft
+    trailer    BOOLEAN             DEFAULT NULL,
 
     createdBy  SMALLINT UNSIGNED   DEFAULT NULL,  -- NULL when self registered
     createdAt  TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,

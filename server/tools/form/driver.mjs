@@ -1449,6 +1449,21 @@ class ApplicationForm {
         },
     })
 
+    static currentVhlTrailer = createYesNoForm({
+        selector: appSelector,
+        target: 'currentVhlTrailer',
+        group: 'currentVhlTrailer',
+        name: 'trailer',
+        disabled: true,
+    })
+    static currentVhlTrailer2 = createForm({
+        selector: appSelector,
+        target: 'currentVhlTrailer',
+        type: 'checkbox',
+        name: 'trailer',
+        label: 'Trailer owned',
+    })
+
 
 
     /* BENEFICIARY */

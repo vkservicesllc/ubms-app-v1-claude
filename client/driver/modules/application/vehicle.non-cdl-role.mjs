@@ -2,6 +2,7 @@ import { selectEvent } from '/modules/events/form.mjs'
 import { makeEvent, modelEvent } from '/modules/events/vehicle.mjs'
 import { onInput, onChange } from './support.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
+import settings from "/modules/settings/driver-application.mjs"
 
 const TS = selector.id.text, SS = selector.id.select
 const vhlMmtId = SS.currentVhlMMT
@@ -24,6 +25,12 @@ const requestLenght = type => {
 
     $length.prop('disabled', disabled)
     $container[action]()
+}
+
+const toggleTrailer = type => {
+    const found = settings.vhlType_wTrailer.includes(type)
+    $('#own-trailer')[found ? 'show' : 'hide']()
+        .find('[type="radio"]').prop('disabled', !found)
 }
 
 
@@ -50,6 +57,7 @@ selectEvent(vhlMmtId, {
             $model.val(model)
 
             requestLenght(type)
+            toggleTrailer(type)
         }
 
         onChange(mmt, $mmt)
@@ -61,6 +69,7 @@ selectEvent(vhlTypeId, {
     fill: true,
     onChange(type, $type) {
         requestLenght(type)
+        toggleTrailer(type)
         onChange(type, $type)
     }
 })
