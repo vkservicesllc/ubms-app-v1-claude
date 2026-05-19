@@ -9,6 +9,7 @@ import application, { dropdownEvent, errorMessage } from './hub.mjs'
 
     const $form = $('#assign-form')
     const $dropdown = {
+        refSrc: $('#refsrc-dropdown'),
         user: $('#user-dropdown'),
         carrier: $('#carrier-dropdown'),
         team: $('#team-dropdown'),

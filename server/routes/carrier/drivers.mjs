@@ -12,7 +12,7 @@ import Individual from '../../tools/core/individual.mjs'
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
-import Company from '../../tools/core/company.mjs'
+import Company, { RefSource } from '../../tools/core/company.mjs'
 import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
 import { privileges, inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 import carrierPrivs from '../../tools/core/user/permissions.carrier.mjs'
@@ -336,7 +336,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             prevEmployers: checkMark.unchecked,
         }
 
-        let options = {}, dropdown = {}, t = `\t`.repeat(11)
+        let options = {}, dropdown = {}, t = `\t`.repeat(13)
 
         const legalStatuses = Application.list.legalStatus
         const legalDocs = [
@@ -358,6 +358,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         /* WORKFLOW */
         {
+            dropdown.refSrc = ''
             dropdown.user = ''
             dropdown.carrier = ''
             dropdown.team = ''
@@ -396,6 +397,13 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             //     const { _id, name } = user
             //     dropdown.user += `\n${t}<div class="item" data-value="${_id}">${name}</div>`
             // })
+
+            options.refSrc = { select: { label: { content: 'Discovery Source' } } }
+            if (application._refSrcId)
+                options.refSrc.hidden = { input: { value: application._refSrcId } }
+
+            let refSrc = await RefSource.fetch(res.session)
+
             if (application._userId)
                 options.user = { hidden: { input: { value: application._userId } } }
 
@@ -414,6 +422,11 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             }
             if (application._carrierId)
                 options.carrier = { hidden: { input: { value: application._carrierId } } }
+
+            //? Should refSrc be modified based on company
+            refSrc.map(src => {
+                dropdown.refSrc += `\n${t}<div class="item" data-value="${src._id}">${src.name}</div>`
+            })
 
             if (unscoped) {
                 const filter = {}

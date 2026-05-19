@@ -19,7 +19,7 @@
                             <button type="submit" class="btn btn-secondary bg-secondary-subtle btn-sm px-3">Skip Upload</button>
                         </form>
                     </div>
-                    <form action="/resource/application/upload/{{formId}}" method="POST" enctype="multipart/form-data">
+                    <form action="/upload/application/{{formId}}/documents" method="POST" enctype="multipart/form-data">
                         <div class="container my-4">
                             <h6 class="text-success mb-3">Upload Driver's License</h6>
                             <div class="row g-2">
@@ -29,7 +29,7 @@
                                         <button class="btn btn-outline-secondary btn-sm" type="button" id="dl-front-btn">Browse...</button>
                                         <input type="text" class="form-control" id="dl-front-placeholder" placeholder="No file selected" readonly />
                                     </div>
-                                    <input type="file" id="dl-front" accept="image/*" style="display:none" />
+                                    <input type="file" id="dl-front" name="dlF" accept="image/*" style="display:none" />
                                     <div class="mt-2">
                                         <img id="dl-front-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license front preview" />
                                     </div>
@@ -40,7 +40,7 @@
                                         <button class="btn btn-outline-secondary btn-sm" type="button" id="dl-back-btn">Browse...</button>
                                         <input type="text" class="form-control" id="dl-back-placeholder" placeholder="No file selected" readonly />
                                     </div>
-                                    <input type="file" id="dl-back" accept="image/*" style="display:none" />
+                                    <input type="file" id="dl-back" name="dlB" accept="image/*" style="display:none" />
                                     <div class="mt-2">
                                         <img id="dl-back-preview" class="img-fluid rounded shadow-sm d-none" alt="Driver's license back preview" />
                                     </div>
@@ -55,7 +55,7 @@
                                         <button class="btn btn-outline-secondary btn-sm" type="button" id="mec-btn">Browse...</button>
                                         <input type="text" class="form-control" id="mec-placeholder" placeholder="No file selected" readonly />
                                     </div>
-                                    <input type="file" id="mec" accept="image/*" style="display:none" />
+                                    <input type="file" id="mec" name="mec" accept="image/*" style="display:none" />
                                     <div class="mt-2">
                                         <img id="mec-preview" class="img-fluid rounded shadow-sm d-none" alt="Medical certificate preview" />
                                     </div>
@@ -70,7 +70,7 @@
                                         <button class="btn btn-outline-secondary btn-sm" type="button" id="ssc-btn">Browse...</button>
                                         <input type="text" class="form-control" id="ssc-placeholder" placeholder="No file selected" readonly />
                                     </div>
-                                    <input type="file" id="ssc" accept="image/*" style="display:none" />
+                                    <input type="file" id="ssc" name="ssc" accept="image/*" style="display:none" />
                                     <div class="mt-2">
                                         <img id="ssc-preview" class="img-fluid rounded shadow-sm d-none" alt="Social security card preview" />
                                     </div>
@@ -86,7 +86,7 @@
                                         <button class="btn btn-outline-secondary btn-sm" type="button" id="leg-btn">Browse...</button>
                                         <input type="text" class="form-control" id="leg-placeholder" placeholder="No file selected" readonly />
                                     </div>
-                                    <input type="file" id="leg" accept="image/*" style="display:none" />
+                                    <input type="file" id="leg" name="leg" accept="image/*" style="display:none" />
                                     <div class="mt-2">
                                         <img id="leg-preview" class="img-fluid rounded shadow-sm d-none" alt="Social security card preview" />
                                     </div>
@@ -103,7 +103,7 @@
                                         <button class="btn btn-outline-secondary btn-sm" type="button" id="reg-btn">Browse...</button>
                                         <input type="text" class="form-control" id="reg-placeholder" placeholder="No file selected" readonly />
                                     </div>
-                                    <input type="file" id="reg" accept="image/*" style="display:none" />
+                                    <input type="file" id="reg" name="reg" accept="image/*" style="display:none" />
                                     <div class="mt-2">
                                         <img id="reg-preview" class="img-fluid rounded shadow-sm d-none" alt="Social security card preview" />
                                     </div>

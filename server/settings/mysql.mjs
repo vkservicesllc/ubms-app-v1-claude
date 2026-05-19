@@ -100,6 +100,7 @@ export const query = {
         vehicle: new Query(db.carrier, 'application_vehicles'),
         beneficiary: new Query(db.carrier, 'application_beneficiaries'),
         emergency: new Query(db.carrier, 'application_emergencies'),
+        uploads: new Query(db.carrier, 'application_uploads'),
         checklist: new Query(db.carrier, 'application_checklists'),
         decision: new Query(db.carrier, 'application_decisions'),
     },

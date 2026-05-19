@@ -39,10 +39,7 @@ router.post('/business/company/:_id/logo', User.mw.verify, User.mw.superAdminOnl
 
     if (since) filename = since
 
-    req.upload = {
-        id,
-        filename,
-    }
+    req.upload = { id, filename }
     req.data = { company, filename }
 
     next()

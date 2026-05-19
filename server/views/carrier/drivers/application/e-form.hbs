@@ -304,7 +304,21 @@
                                             </div>
                                         </div>
                                     </div> --}}
-                                    <h5 class="ui blue text first header">Assignment</h5>
+                                    <h5 class="ui blue text first header">Statistics</h5>
+                                    <div class="ui compact grid" style="margin-top: .35rem;">
+                                        <div class="six wide field">
+                                            {{{form.refSrc.select.label}}}
+                                            <div class="ui fluid clearable selection dropdown" id="refsrc-dropdown">
+                                                {{{form.refSrc.hidden.input}}}
+                                                <i class="dropdown icon"></i>
+                                                <div class="default text"></div>
+                                                <div class="menu">{{{dropdown.refSrc}}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="one wide field"></div>
+                                    </div>
+                                    <h5 class="ui blue text header">Assignment</h5>
                                     <div class="ui compact grid" style="margin-top: .35rem;">
                                         <div class="six wide field">
                                             {{{form.user.select.label}}}
@@ -1660,8 +1674,6 @@
                                             {{{form.emergRelation.text.input}}}
                                         </div>
                                     </div>
-                                    <h5 class="ui blue text header">Referral Source</h5>
-                                    <span class="ui red text"><i>Comming up...</i></span>
                                     <div class="ui divider"></div>
                                     <div class="actions">
                                         <div>

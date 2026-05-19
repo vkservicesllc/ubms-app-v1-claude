@@ -747,6 +747,28 @@ CREATE TABLE application_emergencies (
 );
 
 
+SELECT 'Creating table `app_carrier`.`application_uploads`';
+CREATE TABLE application_uploads (
+
+    appId  MEDIUMINT UNSIGNED  NOT NULL,
+
+    dlF    BOOLEAN             DEFAULT FALSE,
+    dlB    BOOLEAN             DEFAULT FALSE,
+    mec    BOOLEAN             DEFAULT FALSE,
+    ssc    BOOLEAN             DEFAULT FALSE,
+    leg    BOOLEAN             DEFAULT FALSE,
+    reg    BOOLEAN             DEFAULT FALSE,
+
+    createdBy  SMALLINT UNSIGNED   DEFAULT NULL,  -- NULL when self registered
+    createdAt  TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    createdIn  JSON                NOT NULL,
+    updateLog  JSON                DEFAULT NULL,
+
+    PRIMARY KEY (appId)
+
+);
+
+
 SELECT 'Creating table `app_carrier`.`application_checklists`...';
 CREATE TABLE application_checklists (
 

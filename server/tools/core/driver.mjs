@@ -545,6 +545,17 @@ class Application {
             recruiter: data.recruiter_,
         }
 
+        this.uploads = bool(data.dlfUpl)
+        if (this.uploads !== null)
+            this.uploads = {
+                dlF: !!data.dlfUpl,
+                dlB: !!data.dlbUpl,
+                mec: !!data.mecUpl,
+                ssc: !!data.sscUpl,
+                leg: !!data.legUpl,
+                reg: !!data.regUpl,
+            }
+
         if (single) {
             this.session = session
             this.config = { hideRawId, hideSensitive }
@@ -2032,6 +2043,18 @@ class Application {
                     [ 'phone', 'emergPhone' ],
                     [ 'name', 'emergName' ],
                     [ 'relation', 'emergRelation' ],
+                ],
+                join: [ 'appId', 'id' ],
+            },
+            {
+                table: query.driver_application.uploads.table,
+                fields: [
+                    [ 'dlF', 'dlfUpl' ],
+                    [ 'dlB', 'dlbUpl' ],
+                    [ 'mec', 'mecUpl' ],
+                    [ 'ssc', 'sscUpl' ],
+                    [ 'leg', 'legUpl' ],
+                    [ 'reg', 'regUpl' ],
                 ],
                 join: [ 'appId', 'id' ],
             },
