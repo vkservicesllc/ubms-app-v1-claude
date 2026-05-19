@@ -1,6 +1,7 @@
 import { makeEvent, modelEvent } from '/modules/events/vehicle.mjs'
 import application, { dropdownEvent } from './hub.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
+import settings from "/modules/settings/driver-application.mjs"
 
 
 (() => {
@@ -10,14 +11,18 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
 
     const { position } = application
     const vehicle = application.vehicle || {}
-    const { mmt, length } = vehicle
+    const { mmt, length, trailer } = vehicle
     let { year, type, make, model } = vehicle
     const $form = $('#position-form')
     const $vehicle = $('#vehicle-section')
     const $make = $(TS.currentVhlMake), $model = $(TS.currentVhlModel)
+    const $trailer = $(selector.id.checkbox.currentVhlTrailer)
 
     if (year) year = `:${year}`
     if (mmt && mmt !== 'other') [ type, make, model ] = mmt.split(':')
+
+    if (settings.vhlType_wTrailer.includes(type))
+        $trailer.prop('checked', trailer).parent().parent().parent().show()
 
     const $dropdown = {
         position: [
@@ -33,8 +38,13 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
                     $make.prop('disabled', false)
                     $model.prop('disabled', false)
                     $dropdown.vehicleYear[0].find('input').prop('disabled', false)
+
                     if (type === 'straightBox')
                         $dropdown.vehicleLength[0].find('input').prop('disabled', false)
+
+                    //! not sure if this line matters
+                    // if (settings.vhlType_wTrailer.includes(type))
+                    //     $trailer.parent().parent().parent().show()
 
                     $vehicle.show()
                 }
@@ -45,13 +55,17 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
             mmt,
             value => {
                 let type = null, make, model
-                let onOff = 'on', action = 'removeClass'
+                let onOff = 'on', action = 'removeClass', trlAction = 'hide'
 
                 if (value !== 'other') {
                     [ type, make, model ] = value.split(':')
                     onOff = 'off'
                     action = 'addClass'
                 }
+
+                if (settings.vhlType_wTrailer.includes(type))
+                    trlAction = 'show'
+                $trailer.parent().parent().parent()[trlAction]()
 
                 toggleDropdown('vehicleType', onOff, type)
                 $make.val(make).parent()[action]('disabled')
@@ -66,12 +80,15 @@ import selector from '/modules/registry/selectors/driver-application.mjs'
             $('#vehicle-type-dropdown'),
             type,
             value => {
-                let onOff = 'off', action = 'hide'
+                let onOff = 'off', action = 'hide', trlAction = 'hide'
                 if (value === 'straightBox') {
                     onOff = 'on'
                     action = 'show'
                 }
+                if (settings.vhlType_wTrailer.includes(value))
+                    trlAction = 'show'
 
+                $trailer.parent().parent().parent()[trlAction]()
                 toggleDropdown('vehicleLength', onOff).parent()[action]()
             },
         ],

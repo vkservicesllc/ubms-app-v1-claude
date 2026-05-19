@@ -10,7 +10,6 @@ import settings from "/modules/settings/driver-application.mjs"
     const $form = $('#position-form')
     const $vehicle = $('#vehicle-section')
     const { type, trailer } = vehicle
-    const $type = $(selector.id.hidden.currentVhlType)
     const $trailer = $(selector.id.checkbox.currentVhlTrailer)
 
     if (type) $vehicle.show()
@@ -25,14 +24,15 @@ import settings from "/modules/settings/driver-application.mjs"
             position,
             value => {
                 let disabled = true, action = 'hide'
-                const type = $type
+                // const type = $dropdown.vehicleType[0].dropdown('get value')
 
                 if (value === 'OO') {
                     disabled = false
                     action = 'show'
 
-                    if (settings.vhlType_wTrailer.includes(type))
-                        $trailer.parent().parent().parent().show()
+                    //! not sure if this line matters
+                    // if (settings.vhlType_wTrailer.includes(type))
+                    //     $trailer.parent().parent().parent().show()
                 }
 
                 $vehicle[action]().find('input').prop('disabled', disabled)
