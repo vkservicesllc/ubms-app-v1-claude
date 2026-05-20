@@ -23,6 +23,8 @@ import { tel as formatTel } from '../../../client/global/modules/tools/utils/for
 // import { application } from '../../includes/driver'
 import { selectAES, processAES, unprocessAES } from '../utils/data.mjs'
 
+import appSettings from '../../../client/global/modules/settings/driver-application.mjs'
+
 const mysql = require('../utils/mysql')
 
 
@@ -802,11 +804,18 @@ class Application {
                                 body.make = null
                                 body.model = null
 
-                                if (body.mmt.split(':')[0] !== 'straightBox') body.length = null
+                                const type = body.mmt.split(':')[0]
+
+                                if (type !== 'straightBox') body.length = null
+                                if (!appSettings.vhlType_wTrailer.includes(type)) body.trailer = null
+                                else body.trailer = !!body.trailer
                             } else {
                                 if (body.type !== 'straightBox') body.length = null
+                                if (!appSettings.vhlType_wTrailer.includes(body.type)) body.trailer = null
+                                else body.trailer = !!body.trailer
                             }
                         }
+
                         cache.vehicle = { ...body }
 
                         await application[application.vehicle ? 'update' : 'add']('vehicle', body)
@@ -1202,7 +1211,7 @@ class Application {
                                 let { activeLLC } = body
                                 const {
                                     inactiveLLC, busName, state, ein,
-                                    mmt, type, make, model, year, length,
+                                    mmt, type, make, model, year, length, trailer,
                                 } = body
                                 if (inactiveLLC) activeLLC = false
                                 else if (activeLLC === undefined) activeLLC = true
@@ -1229,7 +1238,7 @@ class Application {
                                 body.busId = busId
 
                                 //* Driver Application only (when type is defined)
-                                cache = await vehicleRecord(this, { mmt, type, make, model, year, length }, cache)
+                                cache = await vehicleRecord(this, { mmt, type, make, model, year, length, trailer }, cache)
 
                                 await this.update(body)
                                 await driver.update('appDef', { cache })
@@ -1329,11 +1338,11 @@ class Application {
 
                         case 'position': //* Carrier UI only (no step)
                             {
-                                const { position, mmt, type, make, model, year, length } = body
+                                const { position, mmt, type, make, model, year, length, trailer } = body
 
                                 await this.update({ position })
                                 this.position = position
-                                await vehicleRecord(this, { mmt, type, make, model, year, length })
+                                await vehicleRecord(this, { mmt, type, make, model, year, length, trailer })
                             }
                             break
 
