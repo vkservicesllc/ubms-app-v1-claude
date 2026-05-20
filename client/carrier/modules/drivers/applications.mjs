@@ -308,7 +308,7 @@ const table = $('#driver-applications-table').DataTable({
                 if (condition !== 'p') {
                     if (access && row.uploads !== null)
                         panel += `<a class="apl-uploads" href="" title="Uploads available"><i class="dark green cloud download icon"></i></a>`
-                    panel += `<a class="apl-info" href="" title="Quick peek"><i class="dark green id card icon"></i></a>`
+                    panel += `<a class="apl-info-card" data-id="${_id}" href="" title="Quick peek"><i class="dark green id card icon"></i></a>`
                     if (modify) {
                         panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form" title="Manage Application"><i class="dark green edit outline icon"></i></a>`
                         // panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`

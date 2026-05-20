@@ -26,6 +26,11 @@
         {{#if (eq permissions.create true)}}
         {{> carrier/drivers/application.new}}
         {{/if}}
+        <div class="ui modal" id="apl-info-card-modal">
+            <div class="ui header" id="apl-info-card-header">Applicant's Info</div>
+            <div class="content"></div>
+            <script type="module" src="/modules/drivers/application.info-card.mjs"></script>
+        </div>
         {{#if (eq permissions.modify true)}}
         <div class="ui small modal" id="apl-reinvite-card-modal">
             <div class="ui header">Reinvitation</div>
