@@ -207,9 +207,19 @@ const table = $('#driver-applications-table').DataTable({
             orderable: false,
             render(data, type, row) {
                 data = positions[data]
-                if (row.dlCommercial) data += ` <sup title="Commercial Driver's License"><small><i class="green star outline icon"></i></small></sup>`
+                if (row.dl.commercial) data += ` <sup title="Commercial Driver's License"><small><i class="green star outline icon"></i></small></sup>`
 
                 return data
+            },
+        },
+
+        {
+            data: 'cdlRole',
+            title: 'Role',
+            searchable: false,
+            orderable: false,
+            render(data) {
+                return data ? 'CDL' : 'Non-CDL' 
             },
         },
 
