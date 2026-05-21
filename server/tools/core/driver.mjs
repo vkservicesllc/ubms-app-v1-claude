@@ -798,6 +798,10 @@ class Application {
                         await application.delete('vehicle')
                         delete cache.vehicle
                     } else {
+                        const trailerValue = (trailer = null, type) => {
+                            if (appSettings.vhlType_wTrailer.includes(type)) trailer = !!trailer
+                            return trailer
+                        }
                         if (body.mmt) {
                             if (body.mmt !== 'other') {
                                 body.type = null
@@ -807,14 +811,12 @@ class Application {
                                 const type = body.mmt.split(':')[0]
 
                                 if (type !== 'straightBox') body.length = null
-                                if (!appSettings.vhlType_wTrailer.includes(type)) body.trailer = null
-                                else body.trailer = !!body.trailer
+                                body.trailer = trailerValue(body.trailer, type)
                             } else {
                                 if (body.type !== 'straightBox') body.length = null
-                                if (!appSettings.vhlType_wTrailer.includes(body.type)) body.trailer = null
-                                else body.trailer = !!body.trailer
+                                body.trailer = trailerValue(body.trailer, body.type)
                             }
-                        }
+                        } else body.trailer = trailerValue(body.trailer, body.type)
 
                         cache.vehicle = { ...body }
 
@@ -1342,6 +1344,7 @@ class Application {
 
                                 await this.update({ position })
                                 this.position = position
+
                                 await vehicleRecord(this, { mmt, type, make, model, year, length, trailer })
                             }
                             break

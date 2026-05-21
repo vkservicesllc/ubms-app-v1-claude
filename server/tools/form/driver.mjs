@@ -1564,7 +1564,7 @@ class ApplicationForm {
                 fields = ['status', 'statusExp']
                 break
             case 'position/vehicle':
-                fields = ['position', ...vehicleFields]
+                fields = ['position', ...vehicleFields, 'currentVhlTrailer2']
                 break
             case 'residence':
                 fields = [
@@ -1618,7 +1618,7 @@ class ApplicationForm {
                 fields = businessFields
                 break
             case 'business/vehicle':
-                fields = [...businessFields, ...vehicleFields]
+                fields = [...businessFields, ...vehicleFields, 'currentVhlTrailer']
                 break
             case 'beneficiary':
                 fields = [
