@@ -541,6 +541,8 @@ class Application {
         this.expansion = {
             position: this.position ? Driver.list.position[this.position] : null,
             gender: person?.expansion?.gender || null,
+            addrState: Address.list.state[this?.address?.state] || null,
+            dlState: Address.list.state[this?.dl?.state] || null,
         }
 
         this.signature = {

@@ -27,8 +27,70 @@
         {{> carrier/drivers/application.new}}
         {{/if}}
         <div class="ui modal" id="apl-info-card-modal">
-            <div class="ui header" id="apl-info-card-header">Applicant's Info</div>
-            <div class="content"></div>
+            <div class="ui header" id="apl-info-card-header">
+                <span class="ui dark teal text">Applicant's Info Card &nbsp;—&nbsp;</span>
+                <span id="apl-info-card-fullname"></span>
+            </div>
+            <div class="content">
+                <div class="ui grid">
+                    <div class="seven wide column">
+                        <table class="ui very basic compact table">
+                            <tbody>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">First Name:</span></td>
+                                    <td class="apl-data" id="apl-info-card:firstName"></td>
+                                </tr>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">Middle Name:</span></td>
+                                    <td class="apl-data" id="apl-info-card:middleName"></td>
+                                </tr>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">Last Name:</span></td>
+                                    <td class="apl-data" id="apl-info-card:lastName"></td>
+                                </tr>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">Suffix:</span></td>
+                                    <td class="apl-data" id="apl-info-card:suffix"></td>
+                                </tr>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">DOB:</span></td>
+                                    <td class="apl-data" id="apl-info-card:dob"></td>
+                                </tr>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">SSN:</span></td>
+                                    <td class="apl-data" id="apl-info-card:ssn"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="nine wide column">
+                        <table class="ui very basic compact table">
+                            <tbody>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">Phone:</span></td>
+                                    <td class="apl-data" id="apl-info-card:phone"></td>
+                                </tr>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">Email:</span></td>
+                                    <td class="apl-data" id="apl-info-card:email"></td>
+                                </tr>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">Address:</span></td>
+                                    <td class="apl-data" id="apl-info-card:address"></td>
+                                </tr>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">DL Number:</span></td>
+                                    <td class="apl-data" id="apl-info-card:dlNum"></td>
+                                </tr>
+                                <tr>
+                                    <td class="apl-side-th"><span class="ui grey text">DL State:</span></td>
+                                    <td class="apl-data" id="apl-info-card:dlState"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <script type="module" src="/modules/drivers/application.info-card.mjs"></script>
         </div>
         {{#if (eq permissions.modify true)}}
