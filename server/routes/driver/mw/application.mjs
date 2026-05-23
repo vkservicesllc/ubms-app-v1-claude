@@ -868,7 +868,6 @@ export const applicationProgress = async (req, res, next) => {
                 const  { vhlCode } = application
                 const values = {
                     currentVhlType: application?.vehicle?.type,
-                    currentVhlTrailer: application?.vehicle?.trailer,
                 }
 
                 let vhlTypeData = Application.list.vhlType[cdlRole]
@@ -897,6 +896,7 @@ export const applicationProgress = async (req, res, next) => {
 
                 const wTrailer = applicationSettings.vhlType_wTrailer.includes(application?.vehicle?.type)
 
+                options.currentVhlTrailer = { radio: {} }
                 for (const prop of ['yes', 'no']) {
                     options.currentVhlTrailer.radio[prop] = {
                         input: { ...checkProps.input, disabled: !wTrailer },
@@ -910,6 +910,7 @@ export const applicationProgress = async (req, res, next) => {
                 }
 
                 options = updateFormOptions(options, ApplicationForm, values, { ...formInstr, tabs: 7 })
+
                 options.currentVhlType.select.input.data = vhlTypeData
                 if (vhlCode && !cdlRole) {
                     options.currentVhlMMT.select.input.data = vhlMMTData(vhlCode)

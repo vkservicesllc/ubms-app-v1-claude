@@ -1454,7 +1454,11 @@ class ApplicationForm {
         target: 'currentVhlTrailer',
         group: 'currentVhlTrailer',
         name: 'trailer',
-        disabled: true,
+        // disabled: true,
+        required,
+        validator: {
+            optional: true,
+        },
     })
     static currentVhlTrailer2 = createForm({
         selector: appSelector,
