@@ -18,10 +18,13 @@ export default subdir => multer({
         },
         filename: (req, file, cb) => {
             let name = file.originalname
-            if (req?.upload?.filename) {
-                const ext = path.extname(file.originalname)
+            const ext = path.extname(file.originalname)
+            const config = req?.upload?.files?.[file.fieldname]
+
+            if (config?.filename)
+                name = config.filename + ext
+            else if (req?.upload?.filename) 
                 name = req.upload.filename + ext
-            }
 
             cb(null, name)
         },
