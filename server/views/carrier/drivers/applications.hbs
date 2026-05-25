@@ -12,6 +12,14 @@
                 width: 7.14rem;
                 font-weight: bold;
             }
+            .apl-info-side-th {
+                width: 7rem;
+                font-weight: bold;
+            }
+            .apl-info2-side-th {
+                width: 4.4rem;
+                font-weight: bold;
+            }
             .ui.label.experience-label {
                 padding: .4em;
                 margin-right: .4em;
@@ -27,12 +35,94 @@
         {{> carrier/drivers/application.new}}
         {{/if}}
         <div class="ui modal" id="apl-info-card-modal">
-            <div class="ui header" id="apl-info-card-header">
-                <span class="ui dark teal text">Applicant's Info Card &nbsp;—&nbsp;</span>
+            <div class="ui center aligned header" id="apl-info-card-header">
+                <span class="ui grey text">Applicant's Info Card &nbsp;—&nbsp;</span>
                 <span id="apl-info-card-fullname"></span>
             </div>
-            <div class="content">
-                <div class="ui grid">
+            <div class="content" style="padding-left: 2.4rem; padding-right: 2.4rem;">
+                <div class="ui two column grid">
+                    <div class="column">
+                        <div class="ui raised segment" style="height: 27.12rem;">
+                            <a class="ui basic grey ribbon label">Legal Name</a>
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                    <tr>
+                                        <td class="apl-info-side-th"><span class="ui grey text">First Name:</span></td>
+                                        <td class="apl-data" id="apl-info-card:firstName"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="apl-info-side-th"><span class="ui grey text">Middle Name:</span></td>
+                                        <td class="apl-data" id="apl-info-card:middleName"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="apl-info-side-th"><span class="ui grey text">Last Name:</span></td>
+                                        <td class="apl-data" id="apl-info-card:lastName"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="apl-info-side-th"><span class="ui grey text">Suffix:</span></td>
+                                        <td class="apl-data" id="apl-info-card:suffix"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <a class="ui basic grey ribbon label">Identity</a>
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                    <tr>
+                                        <td class="apl-info-side-th"><span class="ui grey text">DOB:</span></td>
+                                        <td class="apl-data" id="apl-info-card:gender"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="apl-info-side-th"><span class="ui grey text">DOB:</span></td>
+                                        <td class="apl-info-data" id="apl-info-card:dob"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="apl-info-side-th"><span class="ui grey text">SSN:</span></td>
+                                        <td class="apl-data" id="apl-info-card:ssn"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="ui segment" style="height: 27.12rem;">
+                            <a class="ui basic grey right ribbon label">Contacts / Residence</a>
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                    <tr>
+                                        <td class="apl-info2-side-th"><span class="ui grey text">Phone:</span></td>
+                                        <td class="apl-data" id="apl-info-card:phone"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="apl-info2-side-th"><span class="ui grey text">Email:</span></td>
+                                        <td class="apl-data" id="apl-info-card:email"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="apl-info2-side-th"><span class="ui grey text">Address:</span></td>
+                                        <td class="apl-data" id="apl-info-card:address"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <a class="ui basic grey right ribbon label">Driver's License</a>
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                    <tr>
+                                        <td class="apl-info2-side-th"><span class="ui grey text">Number:</span></td>
+                                        <td class="apl-data" id="apl-info-card:dlNum"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="apl-info2-side-th"><span class="ui grey text">State:</span></td>
+                                        <td class="apl-data" id="apl-info-card:dlState"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="apl-info2-side-th"><span class="ui grey text">Expiration:</span></td>
+                                        <td class="apl-data" id="apl-info-card:dlExp"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {{!-- <div class="ui grid">
                     <div class="seven wide column">
                         <table class="ui very basic compact table">
                             <tbody>
@@ -89,7 +179,7 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div> --}}
             </div>
             <script type="module" src="/modules/drivers/application.info-card.mjs"></script>
         </div>

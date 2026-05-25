@@ -27,19 +27,22 @@ table.on('draw', function() {
                 const { application } = response.data
                 const { fullName, formId, dob, ssn, phone, address, dl } = application
 
+                application.gender = application.expansion.gender
                 application.dob = moment(dob).format('MM/DD/YYYY')
                 application.ssn = formatSsn(ssn)
                 application.phone = formatTel(phone)
                 application.address = new Address(address).html({ inline: false })
                 application.dlNum = dl.number
                 application.dlState = `${application.expansion.dlState} (${dl.state})`
+                application.dlExp = moment(dl.expiresOn).format('MM/DD/YYYY')
 
                 const cp = ' <sup><a href="" class="copy-apl-info-cred"><i class="dark green copy outline icon"></i></a></sup>'
                 const na = '<span class="ui red text"><small><i>N/A</i></small></span>'
 
                 const items = [
-                    'firstName', '^middleName', 'lastName', '^suffix', 'dob', 'ssn',
-                    'phone', 'email', '!address', 'dlNum', '!dlState',
+                    'firstName', '^middleName', 'lastName', '^suffix',
+                    '!gender', 'dob', 'ssn',
+                    'phone', 'email', '!address', 'dlNum', '!dlState', 'dlExp',
                 ]
                 items.forEach(prop => {
                     let optional = false, ncp = false
@@ -56,6 +59,7 @@ table.on('draw', function() {
                     else item = `<strong style="font-size: 1.05em;">${item}</strong>${!ncp ? cp : ''}`
                     $(`#apl-info-card\\:${prop}`).html(item)
                 })
+                if (dl.commercial) $('#apl-info-card\\:dlNum').append('<span class="ui tiny left pointing label">CDL</span>')
 
                 $fullName.html(`${fullName} &nbsp;<small style="font-weight: normal;">(${formId}) / ${application.expansion.addrState}</small>`)
 
