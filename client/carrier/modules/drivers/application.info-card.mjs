@@ -59,9 +59,9 @@ table.on('draw', function() {
                     else item = `<strong style="font-size: 1.05em;">${item}</strong>${!ncp ? cp : ''}`
                     $(`#apl-info-card\\:${prop}`).html(item)
                 })
-                if (dl.commercial) $('#apl-info-card\\:dlNum').append('<span class="ui tiny left pointing label">CDL</span>')
+                if (dl.commercial) $('#apl-info-card\\:dlNum').append(' &nbsp;—&nbsp; <b>CDL</b>')
 
-                $fullName.html(`${fullName} &nbsp;<small style="font-weight: normal;">(${formId}) / ${application.expansion.addrState}</small>`)
+                $fullName.html(`${fullName} &nbsp;<small style="font-weight: normal;">(${formId}) — ${application.expansion.addrState}</small>`)
 
                 $modal.modal('show')
 
