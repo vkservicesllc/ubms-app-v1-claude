@@ -24,10 +24,12 @@ table.on('draw', function() {
 
         $.ajax(`/api/resource/drivers/applications/${_id}`, {
             success(response) {
-                const { fullName, uploads } = response.data.application
+                const { fullName, formId, uploads } = response.data.application
                 if (uploads === null) return
 
                 $fullName.html(fullName)
+                let fileName = fullName.replace(',', '').replace(/[\s+]/g, '_')
+                fileName += `_${formId}`
 
                 let html = '<div class="ui special cards">'
                 for (const prop in uploads) {
@@ -41,11 +43,11 @@ table.on('draw', function() {
                         <div class="card" style="max-height: 16.4rem; overflow: hidden;">
                             <div class="blurring dimmable image" style="height: 12rem; overflow: hidden;">
                                 <div class="ui dimmer">
-                                <div class="content">
-                                    <div class="center">
-                                    <button class="ui inverted button">Download</button>
+                                    <div class="content">
+                                        <div class="center">
+                                            <a class="ui inverted button" href="${path}" download="${filename}__${fileName}">Download</a>
+                                        </div>
                                     </div>
-                                </div>
                                 </div>
                                 <img src="${path}" onerror="this.closest('.card').remove()" style="width: 100%; height: 100%; object-fit: cover;" />
                             </div>
