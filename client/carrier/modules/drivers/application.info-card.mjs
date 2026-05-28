@@ -21,7 +21,7 @@ table.on('draw', function() {
         evt.preventDefault()
 
         const _id = $(this).data('id')
-        
+
         $.ajax(`/api/resource/drivers/applications/${_id}?sensitive=true`, {
             success(response) {
                 const { application } = response.data

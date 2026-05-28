@@ -36,6 +36,19 @@
         {{#if (eq permissions.create true)}}
         {{> carrier/drivers/application.new}}
         {{/if}}
+        <div class="ui inverted dimmer" id="img-loader">
+            <div class="ui text loader">Loading images...</div>
+        </div>
+        <div class="ui modal" id="apl-upl-card-modal">
+            <div class="ui center aligned header" id="apl-info-card-header">
+                <span class="ui grey text">Applicant's Uploads &nbsp;—&nbsp;</span>
+                <span id="apl-upl-card-fullname"></span>
+            </div>
+            <div class="content" id="apl-upl-content" style="padding-left: 2.4rem; padding-right: 2.4rem;">
+                <img src="/some/image" alt="">
+            </div>
+            <script type="module" src="/modules/drivers/application.uploads.mjs"></script>
+        </div>
         <div class="ui modal" id="apl-info-card-modal">
             <div class="ui center aligned header" id="apl-info-card-header">
                 <span class="ui grey text">Applicant's Info Card &nbsp;—&nbsp;</span>
@@ -45,7 +58,7 @@
                 <div class="ui two column grid">
                     <div class="column">
                         <div class="ui raised segment" style="height: 27.12rem;">
-                            <a class="ui basic grey ribbon label">Legal Name</a>
+                            <span class="ui basic grey ribbon label">Legal Name</span>
                             <table class="ui very basic compact table">
                                 <tbody>
                                     <tr>
@@ -66,7 +79,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <a class="ui basic grey ribbon label">Identity</a>
+                            <span class="ui basic grey ribbon label">Identity</span>
                             <table class="ui very basic compact table">
                                 <tbody>
                                     <tr>
@@ -87,7 +100,7 @@
                     </div>
                     <div class="column">
                         <div class="ui raised segment" style="height: 27.12rem;">
-                            <a class="ui basic grey right ribbon label">Contacts / Residence</a>
+                            <span class="ui basic grey right ribbon label">Contacts / Residence</span>
                             <table class="ui very basic compact table">
                                 <tbody>
                                     <tr>
@@ -104,7 +117,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <a class="ui basic grey right ribbon label">Driver's License</a>
+                            <span class="ui basic grey right ribbon label">Driver's License</span>
                             <table class="ui very basic compact table">
                                 <tbody>
                                     <tr>

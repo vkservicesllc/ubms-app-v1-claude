@@ -89,6 +89,7 @@ import carrierVehiclesRoute from './server/routes/carrier/vehicles.mjs'
 import carrierApiRoute from './server/routes/carrier/api.mjs'
 import carrierChartsApiRoute from './server/routes/carrier/api.charts.mjs'
 import carrierDriverCrudApiRoute from './server/routes/carrier/api.crud.drivers.mjs'
+import carrierImageRoute from './server/routes/carrier/image.mjs'
 import carrierResourceRoute from './server/routes/carrier/resource.mjs'
 import carrierFilePdfRoute from './server/routes/carrier/files.pdf.mjs'
 
@@ -170,6 +171,7 @@ const apps = {
             { url: '/api/resource/drivers', router: carrierDriverCrudApiRoute },
             { url: '/resource', router: carrierResourceRoute },
             { url: '/files/pdf', router: carrierFilePdfRoute },
+            { url: '/image', router: carrierImageRoute },
         ],
         session: {
             userApp: 'crr',
