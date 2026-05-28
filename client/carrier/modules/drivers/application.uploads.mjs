@@ -5,15 +5,6 @@ const $modal = $('#apl-upl-card-modal')
 const $fullName = $('#apl-upl-card-fullname')
 const $content = $('#apl-upl-content')
 
-const filenames = [
-    [ 'DriversLicense_front', "Driver's License <small>(Front)</small>" ],
-    [ 'DriversLicense_back', "Driver's License <small>(Back)</small>" ],
-    [ 'MedicalCard', 'Medical Card' ],
-    [ 'SSCard', 'SSN Card' ],
-    [ 'LegalDocument', 'Legal Document' ],
-    [ 'Registration', 'Registration' ],
-]
-
 $modal.modal({
     onHidden() {
         $fullName.html(null)
@@ -33,16 +24,22 @@ table.on('draw', function() {
 
         $.ajax(`/api/resource/drivers/applications/${_id}`, {
             success(response) {
-                const { fullName } = response.data.application
+                const { fullName, uploads } = response.data.application
+                if (uploads === null) return
 
                 $fullName.html(fullName)
 
                 let html = '<div class="ui special cards">'
-                filenames.forEach(([ filename, name ]) => {
+                for (const prop in uploads) {
+                    const [ proceed, filename, name, nameExt ] = uploads[prop]
+                    if (!proceed) continue
+
                     const path = `/image/driver/application/${_id}/uploads/${filename}`
+                    let header = name
+                    if (nameExt) header += ` <span class="ui grey text"><small>(${nameExt})</small></span>`
                     html += `
-                        <div class="card">
-                            <div class="blurring dimmable image">
+                        <div class="card" style="max-height: 16.4rem; overflow: hidden;">
+                            <div class="blurring dimmable image" style="height: 12rem; overflow: hidden;">
                                 <div class="ui dimmer">
                                 <div class="content">
                                     <div class="center">
@@ -50,14 +47,14 @@ table.on('draw', function() {
                                     </div>
                                 </div>
                                 </div>
-                                <img src="${path}" onerror="this.closest('.card').remove()" />
+                                <img src="${path}" onerror="this.closest('.card').remove()" style="width: 100%; height: 100%; object-fit: cover;" />
                             </div>
                             <div class="content">
-                                <span class="header">${name}</span>
+                                <span class="header">${header}</span>
                             </div>
                         </div>
                     `
-                })
+                }
                 html += '</div>'
                 $content.html(html)
 
@@ -65,7 +62,7 @@ table.on('draw', function() {
                     $modal.modal('show')
                     $('.special.cards .image').dimmer({ on: 'ontouchstart' in document.documentElement ? 'click' : 'hover' })
                     $loader.removeClass('active')
-                }, 1000)
+                }, 350)
             },
         })
     })

@@ -553,12 +553,12 @@ class Application {
         this.uploads = bool(data.dlfUpl)
         if (this.uploads !== null)
             this.uploads = {
-                dlF: !!data.dlfUpl,
-                dlB: !!data.dlbUpl,
-                mec: !!data.mecUpl,
-                ssc: !!data.sscUpl,
-                leg: !!data.legUpl,
-                reg: !!data.regUpl,
+                dlF: [ !!data.dlfUpl, 'DriversLicense_front', "Driver's License", 'Front' ],
+                dlB: [ !!data.dlbUpl, 'DriversLicense_back', "Driver's License", 'Back' ],
+                mec: [ !!data.mecUpl, 'MedicalCard', 'Medical Card' ],
+                ssc: [ !!data.sscUpl, 'SSCard', 'SSN Card' ],
+                leg: [ !!data.legUpl, 'LegalDocument', 'Legal Document' ],
+                reg: [ !!data.regUpl, 'Registration', 'Registration' ],
             }
 
         if (single) {
