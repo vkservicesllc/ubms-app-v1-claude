@@ -338,13 +338,13 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         let options = {}, dropdown = {}, t = `\t`.repeat(13)
 
-        const legalStatuses = Application.list.legalStatus
-        const legalDocs = [
-            'US Passport (Card)',
-            'Green Card',
-            'Valid Work Visa/Authorization',
-        ]
-        hbs.legalStatusDocDesc = legalDocs[application.legalStatus[0]]
+        // const legalDocs = [
+        //     'US Passport (Card)',
+        //     'Green Card',
+        //     'Valid Work Visa/Authorization',
+        // ]
+        // hbs.legalStatusDocDesc = legalDocs[application.legalStatus[0]]
+        hbs.legalDoc = application.legalStatus[0] === 2
 
         const driverPositions = Driver.list.position
         dropdown.apprPosition = ''
@@ -541,6 +541,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             dropdown.status = ''
             options.status = { hidden: { input: { disabled: false } } }
 
+            const legalStatuses = Application.list.legalStatus
             for (const status in legalStatuses)
                 dropdown.status += `\n${t}<div class="item" data-value="${status}">${legalStatuses[status]}</div>`
         }
