@@ -1,0 +1,118 @@
+<div class="ui tab" data-tab="files">
+    <div class="ui list">
+        <div class="item">
+            <i class="dark orange folder icon"></i>
+            <div class="content">
+                <div class="header">DQ Files</div>
+                <div class="list">
+                    <div class="item">
+                        <i class="dark orange folder icon"></i>
+                        <div class="content">
+                            <div class="header">Initial Documents</div>
+                            <div class="content">
+                                <div class="list">
+                                    {{#if (eq filePerms.apl.download true)}}
+                                    <div class="item">
+                                        <i class="pdf file outline icon"></i>
+                                        <div class="content">
+                                            <div class="header">
+                                                <a target="_blank" href="/files/pdf/driver/application/{{formId}}">
+                                                    <span class="ui dark blue text">Application</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <i class="pdf file outline icon"></i>
+                                        <div class="content">
+                                            <div class="header">
+                                                <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/mvr-psp">
+                                                    <span class="ui dark blue text">MVR/PSP Consent</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <i class="dark orange folder icon"></i>
+                        <div class="content">
+                            <div class="header">Personal Documents</div>
+                            <div class="content">
+                                <div class="list">
+                                    <div class="item">
+                                        <i class="grey file icon"></i>
+                                        <div class="content">
+                                            <div class="header">
+                                                <a><span class="ui grey text">{{legalStatusDocDesc}}</span></a>
+                                                {{!-- <span class="file-actions">
+                                                    <a class="ui dark blue text"><i class="upload icon"></i></a>
+                                                </span> --}}
+                                            </div>
+                                            {{!-- <div class="description">
+                                                <small>{{legalStatusDocDesc}}</small>
+                                            </div> --}}
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <i class="grey file icon"></i>
+                                        <div class="content">
+                                            <div class="header">
+                                                <a><span class="ui grey text">Social Security Card</span></a>
+                                                {{!-- <span class="file-actions">
+                                                    <a class="ui dark blue text"><i class="upload icon"></i></a>
+                                                </span> --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <i class="pdf file outline icon"></i>
+                                        <div class="content">
+                                            <div class="header">
+                                                <a><span class="ui dark blue text">Driver's License</span></a>
+                                                {{!-- <span class="file-actions">
+                                                    <a class="ui dark green text"><i class="download icon"></i></a>
+                                                    <a class="ui dark red text"><i class="delete icon"></i></a>
+                                                </span> --}}
+                                            </div>
+                                            <div class="description">
+                                                <small>Front and back</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <i class="grey file icon"></i>
+                                        <div class="content">
+                                            <div class="header">
+                                                <a><span class="ui grey text">Medical Card</span></a>
+                                                {{!-- <span class="file-actions">
+                                                    <a class="ui dark blue text"><i class="upload icon"></i></a>
+                                                </span> --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{!-- <div class="item">
+                        <i class="dark orange folder icon"></i>
+                        <div class="content">
+                            <div class="header">Previous Employments</div>
+                            <div class="content">
+                                <div class="list">
+                                    <div class="item">
+                                        <a class="ui dark green text"><i class="upload icon"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> --}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
