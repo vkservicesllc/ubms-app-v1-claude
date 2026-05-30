@@ -23,7 +23,7 @@
         <div class="eight wide column" style="padding: .5rem 2rem;">
             <div class="ui list">
                 <div class="item">
-                    <i class="dark orange open folder icon"></i>
+                    <i class="orange open folder icon"></i>
                     <div class="content">
                         <div class="header">Qualification</div>
                         <div class="list">
@@ -66,42 +66,42 @@
                                 </div>
                             </div>
                             <div class="item">
-                                <i class="dark orange open folder icon"></i>
+                                <i class="orange open folder icon"></i>
                                 <div class="content">
                                     <div class="header">Background Check</div>
                                     <div class="content">
                                         <div class="list">
                                             {{#if (eq cdl true)}}
                                             <div class="item">
-                                                <i class="dark orange open folder icon"></i>
+                                                <i class="orange open folder icon"></i>
                                                 <div class="content">
                                                     <div class="header hover-outline">
                                                         <span>Clearinghouse</span>
                                                         <a href="" title="Upload Clearinghouse Report">
-                                                            <i class="dark blue upload action icon"></i>
+                                                            <i class="blue upload action icon"></i>
                                                         </a>
                                                     </div>
                                                 </div>
                                             </div>
                                             {{/if}}
                                             <div class="item">
-                                                <i class="dark orange open folder icon"></i>
+                                                <i class="orange open folder icon"></i>
                                                 <div class="content">
                                                     <div class="header hover-outline">
                                                         <span>MVR</span>
                                                         <a href="" title="Upload MVR/CDLIS Report">
-                                                            <i class="dark blue upload action icon"></i>
+                                                            <i class="blue upload action icon"></i>
                                                         </a>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="item">
-                                                <i class="dark orange open folder icon"></i>
+                                                <i class="orange open folder icon"></i>
                                                 <div class="content">
                                                     <div class="header hover-outline">
                                                         <span>PSP</span>
                                                         <a href="" title="Upload PSP Report">
-                                                            <i class="dark blue upload action icon"></i>
+                                                            <i class="blue upload action icon"></i>
                                                         </a>
                                                     </div>
                                                 </div>
@@ -111,7 +111,7 @@
                                 </div>
                             </div>
                             <div class="item">
-                                <i class="dark orange open folder icon"></i>
+                                <i class="orange open folder icon"></i>
                                 <div class="content">
                                     <div class="header">Personal Documents</div>
                                     <div class="content">
@@ -123,6 +123,7 @@
                                                         <a><span class="ui dark blue text">Driver's License</span></a>
                                                         <span>
                                                             <a href="" title="Download Driver's License" download><i class="dark green download action icon"></i></a>
+                                                            <a href="" title="Replace Driver's License" download><i class="grey upload action icon"></i></a>
                                                             <a title="Delete Driver's License"><i class="dark red trash alternate outline action icon"></i></a>
                                                         </span>
                                                     </div>
@@ -137,19 +138,19 @@
                                                     <div class="header hover-outline">
                                                         <span class="ui grey text">Medical Certificate</span>
                                                         <span>
-                                                            <a title="Upload Medical Certificate"><i class="dark blue upload action icon"></i></a>
+                                                            <a title="Upload Medical Certificate"><i class="blue upload action icon"></i></a>
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {{#if (eq legalDoc true)}}
+                                            {{#if (eq fileLegalDoc true)}}
                                             <div class="item">
                                                 <i class="grey file icon"></i>
                                                 <div class="content">
                                                     <div class="header hover-outline">
                                                         <span class="ui grey text">Legal Document</span>
                                                         <span>
-                                                            <a title="Upload Legal Document"><i class="dark blue upload action icon"></i></a>
+                                                            <a title="Upload Legal Document"><i class="blue upload action icon"></i></a>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -161,7 +162,7 @@
                                                     <div class="header hover-outline">
                                                         <span class="ui grey text">Social Security Card</span>
                                                         <span>
-                                                            <a title="Upload SSN Card"><i class="dark blue upload action icon"></i></a>
+                                                            <a title="Upload SSN Card"><i class="blue upload action icon"></i></a>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -172,7 +173,7 @@
                             </div>
                             {{#if (eq posProp 'OO')}}
                             <div class="item">
-                                <i class="dark orange open folder icon"></i>
+                                <i class="orange open folder icon"></i>
                                 <div class="content">
                                     <div class="header">Vehicle Documents</div>
                                     <div class="content">
@@ -183,11 +184,24 @@
                                                     <div class="header hover-outline">
                                                         <span class="ui grey text">Registration</span>
                                                         <span>
-                                                            <a title="Upload Registration"><i class="dark blue upload action icon"></i></a>
+                                                            <a title="Upload Registration"><i class="blue upload action icon"></i></a>
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
+                                            {{#if (eq fileTrlReg true)}}
+                                            <div class="item">
+                                                <i class="grey file icon"></i>
+                                                <div class="content">
+                                                    <div class="header hover-outline">
+                                                        <span class="ui grey text">Trailer Registration</span>
+                                                        <span>
+                                                            <a title="Upload Trailer Registration"><i class="blue upload action icon"></i></a>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {{/if}}
                                         </div>
                                     </div>
                                 </div>
@@ -214,7 +228,7 @@
         <div class="eight wide column" style="padding: .5rem 2rem; border-left: 1px solid rgba(34, 36, 38, 0.15);">
             <div class="ui list">
                 <div class="item">
-                    <i class="dark orange open folder icon"></i>
+                    <i class="orange open folder icon"></i>
                     <div class="content">
                         <div class="header">Hiring Process</div>
                         <div class="content">
@@ -225,13 +239,13 @@
                                         <div class="header hover-outline">
                                             <span class="ui grey text">Drug Test Results</span>
                                             <span>
-                                                <a title="Upload Drug Test Results"><i class="dark blue upload action icon"></i></a>
+                                                <a title="Upload Drug Test Results"><i class="blue upload action icon"></i></a>
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="item">
-                                    <i class="dark orange open folder icon"></i>
+                                    <i class="orange open folder icon"></i>
                                     <div class="content">
                                         <div class="header">Orientation</div>
                                     </div>
@@ -241,7 +255,7 @@
                     </div>
                 </div>
                 {{!-- <div class="item">
-                    <i class="dark orange open folder icon"></i>
+                    <i class="orange open folder icon"></i>
                     <div class="content">
                         <div class="header">Insurance</div>
                     </div>

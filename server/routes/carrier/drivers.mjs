@@ -344,7 +344,6 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         //     'Valid Work Visa/Authorization',
         // ]
         // hbs.legalStatusDocDesc = legalDocs[application.legalStatus[0]]
-        hbs.legalDoc = application.legalStatus[0] === 2
 
         const driverPositions = Driver.list.position
         dropdown.apprPosition = ''
@@ -470,29 +469,35 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         /* FILES */
         {
             hbs.fileTab = inPGroup('f:drv', permissions, DS)
-            hbs.filePerms = {}
 
-            for (const prop in carrierPrivs['f:drv'].groups) {
-                hbs.filePerms[prop] = {}
-                const privs = carrierPrivs['f:drv'].groups[prop].privileges
+            if (hbs.fileTab) {
+                hbs.filePerms = {}
+                hbs.fileLegalDoc = application.legalStatus[0] === 2
 
-                if (privs === '*')
-                    privileges.file.forEach(priv => hbs.filePerms[prop][priv] = withPrivileges(`f:drv/${prop}`, priv, permissions, DS))
-                else privs.forEach(idx => {
-                    const priv = privileges.file[idx]
-                    hbs.filePerms[prop][priv] = withPrivileges(`f:drv/${prop}`, priv, permissions, DS)
-                })
+                for (const prop in carrierPrivs['f:drv'].groups) {
+                    hbs.filePerms[prop] = {}
+                    const privs = carrierPrivs['f:drv'].groups[prop].privileges
+
+                    if (privs === '*')
+                        privileges.file.forEach(priv => hbs.filePerms[prop][priv] = withPrivileges(`f:drv/${prop}`, priv, permissions, DS))
+                    else privs.forEach(idx => {
+                        const priv = privileges.file[idx]
+                        hbs.filePerms[prop][priv] = withPrivileges(`f:drv/${prop}`, priv, permissions, DS)
+                    })
+                }
+
+                hbs.fileTrlReg = !!application?.vehicle?.trailer
+                //! console.log(hbs.filePerms)
+                // hbs.filePerms = {
+                //     application: {
+                //         download: withPrivileges('f:drv/apl', 'download', permissions, DS),
+                //     },
+                //     legal: {
+                //         download: withPrivileges('f:drv/leg', 'download', permissions, DS),
+                //         upload: withPrivileges('f:drv/leg', 'upload', permissions, DS),
+                //     },
+                // }
             }
-            //! console.log(hbs.filePerms)
-            // hbs.filePerms = {
-            //     application: {
-            //         download: withPrivileges('f:drv/apl', 'download', permissions, DS),
-            //     },
-            //     legal: {
-            //         download: withPrivileges('f:drv/leg', 'download', permissions, DS),
-            //         upload: withPrivileges('f:drv/leg', 'upload', permissions, DS),
-            //     },
-            // }
         }
 
         /* PROFILE */
