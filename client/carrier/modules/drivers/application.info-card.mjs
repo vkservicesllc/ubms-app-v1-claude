@@ -33,6 +33,7 @@ table.on('draw', function() {
                 application.phone = formatTel(phone)
                 application.address = new Address(address).html({ inline: false })
                 application.dlNum = dl.number
+                application.dlClass = dl.class
                 application.dlState = `${application.expansion.dlState} (${dl.state})`
                 application.dlExp = moment(dl.expiresOn).format('MM/DD/YYYY')
 
@@ -42,7 +43,7 @@ table.on('draw', function() {
                 const items = [
                     'firstName', '^middleName', 'lastName', '^suffix',
                     '!gender', 'dob', 'ssn',
-                    'phone', 'email', '!address', 'dlNum', '!dlState', 'dlExp',
+                    'phone', 'email', '!address', 'dlNum', '^!dlClass', '!dlState', 'dlExp',
                 ]
                 items.forEach(prop => {
                     let optional = false, ncp = false
@@ -59,7 +60,7 @@ table.on('draw', function() {
                     else item = `<strong style="font-size: 1.05em;">${item}</strong>${!ncp ? cp : ''}`
                     $(`#apl-info-card\\:${prop}`).html(item)
                 })
-                if (dl.commercial) $('#apl-info-card\\:dlNum').append(' &nbsp;—&nbsp; <b>CDL</b>')
+                if (dl.commercial) $('#apl-info-card\\:dlClass').append('<small> &nbsp;—&nbsp; CDL</small>')
 
                 $fullName.html(`${fullName} &nbsp;<small style="font-weight: normal;">(${formId}) — ${application.expansion.addrState}</small>`)
 
