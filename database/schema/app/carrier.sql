@@ -773,22 +773,42 @@ CREATE TABLE application_uploads (
 SELECT 'Creating table `app_carrier`.`application_checklists`...';
 CREATE TABLE application_checklists (
 
-    appId      MEDIUMINT UNSIGNED  NOT NULL,
+    appId        MEDIUMINT UNSIGNED  NOT NULL,
 
-    dlScn      BOOLEAN             DEFAULT FALSE,
-    dlScnId    SMALLINT UNSIGNED   DEFAULT NULL,
-    dlVrfId    SMALLINT UNSIGNED   DEFAULT NULL,
-    mecScn     BOOLEAN             DEFAULT FALSE,
-    mecScnId   SMALLINT UNSIGNED   DEFAULT NULL,
-    mecVrfId   SMALLINT UNSIGNED   DEFAULT NULL,
-    docScn     BOOLEAN             DEFAULT FALSE,
-    docScnId   SMALLINT UNSIGNED   DEFAULT NULL,
-    docVrfId   SMALLINT UNSIGNED   DEFAULT NULL,
+    dlUplId      SMALLINT UNSIGNED   DEFAULT NULL,
+    mecUplId     SMALLINT UNSIGNED   DEFAULT NULL,
+    sscUplId     SMALLINT UNSIGNED   DEFAULT NULL,
+    legUplId     SMALLINT UNSIGNED   DEFAULT NULL,
 
-    mvrUplId   SMALLINT UNSIGNED   DEFAULT NULL,
-    pspUplId   SMALLINT UNSIGNED   DEFAULT NULL,
+    regUplId     SMALLINT UNSIGNED   DEFAULT NULL,
+    trlRegUplId  SMALLINT UNSIGNED   DEFAULT NULL,
+    vgwUplId     SMALLINT UNSIGNED   DEFAULT NULL,  -- GVW Sticker
+    ccUplId      SMALLINT UNSIGNED   DEFAULT NULL,  -- Carb Card
+    aiUplId      SMALLINT UNSIGNED   DEFAULT NULL,  -- Annual Inspection
 
-    updateLog  JSON                DEFAULT NULL,
+    chUplId      SMALLINT UNSIGNED   DEFAULT NULL,
+    mvrUplId     SMALLINT UNSIGNED   DEFAULT NULL,
+    cdlisUplId   SMALLINT UNSIGNED   DEFAULT NULL,
+    pspUplId     SMALLINT UNSIGNED   DEFAULT NULL,
+    accidents    BOOLEAN             DEFAULT FALSE,
+    accRepUplId  SMALLINT UNSIGNED   DEFAULT NULL,
+
+    dtrUplId     SMALLINT UNSIGNED   DEFAULT NULL,  -- Drug Test Results
+
+    -- dlScn      BOOLEAN             DEFAULT FALSE,
+    -- dlScnId    SMALLINT UNSIGNED   DEFAULT NULL,
+    -- dlVrfId    SMALLINT UNSIGNED   DEFAULT NULL,
+    -- mecScn     BOOLEAN             DEFAULT FALSE,
+    -- mecScnId   SMALLINT UNSIGNED   DEFAULT NULL,
+    -- mecVrfId   SMALLINT UNSIGNED   DEFAULT NULL,
+    -- docScn     BOOLEAN             DEFAULT FALSE,
+    -- docScnId   SMALLINT UNSIGNED   DEFAULT NULL,
+    -- docVrfId   SMALLINT UNSIGNED   DEFAULT NULL,
+
+    -- mvrUplId   SMALLINT UNSIGNED   DEFAULT NULL,
+    -- pspUplId   SMALLINT UNSIGNED   DEFAULT NULL,
+
+    updateLog    JSON                DEFAULT NULL,
 
     FOREIGN KEY (appId) REFERENCES applications(id) ON DELETE CASCADE,
     FOREIGN KEY (dlScnId) REFERENCES app_online.users(id),

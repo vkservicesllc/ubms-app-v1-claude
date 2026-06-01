@@ -341,17 +341,17 @@ class Application {
         this.fullName = person ? person.fullName('FMLs') : null
 
         this.checklist = {
-            dlScn: data.dlScn,
-            dlScnId: data.dlScnId,
-            dlVrfId: data.dlVrfId,
-            mecScn: data.mecScn,
-            mecScnId: data.mecScnId,
-            mecVrfId: data.mecVrfId,
-            docScn: data.docScn,
-            docScnId: data.docScnId,
-            docVrfId: data.docVrfId,
-            mvrUplId: data.mvrUplId,
-            pspUplId: data.pspUplId,
+            // dlScn: data.dlScn,
+            // dlScnId: data.dlScnId,
+            // dlVrfId: data.dlVrfId,
+            // mecScn: data.mecScn,
+            // mecScnId: data.mecScnId,
+            // mecVrfId: data.mecVrfId,
+            // docScn: data.docScn,
+            // docScnId: data.docScnId,
+            // docVrfId: data.docVrfId,
+            // mvrUplId: data.mvrUplId,
+            // pspUplId: data.pspUplId,
         }
 
         if (data.decExperience || data.decPosition)
@@ -2077,10 +2077,14 @@ class Application {
             {
                 table: query.driver_application.checklist.table,
                 fields: [
-                    'dlScn', 'dlScnId', 'dlVrfId',
-                    'mecScn', 'mecScnId', 'mecVrfId',
-                    'docScn', 'docScnId', 'docVrfId',
-                    'mvrUplId', 'pspUplId',
+                    // 'dlScn', 'dlScnId', 'dlVrfId',
+                    // 'mecScn', 'mecScnId', 'mecVrfId',
+                    // 'docScn', 'docScnId', 'docVrfId',
+                    // 'mvrUplId', 'pspUplId',
+                    'dlUplId', 'mecUplId', 'sscUplId', 'legUplId',
+                    'regUplId', 'trlRegUplId', 'vgwUplId', 'ccUplId', 'aiUplId',
+                    'chUplId', 'mvrUplId', 'cdlisUplId', 'pspUplId', 'accidents', 'accRepUplId',
+                    'dtrUplId',
                 ],
                 join: [ 'appId', 'id' ],
             },
