@@ -19,7 +19,7 @@ export const utcTimeStamp = () => moment.utc().format('YYYY-MM-DD HH:mm:ss')
 
 export const utc2tz = (utcTS, toDate = false) => utcTS ? moment.utc(utcTS).tz(timezone).format('YYYY-MM-DD' + (!toDate ? ' HH:mm:ss' : '')) : utcTS
 
-export const tz2utc = tzTS => tzTS ? moment.tz(tzTS, timezone).utc().format('YYYY-MM-DD HH:mm:ss') : tzTS
+export const tz2utc = (tzTS, toDate = false) => tzTS ? moment.tz(tzTS, timezone).utc().format('YYYY-MM-DD' + (!toDate ? ' HH:mm:ss' : '')) : tzTS
 
 
 export const dateAfter = (firstDate, num, units, lastDate) => {

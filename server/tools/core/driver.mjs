@@ -575,7 +575,7 @@ class Application {
                     phone, email, address, marital, legalStatus: status, legalExpiration: expiresOn,
                 } = body
                 const { ssn, dob } = this.lead
-                const since = tz2utc(this.appliedOn)
+                const since = tz2utc(this.appliedOn, true)
                 let step = 1, addrComplete = false
                 const { enough } = address
                 delete address.enough
@@ -845,7 +845,7 @@ class Application {
                         case 'profile':
                             {
                                 const { prefix, firstName, middleName, lastName, suffix, dob, gender, marital, phone, email } = body
-                                const since = tz2utc(this.appliedOn)
+                                const since = tz2utc(this.appliedOn, true)
 
                                 await person.update({ dob, gender })
                                 await person.update('names', { prefix, firstName, middleName, lastName, suffix }, { since: this.dob })
@@ -1336,7 +1336,7 @@ class Application {
                                 if (body.legalStatus < 2) body.legalExpiration = null
 
                                 const { legalStatus: status, legalExpiration: expiresOn } = body
-                                await person.update('legal', { status, expiresOn }, { since: tz2utc(this.appliedOn) })
+                                await person.update('legal', { status, expiresOn }, { since: tz2utc(this.appliedOn, true) })
                             }
                             break
 
