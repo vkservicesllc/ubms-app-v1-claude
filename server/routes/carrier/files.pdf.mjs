@@ -4,6 +4,10 @@ const router = require('express').Router()
 const sendError = require('../../tools/utils/error')
 
 /* Tools */
+import moment from 'moment'
+import { PDFDocument } from 'pdf-lib'
+import fontkit from '@pdf-lib/fontkit'
+import { CustomFonts } from '../../settings/pdf-lib.mjs'
 import Team from '../../tools/core/team.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import Company from '../../tools/core/company.mjs'
@@ -11,6 +15,7 @@ import { Application, Employment } from '../../tools/core/driver.mjs'
 import createApplicationPdf from './mw/pdf/driver-application.mjs'
 import createEmplVerifPdf from './mw/pdf/prev-employment-verification.mjs'
 import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
+import fillPdf from '../../tools/utils/pdf.fillable.mjs'
 import { respond404 } from '../../tools/utils/response.mjs'
 
 /* Other */
@@ -90,7 +95,7 @@ router.get('/driver/application/:formId', fileLoggedOut, Team.mw.verify, async (
         const pdfBytes = await createApplicationPdf(carrier, application, addresses, violations, accidents, employers)
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', 'inline; filename="application.pdf"')
+        res.setHeader('Content-Disposition', `inline; filename="Application.pdf"`)
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
@@ -98,8 +103,7 @@ router.get('/driver/application/:formId', fileLoggedOut, Team.mw.verify, async (
 })
 
 
-//! CREATE CONSENT FORM
-router.get('/driver/application/:formId/consent/mvr-psp', fileLoggedOut, Team.mw.verify, async (req, res) => {
+router.get('/driver/application/:formId/consent/psp', fileLoggedOut, Team.mw.verify, async (req, res) => {
     const { formId } = req.params
 
     try {
@@ -116,27 +120,34 @@ router.get('/driver/application/:formId/consent/mvr-psp', fileLoggedOut, Team.mw
         if (!application || application.condition !== 'c' || (team && application._teamId !== team._id))
             return res.redirect(aplUrl)
 
-        let carrier
-        if (application._carrierId) {
-            const { _carrierId: _id } = application
-            carrier = await Carrier.fetch(res.session, { _id })
+        const { name: carrierName } = application.carrier || {}
+        if (!carrierName) return res.send('Document not found')
 
-            const companyId = carrier.companyId
-            const { name, address, phone, fax, lastLogo } = carrier
-            carrier = { name, address, phone, fax, lastLogo }
-            carrier.address = carrier.address.physical
-            carrier.companyId = companyId
-        }
+        const { fullName, finishedOn, signature } = application
+        let pdfBytes = await fillPdf('/carrier/driver/consent_psp', {
+            'Prospective Employer Name': carrierName,
+            'Signature Date': moment(finishedOn).format('MM/DD/YYYY'),
+            "Driver's Printed Name": fullName,
+        }, { title: `${fullName} - PSP Consent` })
 
-        const addresses = await application.fetch('addresses')
-        const violations = await application.fetch('citations')
-        const accidents = await application.fetch('accidents')
-        const employers = await Employment.fetch(res.session, { appId: application.id, unreported: false })
+        const pdfDoc = await PDFDocument.load(pdfBytes)
+        pdfDoc.registerFontkit(fontkit)
 
-        const pdfBytes = await createApplicationPdf(carrier, application, addresses, violations, accidents, employers)
+        const pages = pdfDoc.getPages()
+        const page2 = pages[1]
+        const font = await pdfDoc.embedFont(CustomFonts.MrsSaintDelafield)
+
+        page2.drawText(signature.applicant, {
+            x: 250,
+            y: 708,
+            size: 21,
+            font,
+        })
+
+        pdfBytes = await pdfDoc.save()
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', 'inline; filename="application.pdf"')
+        res.setHeader('Content-Disposition', `inline; filename="Consent (PSP).pdf"`)
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)

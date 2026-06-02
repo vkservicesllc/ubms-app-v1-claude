@@ -47,19 +47,21 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            {{#if (hv carrier)}}
                                             <div class="item">
                                                 <i class="pdf file outline icon"></i>
                                                 <div class="content">
                                                     <div class="header hover-outline">
-                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/mvr-psp">
+                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/psp">
                                                             <span class="ui dark blue text">Consent (PSP)</span>
                                                         </a>
-                                                        <a href="/files/pdf/driver/application/{{formId}}" title="Download PSP Consent" download>
+                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/psp" title="Download PSP Consent" download>
                                                             <i class="dark green download action icon"></i>
                                                         </a>
                                                     </div>
                                                 </div>
                                             </div>
+                                            {{/if}}
                                             {{/if}}
                                         </div>
                                     </div>
@@ -73,7 +75,7 @@
                                         <div class="list">
                                             {{#if (eq cdl true)}}
                                             <div class="item">
-                                                <i class="orange open folder icon"></i>
+                                                <i class="grey file icon"></i>
                                                 <div class="content">
                                                     <div class="header hover-outline">
                                                         <span>Clearinghouse</span>
@@ -117,14 +119,17 @@
                                     <div class="content">
                                         <div class="list">
                                             <div class="item">
-                                                <i class="pdf file outline icon"></i>
+                                                {{!-- <i class="pdf file outline icon"></i> --}}
+                                                <i class="grey file icon"></i>
                                                 <div class="content">
                                                     <div class="header hover-outline">
-                                                        <a><span class="ui dark blue text">Driver's License</span></a>
+                                                        <span class="ui grey text">Driver's License</span>
+                                                        {{!-- <a><span class="ui dark blue text">Driver's License</span></a> --}}
                                                         <span>
-                                                            <a href="" title="Download Driver's License" download><i class="dark green download action icon"></i></a>
+                                                            <a title="Upload Driver's License"><i class="blue upload action icon"></i></a>
+                                                            {{!-- <a href="" title="Download Driver's License" download><i class="dark green download action icon"></i></a>
                                                             <a href="" title="Replace Driver's License" download><i class="grey upload action icon"></i></a>
-                                                            <a title="Delete Driver's License"><i class="dark red trash alternate outline action icon"></i></a>
+                                                            <a title="Delete Driver's License"><i class="dark red trash alternate outline action icon"></i></a> --}}
                                                         </span>
                                                     </div>
                                                     <div class="description">

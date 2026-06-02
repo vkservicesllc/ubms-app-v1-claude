@@ -8,17 +8,19 @@ import { PDFDocument } from 'pdf-lib'
 
 
 const fillPdf = async (file, data = {}, options = {
+    title: null,
     dateFormat: 'MM/DD/YYYY',
     saveTo: null,
 }) => {
-    const { dateFormat, saveTo } = options
+    const { title, dateFormat, saveTo } = options
 
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = path.dirname(__filename)
-    const templatePath = path.join(__dirname, '../../templates')
+    const templatePath = path.join(__dirname, '../../templates/')
 
-    const fileBytes = fs.readFileSync(file + '.pdf')
+    const fileBytes = fs.readFileSync(templatePath + file + '.pdf')
     const pdfDoc = await PDFDocument.load(fileBytes)
+    if (title) pdfDoc.setTitle(title)
     const form = pdfDoc.getForm()
 
     for (const prop in data) {
