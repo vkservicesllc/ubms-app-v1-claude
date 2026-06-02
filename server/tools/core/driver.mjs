@@ -22,6 +22,7 @@ import bool from '../../../client/global/modules/tools/utils/boolean.mjs'
 import { tel as formatTel } from '../../../client/global/modules/tools/utils/formatter.mjs'
 // import { application } from '../../includes/driver'
 import { selectAES, processAES, unprocessAES } from '../utils/data.mjs'
+import fillPdf from '../utils/pdf.fillable.mjs'
 
 import appSettings from '../../../client/global/modules/settings/driver-application.mjs'
 
@@ -1398,16 +1399,36 @@ class Application {
 
                     await this.update({ condition: 'c', applicant_: this.name, finishedAt: utcTimeStamp() })
                     await this.sign()
+                    await this.sign('document', 'consent-psp')
                 }
             }
 
 
-            this.sign = async (target = 'applicant') => {
+            this.sign = async (target = 'applicant', document) => {
                 let signature = null
 
                 switch (target) {
                     case 'applicant':
                         signature = new Person(this).fullName()
+                        break
+                    case 'document':
+                        const { driverId, id, fullName } = this
+                        const saveDir = `/uploads/driver/${driver}/application/${id}`
+                        switch (document) {
+                            case 'consent-psp':
+                                {
+                                    const { name: carrierName } = this.carrier || {}
+                                    if (!carrierName) return
+
+                                    await fillPdf('/carrier/driver/consent_psp', {
+                                        'Prospective Employer Name#0': carrierName,
+                                        'Prospective Employer Name#1': carrierName,
+                                        'Signature Date': moment().format('MM/DD/YYYY'),
+                                        "Driver's Printed Name": fullName,
+                                    }, { saveTo: saveDir + `/consents/PSP (${carrierName})` })
+                                }
+                                break
+                        }
                         break
                 }
 
@@ -2081,10 +2102,10 @@ class Application {
                     // 'mecScn', 'mecScnId', 'mecVrfId',
                     // 'docScn', 'docScnId', 'docVrfId',
                     // 'mvrUplId', 'pspUplId',
-                    'dlUplId', 'mecUplId', 'sscUplId', 'legUplId',
-                    'regUplId', 'trlRegUplId', 'vgwUplId', 'ccUplId', 'aiUplId',
-                    'chUplId', 'mvrUplId', 'cdlisUplId', 'pspUplId', 'accidents', 'accRepUplId',
-                    'dtrUplId',
+                    // 'dlUplId', 'mecUplId', 'sscUplId', 'legUplId',
+                    // 'regUplId', 'trlRegUplId', 'vgwUplId', 'ccUplId', 'aiUplId',
+                    // 'chUplId', 'mvrUplId', 'cdlisUplId', 'pspUplId', 'accidents', 'accRepUplId',
+                    // 'dtrUplId',
                 ],
                 join: [ 'appId', 'id' ],
             },
