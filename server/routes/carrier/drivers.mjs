@@ -317,7 +317,9 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         }
         hbs.file = {
             dl: fileStyle.blank,
-            mec: fileStyle.mec,
+            mec: fileStyle.blank,
+            leg: fileStyle.blank,
+            ssc: fileStyle.blank,
             //! continue...
         }
 
