@@ -77,6 +77,11 @@ class Individual extends Person {
 
 
             this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
+                sanitize(body) {
+                    //* sql_mode=NO_ENGINE_SUBSTITUTION
+                    if (!body.dob) body.dob = '0000-00-00'
+                    return body
+                },
                 async final(person, body) {
                     if (!body.dob || body.dob === person.dob) return
 
@@ -136,6 +141,11 @@ class Individual extends Person {
             }
 
             return { found: !!data, data }
+        },
+        sanitize(body) {
+            //* sql_mode=NO_ENGINE_SUBSTITUTION
+            if (!body.dob) body.dob = '0000-00-00'
+            return body
         },
         split(body) {
             const {

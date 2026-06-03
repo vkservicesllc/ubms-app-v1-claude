@@ -186,6 +186,7 @@ export const companyById = async (req, res) => {
             }
 
             {({ _id, category, since, ein, duns, busName, coType, alias, website, locked } = data)}
+            if (since === '0000-00-00') since = null
 
             const { name, owner } = data
             const { _id: _ownerId } = owner

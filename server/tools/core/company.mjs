@@ -43,7 +43,7 @@ class Company {
         this.busName = data.busName
         this.coType = data.coType
         this.alias = data.alias
-        this.since = data.since
+        this.since = data.since || '0000-00-00'
         this.until = data.until
         this.lastLogo = data.lastLogo
         this.style = data.style || {}
@@ -114,6 +114,11 @@ class Company {
 
 
             this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
+                sanitize(body) {
+                    //* sql_mode=NO_ENGINE_SUBSTITUTION
+                    if (!body.since) body.since = '0000-00-00'
+                    return body
+                },
                 async final(company, body, target) {
                     if (target !== 'main' || !body.since || body.since === company.since) return
 
@@ -167,6 +172,11 @@ class Company {
             const data = await Company.fetch(session, { busName, coType }, { hideRawId })
 
             return { found: !!data, data }
+        },
+        sanitize(body) {
+            //* sql_mode=NO_ENGINE_SUBSTITUTION
+            if (!body.since) body.since = '0000-00-00'
+            return body
         },
         split(body) {
             const { category, ein, duns, since, busName, coType, alias, website } = body

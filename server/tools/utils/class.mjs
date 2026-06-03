@@ -173,7 +173,7 @@ export const classInstance = {
     },
 
 
-    update: async (inst, Cls, targetOrBody, body, match = {}, { final, skipLog = false, hideRawId = false } = {}) => {
+    update: async (inst, Cls, targetOrBody, body, match = {}, { sanitize, final, skipLog = false, hideRawId = false } = {}) => {
         const config = Cls.config()
 
         const { enforceUser = true, enforceLocation = false } = config
@@ -200,6 +200,7 @@ export const classInstance = {
             options.siteId = siteId
         }
 
+        if (typeof sanitize === 'function') body = sanitize(body)
         body = await processData(body, options)
 
         const [ result ] = await mysql.execute(config.query[target].update(body, {
@@ -336,7 +337,7 @@ export const classStatic = {
 
     create: async (Cls, { user: sessionUser = {}, branch, siteId = null }, body = {},
         { hideRawId = false } = {},
-        { find, split, final } = {}
+        { find, sanitize, split, final } = {}
     ) => {
         const config = Cls.config()
 
@@ -351,6 +352,7 @@ export const classStatic = {
             return { created: false, data }
         }
 
+        if (typeof sanitize === 'function') body = sanitize(body)
         body = await processData(body)
 
         if (typeof split === 'function') body = await split(body)

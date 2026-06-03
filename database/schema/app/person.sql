@@ -2,7 +2,8 @@ SELECT 'Creating table `app_person`.`individuals`...';
 CREATE TABLE individuals (
 
     id          MEDIUMINT UNSIGNED  AUTO_INCREMENT,  -- max 16,777,215 / 3 bytes
-    dob         DATE                NOT NULL,
+    -- dob         DATE                NOT NULL,
+    dob         DATE                DEFAULT '0000-00-00',
 
     -- These 2 parameters are optional but extremely powerful when set
     gender      ENUM('M', 'F')      NOT NULL,

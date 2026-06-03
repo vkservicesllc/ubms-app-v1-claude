@@ -118,8 +118,12 @@ class CompanyForm {
     static id = createIdForm({ selector: companySelector })
     static deleteId = createIdForm({ selector: companySelector, target: 'deleteId' })
     static category = createCategoryForm(companySelector)
-    static since = createSinceForm({ selector: companySelector, label: 'Launch Date' })
-    static effective = createSinceForm({ selector: companySelector, target: 'effective' })
+    static since = createSinceForm({
+        selector: companySelector,
+        label: 'Launch Date',
+        required: false,
+    })
+    // static effective = createSinceForm({ selector: companySelector, target: 'effective' })
     static until = createUntilForm({ selector: companySelector })
 
     static busName = createBusNameForm(companySelector)
@@ -240,7 +244,7 @@ class OwnerForm {
     static suffix = createPersonNameForm('suffix', { selector: ownerSelector, group: 'name' })
 
     static gender = createGenderForm({ selector: ownerSelector })
-    static dob = createDobForm({ selector: ownerSelector, required })
+    static dob = createDobForm({ selector: ownerSelector, required: false })
 
     static ssn = createSsnForm({
         selector: ownerSelector,

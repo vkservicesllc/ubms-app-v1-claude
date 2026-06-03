@@ -12,7 +12,9 @@ CREATE TABLE companies (
     locked     BOOLEAN            NOT NULL DEFAULT FALSE,
     global     BOOLEAN            NOT NULL DEFAULT TRUE,  -- is visible in global list if TRUE, can optionally be set to FALSE if the company is assigned to a site
     lastLogo   DATE               DEFAULT NULL,
-    since      DATE               NOT NULL,
+    -- since      DATE               NOT NULL,
+    since      DATE               DEFAULT '0000-00-00',
+
     until      DATE               DEFAULT NULL,  -- active while NULL, (if canceled, must be final ???, per NAZAR)
 
     style      JSON               DEFAULT NULL,
