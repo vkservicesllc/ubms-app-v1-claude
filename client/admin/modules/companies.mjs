@@ -127,7 +127,7 @@ $.when(statusReq).done(statusRes => {
                 width: '10.7rem',
                 className: 'has-text-left',
                 render(data, type) {
-                    if (!data) return
+                    if (data === '0000-00-00') return
                     return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
                 },
             },

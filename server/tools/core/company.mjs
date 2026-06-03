@@ -409,7 +409,10 @@ class Owner extends Individual {
 
             this.fetch = undefined
 
-            this.update = (targetOrBody, body, match = {}) => classInstance.update(this, new.target, targetOrBody, body, match)
+            this.update = (targetOrBody, body, match = {}) => {
+                if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
+                console.log({ targetOrBody, body, match })
+            }
             // this.update = async (body, { since } = {}) => {
             //     if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
 

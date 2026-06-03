@@ -96,7 +96,7 @@ $trigger.option.click(() => {
                     $(lastNameId).val(lastName)
                     $(suffixId).val(suffix)
                     $(genderId).val(gender).find('option[value=""]').remove()
-                    $(dobId).val(reformatDateString(dob, 'us'))
+                    if (dob !== '0000-00-00') $(dobId).val(reformatDateString(dob, 'us'))
                     // if (ssn) $(ssnId).val(formatSsn(ssn))
 
                     $submit.addClass('is-success').html('Modify')

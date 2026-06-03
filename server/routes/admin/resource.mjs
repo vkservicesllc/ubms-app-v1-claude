@@ -207,11 +207,11 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, Own
             if (!person) throw new Error('Individual not found')
 
             const names = await person.fetch('names')
-            const { since } = names[0]
+            const { since = '0000-00-00' } = names[0]
             const { fistName, middleName, lastName, suffix, gender, dob } = req.body
 
             await person.update({ gender, dob })
-            await person.update('names', { fistName, middleName, lastName, suffix }, { since })
+            await person.update('names', { since: dob, fistName, middleName, lastName, suffix }, { since })
         }
 
         res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][1])
