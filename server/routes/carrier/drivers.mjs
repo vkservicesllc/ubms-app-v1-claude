@@ -287,31 +287,64 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         const checkStyle = {
             unchecked: '<i class="red close icon"></i>',
         }
+        const status = {
+            pending: '<span class="ui dark red text">Pending</span>',
+        }
 
         hbs.step = {
             documents: '',
             vehicle: '',
+            background: '',
+            approval: '',
         }
         hbs.checklist = {
             dl: {
                 check: checkStyle.unchecked,
-                status: '<span class="ui dark red text">Pending</span>',
+                status: status.pending,
             },
             mec: {
                 check: checkStyle.unchecked,
-                status: '<span class="ui dark red text">Pending</span>',
+                status: status.pending,
             },
             ssc: {
                 check: checkStyle.unchecked,
-                status: '<span class="ui dark red text">Pending</span>',
+                status: status.pending,
             },
             leg: {
                 check: checkStyle.unchecked,
-                status: '<span class="ui dark red text">Pending</span>',
+                status: status.pending,
             },
             reg: {
                 check: checkStyle.unchecked,
-                status: '<span class="ui dark red text">Pending</span>',
+                status: status.pending,
+            },
+            trlReg: {
+                check: checkStyle.unchecked,
+                status: status.pending,
+            },
+            ch: {
+                check: checkStyle.unchecked,
+                status: status.pending,
+            },
+            cdlis: {
+                check: checkStyle.unchecked,
+                status: status.pending,
+            },
+            mvr: {
+                check: checkStyle.unchecked,
+                status: status.pending,
+            },
+            psp: {
+                check: checkStyle.unchecked,
+                status: status.pending,
+            },
+            ins: {
+                check: checkStyle.unchecked,
+                status: status.pending,
+            },
+            sft: {
+                check: checkStyle.unchecked,
+                status: status.pending,
             },
         }
 
@@ -331,7 +364,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         hbs.appliedAt = moment(application.appliedAt).format('lll')
         hbs.finishedAt = moment(application.finishedAt).format('lll')
         hbs.steps = [ ...Application.list.step ]
-        hbs.steps[0][3] = 'Position' + (application.position[0] === 'OO' ? ' / Vehicle' : '')
+        hbs.steps[0][3] = 'Position' + (application.position === 'OO' ? ' / Vehicle' : '')
         hbs.steps[6] = 'Previous Employers'
 
         const visibileRow = 'margin-top: 5px;'

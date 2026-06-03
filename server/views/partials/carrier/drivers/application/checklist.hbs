@@ -50,8 +50,79 @@
                         {{{checklist.reg.status}}}
                     </small>
                 </div>
+                {{#if (eq fileTrlReg true)}}
+                <div class="item">
+                    <div class="header">Trailer Registration</div>
+                    <small>
+                        {{{checklist.trlReg.check}}}
+                        {{{checklist.trlReg.status}}}
+                    </small>
+                </div>
+                {{/if}}
             </div>
         </div>
     </div>
 </div>
 {{/if}}
+<div class="{{step.background}}step">
+    <div class="content">
+        <div class="title">Background Check</div>
+        <div class="description">
+            <div class="ui horizontal list">
+                {{#if (eq cdl true)}}
+                <div class="item">
+                    <div class="header">Clearinghouse</div>
+                    <small>
+                        {{{checklist.ch.check}}}
+                        {{{checklist.ch.status}}}
+                    </small>
+                </div>
+                <div class="item">
+                    <div class="header">CDLIS</div>
+                    <small>
+                        {{{checklist.cdlis.check}}}
+                        {{{checklist.cdlis.status}}}
+                    </small>
+                </div>
+                {{/if}}
+                <div class="item">
+                    <div class="header">MVR</div>
+                    <small>
+                        {{{checklist.mvr.check}}}
+                        {{{checklist.mvr.status}}}
+                    </small>
+                </div>
+                <div class="item">
+                    <div class="header">PSP</div>
+                    <small>
+                        {{{checklist.psp.check}}}
+                        {{{checklist.psp.status}}}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="{{step.approval}}step">
+    <div class="content">
+        <div class="title">Approvals</div>
+        <div class="description">
+            <div class="ui horizontal list">
+                <div class="item">
+                    <div class="header">Insurance</div>
+                    <small>
+                        {{{checklist.ins.check}}}
+                        {{{checklist.ins.status}}}
+                    </small>
+                </div>
+                <div class="item">
+                    <div class="header">Safety</div>
+                    <small>
+                        {{{checklist.sft.check}}}
+                        {{{checklist.sft.status}}}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
