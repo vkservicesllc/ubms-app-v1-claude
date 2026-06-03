@@ -20,17 +20,17 @@
         }
     </style>
     <div class="ui grid" style="margin-top: 2rem;">
-        <div class="eight wide column" style="padding: .5rem 2rem;">
+        <div class="nine wide column" style="padding: .5rem 2rem;">
             <div class="ui list">
                 <div class="item">
-                    <i class="orange open folder icon"></i>
+                    {{{folder.driverQualification}}}
                     <div class="content">
                         <div class="header">Driver Qualification</div>
                         <div class="list">
                             <div class="item">
-                                <i class="green folder icon"></i>
+                                {{{folder.applicationDocs}}}
                                 <div class="content">
-                                    <div class="header">Application</div>
+                                    <div class="header">Application Documents</div>
                                     <div class="content">
                                         <div class="list">
                                             {{#if (eq filePerms.apl.download true)}}
@@ -52,10 +52,10 @@
                                                 <i class="pdf file outline icon"></i>
                                                 <div class="content">
                                                     <div class="header hover-outline">
-                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/fcra">
-                                                            <span class="ui dark blue text">Consent (DOT D&A and PE)</span>
+                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/doteda">
+                                                            <span class="ui dark blue text">DOT Employment & Drug-Alcohol Authorization</span>
                                                         </a>
-                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/dotda" title="Download FCRA Consent" download>
+                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/doteda" title="Download DOT Employment & Drug/Alcohol Authorization" download>
                                                             <i class="dark green download action icon"></i>
                                                         </a>
                                                     </div>
@@ -66,9 +66,22 @@
                                                 <div class="content">
                                                     <div class="header hover-outline">
                                                         <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/fcra">
-                                                            <span class="ui dark blue text">Consent (FCRA)</span>
+                                                            <span class="ui dark blue text">FCRA Disclosure and Authorization</span>
                                                         </a>
-                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/dotda" title="Download FCRA Consent" download>
+                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/fcra" title="Download FCRA Disclosure and Authorization" download>
+                                                            <i class="dark green download action icon"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="item">
+                                                <i class="pdf file outline icon"></i>
+                                                <div class="content">
+                                                    <div class="header hover-outline">
+                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/mvr">
+                                                            <span class="ui dark blue text">MVR Authorization</span>
+                                                        </a>
+                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/mvr" title="Download MVR Authorization" download>
                                                             <i class="dark green download action icon"></i>
                                                         </a>
                                                     </div>
@@ -79,9 +92,9 @@
                                                 <div class="content">
                                                     <div class="header hover-outline">
                                                         <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/psp">
-                                                            <span class="ui dark blue text">Consent (PSP)</span>
+                                                            <span class="ui dark blue text">PSP Authorization</span>
                                                         </a>
-                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/psp" title="Download PSP Consent" download>
+                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/psp" title="Download PSP Authorization" download>
                                                             <i class="dark green download action icon"></i>
                                                         </a>
                                                     </div>
@@ -89,12 +102,132 @@
                                             </div>
                                             {{/if}}
                                             {{/if}}
+                                            <div class="item">
+                                                {{{folder.supportingDocs}}}
+                                                <div class="content">
+                                                    <div class="header">Supporting Documents</div>
+                                                    <div class="content">
+                                                        <div class="list">
+                                                            <div class="item">
+                                                                {{{folder.personalDocs}}}
+                                                                <div class="content">
+                                                                    <div class="header">Personal Documents</div>
+                                                                    <div class="content">
+                                                                        <div class="list">
+                                                                            <div class="item">
+                                                                                {{{file.dl}}}
+                                                                                <div class="content">
+                                                                                    <div class="header hover-outline">
+                                                                                        <span class="ui grey text">Driver's License</span>
+                                                                                        {{!-- <a><span class="ui dark blue text">Driver's License</span></a> --}}
+                                                                                        <span>
+                                                                                            <a title="Upload Driver's License"><i class="blue upload action icon"></i></a>
+                                                                                            {{!-- <a href="" title="Download Driver's License" download><i class="dark green download action icon"></i></a>
+                                                                                            <a href="" title="Replace Driver's License" download><i class="grey upload action icon"></i></a>
+                                                                                            <a title="Delete Driver's License"><i class="dark red trash alternate outline action icon"></i></a> --}}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <div class="description">
+                                                                                        <small>Front and back</small>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="item">
+                                                                                {{{file.mec}}}
+                                                                                <div class="content">
+                                                                                    <div class="header hover-outline">
+                                                                                        <span class="ui grey text">Medical Certificate</span>
+                                                                                        <span>
+                                                                                            <a title="Upload Medical Certificate"><i class="blue upload action icon"></i></a>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            {{#if (eq fileLegalDoc true)}}
+                                                                            <div class="item">
+                                                                                <i class="grey file icon"></i>
+                                                                                <div class="content">
+                                                                                    <div class="header hover-outline">
+                                                                                        <span class="ui grey text">Legal Document</span>
+                                                                                        <span>
+                                                                                            <a title="Upload Legal Document"><i class="blue upload action icon"></i></a>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            {{/if}}
+                                                                            <div class="item">
+                                                                                <i class="grey file icon"></i>
+                                                                                <div class="content">
+                                                                                    <div class="header hover-outline">
+                                                                                        <span class="ui grey text">Social Security Card</span>
+                                                                                        <span>
+                                                                                            <a title="Upload SSN Card"><i class="blue upload action icon"></i></a>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {{#if (eq posProp 'OO')}}
+                                                            <div class="item">
+                                                                {{{folder.vehicleDocs}}}
+                                                                <div class="content">
+                                                                    <div class="header">Vehicle Documents</div>
+                                                                    <div class="content">
+                                                                        <div class="list">
+                                                                            <div class="item">
+                                                                                <i class="grey file icon"></i>
+                                                                                <div class="content">
+                                                                                    <div class="header hover-outline">
+                                                                                        <span class="ui grey text">Registration</span>
+                                                                                        <span>
+                                                                                            <a title="Upload Registration"><i class="blue upload action icon"></i></a>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            {{#if (eq fileTrlReg true)}}
+                                                                            <div class="item">
+                                                                                <i class="grey file icon"></i>
+                                                                                <div class="content">
+                                                                                    <div class="header hover-outline">
+                                                                                        <span class="ui grey text">Trailer Registration</span>
+                                                                                        <span>
+                                                                                            <a title="Upload Trailer Registration"><i class="blue upload action icon"></i></a>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            {{/if}}
+                                                                            <div class="item">
+                                                                                <i class="grey file icon"></i>
+                                                                                <div class="content">
+                                                                                    <div class="header hover-outline">
+                                                                                        <span class="ui grey text">VGW Sticker</span>
+                                                                                        <span>
+                                                                                            <a title="Upload VGW Sticker"><i class="blue upload action icon"></i></a>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {{/if}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="item">
-                                <i class="orange open folder icon"></i>
+                                {{{folder.backgroundCheck}}}
                                 <div class="content">
                                     <div class="header">Background Check</div>
                                     <div class="content">
@@ -113,10 +246,10 @@
                                             </div>
                                             {{/if}}
                                             <div class="item">
-                                                <i class="orange open folder icon"></i>
+                                                {{{folder.mvr}}}
                                                 <div class="content">
                                                     <div class="header hover-outline">
-                                                        <span>MVR</span>
+                                                        <span>MVR{{#if (eq cdl true)}} & CDLIS{{/if}}</span>
                                                         <a href="" title="Upload MVR/CDLIS Report">
                                                             <i class="blue upload action icon"></i>
                                                         </a>
@@ -124,7 +257,7 @@
                                                 </div>
                                             </div>
                                             <div class="item">
-                                                <i class="orange open folder icon"></i>
+                                                {{{folder.psp}}}
                                                 <div class="content">
                                                     <div class="header hover-outline">
                                                         <span>PSP</span>
@@ -138,139 +271,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="item">
-                                <i class="orange open folder icon"></i>
-                                <div class="content">
-                                    <div class="header">Personal Documents</div>
-                                    <div class="content">
-                                        <div class="list">
-                                            <div class="item">
-                                                {{!-- <i class="pdf file outline icon"></i> --}}
-                                                <i class="grey file icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span class="ui grey text">Driver's License</span>
-                                                        {{!-- <a><span class="ui dark blue text">Driver's License</span></a> --}}
-                                                        <span>
-                                                            <a title="Upload Driver's License"><i class="blue upload action icon"></i></a>
-                                                            {{!-- <a href="" title="Download Driver's License" download><i class="dark green download action icon"></i></a>
-                                                            <a href="" title="Replace Driver's License" download><i class="grey upload action icon"></i></a>
-                                                            <a title="Delete Driver's License"><i class="dark red trash alternate outline action icon"></i></a> --}}
-                                                        </span>
-                                                    </div>
-                                                    <div class="description">
-                                                        <small>Front and back</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                <i class="grey file icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span class="ui grey text">Medical Certificate</span>
-                                                        <span>
-                                                            <a title="Upload Medical Certificate"><i class="blue upload action icon"></i></a>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{#if (eq fileLegalDoc true)}}
-                                            <div class="item">
-                                                <i class="grey file icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span class="ui grey text">Legal Document</span>
-                                                        <span>
-                                                            <a title="Upload Legal Document"><i class="blue upload action icon"></i></a>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{/if}}
-                                            <div class="item">
-                                                <i class="grey file icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span class="ui grey text">Social Security Card</span>
-                                                        <span>
-                                                            <a title="Upload SSN Card"><i class="blue upload action icon"></i></a>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {{#if (eq posProp 'OO')}}
-                            <div class="item">
-                                <i class="orange open folder icon"></i>
-                                <div class="content">
-                                    <div class="header">Vehicle Documents</div>
-                                    <div class="content">
-                                        <div class="list">
-                                            <div class="item">
-                                                <i class="grey file icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span class="ui grey text">Registration</span>
-                                                        <span>
-                                                            <a title="Upload Registration"><i class="blue upload action icon"></i></a>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{#if (eq fileTrlReg true)}}
-                                            <div class="item">
-                                                <i class="grey file icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span class="ui grey text">Trailer Registration</span>
-                                                        <span>
-                                                            <a title="Upload Trailer Registration"><i class="blue upload action icon"></i></a>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{/if}}
-                                            <div class="item">
-                                                <i class="grey file icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span class="ui grey text">VGW Sticker</span>
-                                                        <span>
-                                                            <a title="Upload VGW Sticker"><i class="blue upload action icon"></i></a>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {{/if}}
-                            {{!-- <div class="item">
-                                <i class="dark orange folder icon"></i>
-                                <div class="content">
-                                    <div class="header">Previous Employments</div>
-                                    <div class="content">
-                                        <div class="list">
-                                            <div class="item">
-                                                <a class="ui dark green text"><i class="upload icon"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> --}}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="eight wide column" style="padding: .5rem 2rem; border-left: 1px solid rgba(34, 36, 38, 0.15);">
+        <div class="seven wide column" style="padding: .5rem 2rem; border-left: 1px solid rgba(34, 36, 38, 0.15);">
             <div class="ui list">
                 <div class="item">
-                    <i class="orange open folder icon"></i>
+                    {{{folder.hiringProcess}}}
                     <div class="content">
                         <div class="header">Hiring Process</div>
                         <div class="content">
@@ -287,7 +296,7 @@
                                     </div>
                                 </div>
                                 <div class="item">
-                                    <i class="orange open folder icon"></i>
+                                    {{{folder.orientation}}}
                                     <div class="content">
                                         <div class="header">Orientation</div>
                                     </div>
@@ -296,12 +305,6 @@
                         </div>
                     </div>
                 </div>
-                {{!-- <div class="item">
-                    <i class="orange open folder icon"></i>
-                    <div class="content">
-                        <div class="header">Insurance</div>
-                    </div>
-                </div> --}}
             </div>
         </div>
     </div>

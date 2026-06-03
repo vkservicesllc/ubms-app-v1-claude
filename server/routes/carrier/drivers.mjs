@@ -284,11 +284,41 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             prevEmployment: 'red',
         }
 
+        const folderStyle = {
+            open: '<i class="orange open folder icon"></i>',
+            closed: '<i class="green folder icon"></i>',
+        }
+        const fileStyle = {
+            blank: '<i class="grey file icon"></i>',
+        }
         const checkStyle = {
             unchecked: '<i class="red close icon"></i>',
+            waiting: '<i class="orange wait icon"></i>',
+            ignored: '<i class="orange check icon"></i>',
+            checked: '<i class="green check icon"></i>',
+            doubleChecked: '<i class="green double check icon"></i>',
         }
         const status = {
             pending: '<span class="ui dark red text">Pending</span>',
+            waiting: '<span class="ui dark orange text">Pending</span>',
+        }
+
+        hbs.folder = {
+            driverQualification: folderStyle.open,
+            applicationDocs: folderStyle.open,
+            supportingDocs: folderStyle.open,
+            personalDocs: folderStyle.open,
+            vehicleDocs: folderStyle.open,
+            backgroundCheck: folderStyle.open,
+            mvr: folderStyle.open,
+            psp: folderStyle.open,
+            hiringProcess: folderStyle.open,
+            orientation: folderStyle.open,
+        }
+        hbs.file = {
+            dl: fileStyle.blank,
+            mec: fileStyle.mec,
+            //! continue...
         }
 
         hbs.step = {
@@ -339,12 +369,12 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                 status: status.pending,
             },
             ins: {
-                check: checkStyle.unchecked,
-                status: status.pending,
+                check: checkStyle.waiting,
+                status: status.waiting,
             },
             sft: {
-                check: checkStyle.unchecked,
-                status: status.pending,
+                check: checkStyle.waiting,
+                status: status.waiting,
             },
         }
 
