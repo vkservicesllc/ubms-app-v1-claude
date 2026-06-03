@@ -1,0 +1,57 @@
+<div class="{{step.documents}}step">
+    <div class="content">
+        <div class="title">Personal Documents</div>
+        <div class="description">
+            <div class="ui horizontal list">
+                <div class="item">
+                    <div class="header">Drivers's License</div>
+                    <small>
+                        {{{checklist.dl.check}}}
+                        {{{checklist.dl.status}}}
+                    </small>
+                </div>
+                <div class="item">
+                    <div class="header">Medical Card</div>
+                    <small>
+                        {{{checklist.mec.check}}}
+                        {{{checklist.mec.status}}}
+                    </small>
+                </div>
+                <div class="item">
+                    <div class="header">Social Security Card</div>
+                    <small>
+                        {{{checklist.ssc.check}}}
+                        {{{checklist.ssc.status}}}
+                    </small>
+                </div>
+                {{#if (eq fileLegalDoc true)}}
+                <div class="item">
+                    <div class="header">Legal Document</div>
+                    <small>
+                        {{{checklist.leg.check}}}
+                        {{{checklist.leg.status}}}
+                    </small>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+{{#if (eq posProp 'OO')}}
+<div class="{{step.vehicle}}step">
+    <div class="content">
+        <div class="title">Vehicle Documents</div>
+        <div class="description">
+            <div class="ui horizontal list">
+                <div class="item">
+                    <div class="header">Registration</div>
+                    <small>
+                        {{{checklist.reg.check}}}
+                        {{{checklist.reg.status}}}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{/if}}

@@ -284,6 +284,37 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             prevEmployment: 'red',
         }
 
+        const checkStyle = {
+            unchecked: '<i class="red close icon"></i>',
+        }
+
+        hbs.step = {
+            documents: '',
+            vehicle: '',
+        }
+        hbs.checklist = {
+            dl: {
+                check: checkStyle.unchecked,
+                status: '<span class="ui dark red text">Pending</span>',
+            },
+            mec: {
+                check: checkStyle.unchecked,
+                status: '<span class="ui dark red text">Pending</span>',
+            },
+            ssc: {
+                check: checkStyle.unchecked,
+                status: '<span class="ui dark red text">Pending</span>',
+            },
+            leg: {
+                check: checkStyle.unchecked,
+                status: '<span class="ui dark red text">Pending</span>',
+            },
+            reg: {
+                check: checkStyle.unchecked,
+                status: '<span class="ui dark red text">Pending</span>',
+            },
+        }
+
         hbs._id = application._id
         hbs.formId = formId
         hbs.cdlRole = cdlRole

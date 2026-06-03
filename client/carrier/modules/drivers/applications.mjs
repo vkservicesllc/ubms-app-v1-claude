@@ -57,7 +57,7 @@ const table = $('#driver-applications-table').DataTable({
             data(row) {
                 if (!row._driverId && !row?.lead?.dob) return '<div class="ui inverted grey label">Pre-Application</div>'
 
-                const { step, stepLen } = row
+                const { step, stepLen, legalStatus } = row
                 let { condition } = row
                 const progress = condition === 'p' ? ` ${step < stepLen ? Math.round(step / stepLen * 100) : 100}%` : ''
                 condition = conditions[condition]
@@ -84,6 +84,8 @@ const table = $('#driver-applications-table').DataTable({
                 } else data += '<div class="ui label experience-label"><span title="Unknown Experience"><i class="question icon"></i></span></div>'
 
                 data += `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`
+                if (legalStatus[0] === 2)
+                    data += '<span title="Temporary Legal Status"><i class="orange hourglass start icon"></i></span>'
 
                 if (step > 2 && !row._mecId)
                     data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`

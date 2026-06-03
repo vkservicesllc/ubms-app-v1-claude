@@ -341,19 +341,7 @@ class Application {
         this.name = person ? person.fullName() : null
         this.fullName = person ? person.fullName('FMLs') : null
 
-        this.checklist = {
-            // dlScn: data.dlScn,
-            // dlScnId: data.dlScnId,
-            // dlVrfId: data.dlVrfId,
-            // mecScn: data.mecScn,
-            // mecScnId: data.mecScnId,
-            // mecVrfId: data.mecVrfId,
-            // docScn: data.docScn,
-            // docScnId: data.docScnId,
-            // docVrfId: data.docVrfId,
-            // mvrUplId: data.mvrUplId,
-            // pspUplId: data.pspUplId,
-        }
+        this.checklist = data.checklist
 
         if (data.decExperience || data.decPosition)
             this.decision = {
@@ -2097,16 +2085,7 @@ class Application {
             },
             {
                 table: query.driver_application.checklist.table,
-                fields: [
-                    // 'dlScn', 'dlScnId', 'dlVrfId',
-                    // 'mecScn', 'mecScnId', 'mecVrfId',
-                    // 'docScn', 'docScnId', 'docVrfId',
-                    // 'mvrUplId', 'pspUplId',
-                    // 'dlUplId', 'mecUplId', 'sscUplId', 'legUplId',
-                    // 'regUplId', 'trlRegUplId', 'vgwUplId', 'ccUplId', 'aiUplId',
-                    // 'chUplId', 'mvrUplId', 'cdlisUplId', 'pspUplId', 'accidents', 'accRepUplId',
-                    // 'dtrUplId',
-                ],
+                fields: 'checklist',
                 join: [ 'appId', 'id' ],
             },
             {
