@@ -12,7 +12,7 @@ class Person {
         this.lastName = data.lastName || data.lname
         this.suffix = data.suffix || data.sfx || null
         this.alias = data.alias || null
-        this.dob = data.dob || null
+        this.dob = data.dob || '0000-00-00'
         this.age = this.dob ? calculateYearAge(this.dob) : null
         this.gender = data.gender || null
         this.expansion = {
