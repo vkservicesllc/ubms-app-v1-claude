@@ -411,7 +411,11 @@ class Owner extends Individual {
 
             this.update = (targetOrBody, body, match = {}) => {
                 if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
-                console.log({ targetOrBody, body, match })
+
+                const { signature } = body
+                if ([0, 1, '0', '1', 'false', 'true'].includes(signature)) {
+                    //
+                }
             }
             // this.update = async (body, { since } = {}) => {
             //     if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')

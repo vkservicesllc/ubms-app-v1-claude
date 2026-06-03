@@ -211,7 +211,7 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, Own
             const { fistName, middleName, lastName, suffix, gender, dob } = req.body
 
             await person.update({ gender, dob })
-            await person.update('names', { since: dob, fistName, middleName, lastName, suffix }, { since })
+            await person.update('names', { fistName, middleName, lastName, suffix }, { since })
         }
 
         res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][1])
