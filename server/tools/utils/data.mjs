@@ -27,8 +27,9 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
         const fields = ['*']
         if (data.ssn) fields.push(selectAES('ssn'))
         if (data.ein) fields.push(selectAES('ein'))
-
+;console.log(query[target].select(fields, { match }));
         currentData = (await mysql.execute(query[target].select(fields, { match })))[0][0]
+;console.log(currentData);
         if (!currentData) currentData = {}
 
         if (!skipLog && currentData.updateLog !== undefined) {

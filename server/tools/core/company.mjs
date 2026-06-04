@@ -43,7 +43,7 @@ class Company {
         this.busName = data.busName
         this.coType = data.coType
         this.alias = data.alias
-        this.since = data.since || '0000-00-00'
+        this.since = data.since
         this.until = data.until
         this.lastLogo = data.lastLogo
         this.style = data.style || {}
@@ -114,9 +114,9 @@ class Company {
 
 
             this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
-                sanitize(body) {
+                sanitize(target, body) {
                     //* sql_mode=NO_ENGINE_SUBSTITUTION
-                    if (!body.since) body.since = '0000-00-00'
+                    if (target === 'main' && !body.since) body.since = '0000-00-00'
                     return body
                 },
                 async final(company, body, target) {
@@ -407,14 +407,39 @@ class Owner extends Individual {
 
             this.add = undefined
 
-            this.fetch = undefined
+            this.fetch = async (target, filter, params) => {
+                if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [FETCH]: Session user not supplied')
 
-            this.update = (targetOrBody, body, match = {}) => {
+                const person = await Individual.fetch(this.session, { id: this.personId || Individual.matchIdHash(this._personId) })
+                if (!person) throw new Error('Individual not found')
+
+                return await person.fetch(target, filter, params)
+            }
+
+            this.update = async (targetOrBody, body, match = {}) => {
                 if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
 
-                const { signature } = body
-                if ([0, 1, '0', '1', 'false', 'true'].includes(signature)) {
-                    //
+                let target = 'main'
+                if (typeof targetOrBody === 'object') body = targetOrBody
+                else target = targetOrBody
+
+                let { signature } = body
+                if ([0, 1, false, true, null, '0', '1', 'false', 'true', 'null'].includes(signature)) {
+                    if (signature !== null) {
+                        if (signature === 'null') signature = null
+                        else signature = [1, true, '1', 'true'].includes(signature)
+                    }
+
+                    const [ result ] = await mysql.execute(query.company_owner.update({ signature }))
+                    this.signature = signature
+
+                    return { updated: result.affectedRows > 0, data: this }
+                } else {
+                    const person = await Individual.fetch(this.session, { id: this.personId })
+                    if (!person) throw new Error('Individual not found')
+
+                    if (target === 'main') return await person.update(body)
+                    else return await person.update(target, body, match)
                 }
             }
             // this.update = async (body, { since } = {}) => {

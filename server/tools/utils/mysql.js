@@ -13,4 +13,9 @@ module.exports = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 50,
     dateStrings: true,
+    typeCast: function (field, next) {
+        if (field.type === 'DATE') return field.string() || '0000-00-00'
+
+        return next()
+    },
 })

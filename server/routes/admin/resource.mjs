@@ -200,18 +200,27 @@ router.post('/upsert/company-owner', User.mw.verify, User.mw.superAdminOnly, Own
                 await company.add('ownerships', { ownerId: owner.id, since })
             }
         } else {
-            const owner = await Owner.fetch(res.session, { _id })
+            let owner = await Owner.fetch(res.session, { _id })
             if (!owner) throw new Error('Owner not found')
 
-            const person = await Individual.fetch(res.session, { id: owner.personId })
-            if (!person) throw new Error('Individual not found')
+            const { firstName, middleName, lastName, suffix, gender, dob } = req.body
+            {
+                ({ data: owner } = await owner.update({ gender, dob }))
+                const names = await owner.fetch('names')
+                const { since = '0000-00-00' } = names[0]
 
-            const names = await person.fetch('names')
-            const { since = '0000-00-00' } = names[0]
-            const { fistName, middleName, lastName, suffix, gender, dob } = req.body
+                await owner.update('names', { firstName, middleName, lastName, suffix }, { since })
+            }
 
-            await person.update({ gender, dob })
-            await person.update('names', { fistName, middleName, lastName, suffix }, { since })
+            // const person = await Individual.fetch(res.session, { id: owner.personId })
+            // if (!person) throw new Error('Individual not found')
+
+            // const names = await person.fetch('names')
+            // const { since = '0000-00-00' } = names[0]
+            // const { firstName, middleName, lastName, suffix, gender, dob } = req.body
+
+            // await person.update({ gender, dob })
+            // await person.update('names', { fistName, middleName, lastName, suffix }, { since })
         }
 
         res.redirect(_companyId ? source.company[2] + _companyId : source['company-owner'][1])
