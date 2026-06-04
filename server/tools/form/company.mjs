@@ -123,7 +123,7 @@ class CompanyForm {
         label: 'Launch Date',
         required: false,
     })
-    // static effective = createSinceForm({ selector: companySelector, target: 'effective' })
+    static effective = createSinceForm({ selector: companySelector, target: 'effective' })
     static until = createUntilForm({ selector: companySelector })
 
     static busName = createBusNameForm(companySelector)

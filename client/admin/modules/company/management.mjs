@@ -166,7 +166,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                 data = row
                 break
             }
-            $effective.val(moment(data.since).format('MM/DD/YYYY'))
+            $effective.val(data.since !== '0000-00-00' ? moment(data.since).format('MM/DD/YYYY') : 'Launch Date')
             if (['names', 'phones', 'addresses'].includes(target))
                 $effective.prop('disabled', data.initial)
             $effectiveMatch.upsert.val(data.since)
@@ -441,9 +441,13 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             emails: !emails.length ? `${defs.a(4)}No emails registered yet${defs.b}` : '',
         }
 
+        const setDate = row =>
+            (row.since !== '0000-00-00' ? moment(row.since).format('ll') : '<em class="has-text-danger has-text-weight-normal">Launch Date</em>')
+            + (row.initial ? defs.init : '')
+
         names.map((row, i) => {
             list.names += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
-            list.names += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
+            list.names += `<td class="effective-date">${setDate(row)}</td>`
             list.names += `<td><span class="has-text-weight-semibold">${row.busName}, ${row.coType}</span> &nbsp;<small>(${row.alias})</small></td>`
             list.names += `<td class="has-text-right controls">`
             list.names += `<a ${defs.aAttr.edit(row, 'names', 'name')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
@@ -454,7 +458,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
         ownerships.map((row, i) => {
             const owner = new Person(row.owner)
             list.ownerships += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
-            list.ownerships += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
+            list.ownerships += `<td class="effective-date">${setDate(row)}</td>`
             list.ownerships += `<td><span class="has-text-weight-semibold">${owner.fullName()}</span></td>`
             list.ownerships += `<td class="has-text-right controls">`
             if (!i) list.ownerships += `<a id="transfer-ownership" title="Transfer ownership" href=""><i class="fas fa-arrows-turn-right has-text-link-70"></i></a>`
@@ -464,7 +468,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
 
         phones.map((row, i) => {
             list.phones += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
-            list.phones += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
+            list.phones += `<td class="effective-date">${setDate(row)}</td>`
             list.phones += `<td><span class="has-text-weight-semibold">${formatTel(row.phone)}</span></td>`
             list.phones += `<td class="has-text-right controls">`
             list.phones += `<a ${defs.aAttr.edit(row, 'phones', 'phone')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
@@ -474,7 +478,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
 
         faxes.map((row, i) => {
             list.faxes += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
-            list.faxes += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
+            list.faxes += `<td class="effective-date">${setDate(row)}</td>`
             list.faxes += `<td><span class="has-text-weight-semibold">${formatTel(row.fax)}</span></td>`
             list.faxes += `<td class="has-text-right controls">`
             list.faxes += `<a ${defs.aAttr.edit(row, 'faxes', 'fax')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
@@ -484,7 +488,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
 
         emails.map((row, i) => {
             list.emails += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
-            list.emails += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
+            list.emails += `<td class="effective-date">${setDate(row)}</td>`
             list.emails += `<td><span class="has-text-weight-semibold">${row.email}</span></td>`
             list.emails += `<td class="has-text-right controls">`
             list.emails += `<a ${defs.aAttr.edit(row, 'emails', 'email')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
@@ -495,7 +499,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
         addresses.map((row, i) => {
             const mailSup = row.mail ? ' &nbsp;<sup class="has-text-info-45 enforced"><i class="fa fa-envelope"></i></sup>' : ''
             list.addresses += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
-            list.addresses += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
+            list.addresses += `<td class="effective-date">${setDate(row)}</td>`
             list.addresses += `<td><span class="has-text-weight-semibold">${new Address(row).html()}</span>${mailSup}</td>`
             list.addresses += `<td class="has-text-right controls">`
             list.addresses += `<a ${defs.aAttr.edit(row, 'addresses', 'address')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
@@ -505,7 +509,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
 
         mail.map((row, i) => {
             list.mail += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
-            list.mail += `<td class="effective-date">${moment(row.since).format('ll') + (row.initial ? defs.init : '')}</td>`
+            list.mail += `<td class="effective-date">${setDate(row)}</td>`
             list.mail += `<td><span class="has-text-weight-semibold">${new Address(row).html()}</span></td>`
             list.mail += `<td class="has-text-right controls">`
             list.mail += `<a ${defs.aAttr.edit(row, 'mail', 'mailing address')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
@@ -527,7 +531,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
         })
 
         inputEvent(effectiveId, {
-            datepicker: { minDate: moment(since, 'YYYY-MM-DD').toDate(), maxDate: 0 },
+            datepicker: { minDate: since !== '0000-00-00' ? moment(since, 'YYYY-MM-DD').toDate() : undefined, maxDate: 0 },
             onChange(date, $date) {
                 $date.removeClass('is-danger')
             },

@@ -405,7 +405,14 @@ class Owner extends Individual {
             this.config = { hideRawId, hideSensitive }
 
 
-            this.add = undefined
+            this.add = async (target, body) => {
+                if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [ADD]: Session user not supplied')
+
+                const person = await Individual.fetch(this.session, { id: this.personId })
+                if (!person) throw new Error('Individual not found')
+
+                return await person.add(target, body)
+            }
 
             this.fetch = async (target, filter, params) => {
                 if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [FETCH]: Session user not supplied')
@@ -442,49 +449,6 @@ class Owner extends Individual {
                     else return await person.update(target, body, match)
                 }
             }
-            // this.update = async (body, { since } = {}) => {
-            //     if (!this?.session?.user?.id) throw new Error('Owner Constructor Method Error [UPDATE]: Session user not supplied')
-
-            //     const { signature } = body
-            //     if (typeof signature === 'boolean') {
-            //         const [ result ] = await mysql.execute(query.company_owner.main.update({ signature }, { id: this.id }))
-            //         return { updated: result.affectedRows > 0 }
-            //     }
-
-            //     const person = await Individual.fetch(this.session, { id: this.personId }, { hideSensitive: false })
-            //     if (!person) throw new Error('Person not identified')
-
-            //     const { dob, gender, ssn, prefix, firstName, middleName, lastName, suffix, phone } = body
-            //     body = {
-            //         person: { dob, gender, ssn },
-            //         name: { prefix, firstName, middleName, lastName, suffix },
-            //         phone: { phone },
-            //     }
-
-            //     if (ssn && person.ssn && ssn !== ssn) {
-            //         const person2 = await Individual.fetch(this.session, { ssn })
-
-            //         if (person2) {
-            //             if (person.dob !== person2.dob) throw new Error('Submitted SSN belongs to someone else with a different DOB')
-
-            //             Object.keys(body).map(key => body[key] = {})
-
-            //             body.main = await processData({ personId: person2.id }, {
-            //                 query: Owner.config().query, match: { id: this.id },
-            //                 modifiedBy: this.session.user.id,
-            //             })
-
-            //             const [ result ] = await mysql.execute(query.company_owner.main.update(body.main, { id: this.id }))
-            //             return { updated: result.affectedRows > 0 }
-            //         }
-            //     }
-
-            //     const { updated } = await person.update(body.main)
-            //     const { updated: nameUpdated } = await person.update('name', body.name, { since: since || dob })
-            //     const { updated: phoneUpdated } = person.phone ? await person.update('phone', body.phone, { since: since || dob }) : { updated: false }
-
-            //     return { updated: updated || nameUpdated || phoneUpdated }
-            // }
 
             this.delete = () => classInstance.delete(this, new.target, null, null, {
                 extendLog(owner, log) {

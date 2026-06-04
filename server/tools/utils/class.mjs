@@ -201,9 +201,8 @@ export const classInstance = {
         }
 
         if (typeof sanitize === 'function') body = sanitize(target, body)
-; if(target === 'main') console.log('class.update[0]', body);
         body = await processData(body, options)
-; if(target === 'main') console.log('class.update[1]', body);
+
         const [ result ] = await mysql.execute(config.query[target].update(body, {
             [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
         }))

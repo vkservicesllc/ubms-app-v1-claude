@@ -433,6 +433,7 @@ export const updateFormOptions = (options, Form, data, instr = {}) => {
 
     fields.forEach(prop => {
         const form = Form[prop]
+
         const { required, initialType } = form.properties
         const keys = Object.keys(form).filter(key => !['properties', 'validate'].includes(key))
         options[prop] = {}

@@ -55,7 +55,7 @@ const display = (data, ein) => {
     }
 
     if (data.since) {
-        display.data.since = moment(data.since).format('ll')
+        display.data.since = data.since !== '0000-00-00' ? moment(data.since).format('ll') : na
         display.data.duns = data.duns ? formatDuns(data.duns) : na
     }
 
@@ -569,7 +569,7 @@ export const companyManagement = async (req, res) => {
         }
 
         company.moment = {
-            since: moment(company.since).format('ll')
+            since: company.since !== '0000-00-00' ? moment(company.since).format('ll') : '<em class="has-text-danger has-text-weight-normal">Not specified</em>'
         }
 
         hbs.data = company

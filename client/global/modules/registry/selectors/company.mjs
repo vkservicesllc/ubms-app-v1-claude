@@ -20,7 +20,7 @@ const selector = {
         },
         text: {
             since: 'start-date',
-            // effective: 'effective-date',
+            effective: 'effective-date',
             ein: 'ein',
             duns: 'duns',
             busName: 'business-name',
