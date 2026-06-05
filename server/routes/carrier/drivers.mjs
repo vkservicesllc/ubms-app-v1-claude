@@ -234,7 +234,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         hbs.nav.top.items = navBuilder.simple(navItems(permissions, DS, 0))
 
-        const { _carrierId, _userId, cdlRole, vhlCode } = application
+        const { _carrierId, _userId, cdlRole, vhlCode, fullName } = application
         const vhlProp = vhlCode ? Application.list.vhlCode[vhlCode] : null
 
         if (_carrierId) {
@@ -303,6 +303,26 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             waiting: '<span class="ui dark orange text">Pending</span>',
         }
 
+        hbs.downloadLinks = { //! index 3 is download name
+            dl: [ ``, "Driver's License", `[${formId}] Driver's License (${fullName})` ],
+            mec: [ ``, 'Medical Certificate', `[${formId}] Medical Certificate (${fullName})` ],
+            leg: [ ``, 'Legal Documents', `[${formId}] Legal Documents (${fullName})` ],
+            ssc: [ ``, 'Social Security Card', `[${formId}] Social Security Card (${fullName})` ],
+
+            //
+        }
+
+        const uploaded = {
+            dl: false,
+            mec: true,
+            leg: false,
+            ssc: false,
+        }
+
+        const fileText = prop => uploaded[prop]
+            ? `<a><span class="ui dark blue text" href="${hbs.downloadLinks[prop][0]}">${hbs.downloadLinks[prop][1]}</span></a>`
+            : `<span class="ui grey text">${hbs.downloadLinks[prop][1]}</span>`
+
         hbs.folder = {
             driverQualification: folderStyle.open,
             applicationDocs: folderStyle.open,
@@ -316,10 +336,26 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             orientation: folderStyle.open,
         }
         hbs.file = {
-            dl: fileStyle.blank,
-            mec: fileStyle.blank,
-            leg: fileStyle.blank,
-            ssc: fileStyle.blank,
+            dl: {
+                uploaded: uploaded.dl,
+                style: fileStyle.blank,
+                text: fileText('dl'),
+            },
+            mec: {
+                uploaded: uploaded.mec,
+                style: fileStyle.blank,
+                text: fileText('mec'),
+            },
+            leg: {
+                uploaded: uploaded.leg,
+                style: fileStyle.blank,
+                text: fileText('leg'),
+            },
+            ssc: {
+                uploaded: uploaded.ssc,
+                style: fileStyle.blank,
+                text: fileText('ssc'),
+            },
             //! continue...
         }
 
@@ -793,7 +829,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         hbs.form = new ApplicationForm(options)
         hbs.dropdown = dropdown
-        hbs.fullName = application.fullName
+        hbs.fullName = fullName
         hbs.originalFullName = identity.individual.fullName('FMLs')
         hbs.nameMismatch = (
             identity.mismatch.firstName ||
