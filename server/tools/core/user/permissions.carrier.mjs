@@ -4,13 +4,30 @@ import { privileges } from './permissions.mjs'
 
 
 export default {
+    'd:crr': {
+        title: 'Carriers',
+        groups: {
+            'pub': {
+                name: [ 'Public Information',
+                    'Logo, MC, USDOT'
+                ],
+                privileges: [ 0 ],
+            },
+            'own': {
+                name: 'Ownerships',
+                privileges: [ 0 ],
+            },
+            'pri': {
+                name: [ 'Sensitive Information',
+                    'EIN'
+                ],
+                privileges: [ 0 ],
+            },
+        },
+    },
     'd:drv': {
         title: 'Drivers',
         groups: {
-            // 'lds': {
-            //     name: 'Pre-Applications',
-            //     privileges: "*",
-            // },
             'apl': {
                 name: 'Applications',
                 privileges: [ 0, 1, 2, 3, 5 ],
@@ -41,52 +58,35 @@ export default {
         title: 'Driver Files',
         groups: {
             'apl': {
-                name: 'Applications',
+                name: 'Application & Authorizations/Consents',
                 format: '.pdf (automatic)',
                 privileges: [ 0 ],
             },
-            'dl': {
-                name: "Driver's License",
+            'sup': {
+                name: [ 'Application Supporting Documents',
+                    "Driver's License, Medical Certificate, Social Security Card, Legal Documents, Vehicle Documents, Additional Authorization/Consent Forms"
+                ],
                 format: '.pdf, .jpeg, .png',
                 privileges: '*',
             },
-            'ssc': {
-                name: 'Social Security Card',
-                format: '.pdf, .jpeg, .png',
-                privileges: '*',
-            },
-            'leg': {
-                name: [ 'US Legal ID', 'US Passport / Green Card' ],
-                format: '.pdf, .jpeg, .png',
-                privileges: '*',
-            },
-            'med': {
-                name: 'Medical Certificate',
+            'bkg': {
+                name: [ 'Background Check',
+                    'Clearinghouse, Motor Vehicle Report (MVR), Pre-Employment Screening Program (PSP), etc.'
+                ],
                 format: '.pdf',
                 privileges: '*',
             },
-            'mvr': {
-                name: [ 'MVR', 'Motor Vehicle Record' ],
-                format: '.pdf',
-                privileges: '*',
-            },
-            'psp': {
-                name: [ 'PSP', 'Pre-Employment Screening Program' ],
-                format: '.pdf',
-                privileges: '*',
-            },
-            // 'tst': {
-            //     name: 'Road Test',
-            //     format: '.pdf',
-            //     privileges: '*',
-            // },
-            'drg': {
-                name: 'Drug Test',
+            'hir': {
+                name: [ 'Hiring Process',
+                    'Drug Test Result, Lease Agreement (LA), Safety Technology Agreement (STA), etc.'
+                ],
                 format: '.pdf',
                 privileges: '*',
             },
             'emp': {
-                name: 'Previous Employment',
+                name: [ 'Previous Employment',
+                    'Previous Employment Verification Documents'
+                ],
                 format: '.pdf',
                 privileges: '*',
             },
@@ -94,11 +94,6 @@ export default {
                 name: 'Pay Agreement',
                 format: '.pdf (automatic)',
                 privileges: [ 0 ],
-            },
-            'pas': {
-                name: 'Passenger Form',
-                format: '.pdf',
-                privileges: '*',
             },
         },
     },

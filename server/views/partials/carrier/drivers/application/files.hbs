@@ -102,6 +102,7 @@
                                             </div>
                                             {{/if}}
                                             {{/if}}
+                                            {{#if (eq filePerms.sup.download true)}}
                                             <div class="item">
                                                 {{{folder.supportingDocs}}}
                                                 <div class="content">
@@ -222,10 +223,12 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            {{/if}}
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            {{#if (eq filePerms.bkg.download true)}}
                             <div class="item">
                                 {{{folder.backgroundCheck}}}
                                 <div class="content">
@@ -271,11 +274,13 @@
                                     </div>
                                 </div>
                             </div>
+                            {{/if}}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        {{#if (eq filePerms.hir.download true)}}
         <div class="seven wide column" style="padding: .5rem 2rem; border-left: 1px solid rgba(34, 36, 38, 0.15);">
             <div class="ui list">
                 <div class="item">
@@ -307,5 +312,6 @@
                 </div>
             </div>
         </div>
+        {{/if}}
     </div>
 </div>

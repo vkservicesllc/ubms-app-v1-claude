@@ -95,7 +95,7 @@ export const html = (branch, permissions, tabs = 0) => {
             let title = ''
             if (Array.isArray(name)) {
                 [ name, title ] = name
-                name += ' *'
+                name += ' <sup><i class="far fa-circle-question"></i></sup>'
             }
             if (title) title = ` title="${title}"`
 
