@@ -142,7 +142,7 @@ $.when(statusReq).done(statusRes => {
 
             {
                 data: 'address',
-                title: 'State',
+                title: 'Base State',
                 render(data) {
                     if (!data.physical.state) return
 
@@ -164,6 +164,16 @@ $.when(statusReq).done(statusRes => {
                 title: 'Phone',
                 orderable: false,
                 render(data) {
+                    return formatTel(data)
+                },
+            },
+
+            {
+                data: 'fax',
+                title: 'Fax',
+                orderable: false,
+                render(data) {
+                    if (!data) return
                     return formatTel(data)
                 },
             },
@@ -221,7 +231,10 @@ $.when(statusReq).done(statusRes => {
             emptyTable: `<span class="has-text-danger">${emptyTableMsg}</span>`,
         },
 
-        lengthMenu,
+        lengthMenu: [
+            [ 15, 50, 100, -1],
+            [ 15, 50, 100, 'All' ],
+        ],
 
         order: [ [ 0, 'asc' ], [ 4, 'asc' ] ],
 

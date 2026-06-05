@@ -15,7 +15,7 @@ export const urlEvent = (id, options = {}) => {
             $url.val(url)
             if (onInput) onInput(url, $url)
         },
-        onChange(url, $url) {
+        onChange(url, $url) { console.log(url)
             url = url.split('?')[0]
 
             $url.val(url)

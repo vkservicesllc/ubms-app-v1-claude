@@ -172,7 +172,10 @@ const table = $('#owners-table').DataTable({
         emptyTable: '<span class="has-text-danger">No company owners registered at this time</span>',
     },
 
-    lengthMenu,
+    lengthMenu: [
+        [ 15, 50, 100, -1],
+        [ 15, 50, 100, 'All' ],
+    ],
 
     order: [ [ 1, 'asc' ], [ 2, 'asc' ] ],
 

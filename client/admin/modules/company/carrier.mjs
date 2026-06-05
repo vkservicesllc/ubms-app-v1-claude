@@ -43,8 +43,8 @@ inputEvent(credClass, {
         const $tip = $(`#${id.replace('carrier-', '')}-tip`)
         let pattern = /\D/g
 
-        if ($(this).hasClass(TCS.alpha)) pattern = /[^A-Za-z]/g
-        if ($(this).hasClass(TCS.alphaNumber)) pattern = /[^A-Za-z0-9]/g
+        if ($number.hasClass(TCS.alpha.replace('.', ''))) pattern = /[^A-Za-z]/g
+        if ($number.hasClass(TCS.alphaNumber.replace('.', ''))) pattern = /[^A-Za-z0-9]/g
 
         $number.val(number.replace(pattern, '').toUpperCase())
         $tip.hide().removeClass('is-danger is-success').html(null)
