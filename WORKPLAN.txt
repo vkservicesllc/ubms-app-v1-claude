@@ -6,3 +6,4 @@ that are available to them.
 1. Fix bug, onChange in address1, if extracted suite is not present, it ovewrites existing suite
 2. Remove Address and Base State from Search Filter in Admin/Companies
 3. Not editing instance in company (possibly when launch date is 0000-00-00)
+4. ----
