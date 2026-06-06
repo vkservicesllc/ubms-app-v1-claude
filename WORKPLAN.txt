@@ -1,3 +1,8 @@
 When a regular admin is unscoped, they can create unscoped users,
 but when they are scoped, they must only be able to invite scoped users and assign them teams and have available only
 that are available to them.
+
+
+1. Fix bug, onChange in address1, if extracted suite is not present, it ovewrites existing suite
+2. Remove Address and Base State from Search Filter in Admin/Companies
+3. Not editing instance in company (possibly when launch date is 0000-00-00)
