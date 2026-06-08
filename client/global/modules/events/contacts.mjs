@@ -30,11 +30,11 @@ export const emailEvent = (id, options = {}) => {
     inputEvent(id, {
         lower: true,
         value,
-        onInput(email, $email) {
+        onInput(email, $email, pos) {
             email = patterns.replace(email, 'email')
 
             $email.val(email)
-            if (onInput) onInput(email, $email)
+            if (onInput) onInput(email, $email, pos)
         },
         onChange(email, $email) {
             if (!multiple) $email.val(email.replace(',', ''))

@@ -12,12 +12,12 @@ export const nameEvent = (id, options = {}) => {
         strip: true,
         word: true,
         value,
-        onInput(name, $name) {
+        onInput(name, $name, pos) {
             name = patterns.replace(name, 'name')
             name = capitalizeEach(name)
 
             $name.val(name)
-            if (onInput) onInput(name, $name)
+            if (onInput) onInput(name, $name, pos)
         },
         onChange(name, $name) {
             const $suffix = $(sfxId)
@@ -72,12 +72,12 @@ export const driverLicenseEvent = (id, options = {}) => {
         strip: true,
         word: true,
         value,
-        onInput(dl, $dl) {
+        onInput(dl, $dl, pos) {
             dl = patterns.replace(dl, 'driverLicense')
             dl = dl.toUpperCase()
 
             $dl.val(dl)
-            if (onInput) onInput(dl, $dl)
+            if (onInput) onInput(dl, $dl, pos)
         },
         onChange,
         onFocus,
@@ -93,12 +93,12 @@ export const dlClassEvent = (id, options = {}) => {
         strip: true,
         word: true,
         value,
-        onInput(dlClass, $dlClass) {
+        onInput(dlClass, $dlClass, pos) {
             dlClass = patterns.replace(dlClass, 'dlClass')
             dlClass = dlClass.toUpperCase()
 
             $dlClass.val(dlClass)
-            if (onInput) onInput(dlClass, $dlClass)
+            if (onInput) onInput(dlClass, $dlClass, pos)
         },
         onChange,
         onFocus,

@@ -13,11 +13,11 @@ export const addr1Event = (id, options = {}) => {
         strip: true,
         word: true,
         value,
-        onInput(addr1, $addr1) {
+        onInput(addr1, $addr1, pos) {
             addr1 = capitalizeEach(addr1)
 
             $addr1.val(addr1)
-            if (onInput) onInput(addr1, $addr1)
+            if (onInput) onInput(addr1, $addr1, pos)
         },
         onChange(addr1, $addr1) {
             addr1 = patterns.replace(addr1, 'addr1')
@@ -58,11 +58,11 @@ export const addr2Event = (id, options = {}) => {
         strip: true,
         word: true,
         value,
-        onInput(addr2, $addr2) {
+        onInput(addr2, $addr2, pos) {
             addr2 = capitalizeEach(addr2)
 
             $addr2.val(addr2)
-            if (onInput) onInput(addr2, $addr2)
+            if (onInput) onInput(addr2, $addr2, pos)
         },
         onChange(addr2, $addr2) {
             addr2 = patterns.replace(addr2, 'addr2')
@@ -81,7 +81,7 @@ export const zipEvent = (id, options = {}) => {
 
     inputEvent(id, {
         value,
-        onInput(zip, $zip) {
+        onInput(zip, $zip, pos) {
             zip = patterns.replace(zip, 'zip')
 
             const { length } = zip
@@ -89,7 +89,7 @@ export const zipEvent = (id, options = {}) => {
 
             $zip.val(zip)
             if (length == maxLength) $zip.blur()
-            if (onInput) onInput(zip, $zip)
+            if (onInput) onInput(zip, $zip, pos)
         },
         onChange(zip, $zip) {
             const { length } = zip
@@ -136,12 +136,12 @@ export const cityEvent = (id, options = {}) => {
         strip: true,
         word: true,
         value,
-        onInput(city, $city) {
+        onInput(city, $city, pos) {
             city = capitalizeEach(city)
             city = patterns.replace(city, 'city')
 
             $city.val(city)
-            if (onInput) onInput(city, $city)
+            if (onInput) onInput(city, $city, pos)
         },
         onChange,
         onFocus,

@@ -9,14 +9,15 @@ export const urlEvent = (id, options = {}) => {
     inputEvent(id, {
         lower: true,
         value,
-        onInput(url, $url) {
+        onInput(url, $url, pos) {
             url = patterns.replace(url, 'url')
 
             $url.val(url)
-            if (onInput) onInput(url, $url)
+            if (onInput) onInput(url, $url, pos)
         },
-        onChange(url, $url) { console.log(url)
+        onChange(url, $url) {
             url = url.split('?')[0]
+            url = url.replace(/(\.[a-z]{2,})\/$/i, '$1')
 
             $url.val(url)
             if (onChange) {

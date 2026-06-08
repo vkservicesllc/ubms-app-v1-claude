@@ -86,37 +86,33 @@ export const inputEvent = (selector, options = {}) => {
     $input
         .off('input')
         .on('input', function() {
-            const { onInput } = options
-            let value = english($(this).val())
-            if (slim) value = _slim(value)
-            if (lower) value = value.toLowerCase()
-            if (upper) value = value.toUpperCase()
-            if (capitalize === 'each') value = capitalizeEach(value)
-            else if (capitalize === 'first') value = capitalizeFirst(value)
-
-            $(this).val(value)
-            if (onInput) onInput(value, $(this))
-
             // const { onInput } = options
+            // let value = english($(this).val())
+            // if (slim) value = _slim(value)
+            // if (lower) value = value.toLowerCase()
+            // if (upper) value = value.toUpperCase()
+            // if (capitalize === 'each') value = capitalizeEach(value)
+            // else if (capitalize === 'first') value = capitalizeFirst(value)
 
-            // const value = this.value
-
-            // let newValue = english(value)
-            // if (slim) newValue = _slim(newValue)
-            // if (lower) newValue = newValue.toLowerCase()
-            // if (upper) newValue = newValue.toUpperCase()
-            // if (capitalize === 'each') newValue = capitalizeEach(newValue)
-            // else if (capitalize === 'first') newValue = capitalizeFirst(newValue)
-
-            // if (newValue === value) return onInput(value, $(this))
-
-            // const diff = value.length - newValue.length
-            // const start = this.selectionStart
-            // const pos = start - diff
-
-            // this.value = newValue
-            // this.setSelectionRange(pos, pos)
+            // $(this).val(value)
             // if (onInput) onInput(value, $(this))
+
+            const { onInput } = options
+            const value = this.value
+            let newValue = english(value)
+            if (slim) newValue = _slim(newValue)
+            if (lower) newValue = newValue.toLowerCase()
+            if (upper) newValue = newValue.toUpperCase()
+            if (capitalize === 'each') newValue = capitalizeEach(newValue)
+            else if (capitalize === 'first') newValue = capitalizeFirst(newValue)
+
+            const diff = value.length - newValue.length
+            const start = this.selectionStart
+            const pos = start - diff
+
+            this.value = newValue
+            if (onInput) onInput(newValue, $(this), pos)
+            this.setSelectionRange(pos, pos)
         })
         .off('change')
         .on('change', function() {

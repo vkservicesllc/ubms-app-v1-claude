@@ -14,11 +14,11 @@ export const usernameEvent = (options = {}) => {
         word: true,
         strip: true,
         value,
-        onInput(username, $username) {
+        onInput(username, $username, pos) {
             username = patterns.replace(username, 'username')
 
             $username.val(username)
-            if (onInput) onInput(username, $username)
+            if (onInput) onInput(username, $username, pos)
         },
         onChange(username, $username) {
             if (onChange) {
@@ -55,9 +55,9 @@ export const passwordEvent = (flag, callback = {}) => {
     const key = { current: 'password', new: 'createPassword', confirm: 'confirmPassword' }[flag]
 
     inputEvent(selector.id.text[key], {
-        onInput(password, $password) {
+        onInput(password, $password, pos) {
             $password.val(password.replace(/\s+/g, ''))
-            if (onInput) onInput($password)
+            if (onInput) onInput($password, pos)
         },
         onChange(password, $password) {
             if (onChange) {
@@ -92,11 +92,11 @@ export const tokenEvent = (callback = {}) => {
     const { onInput, onChange, onFocus, onBlur } = callback
 
     inputEvent(selector.id.text.token, {
-        onInput(token, $token) {
+        onInput(token, $token, pos) {
             token = token.replace(/[\D]/g, '')
 
             $token.val(token)
-            if (onInput) onInput(token, $token)
+            if (onInput) onInput(token, $token, pos)
         },
         onChange(token, $token) {
             if (onChange) {
@@ -205,12 +205,12 @@ export const roleNameEvent = (ajaxData = {}, options = {}) => {
         strip: true,
         word: true,
         value,
-        onInput(name, $name) {
+        onInput(name, $name, pos) {
             name = patterns.replace(name, 'roleName')
             name = capitalizeEach(name)
 
             $name.val(name)
-            if (onInput) onInput(name, $name)
+            if (onInput) onInput(name, $name, pos)
         },
         onChange(name, $name) {
             if (onChange) onChange(name, $name)

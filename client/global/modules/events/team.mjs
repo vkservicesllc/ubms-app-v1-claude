@@ -12,12 +12,12 @@ export const teamNameEvent = (options = {}) => {
         strip: true,
         word: true,
         value,
-        onInput(name, $name) {
+        onInput(name, $name, pos) {
             name = patterns.replace(name, 'teamName')
             name = capitalizeEach(name)
 
             $name.val(name)
-            if (onInput) onInput(name, $name)
+            if (onInput) onInput(name, $name, pos)
         },
         onChange,
         onFocus,
@@ -32,11 +32,11 @@ export const teamDescEvent = (options = {}) => {
     inputEvent(selector.id.text.desc, {
         strip: true,
         value,
-        onInput(desc, $desc) {
+        onInput(desc, $desc, pos) {
             desc = capitalizeAfterPunctuation(desc)
 
             $desc.val(desc)
-            if (onInput) onInput(desc, $desc)
+            if (onInput) onInput(desc, $desc, pos)
         },
         onChange(desc, $desc) {
             desc = desc.trim()
