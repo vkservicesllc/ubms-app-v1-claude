@@ -569,7 +569,9 @@ export const companyManagement = async (req, res) => {
         }
 
         company.moment = {
-            since: company.since !== '0000-00-00' ? moment(company.since).format('ll') : '<em class="has-text-danger has-text-weight-normal">Not specified</em>'
+            since: company.since !== '0000-00-00'
+                ? moment(company.since).format('ll')
+                : '<em class="has-text-danger has-text-weight-normal">Not specified</em>',
         }
 
         hbs.data = company
