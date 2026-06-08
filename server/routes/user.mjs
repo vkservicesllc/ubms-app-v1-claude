@@ -321,6 +321,7 @@ router.get('/register/:_id', async (req, res) => {
                     const props = [ 'name' ]
                     for (const prop of props)
                         hbs.user[prop] = user[prop]
+                    hbs.user.name = user.fullName('AL')
 
                     hbs.label = {}
                     hbs.input = {
