@@ -333,7 +333,7 @@ router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, Comp
         const { since, ein, duns, busName, coType, alias, website, _match: match } = req.body
 
         await company.update({ since, ein, duns, website })
-        await company.update('name', { since, busName, coType, alias }, match)
+        await company.update('names', { since, busName, coType, alias }, match)
 
         res.redirect(source .company[2] + company._id)
     } catch (err) {
