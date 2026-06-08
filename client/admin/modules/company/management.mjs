@@ -377,6 +377,7 @@ $('#upsert-form').submit(function(evt) {
 
         data[name] = input.value
     })
+    if (since === '0000-00-00') delete data.since
 
     $.ajax({ url, method, data,
         success(response) {

@@ -96,6 +96,27 @@ export const inputEvent = (selector, options = {}) => {
 
             $(this).val(value)
             if (onInput) onInput(value, $(this))
+
+            // const { onInput } = options
+
+            // const value = this.value
+
+            // let newValue = english(value)
+            // if (slim) newValue = _slim(newValue)
+            // if (lower) newValue = newValue.toLowerCase()
+            // if (upper) newValue = newValue.toUpperCase()
+            // if (capitalize === 'each') newValue = capitalizeEach(newValue)
+            // else if (capitalize === 'first') newValue = capitalizeFirst(newValue)
+
+            // if (newValue === value) return onInput(value, $(this))
+
+            // const diff = value.length - newValue.length
+            // const start = this.selectionStart
+            // const pos = start - diff
+
+            // this.value = newValue
+            // this.setSelectionRange(pos, pos)
+            // if (onInput) onInput(value, $(this))
         })
         .off('change')
         .on('change', function() {

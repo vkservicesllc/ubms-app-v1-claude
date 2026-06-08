@@ -33,10 +33,12 @@ export const addr1Event = (id, options = {}) => {
                     addr2 = addr2Patt.test(addr1)
                         ? addr2Patt.exec(addr1)[0].toUpperCase()
                         : ''
-                    addr1 = addr1.replace(addr2Patt, '').trim()
-                    if (addr2) addr2 = patterns.replace(addr2, 'addr2')
 
-                    $addr2.val(addr2)
+                    addr1 = addr1.replace(addr2Patt, '').trim()
+                    if (addr2) {
+                        addr2 = patterns.replace(addr2, 'addr2')
+                        $addr2.val(addr2)
+                    }
                 }
             }
 

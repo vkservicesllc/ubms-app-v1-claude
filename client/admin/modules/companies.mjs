@@ -143,6 +143,7 @@ $.when(statusReq).done(statusRes => {
             {
                 data: 'address',
                 title: 'Base State',
+                searchable: false,
                 render(data) {
                     if (!data.physical.state) return
 
@@ -153,6 +154,7 @@ $.when(statusReq).done(statusRes => {
             {
                 data: 'address',
                 title: 'Address',
+                searchable: false,
                 orderable: false,
                 render(data) {
                     return new Address(data.physical).html()
