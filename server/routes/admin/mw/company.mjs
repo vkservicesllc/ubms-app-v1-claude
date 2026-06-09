@@ -548,7 +548,12 @@ export const companyManagement = async (req, res) => {
         const instr = { labelClass, labelClassRequired, textClass: 'input' }
         let options = {}
 
-        const values = { since: moment(since).format('MM/DD/YYYY'), ein, duns, website }
+        const values = {
+            since: since !== '0000-00-00' ? moment(since).format('MM/DD/YYYY') : null,
+            ein: ein ? formatEin(ein) : null,
+            duns: duns ? formatDuns(duns) : null,
+            website,
+        }
         const fields = [
             'effective',
             'busName', 'coType', 'alias',
@@ -557,7 +562,7 @@ export const companyManagement = async (req, res) => {
             'phone', 'fax', 'email',
         ]
 
-        options = updateFormOptions(options, CompanyForm, values, { ...instr })
+        options = updateFormOptions(options, CompanyForm, values, { ...instr, disabled: true })
         options = updateFormOptions(options, CompanyForm, fields, { ...instr, tabs: 13 })
 
         switch (category) {
@@ -568,11 +573,16 @@ export const companyManagement = async (req, res) => {
 
         }
 
+        const na = '<em class="has-text-danger has-text-weight-normal">N/A</em>'
+
         company.moment = {
             since: company.since !== '0000-00-00'
                 ? moment(company.since).format('ll')
                 : '<em class="has-text-danger has-text-weight-normal">Not specified</em>',
         }
+        company.ein = ein ? formatEin(ein) : na
+        company.duns = duns ? formatDuns(duns) : na
+        if (!website) company.website = na
 
         hbs.data = company
         hbs.form = new CompanyForm(options)

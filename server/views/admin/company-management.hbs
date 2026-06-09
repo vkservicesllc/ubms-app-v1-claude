@@ -84,85 +84,73 @@
                                             <td class="has-text-info-50 side-header"><small>Launch Date:</small></td>
                                             <td class="has-text-weight-semibold static-data">
                                                 <span>{{{data.moment.since}}}</span>
-                                                <div class="control has-icons-left" style="display: none;">
+                                                <div class="control has-icons-left form-element" style="display: none;">
                                                     {{{form.since.text.input}}}
                                                     <span class="icon is-small is-left">
                                                         <i class="fas fa-calendar-days"></i>
                                                     </span>
                                                 </div>
+                                                <p class="help is-danger"></p>
                                             </td>
                                             <td class="static-action has-text-right">
                                                 <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                                <a href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="has-text-info-50 side-header"><small>EIN:</small></td>
-                                            <td class="has-text-weight-semibold static-data">{{data.ein}}</td>
+                                            <td class="has-text-weight-semibold static-data">
+                                                <span>{{{data.ein}}}</span>
+                                                <div class="control has-icons-left form-element" style="display: none;">
+                                                    {{{form.ein.text.input}}}
+                                                    <span class="icon is-small is-left">
+                                                        <i class="fas fa-fingerprint"></i>
+                                                    </span>
+                                                </div>
+                                                <p class="help is-danger"></p>
+                                            </td>
                                             <td class="static-action has-text-right">
                                                 <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                                <a href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="has-text-info-50 side-header"><small>DUNS:</small></td>
-                                            <td class="has-text-weight-semibold static-data">{{data.duns}}</td>
+                                            <td class="has-text-weight-semibold static-data">
+                                                <span>{{{data.duns}}}</span>
+                                                <div class="control form-element" style="display: none;">
+                                                    {{{form.duns.text.input}}}
+                                                </div>
+                                                <p class="help is-danger"></p>
+                                            </td>
                                             <td class="static-action has-text-right">
                                                 <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                                <a href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="has-text-info-50 side-header"><small>Website:</small></td>
-                                            <td class="has-text-weight-semibold static-data">{{data.website}}</td>
+                                            <td class="has-text-weight-semibold static-data">
+                                                <span>{{{data.website}}}</span>
+                                                <div class="control has-icons-left form-element" style="display: none;">
+                                                    {{{form.website.text.input}}}
+                                                    <span class="icon is-small is-left">
+                                                        <i class="fas fa-globe"></i>
+                                                    </span>
+                                                </div>
+                                                <p class="help is-danger"></p>
+                                            </td>
                                             <td class="static-action has-text-right">
                                                 <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
+                                                <a href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div class="buttons px-2" style="display: none;">
+                                    <button type="submit" class="button is-primary is-dark">Save Changes</button>
+                                </div>
                             </form>
-                            <p class="has-text-danger mt-4"><i>Work in progress... Coming soon...</i></p>
-                            {{!-- REDUNDANT --}}
-                            {{!-- <form class="mt-6" autocomplete="off" style="display: none;">
-                                <div class="columns">
-                                    <div class="column is-3">
-                                        {{{form.since.text.label}}}
-                                        <div class="control has-icons-left">
-                                            {{{form.since.text.input}}}
-                                            <span class="icon is-small is-left">
-                                                <i class="fas fa-calendar-days"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="column is-4">
-                                        {{{form.ein.text.label}}}
-                                        <div class="control has-icons-left">
-                                            {{{form.ein.text.input}}}
-                                            <span class="icon is-small is-left">
-                                                <i class="fas fa-fingerprint"></i>
-                                            </span>
-                                        </div>
-                                        <p class="help is-info" id="ein-tip">Not public; encrypted</p>
-                                    </div>
-                                    <div class="column is-4">
-                                        {{{form.duns.text.label}}}
-                                        <div class="control">
-                                            {{{form.duns.text.input}}}
-                                        </div>
-                                        <p class="help" id="duns-tip"></p>
-                                    </div>
-                                </div>
-                                <div class="columns">
-                                    <div class="column is-7">
-                                        {{{form.website.text.label}}}
-                                        <div class="control has-icons-left">
-                                            {{{form.website.text.input}}}
-                                            <span class="icon is-small is-left">
-                                                <i class="fas fa-globe"></i>
-                                            </span>
-                                        </div>
-                                        <p class="help is-danger" id="website-tip"></p>
-                                    </div>
-                                </div>
-                            </form> --}}
                         </div>
                         <div class="column is-one-quarter pt-6">
                             <form autocomplete="off">
