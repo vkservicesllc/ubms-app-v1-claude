@@ -76,14 +76,14 @@
                 <section class="tab-section company-management-content" id="profile-section">
                     <div class="columns is-4">
                         <div class="column is-one-quarter pt-6">
-                            <form autocomplete="off">
+                            <form id="static-form" autocomplete="off">
                                 <table class="table">
                                     <thead><tr><td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Static Information</p></td></tr></thead>
                                     <tbody>
                                         <tr>
                                             <td class="has-text-info-50 side-header"><small>Launch Date:</small></td>
                                             <td class="has-text-weight-semibold static-data">
-                                                <span>{{{data.moment.since}}}</span>
+                                                <span class="form-data">{{{data.moment.since}}}</span>
                                                 <div class="control has-icons-left form-element" style="display: none;">
                                                     {{{form.since.text.input}}}
                                                     <span class="icon is-small is-left">
@@ -93,14 +93,14 @@
                                                 <p class="help is-danger"></p>
                                             </td>
                                             <td class="static-action has-text-right">
-                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
-                                                <a href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
+                                                <a class="static-edit" href=""><i class="fa {{link.static.since}}"></i></a>
+                                                <a class="static-cancel" href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="has-text-info-50 side-header"><small>EIN:</small></td>
                                             <td class="has-text-weight-semibold static-data">
-                                                <span>{{{data.ein}}}</span>
+                                                <span class="form-data">{{{data.ein}}}</span>
                                                 <div class="control has-icons-left form-element" style="display: none;">
                                                     {{{form.ein.text.input}}}
                                                     <span class="icon is-small is-left">
@@ -110,28 +110,28 @@
                                                 <p class="help is-danger"></p>
                                             </td>
                                             <td class="static-action has-text-right">
-                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
-                                                <a href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
+                                                <a class="static-edit" href=""><i class="fa {{link.static.ein}}"></i></a>
+                                                <a class="static-cancel" href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="has-text-info-50 side-header"><small>DUNS:</small></td>
                                             <td class="has-text-weight-semibold static-data">
-                                                <span>{{{data.duns}}}</span>
+                                                <span class="form-data">{{{data.duns}}}</span>
                                                 <div class="control form-element" style="display: none;">
                                                     {{{form.duns.text.input}}}
                                                 </div>
                                                 <p class="help is-danger"></p>
                                             </td>
                                             <td class="static-action has-text-right">
-                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
-                                                <a href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
+                                                <a class="static-edit" href=""><i class="fa {{link.static.duns}}"></i></a>
+                                                <a class="static-cancel" href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="has-text-info-50 side-header"><small>Website:</small></td>
                                             <td class="has-text-weight-semibold static-data">
-                                                <span>{{{data.website}}}</span>
+                                                <span class="form-data">{{{data.website}}}</span>
                                                 <div class="control has-icons-left form-element" style="display: none;">
                                                     {{{form.website.text.input}}}
                                                     <span class="icon is-small is-left">
@@ -141,13 +141,13 @@
                                                 <p class="help is-danger"></p>
                                             </td>
                                             <td class="static-action has-text-right">
-                                                <a href=""><i class="fa fa-pen-to-square has-text-success-45"></i></a>
-                                                <a href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
+                                                <a class="static-edit" href=""><i class="fa {{link.static.website}}"></i></a>
+                                                <a class="static-cancel" href="" style="display: none;"><i class="fa fa-close has-text-danger-60"></i></a>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <div class="buttons px-2" style="display: none;">
+                                <div class="buttons px-2" id="static-buttons" style="display: none;">
                                     <button type="submit" class="button is-primary is-dark">Save Changes</button>
                                 </div>
                             </form>

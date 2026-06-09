@@ -151,6 +151,51 @@ const titles = {
     mail: 'Mailing Address',
 }
 
+const $staticButtons = $('#static-buttons')
+
+
+$('.static-edit').click(function(evt) {
+    evt.preventDefault()
+
+    const $td = $(this).parent().prev()
+    const $formData = $td.find('.form-data')
+    const $formEl = $td.find('.form-element')
+    const $cancel = $(this).next()
+
+    $formEl.find('input').prop('required', true).prop('disabled', false)
+    $formEl.show()
+    $formData.hide()
+
+    $(this).hide()
+    $cancel.show()
+    $staticButtons.show()
+})
+
+$('.static-cancel').click(function(evt) {
+    evt.preventDefault()
+
+    const $td = $(this).parent().prev()
+    const $formData = $td.find('.form-data')
+    const $formEl = $td.find('.form-element')
+    const $edit = $(this).prev()
+
+    $formEl.find('input').prop('required', false).prop('disabled', true)
+    $formEl.hide()
+    $formData.show()
+
+    $(this).hide()
+    $edit.show()
+
+    let enabled = false
+    $('#static-form').find('input').each(function() {
+        if (!enabled) {
+            if ($(this).prop('disabled') === false) enabled = true
+        }
+    })
+
+    if (!enabled) $staticButtons.hide()
+})
+
 
 const openUpsertModal = (target, action = 'insert', data, since) => {
     const { $title, $warning, $main, $submit } = $modal.elements('upsert')

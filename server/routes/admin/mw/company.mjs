@@ -574,6 +574,7 @@ export const companyManagement = async (req, res) => {
         }
 
         const na = '<em class="has-text-danger has-text-weight-normal">N/A</em>'
+        const linkAdd = 'fa-plus has-text-link-70', linkEdit = 'fa-pen-to-square has-text-success-45'
 
         company.moment = {
             since: company.since !== '0000-00-00'
@@ -583,6 +584,15 @@ export const companyManagement = async (req, res) => {
         company.ein = ein ? formatEin(ein) : na
         company.duns = duns ? formatDuns(duns) : na
         if (!website) company.website = na
+
+        hbs.link = {
+            static: {
+                since: since === '0000-00-00' ? linkAdd : linkEdit,
+                ein: ein ? linkEdit : linkAdd,
+                duns: duns ? linkEdit : linkAdd,
+                website: website ? linkEdit : linkAdd,
+            },
+        }
 
         hbs.data = company
         hbs.form = new CompanyForm(options)
