@@ -116,18 +116,18 @@ class Company {
             this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
                 sanitize(target, body) {
                     //* sql_mode=NO_ENGINE_SUBSTITUTION
-                    if (target === 'main' && !body.since) body.since = '0000-00-00'
+                    if (target === 'main' && body.since === null) body.since = '0000-00-00'
                     return body
                 },
                 async final(company, body, target) {
-                    if (target !== 'main' || !body.since || body.since === company.since) return
+                    if (target !== 'main' || body.since === undefined || body.since === company.since) return
 
                     let keys = Object.keys(query.company)
                     keys = keys.filter(key => !['main'].includes(key))
 
                     for (const target of keys)
                         await mysql.execute(query.company[target].update({ since: body.since }, {
-                            companyId: company.id, since: company.dob,
+                            companyId: company.id, since: company.since,
                         }))
                 },
             })

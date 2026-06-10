@@ -3,10 +3,13 @@ import Address from '/modules/tools/core/address.us.mjs'
 import Tip from '/modules/tools/tip.mjs'
 import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import { busNameEvent, coTypeEvent, aliasEvent, einEvent, dunsEvent } from '/modules/events/company.mjs'
+import { urlEvent } from '../events/web.mjs'
 import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import selector from '/modules/registry/selectors/company.mjs'
+
+//! FIXES NEEDED: since event must be updated
 
 const TS = selector.id.text, SS = selector.id.select
 const sinceId = TS.since, effectiveId = TS.effective
@@ -22,9 +25,9 @@ const $tip = {
     name: $('#busname-tip'),
     alias: $('#alias-tip'),
     email: $('#email-tip'),
-    // ein: $('#ein-tip'),
-    // duns: $('#duns-tip'),
-    // website: $('#website-tip'),
+    ein: $('#ein-tip'),
+    duns: $('#duns-tip'),
+    website: $('#website-tip'),
     // form: $('#company-form-tip'),
 }
 
@@ -36,14 +39,14 @@ const message = {
     success: {
         name: 'Name is unique',
         alias: 'Alias is unique',
-        // ein: 'EIN is unique',
-        // duns: 'DUNS is unique',
+        ein: 'EIN is unique',
+        duns: 'DUNS is unique',
     },
     failed: {
         name: 'Name is taken',
         alias: 'Alias is taken',
-        // ein: 'EIN is taken',
-        // duns: 'DUNS is taken',
+        ein: 'EIN is taken',
+        duns: 'DUNS is taken',
     },
 }
 
@@ -160,10 +163,12 @@ $('.static-edit').click(function(evt) {
     const $td = $(this).parent().prev()
     const $formData = $td.find('.form-data')
     const $formEl = $td.find('.form-element')
+    const $help = $td.find('.help')
     const $cancel = $(this).next()
 
-    $formEl.find('input').prop('required', true).prop('disabled', false)
+    $formEl.find('input').prop('disabled', false)
     $formEl.show()
+    $help.show()
     $formData.hide()
 
     $(this).hide()
@@ -177,10 +182,12 @@ $('.static-cancel').click(function(evt) {
     const $td = $(this).parent().prev()
     const $formData = $td.find('.form-data')
     const $formEl = $td.find('.form-element')
+    const $help = $td.find('.help')
     const $edit = $(this).prev()
 
-    $formEl.find('input').prop('required', false).prop('disabled', true)
+    $formEl.find('input').prop('disabled', true)
     $formEl.hide()
+    $help.hide()
     $formData.show()
 
     $(this).hide()
@@ -351,6 +358,43 @@ const closeDeleteModal = () => {
 
 
 $input.prop('disabled', true)
+
+
+//! NOT FINISHED
+inputEvent(sinceId, {
+    datepicker: {
+        maxDate: 0, //! Determine maxDate based on other components minimum date minus 1 day
+    },
+})
+
+
+einEvent(einId, {
+    onInput() {
+        setTip.default('ein')
+    },
+    onChange(ein) {
+        handleChange({ data: { ein }, key: 'ein' })
+    },
+})
+
+dunsEvent(dunsId, {
+    onInput() {
+        setTip.default('duns')
+    },
+    onChange(duns) {
+        handleChange({ data: { duns }, key: 'duns' })
+    },
+})
+
+urlEvent(websiteId, {
+    onInput() {
+        $tip.website.html(null)
+    },
+    onChange(website, valid) {
+        if (website && !valid)
+            $tip.website.html('<i class="fa fa-triangle-exclamation"></i> Invalid website')
+    },
+})
 
 
 busNameEvent(busNameId, coTypeId, {

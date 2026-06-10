@@ -79,11 +79,11 @@ class Individual extends Person {
             this.update = (targetOrBody, body, match) => classInstance.update(this, new.target, targetOrBody, body, match, {
                 sanitize(target, body) {
                     //* sql_mode=NO_ENGINE_SUBSTITUTION
-                    if (target === 'main' && !body.dob) body.dob = '0000-00-00'
+                    if (target === 'main' && body.dob === null) body.dob = '0000-00-00'
                     return body
                 },
-                async final(person, body) {
-                    if (!body.dob || body.dob === person.dob) return
+                async final(person, body, target) {
+                    if (target !== 'main' || body.dob === undefined || body.dob === person.dob) return
 
                     let keys = Object.keys(query.person)
                     keys = keys.filter(key => !['main', 'identifications'].includes(key))

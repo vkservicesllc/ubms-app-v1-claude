@@ -217,6 +217,9 @@ class CompanyForm {
             case 'contacts':
                 fields = ['phone', 'fax', 'email']
                 break
+            case 'static':
+                fields = ['since', 'ein', 'duns', 'website']
+                break
             default:
                 fields = ['category', 'ein', 'duns', 'busName', 'coType', 'alias', 'website', 'since']
         }

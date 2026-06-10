@@ -342,6 +342,24 @@ router.post('/update/company/:_id', User.mw.verify, User.mw.superAdminOnly, Comp
 })
 
 
+router.post('/update/company/:_id/static', User.mw.verify, User.mw.superAdminOnly, CompanyForm.validate('static'), validationCheck, async (req, res) => {
+    try {
+        const { _id } = req.params
+        const company = await Company.fetch(res.session, { _id }, { hideSensitive: false })
+        if (!company) throw new Error('Company not found')
+
+        await company.update(req.body)
+
+        const category = Company.list.category[company.category].path[1]
+        const { route } = company
+
+        res.redirect(`/business/${category}/${route}/management`)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.companies, validationCheck, async (req, res) => {
     //! THIS MAY ONLY WORK WITH INITIAL VALUES
     try {
