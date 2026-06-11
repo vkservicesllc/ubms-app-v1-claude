@@ -61,7 +61,7 @@
                     or
                         (eq data.confirmed true)
                         ( and (eq data.confirmed false) (eq data.category 'crr') (hv data.mc) (hv data.usdot) )
-                        ( and (eq data.confirmed false) (eq data.category 'hld') )
+                        ( and (eq data.confirmed false) (eq data.category 'hld') (hv data.phone) )
                 )}}
                 {{> admin/company/card}}
                 {{/if}}
