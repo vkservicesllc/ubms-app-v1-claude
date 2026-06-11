@@ -16,9 +16,13 @@ $.when(statusReq).done(statusRes => {
     const table = new DataTable('#companies-table', {
 
         ajax: {
-            url: '/api/resource/companies',
+            url: '/api/resource/companies/query',
+            type: 'POST',
             data(body) {
-                body.filter = {}
+                body.filter = {
+                    category: $('#dt-custom-select-categories').val(),
+                    owner: $('#dt-custom-select-owners').val(),
+                }
             },
             dataSrc(response) {
                 const { data: companies } = response
@@ -239,12 +243,29 @@ $.when(statusReq).done(statusRes => {
                 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
             ]
-            const { alphabet } = response.supData
+            const { alphabet, categories, owners, states } = response.supData
             const $toolbar = $('<div class="custom-dt-toolbar"></div>')
             const $alphabet = $('<div class="buttons"></div>')
-            alphabet.map(letter => $alphabet.append(`<button class="button">${letter}</button>`))
+            alphabet.map(letter => $alphabet.append(`<button class="button" disabled>${letter}</button>`))
 
             $('.dt-top-toolbar-1').append('<div></div>').append($alphabet).append('<div></div>')
+
+            const dropdown = {
+                categories: '<div><label for="dt-custom-select-categories">Filter by Category:</label><div class="select"><select id="dt-custom-select-categories" disabled>',
+                owners: '<div><label for="dt-custom-select-owners">Filter by Owner:</label><div class="select"><select id="dt-custom-select-owners" disabled>',
+                states: '<div><label for="dt-custom-select-states">Filter by Base State:</label><div class="select"><select id="dt-custom-select-states" disabled>',
+            }
+            dropdown.categories += '<option value="">All</option>'
+            dropdown.owners += '<option value="">All</option>'
+            dropdown.states += '<option value="">All</option>'
+            categories.map(category => dropdown.categories += `<option value="${category.code}">${category.name}</option>`)
+            owners.map(owner => dropdown.owners += `<option value="${owner._id}">${owner.name}</option>`)
+            states.map(state => dropdown.states += `<option value="${state.code}">${state.name}</option>`)
+
+            dropdown.categories += '</select></div></div>'
+            dropdown.owners += '</select></div></div>'
+            dropdown.states += '</select></div></div>'
+            $toolbar.append(dropdown.categories).append(dropdown.owners).append(dropdown.states)
 
             $('.dt-length').after($toolbar)
         },

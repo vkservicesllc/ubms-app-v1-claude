@@ -5,9 +5,11 @@ const sendError = require('../../tools/utils/error')
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Individual from '../../tools/core/individual.mjs'
+import Address from '../../../client/global/modules/tools/core/address.us.mjs'
 import Company, { Owner, RefSource } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 import { Application as DriverApplication } from '../../tools/core/driver.mjs'
+import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
 
 /* Import: Validators */
 import validationCheck from '../../tools/form/validator.mjs'
@@ -80,27 +82,36 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
 })
 
 
-router.get('/companies', User.mw.verify, async (req, res) => {
+router.post('/companies/query', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser } = res.session
         const options = { hideRawId }, filter = {}
         let data
-
+console.log(req.body)
         if (!sessionUser.DS) {
             filter.closed = false
             filter.confirmed = true
 
             data = await sessionUser.fetch('jx.companies', filter, options)
         } else data = await Company.fetch(res.session, filter, options)
+
         const alphabet = []
+        let categories = [], owners = [], states = []
 
         for (const company of data) {
             const firstLetter = company.name[0]
-            if (alphabet.includes(firstLetter)) continue
-            alphabet.push(firstLetter)
+            if (!alphabet.includes(firstLetter)) alphabet.push(firstLetter)
+            if (!categories.some(category => category.code = company.category)) categories.push({ code: company.category, name: company.expansion.categoryGroup })
+            if (company?.owner?._id && !owners.some(owner => owner._id === company.owner._id))
+                owners.push({ _id: company.owner._id, name: company.owner.fullName() })
+            if (company?.address?.physical?.state && !states.some(state => state.code === company.address.physical.state))
+                states.push({ code: company.address.physical.state, name: Address.list.state[company.address.physical.state] })
         }
+        categories = sortArrayByObjectKey(categories, 'name')
+        owners = sortArrayByObjectKey(owners, 'name')
+        states = sortArrayByObjectKey(states, 'name')
 
-        res.json({ data, supData: { alphabet } })
+        res.json({ data, supData: { alphabet, categories, owners, states } })
     } catch (err) {
         sendError.server(req, res, err)
     }

@@ -13,3 +13,14 @@
     align-items: center;
     margin: 1.2rem 0;
 }
+
+.custom-dt-toolbar {
+    display: flex;
+    justify-content: space-around;
+    min-width: 60%;
+}
+
+.custom-dt-toolbar label {
+    padding-right: .8rem;
+    font-weight: bold;
+}
