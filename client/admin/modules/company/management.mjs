@@ -9,7 +9,6 @@ import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/add
 import { inputEvent, selectEvent } from '/modules/events/form.mjs'
 import selector from '/modules/registry/selectors/company.mjs'
 
-//! FIXES NEEDED: since event must be updated
 
 const TS = selector.id.text, SS = selector.id.select
 const sinceId = TS.since, effectiveId = TS.effective
@@ -130,6 +129,7 @@ const $modal = {
 
 const _id = $('#company-id').val()
 const since = $('#company-since').val()
+const maxDate = $('#company-max-date').val()
 const timeout = 250
 
 
@@ -360,10 +360,9 @@ const closeDeleteModal = () => {
 $input.prop('disabled', true)
 
 
-//! NOT FINISHED
 inputEvent(sinceId, {
     datepicker: {
-        maxDate: 0, //! Determine maxDate based on other components minimum date minus 1 day
+        maxDate: maxDate ? moment(maxDate).toDate() : new Date,
     },
 })
 

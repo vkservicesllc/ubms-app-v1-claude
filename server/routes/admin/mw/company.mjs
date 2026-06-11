@@ -464,7 +464,8 @@ export const companyByCategoryAndRoute = async (req, res) => {
             files.forEach((filename, i) => {
                 const t = `\t\t\t\t`
                 const label = files.length - 1 === i ? 'Initial' : 'Effective '
-                const caption = moment(filename.split('.')[0]).format('ll')
+                const fileDate = filename.split('.')[0]
+                const caption = fileDate !== '0000-00-00' ? moment(fileDate).format('ll') : 'Launch Date'
 
                 logoList += `\n${t}<figure class="image">`
                 logoList += `\n${t}\t<figcaption><small>${label}:</small> ${caption}`
@@ -540,6 +541,7 @@ export const companyManagement = async (req, res) => {
         const icon = Company.list.category[category].icon
         hbs.companyName = company.name
         if (icon) hbs.companyName = `${icon}&nbsp;&nbsp;${hbs.companyName}`
+        hbs.maxDate = await company.maxDate()
 
         hbs.url = {
             back: `/business/${req.params.category}/${route}`,

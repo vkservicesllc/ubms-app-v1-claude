@@ -44,7 +44,11 @@ $input.on('change', function(evt) {
 
 if ($since.length)
     inputEvent('#company-logo-since', {
-        datepicker: { maxDate: 0, minDate: moment(defSince).format('MM/DD/YYYY'), dateFormat: 'mm/dd/yy' },
+        datepicker: {
+            maxDate: new Date,
+            minDate: defSince !== '0000-00-00' ? moment(defSince).toDate() : undefined,
+            dateFormat: 'mm/dd/yy',
+        },
     })
 
 

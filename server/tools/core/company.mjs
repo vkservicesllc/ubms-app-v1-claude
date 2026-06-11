@@ -13,7 +13,7 @@ import { classInstance, classStatic } from '../utils/class.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { selectAES, processAES } from '../utils/data.mjs'
-import { renameFile } from '../utils/fs.mjs'
+import { getFiles, renameFile } from '../utils/fs.mjs'
 
 const mysql = require('../utils/mysql')
 
@@ -153,6 +153,34 @@ class Company {
 
 
             this.log = params => classInstance.log(this, new.target, params)
+
+
+            this.maxDate = async () => {
+                const dates = []
+
+                const files = await getFiles(`${dir}/uploads/business/company/${this.id}/logo/`)
+                if (files.length) files.shift()
+                if (files.length) dates.push(files[0].split('.')[0])
+
+                const match = { since: { not: this.since } }
+                const names = await this.fetch('names', match)
+                const ownerships = await this.fetch('ownerships', match)
+                const addresses = await this.fetch('addresses', match)
+                const mail = await this.fetch('mail', match)
+                const phones = await this.fetch('phones', match)
+                const faxes = await this.fetch('faxes', match)
+                const emails = await this.fetch('emails', match)
+
+                if (names.length) dates.push(names[0].since)
+                if (ownerships.length) dates.push(ownerships[0].since)
+                if (addresses.length) dates.push(addresses[0].since)
+                if (mail.length) dates.push(mail[0].since)
+                if (phones.length) dates.push(phones[0].since)
+                if (faxes.length) dates.push(faxes[0].since)
+                if (emails.length) dates.push(emails[0].since)
+
+                return dates.sort()[0]
+            }
         }
     }
 
