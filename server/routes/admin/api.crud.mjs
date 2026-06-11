@@ -87,7 +87,7 @@ router.post('/companies/query', User.mw.verify, async (req, res) => {
         const { user: sessionUser } = res.session
         const options = { hideRawId }, filter = {}
         let data
-console.log(req.body)
+
         if (!sessionUser.DS) {
             filter.closed = false
             filter.confirmed = true

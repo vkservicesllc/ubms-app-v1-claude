@@ -133,6 +133,19 @@ class Company {
                         }))
 
                     await renameFile(`${dir}/uploads/business/company/${company.id}/logo/`, `${company.since}.png`, `${body.since}.png`)
+
+                    switch(company.category) {
+
+                        case 'crr':
+                            {
+                                const { carrierId } = company.externalId
+                                await mysql.execute(query.carrier.ifta.update({ since: body.since }, {
+                                    carrierId, since: company.since,
+                                }))
+                            }
+                            break
+
+                    }
                 },
             })
 
