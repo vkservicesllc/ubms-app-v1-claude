@@ -141,7 +141,7 @@ class Carrier extends Company {
             batch[0].match.category = 'crr'
 
             const {
-                id, _id, companyId,  _companyId, ein, duns, busName, coType, alias, route,
+                id, _id, companyId, _companyId, ein, duns, busName, coType, alias, route,
                 mc, usdot, scac, irp, efs, fleetOne, transflo, ifta, stateTax = {},
                 ids, _ids, companyIds, _companyIds,
             } = filter

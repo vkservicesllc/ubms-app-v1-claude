@@ -73,6 +73,10 @@ export const query = {
         main: new Query(db.business, 'refsources'),
     },
 
+    parent: {
+        main: new Query(db.business, 'parents'),
+    },
+
     carrier: {
         main: new Query(db.carrier, 'carriers'),
         ifta: new Query(db.carrier, 'carrier_ifta'),  //* 1-to-many
@@ -122,5 +126,6 @@ export const query = {
 
 
 export const algorithm = {
+    parent: 'SHA-224',
     carrier: 'SHA-224',
 }

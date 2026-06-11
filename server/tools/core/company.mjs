@@ -27,6 +27,10 @@ class Company {
         if (!hideRawId) this.id = data.id
 
         this.externalId = {}
+        if (data._parentId) {
+            if (!hideRawId) this.externalId.parentId = data.parentId
+            this.externalId._parentId = data._parentId
+        }
         if (data._carrierId) {
             if (!hideRawId) this.externalId.carrierId = data.carrierId
             this.externalId._carrierId = data._carrierId
@@ -370,12 +374,13 @@ class Company {
     static list = {
 
         category: {
-            'crr': {  branch: 'carrier',       item: [ 'Carriers', 'Carrier' ],      group: 'Logistics',     path: [ 'carriers', 'carrier' ],  icon: '<i class="fas fa-truck-fast"></i>'  },
-            'brk': {  branch: 'broker',        item: [ 'Brokers', 'Broker' ],        group: 'Brokerage',     path: [ 'brokers', 'broker' ]        },
-            'whs': {  branch: 'warehouse',     item: [ 'Warehouses', 'Warehouse' ],  group: 'Storage',       path: [ 'warehouses', 'warehouse' ]  },
-            'shp': {  branch: 'shop',          item: [ 'Shops', 'Shop' ],            group: 'Shops',         path: [ 'shops', 'shop' ]            },
-            'scl': {  branch: 'school',        item: [ 'Schools', 'School' ],        group: 'CDL Training',  path: [ 'schools', 'school' ]        },
-            'cst': {  branch: 'construction',  item: [ 'Builders', 'Builder' ],      group: 'Construction',  path: [ 'builders', 'builder' ]      },
+            'hld': {  branch: 'parent',        item: [ 'Parents', 'Parent' ],        group: 'Holding Companies',  path: [ 'parents', 'parent' ],    icon: '<i class="fas fa-hand-holding"></i>'  },
+            'crr': {  branch: 'carrier',       item: [ 'Carriers', 'Carrier' ],      group: 'Logistics',          path: [ 'carriers', 'carrier' ],  icon: '<i class="fas fa-truck-fast"></i>'  },
+            'brk': {  branch: 'broker',        item: [ 'Brokers', 'Broker' ],        group: 'Brokerage',          path: [ 'brokers', 'broker' ]        },
+            'whs': {  branch: 'warehouse',     item: [ 'Warehouses', 'Warehouse' ],  group: 'Storage',            path: [ 'warehouses', 'warehouse' ]  },
+            'shp': {  branch: 'shop',          item: [ 'Shops', 'Shop' ],            group: 'Shops',              path: [ 'shops', 'shop' ]            },
+            'scl': {  branch: 'school',        item: [ 'Schools', 'School' ],        group: 'CDL Training',       path: [ 'schools', 'school' ]        },
+            'cst': {  branch: 'construction',  item: [ 'Builders', 'Builder' ],      group: 'Construction',       path: [ 'builders', 'builder' ]      },
             key(category, prop = 'branch', idx = null) {
                 for (const key in this) {
                     let value = this[key][prop]
@@ -640,6 +645,92 @@ class Owner extends Individual {
 }
 
 
+class Parent extends Company {
+    constructor(data = {}, { single = true, session, hideRawId = false, hideSensitive = true }) {
+        if (!data?._id) throw new Error('Constructor Error: Invalid Parent Data')
+
+        super(data, { single, hideRawId, hideSensitive })
+        this.externalId = undefined
+
+        const props = { _id: data._parentId, _companyId: data._id }
+        if (!hideRawId) {
+            props.id = data.parentId
+            props.companyId = data.id
+        }
+
+        reSuper(this, props)
+
+        if (single) {
+            this.session = session
+            this.config = { hideRawId, hideSensitive }
+        }
+    }
+
+    static #algorithm = algorithm.carrier
+    static hashId = (field = 'id') => hash(field, Parent.#algorithm)
+    static matchIdHash = value => matchHash(value, Parent.#algorithm)
+
+    static config = () => ({
+        db: db.business,
+        query: query.parent,
+        idProp: 'parentId',
+    })
+
+
+    static create = (session, body) => classStatic.create(this, session, body)
+
+
+    static fetch = (session, filter,
+        { hideRawId = false, hideSensitive = true, sorts = Company.config().defSorts, limit, mode } = {}
+    ) => classStatic.fetch(this, session, filter, { hideRawId, hideSensitive, sorts, limit, mode }, {
+        async prepare(batch, filter) {
+            batch = await Company.fetch(session, {}, { mode: 'batch' })
+
+            //! IMPORTANT
+            batch = batch.filter(item => item.table !== query.parent.main.table)
+
+            batch.push({
+                table: query.parent.main.table,
+                fields: [ [ 'id', 'parentId' ], [ Parent.hashId(), 'parentId' ] ],
+                join: [ 'companyId', 'id' ],
+            })
+
+            delete batch[0].match.id
+            batch[0].match.category = 'hld'
+
+            const {
+                id, _id, companyId, _companyId, ein, duns, busName, coType, alias, route,
+                ids, _ids, companyIds, _companyIds,
+            } = filter
+            
+            const single = !!id || !!_id || !!companyId || !!_companyId || !!ein || !!duns || !!(busName && coType) || !!alias || !!route
+
+            const idx = batch.length - 1
+            batch[idx].match = {}
+
+            if (!batch[0].match) batch[0].match = {}
+            if (!batch[1].match) batch[1].match = {}
+
+            if (id || _id || ids || _ids) {
+                if (id) batch[idx].match.id = id
+                else if (ids) batch[idx].match.id = ids
+                else if (_id || _ids) batch[idx].match.id = Parent.matchIdHash(_id || _ids)
+            }
+            if (companyId || _companyId || companyIds || _companyIds)
+                batch[0].match.id = companyId || companyIds || Company.matchIdHash(_companyId || _companyIds)
+            if (ein) batch[0].match.ein = processAES('ein', ein)
+            if (busName && coType) {
+                batch[1].match.busName = busName
+                batch[1].match.coType = coType
+            }
+            if (route) batch[1].match.route = { route: [ [ 'busName', 'coType' ], route ] }
+
+            return { single, batch }
+        },
+    })
+}
+
+
 class RefSource {
     constructor(data = {}, { single = true, session, hideRawId = false, custom = {} }) {
         if (!data?._id) throw new Error('Constructor Error: Invalid RefSource Data')
@@ -774,4 +865,4 @@ function jxTargets(src, target = null) {
 
 
 export default Company
-export { Owner, RefSource }
+export { Owner, Parent, RefSource }

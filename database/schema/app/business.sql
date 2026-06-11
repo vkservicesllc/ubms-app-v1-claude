@@ -116,11 +116,30 @@ ALTER TABLE company_emails
 CHANGE COLUMN phone email VARCHAR (100) NOT NULL;
 
 
+SELECT 'Creating table `app_business`.`parents`...';
+CREATE TABLE parents (
+
+    id         SMALLINT UNSIGNED  AUTO_INCREMENT,  -- max 65,535 / 2 bytes
+    companyId  SMALLINT UNSIGNED  UNIQUE NOT NULL,
+
+    -- Created in ADMIN only; Update location required
+    createdBy  SMALLINT           UNSIGNED NOT NULL,
+    createdAt  TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updateLog  JSON               DEFAULT NULL,
+
+    FOREIGN KEY (companyId) REFERENCES companies(id) ON DELETE CASCADE,
+    FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
+    PRIMARY KEY (id)
+
+);
+
+
 SELECT 'Creating table `app_business`.`owners`...';
 CREATE TABLE owners (
 
     id         SMALLINT UNSIGNED   AUTO_INCREMENT,  -- max 65,535 / 2 bytes
-    personId   MEDIUMINT UNSIGNED  NOT NULL,
+    personId   MEDIUMINT UNSIGNED  DEFAULT NULL,
+    parentId   SMALLINT UNSIGNED   DEFAULT NULL,
     signature  BOOLEAN             NOT NULL DEFAULT FALSE,
     -- A person must not be deleted when an owner is deleted
 
@@ -130,6 +149,7 @@ CREATE TABLE owners (
     updateLog  JSON                DEFAULT NULL,
 
     FOREIGN KEY (personId) REFERENCES app_person.individuals(id),
+    FOREIGN KEY (parentId) REFERENCES parents(id),
     FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
     PRIMARY KEY (id)
 

@@ -7,7 +7,7 @@ const sendError = require('../../tools/utils/error')
 import User, { Role } from '../../tools/core/user.mjs'
 import Team from '../../tools/core/team.mjs'
 import Individual from '../../tools/core/individual.mjs'
-import Company, { Owner, RefSource } from '../../tools/core/company.mjs'
+import Company, { Owner, Parent, RefSource } from '../../tools/core/company.mjs'
 import Carrier from '../../tools/core/carrier.mjs'
 
 /* Validators */
@@ -539,6 +539,16 @@ router.post('/confirm/company/:_id', User.mw.verify, User.mw.superAdminOnly, asy
         const { _id } = req.params
         const company = await Company.fetch(res.session, { _id })
         if (!company) throw new Error('Company not found')
+
+        const { id: companyId } = company
+
+        switch (company.category) {
+
+            case 'hld':
+                await Parent.create(res.session, { companyId })
+                break
+
+        }
 
         await company.update({ confirmed: true })
 

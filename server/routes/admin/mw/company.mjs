@@ -4,7 +4,7 @@ const { DIR__PATH: dir } = Bun.env
 import moment from 'moment'
 
 /* Tools */
-import Company, { Owner } from '../../../tools/core/company.mjs'
+import Company, { Owner, Parent } from '../../../tools/core/company.mjs'
 import Carrier from '../../../tools/core/carrier.mjs'
 import Address from '../../../../client/global/modules/tools/core/address.us.mjs'
 import escapeHTML from '../../../../client/global/modules/tools/utils/html.mjs'
@@ -249,6 +249,15 @@ export const companyById = async (req, res) => {
 
 
                         switch (category) {
+
+
+                            case 'hld':
+                                data = await Parent.fetch(res.session, { _companyId: _id })
+                                if (!data) return respond404(res)
+
+                                steps.confirmation = activeStep
+
+                                break
 
 
                             case 'crr':
