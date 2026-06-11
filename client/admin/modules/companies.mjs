@@ -17,6 +17,9 @@ $.when(statusReq).done(statusRes => {
 
         ajax: {
             url: '/api/resource/companies',
+            data(body) {
+                body.filter = {}
+            },
             dataSrc(response) {
                 const { data: companies } = response
                 let owners = []
@@ -229,13 +232,30 @@ $.when(statusReq).done(statusRes => {
             else if (!data.active) $(tr).addClass('is-warning')
         },
 
+        dom: '<"dt-top-toolbar-1"><"dt-top-toolbar-2"lf>rt<"dt-bottom-toolbar"ip>',
+
+        initComplete(settings, response) {
+            if (true) response.supData.alphabet = [
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+            ]
+            const { alphabet } = response.supData
+            const $toolbar = $('<div class="custom-dt-toolbar"></div>')
+            const $alphabet = $('<div class="buttons"></div>')
+            alphabet.map(letter => $alphabet.append(`<button class="button">${letter}</button>`))
+
+            $('.dt-top-toolbar-1').append('<div></div>').append($alphabet).append('<div></div>')
+
+            $('.dt-length').after($toolbar)
+        },
+
         language: {
             emptyTable: `<span class="has-text-danger">${emptyTableMsg}</span>`,
         },
 
         lengthMenu: [
-            [ 15, 50, 100, -1],
-            [ 15, 50, 100, 'All' ],
+            [ 10, 50, 100, -1],
+            [ 10, 50, 100, 'All' ],
         ],
 
         order: [ [ 0, 'asc' ], [ 4, 'asc' ] ],

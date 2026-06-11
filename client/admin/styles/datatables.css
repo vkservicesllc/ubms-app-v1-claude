@@ -4,3 +4,12 @@
     flex-direction: row-reverse;
     gap: .35rem;
 }
+
+.dt-top-toolbar-1,
+.dt-top-toolbar-2,
+.dt-bottom-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.2rem 0;
+}

@@ -100,7 +100,7 @@ router.get('/companies', User.mw.verify, async (req, res) => {
             alphabet.push(firstLetter)
         }
 
-        res.json({ data, alphabet })
+        res.json({ data, supData: { alphabet } })
     } catch (err) {
         sendError.server(req, res, err)
     }
