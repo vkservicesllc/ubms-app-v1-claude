@@ -1,4 +1,5 @@
 /* Settings */
+const { DIR__PATH: dir } = Bun.env
 import db, { query, algorithm } from '../../settings/mysql.mjs'
 
 /* Tools */
@@ -12,6 +13,7 @@ import { classInstance, classStatic } from '../utils/class.mjs'
 import { reSuper } from '../../../client/global/modules/tools/utils/object.mjs'
 import { stringifyBuffer } from '../../../client/global/modules/tools/utils/buffer.mjs'
 import { selectAES, processAES } from '../utils/data.mjs'
+import { renameFile } from '../utils/fs.mjs'
 
 const mysql = require('../utils/mysql')
 
@@ -129,6 +131,8 @@ class Company {
                         await mysql.execute(query.company[target].update({ since: body.since }, {
                             companyId: company.id, since: company.since,
                         }))
+
+                    await renameFile(`${dir}/uploads/business/company/${company.id}/logo/`, `${company.since}.png`, `${body.since}.png`)
                 },
             })
 
