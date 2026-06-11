@@ -84,15 +84,23 @@ router.get('/companies', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser } = res.session
         const options = { hideRawId }, filter = {}
+        let data
 
         if (!sessionUser.DS) {
             filter.closed = false
             filter.confirmed = true
 
-            return res.json({ data: await sessionUser.fetch('jx.companies', filter, options) })
+            data = await sessionUser.fetch('jx.companies', filter, options)
+        } else data = await Company.fetch(res.session, filter, options)
+        const alphabet = []
+
+        for (const company of data) {
+            const firstLetter = company.name[0]
+            if (alphabet.includes(firstLetter)) continue
+            alphabet.push(firstLetter)
         }
 
-        res.json({ data: await Company.fetch(res.session, filter, options) })
+        res.json({ data, alphabet })
     } catch (err) {
         sendError.server(req, res, err)
     }
