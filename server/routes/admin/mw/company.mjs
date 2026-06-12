@@ -231,9 +231,10 @@ export const companyById = async (req, res) => {
                 visibility.mailAddress = hidden
                 submitProps.ownership = saveSubmit
                 hbs.ownerName = owner.name
-                if (data.externalId._parentId) {
+
+                if (owner?.parent?.name) {
                     hbs.label.owner = 'Holding Company'
-                    hbs.ownerName = data.parent.name
+                    hbs.ownerName = owner.parent.name
                 }
 
 
@@ -514,8 +515,9 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs.cardTitle = cardTitle
         hbs.data = company
         hbs.label = {
-            owner: 'Owner',
+            owner: company.owner?.parent?.name ? 'Holding Company' : 'Owner',
         }
+        hbs.ownerName = company.owner?.parent?.name || company.owner.name
 
         hbs.display = display(company, ein)
         hbs.css = css

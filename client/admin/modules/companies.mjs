@@ -143,7 +143,7 @@ $.when(statusReq).done(statusRes => {
                 data: 'owner',
                 title: 'Owner/Parent',
                 render(data, type, row) {
-                    const { name } = row.parent
+                    const { name } = row.owner?.parent || {}
                     return name || data.name
                 },
             },

@@ -77,17 +77,13 @@ class Company {
                 dob: data.dob,
                 ssn: data.ssn,
                 nameSince: data.ownerNameSince,
+                busName: data.parentBusName,
+                coType: data.parentCoType,
+                parentName: data.parentName,
             }, { hideRawId, hideSensitive })
             : { _id: null }
         if (this.owner._id)
             this.owner.name = this.owner.fullName('FmLs')
-        this.parent = data._parentId
-            ? {
-                busName: data.parentBusName,
-                coType: data.parentCoType,
-                name: data.parentName,
-            }
-            : { _id: null }
 
         this.address = {
             physical: new Address(data),
@@ -298,17 +294,17 @@ class Company {
                     } ],
                 },
                 {
-                    table: query.parent.main.table,
+                    table: [ query.parent.main.table, 'parent_owners' ],
                     join: [ 'id', 'parentId', query.company_owner.main.table ],
                 },
                 {
-                    table: [ query.company.names.table, 'parent_names' ],
+                    table: [ query.company.names.table, 'parent_owner_names' ],
                     fields: [
                         [ 'busName', 'parentBusName' ], [ 'coType', 'parentCoType' ],
                         { concat: [ [ 'busName', '^, ', 'coType' ], 'parentName' ] },
                     ],
                     join: [ 'companyId', 'companyId', {
-                        table: query.parent.main.table,
+                        table: 'parent_owners',
                         max: 'since',
                     } ],
                 },
@@ -350,6 +346,11 @@ class Company {
                 },
                 //* External IDs based on category
                 //! IMPORTANT: Filter this batch in external Category Class to avoid db/table coincidence in query
+                {
+                    table: query.parent.main.table,
+                    fields: [ [ 'id', 'parentId' ], [ hash('id', algorithm.parent), '_parentId' ] ],
+                    join: [ 'companyId', 'id' ],
+                },
                 {
                     db: db.carrier,
                     table: query.carrier.main.table,
@@ -458,10 +459,10 @@ class Owner extends Individual {
         }
         if (!hideSensitive) this.ssn = stringifyBuffer(data.ssn)
 
-        if (props._parentId)
+        if (data.parentName)
             this.parent = {
                 busName: data.busName,
-                coType: data.oType,
+                coType: data.coType,
                 name: data.parentName,
             }
 
@@ -745,7 +746,7 @@ class Parent extends Company {
             batch = await Company.fetch(session, {}, { mode: 'batch' })
 
             //! IMPORTANT
-            // batch = batch.filter(item => item.table !== query.parent.main.table)
+            batch = batch.filter(item => item.table !== query.parent.main.table)
 
             batch.push({
                 table: [ query.parent.main.table, 'holding_companies' ],

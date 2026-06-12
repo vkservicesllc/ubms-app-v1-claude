@@ -103,7 +103,7 @@ router.post('/companies/query', User.mw.verify, async (req, res) => {
             if (!alphabet.includes(firstLetter)) alphabet.push(firstLetter)
             if (!categories.some(category => category.code = company.category)) categories.push({ code: company.category, name: company.expansion.categoryGroup })
             if (company?.owner?._id && !owners.some(owner => owner._id === company.owner._id))
-                owners.push({ _id: company.owner._id, name: company.owner.fullName() })
+                owners.push({ _id: company.owner._id, name: company.owner.fullName() || company.owner.parent.name })
             if (company?.address?.physical?.state && !states.some(state => state.code === company.address.physical.state))
                 states.push({ code: company.address.physical.state, name: Address.list.state[company.address.physical.state] })
         }

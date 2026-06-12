@@ -548,7 +548,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             const owner = new Person(row.owner)
             list.ownerships += `<tr><td class="current-status">${!i ? defs.current : ''}</td>`
             list.ownerships += `<td class="effective-date">${setDate(row)}</td>`
-            list.ownerships += `<td><span class="has-text-weight-semibold">${owner.fullName()}</span></td>`
+            list.ownerships += `<td><span class="has-text-weight-semibold">${owner.fullName() || row.owner.parent.name}</span></td>`
             list.ownerships += `<td class="has-text-right controls">`
             if (!i) list.ownerships += `<a id="transfer-ownership" title="Transfer ownership" href=""><i class="fas fa-arrows-turn-right has-text-link-70"></i></a>`
             if (!row.initial) list.ownerships += `<a ${defs.aAttr.delete(row, 'ownerships', 'ownership')}><i class="fa fa-trash has-text-danger-60"></i></a>`
