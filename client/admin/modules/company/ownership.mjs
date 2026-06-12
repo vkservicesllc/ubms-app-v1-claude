@@ -16,7 +16,7 @@ $submit.prop('disabled', false)
 
 selectEvent(ownershipId, {
     onChange(_ownerId) {
-        const disabled = _ownerId ? false : true
+        const disabled = _ownerId && _ownerId[0] === 'p' ? false : true
 
         $button.edit.prop('disabled', disabled)
     },
@@ -27,7 +27,7 @@ $button.add.on('click', openAddModal)
 $button.edit.on('click', () => {
     const _id = $(ownershipId).val()
 
-    openModifyModal(_id)
+    if (_id[0] === 'p') openModifyModal(_id.split(':')[1])
 })
 
 $button.cancel.on('click', () => {

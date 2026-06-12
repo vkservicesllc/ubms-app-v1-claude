@@ -142,8 +142,9 @@ $.when(statusReq).done(statusRes => {
             {
                 data: 'owner',
                 title: 'Owner',
-                render(data) {
-                    return data.name
+                render(data, type, row) {
+                    const { name } = row.parent
+                    return name || data.name
                 },
             },
 

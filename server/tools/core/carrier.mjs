@@ -139,6 +139,7 @@ class Carrier extends Company {
 
             delete batch[0].match.id
             batch[0].match.category = 'crr'
+            batch[0].match.confirmed = true
 
             const {
                 id, _id, companyId, _companyId, ein, duns, busName, coType, alias, route,

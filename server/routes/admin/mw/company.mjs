@@ -350,13 +350,29 @@ export const companyById = async (req, res) => {
                 options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
                 options.ownership.select.input.data = {} //await Owner.inputData(res.session)
 
-                const owners = await Owner.fetch(res.session)
-                const data = {}, names = []
+                let owners = await Owner.fetch(res.session)
+                owners = {
+                    companies: owners.filter(owner => owner.parentId !== null),
+                    individuals: owners.filter(owner => owner.personId !== null),
+                }
+                const data = { 'Holding Companies': {}, 'Individuals': {} }, names = []
 
-                owners.map(owner => names.push(owner.fullName()))
-                let dublicates = names.filter((name, i) => names.indexOf(name) !== i)
-                dublicates = [ ...new Set(dublicates) ]
-                owners.forEach((owner, i) => data[owner._id] = names[i] + (dublicates.includes(names[i]) ? ` (${owner.age})` : ''))
+                if (!owners.individuals.length) delete data['Individuals']
+                else {
+                    owners.individuals.map(owner => names.push(owner.fullName()))
+                    let dublicates = names.filter((name, i) => names.indexOf(name) !== i)
+                    dublicates = [ ...new Set(dublicates) ]
+                    owners.individuals.forEach((owner, i) => data['Individuals'][`p:${owner._id}`] = names[i] + (dublicates.includes(names[i]) ? ` (${owner.age})` : '') )
+                }
+
+                if (category === 'hld') delete data['Holding Companies']
+                else {
+                    if (!owners.companies.length) delete data['Holding Companies']
+                    else owner.companies.map(owner => data['Holding Companies'][`c:${owner._id}`] = owner.parent.name)
+                }
+
+                if (data['Individuals']) data['Individuals'] = sortObjectByValue(data['Individuals'])
+                if (data['Holding Companies']) data['Holding Companies'] = sortObjectByValue(data['Holding Companies'])
                 options.ownership.select.input.data = sortObjectByValue(data)
 
                 const { content, style } = submitProps.ownership

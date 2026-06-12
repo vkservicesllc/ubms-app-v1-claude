@@ -5,6 +5,9 @@ import { urlEvent } from '../events/web.mjs'
 import { inputEvent } from '../events/form.mjs'
 import selector from '../registry/selectors/company.mjs'
 
+const params = new URLSearchParams(window.location.search)
+const cat = params.get('cat')
+
 const TS = selector.id.text, SS = selector.id.select
 const catId = SS.category
 const sinceId = TS.since
@@ -89,6 +92,7 @@ const handleChange = (props = {}) => {
 
 
 categoryEvent(catId, 'business-category-select-icon')
+if (cat) $(catId).val(cat)
 
 einEvent(einId, {
     onInput() {

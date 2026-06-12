@@ -373,7 +373,9 @@ router.post('/update/company/:_id/:action/:step', User.mw.verify, User.mw.superA
         switch (step) {
 
             case 'ownership':
-                const { _ownerId: _id } = req.body
+                let { _ownerId: _id } = req.body, type
+                [ type, _id ] = _id.split(':')
+
                 const owner = await Owner.fetch(res.session, { _id })
                 if (!owner) throw new Error('Company owner not found')
 

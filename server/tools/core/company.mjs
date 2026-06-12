@@ -82,7 +82,12 @@ class Company {
         if (this.owner._id)
             this.owner.name = this.owner.fullName('FmLs')
         this.parent = data._parentId
-            ? { _id: data._parentId }
+            ? {
+                _id: data._parentId,
+                busName: data.parentBusName,
+                coType: data.parentCoType,
+                name: data.parentName,
+            }
             : { _id: null }
 
         this.address = {
@@ -293,15 +298,21 @@ class Company {
                         max: 'since',
                     } ],
                 },
-                // {
-                //     table: query.company.names.table,
-                //     fields: [
-                //         [ 'busName', 'parentBusName' ], [ 'coType', 'parentCoType' ],
-                //     ],
-                //     join: [ 'companyId', 'id', {
-                //         table: '',
-                //     } ],
-                // },
+                {
+                    table: query.parent.main.table,
+                    join: [ 'id', 'parentId', query.company_owner.main.table ],
+                },
+                {
+                    table: [ query.company.names.table, 'parent_names' ],
+                    fields: [
+                        [ 'busName', 'parentBusName' ], [ 'coType', 'parentCoType' ],
+                        { concat: [ [ 'busName', '^, ', 'coType' ], 'parentName' ] },
+                    ],
+                    join: [ 'companyId', 'companyId', {
+                        table: query.parent.main.table,
+                        max: 'since',
+                    } ],
+                },
                 {
                     table: query.company.addresses.table,
                     fields: [
@@ -386,13 +397,13 @@ class Company {
     static list = {
 
         category: {
-            'hld': {  branch: 'parent',        item: [ 'Parents', 'Parent' ],        group: 'Holding Companies',  path: [ 'parents', 'parent' ],    icon: '<i class="fas fa-hand-holding"></i>'  },
             'crr': {  branch: 'carrier',       item: [ 'Carriers', 'Carrier' ],      group: 'Logistics',          path: [ 'carriers', 'carrier' ],  icon: '<i class="fas fa-truck-fast"></i>'  },
             'brk': {  branch: 'broker',        item: [ 'Brokers', 'Broker' ],        group: 'Brokerage',          path: [ 'brokers', 'broker' ]        },
             'whs': {  branch: 'warehouse',     item: [ 'Warehouses', 'Warehouse' ],  group: 'Storage',            path: [ 'warehouses', 'warehouse' ]  },
             'shp': {  branch: 'shop',          item: [ 'Shops', 'Shop' ],            group: 'Shops',              path: [ 'shops', 'shop' ]            },
             'scl': {  branch: 'school',        item: [ 'Schools', 'School' ],        group: 'CDL Training',       path: [ 'schools', 'school' ]        },
             'cst': {  branch: 'construction',  item: [ 'Builders', 'Builder' ],      group: 'Construction',       path: [ 'builders', 'builder' ]      },
+            'hld': {  branch: 'parent',        item: [ 'Parents', 'Parent (Holding Company)' ],        group: 'Holding Companies',  path: [ 'parents', 'parent' ],    icon: '<i class="fas fa-hand-holding"></i>'  },
             key(category, prop = 'branch', idx = null) {
                 for (const key in this) {
                     let value = this[key][prop]
@@ -440,12 +451,16 @@ class Owner extends Individual {
 
         super(data, { single, hideRawId, hideSensitive })
 
-        const props = { _id: data._id, _personId: data._personId }
+        const props = { _id: data._id, _personId: data._personId, _parentId: data._parentId }
         if (!hideRawId) {
             props.id = data.id
             props.personId = data.personId
+            props.parentId = data.parentId
         }
         if (!hideSensitive) this.ssn = stringifyBuffer(data.ssn)
+
+        if (props.parentId)
+            this.parent = {}
 
         const props2 = { count: { companies: data.companyCount } }
 
@@ -582,7 +597,7 @@ class Owner extends Individual {
         batch: [
             {
                 table: query.company_owner.main.table,
-                fields: [ 'id', Owner.hashId(), 'personId', Individual.hashId('personId') ],
+                fields: [ 'id', Owner.hashId(), 'personId', Individual.hashId('personId'), 'parentId', Parent.hashId('parentId') ],
                 group: 'id',
             },
             {
@@ -699,16 +714,17 @@ class Parent extends Company {
             batch = await Company.fetch(session, {}, { mode: 'batch' })
 
             //! IMPORTANT
-            batch = batch.filter(item => item.table !== query.parent.main.table)
+            // batch = batch.filter(item => item.table !== query.parent.main.table)
 
             batch.push({
-                table: query.parent.main.table,
+                table: [ query.parent.main.table, 'holding_companies' ],
                 fields: [ [ 'id', 'parentId' ], [ Parent.hashId(), 'parentId' ] ],
                 join: [ 'companyId', 'id' ],
             })
 
             delete batch[0].match.id
             batch[0].match.category = 'hld'
+            batch[0].match.confirmed = true
 
             const {
                 id, _id, companyId, _companyId, ein, duns, busName, coType, alias, route,
