@@ -81,6 +81,9 @@ class Company {
             : { _id: null }
         if (this.owner._id)
             this.owner.name = this.owner.fullName('FmLs')
+        this.parent = data._parentId
+            ? { _id: data._parentId }
+            : { _id: null }
 
         this.address = {
             physical: new Address(data),
@@ -272,7 +275,7 @@ class Company {
                 },
                 {
                     table: query.company_owner.main.table,
-                    fields: [ [ 'id', 'ownerId' ], [ Owner.hashId(), 'ownerId' ], 'personId', Individual.hashId('personId') ],
+                    fields: [ [ 'id', 'ownerId' ], [ Owner.hashId(), 'ownerId' ], 'personId', Individual.hashId('personId'), 'parentId', Parent.hashId('parentId') ],
                     join: [ 'id', 'ownerId', query.company.ownerships.table ],
                 },
                 {
@@ -286,10 +289,19 @@ class Company {
                     table: query.person.names.table,
                     fields: [ 'prefix', 'firstName', 'middleName', 'lastName', 'suffix', [ 'since', 'ownerNameSince' ] ],
                     join: [ 'personId', 'id', {
-                        table: 'individuals',
+                        table: query.person.main.table,
                         max: 'since',
                     } ],
                 },
+                // {
+                //     table: query.company.names.table,
+                //     fields: [
+                //         [ 'busName', 'parentBusName' ], [ 'coType', 'parentCoType' ],
+                //     ],
+                //     join: [ 'companyId', 'id', {
+                //         table: '',
+                //     } ],
+                // },
                 {
                     table: query.company.addresses.table,
                     fields: [
