@@ -139,7 +139,6 @@ class Carrier extends Company {
 
             delete batch[0].match.id
             batch[0].match.category = 'crr'
-            batch[0].match.confirmed = true
 
             const {
                 id, _id, companyId, _companyId, ein, duns, busName, coType, alias, route,
@@ -150,7 +149,7 @@ class Carrier extends Company {
 
             const idx = batch.length - 3
             batch[idx].match = { usdot, mc, scac, irp, efs, fleetOne, transflo }
-            
+
             //! IFTA match will probably match only if final ifta number checked, not previous
             batch[idx + 1].match = { number: ifta?.number }
             Object.keys(stateTax).forEach(state => batch[idx + 2].match = { [state]: stateTax[state] })

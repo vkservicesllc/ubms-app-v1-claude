@@ -28,6 +28,7 @@ router.use((req, res, next) => {
             'dash': inactive,
             'charts': inactive,
             'companies': inactive,
+            'parents': inactive,
             'owners': inactive,
             'advertisement': inactive,
             // 'branches': inactive,

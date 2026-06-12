@@ -85,7 +85,7 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
 router.post('/companies/query', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser } = res.session
-        const options = { hideRawId }, filter = {}
+        const options = { hideRawId }, filter = { category: { not: 'hld' } }
         let data
 
         if (!sessionUser.DS) {
@@ -143,8 +143,11 @@ router.get('/:src', User.mw.verify, User.mw.superAdminOnly, async (req, res) => 
     try {
         const { src } = req.params
         const Src = { teams: Team, 'company-owners': Owner, refsources: RefSource }[src]
+        const filter = {}
 
-        res.json({ data: await Src.fetch(res.session, {}, { hideRawId }) })
+        if (src === 'company-owners') filter.type = 'individuals'
+
+        res.json({ data: await Src.fetch(res.session, filter, { hideRawId }) })
     } catch(err) {
         sendError.server(req, res, err)
     }

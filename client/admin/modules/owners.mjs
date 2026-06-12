@@ -15,7 +15,7 @@ const columns = [
         data: 'gender',
         searchable: false,
         orderable: false,
-        render(data) {
+        render(data, type, row) {
             if (data === 'X') return '<span class="has-text-grey">?</span>'
 
             let fa = 'fa-person', color = 'link-75'

@@ -174,6 +174,10 @@ export const companyById = async (req, res) => {
         let category, since, ein, duns, busName, coType, alias, website, locked
         const checked = { mailAddress: '' }
 
+        hbs.label = {
+            owner: 'Owner',
+        }
+
 
         /* Current Company */
         if (_id !== 'new') {
@@ -226,6 +230,11 @@ export const companyById = async (req, res) => {
                 visibility.address = ''
                 visibility.mailAddress = hidden
                 submitProps.ownership = saveSubmit
+                hbs.ownerName = owner.name
+                if (data.externalId._parentId) {
+                    hbs.label.owner = 'Holding Company'
+                    hbs.ownerName = data.parent.name
+                }
 
 
                 if (addrZip) {
@@ -368,7 +377,7 @@ export const companyById = async (req, res) => {
                 if (category === 'hld') delete data['Holding Companies']
                 else {
                     if (!owners.companies.length) delete data['Holding Companies']
-                    else owner.companies.map(owner => data['Holding Companies'][`c:${owner._id}`] = owner.parent.name)
+                    else owners.companies.map(owner => data['Holding Companies'][`c:${owner._id}`] = owner.parent.name)
                 }
 
                 if (data['Individuals']) data['Individuals'] = sortObjectByValue(data['Individuals'])
@@ -504,6 +513,9 @@ export const companyByCategoryAndRoute = async (req, res) => {
         hbs._id = _companyId
         hbs.cardTitle = cardTitle
         hbs.data = company
+        hbs.label = {
+            owner: 'Owner',
+        }
 
         hbs.display = display(company, ein)
         hbs.css = css

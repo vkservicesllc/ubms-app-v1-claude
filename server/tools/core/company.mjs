@@ -83,7 +83,6 @@ class Company {
             this.owner.name = this.owner.fullName('FmLs')
         this.parent = data._parentId
             ? {
-                _id: data._parentId,
                 busName: data.parentBusName,
                 coType: data.parentCoType,
                 name: data.parentName,
@@ -459,8 +458,12 @@ class Owner extends Individual {
         }
         if (!hideSensitive) this.ssn = stringifyBuffer(data.ssn)
 
-        if (props.parentId)
-            this.parent = {}
+        if (props._parentId)
+            this.parent = {
+                busName: data.busName,
+                coType: data.oType,
+                name: data.parentName,
+            }
 
         const props2 = { count: { companies: data.companyCount } }
 
@@ -570,18 +573,20 @@ class Owner extends Individual {
     static create = async (session, body, params) => {
         if (!session?.user?.id) throw new Error('Owner Static Method Error [CREATE]: Session user not supplied')
 
-        const { ssn, dob } = body
+        const { parentId, ssn, dob } = body
+        const ownerData = { createdBy: session.user.id }
 
-        let person
-        if (ssn) person = await Individual.fetch(session, { ssn })
-        if (person && person.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
+        if (parentId) ownerData.parentId = parentId
+        else {
+            let person
+            if (ssn) person = await Individual.fetch(session, { ssn })
+            if (person && person.dob !== dob) throw new Error('SSN/DOB mismatch (SSN recognized)')
 
-        if (!person) person = (await Individual.create(session, body)).data
+            if (!person) person = (await Individual.create(session, body)).data
+            ownerData.personId = person.id
+        }
 
-        const [ result ] = await mysql.execute(query.company_owner.main.insert({
-            personId: person.id,
-            createdBy: session.user.id,
-        }))
+        const [ result ] = await mysql.execute(query.company_owner.main.insert(ownerData))
         const id = result.insertId
 
         if (!id) throw new Error('Failed to create owner')
@@ -625,20 +630,39 @@ class Owner extends Individual {
                 } ],
             },
             {
+                table: query.parent.main.table,
+                join: [ 'id', 'parentId' ],
+            },
+            {
+                table: query.company.main.table,
+                join: [ 'id', 'companyId', query.parent.main.table ],
+            },
+            {
+                table: query.company.names.table,
+                fields: [
+                    'busName', 'coType',
+                    { concat: [ [ 'busName', '^, ', 'coType' ], 'parentName' ] },
+                ],
+                join: [ 'companyId', 'id', {
+                    table: query.company.main.table,
+                    max: 'since',
+                } ],
+            },
+            {
                 table: query.company.ownerships.table,
                 join: [ 'ownerId', 'id' ],
             },
             {
-                table: query.company.main.table,
+                table: [ query.company.main.table, 'countableCompanies' ],
                 fields: [ { count: [ 'category', 'companyCount' ] } ],
-                join: [ 'id', 'companyId', 4 ],
+                join: [ 'id', 'companyId', query.company.ownerships.table ],
             },
         ],
         prepare(batch, filter) {
             const categories = Company.list.category
             for (const category in categories) {
                 if (typeof categories[category] === 'function') continue
-                batch[5].fields.push({
+                batch[8].fields.push({
                     countCase: [ { category }, `${categories[category].path[0]}Count` ],
                 })
             }
@@ -646,6 +670,8 @@ class Owner extends Individual {
             const {
                 id, _id, ssn,
                 ids, _ids, gender, firstName, lastName,
+                busName,
+                type,
             } = filter
             const single = !!id || !!_id || !!ssn
 
@@ -653,6 +679,7 @@ class Owner extends Individual {
                 main: { id },
                 individuals: { gender },
                 names: { firstName, lastName },
+                parentNames: { busName },
             }
             if (!id) {
                 if (ids) match.main.id = ids
@@ -660,9 +687,13 @@ class Owner extends Individual {
             }
             if (ssn) match.individuals.ssn = processAES('ssn', ssn)
 
+            if (type === 'individuals') match.main.personId = { null: false }
+            if (type === 'parents') match.main.parentId = { null: false }
+
             batch[0].match = match.main
             batch[1].match = match.individuals
             batch[2].match = match.names
+            batch[6].match = match.parentNames
 
             return { single, batch }
         },
@@ -724,7 +755,6 @@ class Parent extends Company {
 
             delete batch[0].match.id
             batch[0].match.category = 'hld'
-            batch[0].match.confirmed = true
 
             const {
                 id, _id, companyId, _companyId, ein, duns, busName, coType, alias, route,

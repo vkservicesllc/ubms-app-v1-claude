@@ -102,6 +102,15 @@ const includes = {
         },
     },
 
+    'parents': {
+        external: [ ...online.external, 'datatables.bulma', 'datatables.bulma.row-group', 'moment' ],
+        internal: {
+            css: [ ...online.internal.css, 'datatables' ],
+            js: [ ...online.internal.js ],
+            mjs: [ ...online.internal.mjs, '^parents' ],
+        },
+    },
+
     'owners': {
         external: [ ...online.external, 'jquery.masked-input', 'bulma.checkradio', 'datatables.bulma', 'moment' ],
         internal: {

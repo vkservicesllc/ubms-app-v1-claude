@@ -547,7 +547,8 @@ router.post('/confirm/company/:_id', User.mw.verify, User.mw.superAdminOnly, asy
         switch (company.category) {
 
             case 'hld':
-                await Parent.create(res.session, { companyId })
+                const { data: parent } = await Parent.create(res.session, { companyId })
+                await Owner.create(res.session, { parentId: parent.id })
                 break
 
         }
