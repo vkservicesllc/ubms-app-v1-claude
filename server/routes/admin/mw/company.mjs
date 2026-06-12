@@ -466,7 +466,23 @@ export const companyByCategoryAndRoute = async (req, res) => {
         let logoList = ''
         const id = company.id
 
+        const key = 'company'
+        let { hbs } = res
+        hbs = hbs.set(key, { titlePfx: company.name })
+
+        const { active } = hbs.nav
+        hbs.nav.companies = active
+
         switch (category) {
+
+            case 'hld':
+                company = await Parent.fetch(res.session, { _companyId })
+
+                css.card = { minHeight: '455px' }
+                css.multiSelect = { minHeight: '310px' }
+                res.hbs.nav.companies = ''
+                res.hbs.nav.parents = active
+                break
 
             case 'crr':
                 company = await Carrier.fetch(res.session, { _companyId })
@@ -485,13 +501,6 @@ export const companyByCategoryAndRoute = async (req, res) => {
         const icon = Company.list.category[category].icon
         let cardTitle = company.name
         if (icon) cardTitle = `${icon}&nbsp;&nbsp;${cardTitle}`
-
-        const key = 'company'
-        let { hbs } = res
-        hbs = hbs.set(key, { titlePfx: company.name })
-
-        const { active } = hbs.nav
-        hbs.nav.companies = active
 
         if (company.lastLogo) {
             const files = await getFiles(`${dir}/uploads/business/company/${id}/logo`, false)

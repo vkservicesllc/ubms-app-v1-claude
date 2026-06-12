@@ -60,6 +60,7 @@ class Company {
             category: Company.list.category[data.category].item[1],
             categoryGroup: Company.list.category[data.category].item[0],
             group: Company.list.category[data.category].group,
+            path: Company.list.category[data.category].path,
         }
 
         this.owner = data._ownerId

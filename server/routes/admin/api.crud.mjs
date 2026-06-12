@@ -82,10 +82,11 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
 })
 
 
-router.post('/companies/query', User.mw.verify, async (req, res) => {
+router.get('/companies', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser } = res.session
-        const options = { hideRawId }, filter = { category: { not: 'hld' } }
+        const { category } = req.query
+        const options = { hideRawId }, filter = { category: category || { not: 'hld' } }
         let data
 
         if (!sessionUser.DS) {

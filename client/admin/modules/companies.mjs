@@ -16,14 +16,13 @@ $.when(statusReq).done(statusRes => {
     const table = new DataTable('#companies-table', {
 
         ajax: {
-            url: '/api/resource/companies/query',
-            type: 'POST',
-            data(body) {
-                body.filter = {
-                    category: $('#dt-custom-select-categories').val(),
-                    owner: $('#dt-custom-select-owners').val(),
-                }
-            },
+            url: '/api/resource/companies',
+            // data(body) {
+            //     body.filter = {
+            //         category: $('#dt-custom-select-categories').val(),
+            //         owner: $('#dt-custom-select-owners').val(),
+            //     }
+            // },
             dataSrc(response) {
                 const { data: companies } = response
                 let owners = []
@@ -212,7 +211,7 @@ $.when(statusReq).done(statusRes => {
                         let fa, url = '/business'
 
                         if (row.confirmed) {
-                            const category = row.expansion.category.toLowerCase()
+                            const category = row.expansion.path[1]
                             const { route } = row
                             fa = 'file-lines'
                             url += `/${category}/${route}`

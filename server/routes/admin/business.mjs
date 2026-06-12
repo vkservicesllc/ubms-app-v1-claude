@@ -72,6 +72,19 @@ router.get('/company-owners', User.mw.verify, User.mw.superAdminOnly, (req, res)
 })
 
 
+router.get('/parents', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
+    try {
+        const key = 'parents'
+        let { hbs } = res
+        hbs = hbs.set(key, { titlePfx: 'Holding Companies' })
+
+        res.render(key, hbs)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 router.get('/advertisement', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
     try {
         const key = 'advertisement'
