@@ -606,7 +606,7 @@ export const companyManagement = async (req, res) => {
         }
         const fields = [
             'effective',
-            'busName', 'coType', 'alias',
+            'busName', 'coType', 'alias', 'ownership',
             'address1', 'address2', 'addrZip', 'addrCity', 'addrState',
             'mailAddress1', 'mailAddress2', 'mailAddrZip', 'mailAddrCity', 'mailAddrState',
             'phone', 'fax', 'email',
@@ -614,8 +614,15 @@ export const companyManagement = async (req, res) => {
 
         options = updateFormOptions(options, CompanyForm, values, { ...instr, disabled: true })
         options = updateFormOptions(options, CompanyForm, fields, { ...instr, tabs: 13 })
+        options.ownership.select.input.disabled = false
 
         switch (category) {
+
+            case 'hld':
+                company = await Parent.fetch(res.session, { _companyId })
+                res.hbs.nav.companies = ''
+                res.hbs.nav.parents = active
+                break
 
             case 'crr':
                 company = await Carrier.fetch(res.session, { _companyId })

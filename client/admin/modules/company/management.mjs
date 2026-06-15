@@ -550,7 +550,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             list.ownerships += `<td class="effective-date">${setDate(row)}</td>`
             list.ownerships += `<td><span class="has-text-weight-semibold">${owner.fullName() || row.owner.parent.name}</span></td>`
             list.ownerships += `<td class="has-text-right controls">`
-            if (!i) list.ownerships += `<a id="transfer-ownership" title="Transfer ownership" href=""><i class="fas fa-arrows-turn-right has-text-link-70"></i></a>`
+            list.ownerships += `<a ${defs.aAttr.edit(row, 'names', 'name')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
             if (!row.initial) list.ownerships += `<a ${defs.aAttr.delete(row, 'ownerships', 'ownership')}><i class="fa fa-trash has-text-danger-60"></i></a>`
             list.ownerships += '</td></tr>'
         })

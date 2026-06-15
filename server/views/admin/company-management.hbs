@@ -174,7 +174,14 @@
                                 <tfoot><tr><td colspan="4"></td></tr></tfoot>
                             </table>
                             <table class="table mb-6">
-                                <thead><tr><td colspan="4"><p class="subtitle is-6 has-text-primary-35 mb-0">Ownership History</p></td></tr></thead>
+                                <thead>
+                                    <tr>
+                                        <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Ownership History</p></td>
+                                        <td class="has-text-right controls">
+                                            <a class="transfer-event" data-target="ownerships" title="Transfer ownership" href=""><i class="fas fa-arrows-turn-right has-text-link-70"></i></a>
+                                        </td>
+                                    </tr>
+                                </thead>
                                 <tbody id="ownership-table-list"></tbody>
                                 <tfoot><tr><td colspan="4"></td></tr></tfoot>
                             </table>
@@ -266,7 +273,7 @@
                                 <div class="message-body">
                                     This form is intended for correcting errors only.<br/>
                                     If the company data has changed, please click <i>Cancel</i><br/>
-                                    and then the "+" link to register a new record.
+                                    and then the " <i class="fas fa-plus"></i> " link to register a new record.
                                 </div>
                             </article>
                         </section>
@@ -425,6 +432,54 @@
                                 <button class="button is-danger is-outlined" id="proceed-button" style="display: none;">Proceed to Error Correction</button>
                                 <button class="button upsert-modal-cancel">Cancel</button>
                                 <p class="help is-danger" id="upsert-error" style="display: none;"></p>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+
+                <div class="modal is-active!" id="ownership-modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">
+                                <strong>{{{companyName}}}</strong>
+                                <span class="modal-card-target-title"></span>
+                            </p>
+                        </header>
+                        <section class="modal-card-body warning-body" style="display: none;">
+                            <article class="message is-warning">
+                                <div class="message-header">Warning!</div>
+                                <div class="message-body">
+                                    This form is intended for correcting errors only.<br/>
+                                    If the company ownerships has changed, please click <i>Cancel</i><br/>
+                                    and then the " <i class="fas fa-arrows-turn-right"></i> " link to register a new owner.
+                                </div>
+                            </article>
+                        </section>
+                        <section class="modal-card-body form-body" style="display: none!;">
+                            <div class="columns">
+                                <div class="column is-8">
+                                    {{{form.ownership.select.label}}}
+                                    <div class="select is-fullwidth">
+                                        {{{form.ownership.select.input}}}
+                                    </div>
+                                </div>
+                                <div class="column is-2" style="text-align: right;">
+                                    <label class="label button-label">&nbsp;</label>
+                                    <button class="button" disabled><i class="fas fa-pen"></i></button>
+                                </div>
+                                <div class="column is-2" style="text-align: right;">
+                                    <label class="label button-label">&nbsp;</label>
+                                    <button class="button" disabled><i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                        </section>
+                        <footer class="modal-card-foot">
+                            <div class="buttons">
+                                <button type="submit" form="ownership-form" class="button" style="display: none;"></button>
+                                <button class="button is-danger is-outlined" id="owner-proceed-button" style="display: none;">Proceed to Error Correction</button>
+                                <button class="button ownership-modal-cancel">Cancel</button>
+                                <p class="help is-danger" id="ownership-error" style="display: none;"></p>
                             </div>
                         </footer>
                     </div>
