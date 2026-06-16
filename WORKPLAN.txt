@@ -1,3 +1,9 @@
 When a regular admin is unscoped, they can create unscoped users,
 but when they are scoped, they must only be able to invite scoped users and assign them teams and have available only
 that are available to them.
+
+Ownership menu, need to add event to remove '--'
+
+Need to add owner value when deleting non-initial owner in management
+
+Need to add "Transfer ownership" functionality

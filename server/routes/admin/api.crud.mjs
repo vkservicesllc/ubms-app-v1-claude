@@ -342,6 +342,14 @@ router.put('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminO
         if (!company) throw new Error('Company not found')
 
         if (target === 'addresses') req.body.mail = req.body.mail === 'on'
+        if (target === 'ownerships') {
+            const _id = req.body._ownerId.split(':')[1]
+            const owner = await Owner.fetch(res.session, { _id })
+            if (!owner) throw new Error('Owner not found')
+
+            delete req.body._ownerId
+            req.body.ownerId = owner.id
+        }
 
         const { route: oldRoute } = company
         const { updated } = await company.update(target, req.body, { since })

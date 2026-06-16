@@ -152,6 +152,7 @@
                                 </div>
                             </form>
                         </div>
+                        {{#if (eq creds true)}}
                         <div class="column is-one-quarter pt-6">
                             <form autocomplete="off">
                                 <table class="table">
@@ -160,7 +161,8 @@
                             </form>
                             <p class="has-text-danger mt-4"><i>Work in progress... Coming soon...</i></p>
                         </div>
-                        <div class="column secondary-column pt-6">
+                        {{/if}}
+                        <div class="column is-half secondary-column pt-6">
                             <table class="table mb-6">
                                 <thead>
                                     <tr>
@@ -178,7 +180,7 @@
                                     <tr>
                                         <td colspan="3"><p class="subtitle is-6 has-text-primary-35 mb-0">Ownership History</p></td>
                                         <td class="has-text-right controls">
-                                            <a class="transfer-event" data-target="ownerships" title="Transfer ownership" href=""><i class="fas fa-arrows-turn-right has-text-link-70"></i></a>
+                                            <a class="transfer-event" data-target="ownerships" title="Transfer ownership" disabled><i class="fas fa-arrows-turn-right has-text-link-70"></i></a>
                                         </td>
                                     </tr>
                                 </thead>
@@ -272,8 +274,8 @@
                                 <div class="message-header">Warning!</div>
                                 <div class="message-body">
                                     This form is intended for correcting errors only.<br/>
-                                    If the company data has changed, please click <i>Cancel</i><br/>
-                                    and then the " <i class="fas fa-plus"></i> " link to register a new record.
+                                    If the company <span class="update-warning-target"></span> has changed, please click "<i>Cancel</i>"<br/>
+                                    and then the " <i class="update-warning-button-style fas"></i> " link to register a new <span class="update-warning-target"></span>.
                                 </div>
                             </article>
                         </section>
@@ -298,6 +300,12 @@
                                             <span class="icon is-small is-left">
                                                 <i class="fas fa-phone"></i>
                                             </span>
+                                        </div>
+                                    </div>
+                                    <div class="column is-6 form ownerships-form" style="display: none;">
+                                        {{{form.ownership.select.label}}}
+                                        <div class="select is-fullwidth">
+                                            {{{form.ownership.select.input}}}
                                         </div>
                                     </div>
                                     <div class="column is-4 form faxes-form" style="display: none;">
@@ -436,8 +444,7 @@
                         </footer>
                     </div>
                 </div>
-
-                <div class="modal is-active!" id="ownership-modal">
+                {{!-- <div class="modal is-active!" id="ownership-modal">
                     <div class="modal-background"></div>
                     <div class="modal-card">
                         <header class="modal-card-head">
@@ -451,7 +458,7 @@
                                 <div class="message-header">Warning!</div>
                                 <div class="message-body">
                                     This form is intended for correcting errors only.<br/>
-                                    If the company ownerships has changed, please click <i>Cancel</i><br/>
+                                    If the company ownership has changed, please click <i>Cancel</i><br/>
                                     and then the " <i class="fas fa-arrows-turn-right"></i> " link to register a new owner.
                                 </div>
                             </article>
@@ -483,7 +490,7 @@
                             </div>
                         </footer>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="modal" id="delete-modal">
                     <div class="modal-background"></div>

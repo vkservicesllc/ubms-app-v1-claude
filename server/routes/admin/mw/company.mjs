@@ -99,6 +99,35 @@ const display = (data, ein) => {
 }
 
 
+const ownershipMenu = async (session, category) => {
+    let owners = await Owner.fetch(session)
+    owners = {
+        companies: owners.filter(owner => owner.parentId !== null),
+        individuals: owners.filter(owner => owner.personId !== null),
+    }
+    const data = { 'Holding Companies': {}, 'Individuals': {} }, names = []
+
+    if (!owners.individuals.length) delete data['Individuals']
+    else {
+        owners.individuals.map(owner => names.push(owner.fullName()))
+        let dublicates = names.filter((name, i) => names.indexOf(name) !== i)
+        dublicates = [ ...new Set(dublicates) ]
+        owners.individuals.forEach((owner, i) => data['Individuals'][`p:${owner._id}`] = names[i] + (dublicates.includes(names[i]) ? ` (${owner.age})` : '') )
+    }
+
+    if (category === 'hld') delete data['Holding Companies']
+    else {
+        if (!owners.companies.length) delete data['Holding Companies']
+        else owners.companies.map(owner => data['Holding Companies'][`c:${owner._id}`] = owner.parent.name)
+    }
+
+    if (data['Individuals']) data['Individuals'] = sortObjectByValue(data['Individuals'])
+    if (data['Holding Companies']) data['Holding Companies'] = sortObjectByValue(data['Holding Companies'])
+
+    return sortObjectByValue(data)
+}
+
+
 
 export const companyById = async (req, res) => {
     try {
@@ -358,32 +387,7 @@ export const companyById = async (req, res) => {
             {
                 const values = { confirmAlias: null, ownership: _ownerId }
                 options = updateFormOptions(options, CompanyForm, values, { ...instr, tabs: 5 })
-                options.ownership.select.input.data = {} //await Owner.inputData(res.session)
-
-                let owners = await Owner.fetch(res.session)
-                owners = {
-                    companies: owners.filter(owner => owner.parentId !== null),
-                    individuals: owners.filter(owner => owner.personId !== null),
-                }
-                const data = { 'Holding Companies': {}, 'Individuals': {} }, names = []
-
-                if (!owners.individuals.length) delete data['Individuals']
-                else {
-                    owners.individuals.map(owner => names.push(owner.fullName()))
-                    let dublicates = names.filter((name, i) => names.indexOf(name) !== i)
-                    dublicates = [ ...new Set(dublicates) ]
-                    owners.individuals.forEach((owner, i) => data['Individuals'][`p:${owner._id}`] = names[i] + (dublicates.includes(names[i]) ? ` (${owner.age})` : '') )
-                }
-
-                if (category === 'hld') delete data['Holding Companies']
-                else {
-                    if (!owners.companies.length) delete data['Holding Companies']
-                    else owners.companies.map(owner => data['Holding Companies'][`c:${owner._id}`] = owner.parent.name)
-                }
-
-                if (data['Individuals']) data['Individuals'] = sortObjectByValue(data['Individuals'])
-                if (data['Holding Companies']) data['Holding Companies'] = sortObjectByValue(data['Holding Companies'])
-                options.ownership.select.input.data = sortObjectByValue(data)
+                options.ownership.select.input.data = await ownershipMenu(res.session, category)
 
                 const { content, style } = submitProps.ownership
                 button.submit.ownership = submitButton('ownership-submit', content, style)
@@ -614,7 +618,9 @@ export const companyManagement = async (req, res) => {
 
         options = updateFormOptions(options, CompanyForm, values, { ...instr, disabled: true })
         options = updateFormOptions(options, CompanyForm, fields, { ...instr, tabs: 13 })
-        options.ownership.select.input.disabled = false
+        options.ownership.select.input.data = await ownershipMenu(res.session, category)
+
+        let creds = false
 
         switch (category) {
 
@@ -626,6 +632,7 @@ export const companyManagement = async (req, res) => {
 
             case 'crr':
                 company = await Carrier.fetch(res.session, { _companyId })
+                creds = true
                 break
 
         }
@@ -653,6 +660,7 @@ export const companyManagement = async (req, res) => {
 
         hbs.data = company
         hbs.form = new CompanyForm(options)
+        hbs.creds = creds
 
         res.render(key, hbs)
     } catch (err) {

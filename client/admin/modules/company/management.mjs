@@ -14,6 +14,7 @@ const TS = selector.id.text, SS = selector.id.select
 const sinceId = TS.since, effectiveId = TS.effective
 const einId = TS.ein, dunsId = TS.duns, websiteId = TS.website
 const busNameId = TS.busName, coTypeId = SS.coType, aliasId = TS.alias
+const ownershipId = SS.ownership
 const phoneId = TS.phone, faxId = TS.fax, emailId = TS.email
 const addr1Id = TS.address1, addr2Id = TS.address2
 const zipId = TS.addrZip, cityId = TS.addrCity, stateId = SS.addrState
@@ -116,7 +117,11 @@ const $modal = {
 
         switch (target) {
             case 'upsert':
-                const $warning = $(this.upsert).find('.warning-body')
+                const $warning = {
+                    body: $(this.upsert).find('.warning-body'),
+                    target: $(this.upsert).find('.update-warning-target'),
+                    btnStyle: $(this.upsert).find('.update-warning-button-style'),
+                }
 
                 return { $title, $body, $warning, $main, $form, $input, $submit }
                 break
@@ -147,6 +152,7 @@ $tabs.click(function() {
 
 const titles = {
     names: 'Name',
+    ownerships: 'Ownership',
     phones: 'Phone',
     faxes: 'Fax',
     emails: 'Email',
@@ -211,6 +217,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
     switch (action) {
 
         case 'update':
+            let targetTxt = 'data', btnCls = 'fa-plus'
             title = '<small>Modify selected</small> ' + title
             data = data[target]
             for (const row of data) {
@@ -219,25 +226,39 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                 break
             }
             $effective.val(data.since !== '0000-00-00' ? moment(data.since).format('MM/DD/YYYY') : 'Launch Date')
-            if (['names', 'phones', 'addresses'].includes(target))
+            if (['names', 'ownerships', 'phones', 'addresses'].includes(target))
                 $effective.prop('disabled', data.initial)
             $effectiveMatch.upsert.val(data.since)
+
             switch (target) {
                 case 'names':
+                    targetTxt = 'name'
                     $(busNameId).val(data.busName)
                     $(coTypeId).val(data.coType).find('option[value=""]').remove()
                     $(aliasId).val(data.alias)
                     break
+                case 'ownerships':
+                    targetTxt = 'ownership'
+                    btnCls = 'fa-arrows-turn-right'
+                    let value = data.owner._id
+                    value = (data.owner._personId ? 'p' : 'c') + `:${value}`
+
+                    $(ownershipId).val(value)
+                    break
                 case 'phones':
+                    targetTxt = 'phone'
                     $(phoneId).val(formatTel(data.phone))
                     break
                 case 'faxes':
+                    targetTxt = 'fax'
                     $(faxId).val(formatTel(data.fax))
                     break
                 case 'emails':
+                    targetTxt = 'email'
                     $(emailId).val(data.email)
                     break
                 case 'addresses':
+                    targetTxt = 'address'
                     $(addr1Id).val(data.address1)
                     $(addr2Id).val(data.address2)
                     $(zipId).val(data.zip)
@@ -246,6 +267,7 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                     $enfMail.prop('checked', !!data.mail)
                     break
                 case 'mail':
+                    targetTxt = 'mailing address'
                     $(mailAddr1Id).val(data.address1)
                     $(mailAddr2Id).val(data.address2)
                     $(mailZipId).val(data.zip)
@@ -253,14 +275,16 @@ const openUpsertModal = (target, action = 'insert', data, since) => {
                     $(mailStateId).val(data.state).find('option[value=""]').remove()
                     break
             }
-            $warning.show()
+            $warning.body.show()
+            $warning.target.text(targetTxt)
+            $warning.btnStyle.addClass(btnCls)
             $proceed.show()
             $submit.text('Register').addClass('is-success')
 
             $proceed.on('click', function() {
                 $(this).hide()
                 $submit.text('Save Changes').addClass('is-success').show()
-                $warning.hide()
+                $warning.body.hide()
                 $main.show()
             })
             break
@@ -300,7 +324,9 @@ const closeUpsertModal = () => {
     $form.hide()
     $main.hide()
     $submit.hide().text(null).removeClass('is-link is-success')
-    $warning.hide()
+    $warning.body.hide()
+    $warning.target.text(null)
+    $warning.btnStyle.removeClass('fa-plus fa-fa-arrows-turn-right')
     $proceed.hide()
 }
 
@@ -322,6 +348,9 @@ const openDeleteModal = (target, data, since) => {
     switch (target) {
         case 'names':
             record = `${data.busName}, ${data.coType} <small>(${data.alias})</small>`
+            break
+        case 'ownerships':
+            //! Need to display the owner
             break
         case 'phones':
             record = formatTel(data.phone)
@@ -466,7 +495,7 @@ $('#upsert-form').submit(function(evt) {
         data[name] = input.value
     })
     if (since === '0000-00-00') delete data.since
-
+// return console.log({ url, method, data })
     $.ajax({ url, method, data,
         success(response) {
             const { oldRoute, newRoute } = response.props
@@ -550,7 +579,7 @@ $.ajax(`/api/resource/companies/${_id}/history`, {
             list.ownerships += `<td class="effective-date">${setDate(row)}</td>`
             list.ownerships += `<td><span class="has-text-weight-semibold">${owner.fullName() || row.owner.parent.name}</span></td>`
             list.ownerships += `<td class="has-text-right controls">`
-            list.ownerships += `<a ${defs.aAttr.edit(row, 'names', 'name')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
+            list.ownerships += `<a ${defs.aAttr.edit(row, 'ownerships', 'ownership')}><i class="fa fa-pen-to-square has-text-success-45"></i></a>`
             if (!row.initial) list.ownerships += `<a ${defs.aAttr.delete(row, 'ownerships', 'ownership')}><i class="fa fa-trash has-text-danger-60"></i></a>`
             list.ownerships += '</td></tr>'
         })
