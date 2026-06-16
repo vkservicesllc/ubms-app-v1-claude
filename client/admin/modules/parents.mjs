@@ -23,6 +23,11 @@ const table = $('#parents-table').DataTable({
 
         {
             data: null,
+            visible: false,
+        },
+
+        {
+            data: null,
             searchable: false,
             orderable: false,
             width: '8.57rem',
