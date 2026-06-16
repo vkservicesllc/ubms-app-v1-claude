@@ -11,10 +11,10 @@ let refreshed = false
 const table = $('#parents-table').DataTable({
 
     ajax: {
-        url: '/api/resource/companies?category=hld',
+        // url: '/api/resource/companies?category=hld',
+        url: '/api/resource/company-parents',
         dataSrc(response) {
             const { data } = response
-            console.log(data)
             return data
         },
     },
@@ -22,120 +22,93 @@ const table = $('#parents-table').DataTable({
     columns: [
 
         {
-            data: 'active',
+            data: null,
             searchable: false,
             orderable: false,
             width: '8.57rem',
             render(data, type, row) {
-                if (row.until) return `<small class="has-text-danger-55" title="Permanently closed on ${moment(row.until).format('ll')}">Closed</small>`
-                if (!row.confirmed) return '<i class="fa fa-hourglass-half has-text-primary"></i>'
-                let txt = data ? 'success-dark">Active' : 'danger-dark">Inactive'
+                if (row.parent.until) return `<small class="has-text-danger-55" title="Permanently closed on ${moment(row.until).format('ll')}">Closed</small>`
+                if (!row.parent.confirmed) return '<i class="fa fa-hourglass-half has-text-primary"></i>'
+                let txt = row.parent.active ? 'success-dark">Active' : 'danger-dark">Inactive'
 
                 return `<small class="has-text-${txt}</small>`
             },
         },
         
         {
-            data: 'alias',
-            orderable: false,
-            width: '5%',
-            render(data, type, row) {
-                return `<span class="box py-0" data-target="${row._id}">${escapeHTML(data)}</span>`
-            },
-            createdCell(cell, data, row) {
-                const { style } = row
-
-                if (style) {
-                    const $box = $(cell).find('.box')
-                    const { background, color } = style
-
-                    if (background) $box.css('background-color', background)
-                    if (color) $box.css('color', color)
-                }
-            },
-        },
-        
-        {
-            data: 'name',
+            data: null,
             title: 'Name',
             render(data, type, row) {
                 let link = ''
                 if (row.website)
                     link = `&nbsp; <a href="https://${row.website}" target="_blank"><i class="fa fa-arrow-up-right-from-square has-text-grey is-size-7"></i></a>`
+                data = escapeHTML(row.parent.name)
+                data += ` <small style="font-weight: normal;">(${row.parent.alias})</small>`
 
-                return `<span class="has-text-weight-semibold">${escapeHTML(data) + link}</span>`
+                return `<span class="has-text-weight-semibold">${data + link}</span>`
             },
         },
 
         {
-            data: 'since',
+            data: null,
             title: 'Launch Date',
             searchable: false,
             width: '10.7rem',
             className: 'has-text-left',
-            render(data, type) {
+            defaultContent: '<i class="has-text-danger">TBD</i>',
+            render(data, type, row) {
+                data = row.parent.since
                 if (data === '0000-00-00') return
                 return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
             },
         },
 
         {
-            data: 'owner',
-            title: 'Owner',
-            render(data, type, row) {
-                return data.name
-            },
-        },
-        
-        {
-            data: 'address',
-            title: 'Base State',
-            searchable: false,
-            render(data) {
-                if (!data.physical.state) return
-
-                return data.physical.expansion.state
-            }
-        },
-
-        {
-            data: 'address',
+            data: null,
             title: 'Address',
             searchable: false,
             orderable: false,
-            render(data) {
-                return new Address(data.physical).html()
+            render(data, type, row) {
+                return new Address(row.parent.address).html()
             },
         },
 
         {
-            data: 'phone',
+            data: null,
             title: 'Phone',
             orderable: false,
-            render(data) {
-                return formatTel(data)
+            render(data, type, row) {
+                return formatTel(row.parent.phone)
             },
         },
 
         {
-            data: 'fax',
+            data: null,
             title: 'Fax',
             orderable: false,
-            render(data) {
-                if (!data) return
-                return formatTel(data)
+            render(data, type, row) {
+                if (!row.parent.fax) return
+                return formatTel(row.parent.fax)
             },
         },
 
         {
-            data: 'lastLogo',
-            title: 'Logo',
+            data: 'count',
+            searchable: false,
             orderable: false,
             render(data) {
-                return data
-                    ? '<span class="has-text-success-dark"><i class="fa fa-check"></i></span>'
-                    : '<span class="has-text-danger-dark"><i class="fa fa-close"></i></span>'
-            }
+                const count = data.companies
+                const tag = !count ? 'span' : 'a' // add trigger and attributes
+
+                let cell = '<div class="field is-grouped is-grouped-multiline">'
+                cell += '<div class ="control"><div class="tags has-addons">'
+                cell += `<${tag} class="tag has-text-weight-semibold${!data.companies ? ' has-text-danger' : ''}">Companies</${tag}>`
+                cell += `<span class="tag is-${!data.companies ? 'danger' : 'success'}">${data.companies}</span>`
+                cell += '</div></div>'
+                cell += '</div>'
+
+                return cell
+            },
         },
 
         {
@@ -145,14 +118,13 @@ const table = $('#parents-table').DataTable({
             render(data, type, row) {
                 let fa, url = '/business'
 
-                if (row.confirmed) {
-                    const category = row.expansion.path[1]
-                    const { route } = row
+                if (row.parent.confirmed) {
+                    const { route } = row.parent
                     fa = 'file-lines'
-                    url += `/${category}/${route}`
+                    url += `/parent/${route}`
                 } else {
                     fa = 'pen-to-square'
-                    url += `/company/${row._id}`
+                    url += `/company/${row._companyId}`
                 }
 
                 let cell = '<div class="dt-action">'
@@ -164,6 +136,11 @@ const table = $('#parents-table').DataTable({
         },
 
     ],
+
+    createdRow(tr, data) {
+        if (data.parent.until) $(tr).find('td').css('color', 'grey')
+        else if (!data.parent.active) $(tr).addClass('is-warning')
+    },
 
     language: {
         emptyTable: `<span class="has-text-danger">No holding companies registered at this time</span>`,

@@ -452,19 +452,35 @@ class Owner extends Individual {
 
         super(data, { single, hideRawId, hideSensitive })
 
-        const props = { _id: data._id, _personId: data._personId, _parentId: data._parentId }
+        const props = { _id: data._id, _personId: data._personId, _parentId: data._parentId, _companyId: data._companyId }
         if (!hideRawId) {
             props.id = data.id
             props.personId = data.personId
             props.parentId = data.parentId
+            props.companyId = data.companyId
         }
         if (!hideSensitive) this.ssn = stringifyBuffer(data.ssn)
 
         if (data.parentName)
             this.parent = {
+                active: !!data.parentActive,
+                since: data.parentSince,
+                until: data.parentUntil,
+                confirmed: !!data.parentConfirmed,
                 busName: data.busName,
                 coType: data.coType,
+                alias: data.parentAlias,
+                route: data.route,
                 name: data.parentName,
+                phone: data.parentPhone,
+                fax: data.parentFax,
+                address: new Address({
+                    address1: data.parentAddr1,
+                    address2: data.parentAddr2,
+                    city: data.parentCity,
+                    state: data.parentState,
+                    zip: data.parentZip,
+                }),
             }
 
         const props2 = { count: { companies: data.companyCount } }
@@ -637,13 +653,51 @@ class Owner extends Individual {
             },
             {
                 table: query.company.main.table,
+                fields: [
+                    [ 'id', 'compamyId' ], [ Company.hashId(), '_companyId' ],
+                    [ 'active', 'parentActive' ],
+                    [ 'since', 'parentSince' ],
+                    [ 'until', 'parentUntil' ],
+                    [ 'confirmed', 'parentConfirmed' ],
+                ],
                 join: [ 'id', 'companyId', query.parent.main.table ],
             },
             {
                 table: query.company.names.table,
                 fields: [
-                    'busName', 'coType',
+                    'busName', 'coType', [ 'alias', 'parentAlias' ],
                     { concat: [ [ 'busName', '^, ', 'coType' ], 'parentName' ] },
+                    { route: [ [ 'busName', 'coType' ] ] },
+                ],
+                join: [ 'companyId', 'id', {
+                    table: query.company.main.table,
+                    max: 'since',
+                } ],
+            },
+            {
+                table: query.company.phones.table,
+                fields: [ [ 'phone', 'parentPhone' ] ],
+                join: [ 'companyId', 'id', {
+                    table: query.company.main.table,
+                    max: 'since',
+                } ],
+            },
+            {
+                table: query.company.faxes.table,
+                fields: [ [ 'fax', 'parentFax' ] ],
+                join: [ 'companyId', 'id', {
+                    table: query.company.main.table,
+                    max: 'since',
+                } ],
+            },
+            {
+                table: query.company.addresses.table,
+                fields: [
+                    [ 'address1', 'parentAddr1' ],
+                    [ 'address2', 'parentAddr2' ],
+                    [ 'city', 'parentCity' ],
+                    [ 'state', 'parentState' ],
+                    [ 'zip', 'parentZip' ],
                 ],
                 join: [ 'companyId', 'id', {
                     table: query.company.main.table,
@@ -664,7 +718,7 @@ class Owner extends Individual {
             const categories = Company.list.category
             for (const category in categories) {
                 if (typeof categories[category] === 'function') continue
-                batch[8].fields.push({
+                batch[11].fields.push({
                     countCase: [ { category }, `${categories[category].path[0]}Count` ],
                 })
             }

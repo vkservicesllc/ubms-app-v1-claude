@@ -86,7 +86,7 @@ router.get('/companies', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser } = res.session
         const { category } = req.query
-        const options = { hideRawId }, filter = { category: category || { not: 'hld' } }
+        const options = { hideRawId }, filter = { category: category } // || { not: 'hld' } }
         let data
 
         if (!sessionUser.DS) {
@@ -143,10 +143,11 @@ router.get('/roles', User.mw.verify, User.mw.superAdminOnly, async (req, res) =>
 router.get('/:src', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
     try {
         const { src } = req.params
-        const Src = { teams: Team, 'company-owners': Owner, refsources: RefSource }[src]
+        const Src = { teams: Team, 'company-owners': Owner, 'company-parents': Owner, refsources: RefSource }[src]
         const filter = {}
 
         if (src === 'company-owners') filter.type = 'individuals'
+        if (src === 'company-parents') filter.type = 'parents'
 
         res.json({ data: await Src.fetch(res.session, filter, { hideRawId }) })
     } catch(err) {

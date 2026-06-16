@@ -132,6 +132,7 @@ $.when(statusReq).done(statusRes => {
                 searchable: false,
                 width: '10.7rem',
                 className: 'has-text-left',
+                defaultContent: '<i class="has-text-danger">TBD</i>',
                 render(data, type) {
                     if (data === '0000-00-00') return
                     return type == 'display' ? moment(data, 'YYYY-MM-DD').format('ll') : data
