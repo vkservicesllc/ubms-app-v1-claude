@@ -10,9 +10,9 @@ that are available to them.
 
 - Need to add "Transfer ownership" functionality
 
-- Bad situation with screen when not wide (Especially Safari)
+- [bug] Bad situation with screen when not wide (Especially Safari)
 
 
 ==== USER PORTAL ====
 
-- Registration page when used in Safari not launching Terms and Condition Modal
+- [bug] Registration page when used in Safari not launching Terms and Condition Modal
