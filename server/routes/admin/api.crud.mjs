@@ -85,8 +85,9 @@ router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
 router.get('/companies', User.mw.verify, async (req, res) => {
     try {
         const { user: sessionUser } = res.session
-        const { category } = req.query
-        const options = { hideRawId }, filter = { category: category } // || { not: 'hld' } }
+        const { category, owner: _ownerId, state, alphabet: abc } = req.query
+
+        const options = { hideRawId }, filter = { category, _ownerId, state, abc }
         let data
 
         if (!sessionUser.DS) {

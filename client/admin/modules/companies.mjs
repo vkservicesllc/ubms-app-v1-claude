@@ -10,19 +10,21 @@ $.when(statusReq).done(statusRes => {
     const [ adminStatus ] = statusRes
     const interval = 30000
 
-    let emptyTableMsg = 'No companies registered at this time'
-    if (adminStatus === 'A') emptyTableMsg = 'No companies to display'
+    // let emptyTableMsg = 'No companies registered at this time'
+    // if (adminStatus === 'A') emptyTableMsg = 'No companies to display'
 
     const table = new DataTable('#companies-table', {
 
         ajax: {
             url: '/api/resource/companies',
-            // data(body) {
-            //     body.filter = {
-            //         category: $('#dt-custom-select-categories').val(),
-            //         owner: $('#dt-custom-select-owners').val(),
-            //     }
-            // },
+            data(query) {
+                query.category = $('#dt-custom-select-categories').val() || undefined
+                query.owner = $('#dt-custom-select-owners').val() || undefined
+                query.state = $('#dt-custom-select-states').val() || undefined
+                query.alphabet = $('.alphabet.is-primary').text() || undefined
+
+                return query
+            },
             dataSrc(response) {
                 const { data: companies } = response
                 let owners = []
@@ -248,15 +250,15 @@ $.when(statusReq).done(statusRes => {
             ]
             const { alphabet, categories, owners, states } = response.supData
             const $toolbar = $('<div class="custom-dt-toolbar"></div>')
-            const $alphabet = $('<div class="buttons"><button class="button" disabled>A-Z</button> - </div>')
-            alphabet.map(letter => $alphabet.append(`<button class="button" disabled>${letter}</button>`))
+            const $alphabet = $('<div class="buttons"><button class="button alphabet is-primary is-dark">A-Z</button> - </div>')
+            alphabet.map(letter => $alphabet.append(`<button class="button alphabet">${letter}</button>`))
 
             $('.dt-top-toolbar-1').append('<div></div>').append($alphabet).append('<div></div>')
 
             const dropdown = {
-                categories: '<div><label for="dt-custom-select-categories">Filter by Category:</label><div class="select"><select id="dt-custom-select-categories" disabled>',
-                owners: '<div><label for="dt-custom-select-owners">Filter by Owner:</label><div class="select"><select id="dt-custom-select-owners" disabled>',
-                states: '<div><label for="dt-custom-select-states">Filter by Base State:</label><div class="select"><select id="dt-custom-select-states" disabled>',
+                categories: '<div><label for="dt-custom-select-categories">Filter by Category:</label><div class="select"><select id="dt-custom-select-categories">',
+                owners: '<div><label for="dt-custom-select-owners">Filter by Owner:</label><div class="select"><select id="dt-custom-select-owners">',
+                states: '<div><label for="dt-custom-select-states">Filter by Base State:</label><div class="select"><select id="dt-custom-select-states">',
             }
             dropdown.categories += '<option value="">All</option>'
             dropdown.owners += '<option value="">All</option>'
@@ -271,10 +273,22 @@ $.when(statusReq).done(statusRes => {
             $toolbar.append(dropdown.categories).append(dropdown.owners).append(dropdown.states)
 
             $('.dt-length').after($toolbar)
+
+            $('.alphabet')
+                .off('click')
+                .on('click', function () {
+                    $('.alphabet').removeClass('is-primary is-dark')
+                    $(this).addClass('is-primary is-dark')
+
+                    table.ajax.reload()
+                })
+            $('#dt-custom-select-categories, #dt-custom-select-owners, #dt-custom-select-states')
+                .off('change')
+                .on('change', () => table.ajax.reload())
         },
 
         language: {
-            emptyTable: `<span class="has-text-danger">${emptyTableMsg}</span>`,
+            emptyTable: `<span class="has-text-danger">No companies matching your query</span>`,
         },
 
         lengthMenu: [

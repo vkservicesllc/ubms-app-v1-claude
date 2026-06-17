@@ -363,7 +363,7 @@ class Company {
             prepare(batch, filter) {
                 const {
                     id, _id, ein, duns, busName, coType, alias, route,
-                    ids, _ids, ownerId, _ownerId, category, global, lastLogo,
+                    ids, _ids, ownerId, _ownerId, category, global, lastLogo, state, abc,
                     closed, confirmed, active, // Combined when undefined
                 } = filter
                 const single = !!id || !!_id || !!ein || !!duns || !!(busName && coType) || !!alias || !!route
@@ -372,7 +372,9 @@ class Company {
                     main: { id, duns, category, global, lastLogo, confirmed, active },
                     names: { alias },
                     ownerships: { ownerId: ownerId || Owner.matchIdHash(_ownerId) },
+                    addresses: { state },
                 }
+                if (abc && abc.toLowerCase() !== 'a-z') match.names.busName = { abc }
                 if (!id) {
                     if (ids) match.main.id = ids
                     else match.main.id = Company.matchIdHash(_id || _ids)
@@ -388,6 +390,7 @@ class Company {
                 batch[0].match = match.main
                 batch[1].match = match.names
                 batch[2].match = match.ownerships
+                batch[8].match = match.addresses
 
                 return { single, batch }
             },

@@ -451,6 +451,14 @@ class Query {
                     value = Query.#value(value)
                 }
 
+                else if ('abc' in value) {
+                    value = value.abc
+                    if (empty(value)) continue
+
+                    value = Query.#value(`${value}%`)
+                    operator = ' LIKE '
+                }
+
                 else if ('not' in value) {
                     value = value.not
                     if (empty(value)) continue
