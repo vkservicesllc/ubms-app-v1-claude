@@ -1,9 +1,18 @@
-When a regular admin is unscoped, they can create unscoped users,
+==== ADMIN PORTAL ====
+
+- When a regular admin is unscoped, they can create unscoped users,
 but when they are scoped, they must only be able to invite scoped users and assign them teams and have available only
 that are available to them.
 
-Ownership menu, need to add event to remove '--'
+- Ownership menu, need to add event to remove '--'
 
-Need to add owner value when deleting non-initial owner in management
+- Need to add owner value when deleting non-initial owner in management
 
-Need to add "Transfer ownership" functionality
+- Need to add "Transfer ownership" functionality
+
+- Bad situation with screen when not wide (Especially Safari)
+
+
+==== USER PORTAL ====
+
+- Registration page when used in Safari not launching Terms and Condition Modal
