@@ -16,3 +16,5 @@ that are available to them.
 ==== USER PORTAL ====
 
 - [bug] Registration page when used in Safari not launching Terms and Condition Modal
+
+- [bug] Returns some error when trying to resend the token when authenticating
