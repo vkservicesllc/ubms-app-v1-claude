@@ -30,9 +30,9 @@
                 <label class="form-label fw-normal text-warning mt-3 mb-0" id="employment-message" style="display: none;">
                     <small>
                         <i class="fas fa-circle-exclamation"></i>
-                        List all jobs from the past 3 years{{#if (eq noExp true)}},{{/if}}
+                        List <u>all jobs</u> from the past 3 years{{#if (eq noExp true)}},{{/if}}
                         {{#if (eq noExp false)}}
-                        and all commercial driving experience
+                        and all {{#if (eq cdlRole true)}}commercial {{/if}}driving experience
                         {{#if (hv expDate)}}
                         since {{expDate}},
                         {{else}}
