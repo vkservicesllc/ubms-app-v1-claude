@@ -126,7 +126,7 @@ router.post('/token/resend', async (req, res) => {
         if (!user) throw new Error('Oops! Something went wrong!')
 
         const { clientIp } = req.session
-        const { key: token } = await Token.create({ userId: id, clientIp })
+        const { key: token } = await Token.create({ userId: user.id, clientIp })
 
         const response = { status: token ? 'success' : 'error' }
         if (token && !config.notification.email.authToken) response.token = token
