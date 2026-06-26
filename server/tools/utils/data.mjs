@@ -14,7 +14,7 @@ const mysql = require('./mysql')
 
 
 
-export async function processData(data = {}, { query, target = 'main', skipLog = false, match = {}, modifiedBy, branch, siteId } = {}) {
+export async function processData(data = {}, { query, target = 'main', skipLog = false, match = {}, modifiedBy, branch, siteId, debug } = {}) {
     const update = query && target
     let currentData, currentUpdateLog, updateLog
 
@@ -28,8 +28,15 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
         if (data.ssn || data.ssn === null) fields.push(selectAES('ssn'))
         if (data.ein || data.ein === null) fields.push(selectAES('ein'))
 
-        currentData = (await mysql.execute(query[target].select(fields, { match })))[0][0]
+        const fetchQuery = query[target].select(fields, { match })
+
+        currentData = (await mysql.execute(fetchQuery))[0][0]
         if (!currentData) currentData = {}
+
+//! Debugger
+if (debug?.processData?.fetchQuery) console.log('[debug] processData fetchQuery', fetchQuery)
+if (debug?.processData?.match) console.log('[debug] processData match', match)
+if (debug?.processData?.currentData) console.log('[debug] processData currentData', currentData)
 
         if (!skipLog && currentData.updateLog !== undefined) {
             currentUpdateLog = currentData.updateLog
@@ -45,6 +52,9 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
             if (siteId) updateLog[0].modifiedIn.siteId = siteId
         }
     }
+
+//! Debugger
+if (debug?.processData?.inputData) console.log('[debug] processData inputData', data)
 
     for (const field in data) {
         const value = data[field]
@@ -93,6 +103,9 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
 
         data.updateLog = JSON.stringify(updateLog).replace(/(?<!\\)\\"/g, '\\\\"')
     }
+
+//! Debugger
+if (debug?.processData?.outputData) console.log('[debug] processData outputData', data)
 
     return data
 }
