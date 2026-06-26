@@ -16,3 +16,8 @@ that are available to them.
 ==== USER PORTAL ====
 
 - [bug] Registration page when used in Safari not launching Terms and Condition Modal
+
+
+==== CARRIER/DRIVER PORTAL ====
+
+- [bug] Enough and livedAbroad props do not update in Addresses
