@@ -123,6 +123,7 @@ if (_id) {
             }, {})
 
             for (const category in optgroups[prop]) {
+                if (category === 'hld') continue
                 options[prop] += `<optgroup label="${categories[category].item[1]}">`
                 for (const company of optgroups[prop][category]) {
                     const { _id, name, active, until } = company
