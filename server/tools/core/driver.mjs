@@ -851,7 +851,7 @@ class Application {
                                 const { personId = person.id } = this
 
                                 await person.update('addresses', { since, address1, address2, city, state, zip }, { since: currentSince })
-                                await this.update('addresses', { enough, livedAbroad }, { since: currentSince })
+                                await this.update('addresses', { enough, livedAbroad }, { since }) //* since cascaded
 
                                 body = {
                                     main: { addrComplete: true },
@@ -1284,16 +1284,7 @@ class Application {
 
                                 if (enough || (livedAbroad && prevCountry)) await person.delete('addresses', { since: { not: currentSince } })
                                 await person.update('addresses', { since, address1, address2, city, state, zip }, { since: currentSince })
-                                await this.update('addresses', { enough, livedAbroad }, { since: currentSince }, {
-                                    debug: {
-                                        processData: {
-                                            fetchQuery: true,
-                                            currentData: true,
-                                            inputData: true,
-                                            outputData: true,
-                                        },
-                                    },
-                                })
+                                await this.update('addresses', { enough, livedAbroad }, { since }) //* since cascaded
                                 await driver.update('appDef', { prevCountry })
                             }
                             break
