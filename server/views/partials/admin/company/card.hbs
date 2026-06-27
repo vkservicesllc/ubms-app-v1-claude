@@ -31,9 +31,11 @@
                 <div class="dropdown-content">
                     {{!-- <a class="dropdown-item" id="highlight-company-trigger">Highlight</a> --}}
                     <a class="dropdown-item" href="{{{url.update}}}">Edit/Update</a>
+                    {{#if (ne data.category 'hld')}}
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" id="company-condition-trigger">{{{display.statusTrigger}}}</a>
                     <a class="dropdown-item" id="close-company-trigger">Close</a>
+                    {{/if}}
                     <hr class="dropdown-divider">
                     <a class="dropdown-item has-text-danger" id="delete-company-trigger">Delete</a>
                 </div>
@@ -52,8 +54,10 @@
                 {{#if (eq data.confirmed true)}}
                 <li class="company-card-tabs" data-section="logo"><a>Logo</a></li>
                 {{!-- <li class="company-card-tabs" data-section="teams"><a>Teams</a></li> --}}
+                {{#if (ne data.category 'hld')}}
                 <li class="company-card-tabs" data-section="users"><a>Users</a></li>
                 <li class="company-card-tabs" data-section="sources"><a>Discovery Sources</a></li>
+                {{/if}}
                 {{/if}}
             </ul>
         </div>
@@ -287,6 +291,7 @@
             }
         </style>
         {{{form.id.hidden.input}}}
+        {{#if (ne data.category 'hld')}}
 
         <section class="company-card-content" id="users-card-content" style="display: none;">
             <div class="columns">
@@ -353,6 +358,7 @@
                 </div>
             </div>
         </section>
+        {{/if}}
 
         {{!-- <section class="company-card-content" id="teams-card-content" style="display: none;">
             <div class="columns">
