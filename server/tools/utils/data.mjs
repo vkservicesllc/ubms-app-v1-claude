@@ -34,7 +34,10 @@ export async function processData(data = {}, { query, target = 'main', skipLog =
         if (!currentData) currentData = {}
 
 //! Debugger
-if (debug?.processData?.fetchQuery) console.log('[debug] processData fetchQuery', fetchQuery)
+if (debug?.processData?.target) console.log('[debug] processData target', target)
+if (debug?.processData?.fetchQuery) console.log('[debug] processData fetchQuery', `
+${fetchQuery}
+`)
 if (debug?.processData?.match) console.log('[debug] processData match', match)
 if (debug?.processData?.currentData) console.log('[debug] processData currentData', currentData)
 

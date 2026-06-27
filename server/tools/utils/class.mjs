@@ -173,7 +173,7 @@ export const classInstance = {
     },
 
 
-    update: async (inst, Cls, targetOrBody, body, match = {}, { sanitize, final, skipLog = false, hideRawId = false } = {}) => {
+    update: async (inst, Cls, targetOrBody, body, match = {}, { sanitize, final, skipLog = false, hideRawId = false, debug } = {}) => {
         const config = Cls.config()
 
         const { enforceUser = true, enforceLocation = false } = config
@@ -200,12 +200,22 @@ export const classInstance = {
             options.siteId = siteId
         }
 
+//! Debugger
+if (debug) options.debug = debug
+
         if (typeof sanitize === 'function') body = sanitize(target, body)
         body = await processData(body, options)
 
-        const [ result ] = await mysql.execute(config.query[target].update(body, {
+        const updateQuery = config.query[target].update(body, {
             [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match,
-        }))
+        })
+
+//! Debugger
+if (debug?.classInstance?.update?.updateQuery) console.log('[debug] classInstance.update updateQuery', `
+${updateQuery}
+`)
+
+        const [ result ] = await mysql.execute(updateQuery)
 
         if (typeof final === 'function') await final(inst, body, target)
 
