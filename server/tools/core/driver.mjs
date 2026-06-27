@@ -1284,7 +1284,16 @@ class Application {
 
                                 if (enough || (livedAbroad && prevCountry)) await person.delete('addresses', { since: { not: currentSince } })
                                 await person.update('addresses', { since, address1, address2, city, state, zip }, { since: currentSince })
-                                await this.update('addresses', { enough, livedAbroad }, { since: currentSince })
+                                await this.update('addresses', { enough, livedAbroad }, { since: currentSince }, {
+                                    debug: {
+                                        processData: {
+                                            fetchQuery: true,
+                                            currentData: true,
+                                            inputData: true,
+                                            outputData: true,
+                                        },
+                                    },
+                                })
                                 await driver.update('appDef', { prevCountry })
                             }
                             break

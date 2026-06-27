@@ -201,7 +201,7 @@ export const classInstance = {
         }
 
 //! Debugger
-if (debug) options.debug = debug
+if (debug?.processData) options.debug = { processData: debug.processData }
 
         if (typeof sanitize === 'function') body = sanitize(target, body)
         body = await processData(body, options)
