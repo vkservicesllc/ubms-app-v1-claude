@@ -1622,7 +1622,7 @@ class Application {
 
             const {
                 _carrierId, _teamId, _refSrcId, _userSimpleId, selfAssign, cdlRole, vhlCode, dob,
-                prefix, firstName, middleName, lastName, suffix, phone, email, position,
+                prefix, firstName, middleName, lastName, suffix, gender, phone, email, position,
             } = body
             const ssn = unprocessAES(body.ssn)
 
@@ -1655,7 +1655,7 @@ class Application {
 
             if (!ssn) { //* Pre-Application
                 body.main.step = 0
-                body.lead = { prefix, firstName, middleName, lastName, suffix, email, phone }
+                body.lead = { prefix, firstName, middleName, lastName, suffix, gender, email, phone }
 
                 return body
             }
@@ -1666,7 +1666,7 @@ class Application {
                 const person = await Individual.fetch(session, { ssn })
 
                 body.main.public = false
-                body.lead = !person ? { ssn: processAES('ssn', ssn), dob } : { personId: person.id }
+                body.lead = !person ? { ssn: processAES('ssn', ssn), dob, gender } : { personId: person.id }
 
                 return body
             }
@@ -1687,7 +1687,7 @@ class Application {
                 let { step } = cache
 
                 body.main.addrComplete = cache.addrComplete
-                body.lead = { ssn: processAES('ssn', person.ssn), dob: person.dob }
+                body.lead = { ssn: processAES('ssn', person.ssn), dob: person.dob, gender: person.gender }
 
                 body.addresses = []
 
