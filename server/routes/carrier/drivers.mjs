@@ -314,7 +314,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         const uploaded = {
             dl: false,
-            mec: true,
+            mec: false,
             leg: false,
             ssc: false,
         }

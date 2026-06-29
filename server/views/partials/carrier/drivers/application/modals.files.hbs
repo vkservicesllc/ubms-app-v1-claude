@@ -1,0 +1,30 @@
+<div class="ui large modal" id="upload-dl-modal">
+    <div class="header"><small>Upload</small> Driver's License</div>
+    <div class="content">
+        <form id="upload-dl-form" action="" method="POST">
+            <div class="ui two column very relaxed grid">
+                <div class="column">
+                    <div class="ui segment dropzone" id="dropzone-dl-front">
+                        <div class="ui top attached label">Driver's License <small>(Front)</small></div>
+                        <p>Drag here or click to upload</p>
+                        <input type="file" id="file-dl-front" accept="image/*" hidden />
+                        <img id="image-dl-front" style="max-width: 100%; display: none;" />
+                        <div class="ui mini buttons" style="margin-top: .3rem;">
+                            <button class="ui button" id="dl-front-rotate-left">⟲</button>
+                            <button class="ui button" id="dl-front-rotate-right">⟳</button>
+                            <button class="ui button" id="dl-front-reset">Reset</button>
+                        </div>
+                        <img id="preview-dl-front" style="max-width: 100%; margin-top: .3rem;" />
+                    </div>
+                </div>
+                <div class="column">
+                    <p>Right content goes here</p>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions" style="display: flex !important; justify-content: space-between;">
+        <div class="ui cancel button">Cancel</div>
+        <button type="submit" form="upload-dl-form" class="ui primary button" id="upload-dl-submit">Confirm and Upload</button>
+    </div>
+</div>

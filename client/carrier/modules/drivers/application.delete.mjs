@@ -71,7 +71,7 @@ table.on('draw', function() {
                 })
                 $id.val(application._id)
 
-                $modal.modal('show')
+                $modal.modal({ autofocus: false, closable: false }).modal('show')
             },
         })
     })
