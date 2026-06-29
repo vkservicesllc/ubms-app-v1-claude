@@ -20,4 +20,27 @@ import application from './hub.mjs'
             closable: false,
         }).modal('show')
     })
+
+    function dropzoneEvents(target) {
+        const $drop = $(`#dropzone-${target}`)
+        const $file = $(`#file-${target}`)
+        const $image = $(`#image-${target}`)
+        const $preview = $(`#preview-${target}`)
+
+        $drop
+            .on('click', function(evt) {
+                evt.preventDefault()
+                $file.click()
+            })
+            .on('dragover', (evt) => {
+                evt.preventDefault()
+                $(this).css('outline', '1px dotted grey')
+            })
+            .on('drop', function(evt) {
+                evt.preventDefault()
+                $(this).css('outline', 'none')
+
+                //
+            })
+    }
 })()
