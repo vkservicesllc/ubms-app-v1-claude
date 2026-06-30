@@ -1,20 +1,47 @@
+<style>
+    .drag-drop-area {
+        text-align: center;
+        padding: 1.4rem;
+        border: 1px dashed gainsboro;
+        border-radius: .2rem;
+        cursor: pointer;
+    }
+    .cropper-buttons {
+        text-align: center;
+    }
+</style>
+
 <div class="ui large modal" id="upload-dl-modal">
     <div class="header"><small>Upload</small> Driver's License</div>
     <div class="content">
         <form id="upload-dl-form" action="" method="POST">
             <div class="ui two column very relaxed grid">
                 <div class="column">
-                    <div class="ui segment dropzone" id="dropzone-dl-front">
+                    <div class="ui placeholder segment dropzone" id="dropzone-dl-front">
                         <div class="ui top attached label">Driver's License <small>(Front)</small></div>
-                        <a href="">Drag here or click to upload</a>
+                        <div class="drag-drop-area">
+                            <span class="ui teal text">Drag here or click to upload</span>
+                        </div>
                         <input type="file" id="file-dl-front" accept="image/*" hidden />
                         <img id="image-dl-front" style="max-width: 100%; display: none;" />
-                        <div class="ui mini buttons" style="margin-top: .3rem;">
-                            <button class="ui button" id="dl-front-rotate-left">⟲</button>
-                            <button class="ui button" id="dl-front-rotate-right">⟳</button>
-                            <button class="ui button" id="dl-front-reset">Reset</button>
+                        <div class="cropper-buttons" style="display: none;">
+                            <div class="ui mini centered buttons">
+                                <button class="ui button" id="dl-front-rotate-left" title="Rotate Left">
+                                    <i class="undo alternate icon"></i>
+                                </button>
+                                <button class="ui button" id="dl-front-rotate-right" title="Rotate Right">
+                                    <i class="redo alternate icon"></i>
+                                </button>
+                                <button class="ui button" id="dl-front-zoom-in" title="Zoom In">
+                                    <i class="search plus icon"></i>
+                                </button>
+                                <button class="ui button" id="dl-front-zoom-out" title="Zoom Out">
+                                    <i class="search minus icon"></i>
+                                </button>
+                                <button class="ui button" id="dl-front-reset">Reset</button>
+                            </div>
                         </div>
-                        <img id="preview-dl-front" style="max-width: 100%; margin-top: .3rem;" />
+                        <img id="preview-dl-front" style="max-width: 100%; margin-top: .3rem; display: none;" />
                     </div>
                 </div>
                 <div class="column">
