@@ -112,7 +112,7 @@ const includes = {
     },
 
     'drivers.application.e-form': {
-        external: [ ...online.external, 'jquery.masked-input', 'moment' ],
+        external: [ ...online.external, 'jquery.masked-input', 'moment', 'cropper' ],
         internal: {
             css: [ ...online.internal.css ],
             js: [ ...online.internal.js ],
