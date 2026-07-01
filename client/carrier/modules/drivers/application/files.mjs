@@ -14,6 +14,20 @@ import application from './hub.mjs'
             dl: $('#upload-dl-modal'),
         },
     }
+    const $button = {
+        upload: {
+            dl: {
+                prev: $('#upload-dl-prev-button'),
+                next: $('#upload-dl-next-button'),
+                submit: $('#upload-dl-submit'),
+            },
+        },
+    }
+    const $step = {
+        upload: {
+            dl: $('#upload-dl-step'),
+        },
+    }
 
     $upload.dl.click(function() {
         $modal.upload.dl.modal({
@@ -22,11 +36,16 @@ import application from './hub.mjs'
         }).modal('show')
     })
 
-    dropzoneEvents('dl-front')
+    dropzoneEvents('dl-front', {
+        onImageLoad() {
+            $button.upload.dl.next.prop('disabled', false)
+            $step.upload.dl.html("Driver's License <small>(Front)</small>")
+        },
+    })
     dropzoneEvents('dl-back')
 
 
-    function dropzoneEvents(target) {
+    function dropzoneEvents(target, cb = {}) {
         const $cropArea = $(`#croparea-${target}`)
         const $dropZone = $cropArea.find('.cropper-dropzone')
         const $file = $cropArea.find('.cropper-file')
@@ -34,7 +53,7 @@ import application from './hub.mjs'
         const $buttons = $cropArea.find('.cropper-buttons')
         const $preview = $cropArea.find('.cropper-preview')
         const aspectRatio = +$cropArea.data('aspect-ratio') || NaN
-console.log({ aspectRatio })
+
         $dropZone
             .on('click', function() {
                 $file.click()
@@ -86,6 +105,7 @@ console.log({ aspectRatio })
             $image.parent().show()
             $dropZone.hide()
             $buttons.show()
+            if (cb.onImageLoad) cb.onImageLoad()
         }
     }
 })()
