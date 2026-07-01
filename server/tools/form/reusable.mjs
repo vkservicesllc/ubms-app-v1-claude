@@ -143,7 +143,8 @@ export const createAddressForm = (props = {}, options) => {
         required: idx === 1,
         label: idx === 1
             ? 'Street Address' + (mail === true ? ' / PO Box' : '')
-            : business ? 'Suite/Unit' : 'Apt/Unit',
+            : 'Address #2',
+            // : business ? 'Suite/Unit' : 'Apt/Unit',
         ...props,
         maxLength: length.address[`address${idx}`].max,
         validator: {
