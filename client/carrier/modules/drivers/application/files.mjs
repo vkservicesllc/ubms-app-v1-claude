@@ -50,6 +50,12 @@ import application from './hub.mjs'
         $modal.upload.dl.modal({
             autofocus: false,
             closable: false,
+            onVisible() {
+                setTimeout(() => {
+                    croppers?.['dl-front']?.resize()
+                    croppers?.['dl-back']?.resize()
+                }, 250)
+            },
         }).modal('show')
     })
 
@@ -163,7 +169,9 @@ import application from './hub.mjs'
                             autoCropArea: 1,
                             responsive: true,
                             preview: `#cropper-preview-${target}`,
-                            cropend() { updatePreview() },
+                            crop() { resizeWorkZone() },
+                            cropend() { resizeWorkZone() },
+                            zoom() { resizeWorkZone() },
                         })
 
                         setTimeout(updatePreview, 100)
@@ -211,18 +219,18 @@ import application from './hub.mjs'
                 $file.click()
             })
 
-            //! HUGE PROBLEM if window is resized
-            $(window).on('resize', function () {
-                if (cropper[target]) cropper[target].resize()
-                updatePreview()
-            })
-
             if (cb.onImageLoad) cb.onImageLoad()
 
             function updatePreview() {
                 const canvas = croppers[target].getCroppedCanvas()
+                $preview.find('img').attr('src', canvas.toDataURL())
+                resizeWorkZone()
+            }
+
+            function resizeWorkZone() { //! SOME ISSUES PERSIST
+                //! $image.css()
                 $preview.css({ width: '36rem', height: '100%', overflow: 'hidden' })
-                    .find('img').attr('src', canvas.toDataURL()).css({ width: 'inherit', height: 'inherit' })
+                    .find('img').css({ width: 'inherit', height: 'inherit' })
             }
         }
     }
