@@ -53,14 +53,14 @@
     </div>
     <div class="content">
         <form id="upload-dl-form" action="" method="POST" enctype="multipart/form-data">
-            <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-aspect-ratio="1.59">
+            <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-aspect-ratio="1.6">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Front)</small></h1>
                     <i class="dark teal image file outline icon"></i>
                     <span class="ui dark teal text cropper-drag-drop-click">Drag and drop here or click to upload</span>
                     {{#if (eq uploads.dlF true)}}
                     <p class="cropper-opt-or"><span class="ui grey text">OR</span></p>
-                    <button class="ui primary button">Load Uploaded</button>
+                    <button class="ui primary button">Load Shared</button>
                     {{/if}}
                 </div>
                 <input class="cropper-file" type="file" accept="image/*" hidden />
@@ -69,14 +69,14 @@
                 </div>
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
-            <div class="ui placeholder segment dl-section" id="croparea-dl-back" data-aspect-ratio="1.59" style="display: none;">
+            <div class="ui placeholder segment dl-section" id="croparea-dl-back" data-aspect-ratio="1.6" style="display: none;">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Back)</small></h1>
                     <i class="dark teal image file outline icon"></i>
                     <span class="ui dark teal text cropper-drag-drop-click">Drag and drop here or click to upload</span>
                     {{#if (eq uploads.dlB true)}}
                     <p class="cropper-opt-or"><span class="ui grey text">OR</span></p>
-                    <button class="ui primary button">Load Uploaded</button>
+                    <button class="ui primary button">Load Shared</button>
                     {{/if}}
                 </div>
                 <input class="cropper-file" type="file" accept="image/*" hidden />
@@ -86,13 +86,13 @@
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
             <div class="ui two column relaxed grid dl-section" id="confirmation-dl" style="display: none; margin: 0;">
-                <div class="nine wide column" style="outline: 2px dashed red;">
+                <div class="six wide column">
                     <div>
                         <div class="cropper-preview" id="cropper-preview-dl-front"></div>
                         <div class="cropper-preview" id="cropper-preview-dl-back"></div>
                     </div>
                 </div>
-                <div class="seven wide column" style="outline: 2px dashed blue;">
+                <div class="ten wide column">
                     CONFIRMATION FORM
                 </div>
             </div>
@@ -100,11 +100,56 @@
     </div>
     <div class="actions" style="display: flex !important; justify-content: space-between;">
         <div class="ui cancel button">Cancel</div>
-        <strong id="upload-dl-step">Driver's License <small>(Front)</small></strong>
+        <strong id="upload-dl-step">Editor: Driver's License <small>(Front)</small></strong>
         <div>
             <button class="ui primary button" id="upload-dl-prev-button" style="display: none;">Back</button>
             <button class="ui primary button" id="upload-dl-next-button" disabled>Next</button>
             <button type="submit" form="upload-dl-form" class="ui primary button" id="upload-dl-submit" style="display: none;">Confirm and Create PDF</button>
+        </div>
+    </div>
+</div>
+
+<div class="ui overlay fullscreen modal" id="upload-mec-modal">
+    <div class="center aligned header">
+        <small>Upload</small> Medical Certificate — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
+    </div>
+    <div class="content">
+        <form id="upload-mec-form" action="" method="POST" enctype="multipart/form-data">
+            <div class="ui placeholder segment mec-section" id="croparea-mec">
+                <div class="ui icon header cropper-dropzone">
+                    <h1 class="ui header">Medical Certificate</h1>
+                    <i class="dark teal image file outline icon"></i>
+                    <span class="ui dark teal text cropper-drag-drop-click">Drag and drop here or click to upload</span>
+                    {{#if (eq uploads.mec true)}}
+                    <p class="cropper-opt-or"><span class="ui grey text">OR</span></p>
+                    <button class="ui primary button">Load Shared</button>
+                    {{/if}}
+                </div>
+                <input class="cropper-file" type="file" accept="image/*" hidden />
+                <div class="cropper-wrapper" style="display: none;">
+                    <img class="cropper-image" style="display: none;" />
+                </div>
+                {{> carrier/components/modal.cropper.buttons}}
+            </div>
+            <div class="ui two column relaxed grid mec-section" id="confirmation-mec" style="display: none; margin: 0;">
+                <div class="six wide column">
+                    <div>
+                        <div class="cropper-preview" id="cropper-preview-mec"></div>
+                    </div>
+                </div>
+                <div class="ten wide column">
+                    CONFIRMATION FORM
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions" style="display: flex !important; justify-content: space-between;">
+        <div class="ui cancel button">Cancel</div>
+        <strong id="upload-mec-step">Editor: Medical Certificate</strong>
+        <div>
+            <button class="ui primary button" id="upload-mec-prev-button" style="display: none;">Back</button>
+            <button class="ui primary button" id="upload-mec-next-button" disabled>Next</button>
+            <button type="submit" form="upload-mec-form" class="ui primary button" id="upload-mec-submit" style="display: none;">Confirm and Create PDF</button>
         </div>
     </div>
 </div>

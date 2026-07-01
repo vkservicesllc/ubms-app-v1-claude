@@ -7,11 +7,13 @@ import application from './hub.mjs'
     const croppers = {}
     const $upload = {
         dl: $('#upload-dl-file'),
+        mec: $('#upload-mec-file'),
     }
 
     const $modal = {
         upload: {
             dl: $('#upload-dl-modal'),
+            mec: $('#upload-mec-modal'),
         },
     }
     const $button = {
@@ -21,19 +23,36 @@ import application from './hub.mjs'
                 next: $('#upload-dl-next-button'),
                 submit: $('#upload-dl-submit'),
             },
+            mec: {
+                prev: $('#upload-mec-prev-button'),
+                next: $('#upload-mec-next-button'),
+                submit: $('#upload-mec-submit'),
+            },
         },
     }
     const $step = {
         upload: {
             dl: $('#upload-dl-step'),
+            mec: $('#upload-mec-step'),
         },
     }
-    let steps = [
-        "Driver's License <small>(Front)</small>",
-        "Driver's License <small>(Back)</small>",
-        'Data Verification',
-    ]
-    let activeStep = 0
+    const steps = {
+        upload: {
+            dl: [
+                "Editor: Driver's License <small>(Front)</small>",
+                "Editor: Driver's License <small>(Back)</small>",
+                'Data Verification and Confirmation',
+            ],
+            mec: [
+                "Editor: Medical Certificate",
+                'Data Verification and Confirmation',
+            ],
+        },
+    }
+    const activeStep = {
+        dl: 0,
+        mec: 0,
+    }
 
     const $section = {
         upload: {
@@ -42,6 +61,11 @@ import application from './hub.mjs'
                 cropperFront: $('#croparea-dl-front'),
                 cropperBack: $('#croparea-dl-back'),
                 confirmation: $('#confirmation-dl'),
+            },
+            mec: {
+                all: $('.mec-section'),
+                cropper: $('#croparea-mec'),
+                confirmation: $('#confirmation-mec'),
             },
         },
     }
@@ -59,10 +83,23 @@ import application from './hub.mjs'
         }).modal('show')
     })
 
+    $upload.mec.click(function() {
+        $modal.upload.mec.modal({
+            autofocus: false,
+            closable: false,
+            onVisible() {
+                setTimeout(() => {
+                    croppers?.['mec']?.resize()
+                    croppers?.['mec']?.resize()
+                }, 250)
+            },
+        }).modal('show')
+    })
+
     dropzoneEvents('dl-front', {
         onImageLoad() {
             $button.upload.dl.next.prop('disabled', false)
-            $step.upload.dl.html(steps[0])
+            $step.upload.dl.html(steps.upload.dl[0])
         },
     })
     dropzoneEvents('dl-back', {
@@ -71,34 +108,62 @@ import application from './hub.mjs'
         },
     })
 
+    dropzoneEvents('mec', {
+        onImageLoad() {
+            $button.upload.mec.next.prop('disabled', false)
+        },
+    })
+
     $button.upload.dl.next.click(function() {
         $section.upload.dl.all.hide()
-        if (activeStep === 0) {
+        if (activeStep.dl === 0) {
             $button.upload.dl.prev.show()
             if (!croppers['dl-back']) $button.upload.dl.next.prop('disabled', true)
             $section.upload.dl.cropperBack.show()
         }
-        if (activeStep === 1) {
+        if (activeStep.dl === 1) {
             $button.upload.dl.next.hide()
             $button.upload.dl.submit.show()
             $section.upload.dl.confirmation.show()
         }
-        $step.upload.dl.html(steps[++activeStep])
+        $step.upload.dl.html(steps.upload.dl[++activeStep.dl])
     })
 
     $button.upload.dl.prev.click(function() {
         $section.upload.dl.all.hide()
-        if (activeStep === 1) {
+        if (activeStep.dl === 1) {
             $button.upload.dl.prev.hide()
             $section.upload.dl.cropperFront.show()
             $button.upload.dl.next.prop('disabled', false)
         }
-        if (activeStep === 2) {
+        if (activeStep.dl === 2) {
             $button.upload.dl.submit.hide()
             $button.upload.dl.next.show()
             $section.upload.dl.cropperBack.show()
         }
-        $step.upload.dl.html(steps[--activeStep])
+        $step.upload.dl.html(steps.upload.dl[--activeStep.dl])
+    })
+
+    $button.upload.mec.next.click(function() {
+        $section.upload.mec.all.hide()
+        if (activeStep.mec === 0) {
+            $button.upload.mec.next.hide()
+            $button.upload.mec.prev.show()
+            $button.upload.mec.submit.show()
+            $section.upload.mec.confirmation.show()
+        }
+        $step.upload.mec.html(steps.upload.mec[++activeStep.mec])
+    })
+
+    $button.upload.mec.prev.click(function() {
+        $section.upload.mec.all.hide()
+        if (activeStep.mec === 1) {
+            $button.upload.mec.prev.hide()
+            $button.upload.mec.submit.hide()
+            $button.upload.mec.next.show()
+            $section.upload.mec.cropper.show()
+        }
+        $step.upload.mec.html(steps.upload.mec[--activeStep.mec])
     })
 
 
@@ -169,9 +234,9 @@ import application from './hub.mjs'
                             autoCropArea: 1,
                             responsive: true,
                             preview: `#cropper-preview-${target}`,
-                            crop() { resizeWorkZone() },
-                            cropend() { resizeWorkZone() },
-                            zoom() { resizeWorkZone() },
+                            crop() { updatePreview() },
+                            cropend() { updatePreview() },
+                            zoom() { updatePreview() },
                         })
 
                         setTimeout(updatePreview, 100)
