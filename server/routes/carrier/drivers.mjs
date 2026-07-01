@@ -619,6 +619,8 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                 }
 
                 hbs.fileTrlReg = !!application?.vehicle?.trailer
+
+                hbs.uploads = application.uploads
                 //! console.log(hbs.filePerms)
                 // hbs.filePerms = {
                 //     application: {

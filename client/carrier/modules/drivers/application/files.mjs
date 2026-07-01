@@ -28,6 +28,23 @@ import application from './hub.mjs'
             dl: $('#upload-dl-step'),
         },
     }
+    let steps = [
+        "Driver's License <small>(Front)</small>",
+        "Driver's License <small>(Back)</small>",
+        'Data Verification',
+    ]
+    let activeStep = 0
+
+    const $section = {
+        upload: {
+            dl: {
+                all: $('.dl-section'),
+                cropperFront: $('#croparea-dl-front'),
+                cropperBack: $('#croparea-dl-back'),
+                confirmation: $('#confirmation-dl'),
+            },
+        },
+    }
 
     $upload.dl.click(function() {
         $modal.upload.dl.modal({
@@ -39,10 +56,44 @@ import application from './hub.mjs'
     dropzoneEvents('dl-front', {
         onImageLoad() {
             $button.upload.dl.next.prop('disabled', false)
-            $step.upload.dl.html("Driver's License <small>(Front)</small>")
+            $step.upload.dl.html(steps[0])
         },
     })
-    dropzoneEvents('dl-back')
+    dropzoneEvents('dl-back', {
+        onImageLoad() {
+            $button.upload.dl.next.prop('disabled', false)
+        },
+    })
+
+    $button.upload.dl.next.click(function() {
+        $section.upload.dl.all.hide()
+        if (activeStep === 0) {
+            $button.upload.dl.prev.show()
+            if (!croppers['dl-back']) $button.upload.dl.next.prop('disabled', true)
+            $section.upload.dl.cropperBack.show()
+        }
+        if (activeStep === 1) {
+            $button.upload.dl.next.hide()
+            $button.upload.dl.submit.show()
+            $section.upload.dl.confirmation.show()
+        }
+        $step.upload.dl.html(steps[++activeStep])
+    })
+
+    $button.upload.dl.prev.click(function() {
+        $section.upload.dl.all.hide()
+        if (activeStep === 1) {
+            $button.upload.dl.prev.hide()
+            $section.upload.dl.cropperFront.show()
+            $button.upload.dl.next.prop('disabled', false)
+        }
+        if (activeStep === 2) {
+            $button.upload.dl.submit.hide()
+            $button.upload.dl.next.show()
+            $section.upload.dl.cropperBack.show()
+        }
+        $step.upload.dl.html(steps[--activeStep])
+    })
 
 
     function dropzoneEvents(target, cb = {}) {
@@ -51,14 +102,27 @@ import application from './hub.mjs'
         const $file = $cropArea.find('.cropper-file')
         const $image = $cropArea.find('.cropper-image')
         const $buttons = $cropArea.find('.cropper-buttons')
-        const $preview = $cropArea.find('.cropper-preview')
+        const $preview = $(`#cropper-preview-${target}`)
         const aspectRatio = +$cropArea.data('aspect-ratio') || NaN
+
+        const $editor = {
+            rotate: {
+                left: $cropArea.find('.cropper-rotate-left-button'),
+                right: $cropArea.find('.cropper-rotate-right-button'),
+            },
+            zoom: {
+                in: $cropArea.find('.cropper-zoom-in-button'),
+                out: $cropArea.find('.cropper-zoom-out-button'),
+            },
+            reset: $cropArea.find('.cropper-reset-button'),
+            replace: $cropArea.find('.cropper-replace-button'),
+        }
 
         $dropZone
             .on('click', function() {
                 $file.click()
             })
-            .on('dragover', (evt) => {
+            .on('dragover', function(evt) {
                 evt.preventDefault()
                 evt.stopPropagation()
                 $(this).css('outline', '2px dashed #2185d0')
@@ -88,24 +152,78 @@ import application from './hub.mjs'
 
                 if (croppers[target]) {
                     croppers[target].replace(src)
-                } else {
-                    $image.attr('src', src)
-
-                    croppers[target] = new Cropper($image[0], {
-                        aspectRatio,
-                        viewMode: 1,
-                        autoCropArea: 1,
-                        responsive: true,
-                        preview: $preview[0]
-                    })
+                    return
                 }
+
+                $image.attr('src', src)
+                    .on('load', function() {
+                        croppers[target] = new Cropper($image[0], {
+                            aspectRatio,
+                            viewMode: 1,
+                            autoCropArea: 1,
+                            responsive: true,
+                            preview: `#cropper-preview-${target}`,
+                            cropend() { updatePreview() },
+                        })
+
+                        setTimeout(updatePreview, 100)
+                    })
+
             }
 
             reader.readAsDataURL(file)
             $image.parent().show()
             $dropZone.hide()
             $buttons.show()
+
+            $editor.rotate.left.on('click', function(evt) {
+                evt.preventDefault()
+                croppers[target].rotate(-.5)
+                updatePreview()
+            })
+
+            $editor.rotate.right.on('click', function(evt) {
+                evt.preventDefault()
+                croppers[target].rotate(.5)
+                updatePreview()
+            })
+
+            $editor.zoom.in.on('click', function(evt) {
+                evt.preventDefault()
+                croppers[target].zoom(.05)
+                updatePreview()
+            })
+
+            $editor.zoom.out.on('click', function(evt) {
+                evt.preventDefault()
+                croppers[target].zoom(-.05)
+                updatePreview()
+            })
+
+            $editor.reset.on('click', function(evt) {
+                evt.preventDefault()
+                croppers[target].reset()
+                updatePreview()
+            })
+
+            $editor.replace.on('click', function(evt) {
+                evt.preventDefault()
+                $file.click()
+            })
+
+            //! HUGE PROBLEM if window is resized
+            $(window).on('resize', function () {
+                if (cropper[target]) cropper[target].resize()
+                updatePreview()
+            })
+
             if (cb.onImageLoad) cb.onImageLoad()
+
+            function updatePreview() {
+                const canvas = croppers[target].getCroppedCanvas()
+                $preview.css({ width: '36rem', height: '100%', overflow: 'hidden' })
+                    .find('img').attr('src', canvas.toDataURL()).css({ width: 'inherit', height: 'inherit' })
+            }
         }
     }
 })()
