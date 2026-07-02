@@ -31,6 +31,7 @@ class Individual extends Person {
         const identification = data.idNumber
             ? {
                 driver: !!data.driver,
+                addrSince: data.idAddrSince,
                 commercial: !!data.commercial,
                 number: data.idNumber,
                 class: data.idClass,
@@ -41,6 +42,24 @@ class Individual extends Person {
                 restriction: data.idRestriction,
             }
             : null
+        if (identification) {
+            if (identification.addrSince)
+                identification.address = new Address({
+                    address1: data.idAddr1,
+                    address2: data.idAddr2,
+                    city: data.idAddrCity,
+                    state: data.idAddrState,
+                    zip: data.idAddrZip,
+                })
+            else if (data.idAddrZipBu)
+                identification.address = new Address({
+                    address1: data.idAddr1Bu,
+                    address2: data.idAddr2Bu,
+                    city: data.idAddrCityBu,
+                    state: data.idAddrStateBu,
+                    zip: data.idAddrZipBu,
+                })
+        }
 
         let count
         if (data.ownerCount !== undefined && data.driverCount !== undefined)
@@ -221,6 +240,7 @@ class Individual extends Person {
                     table: query.person.identifications.table,
                     fields: [
                         [ 'id', 'identId' ],
+                        [ 'addrSince', 'idAddrSince' ],
                         'driver', 'commercial',
                         [ 'number', 'idNumber' ],
                         [ 'class', 'idClass' ],
@@ -229,8 +249,27 @@ class Individual extends Person {
                         [ 'expiresOn', 'idExpiresOn' ],
                         [ 'endorsement', 'idEndorsement' ],
                         [ 'restriction', 'idRestriction' ],
+                        //* Bu - Backup
+                        [ 'address1', 'idAddr1Bu' ],
+                        [ 'address2', 'idAddr2Bu' ],
+                        [ 'addrCity', 'idAddrCityBu' ],
+                        [ 'addrState', 'idAddrStateBu' ],
+                        [ 'addrZip', 'idAddrZipBu' ],
                     ],
                     join: [ 'personId', 'id', { max: 'issuedOn' } ],
+                },
+                {
+                    table: [ query.person.addresses.table, 'identificationAddresses' ],
+                    fields: [
+                        [ 'address1', 'idAddr1'  ],
+                        [ 'address2', 'idAddr2' ],
+                        [ 'city', 'idAddrCity' ],
+                        [ 'state', 'idAddrState' ],
+                        [ 'zip', 'idAddrZip' ],
+                    ],
+                    join: [ 'personId', 'id', 0, [
+                        'since', 'addrSince', query.person.identifications.table,
+                    ] ],
                 },
                 //? need it?
                 {

@@ -178,6 +178,7 @@ CREATE TABLE identifications (
 
     id             MEDIUMINT UNSIGNED  AUTO_INCREMENT PRIMARY KEY,
     personId       MEDIUMINT UNSIGNED  NOT NULL,
+    addrSince      DATE                DEFAULT NULL,  -- If not NULL, then use the address based on personId and addrSince
 
     driver         BOOLEAN             NOT NULL DEFAULT TRUE,
     commercial     BOOLEAN             DEFAULT NULL, -- NULL when when not a driver's license
@@ -189,6 +190,13 @@ CREATE TABLE identifications (
     endorsement    VARCHAR(65)         DEFAULT NULL,
     restriction    VARCHAR(65)         DEFAULT NULL,
 
+    -- Backup Address on ID only, no residence registered
+    address1       VARCHAR(35)         DEFAULT NULL,
+    address2       VARCHAR(25)         DEFAULT NULL,
+    addrCity       VARCHAR(30)         DEFAULT NULL,
+    addrState      VARCHAR(2)          DEFAULT NULL,
+    addrZip        VARCHAR(10)         DEFAULT NULL,
+
     -- Create/update location required
     createdBy      SMALLINT UNSIGNED   DEFAULT NULL,  -- NULL when self registered
     createdAt      TIMESTAMP           NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -196,6 +204,7 @@ CREATE TABLE identifications (
     updateLog      JSON                DEFAULT NULL,
 
     FOREIGN KEY (createdBy) REFERENCES app_online.users(id),
-    FOREIGN KEY (personId) REFERENCES individuals(id) ON DELETE CASCADE
+    FOREIGN KEY (personId) REFERENCES individuals(id) ON DELETE CASCADE,
+    FOREIGN KEY (personId, addrSince) REFERENCES addresses(personId, since) ON UPDATE CASCADE  -- Should work when addrSince is not null
 
 );

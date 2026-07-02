@@ -53,7 +53,7 @@
     </div>
     <div class="content">
         <form id="upload-dl-form" action="" method="POST" enctype="multipart/form-data">
-            <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-aspect-ratio="1.6">
+            <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-aspect-ratio="1.6" style="display: none; margin: 0;">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Front)</small></h1>
                     <i class="dark teal image file outline icon"></i>
@@ -85,7 +85,7 @@
                 </div>
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
-            <div class="ui two column relaxed grid dl-section" id="confirmation-dl" style="display: none; margin: 0;">
+            <div class="ui two column relaxed grid dl-section" id="confirmation-dl">
                 <div class="six wide column">
                     <div>
                         <div class="cropper-preview" id="cropper-preview-dl-front" data-width="36"></div>

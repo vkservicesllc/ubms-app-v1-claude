@@ -1640,6 +1640,14 @@ class ApplicationForm {
 }
 
 
+class ApplicationFileForm {
+    constructor(options = {}) {
+        getStaticProps(ApplicationFileForm)
+            .forEach(target => this[target] = constructForm(ApplicationFileForm, target, options))
+    }
+}
+
+
 class EmploymentForm {
     constructor(options = {}) {
         getStaticProps(EmploymentForm)
