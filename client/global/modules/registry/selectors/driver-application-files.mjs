@@ -3,11 +3,13 @@ import initialize from './support.mjs'
 const prefix = 'driver-application-file'
 
 const selector = {
-    class: {},
-    id: {
-        hidden: {
-            appId: 'app-id',
+    class: {
+        combo: {
+            driverLicense: 'driver-license',
         },
+    },
+    id: {
+        hidden: {},
         text: {
             dlNumber: 'driver-license-number',
             dlClass: 'driver-license-class',
@@ -18,11 +20,12 @@ const selector = {
             dlFirstName: 'dl-first-name',
             dlMiddleName: 'dl-middle-name',
             dlLastName: 'dl-last-name',
-            dlSuffix: 'dl-suffix',
             dlDob: 'dl-dob',
         },
         select: {
-            dlGender: 'dl-gender',
+            dlState: 'dl-state',
+            // dlSuffix: 'dl-suffix',
+            // dlGender: 'dl-gender',
         },
         radio: {
             dlCommercial: {
@@ -36,7 +39,6 @@ const selector = {
         },
         checkbox: {
             dlCommercial: 'dl-commercial',
-            dlState: 'dl-state',
         },
     },
 }

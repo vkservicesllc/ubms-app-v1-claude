@@ -22,7 +22,7 @@ import { navBuilder } from './tools.mjs'
 
 /* Forms */
 import { updateFormOptions } from '../../tools/form/builder.mjs'
-import { ApplicationForm, EmploymentForm, vhlMMTData, descYears } from '../../tools/form/driver.mjs'
+import { ApplicationForm, ApplicationFileForm, EmploymentForm, vhlMMTData, descYears } from '../../tools/form/driver.mjs'
 
 
 // ==== SETUP ==== //
@@ -468,7 +468,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             prevEmployers: checkMark.unchecked,
         }
 
-        let options = {}, dropdown = {}, t = `\t`.repeat(13)
+        let options = {}, fileOptions = {}, dropdown = {}, t = `\t`.repeat(13)
 
         // const legalDocs = [
         //     'US Passport (Card)',
@@ -624,6 +624,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                 for (const prop in application.uploads)
                     hbs.uploads[prop] = application.uploads[prop][0]
                 hbs.cancelUploadUrl = `/drivers/application/${formId}/e-form?files`
+
                 //! console.log(hbs.filePerms)
                 // hbs.filePerms = {
                 //     application: {
@@ -833,6 +834,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         }
 
         hbs.form = new ApplicationForm(options)
+        hbs.fileForm = new ApplicationFileForm(fileOptions)
         hbs.dropdown = dropdown
         hbs.fullName = fullName
         hbs.originalFullName = identity.individual.fullName('FMLs')

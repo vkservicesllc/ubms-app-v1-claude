@@ -23,6 +23,7 @@ import { createNumberForm } from './carrier.mjs'
 
 import selector from '../../../client/global/modules/registry/selectors/driver.mjs'
 import appSelector from '../../../client/global/modules/registry/selectors/driver-application.mjs'
+import appFileSelector from '../../../client/global/modules/registry/selectors/driver-application-files.mjs'
 import appEmplSelector from '../../../client/global/modules/registry/selectors/driver-application-employment.mjs'
 import Driver, { Application, Employment } from '../core/driver.mjs'
 import { Truck, Van } from '../core/vehicle.mjs'
@@ -1645,6 +1646,34 @@ class ApplicationFileForm {
         getStaticProps(ApplicationFileForm)
             .forEach(target => this[target] = constructForm(ApplicationFileForm, target, options))
     }
+
+
+    static dlCommercial = createDlCommercialFrom({ selector: appFileSelector })
+    // static dlCommercial2 = createForm({
+    //     selector: appFileSelector,
+    //     target: 'dlCommercial',
+    //     type: 'checkbox',
+    //     name: 'commercial',
+    //     label: 'Commercial <small>(CDL)</small>',
+    // })
+
+    static dlState = createDlStateForm({ selector: appFileSelector })
+    static dlNumber = createDlNumberForm({ selector: appFileSelector })
+    static dlClass = createDlClassForm({ selector: appFileSelector })
+    static dlIss = createDlIssForm({ selector: appFileSelector })
+    static dlExp = createDlExpForm({ selector: appFileSelector })
+    static dlEndrs = createDlEndrsForm({ selector: appFileSelector })
+    static dlRestr = createDlRestrForm({ selector: appFileSelector })
+
+    static dlFirstName = createPersonNameForm('first', { selector: appFileSelector, target: 'dlFirstName' })
+    static dlMiddleName = createPersonNameForm('middle', { selector: appFileSelector, target: 'dlMiddleName' })
+    static dlLastName = createPersonNameForm('last', { selector: appFileSelector, target: 'dlLastName' })
+    static dlSuffix = createPersonNameForm('suffix', { selector: appFileSelector, target: 'dlSuffix' })
+    static dlGender = createGenderForm({ selector: appFileSelector, target: 'dlGender' })
+    static dlDob = createDobForm({ selector: appFileSelector, target: 'dlDob' })
+
+    //
+
 }
 
 
@@ -2039,7 +2068,7 @@ for (let i = 0; i < 7; i++) {
 
 
 export default DriverForm
-export { ApplicationForm, EmploymentForm }
+export { ApplicationForm, ApplicationFileForm, EmploymentForm }
 
 
 export function vhlMMTData(vhlCode) {
