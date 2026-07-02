@@ -4,6 +4,11 @@ module.exports = {
     includes: {
 
 
+        'blueimp-load-image': {
+            js: '<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/5.16.0/load-image.all.min.js" integrity="sha512-49bX8bdwg7bdT8H0DA60GZnVm+6FqR+lq2kRra4tfwh3Fytlrq92U3kpHWH+gDOOb3HyyQNX7EJ6+yKoKArNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>',
+        },
+
+
         'bootstrap': {
             css: [
                 '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" crossorigin="anonymous" referrerpolicy="no-referrer" />',

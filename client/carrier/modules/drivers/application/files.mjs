@@ -174,6 +174,7 @@ import application from './hub.mjs'
         const $image = $cropArea.find('.cropper-image')
         const $buttons = $cropArea.find('.cropper-buttons')
         const $preview = $(`#cropper-preview-${target}`)
+        const width = $preview.data('width') + 'rem'
         const aspectRatio = +$cropArea.data('aspect-ratio') || NaN
 
         const $editor = {
@@ -216,10 +217,8 @@ import application from './hub.mjs'
         function loadImage(file) {
             if (!file || !file.type.startsWith('image/')) return
 
-            const reader = new FileReader()
-
-            reader.onload = function (e) {
-                const src = e.target.result
+            window.loadImage(file, function(img) {
+                const src = img.toDataURL ? img.toDataURL() : img.src
 
                 if (croppers[target]) {
                     croppers[target].replace(src)
@@ -233,6 +232,7 @@ import application from './hub.mjs'
                             viewMode: 1,
                             autoCropArea: 1,
                             responsive: true,
+                            checkOrientation: true,
                             preview: `#cropper-preview-${target}`,
                             crop() { updatePreview() },
                             cropend() { updatePreview() },
@@ -241,10 +241,11 @@ import application from './hub.mjs'
 
                         setTimeout(updatePreview, 100)
                     })
+            }, {
+                canvas: true,
+                orientation: true,
+            })
 
-            }
-
-            reader.readAsDataURL(file)
             $image.parent().show()
             $dropZone.hide()
             $buttons.show()
@@ -294,7 +295,7 @@ import application from './hub.mjs'
 
             function resizeWorkZone() { //! SOME ISSUES PERSIST
                 //! $image.css()
-                $preview.css({ width: '36rem', height: '100%', overflow: 'hidden' })
+                $preview.css({ width, height: '100%', overflow: 'hidden' })
                     .find('img').css({ width: 'inherit', height: 'inherit' })
             }
         }
