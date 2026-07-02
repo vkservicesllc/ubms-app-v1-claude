@@ -1,9 +1,17 @@
 import application from './hub.mjs'
+import filenames from '/modules/registry/filenames/driver-application-uploads.mjs'
 
 
 (() => {
     if (!application || !Object.keys(application).length) return
 
+    const { _id } = application
+    const filenameProps = {
+        'dl-front': 'dlF',
+        'dl-back': 'dlB',
+        'mec': 'mec',
+        //! add more
+    }
     const croppers = {}
     const $upload = {
         dl: $('#upload-dl-file'),
@@ -170,6 +178,7 @@ import application from './hub.mjs'
     function dropzoneEvents(target, cb = {}) {
         const $cropArea = $(`#croparea-${target}`)
         const $dropZone = $cropArea.find('.cropper-dropzone')
+        const $loadShared = $cropArea.find('.cropper-load-shared')
         const $file = $cropArea.find('.cropper-file')
         const $image = $cropArea.find('.cropper-image')
         const $buttons = $cropArea.find('.cropper-buttons')
@@ -191,8 +200,9 @@ import application from './hub.mjs'
         }
 
         $dropZone
-            .on('click', function() {
-                $file.click()
+            .on('click', function(evt) {
+                if ($(evt.target).closest('.cropper-load-shared').length) return
+                $file.trigger('click')
             })
             .on('dragover', function(evt) {
                 evt.preventDefault()
@@ -209,6 +219,22 @@ import application from './hub.mjs'
 
                 loadImage(evt.originalEvent.dataTransfer.files[0])
             })
+
+        $loadShared.on('click', function(evt) {
+            evt.preventDefault()
+
+            $cropArea.addClass('loading')
+            const filename = filenames[filenameProps[target]].filename
+
+            const url = `/image/driver/application/${_id}/uploads/${filename}`
+            fetch(url)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([ blob ], filename, { type: blob.type })
+                    loadImage(file)
+                    $cropArea.removeClass('loading')
+                })
+        })
 
         $file.on('change', function () {
             loadImage(this.files[0])

@@ -10,6 +10,9 @@ import { Application } from '../../tools/core/driver.mjs'
 import uploader from '../../tools/utils/multer.mjs'
 import { getFiles } from '../../tools/utils/fs.mjs'
 
+/* Registry */
+import appFilenames from '../../../client/global/modules/registry/filenames/driver-application-uploads.mjs'
+
 
 // ==== SETUP ==== //
 
@@ -34,14 +37,15 @@ router.post('/application/:formId/documents', async (req, res, next) => {
     req.upload = {
         id: driverId,
         id2: id,
-        files: {
-            dlF: { filename: 'DriversLicense_front' },
-            dlB: { filename: 'DriversLicense_back' },
-            mec: { filename: 'MedicalCard' },
-            ssc: { filename: 'SSCard' },
-            leg: { filename: 'LegalDocument' },
-            reg: { filename: 'Registration' },
-        },
+        files: appFilenames,
+        // files: {
+        //     dlF: { filename: 'DriversLicense_front' },
+        //     dlB: { filename: 'DriversLicense_back' },
+        //     mec: { filename: 'MedicalCard' },
+        //     ssc: { filename: 'SSCard' },
+        //     leg: { filename: 'LegalDocument' },
+        //     reg: { filename: 'Registration' },
+        // },
     }
     req.data = { application }
 
