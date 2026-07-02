@@ -620,7 +620,9 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
                 hbs.fileTrlReg = !!application?.vehicle?.trailer
 
-                hbs.uploads = application.uploads
+                hbs.uploads = {}
+                for (const prop in application.uploads)
+                    hbs.uploads[prop] = application.uploads[prop][0]
                 hbs.cancelUploadUrl = `/drivers/application/${formId}/e-form?files`
                 //! console.log(hbs.filePerms)
                 // hbs.filePerms = {

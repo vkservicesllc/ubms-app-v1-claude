@@ -144,7 +144,7 @@ export const dtApplicationList = async (req, res) => {
                     delete: DS || permissions?.['d:drv/apl'].includes('5'),
                 },
                 file: {
-                    access: Object.keys(permissions).some(key => key.startsWith('f:drv')),
+                    access: DS || Object.keys(permissions).some(key => key.startsWith('f:drv')),
                 },
             },
             aplAddress: `${res.hbs.addrBook.driver}/application/`,
