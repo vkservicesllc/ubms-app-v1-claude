@@ -240,18 +240,38 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             loadImage(this.files[0])
         })
 
+        $('.confirm-file-toggle').on('change', function() {
+            const $check = $(this).parent().parent().parent().prev().find('.confirm-file-check > .check.icon')
+            const action = $(this).prop('checked') ? 'show' : 'hide'
+            $check[action]()
+        })
+
         function loadImage(file) {
             if (!file || !file.type.startsWith('image/')) return
 
             window.loadImage(file, function(img) {
                 const src = img.toDataURL ? img.toDataURL() : img.src
 
+                // if (croppers[target]) {
+                //     croppers[target].replace(src)
+
+                //     setTimeout(() => {
+                //         croppers[target].reset()
+
+                //         updatePreview()
+                //         resizeWorkZone()
+                //     }, 50)
+
+                //     return
+                // }
                 if (croppers[target]) {
-                    croppers[target].replace(src)
-                    return
+                    croppers[target].destroy()
+                    croppers[target] = null
                 }
 
-                $image.attr('src', src)
+                $image
+                    .off('load')
+                    .attr('src', src)
                     .on('load', function() {
                         croppers[target] = new Cropper($image[0], {
                             aspectRatio,
@@ -314,8 +334,16 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             if (cb.onImageLoad) cb.onImageLoad()
 
             function updatePreview() {
-                const canvas = croppers[target].getCroppedCanvas()
-                $preview.find('img').attr('src', canvas.toDataURL())
+                const cropper = croppers[target]
+                if (!cropper) return
+
+                const canvas = cropper.getCroppedCanvas()
+                if (!canvas) return
+
+                const dataUrl = canvas.toDataURL()
+                if (!dataUrl) return
+
+                $preview.find('img').attr('src', dataUrl)
                 resizeWorkZone()
             }
 

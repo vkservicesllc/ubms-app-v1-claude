@@ -46,13 +46,17 @@
         margin-bottom: 1.2rem;
     }
     .confirm-file-label {
-        width: 9rem;
+        width: 8rem;
     }
     .confirm-file-field {
         width: 27rem;
     }
     .confirm-file-field .ui.compact.grid {
-        margin-top: .35rem !important;
+        margin: .25rem 0 !important;
+    }
+    .confirm-file-field .confirm-file-check {
+        padding-top: .35rem !important;
+        text-align: center;
     }
     .confirm-file {
         padding-left: 5rem !important;
@@ -65,7 +69,7 @@
     </div>
     <div class="content">
         <form class="ui form" id="upload-dl-form" action="" method="POST" enctype="multipart/form-data">
-            <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-aspect-ratio="1.6">
+            <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-aspect-ratio="1.65" style="display: none; margin: 0;">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Front)</small></h1>
                     <i class="dark teal image file outline icon"></i>
@@ -81,7 +85,7 @@
                 </div>
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
-            <div class="ui placeholder segment dl-section" id="croparea-dl-back" data-aspect-ratio="1.6" style="display: none;">
+            <div class="ui placeholder segment dl-section" id="croparea-dl-back" data-aspect-ratio="1.65" style="display: none;">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Back)</small></h1>
                     <i class="dark teal image file outline icon"></i>
@@ -97,7 +101,7 @@
                 </div>
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
-            <div class="ui two column relaxed grid dl-section" id="confirmation-dl" style="display: none; margin: 0;">
+            <div class="ui two column relaxed grid dl-section" id="confirmation-dl">
                 <div class="seven wide column">
                     <div>
                         <div class="cropper-preview" id="cropper-preview-dl-front" data-width="36"></div>
@@ -106,7 +110,7 @@
                 </div>
                 <div class="nine wide column">
                     <h5 class="ui blue text first header">Driver's License</h5>
-                    <table class="ui very basic compact table">
+                    <table class="ui very basic very compact table">
                         <tbody>
                             <tr>
                                 <td class="confirm-file-label">
@@ -115,17 +119,24 @@
                                     </div>
                                 </td>
                                 <td class="confirm-file-field">
-                                    <div class="inline fields">
-                                        <div class="field">
-                                            <div class="ui radio checkbox">
-                                                {{{fileForm.dlCommercial.radio.yes.input}}}
-                                                {{{fileForm.dlCommercial.radio.yes.label}}}
-                                            </div>
+                                    <div class="ui compact grid">
+                                        <div class="two wide field confirm-file-check">
+                                            <i class="dark green double check icon" style="display: none;"></i>
                                         </div>
-                                        <div class="field">
-                                            <div class="ui radio checkbox">
-                                                {{{fileForm.dlCommercial.radio.no.input}}}
-                                                {{{fileForm.dlCommercial.radio.no.label}}}
+                                        <div class="twelve wide field">
+                                            <div class="inline fields">
+                                                <div class="field">
+                                                    <div class="ui radio checkbox">
+                                                        {{{fileForm.dlCommercial.radio.yes.input}}}
+                                                        {{{fileForm.dlCommercial.radio.yes.label}}}
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <div class="ui radio checkbox">
+                                                        {{{fileForm.dlCommercial.radio.no.input}}}
+                                                        {{{fileForm.dlCommercial.radio.no.label}}}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -133,7 +144,7 @@
                                 <td class="confirm-file">
                                     <div class="field">
                                         <div class="ui toggle checkbox">
-                                            <input type="checkbox" id="confirm-file-dl-category" required />
+                                            <input class="confirm-file-toggle" type="checkbox" id="confirm-file-dl-category" required />
                                             <label for="confirm-file-dl-category">The <strong>Category</strong> is correct</label>
                                         </div>
                                     </div>
@@ -147,6 +158,9 @@
                                 </td>
                                 <td class="confirm-file-field">
                                     <div class="ui compact grid">
+                                        <div class="two wide field confirm-file-check">
+                                            <i class="dark green double check icon" style="display: none;"></i>
+                                        </div>
                                         <div class="ten wide field">
                                             {{{fileForm.dlNumber.text.input}}}
                                         </div>
@@ -155,8 +169,33 @@
                                 <td class="confirm-file">
                                     <div class="field">
                                         <div class="ui toggle checkbox">
-                                            <input type="checkbox" id="confirm-file-dl-number" required />
+                                            <input class="confirm-file-toggle" type="checkbox" id="confirm-file-dl-number" required />
                                             <label for="confirm-file-dl-number">The <strong>DL #</strong> is correct</label>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="confirm-file-label">
+                                    <div class="field">
+                                        {{{fileForm.dlClass.text.label}}}
+                                    </div>
+                                </td>
+                                <td class="confirm-file-field">
+                                    <div class="ui compact grid">
+                                        <div class="two wide field confirm-file-check">
+                                            <i class="dark green double check icon" style="display: none;"></i>
+                                        </div>
+                                        <div class="seven wide field">
+                                            {{{fileForm.dlClass.text.input}}}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="confirm-file">
+                                    <div class="field">
+                                        <div class="ui toggle checkbox">
+                                            <input class="confirm-file-toggle" type="checkbox" id="confirm-file-dl-class" required />
+                                            <label for="confirm-file-dl-class">The <strong>Class</strong> is correct</label>
                                         </div>
                                     </div>
                                 </td>
