@@ -27,23 +27,30 @@ table.on('draw', function() {
                 const { application } = response.data
                 const { fullName, formId, dob, ssn, phone, address, dl } = application
 
+                const cp = ' <sup><a href="" class="copy-apl-info-cred"><i class="dark green copy outline icon"></i></a></sup>'
+                const na = '<span class="ui red text"><small><i>N/A</i></small></span>'
+
                 application.gender = application.expansion.gender
                 application.dob = moment(dob).format('MM/DD/YYYY')
                 application.ssn = formatSsn(ssn)
                 application.phone = formatTel(phone)
                 application.address = new Address(address).html({ inline: false })
                 application.dlNum = dl.number
-                application.dlClass = dl.class
+                // application.dlClass = dl.class
                 application.dlState = `${application.expansion.dlState} (${dl.state})`
-                application.dlExp = moment(dl.expiresOn).format('MM/DD/YYYY')
-
-                const cp = ' <sup><a href="" class="copy-apl-info-cred"><i class="dark green copy outline icon"></i></a></sup>'
-                const na = '<span class="ui red text"><small><i>N/A</i></small></span>'
+                // application.dlExp = moment(dl.expiresOn).format('MM/DD/YYYY')
+                application.dlDuration = `<strong style="font-size: 1.05em;">${moment(dl.issuedOn).format('MM/DD/YYYY')}</strong>${cp}`
+                application.dlDuration += ` — <strong style="font-size: 1.05em;">${moment(dl.expiresOn).format('MM/DD/YYYY')}</strong>${cp}`
 
                 const items = [
                     'firstName', '^middleName', 'lastName', '^suffix',
                     '!gender', 'dob', 'ssn',
-                    'phone', 'email', '!address', 'dlNum', '^!dlClass', '!dlState', 'dlExp',
+                    'phone', 'email', '!address',
+                    '!dlState', 'dlNum',
+                    // '^!dlClass',
+                    // 'dlExp',
+                    '!dlDuration',
+                    '^!dlAddress',
                 ]
                 items.forEach(prop => {
                     let optional = false, ncp = false
@@ -60,7 +67,9 @@ table.on('draw', function() {
                     else item = `<strong style="font-size: 1.05em;">${item}</strong>${!ncp ? cp : ''}`
                     $(`#apl-info-card\\:${prop}`).html(item)
                 })
-                if (dl.commercial) $('#apl-info-card\\:dlClass').append('<small> &nbsp;—&nbsp; CDL</small>')
+                if (dl.class) $('#apl-info-card\\:dlNum').append(`&nbsp; <strong>/&nbsp; ${dl.class}</strong>`)
+                if (!dl.commercial) $('#apl-info-card\\:dlNum').append('<small> &nbsp;—&nbsp; CDL</small>')
+                // if (dl.commercial) $('#apl-info-card\\:dlClass').append('<small> &nbsp;—&nbsp; CDL</small>')
 
                 $fullName.html(`${fullName} &nbsp;<small style="font-weight: normal;">(${formId}) — ${application.expansion.addrState}</small>`)
 

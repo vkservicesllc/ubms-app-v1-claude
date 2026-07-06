@@ -379,6 +379,23 @@ class Application {
                 revoked: !!data.dlRevoked,
                 revokedExpl: data.dlRevokedExpl,
             }
+        // if (this.dl) {
+        //     if (data.dlAddrSince)
+        //         this.dl.address = new Address({
+        //             address1: data.dlAddr1,
+        //             address2: data.dlAddr2,
+        //             city: data.dlAddrCity,
+        //             state: data.dlAddrState,
+        //             zip: data.dlAddrZip,
+        //         })
+        //     else if (data.idAddrZipBu)
+        //         this.dl.address = new Address({
+        //             address1: data.dlAddr1Bu,
+        //             address2: data.dlAddr2Bu,
+        //             city: data.dlAddrCityBu,
+        //             state: data.dlAddrStateBu,
+        //             zip: data.dlAddrZipBu,
+        //         })
 
         if (this._mecId)
             this.mec = {
@@ -1969,10 +1986,31 @@ class Application {
                     [ 'expiresOn', 'dlExpiresOn' ],
                     [ 'endorsement', 'dlEndors' ],
                     [ 'restriction', 'dlRestr' ],
+                    [ 'addrSince', 'dlAddrSince' ],
+                    //* Bu - Backup
+                    [ 'address1', 'dlAddr1Bu' ],
+                    [ 'address2', 'dlAddr2Bu' ],
+                    [ 'addrCity', 'dlAddrCityBu' ],
+                    [ 'addrState', 'dlAddrStateBu' ],
+                    [ 'addrZip', 'dlAddrZipBu' ],
                 ],
                 // join: [ 'id', 'dlId', 3 ],
                 // // join: [ 'personId', 'personId', 2, [ 'id', 'dlId', 3 ] ],
                 join: [ 'id', 'dlId' ],
+            },
+            {
+                db: db.person,
+                table: [ query.person.addresses.table, 'dlAddresses' ],
+                fields: [
+                    [ 'address1', 'dlAddr1'  ],
+                    [ 'address2', 'dlAddr2' ],
+                    [ 'city', 'dlAddrCity' ],
+                    [ 'state', 'dlAddrState' ],
+                    [ 'zip', 'dlAddrZip' ],
+                ],
+                join: [ 'personId', 'personId', query.driver.main.table, [
+                    'since', 'addrSince', query.person.identifications.table,
+                ] ],
             },
             {
                 table: query.driver.mecs.table,
