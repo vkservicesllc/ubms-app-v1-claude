@@ -145,7 +145,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         value: application.lastName,
         onChange(lastName, $lastName, suffix) {
             if (suffix)
-                $dropdown.suffix[0].dropdown('set selected', suffix)
+                $dropdown.dlSuffix[0].dropdown('set selected', suffix)
         },
     })
 
