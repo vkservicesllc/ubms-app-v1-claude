@@ -379,23 +379,23 @@ class Application {
                 revoked: !!data.dlRevoked,
                 revokedExpl: data.dlRevokedExpl,
             }
-        // if (this.dl) {
-        //     if (data.dlAddrSince)
-        //         this.dl.address = new Address({
-        //             address1: data.dlAddr1,
-        //             address2: data.dlAddr2,
-        //             city: data.dlAddrCity,
-        //             state: data.dlAddrState,
-        //             zip: data.dlAddrZip,
-        //         })
-        //     else if (data.idAddrZipBu)
-        //         this.dl.address = new Address({
-        //             address1: data.dlAddr1Bu,
-        //             address2: data.dlAddr2Bu,
-        //             city: data.dlAddrCityBu,
-        //             state: data.dlAddrStateBu,
-        //             zip: data.dlAddrZipBu,
-        //         })
+        if (this.dl)
+            if (data.dlAddrSince)
+                this.dl.address = new Address({
+                    address1: data.dlAddr1,
+                    address2: data.dlAddr2,
+                    city: data.dlAddrCity,
+                    state: data.dlAddrState,
+                    zip: data.dlAddrZip,
+                })
+            else if (data.dlAddrZipBu)
+                this.dl.address = new Address({
+                    address1: data.dlAddr1Bu,
+                    address2: data.dlAddr2Bu,
+                    city: data.dlAddrCityBu,
+                    state: data.dlAddrStateBu,
+                    zip: data.dlAddrZipBu,
+                })
 
         if (this._mecId)
             this.mec = {
