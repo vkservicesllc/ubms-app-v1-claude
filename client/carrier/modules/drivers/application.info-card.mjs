@@ -71,7 +71,7 @@ table.on('draw', function() {
                 if (!dl.commercial) $('#apl-info-card\\:dlNum').append('<small> &nbsp;—&nbsp; CDL</small>')
                 // if (dl.commercial) $('#apl-info-card\\:dlClass').append('<small> &nbsp;—&nbsp; CDL</small>')
 
-                $fullName.html(`${fullName} &nbsp;<small style="font-weight: normal;">(${formId}) — ${application.expansion.addrState}</small>`)
+                $fullName.html(`${fullName} &nbsp;<small style="font-weight: normal;">(${formId})</small>`)
 
                 $modal.modal('show')
 
