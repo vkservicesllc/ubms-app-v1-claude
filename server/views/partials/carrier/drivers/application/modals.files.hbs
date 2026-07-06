@@ -61,6 +61,9 @@
     .confirm-file {
         padding-left: 5rem !important;
     }
+    .empty-header {
+        width: 7.4rem !important;
+    }
 </style>
 
 <div class="ui overlay fullscreen modal" id="upload-dl-modal">
@@ -102,13 +105,13 @@
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
             <div class="ui two column relaxed grid dl-section" id="confirmation-dl">
-                <div class="seven wide column">
+                <div class="six wide column">
                     <div>
                         <div class="cropper-preview" id="cropper-preview-dl-front" data-width="36"></div>
                         <div class="cropper-preview" id="cropper-preview-dl-back" data-width="36"></div>
                     </div>
                 </div>
-                <div class="nine wide column">
+                <div class="ten wide column">
                     {{> carrier/drivers/application/file_forms/drivers_license}}
                 </div>
             </div>

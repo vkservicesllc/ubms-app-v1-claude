@@ -1,110 +1,23 @@
-{{!-- <h5 class="ui blue text first header">Driver's License</h5>
-<table class="ui very basic very compact table">
-    <tbody>
-        <tr>
-            <td class="confirm-file-label">
-                <div class="field">
-                    {{{fileForm.dlCommercial.radio.label}}}
-                </div>
-            </td>
-            <td class="confirm-file-field">
-                <div class="ui compact grid">
-                    <div class="two wide field confirm-file-check">
-                        <i class="dark green double check icon" style="display: none;"></i>
-                    </div>
-                    <div class="twelve wide field">
-                        <div class="inline fields">
-                            <div class="field">
-                                <div class="ui radio checkbox">
-                                    {{{fileForm.dlCommercial.radio.yes.input}}}
-                                    {{{fileForm.dlCommercial.radio.yes.label}}}
-                                </div>
-                            </div>
-                            <div class="field">
-                                <div class="ui radio checkbox">
-                                    {{{fileForm.dlCommercial.radio.no.input}}}
-                                    {{{fileForm.dlCommercial.radio.no.label}}}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </td>
-            <td class="confirm-file">
-                <div class="field">
-                    <div class="ui toggle checkbox">
-                        <input class="confirm-file-toggle" type="checkbox" id="confirm-file-dl-category" required />
-                        <label for="confirm-file-dl-category">The <strong>Category</strong> is correct</label>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="confirm-file-label">
-                <div class="field">
-                    {{{fileForm.dlNumber.text.label}}}
-                </div>
-            </td>
-            <td class="confirm-file-field">
-                <div class="ui compact grid">
-                    <div class="two wide field confirm-file-check">
-                        <i class="dark green double check icon" style="display: none;"></i>
-                    </div>
-                    <div class="ten wide field">
-                        {{{fileForm.dlNumber.text.input}}}
-                    </div>
-                </div>
-            </td>
-            <td class="confirm-file">
-                <div class="field">
-                    <div class="ui toggle checkbox">
-                        <input class="confirm-file-toggle" type="checkbox" id="confirm-file-dl-number" required />
-                        <label for="confirm-file-dl-number">The <strong>DL #</strong> is correct</label>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="confirm-file-label">
-                <div class="field">
-                    {{{fileForm.dlClass.text.label}}}
-                </div>
-            </td>
-            <td class="confirm-file-field">
-                <div class="ui compact grid">
-                    <div class="two wide field confirm-file-check">
-                        <i class="dark green double check icon" style="display: none;"></i>
-                    </div>
-                    <div class="seven wide field">
-                        {{{fileForm.dlClass.text.input}}}
-                    </div>
-                </div>
-            </td>
-            <td class="confirm-file">
-                <div class="field">
-                    <div class="ui toggle checkbox">
-                        <input class="confirm-file-toggle" type="checkbox" id="confirm-file-dl-class" required />
-                        <label for="confirm-file-dl-class">The <strong>Class</strong> is correct</label>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table> --}}
+{{!-- <h5 class="ui blue text first header">Driver's License</h5> --}}
 <table class="ui compact celled definition table">
-    <tr>
-        <th>Confirm</th>
-        <th>{{{fileForm.dlCommercial.radio.label}}}</th>
-        <th>{{{fileForm.dlState.select.label}}}</th>
-        <th>{{{fileForm.dlNumber.text.label}}}</th>
-        <th>{{{fileForm.dlClass.text.label}}}</th>
-    </tr>
+    <thead>
+        <tr>
+            <th class="empty-header"></th>
+            <th>{{{fileForm.dlCommercial.radio.label}}}</th>
+            <th style="width: 15rem;">{{{fileForm.dlState.select.label}}}</th>
+            <th style="width: 15rem;">{{{fileForm.dlNumber.text.label}}}</th>
+            <th style="width: 7.5rem;">{{{fileForm.dlClass.text.label}}}</th>
+        </tr>
+    </thead>
     <tbody>
         <tr>
             <td class="collapsing">
                 <div class="ui fitted slider checkbox">
-                    <input type="checkbox" required /> <label></label>
+                    <input class="file-form-confirm-check" type="checkbox" required /> <label></label>
                 </div>
+                <span class="ui dark green text" style="display: none;">
+                    <i class="icon checkmark"></i> Correct
+                </span>
             </td>
             <td>
                 <div class="inline fields">
@@ -122,7 +35,15 @@
                     </div>
                 </div>
             </td>
-            <td></td>
+            <td>
+                <div class="ui fluid selection required dropdown" id="dl-state-confirm-dropdown">
+                    {{{fileForm.dlState.hidden.input}}}
+                    <i class="dropdown icon"></i>
+                    <div class="default text"></div>
+                    <div class="menu">{{{dropdown.confDlState}}}
+                    </div>
+                </div>
+            </td>
             <td>
                 <div class="field">
                     {{{fileForm.dlNumber.text.input}}}
@@ -131,6 +52,127 @@
             <td>
                 <div class="field">
                     {{{fileForm.dlClass.text.input}}}
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table class="ui compact celled definition table">
+    <thead>
+        <tr>
+            <th class="empty-header"></th>
+            <th style="width: 12rem;">{{{fileForm.dlIss.text.label}}}</th>
+            <th style="width: 12rem;">{{{fileForm.dlExp.text.label}}}</th>
+            <th>{{{fileForm.dlEndrs.text.label}}}</th>
+            <th>{{{fileForm.dlRestr.text.label}}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="collapsing">
+                <div class="ui fitted slider checkbox">
+                    <input class="file-form-confirm-check" type="checkbox" required /> <label></label>
+                </div>
+                <span class="ui dark green text" style="display: none;">
+                    <i class="icon checkmark"></i> Correct
+                </span>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui calendar" id="dl-issued-confirm-calendar">
+                        <div class="ui fluid input left icon">
+                            {{{fileForm.dlIss.text.input}}}
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui calendar" id="dl-expires-confirm-calendar">
+                        <div class="ui fluid input left icon">
+                            {{{fileForm.dlExp.text.input}}}
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    {{{fileForm.dlEndrs.text.input}}}
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    {{{fileForm.dlRestr.text.input}}}
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table class="ui compact celled definition table">
+    <thead>
+        <tr>
+            <th class="empty-header"></th>
+            <th>{{{fileForm.dlFirstName.text.label}}}</th>
+            <th>{{{fileForm.dlMiddleName.text.label}}}</th>
+            <th>{{{fileForm.dlLastName.text.label}}}</th>
+            <th style="width: 5rem;">{{{fileForm.dlSuffix.select.label}}}</th>
+            <th style="width: 12rem;">{{{fileForm.dlDob.text.label}}}</th>
+            <th style="width: 5rem;">{{{fileForm.dlGender.select.label}}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="collapsing">
+                <div class="ui fitted slider checkbox">
+                    <input class="file-form-confirm-check" type="checkbox" required /> <label></label>
+                </div>
+                <span class="ui dark green text" style="display: none;">
+                    <i class="icon checkmark"></i> Correct
+                </span>
+            </td>
+            <td>
+                <div class="field">
+                    {{{fileForm.dlFirstName.text.input}}}
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    {{{fileForm.dlMiddleName.text.input}}}
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    {{{fileForm.dlLastName.text.input}}}
+                </div>
+            </td>
+            <td>
+                <div class="ui fluid clearable selection dropdown" id="dl-suffix-confirm-dropdown">
+                    {{{fileForm.dlSuffix.hidden.input}}}
+                    <i class="dropdown icon"></i>
+                    <div class="default text"></div>
+                    <div class="menu">{{{dropdown.confDlSuffix}}}
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui calendar" id="dl-dob-confirm-calendar">
+                        <div class="ui fluid input left icon">
+                            {{{fileForm.dlDob.text.input}}}
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="ui fluid selection required dropdown" id="dl-gender-confirm-dropdown">
+                    {{{fileForm.dlGender.hidden.input}}}
+                    <i class="dropdown icon"></i>
+                    <div class="default text"></div>
+                    <div class="menu">{{{dropdown.confDlGender}}}
+                    </div>
                 </div>
             </td>
         </tr>

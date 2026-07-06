@@ -21,3 +21,4 @@ that are available to them.
 ==== CARRIER/DRIVER PORTAL ====
 
 - [bug] Enough and livedAbroad props do not update in Addresses
+- [bug] Driver's License Upload Confirmation Form: Name, Dob & Gender table, can't fix column widths in Suffix and Gender

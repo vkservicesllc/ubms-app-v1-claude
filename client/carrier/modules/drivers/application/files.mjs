@@ -1,11 +1,19 @@
-import application from './hub.mjs'
+import { inputEvent } from '/modules/events/form.mjs'
+import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
+import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
+import calSettings from '/modules/settings/calendar.mjs'
+import application, { dropdownEvent } from './hub.mjs'
+import selector from '/modules/registry/selectors/driver-application-files.mjs'
 import filenames from '/modules/registry/filenames/driver-application-uploads.mjs'
 
 
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { _id } = application
+    const { _id, cdlRole, dl, finishedAt } = application
+    const TS = selector.id.text, RS = selector.id.radio, CS = selector.id.checkbox
+    const $commercial = $(selector.class.radio.dlCommercial)
+
     const filenameProps = {
         'dl-front': 'dlF',
         'dl-back': 'dlB',
@@ -77,6 +85,76 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             },
         },
     }
+
+    const $dropdown = {
+        dlState: [ $('#dl-state-confirm-dropdown'), dl.state ],
+        dlSuffix: [ $('#dl-suffix-confirm-dropdown'), application.suffix ],
+        dlGender: [ $('#dl-gender-confirm-dropdown'), application.gender ],
+    }
+    const $calendar = {
+        dlIssuedOn: $('#dl-issued-confirm-calendar'),
+        dlExpiresOn: $('#dl-expires-confirm-calendar'),
+        dlDob: $('#dl-dob-confirm-calendar'),
+    }
+
+    $('.file-form-confirm-check').on('change', function() {
+        const $div = $(this).parent()
+        $div.fadeOut(250)
+        setTimeout(() => {
+            $div.next().fadeIn(250)
+            $div.parent().parent().addClass('positive')
+        }, 250)
+    })
+
+    dropdownEvent($dropdown)
+
+    $(RS.dlCommercial[dl.commercial ? 'yes' : 'no']).prop('checked', true)
+    if (cdlRole) $commercial.prop('disabled', true)
+    $(TS.dlEndrs).prop('disabled', !dl.commercial)
+
+    $commercial.on('change', function() {
+        const value = $(this).val()
+        $(TS.dlEndrs).prop('disabled', value === 'N')
+    })
+
+    driverLicenseEvent(TS.dlNumber, { value: dl.number })
+    
+    dlClassEvent(TS.dlClass, { value: dl.class })
+
+    $calendar.dlIssuedOn
+        .calendar({
+            ...calSettings,
+            maxDate: moment(finishedAt).toDate(),
+        })
+        .calendar('set date', new Date(moment(dl.issuedOn).toDate()))
+
+    $calendar.dlExpiresOn
+        .calendar({
+            ...calSettings,
+            minDate: moment(finishedAt).add(1, 'days').toDate(),
+        })
+        .calendar('set date', new Date(moment(dl.expiresOn).toDate()))
+
+    inputEvent(TS.dlEndrs, { strip: true, capitalize: 'first', value: dl.endorsement })
+    inputEvent(TS.dlRestr, { strip: true, capitalize: 'first', value: dl.restriction })
+
+    nameEvent(TS.dlFirstName, { value: application.firstName })
+    nameEvent(TS.dlMiddleName, { value: application.middleName })
+    nameEvent(TS.dlLastName, {
+        sfxId: true,
+        value: application.lastName,
+        onChange(lastName, $lastName, suffix) {
+            if (suffix)
+                $dropdown.suffix[0].dropdown('set selected', suffix)
+        },
+    })
+
+    $calendar.dlDob
+        .calendar({
+            ...calSettings,
+            maxDate: moment(finishedAt).subtract(18, 'years').toDate(),
+        })
+        .calendar('set date', new Date(moment(application.dob).toDate()))
 
     $upload.dl.click(function() {
         $modal.upload.dl.modal({
@@ -252,18 +330,6 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             window.loadImage(file, function(img) {
                 const src = img.toDataURL ? img.toDataURL() : img.src
 
-                // if (croppers[target]) {
-                //     croppers[target].replace(src)
-
-                //     setTimeout(() => {
-                //         croppers[target].reset()
-
-                //         updatePreview()
-                //         resizeWorkZone()
-                //     }, 50)
-
-                //     return
-                // }
                 if (croppers[target]) {
                     croppers[target].destroy()
                     croppers[target] = null

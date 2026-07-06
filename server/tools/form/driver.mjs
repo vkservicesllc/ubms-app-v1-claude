@@ -1648,7 +1648,7 @@ class ApplicationFileForm {
     }
 
 
-    static dlCommercial = createDlCommercialFrom({ selector: appFileSelector })
+    static dlCommercial = createDlCommercialFrom({ selector: appFileSelector, group: 'dlCommercial' })
     // static dlCommercial2 = createForm({
     //     selector: appFileSelector,
     //     target: 'dlCommercial',

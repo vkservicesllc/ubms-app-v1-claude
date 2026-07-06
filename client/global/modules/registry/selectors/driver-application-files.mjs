@@ -7,6 +7,9 @@ const selector = {
         combo: {
             driverLicense: 'driver-license',
         },
+        radio: {
+            dlCommercial: 'dl-commercial',
+        },
     },
     id: {
         hidden: {},

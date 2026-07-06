@@ -601,6 +601,9 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         /* FILES */
         {
             hbs.fileTab = inPGroup('f:drv', permissions, DS)
+            dropdown.confDlState = ''
+            dropdown.confDlSuffix = ''
+            dropdown.confDlGender = ''
 
             if (hbs.fileTab) {
                 hbs.filePerms = {}
@@ -625,6 +628,9 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                     hbs.uploads[prop] = application.uploads[prop][0]
                 hbs.cancelUploadUrl = `/drivers/application/${formId}/e-form?files`
 
+                fileOptions.dlEndrs = { text: { input: { rows: 1 } } }
+                fileOptions.dlRestr = { text: { input: { rows: 1 } } }
+
                 //! console.log(hbs.filePerms)
                 // hbs.filePerms = {
                 //     application: {
@@ -644,10 +650,14 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             dropdown.gender = ''
             dropdown.marital = ''
 
-            for (const sfx in Individual.list.suffix)
+            for (const sfx in Individual.list.suffix) {
                 dropdown.suffix += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
-            for (const gender in Individual.list.gender)
+                dropdown.confDlSuffix += `\n${t}<div class="item" data-value="${sfx}">${sfx}</div>`
+            }
+            for (const gender in Individual.list.gender) {
                 dropdown.gender += `\n${t}<div class="item" data-value="${gender}">${Individual.list.gender[gender]}</div>`
+                dropdown.confDlGender += `\n${t}<div class="item" data-value="${gender}">${Individual.list.gender[gender]}</div>`
+            }
             for (const stat in Individual.list.marital)
                 dropdown.marital += `\n${t}<div class="item" data-value="${stat}">${Individual.list.marital[stat]}</div>`
 
@@ -819,7 +829,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             }
         }
 
-        for (const prop of ['addrState', 'dlState', 'schState', 'llcState'])
+        for (const prop of ['confDlState', 'addrState', 'dlState', 'schState', 'llcState'])
             for (const state in Address.list.state)
                 dropdown[prop] += `\n${t}<div class="item" data-value="${state}">${Address.list.state[state]}</div>`
 
