@@ -1649,13 +1649,6 @@ class ApplicationFileForm {
 
 
     static dlCommercial = createDlCommercialFrom({ selector: appFileSelector, group: 'dlCommercial' })
-    // static dlCommercial2 = createForm({
-    //     selector: appFileSelector,
-    //     target: 'dlCommercial',
-    //     type: 'checkbox',
-    //     name: 'commercial',
-    //     label: 'Commercial <small>(CDL)</small>',
-    // })
 
     static dlState = createDlStateForm({ selector: appFileSelector })
     static dlNumber = createDlNumberForm({ selector: appFileSelector })
@@ -1672,7 +1665,35 @@ class ApplicationFileForm {
     static dlGender = createGenderForm({ selector: appFileSelector, target: 'dlGender' })
     static dlDob = createDobForm({ selector: appFileSelector, target: 'dlDob' })
 
-    //
+    static dlAddress1 = createAddressForm({
+        selector: appSelector,
+        target: 'address1',
+        name: 'address[address1]',
+    })
+
+    static dlAddress2 = createAddressForm({
+        selector: appSelector,
+        target: 'address2',
+        name: 'address[address2]',
+    }, { idx: 2 })
+
+    static dlAddrZip = createAddrZipForm({
+        selector: appSelector,
+        target: 'addrZip',
+        name: 'address[zip]',
+    })
+
+    static dlAddrCity = createAddrCityForm({
+        selector: appSelector,
+        target: 'addrCity',
+        name: 'address[city]',
+    })
+
+    static dlAddrState = createAddrStateForm({
+        selector: appSelector,
+        target: 'addrState',
+        name: 'address[state]',
+    })
 
 }
 

@@ -90,6 +90,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         dlState: [ $('#dl-state-confirm-dropdown'), dl.state ],
         dlSuffix: [ $('#dl-suffix-confirm-dropdown'), application.suffix ],
         dlGender: [ $('#dl-gender-confirm-dropdown'), application.gender ],
+        dlAddrState: [ $('#dl-addr-state-confirm-dropdown') ],
     }
     const $calendar = {
         dlIssuedOn: $('#dl-issued-confirm-calendar'),
