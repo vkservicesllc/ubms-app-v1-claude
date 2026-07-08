@@ -6,7 +6,7 @@ import strip, { ssn as formatSsn } from '../tools/utils/formatter.mjs'
 
 
 export const nameEvent = (id, options = {}) => {
-    const { sfxId, onInput, onChange, onFocus, onBlur, value } = options
+    const { sfx, sfxId, onInput, onChange, onFocus, onBlur, value } = options
 
     inputEvent(id, {
         strip: true,
@@ -22,7 +22,7 @@ export const nameEvent = (id, options = {}) => {
         onChange(name, $name) {
             const $suffix = $(sfxId)
             let suffix
-            if (sfxId) {
+            if (sfxId || sfx === true) {
                 const sfxPatt = patterns.match.suffix
                 suffix = sfxPatt.test(name)
                     ? sfxPatt.exec(name)[0]
@@ -32,7 +32,8 @@ export const nameEvent = (id, options = {}) => {
                 if (suffix) {
                     suffix = patterns.replace(suffix, 'suffix')
 
-                    $suffix.val(suffix)
+                    if (sfx === true) name += `, ${suffix}`
+                    else $suffix.val(suffix)
                 }
             }
 
