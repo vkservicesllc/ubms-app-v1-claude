@@ -601,10 +601,15 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         /* FILES */
         {
             hbs.fileTab = inPGroup('f:drv', permissions, DS)
+            const { address1, address2, city, state, zip } = application.address
+            let currentAddress = address1
+            if (address2) currentAddress += `, ${address2}`
+            currentAddress += `, ${city}, ${state} ${zip}`
             dropdown.confDlState = ''
             dropdown.confDlSuffix = ''
             dropdown.confDlGender = ''
             dropdown.confDlAddrState = ''
+            dropdown.confDlAddresses = `\n${t}<div class="item" data-value="${application.address.since}">${currentAddress}</div>`
 
             if (hbs.fileTab) {
                 hbs.filePerms = {}
