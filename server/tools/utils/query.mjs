@@ -504,6 +504,15 @@ class Query {
                     operator = ' >= '
                 }
 
+                else if ('range' in value) {
+                    let [ first, last ] = value.range
+                    if (typeof first === 'string') first = `'${first}'`
+                    if (typeof last === 'string') last = `'${last}'`
+
+                    value = `${first} AND ${last}`
+                    operator = ' BETWEEN '
+                }
+
                 else if ('null' in value) {
                     value = value.null
                     if (empty(value)) continue
