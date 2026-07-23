@@ -27,7 +27,7 @@
 .label.inverted.dark.red { background-color: #A32222 !important; }
 .label.inverted.dark.green { background-color: #137A3F !important; }
 
-.button.dark.green {
+.button.dark.green, .label.dark.green {
     color: white !important;
     background-color: #19A958 !important;
 }
