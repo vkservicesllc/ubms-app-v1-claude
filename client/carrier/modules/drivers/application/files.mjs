@@ -107,6 +107,10 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         }, 250)
     })
 
+    $('.file-form-confirm-dl-check').on('change', function() {
+        //! find if all correct and active submit button
+    })
+
     dropdownEvent($dropdown)
 
     $(RS.dlCommercial[dl.commercial ? 'yes' : 'no']).prop('checked', true)
