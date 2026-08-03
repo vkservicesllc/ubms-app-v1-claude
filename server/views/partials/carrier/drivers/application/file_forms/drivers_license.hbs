@@ -192,7 +192,7 @@
     </tbody>
 </table>
 
-<div class="ui large labeled icon dropdown" style="margin-top: 2.4rem;">
+<div class="ui large labeled icon dropdown" id="dl-choose-addr-confirm-dropdown" style="margin-top: 2.4rem;">
     <i class="map marked alternate icon"></i>
     <span class="text">Select address shown on the driver's license</span>
     <div class="menu">
@@ -207,20 +207,21 @@
             <i class="red exclamation circle icon"></i>
             <span class="ui red text">The driver's license shows a different address</span>
         </div>
-        <div class="item">
+        <div class="item" data-value="new">
             <i class="ui dark blue plus icon"></i>
             Add another address
         </div>
     </div>
 </div>
 
-<table class="ui compact celled definition table" style="display: none;">
+{{{fileForm.dlSince.hidden.input}}}
+<table class="ui compact celled definition table" id="dl-addr-confirm-table" style="display: none;">
     <thead>
         <tr>
             <th class="empty-header"></th>
             <th>{{{fileForm.dlAddress1.text.label}}}</th>
-            <th>{{{fileForm.dlAddress2.text.label}}}</th>
-            <th>{{{fileForm.dlAddrZip.text.label}}}</th>
+            <th style="width: 10rem;">{{{fileForm.dlAddress2.text.label}}}</th>
+            <th style="width: 10rem;">{{{fileForm.dlAddrZip.text.label}}}</th>
             <th>{{{fileForm.dlAddrCity.text.label}}}</th>
             <th style="width: 15rem;">{{{fileForm.dlAddrState.select.label}}}</th>
         </tr>
@@ -256,11 +257,13 @@
                 </div>
             </td>
             <td>
-                <div class="ui fluid selection required dropdown" id="dl-addr-state-confirm-dropdown">
-                    {{{fileForm.dlAddrState.hidden.input}}}
-                    <i class="dropdown icon"></i>
-                    <div class="default text"></div>
-                    <div class="menu">{{{dropdown.confDlAddrState}}}
+                <div class="field">
+                    <div class="ui fluid selection required dropdown" id="dl-addr-state-confirm-dropdown">
+                        {{{fileForm.dlAddrState.hidden.input}}}
+                        <i class="dropdown icon"></i>
+                        <div class="default text"></div>
+                        <div class="menu">{{{dropdown.confDlAddrState}}}
+                        </div>
                     </div>
                 </div>
             </td>

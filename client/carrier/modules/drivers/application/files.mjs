@@ -2,7 +2,7 @@ import { inputEvent } from '/modules/events/form.mjs'
 import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
-import application, { dropdownEvent } from './hub.mjs'
+import application, { addresses, dropdownEvent } from './hub.mjs'
 import selector from '/modules/registry/selectors/driver-application-files.mjs'
 import filenames from '/modules/registry/filenames/driver-application-uploads.mjs'
 
@@ -85,12 +85,36 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             },
         },
     }
-
+// $('#dl-addr-state-confirm-dropdown').dropdown()
     const $dropdown = {
         dlState: [ $('#dl-state-confirm-dropdown'), dl.state ],
         dlSuffix: [ $('#dl-suffix-confirm-dropdown'), application.suffix ],
         dlGender: [ $('#dl-gender-confirm-dropdown'), application.gender ],
         dlAddrState: [ $('#dl-addr-state-confirm-dropdown') ],
+        dlChooseAddr: [ $('#dl-choose-addr-confirm-dropdown'), null, function(value) {
+            let since = null, address1 = null, address2 = null, zip = null, city = null, state = null
+
+            if (value === application.address.since) {
+                ({ address1, address2, zip, city, state } = application.address)
+            } else
+                for (const address of addresses) {
+                    if (value === address.since) {
+                        ({ address1, address2, zip, city, state } = address)
+                        break
+                    }
+                }
+
+            $(selector.id.hidden.dlAddrSince).val(since)
+            $(selector.id.text.dlAddress1).val(address1)
+            $(selector.id.text.dlAddress2).val(address2)
+            $(selector.id.text.dlAddrZip).val(zip)
+            $(selector.id.text.dlAddrCity).val(city)
+
+            const $stateDropdown = $('#dl-addr-state-confirm-dropdown')
+            if (state) $stateDropdown.dropdown('set selected', state)
+            else $stateDropdown.dropdown('clear')
+            $('#dl-addr-confirm-table').show()
+        } ],
     }
     const $calendar = {
         dlIssuedOn: $('#dl-issued-confirm-calendar'),

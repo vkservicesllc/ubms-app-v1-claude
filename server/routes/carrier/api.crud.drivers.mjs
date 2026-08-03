@@ -101,13 +101,14 @@ router.get('/applications/:_id', User.mw.verify, Team.mw.verify, async (req, res
 
         const { formId } = application
         const identity = await application.identity()
+        const addresses = await application.fetch('addresses')
         const log = await application.log()
 
         const applications = await Application.fetch(res.session, { driverId: driver.id })
         const count = applications.length
         const { unmatchedIdx } = applications.filter(application => application.formId === formId)[0]
 
-        res.json({ data: { application, identity, count, unmatchedIdx, log } })
+        res.json({ data: { application, identity, addresses, count, unmatchedIdx, log } })
     } catch (err) {
         sendError.server(req, res, err)
     }

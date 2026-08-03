@@ -5,7 +5,7 @@ import calSettings from '/modules/settings/calendar.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import patterns from '/modules/registry/patterns.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
-import application, { dropdownEvent } from './hub.mjs'
+import application, { addresses, dropdownEvent } from './hub.mjs'
 
 (() => {
     if (!application || !Object.keys(application).length) return
@@ -173,31 +173,54 @@ import application, { dropdownEvent } from './hub.mjs'
         })
     }
 
-    $.ajax(`/api/resource/drivers/applications/${_id}/addresses`, {
-        success(response) {
-            const { data } = response
-            const len = data.length
+    {
+        const len = addresses.length
 
-            if (len)
-                data.forEach((record, i) => {
-                    const { enough, livedAbroad } = record
-                    addrMaxDate = appendRow(record, addrMaxDate)
-                })
-            else appendRow({}, addrMaxDate)
-
-            resetEvents()
-
-            if (country) enableCountry(country)
-            else disableLivedAbroad()
-            $country.dropdown({
-                onChange() {
-                    validateForm()
-                },
+        if (len)
+            addresses.forEach((record, i) => {
+                const { enough, livedAbroad } = record
+                addrMaxDate = appendRow(record, addrMaxDate)
             })
+        else appendRow({}, addrMaxDate)
 
-            $('.table, .footer').fadeIn()
-        },
-    })
+        resetEvents()
+
+        if (country) enableCountry(country)
+        else disableLivedAbroad()
+        $country.dropdown({
+            onChange() {
+                validateForm()
+            },
+        })
+
+        $('.table, .footer').fadeIn()
+    }
+
+    // $.ajax(`/api/resource/drivers/applications/${_id}/addresses`, {
+    //     success(response) {
+    //         const { data } = response
+    //         const len = data.length
+
+    //         if (len)
+    //             data.forEach((record, i) => {
+    //                 const { enough, livedAbroad } = record
+    //                 addrMaxDate = appendRow(record, addrMaxDate)
+    //             })
+    //         else appendRow({}, addrMaxDate)
+
+    //         resetEvents()
+
+    //         if (country) enableCountry(country)
+    //         else disableLivedAbroad()
+    //         $country.dropdown({
+    //             onChange() {
+    //                 validateForm()
+    //             },
+    //         })
+
+    //         $('.table, .footer').fadeIn()
+    //     },
+    // })
 
     function checkEnough() {
         let enough = false

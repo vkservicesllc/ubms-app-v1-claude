@@ -1665,33 +1665,40 @@ class ApplicationFileForm {
     static dlGender = createGenderForm({ selector: appFileSelector, target: 'dlGender' })
     static dlDob = createDobForm({ selector: appFileSelector, target: 'dlDob' })
 
+    static dlSince = createForm({
+        selector: appFileSelector,
+        target: 'dlAddress1',
+        type: 'hidden',
+        name: 'address[since]',
+    })
+
     static dlAddress1 = createAddressForm({
-        selector: appSelector,
-        target: 'address1',
+        selector: appFileSelector,
+        target: 'dlAddress1',
         name: 'address[address1]',
     })
 
     static dlAddress2 = createAddressForm({
-        selector: appSelector,
-        target: 'address2',
+        selector: appFileSelector,
+        target: 'dlAddress2',
         name: 'address[address2]',
     }, { idx: 2 })
 
     static dlAddrZip = createAddrZipForm({
-        selector: appSelector,
-        target: 'addrZip',
+        selector: appFileSelector,
+        target: 'dlAddrZip',
         name: 'address[zip]',
     })
 
     static dlAddrCity = createAddrCityForm({
-        selector: appSelector,
-        target: 'addrCity',
+        selector: appFileSelector,
+        target: 'dlAddrCity',
         name: 'address[city]',
     })
 
     static dlAddrState = createAddrStateForm({
-        selector: appSelector,
-        target: 'addrState',
+        selector: appFileSelector,
+        target: 'dlAddrState',
         name: 'address[state]',
     })
 

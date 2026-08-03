@@ -4,10 +4,10 @@ const response = $.ajax(`/api/resource/drivers/applications/${_id}?sensitive=tru
 const { data, error } = response
 
 if (error) alert(error)
-const { application, identity, count, unmatchedIdx } = data
+const { application, identity, addresses, count, unmatchedIdx } = data
 
 export default application
-export { identity, count, unmatchedIdx }
+export { identity, addresses, count, unmatchedIdx }
 
 
 export const errorIcon = '<i class="ui red exclamation triangle icon"></i>'

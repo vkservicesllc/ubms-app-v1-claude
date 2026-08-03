@@ -611,6 +611,15 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             dropdown.confDlAddrState = ''
             dropdown.confDlAddresses = `\n${t}<div class="item" data-value="${application.address.since}">${currentAddress}</div>`
 
+            const addresses = await application.fetch('addresses')
+            addresses.map(address => {
+                const { address1, address2, city, state, zip } = address
+                let prevAddress = address1
+                if (address2) prevAddress += `, ${address2}`
+                prevAddress += `, ${city}, ${state} ${zip}`
+                dropdown.confDlAddresses += `\n${t}<div class="item" data-value="${address.since}">${prevAddress}</div>`
+            })
+
             if (hbs.fileTab) {
                 hbs.filePerms = {}
                 hbs.fileLegalDoc = application.legalStatus[0] === 2

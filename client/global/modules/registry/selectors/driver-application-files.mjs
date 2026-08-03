@@ -12,7 +12,9 @@ const selector = {
         },
     },
     id: {
-        hidden: {},
+        hidden: {
+            dlAddrSince: 'dl-address-start-date',
+        },
         text: {
             dlNumber: 'driver-license-number',
             dlClass: 'driver-license-class',
@@ -24,11 +26,16 @@ const selector = {
             dlMiddleName: 'dl-middle-name',
             dlLastName: 'dl-last-name',
             dlDob: 'dl-dob',
+            dlAddress1: 'dl-address-1',
+            dlAddress2: 'dl-address-2',
+            dlAddrZip: 'dl-address-zip',
+            dlAddrCity: 'dl-address-city',
         },
         select: {
             dlState: 'dl-state',
-            // dlSuffix: 'dl-suffix',
-            // dlGender: 'dl-gender',
+            dlSuffix: 'dl-suffix',
+            dlGender: 'dl-gender',
+            dlAddrState: 'dl-address-state',
         },
         radio: {
             dlCommercial: {
