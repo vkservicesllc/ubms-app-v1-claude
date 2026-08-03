@@ -231,12 +231,12 @@ class Query {
     static #_value(value, secret) {
         if (secret) {
             if (!value) return 'NULL'
-            return `AES_ENCRYPT('${value}', '${secret}')`
+            return `AES_ENCRYPT('${Query.#escape(value)}', '${secret}')`
         }
         else if (typeof value === 'boolean') return value ? 'TRUE' : 'FALSE'
         else if (!value && value !== 0) return 'NULL'
         else if (value === Query.timeStamp) return Query.timeStamp
-        else if (typeof value === 'string') return `'${value.replace(/'/g, "\\'")}'`
+        else if (typeof value === 'string') return `'${Query.#escape(value)}'`
         return value
     }
 
@@ -405,6 +405,11 @@ class Query {
 
         return Query.#_value(value, secret)
     }
+
+
+    static #escape(str) {
+    return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+}
 
 
     static #join(joins) {
@@ -617,7 +622,7 @@ class Query {
         const chunks = []
         if (!Array.isArray(fields)) fields = [ fields ]
         if (table) table = table
-        searchStr = searchStr.replace(/'/g, "''")
+        searchStr = Query.#escape(searchStr)
 
         fields.map(field => {
             field = Query.#field(field, table).split(' AS ')[0]

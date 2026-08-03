@@ -211,6 +211,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             $button.upload.dl.prev.show()
             if (!croppers['dl-back']) $button.upload.dl.next.prop('disabled', true)
             $section.upload.dl.cropperBack.show()
+            croppers['dl-back']?.resize()
         }
         if (activeStep.dl === 1) {
             $button.upload.dl.next.hide()
@@ -225,12 +226,14 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         if (activeStep.dl === 1) {
             $button.upload.dl.prev.hide()
             $section.upload.dl.cropperFront.show()
+            croppers['dl-front']?.resize()
             $button.upload.dl.next.prop('disabled', false)
         }
         if (activeStep.dl === 2) {
             $button.upload.dl.submit.hide()
             $button.upload.dl.next.show()
             $section.upload.dl.cropperBack.show()
+            croppers['dl-back']?.resize()
         }
         $step.upload.dl.html(steps.upload.dl[--activeStep.dl])
     })
@@ -253,6 +256,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             $button.upload.mec.submit.hide()
             $button.upload.mec.next.show()
             $section.upload.mec.cropper.show()
+            croppers['mec']?.resize()
         }
         $step.upload.mec.html(steps.upload.mec[--activeStep.mec])
     })
@@ -348,7 +352,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                             aspectRatio,
                             viewMode: 1,
                             autoCropArea: 1,
-                            responsive: true,
+                            responsive: false,
                             checkOrientation: true,
                             preview: `#cropper-preview-${target}`,
                             crop() { updatePreview() },
