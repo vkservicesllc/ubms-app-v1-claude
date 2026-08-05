@@ -1,6 +1,7 @@
 import { inputEvent } from '/modules/events/form.mjs'
 import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
 import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
+import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import application, { addresses, dropdownEvent } from './hub.mjs'
 import selector from '/modules/registry/selectors/driver-application-files.mjs'
@@ -185,6 +186,16 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         },
     })
 
+    addr1Event(TS.dlAddress1, { addr2Id: TS.dlAddress2 })
+    addr2Event(TS.dlAddress2)
+    zipEvent(TS.dlAddrZip, {
+        cityId: TS.dlAddrCity,
+        onChange(zip, $zip, city, state) {
+            if (state) $dropdown.dlAddrState[0].dropdown('set selected', state)
+        },
+    })
+    cityEvent(TS.dlAddrCity)
+
     $calendar.dlDob
         .calendar({
             ...calSettings,
@@ -271,6 +282,8 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 
     $('#upload-dl-form').on('submit', function(evt) {
         evt.preventDefault()
+        if (!$dropdown.dlAddrState[0].dropdown('get value')) return alert('Address State is not selected')
+
         const form = this
 
         Promise.all([
@@ -281,10 +294,14 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             formData.set('dlF', dlF, 'dlF.jpg')
             formData.set('dlB', dlB, 'dlB.jpg')
 
+            const dateFields = [ 'dl[issuedOn]', 'dl[expiresOn]', 'person[dob]' ]
+            for (const [ key, value ] of formData.entries())
+                if (dateFields.includes(key)) formData.set(key, moment(value).format('YYYY-MM-DD'))
+
             fetch(form.action, { method: 'POST', body: formData })
-                .then(res => res.json())
+                // .then(res => res.json())
                 .then(data => {
-                    //! location.reload()
+                    location.reload()
                 })
         })
     })

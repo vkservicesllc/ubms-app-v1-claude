@@ -9,6 +9,7 @@ const sendError = require('../../tools/utils/error')
 import moment, { defaultFormat } from 'moment'
 import User from '../../tools/core/user.mjs'
 import Company from '../../tools/core/company.mjs'
+import Individual from '../../tools/core/individual.mjs'
 import { Application } from '../../tools/core/driver.mjs'
 import uploader from '../../tools/utils/multer.mjs'
 import { getFiles } from '../../tools/utils/fs.mjs'
@@ -33,7 +34,8 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
     const application = await Application.fetch(res.session, { formId })
     if (!application) throw new Error('Application not found')
 
-    const { id, driverId } = application
+    const { id, driverId, personId } = application
+    const individual = await Individual.fetch(res.session, { id: personId })
 
     req.upload = {
         id: driverId,
@@ -44,7 +46,7 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
             dlB: { filename: '00-back' },
         },
     }
-    req.data = { application }
+    req.data = { application, individual }
 
     next()
 }, upload.application.dlInit.fields([
@@ -53,11 +55,46 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
 ]), async (req, res) => {
     try {
         //* Runs when upload is successfull
-        const { application } = req.data
-console.log(req.body)
-        return res.send({ body: req.body, files: req.files })
-        //! to be continued...
+        const { application, individual } = req.data
+        let { checklist } = application
+        if (!checklist) checklist = {}
 
+        let action = 'update'
+
+        if (!checklist.documents) {
+            checklist.documents = {}
+            action = 'add'
+        }
+        checklist.documents.dl = 1
+
+        const { dl, name, person, address } = req.body
+        const { dlId } = application
+
+        dl.commercial = dl.commercial === 'Y'
+        // if (!dl.class) dl.class = null
+        // if (!dl.endorsement) dl.endorsement = null
+        // if (!dl.restriction) dl.restriction = null
+        // if (!name.middleName) name.middleName = null
+        // if (!name.suffix) name.suffix = null
+        await individual.update('identifications', dl, { id: dlId })
+        await individual.update('names', name, { since: individual.dob })
+
+        const { since } = address
+        delete address.since
+        if (since) {
+            await individual.update('addresses', address, { since })
+            await individual.update('identifications', { addrSince: since }, { id: dlId })
+        } else {
+            const { address1, address2, city: addrCity, state: addrState, zip: addrZip } = address
+            await individual.update('identifications', {
+                address1, address2, addrCity, addrState, addrZip,
+            }, { id: dlId })
+        }
+
+        await individual.update(person)
+        await application[action]('checklist', { checklist })
+
+        res.json({ status: 'OK' })
     } catch (err) {
         sendError.server(req, res, err)
     }

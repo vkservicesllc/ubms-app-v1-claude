@@ -1648,26 +1648,26 @@ class ApplicationFileForm {
     }
 
 
-    static dlCommercial = createDlCommercialFrom({ selector: appFileSelector, group: 'dlCommercial' })
+    static dlCommercial = createDlCommercialFrom({ selector: appFileSelector, group: 'dlCommercial', name: 'dl[commercial]' })
 
-    static dlState = createDlStateForm({ selector: appFileSelector })
-    static dlNumber = createDlNumberForm({ selector: appFileSelector })
-    static dlClass = createDlClassForm({ selector: appFileSelector })
-    static dlIss = createDlIssForm({ selector: appFileSelector })
-    static dlExp = createDlExpForm({ selector: appFileSelector })
-    static dlEndrs = createDlEndrsForm({ selector: appFileSelector })
-    static dlRestr = createDlRestrForm({ selector: appFileSelector })
+    static dlState = createDlStateForm({ selector: appFileSelector, name: 'dl[state]' })
+    static dlNumber = createDlNumberForm({ selector: appFileSelector, name: 'dl[number]' })
+    static dlClass = createDlClassForm({ selector: appFileSelector, name: 'dl[class]' })
+    static dlIss = createDlIssForm({ selector: appFileSelector, name: 'dl[issuedOn]' })
+    static dlExp = createDlExpForm({ selector: appFileSelector, name: 'dl[expiresOn]' })
+    static dlEndrs = createDlEndrsForm({ selector: appFileSelector, name: 'dl[endorsement]' })
+    static dlRestr = createDlRestrForm({ selector: appFileSelector, name: 'dl[restriction]' })
 
-    static dlFirstName = createPersonNameForm('first', { selector: appFileSelector, target: 'dlFirstName' })
-    static dlMiddleName = createPersonNameForm('middle', { selector: appFileSelector, target: 'dlMiddleName' })
-    static dlLastName = createPersonNameForm('last', { selector: appFileSelector, target: 'dlLastName' })
-    static dlSuffix = createPersonNameForm('suffix', { selector: appFileSelector, target: 'dlSuffix' })
-    static dlGender = createGenderForm({ selector: appFileSelector, target: 'dlGender' })
-    static dlDob = createDobForm({ selector: appFileSelector, target: 'dlDob' })
+    static dlFirstName = createPersonNameForm('first', { selector: appFileSelector, target: 'dlFirstName', name: 'name[firstName]' })
+    static dlMiddleName = createPersonNameForm('middle', { selector: appFileSelector, target: 'dlMiddleName', name: 'name[middleName]' })
+    static dlLastName = createPersonNameForm('last', { selector: appFileSelector, target: 'dlLastName', name: 'name[lastName]' })
+    static dlSuffix = createPersonNameForm('suffix', { selector: appFileSelector, target: 'dlSuffix', name: 'name[suffix]' })
+    static dlGender = createGenderForm({ selector: appFileSelector, target: 'dlGender', name: 'person[gender]' })
+    static dlDob = createDobForm({ selector: appFileSelector, target: 'dlDob', name: 'person[dob]' })
 
     static dlSince = createForm({
         selector: appFileSelector,
-        target: 'dlAddress1',
+        target: 'dlAddrSince',
         type: 'hidden',
         name: 'address[since]',
     })

@@ -290,6 +290,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         }
         const fileStyle = {
             blank: '<i class="grey file icon"></i>',
+            pdf: '<i class="pdf file outline icon"></i>',
         }
         const checkStyle = {
             unchecked: '<i class="red close icon"></i>',
@@ -313,10 +314,10 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         }
 
         const uploaded = {
-            dl: false,
-            mec: false,
-            leg: false,
-            ssc: false,
+            dl: application?.checklist?.documents?.dl === 1,
+            mec: application?.checklist?.documents?.mec === 1,
+            leg: application?.checklist?.documents?.leg === 1,
+            ssc: application?.checklist?.documents?.ssc === 1,
         }
 
         const fileText = prop => uploaded[prop]
@@ -338,22 +339,22 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         hbs.file = {
             dl: {
                 uploaded: uploaded.dl,
-                style: fileStyle.blank,
+                style: fileStyle[uploaded.dl ? 'pdf' : 'blank'],
                 text: fileText('dl'),
             },
             mec: {
                 uploaded: uploaded.mec,
-                style: fileStyle.blank,
+                style: fileStyle[uploaded.mec ? 'pdf' : 'blank'],
                 text: fileText('mec'),
             },
             leg: {
                 uploaded: uploaded.leg,
-                style: fileStyle.blank,
+                style: fileStyle[uploaded.leg ? 'pdf' : 'blank'],
                 text: fileText('leg'),
             },
             ssc: {
                 uploaded: uploaded.ssc,
-                style: fileStyle.blank,
+                style: fileStyle[uploaded.ssc ? 'pdf' : 'blank'],
                 text: fileText('ssc'),
             },
             //! continue...
