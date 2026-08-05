@@ -71,7 +71,7 @@
         <small>Upload</small> Driver's License — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
     </div>
     <div class="content">
-        <form class="ui form" id="upload-dl-form" action="" method="POST" enctype="multipart/form-data">
+        <form class="ui form" id="upload-dl-form" action="/upload/drivers/application/{{formId}}/initial-drivers-license" method="POST" enctype="multipart/form-data">
             <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-aspect-ratio="1.65">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Front)</small></h1>
@@ -82,7 +82,7 @@
                     <button class="ui primary button cropper-load-shared">Load Shared</button>
                     {{/if}}
                 </div>
-                <input class="cropper-file" type="file" accept="image/*" hidden />
+                <input class="cropper-file" type="file" accept="image/*" hidden name="dlF" />
                 <div class="cropper-wrapper" style="display: none;">
                     <img class="cropper-image" style="display: none;" />
                 </div>
@@ -98,7 +98,7 @@
                     <button class="ui primary button cropper-load-shared">Load Shared</button>
                     {{/if}}
                 </div>
-                <input class="cropper-file" type="file" accept="image/*" hidden />
+                <input class="cropper-file" type="file" accept="image/*" hidden name="dlB" />
                 <div class="cropper-wrapper" style="display: none;">
                     <img class="cropper-image" style="display: none;" />
                 </div>

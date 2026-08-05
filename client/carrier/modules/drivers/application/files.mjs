@@ -20,6 +20,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         'mec': 'mec',
         //! add more
     }
+    const uploadMaxWidth = 1200
     const croppers = {}
     const $upload = {
         dl: $('#upload-dl-file'),
@@ -268,6 +269,26 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $step.upload.dl.html(steps.upload.dl[--activeStep.dl])
     })
 
+    $('#upload-dl-form').on('submit', function(evt) {
+        evt.preventDefault()
+        const form = this
+
+        Promise.all([
+            getResizedBlob('dl-front'),
+            getResizedBlob('dl-back'),
+        ]).then(([ dlF, dlB ]) => {
+            const formData = new FormData(form)
+            formData.set('dlF', dlF, 'dlF.jpg')
+            formData.set('dlB', dlB, 'dlB.jpg')
+
+            fetch(form.action, { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    //! location.reload()
+                })
+        })
+    })
+
     $button.upload.mec.next.click(function() {
         $section.upload.mec.all.hide()
         if (activeStep.mec === 0) {
@@ -291,6 +312,14 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $step.upload.mec.html(steps.upload.mec[--activeStep.mec])
     })
 
+
+    function getResizedBlob(target, { quality = .85 } = {}) {
+        return new Promise(resolve => {
+            croppers[target]
+                .getCroppedCanvas({ width: uploadMaxWidth })
+                .toBlob(resolve, 'image/jpeg', quality)
+        })
+    }
 
     function dropzoneEvents(target, cb = {}) {
         const $cropArea = $(`#croparea-${target}`)
