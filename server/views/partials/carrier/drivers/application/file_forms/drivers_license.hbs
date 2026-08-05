@@ -194,7 +194,7 @@
 
 <div class="ui large labeled icon dropdown" id="dl-choose-addr-confirm-dropdown" style="margin-top: 2.4rem;">
     <i class="map marked alternate icon"></i>
-    <span class="text">Select address shown on the driver's license</span>
+    <span class="ui red text">Select address shown on the driver's license</span>
     <div class="menu">
         <div class="header">
             <i class="user icon"></i>
@@ -207,7 +207,7 @@
             <i class="red exclamation circle icon"></i>
             <span class="ui red text">The driver's license shows a different address</span>
         </div>
-        <div class="item" data-value="new">
+        <div class="item" data-value="new" data-text='<span class="ui green text"><i>Adding New Address...</i></span>'>
             <i class="ui dark blue plus icon"></i>
             Add another address
         </div>
@@ -230,7 +230,7 @@
         <tr>
             <td class="collapsing">
                 <div class="ui fitted slider checkbox">
-                    <input class="file-form-confirm-check file-form-confirm-dl-check" type="checkbox" required /><label></label>
+                    <input class="file-form-confirm-check file-form-confirm-dl-check" id="file-form-confirm-dl-addr-check" type="checkbox" required /><label></label>
                 </div>
                 <span class="ui dark green text" style="display: none;">
                     <i class="icon checkmark"></i> Correct

@@ -85,7 +85,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             },
         },
     }
-// $('#dl-addr-state-confirm-dropdown').dropdown()
+
     const $dropdown = {
         dlState: [ $('#dl-state-confirm-dropdown'), dl.state ],
         dlSuffix: [ $('#dl-suffix-confirm-dropdown'), application.suffix ],
@@ -95,11 +95,11 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             let since = null, address1 = null, address2 = null, zip = null, city = null, state = null
 
             if (value === application.address.since) {
-                ({ address1, address2, zip, city, state } = application.address)
+                ({ since, address1, address2, zip, city, state } = application.address)
             } else
                 for (const address of addresses) {
                     if (value === address.since) {
-                        ({ address1, address2, zip, city, state } = address)
+                        ({ since, address1, address2, zip, city, state } = address)
                         break
                     }
                 }
@@ -132,7 +132,13 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     })
 
     $('.file-form-confirm-dl-check').on('change', function() {
-        //! find if all correct and active submit button
+        const $checks = $('.file-form-confirm-dl-check')
+        const allChecked = $checks.length === $checks.filter(':checked').length
+        $button.upload.dl.submit.prop('disabled', !allChecked)
+    })
+    $('#file-form-confirm-dl-addr-check').on('change', function() {
+        $('.dl-addr-verifying-txt').remove()
+        $dropdown.dlChooseAddr[0].addClass('disabled')
     })
 
     dropdownEvent($dropdown)

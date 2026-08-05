@@ -609,7 +609,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             dropdown.confDlSuffix = ''
             dropdown.confDlGender = ''
             dropdown.confDlAddrState = ''
-            dropdown.confDlAddresses = `\n${t}<div class="item" data-value="${application.address.since}">${currentAddress}</div>`
+            dropdown.confDlAddresses = `\n${t}<div class="item" data-value="${application.address.since}" data-text='<span class="ui blue text"><b>${currentAddress}</b></span> <i class="dl-addr-verifying-txt">Verifying...</i>'>${currentAddress}</div>`
 
             const addresses = await application.fetch('addresses')
             addresses.map(address => {
@@ -617,7 +617,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                 let prevAddress = address1
                 if (address2) prevAddress += `, ${address2}`
                 prevAddress += `, ${city}, ${state} ${zip}`
-                dropdown.confDlAddresses += `\n${t}<div class="item" data-value="${address.since}">${prevAddress}</div>`
+                dropdown.confDlAddresses += `\n${t}<div class="item" data-value="${address.since}" data-text='<span class="ui blue text"><b>${prevAddress}</b></span> <i class="dl-addr-verifying-txt">Verifying...</i>'>${prevAddress}</div>`
             })
 
             if (hbs.fileTab) {

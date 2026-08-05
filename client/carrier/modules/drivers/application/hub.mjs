@@ -18,6 +18,8 @@ export const dropdownEvent = $dropdown => {
         const [ $el, value, onChange ] = $dropdown[prop]
 
         $el.dropdown('set value', value).dropdown({ onChange })
+        // $el.dropdown({ onChange })
+        // if (value) $el.dropdown('set value', value)
     })
 }
 
