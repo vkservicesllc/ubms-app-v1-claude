@@ -17,6 +17,7 @@ import {
     createDateForm,
     createUsStateForm,
     createYesNoForm,
+    createCheckForm,
 } from './reusable.mjs'
 import { createBusNameForm, createEinForm } from './company.mjs'
 import { createNumberForm } from './carrier.mjs'
@@ -405,10 +406,9 @@ class ApplicationForm {
         disabled,
         label: 'Lived Abroad',
     }, true)
-    static livedAbroad2 = createForm({
+    static livedAbroad2 = createCheckForm({
         selector: appSelector,
         target: 'livedAbroad1',
-        type: 'checkbox',
         name: 'address[livedAbroad]',
         label: 'Lived abroad before this date',
     })
@@ -510,10 +510,9 @@ class ApplicationForm {
         disabled,
         label: 'Lived Abroad',
     })
-    static _livedAbroad2 = createForm({
+    static _livedAbroad2 = createCheckForm({
         selector: appSelector,
         target: 'livedAbroad2',
-        type: 'checkbox',
         name: 'addresses[livedAbroad][]',
         label: 'Lived abroad before this date',
     })
@@ -549,10 +548,9 @@ class ApplicationForm {
 
     static dlCommercial = createDlCommercialFrom({ selector: appSelector })
 
-    static dlCommercial2 = createForm({
+    static dlCommercial2 = createCheckForm({
         selector: appSelector,
         target: 'dlCommercial',
-        type: 'checkbox',
         name: 'commercial',
         label: 'Commercial <small>(CDL)</small>',
     })
@@ -571,10 +569,9 @@ class ApplicationForm {
         group: 'driverLicense',
         name: 'dlDenied',
     })
-    static dlDenied2 = createForm({
+    static dlDenied2 = createCheckForm({
         selector: appSelector,
         target: 'dlDenied',
-        type: 'checkbox',
         name: 'dlDenied',
         label: 'The license has been denied in the past',
     })
@@ -585,10 +582,9 @@ class ApplicationForm {
         group: 'driverLicense',
         name: 'dlRevoked',
     })
-    static dlRevoked2 = createForm({
+    static dlRevoked2 = createCheckForm({
         selector: appSelector,
         target: 'dlRevoked',
-        type: 'checkbox',
         name: 'dlRevoked',
         label: 'The license has been revoked/suspended in the past',
     })
@@ -621,10 +617,9 @@ class ApplicationForm {
         label: 'Impairing medications taken',
     })
 
-    static underMeds2 = createForm({
+    static underMeds2 = createCheckForm({
         selector: appSelector,
         target: 'underMeds',
-        type: 'checkbox',
         name: 'underMeds',
         label: 'Impairing medications taken',
     })
@@ -656,10 +651,9 @@ class ApplicationForm {
         target: 'dui',
         name: 'dui',
     })
-    static dui2 = createForm({
+    static dui2 = createCheckForm({
         selector: appSelector,
         target: 'dui',
-        type: 'checkbox',
         name: 'dui',
         label: 'Previously charged with DUI/DWI',
     })
@@ -679,10 +673,9 @@ class ApplicationForm {
         target: 'criminal',
         name: 'criminal',
     })
-    static criminal2 = createForm({
+    static criminal2 = createCheckForm({
         selector: appSelector,
         target: 'criminal',
-        type: 'checkbox',
         name: 'criminal',
         label: 'Previously charged with misdemeanor/felony',
     })
@@ -703,10 +696,9 @@ class ApplicationForm {
         target: 'dotDat',
         name: 'dotDat',
     })
-    static dotDat2 = createForm({
+    static dotDat2 = createCheckForm({
         selector: appSelector,
         target: 'dotDat',
-        type: 'checkbox',
         name: 'dotDat',
         label: 'Previously refused/failed to take DOT drug/alcohol test',
     })
@@ -824,10 +816,9 @@ class ApplicationForm {
         // disabled,
         label: 'Injuries',
     })
-    static _accInjuries2 = createForm({
+    static _accInjuries2 = createCheckForm({
         selector: appSelector,
         target: 'accInjuries',
-        type: 'checkbox',
         name: 'injuries[]',
         required,
         // disabled,
@@ -842,10 +833,9 @@ class ApplicationForm {
         // disabled,
         label: 'Fatalities',
     })
-    static _accFatalities2 = createForm({
+    static _accFatalities2 = createCheckForm({
         selector: appSelector,
         target: 'accFatalities',
-        type: 'checkbox',
         name: 'fatalities[]',
         required,
         // disabled,
@@ -960,10 +950,9 @@ class ApplicationForm {
         label: 'Completed CDL school',
     }, true)
 
-    static cdlSchool2 = createForm({
+    static cdlSchool2 = createCheckForm({
         selector: appSelector,
         target: 'cdlSchool',
-        type: 'checkbox',
         name: 'cdlSchool',
         label: 'Completed CDL training program',
     })
@@ -1458,10 +1447,9 @@ class ApplicationForm {
         // disabled: true,
         required,
     }, true)
-    static currentVhlTrailer2 = createForm({
+    static currentVhlTrailer2 = createCheckForm({
         selector: appSelector,
         target: 'currentVhlTrailer',
-        type: 'checkbox',
         name: 'trailer',
         label: 'Trailer owned',
     })
@@ -1589,13 +1577,26 @@ class ApplicationForm {
                     'dlEndrs', 'dlRestr', 'dlDenied', 'dlRevoked', 'dlDeniedExpl', 'dlRevokedExpl',
                 ]
                 break
+            case 'license-alt':
+                fields = [
+                    'dlCommercial2', 'dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp',
+                    'dlEndrs', 'dlRestr', 'dlDenied2', 'dlRevoked2', 'dlDeniedExpl', 'dlRevokedExpl',
+                ]
+                break
             case 'medical':
                 fields = ['noMec', 'mecExp', 'mecIss', 'mecNumber', 'underMeds', 'medList']
+                break
+            case 'medical-alt':
+                fields = ['mecExp', 'mecIss', 'mecNumber', 'underMeds2', 'medList']
                 break
             case 'compliance':
                 fields = [
                     'dui', 'duiInDecade', 'criminal', 'criminalExpl', 'dotDat', 'citations',
                     '_citDate', '_citState', '_citReason', '_citOtherReason',
+                ]
+            case 'compliance-alt':
+                fields = [
+                    'dui2', 'duiInDecade', 'criminal2', 'criminalExpl', 'dotDat2',
                 ]
                 break
             case 'safety':
@@ -1871,11 +1872,10 @@ class EmploymentForm {
         // disabled,
         label: 'Subject to FMCSRs',
     })
-    static FMCSR2 = createForm({
+    static FMCSR2 = createCheckForm({
         selector: appEmplSelector,
         target: 'fmcsr',
         group: 'fmcsr',
-        type: 'checkbox',
         name: 'fmcsr',
         // disabled,
         label: 'Subject to FMCSRs',
@@ -1892,11 +1892,10 @@ class EmploymentForm {
         name: 'dotDat',
         label: 'Subject to DOT Drug/Alcohol Testing',
     })
-    static dotDat2 = createForm({
+    static dotDat2 = createCheckForm({
         selector: appEmplSelector,
         target: 'dotDat',
         group: 'dotDat',
-        type: 'checkbox',
         name: 'dotDat',
         label: 'Subject to DOT Drug/Alcohol Testing',
         validator: {

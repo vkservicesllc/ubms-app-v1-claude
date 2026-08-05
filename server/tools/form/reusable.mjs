@@ -318,3 +318,12 @@ export const createYesNoForm = (props = {}, optional = false, type = 'radio') =>
         optional,
     },
 })
+
+
+export const createCheckForm = (props = {}) => createForm({
+    type: 'checkbox',
+    ...props,
+    validator: {
+        sanitizer: value => !!value, // value === 'on' || value === 'Y' ? 'Y' : 'N',
+    },
+})

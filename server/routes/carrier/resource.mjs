@@ -181,6 +181,7 @@ router.post('/drivers/prev-employments/modify', User.mw.verify, Team.mw.verify, 
 router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.verify,
     dynamicApplicantValidator.applications, validationCheck, // validationCheck returns error when checkbox is unchecked
     async (req, res) => {
+        req.params.step = req.params.step.replace('-alt', '')
 // return res.send(req.body) //! TEMP
         try {
             const { user } = res.session

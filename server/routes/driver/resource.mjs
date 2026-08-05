@@ -49,11 +49,20 @@ const dynamicValidator = {
             case 'driver-license':
                 validators = ApplicationForm.validate('license')
                 break
+            case 'driver-license-alt':
+                validators = ApplicationForm.validate('license-alt')
+                break
             case 'medical-card':
                 validators = ApplicationForm.validate('medical')
                 break
+            case 'medical-card-alt':
+                validators = ApplicationForm.validate('medical-alt')
+                break
             case 'legal-compliance':
                 validators = ApplicationForm.validate('compliance')
+                break
+            case 'legal-compliance-alt':
+                validators = ApplicationForm.validate('compliance-alt')
                 break
             case 'safety':
                 validators = ApplicationForm.validate('safety')

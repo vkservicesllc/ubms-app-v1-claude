@@ -349,7 +349,7 @@ class Application {
                 position: data.decPosition,
             }
 
-        this.legalStatus = [ data.legalStatus, data.legalExpiration ]
+        this.legalStatus = [ data.legalStatus, data.legalExpiration !== '0000-00-00' ? data.legalExpiration : null ]
         this.marital = data.marital
 
         this.email = data.email
@@ -1024,6 +1024,10 @@ class Application {
 
                         case 'legal-compliance':
                             {
+                                if (body.dui === undefined) body.dui = false
+                                if (body.criminal === undefined) body.criminal = false
+                                if (body.dotDat === undefined) body.dotDat = false
+
                                 if (!body.dui) body.duiInDecade = null
                                 if (!body.criminal) body.criminalExpl = null
 

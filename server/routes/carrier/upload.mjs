@@ -36,14 +36,17 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
 
     const { id, driverId, personId } = application
     const individual = await Individual.fetch(res.session, { id: personId })
+    if (!individual) throw new Error('Individual not found')
+
+    const { issuedOn, expiresOn } = application.dl
 
     req.upload = {
         id: driverId,
         id2: id,
         files: {
             //* Initial
-            dlF: { filename: '00-front' },
-            dlB: { filename: '00-back' },
+            dlF: { filename: `${issuedOn}_${expiresOn}_front` },
+            dlB: { filename: `${issuedOn}_${expiresOn}_back` },
         },
     }
     req.data = { application, individual }

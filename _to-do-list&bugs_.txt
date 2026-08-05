@@ -22,3 +22,5 @@ that are available to them.
 
 - [bug] Enough and livedAbroad props do not update in Addresses
 - [bug] Driver's License Upload Confirmation Form: Name, Dob & Gender table, can't fix column widths in Suffix and Gender
+
+-- [attention] Commercial license can be disabled when dl uploaded, and must be ignored, but if enabled must be false if unchecked...
