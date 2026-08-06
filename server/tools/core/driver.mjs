@@ -794,9 +794,9 @@ class Application {
             this.delete = (target, match = {}) => classInstance.delete(this, new.target, target, match)
 
 
-            this.progress = async (step, body, { rehire = false, office = false } = {}) => {
-                if (rehire !== true) await initialProgress(this, step, body, office)
-                else await rehireProgress(this, step, body, office)
+            this.progress = async (step, body, { rehire = false } = {}) => {
+                if (rehire !== true) await initialProgress(this, step, body)
+                else await rehireProgress(this, step, body)
             }
 
 

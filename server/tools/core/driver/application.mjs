@@ -9,7 +9,7 @@ import appSettings from '../../../../client/global/modules/settings/driver-appli
 const mysql = require('../../utils/mysql')
 
 
-export const initialProgress = async (inst, step, body, office = false) => {
+export const initialProgress = async (inst, step, body) => {
     const person = await Individual.fetch(inst.session, { id: inst.personId || Individual.matchHash(inst._personId) })
     if (!person) throw new Error('Person not found')
 
@@ -81,7 +81,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                     }
                 }
 
-                if (!office) body.appDef.cache = cache //? JSON.stringify(cache)
+                body.appDef.cache = cache //? JSON.stringify(cache)
 
                 await inst.update(body.main)
                 await driver.update('appDef', body.appDef)
@@ -145,7 +145,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                 cache.dlRevokedExpl = dlRevokedExpl || null
 
                 //? cache = JSON.stringify(cache)
-                if (!office) await driver.update('appDef', { cache })
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -192,7 +192,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                 cache.medList = body.main.medList || null
 
                 //? cache = JSON.stringify(cache)
-                if (!office) await driver.update('appDef', { cache })
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -246,7 +246,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                 await inst.update(body)
 
                 //? cache = JSON.stringify(cache)
-                if (!office) await driver.update('appDef', { cache })
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -287,7 +287,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                 await inst.update(body)
 
                 //? cache = JSON.stringify(cache)
-                if (!office) await driver.update('appDef', { cache })
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -337,7 +337,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                 cache.cdlSchool = cdlSchool
                 cache.prevEmployed
 
-                if (!office) body.appDef.cache = cache
+                body.appDef.cache = cache
 
                 if (experience) await inst[inst.experience ? 'update' : 'add']('experience', body.experience)
                 else {
@@ -365,7 +365,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
 
                 if (!body.prevEmployed) await mysql.execute(query.driver_employment.main.delete({ driverId: driver.id }))
                 await inst.update(body)
-                if (!office) await driver.update('appDef', { cache })
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -390,7 +390,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                     cache.step = 8
                 }
 
-                if (!office) await driver.update('appDef', { cache })
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -430,7 +430,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                 cache = await vehicleRecord(inst, { mmt, type, make, model, year, length, trailer }, cache)
 
                 await inst.update(body)
-                if (!office) await driver.update('appDef', { cache })
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -446,7 +446,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                     cache.step = 10
                 } else await inst.update('beneficiary', body)
 
-                if (!office) await driver.update('appDef', { cache })
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -460,7 +460,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
                     cache.step = 10
                 } else await inst.update('emergency', body)
 
-                if (!office) await driver.update('appDef', { cache })
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -563,7 +563,7 @@ export const initialProgress = async (inst, step, body, office = false) => {
 }
 
 
-export const rehireProgress = async (inst, step, body, office = false) => {
+export const rehireProgress = async (inst, step, body) => {
     //
 }
 
