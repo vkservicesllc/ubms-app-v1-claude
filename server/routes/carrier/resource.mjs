@@ -53,15 +53,14 @@ const dynamicValidator = {
             case 'profile-lock':
                 validators = ApplicationForm.validate('carrier/profile-full-lock')
                 break
+            case 'address':
+                validators = ApplicationForm.validate('carrier/residence')
+                break
             case 'legal-status':
                 validators = ApplicationForm.validate('carrier/legal')
                 break
             case 'position':
                 validators = ApplicationForm.validate('carrier/position+vehicle')
-                break
-            case 'address':
-                validators = ApplicationForm.validate('carrier/residence')
-                break
                 break
             case 'driver-license':
                 validators = ApplicationForm.validate('carrier/license')
@@ -248,9 +247,8 @@ router.post('/drivers/prev-employments/modify', User.mw.verify, Team.mw.verify, 
 
 
 router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.verify,
-    dynamicValidator.driverApplications, validationCheck, // validationCheck returns error when checkbox is unchecked
+    dynamicValidator.driverApplications, validationCheck,
     async (req, res) => {
-        req.params.step = req.params.step.replace('-alt', '')
 // return res.send(req.body) //! TEMP
         try {
             const { user } = res.session
@@ -266,7 +264,7 @@ router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.ve
 
             await application.progress(step, req.body)
 
-            res.redirect(`/drivers/application/${formId}/e-form?${step}`)
+            res.redirect(`/drivers/application/${formId}/e-form?${step.replace(/\-lock\d?/, '')}`)
         } catch (err) {
             sendError.server(req, res, err)
         }

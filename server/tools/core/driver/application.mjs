@@ -22,13 +22,61 @@ export const initialProgress = async (inst, step, body) => {
     switch (step) {
 
 
-        case 'profile':
+        //! NEEDS ATTN
+        case 'workflow': //* Carrier E-Form
             {
-                const { prefix, firstName, middleName, lastName, suffix, dob, gender, marital, phone, email } = body
+                const { _userId, _carrierId, _teamId, condition, experience, position } = body
+                body = { main: {}, decision: {} }
+
+                if (_carrierId && _carrierId !== inst._carrierId) {
+                    const carrier = await Carrier.fetch(inst.session, { _id: _carrierId })
+                    if (!carrier) throw new Error('Carrier not found')
+
+                    body.main.carrierId = carrier.id
+                }
+
+                if (_teamId && _teamId !== inst._teamId) {
+                    const team = await Team.fetch(inst.session, { _id: _teamId })
+                    body.main.teamId = team.id
+                }
+
+                await inst.update(body.main)
+            }
+            break
+
+
+        case 'profile':
+        case 'profile-lock1': //* Carrier E-Form
+        case 'profile-lock2': //* Carrier E-Form
+        case 'profile-lock': //* Carrier E-Form
+            {
+                const { prefix, firstName, middleName, lastName, suffix, dob, gender, ssn, marital, phone, email } = body
                 const since = tz2utc(inst.appliedOn, true)
 
-                await person.update({ dob, gender })
-                await person.update('names', { prefix, firstName, middleName, lastName, suffix }, { since: inst.dob })
+                const update = {
+                    individual: { dob, gender },
+                    names: { prefix, firstName, middleName, lastName, suffix },
+                }
+
+                if (inst.step === 12) { //* Carrier E-Form
+                    update.individual.ssn = ssn
+
+                    if (step !== 'profile') {
+                        if (step === 'profile-lock1') {
+                            delete update.individual.dob
+                            delete update.individual.gender
+                            delete update.names
+                        } else if (step === 'profile-lock2') {
+                            delete update.individual.ssn
+                        } else {
+                            delete update.individual
+                            delete update.names
+                        }
+                    }
+                }
+
+                if (update.individual) await person.update(update.individual)
+                if (update.names) await person.update('names', update.names, { since: inst.dob })
                 await person.update('maritals', { status: marital }, { since })
                 await person.update('phones', { phone }, { since })
                 await person.update('emails', { email }, { since })
@@ -36,7 +84,7 @@ export const initialProgress = async (inst, step, body) => {
             break
 
 
-        case 'residence':
+        case 'residence': //* Driver Application
             {
                 const { address, addresses, prevCountry = null } = body
                 const { since, currentSince, enough, livedAbroad, address1, address2, city, state, zip } = address
@@ -89,56 +137,135 @@ export const initialProgress = async (inst, step, body) => {
             break
 
 
-        case 'driver-license':
+        //! ATTN NEEDED (Deside if caching needed)
+        case 'address': //* Carrier E-Form
             {
-                if (!body.dlDenied) body.dlDeniedExpl = null
-                if (!body.dlRevoked) body.dlRevokedExpl = null
+                const { address, prevCountry = null } = body
+                const { since, currentSince, enough, livedAbroad = false, address1, address2, city, state, zip } = address
+                const { personId } = inst
 
-                const { dlDenied, dlRevoked, dlDeniedExpl, dlRevokedExpl } = body
+                if (enough || (livedAbroad && prevCountry)) await person.delete('addresses', { since: { not: currentSince } })
+                await person.update('addresses', { since, address1, address2, city, state, zip }, { since: currentSince })
+                await inst.update('addresses', { enough, livedAbroad }, { since }) //* since cascaded
+                await driver.update('appDef', { prevCountry })
+            }
+            break
+
+
+        //! ATTN NEEDED (Deside if caching needed)
+        case 'prior-addresses': //* Carrier E-Form
+            {
+                const { maxDate, addresses, prevCountry = null } = body
+                await person.delete('addresses', { since: { not: maxDate } })
+                if (addresses) {
+                    const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
+                    const count = zip.length
+
+                    for (let i = 0; i < count; i++) {
+                        await person.add('addresses', {
+                            since: since[i],
+                            address1: address1[i],
+                            address2: address2[i],
+                            city: city[i],
+                            state: state[i],
+                            zip: zip[i],
+                        })
+                        inst.add('addresses', {
+                            personId,
+                            since: since[i],
+                            enough: enough[i],
+                            livedAbroad: count - i === 1 ? !!prevCountry : null,
+                        })
+                    }
+                }
+            }
+            break
+
+
+        case 'legal-status': //* Carrier E-Form
+            {
+                if (body.legalStatus < 2) body.legalExpiration = null
+
+                const { legalStatus: status, legalExpiration: expiresOn } = body
+                await person.update('legal', { status, expiresOn }, { since: tz2utc(inst.appliedOn, true) })
+            }
+            break
+
+
+        case 'position': //* Carrier E-Form
+            {
+                const { position, mmt, type, make, model, year, length, trailer } = body
+
+                await inst.update({ position })
+                inst.position = position
+
+                await vehicleRecord(inst, { mmt, type, make, model, year, length, trailer })
+            }
+            break
+
+
+        case 'driver-license':
+        case 'driver-license-lock': //* Carrier E-Form
+            {
+
+                let { dlDenied, dlRevoked, dlDeniedExpl, dlRevokedExpl } = body
                 delete body.dlDenied
                 delete body.dlRevoked
                 delete body.dlDeniedExpl
                 delete body.dlRevokedExpl
+
+                if (inst.step === 12) { //* Carrier E-Form
+                    //? Unchecked
+                    if (dlDenied === undefined) dlDenied = false
+                    if (dlRevoked === undefined) dlRevoked = false
+                }
+
+                if (dlDenied === false) dlDeniedExpl = null
+                if (dlRevoked === false) dlRevokedExpl = null
 
                 body = {
                     dl: body,
                     main: { dlDenied, dlRevoked, dlDeniedExpl, dlRevokedExpl },
                 }
 
-                let dlId
+                if (step == 'driver-license-lock') delete body.dl
 
-                //* Attempt to Avoid Dublicates (NOT GUARANTEED)
-                const identifications = await person.fetch('identifications')
-                if (identifications.length)
-                    for (const card of identifications) {
-                        if (!card.driver) continue
-                        if (!!card.commercial !== !!body.dl.commercial) continue
-                        if (card.number !== body.dl.number) continue
-                        if (card.class !== body.dl.class) continue
-                        if (card.state !== body.dl.state) continue
-                        if (card.issuedOn !== body.dl.issuedOn) continue
-                        if (card.expiresOn !== body.dl.expiresOn) continue
-                        dlId = card.id
+                if (body.dl) {
+                    let dlId
+
+                    //* Attempt to Avoid Dublicates (NOT GUARANTEED)
+                    const identifications = await person.fetch('identifications')
+                    if (identifications.length)
+                        for (const card of identifications) {
+                            if (!card.driver) continue
+                            if (!!card.commercial !== !!body.dl.commercial) continue
+                            if (card.number !== body.dl.number) continue
+                            if (card.class !== body.dl.class) continue
+                            if (card.state !== body.dl.state) continue
+                            if (card.issuedOn !== body.dl.issuedOn) continue
+                            if (card.expiresOn !== body.dl.expiresOn) continue
+                            dlId = card.id
+                        }
+
+                    if (!inst.dl) {
+                        if (!dlId) {
+                            const { insertId } = await person.add('identifications', body.dl)
+                            if (!insertId) throw new Error("Failed to add driver's license")
+
+                            dlId = insertId
+                        }
+                        body.main.step = 2
+                        cache.step = 2
+                    } else {
+                        if (!dlId) await person.update('identifications', body.dl, { id: inst.dlId })
                     }
 
-                if (!inst.dl) {
-                    if (!dlId) {
-                        const { insertId } = await person.add('identifications', body.dl)
-                        if (!insertId) throw new Error("Failed to add driver's license")
-
-                        dlId = insertId
-                    }
-                    body.main.step = 2
-                    cache.step = 2
-                } else {
-                    if (!dlId) await person.update('identifications', body.dl, { id: inst.dlId })
+                    body.main.dlId = dlId
+                    cache.dlId = dlId
+                    cache.dlIssuedOn = body.dl.issuedOn
+                    cache.dlExpiresOn = body.dl.expiresOn
                 }
 
-                body.main.dlId = dlId
-                await inst.update(body.main)
-
-                cache.dlId = dlId
-                cache.dlExpiresOn = body.dl.expiresOn
                 cache.dlDenied = dlDenied
                 cache.dlRevoked = dlRevoked
                 cache.dlDeniedExpl = dlDeniedExpl || null
@@ -146,11 +273,13 @@ export const initialProgress = async (inst, step, body) => {
 
                 //? cache = JSON.stringify(cache)
                 await driver.update('appDef', { cache })
+                await inst.update(body.main)
             }
             break
 
 
         case 'medical-card':
+        case 'medical-card-lock': //* Carrier E-Form
             {
                 const { expiresOn, issuedOn, nrcme, mecAbsent } = body
                 delete body.expiresOn
@@ -158,7 +287,12 @@ export const initialProgress = async (inst, step, body) => {
                 delete body.nrcme
                 delete body.mecAbsent
 
-                if (!body.underMeds) body.medList = null
+                if (inst.step === 12) { //* Carrier E-Form
+                    //? Unchecked
+                    if (body.underMeds === undefined) body.underMeds = false
+                }
+
+                if (body.underMeds === false) body.medList = null
                 if (mecAbsent) body.mecId = null
 
                 body = {
@@ -166,92 +300,100 @@ export const initialProgress = async (inst, step, body) => {
                     mec: { expiresOn, issuedOn, nrcme },
                 }
 
-                if (inst.step < 3) {
-                    body.main.step = 3
-                    cache.step = 3
-                }
+                if (step === 'medical-card-lock') delete body.mec
 
-                if (expiresOn) {
-                    if (inst.mecId) await driver.update('mecs', body.mec, { id: inst.mecId })
-                    else {
-                        const { insertId } = await driver.add('mecs', body.mec)
-                        if (!insertId) throw new Error('Failed to add medical card')
-
-                        body.main.mecId = insertId
+                if (body.mec) {
+                    if (inst.step < 3) {
+                        body.main.step = 3
+                        cache.step = 3
                     }
-                } else {
-                    await inst.update({ mecId: null })
-                    await driver.delete('mecs', { id: inst.mecId })
-                    body.main.mecId = null
+
+                    if (expiresOn) {
+                        if (inst.mecId) await driver.update('mecs', body.mec, { id: inst.mecId })
+                        else {
+                            const { insertId } = await driver.add('mecs', body.mec)
+                            if (!insertId) throw new Error('Failed to add medical card')
+
+                            body.main.mecId = insertId
+                        }
+                    } else {
+                        await inst.update({ mecId: null })
+                        await driver.delete('mecs', { id: inst.mecId })
+                        body.main.mecId = null
+                    }
+                    cache.mecUntil = expiresOn || null
                 }
-
-                await inst.update(body.main)
-
-                cache.mecUntil = expiresOn || null
                 cache.underMeds = body.main.underMeds
                 cache.medList = body.main.medList || null
 
                 //? cache = JSON.stringify(cache)
                 await driver.update('appDef', { cache })
+                await inst.update(body.main)
             }
             break
 
 
         case 'legal-compliance':
             {
-                if (body.dui === undefined) body.dui = false
-                if (body.criminal === undefined) body.criminal = false
-                if (body.dotDat === undefined) body.dotDat = false
+                if (inst.step === 12) {
+                    if (body.dui === undefined) body.dui = false
+                    if (body.criminal === undefined) body.criminal = false
+                    if (body.dotDat === undefined) body.dotDat = false
+                    delete body.citations
+                }
 
-                if (!body.dui) body.duiInDecade = null
-                if (!body.criminal) body.criminalExpl = null
+                if (body.dui === false) body.duiInDecade = null
+                if (body.criminal === false) body.criminalExpl = null
 
                 const { violation, other, citedOn, state } = body
                 delete body.violation
                 delete body.other
                 delete body.citedOn
                 delete body.state
-                if (!violation && body.citations) body.citations = false
-
-                if (inst.step < 4) {
-                    body.step = 4
-                    cache.step = 4
-                }
 
                 cache.dui = body.dui
                 cache.duiInDecade = body.duiInDecade
                 cache.criminal = body.criminal
                 cache.criminalExpl = body.criminalExpl
                 cache.dotDat = body.dotDat
-                cache.citations = body.citations
-                cache.citIds = []
 
-                if (body.citations) {
-                    const count = violation.length
+                if (inst.step < 12) {
+                    if (!violation && body.citations) body.citations = false
 
-                    await driver.delete('citations') //* Cascades on delete in application citations
-                    for (let i = 0; i < count; i++) {
-                        const { insertId: citId } = await driver.add('citations', {
-                            violation: violation[i],
-                            other: violation[i] === 'other' ? other?.[i] : null,
-                            citedOn: citedOn[i],
-                            state: state[i],
-                        })
-                        if (!citId) throw new Error('Failed adding citation')
-                        await inst.add('citations', { citId })
-                        cache.citIds.push(citId)
+                    if (inst.step < 4) {
+                        body.step = 4
+                        cache.step = 4
+                    }
+
+                    cache.citations = body.citations
+                    cache.citIds = []
+
+                    if (body.citations) {
+                        const count = violation.length
+
+                        await driver.delete('citations') //* Cascades on delete in application citations
+                        for (let i = 0; i < count; i++) {
+                            const { insertId: citId } = await driver.add('citations', {
+                                violation: violation[i],
+                                other: violation[i] === 'other' ? other?.[i] : null,
+                                citedOn: citedOn[i],
+                                state: state[i],
+                            })
+                            if (!citId) throw new Error('Failed adding citation')
+                            await inst.add('citations', { citId })
+                            cache.citIds.push(citId)
+                        }
                     }
                 }
 
-                await inst.update(body)
-
                 //? cache = JSON.stringify(cache)
                 await driver.update('appDef', { cache })
+                await inst.update(body)
             }
             break
 
 
-        case 'safety':
+        case 'safety': //* Driver Application
             {
                 const { accidents, collision, other, date, state, injuries, fatalities } = body
                 body = { accidents }
@@ -354,7 +496,7 @@ export const initialProgress = async (inst, step, body) => {
             break
 
 
-        case 'prev-employment':
+        case 'prev-employment': //* Driver Application
             {
                 delete body.explGap
                 if (inst.step < 7) {
@@ -468,93 +610,6 @@ export const initialProgress = async (inst, step, body) => {
         case 'certify':
             {
                 if (inst.step < 12) await inst.update({ step: 12 })
-            }
-            break
-
-
-        case 'address': //* Carrier UI only (no step)
-            {
-                const { address, prevCountry = null } = body
-                const { since, currentSince, enough, livedAbroad = false, address1, address2, city, state, zip } = address
-                const { personId } = inst
-
-                if (enough || (livedAbroad && prevCountry)) await person.delete('addresses', { since: { not: currentSince } })
-                await person.update('addresses', { since, address1, address2, city, state, zip }, { since: currentSince })
-                await inst.update('addresses', { enough, livedAbroad }, { since }) //* since cascaded
-                await driver.update('appDef', { prevCountry })
-            }
-            break
-
-
-        case 'prior-addresses': //* Carrier UI only (no step)
-            {
-                const { maxDate, addresses, prevCountry = null } = body
-                await person.delete('addresses', { since: { not: maxDate } })
-                if (addresses) {
-                    const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
-                    const count = zip.length
-
-                    for (let i = 0; i < count; i++) {
-                        await person.add('addresses', {
-                            since: since[i],
-                            address1: address1[i],
-                            address2: address2[i],
-                            city: city[i],
-                            state: state[i],
-                            zip: zip[i],
-                        })
-                        inst.add('addresses', {
-                            personId,
-                            since: since[i],
-                            enough: enough[i],
-                            livedAbroad: count - i === 1 ? !!prevCountry : null,
-                        })
-                    }
-                }
-            }
-            break
-
-
-        case 'legal-status': //* Carrier UI only (no step)
-            {
-                if (body.legalStatus < 2) body.legalExpiration = null
-
-                const { legalStatus: status, legalExpiration: expiresOn } = body
-                await person.update('legal', { status, expiresOn }, { since: tz2utc(inst.appliedOn, true) })
-            }
-            break
-
-
-        case 'position': //* Carrier UI only (no step)
-            {
-                const { position, mmt, type, make, model, year, length, trailer } = body
-
-                await inst.update({ position })
-                inst.position = position
-
-                await vehicleRecord(inst, { mmt, type, make, model, year, length, trailer })
-            }
-            break
-
-
-        case 'workflow': //* Carrier UI only
-            {
-                const { _userId, _carrierId, _teamId, condition, experience, position } = body
-                body = { main: {}, decision: {} }
-
-                if (_carrierId && _carrierId !== inst._carrierId) {
-                    const carrier = await Carrier.fetch(inst.session, { _id: _carrierId })
-                    if (!carrier) throw new Error('Carrier not found')
-
-                    body.main.carrierId = carrier.id
-                }
-
-                if (_teamId && _teamId !== inst._teamId) {
-                    const team = await Team.fetch(inst.session, { _id: _teamId })
-                    body.main.teamId = team.id
-                }
-
-                await inst.update(body.main)
             }
             break
 
