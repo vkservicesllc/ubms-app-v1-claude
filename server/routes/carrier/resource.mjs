@@ -14,7 +14,6 @@ import { inPEnvironment, withPrivileges } from '../../tools/core/user/permission
 
 /* Validators */
 import validationCheck from '../../tools/form/validator.mjs'
-import { dynamicValidator as dynamicApplicantValidator } from '../driver/resource.mjs'
 
 
 // ==== SETUP ==== //
@@ -31,6 +30,76 @@ const applicantEmployerFields = [
     'startDate', 'position', 'earnings', 'FMCSR', 'dotDat', 'RFL', 'endDate',
 ]
 applicantEmployerFields.forEach(prop => validateApplicantEmployers.push(EmploymentForm[prop].validate()))
+
+
+const dynamicValidator = {
+    driverApplications: (req, res, next) => {
+        const { step } = req.params
+        let validators = []
+
+        switch (step) {
+            case 'workflow':
+                validators = ApplicationForm.validate('carrier/workflow')
+                break
+            case 'profile':
+                validators = ApplicationForm.validate('carrier/profile')
+                break
+            case 'profile-lock1':
+                validators = ApplicationForm.validate('carrier/profile-dl-lock')
+                break
+            case 'profile-lock2':
+                validators = ApplicationForm.validate('carrier/profile-ssn-lock')
+                break
+            case 'profile-lock':
+                validators = ApplicationForm.validate('carrier/profile-full-lock')
+                break
+            case 'legal-status':
+                validators = ApplicationForm.validate('carrier/legal')
+                break
+            case 'position':
+                validators = ApplicationForm.validate('carrier/position+vehicle')
+                break
+            case 'address':
+                validators = ApplicationForm.validate('carrier/residence')
+                break
+                break
+            case 'driver-license':
+                validators = ApplicationForm.validate('carrier/license')
+                break
+            case 'driver-license-lock':
+                validators = ApplicationForm.validate('carrier/license-lock')
+                break
+            case 'medical-card':
+                validators = ApplicationForm.validate('carrier/medical')
+                break
+            case 'medical-card-lock':
+                validators = ApplicationForm.validate('carrier/medical-lock')
+                break
+            case 'legal-compliance':
+                validators = ApplicationForm.validate('carrier/compliance')
+                break
+            case 'experience':
+                validators = ApplicationForm.validate('carrier/experience')
+                break
+            case 'preference':
+                validators = ApplicationForm.validate('carrier/preference')
+                break
+            case 'business':
+                validators = ApplicationForm.validate('carrier/business')
+                break
+            case 'beneficiary':
+                validators = ApplicationForm.validate('carrier/beneficiary')
+                break
+            case 'misc':
+                validators = ApplicationForm.validate('carrier/misc')
+                break
+        }
+
+        Promise.all(validators.map(validator => validator.run(req)))
+            .then(() => next())
+            .catch(next)
+    },
+}
 
 
 
@@ -179,7 +248,7 @@ router.post('/drivers/prev-employments/modify', User.mw.verify, Team.mw.verify, 
 
 
 router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.verify,
-    dynamicApplicantValidator.applications, validationCheck, // validationCheck returns error when checkbox is unchecked
+    dynamicValidator.driverApplications, validationCheck, // validationCheck returns error when checkbox is unchecked
     async (req, res) => {
         req.params.step = req.params.step.replace('-alt', '')
 // return res.send(req.body) //! TEMP
@@ -206,7 +275,7 @@ router.post('/driver/application/:formId/edit/:step', User.mw.verify, Team.mw.ve
 
 
 router.post('/driver/application/:formId/prior-residence', User.mw.verify, Team.mw.verify,
-    ApplicationForm.validate('prior-residence'),
+    ApplicationForm.validate('carrier/prior-residence'),
     validationCheck, async (req, res) => {
 return res.send(req.body)
         try {

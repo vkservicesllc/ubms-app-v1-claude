@@ -253,23 +253,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
 
         const url = `/drivers/application/${formId}/e-form`
         const recUrl = `/resource/driver/application/${formId}/edit`
-        hbs.actionUrl = {
-            workflow: `${recUrl}/workflow`,
-            profile: `${recUrl}/profile`,
-            address: `${recUrl}/address`,
-            status: `${recUrl}/legal-status`,
-            position: `${recUrl}/position`,
-            dl: `${recUrl}/driver-license-alt`,
-            mec: `${recUrl}/medical-card-alt`,
-            legal: `${recUrl}/legal-compliance-alt`,
-            safety: `${recUrl}/safety`,
-            experience: `${recUrl}/experience`,
-            prevEmployment: `${recUrl}/prev-employment`,
-            preference: `${recUrl}/preference`,
-            business: `${recUrl}/business`,
-            beneficiary: `${recUrl}/beneficiary`,
-            misc: `${recUrl}/misc`,
-        }
+
         hbs.linkUrl = {
             priorAddr: `${url}/prior-residence`,
             citations: `${url}/citations`,
@@ -415,6 +399,30 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                 check: checkStyle.waiting,
                 status: status.waiting,
             },
+        }
+
+        let profileAction = 'profile'
+        if (uploaded.dl || uploaded.ssn) {
+            profileAction += '-lock'
+            if (!uploaded.ssn) profileAction += 1
+            if (!uploaded.dl) profileAction += 2
+        }
+        hbs.actionUrl = {
+            workflow: `${recUrl}/workflow`,
+            profile: `${recUrl}/${profileAction}`,
+            address: `${recUrl}/address`,
+            status: `${recUrl}/legal-status`,
+            position: `${recUrl}/position`,
+            dl: `${recUrl}/driver-license${uploaded.dl ? '-lock' : ''}`,
+            mec: `${recUrl}/medical-card${uploaded.mec ? '-lock' : ''}`,
+            legal: `${recUrl}/legal-compliance`,
+            // safety: `${recUrl}/safety`,
+            experience: `${recUrl}/experience`,
+            prevEmployment: `${recUrl}/prev-employment`,
+            preference: `${recUrl}/preference`,
+            business: `${recUrl}/business`,
+            beneficiary: `${recUrl}/beneficiary`,
+            misc: `${recUrl}/misc`,
         }
 
         hbs._id = application._id

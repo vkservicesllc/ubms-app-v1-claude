@@ -1526,113 +1526,165 @@ class ApplicationForm {
 
     static validate = (target, options) => validate(ApplicationForm, (target, options) => {
         let fields
+        const regFields = [ 'marital', 'phone', 'email' ]
         const profileFields = [
             'firstName', 'middleName', 'lastName', 'suffix',
-            'gender', // 'dob', // 'ssn',
-            'marital', 'phone', 'email',
+            ...regFields,
         ]
         const addressFields = ['address1', 'address2', 'addrZip', 'addrCity', 'addrState', 'addrSince', 'addrEnough']
+        const legalFields = ['status', 'statusExp']
+        const licenseFields = ['dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp', 'dlEndrs', 'dlRestr']
+        const licenseExtFields = ['dlDenied2', 'dlRevoked2', 'dlDeniedExpl', 'dlRevokedExpl']
         const vehicleFields = [
             'currentVhlType',
             'currentVhlMMT', 'currentVhlYear', 'currentVhlMake', 'currentVhlModel', 'currentVhlLen',
         ]
         const businessFields = ['activeLLC', 'inactiveLLC', 'llcName', 'llcState', 'llcEin']
 
-        //! NOT REHIRE (FIRST TIMER)
         switch (target) {
-            case 'registration':
-                fields = [...profileFields, ...addressFields, 'status', 'statusExp']
-                // fields = [...profileFields, 'status', 'statusExp']
+
+
+            case 'driver/registration':
+                fields = [...profileFields, ...addressFields, ...legalFields]
                 break
-            case 'workflow':
+
+
+            case 'carrier/workflow':
                 fields = ['user', 'carrier', 'condition', 'experience', 'apprPosition']
                 break
-            case 'profile':
-                fields = [ ...profileFields, 'dob' ]
+
+
+            case 'driver/profile':
+                fields = [...profileFields, 'gender', 'dob']
                 break
-            case 'legal':
-                fields = ['status', 'statusExp']
+            case 'carrier/profile':
+                fields = [...profileFields, 'gender', 'dob', 'ssn']
                 break
-            case 'position/vehicle':
-                fields = ['position', ...vehicleFields, 'currentVhlTrailer2']
+            case 'carrier/profile-dl-lock':
+                fields = [...regFields, 'ssn']
                 break
-            case 'residence':
+            case 'carrier/profile-ssn-lock':
+                fields = [...regFields, 'gender', 'dob']
+                break
+            case 'carrier/profile-full-lock':
+                fields = regFields
+                break
+
+
+            case 'driver/residence':
                 fields = [
-                    ...addressFields,
-                    'livedAbroad', 'country',
+                    ...addressFields, 'livedAbroad', 'country',
                     '_addrSince', '_addrEnough', '_address1', '_address2',
                     '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
                 ]
                 break
-            case 'prior-residence':
+            case 'carrier/residence':
+                fields = [...addressFields, 'livedAbroad', 'country']
+                break
+            case 'carrier/prior-residence':
                 fields = [
                     'country',
                     '_addrSince', '_addrEnough', '_address1', '_address2',
                     '_addrZip', '_addrCity', '_addrState', '_livedAbroad',
                 ]
+
+
+            case 'carrier/legal':
+                fields = legalFields
                 break
-            case 'license':
-                fields = [
-                    'dlCommercial', 'dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp',
-                    'dlEndrs', 'dlRestr', 'dlDenied', 'dlRevoked', 'dlDeniedExpl', 'dlRevokedExpl',
-                ]
+
+
+            case 'carrier/position+vehicle':
+                fields = ['position', ...vehicleFields, 'currentVhlTrailer2']
                 break
-            case 'license-alt':
-                fields = [
-                    'dlCommercial2', 'dlState', 'dlNumber', 'dlClass', 'dlIss', 'dlExp',
-                    'dlEndrs', 'dlRestr', 'dlDenied2', 'dlRevoked2', 'dlDeniedExpl', 'dlRevokedExpl',
-                ]
+
+
+            case 'driver/license':
+                fields = ['dlCommercial', ...licenseFields, 'dlDenied', 'dlRevoked', 'dlDeniedExpl', 'dlRevokedExpl']
                 break
-            case 'medical':
+            case 'carrier/license':
+                fields = ['dlCommercial2', ...licenseFields, ...licenseExtFields]
+                break
+            case 'carrier/license-lock':
+                fields = licenseExtFields
+                break
+
+
+            case 'driver/medical':
                 fields = ['noMec', 'mecExp', 'mecIss', 'mecNumber', 'underMeds', 'medList']
                 break
-            case 'medical-alt':
+            case 'carrier/medical':
                 fields = ['mecExp', 'mecIss', 'mecNumber', 'underMeds2', 'medList']
                 break
-            case 'compliance':
+            case 'carrier/medical-lock':
+                fields = ['underMeds2', 'medList']
+                break
+
+
+
+            case 'driver/compliance':
                 fields = [
                     'dui', 'duiInDecade', 'criminal', 'criminalExpl', 'dotDat', 'citations',
                     '_citDate', '_citState', '_citReason', '_citOtherReason',
                 ]
-            case 'compliance-alt':
+            case 'carrier/compliance':
                 fields = [
                     'dui2', 'duiInDecade', 'criminal2', 'criminalExpl', 'dotDat2',
                 ]
                 break
-            case 'safety':
+
+
+            case 'driver/safety':
                 fields = [
                     'accidents',
                     '_accType', '_accOtherType', '_accDate', '_accState', '_accInjuries', '_accFatalities',
                 ]
                 break
-            case 'experience':
+
+            case 'driver/experience':
+            case 'carrier/experience':
                 fields = [
-                    'noExp', 'cmvExp', 'expStartDate', 'expMileage', // 'expEndDate',
+                    'noExp', 'cmvExp', 'expStartDate', 'expMileage',
                     'cdlSchool', 'schName', 'schPhone', 'schState', 'schEndDate', 'schDuration',
                 ]
                 break
-            case 'employment':
+
+
+            case 'driver/employment':
                 fields = ['prevEmployed']
                 break
-            case 'preference':
+
+
+            case 'driver/preference':
+            case 'carrier/preference':
                 fields = ['operType', 'teamName', 'teamPhone', 'haulRegion', 'equipmentType', 'startPref']
                 break
-            case 'business':
-                fields = businessFields
-                break
-            case 'business/vehicle':
+
+
+            case 'driver/business+vehicle':
                 fields = [...businessFields, ...vehicleFields, 'currentVhlTrailer']
                 break
-            case 'beneficiary':
+            case 'carrier/business':
+                fields = businessFields
+                break
+
+
+            case 'driver/beneficiary':
+            case 'carrier/beneficiary':
                 fields = [
                     'benefRelation', 'benefOtherRel',
                     'benefFirstName', 'benefMiddleName', 'benefLastName', 'benefSuffix',
                     'benefPhone','benefSsn',
                 ]
                 break
-            case 'emergency':
+
+
+            case 'driver/misc':
+            case 'carrier/misc':
                 fields = ['emergPhone', 'emergName', 'emergRelation']
                 break
+
+
         }
 
         return fields

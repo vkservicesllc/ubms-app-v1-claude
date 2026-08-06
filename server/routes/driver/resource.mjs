@@ -30,63 +30,41 @@ const dynamicValidator = {
         let validators = []
 
         switch (step) {
-            case 'workflow':
-                validators = ApplicationForm.validate('workflow')
-                break
             case 'profile':
-                validators = ApplicationForm.validate('profile')
-                break
-            case 'legal-status':
-                validators = ApplicationForm.validate('legal')
-                break
-            case 'position':
-                validators = ApplicationForm.validate('position/vehicle')
+                validators = ApplicationForm.validate('driver/profile')
                 break
             case 'residence':
-            case 'address':
-                validators = ApplicationForm.validate('residence')
+                validators = ApplicationForm.validate('driver/residence')
                 break
             case 'driver-license':
-                validators = ApplicationForm.validate('license')
-                break
-            case 'driver-license-alt':
-                validators = ApplicationForm.validate('license-alt')
+                validators = ApplicationForm.validate('driver/license')
                 break
             case 'medical-card':
-                validators = ApplicationForm.validate('medical')
-                break
-            case 'medical-card-alt':
-                validators = ApplicationForm.validate('medical-alt')
+                validators = ApplicationForm.validate('driver/medical')
                 break
             case 'legal-compliance':
-                validators = ApplicationForm.validate('compliance')
-                break
-            case 'legal-compliance-alt':
-                validators = ApplicationForm.validate('compliance-alt')
+                validators = ApplicationForm.validate('driver/compliance')
                 break
             case 'safety':
-                validators = ApplicationForm.validate('safety')
+                validators = ApplicationForm.validate('driver/safety')
                 break
             case 'experience':
-                validators = ApplicationForm.validate('experience')
+                validators = ApplicationForm.validate('driver/experience')
                 break
             case 'prev-employment':
-                validators = ApplicationForm.validate('employment')
-                break
-            // case 'prev-employer':
-            //     validators = EmploymentForm.validate()
+                validators = ApplicationForm.validate('driver/employment')
                 break
             case 'preference':
-                validators = ApplicationForm.validate('preference')
+                validators = ApplicationForm.validate('driver/preference')
                 break
             case 'business':
-                validators = ApplicationForm.validate('business/vehicle')
+                validators = ApplicationForm.validate('driver/business+vehicle')
                 break
             case 'beneficiary':
-                validators = ApplicationForm.validate('beneficiary')
+                validators = ApplicationForm.validate('driver/beneficiary')
                 break
             case 'misc':
-                validators = ApplicationForm.validate('emergency')
+                validators = ApplicationForm.validate('driver/misc')
                 break
         }
 
@@ -232,7 +210,7 @@ router.post('/application/start/:_teamId?/:_carrierId?', [
 })
 
 
-router.post('/application/register/:_id', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
+router.post('/application/register/:_id', ApplicationForm.validate('driver/registration'), validationCheck, async (req, res) => {
     try {
         const { _id } = req.params
         const application = await Application.fetch(res.session, { _id }, { hideSensitive: false })
@@ -287,90 +265,3 @@ router.post('/application/submit/:formId', async (req, res) => {
 // ==== EXPORT ==== //
 
 export default router
-
-export { dynamicValidator }
-
-
-
-
-
-
-
-// router.post('/OLD/application/start/:_teamId/:_carrierId?', ApplicationForm.validate('registration'), validationCheck, async (req, res) => {
-// // return res.send(req.body)
-//     try {
-//         let { form: formId } = req.query
-//         const { address: addrBody } = req.body
-//         delete req.body.address
-
-//         let application, personId
-
-//         if (formId) {
-//             application = await Application.fetch(res.session, { formId })
-//             if (!application) throw new Error('Application not found')
-
-// //* Pre-Applicant
-// //! Individual add-ons
-
-//             await application.update(req.body)
-
-//             //! Need to get personId from application
-//         } else {
-//             const { _teamId, _carrierId } = req.params
-//             const { cdl: cdlRole, rec: _userId } = req.query
-
-//             req.body.cdlRole = +cdlRole
-
-//             let team
-//             if (_teamId !== 'global') {
-//                 team = await Team.fetch(res.session, { _id: _teamId }, { offline: true })
-//                 if (!team) throw new Error('Team not found')
-
-//                 res.session.team = team
-//                 req.body.teamId = team.id
-//             }
-
-//             if (_carrierId) {
-//                 const carrier = await Carrier.fetch({ ...res.session, user: { id: 1 } }, { _id: _carrierId })
-//                 if (!carrier) throw new Error('Carrier not found')
-
-//                 req.body.carrierId = carrier.id
-//             }
-
-//             if (_userId) {
-//                 const user = await User.fetch(res.session, { _simpleId: _userId }, { offline: true })
-//                 if (!user) throw new Error('User not found')
-
-//                 req.body.userId = user.id
-//             }
-
-//             const result = await Application.create(res.session, req.body)
-//             application = result.data
-//             if (!application) throw new Error('Failed to create application')
-
-//             formId = application.formId
-//             personId = application.personId
-//         }
-
-//         await application.add('addresses', addrBody)
-//         await application.welcome()
-
-//         if (!addrBody.enough) await application.update({ step: 0 })
-//         await application.update({ addrComplete: !!addrBody.enough })
-
-//         if (personId) { //! CONDITION IS TEMPORARY (EXPECT personId anyway)
-//             const person = await Individual.fetch(res.session, { id: application.personId })
-//             if (person) { //* DO NOT INTERRUPT APPLICATION WITH ERROR
-//                 delete addrBody.appId
-//                 delete addrBody.enough
-
-//                 //! ADD THE ADDRESS ONLY IF NOT FOUND
-//                 await person.add('addresses', addrBody)
-//             }
-//         }
-
-//         res.redirect(`/application/${formId}`)
-//     } catch (err) {
-//         sendError.server(req, res, err)
-//     }
-// })
