@@ -27,7 +27,7 @@ table.on('draw', function() {
                 const { application } = response.data
                 const { fullName, formId, dob, ssn, phone, address, dl } = application
 
-                const cp = ' <sup><a href="" class="copy-apl-info-cred"><i class="dark green copy outline icon"></i></a></sup>'
+                const cp = ' <sup style="font-size: .65rem;" title="Copy Text"><a href="" class="copy-apl-info-cred"><i class="teal copy outline icon"></i></a></sup>'
                 const na = '<span class="ui red text"><small><i>N/A</i></small></span>'
 
                 application.gender = application.expansion.gender
@@ -37,16 +37,22 @@ table.on('draw', function() {
                 application.address = new Address(address).html({ inline: false })
                 application.dlNum = dl.number
                 // application.dlClass = dl.class
-                application.dlState = `${application.expansion.dlState} (${dl.state})`
+                application.dlState = application.expansion.dlState
                 // application.dlExp = moment(dl.expiresOn).format('MM/DD/YYYY')
                 application.dlDuration = `<strong style="font-size: 1.05em;">${moment(dl.issuedOn).format('MM/DD/YYYY')}</strong>${cp}`
                 application.dlDuration += ` — <strong style="font-size: 1.05em;">${moment(dl.expiresOn).format('MM/DD/YYYY')}</strong>${cp}`
+                if (dl?.address?.zip) {
+                    application.dlAddress = `<span>${dl.address.address1}</span>${cp}`
+                    if (dl.address.address2) application.dlAddress += `, <span>${dl.address.address2}</span>${cp}`
+                    application.dlAddress += `<br/><span>${dl.address.city}</span>${cp}, <span>${dl.address.state}</span>${cp}`
+                    application.dlAddress += ` <span>${dl.address.zip}</span>${cp}`
+                }
 
                 const items = [
                     'firstName', '^middleName', 'lastName', '^suffix',
                     '!gender', 'dob', 'ssn',
                     'phone', 'email', '!address',
-                    '!dlState', 'dlNum',
+                    'dlState', 'dlNum',
                     // '^!dlClass',
                     // 'dlExp',
                     '!dlDuration',
@@ -67,7 +73,7 @@ table.on('draw', function() {
                     else item = `<strong style="font-size: 1.05em;">${item}</strong>${!ncp ? cp : ''}`
                     $(`#apl-info-card\\:${prop}`).html(item)
                 })
-                if (dl.class) $('#apl-info-card\\:dlNum').append(`&nbsp; <strong>/&nbsp; ${dl.class}</strong>`)
+                if (dl.class) $('#apl-info-card\\:dlNum').append(`&nbsp; <strong>/&nbsp; ${dl.class}</strong>${cp}`)
                 if (!dl.commercial) $('#apl-info-card\\:dlNum').append('<small> &nbsp;—&nbsp; CDL</small>')
                 // if (dl.commercial) $('#apl-info-card\\:dlClass').append('<small> &nbsp;—&nbsp; CDL</small>')
 
