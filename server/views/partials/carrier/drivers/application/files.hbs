@@ -123,10 +123,12 @@
                                                                                         <span>
                                                                                             {{#if (eq file.dl.uploaded false)}}
                                                                                             {{#if (eq filePerms.sup.upload true)}}
-                                                                                            <a title="Upload {{idx downloadLinks.dl 1}}" id="upload-dl-file"><i class="blue upload action icon"></i></a>
+                                                                                            <a title="Upload {{idx downloadLinks.dl 1}}" id="upload-dl-file">
+                                                                                                <i class="blue upload action icon"></i>
+                                                                                            </a>
                                                                                             {{/if}}
                                                                                             {{else}}
-                                                                                            <a href="{{idx downloadLinks.dl 0}}" title="Download {{idx downloadLinks.dl 1}}" download="{{idx downloadLinks.dl 2}}">
+                                                                                            <a href="{{idx downloadLinks.dl 0}}" title="Download {{idx downloadLinks.dl 1}}" download>
                                                                                                 <i class="dark green download action icon"></i>
                                                                                             </a>
                                                                                             {{#if (eq filePerms.sup.upload true)}}

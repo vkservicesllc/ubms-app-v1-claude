@@ -288,8 +288,9 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             waiting: '<span class="ui dark orange text">Pending</span>',
         }
 
+        const filePath = `/files/pdf/driver/application/${formId}`
         hbs.downloadLinks = { //! index 3 is download name
-            dl: [ ``, "Driver's License", `[${formId}] Driver's License (${fullName})` ],
+            dl: [ `${filePath}/drivers-license`, "Driver's License", `[${formId}] Driver's License (${fullName})` ],
             mec: [ ``, 'Medical Certificate', `[${formId}] Medical Certificate (${fullName})` ],
             leg: [ ``, 'Legal Documents', `[${formId}] Legal Documents (${fullName})` ],
             ssc: [ ``, 'Social Security Card', `[${formId}] Social Security Card (${fullName})` ],
@@ -305,7 +306,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         }
 
         const fileText = prop => uploaded[prop]
-            ? `<a><span class="ui dark blue text" href="${hbs.downloadLinks[prop][0]}">${hbs.downloadLinks[prop][1]}</span></a>`
+            ? `<span class="ui dark blue text"><a href="${hbs.downloadLinks[prop][0]}" target="_blank">${hbs.downloadLinks[prop][1]}</a></span>`
             : `<span class="ui grey text">${hbs.downloadLinks[prop][1]}</span>`
 
         hbs.folder = {

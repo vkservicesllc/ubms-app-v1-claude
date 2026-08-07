@@ -13,6 +13,7 @@ import Carrier from '../../tools/core/carrier.mjs'
 import Company from '../../tools/core/company.mjs'
 import { Application, Employment } from '../../tools/core/driver.mjs'
 import createApplicationPdf from './mw/pdf/driver-application.mjs'
+import createDriverLicensePdf from './mw/pdf/driver-license.mjs'
 import createEmplVerifPdf from './mw/pdf/prev-employment-verification.mjs'
 import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 import fillPdf from '../../tools/utils/pdf.fillable.mjs'
@@ -50,7 +51,7 @@ router.get('/driver/application/blank/:route?', fileLoggedOut, Team.mw.verify, a
         const pdfBytes = await createApplicationPdf(carrier)
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', 'inline; filename="application.pdf"')
+        res.setHeader('Content-Disposition', 'inline; filename="Application Blank.pdf"')
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
@@ -72,7 +73,7 @@ router.get('/driver/application/:formId', fileLoggedOut, Team.mw.verify, async (
 
         const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
 
-        if (!application || application.condition !== 'c' || (team && application._teamId !== team._id))
+        if (!application || application.condition === 'p' || (team && application._teamId !== team._id))
             return res.redirect(aplUrl)
 
         let carrier
@@ -95,7 +96,7 @@ router.get('/driver/application/:formId', fileLoggedOut, Team.mw.verify, async (
         const pdfBytes = await createApplicationPdf(carrier, application, addresses, violations, accidents, employers)
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', `inline; filename="Application.pdf"`)
+        res.setHeader('Content-Disposition', `inline; filename="[${formId}] Application.pdf"`)
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
@@ -117,7 +118,7 @@ router.get('/driver/application/:formId/consent/psp', fileLoggedOut, Team.mw.ver
 
         const application = await Application.fetch(res.session, { formId }, { hideSensitive: false })
 
-        if (!application || application.condition !== 'c' || (team && application._teamId !== team._id))
+        if (!application || application.condition === 'p' || (team && application._teamId !== team._id))
             return res.redirect(aplUrl)
 
         const { name: carrierName } = application.carrier || {}
@@ -147,7 +148,41 @@ router.get('/driver/application/:formId/consent/psp', fileLoggedOut, Team.mw.ver
         pdfBytes = await pdfDoc.save()
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', `inline; filename="Consent (PSP).pdf"`)
+        res.setHeader('Content-Disposition', `inline; filename="[${formId}] Consent (PSP).pdf"`)
+        res.send(Buffer.from(pdfBytes))
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.get('/driver/application/:formId/:documentType', fileLoggedOut, Team.mw.verify, async (req, res) => {
+    const { formId, documentType } = req.params
+
+    try {
+        const aplUrl = '/drivers/applications'
+        const { user, team } = res.session
+        const { DS } = user
+
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('f:drv/sup', 'download', permissions, DS))
+            return res.redirect(aplUrl)
+
+        const application = await Application.fetch(res.session, { formId })
+        if (!application || application.condition === 'p' || (team && application._teamId !== team._id))
+            return res.redirect(aplUrl)
+
+        let pdfBytes, downloadName
+
+        switch (documentType) {
+            case 'drivers-license':
+                pdfBytes = await createDriverLicensePdf(application)
+                downloadName = "Driver's License"
+                break
+        }
+
+        res.setHeader('Content-Type', 'application/pdf')
+        res.setHeader('Content-Disposition', `inline; filename="[${formId}] ${downloadName}.pdf"`)
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
@@ -173,7 +208,7 @@ router.get('/driver/application/previous-employment/verification/:method?', file
         const pdfBytes = await createEmplVerifPdf(employment, method)
 
         res.setHeader('Content-Type', 'application/pdf')
-        res.setHeader('Content-Disposition', 'inline; filename="verification.pdf"')
+        res.setHeader('Content-Disposition', `inline; filename="Verification (TEMP).pdf"`)
         res.send(Buffer.from(pdfBytes))
     } catch (err) {
         sendError.server(req, res, err)
