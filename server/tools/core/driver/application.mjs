@@ -80,6 +80,14 @@ export const initialProgress = async (inst, step, body) => {
                 await person.update('maritals', { status: marital }, { since })
                 await person.update('phones', { phone }, { since })
                 await person.update('emails', { email }, { since })
+
+                //* ssn is deliberately excluded from cache
+                if (update.individual) cache.profile = { ...cache.profile, dob: update.individual.dob, gender: update.individual.gender }
+                if (update.names) cache.profile = { ...cache.profile, ...update.names }
+                cache.profile = { ...cache.profile, marital, phone, email }
+
+                //? cache = JSON.stringify(cache)
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -137,7 +145,6 @@ export const initialProgress = async (inst, step, body) => {
             break
 
 
-        //! ATTN NEEDED (Deside if caching needed)
         case 'address': //* Carrier E-Form
             {
                 const { address, prevCountry = null } = body
@@ -147,15 +154,21 @@ export const initialProgress = async (inst, step, body) => {
                 if (enough || (livedAbroad && prevCountry)) await person.delete('addresses', { since: { not: currentSince } })
                 await person.update('addresses', { since, address1, address2, city, state, zip }, { since: currentSince })
                 await inst.update('addresses', { enough, livedAbroad }, { since }) //* since cascaded
-                await driver.update('appDef', { prevCountry })
+
+                cache.addrEnough = enough
+                cache.livedAbroad = !!prevCountry
+
+                //? cache = JSON.stringify(cache)
+                await driver.update('appDef', { prevCountry, cache })
             }
             break
 
 
-        //! ATTN NEEDED (Deside if caching needed)
         case 'prior-addresses': //* Carrier E-Form
             {
                 const { maxDate, addresses, prevCountry = null } = body
+                const { personId } = inst
+
                 await person.delete('addresses', { since: { not: maxDate } })
                 if (addresses) {
                     const { address1, address2, zip, city, state, since, enough, livedAbroad } = addresses
@@ -176,8 +189,13 @@ export const initialProgress = async (inst, step, body) => {
                             enough: enough[i],
                             livedAbroad: count - i === 1 ? !!prevCountry : null,
                         })
+                        cache.addrEnough = enough[i]
                     }
                 }
+                cache.livedAbroad = !!prevCountry
+
+                //? cache = JSON.stringify(cache)
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -188,6 +206,11 @@ export const initialProgress = async (inst, step, body) => {
 
                 const { legalStatus: status, legalExpiration: expiresOn } = body
                 await person.update('legal', { status, expiresOn }, { since: tz2utc(inst.appliedOn, true) })
+
+                cache.legal = { status, expiresOn }
+
+                //? cache = JSON.stringify(cache)
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -199,7 +222,10 @@ export const initialProgress = async (inst, step, body) => {
                 await inst.update({ position })
                 inst.position = position
 
-                await vehicleRecord(inst, { mmt, type, make, model, year, length, trailer })
+                cache = await vehicleRecord(inst, { mmt, type, make, model, year, length, trailer }, cache)
+
+                //? cache = JSON.stringify(cache)
+                await driver.update('appDef', { cache })
             }
             break
 
@@ -477,7 +503,7 @@ export const initialProgress = async (inst, step, body) => {
 
                 cache.experience = experience ? { ...body.experience } : false
                 cache.cdlSchool = cdlSchool
-                cache.prevEmployed
+                cache.prevEmployed = prevEmployed
 
                 body.appDef.cache = cache
 
@@ -599,7 +625,7 @@ export const initialProgress = async (inst, step, body) => {
                 if (!inst.emergency) {
                     await inst.add('emergency', body)
                     await inst.update({ step: 11 })
-                    cache.step = 10
+                    cache.step = 11
                 } else await inst.update('emergency', body)
 
                 await driver.update('appDef', { cache })
