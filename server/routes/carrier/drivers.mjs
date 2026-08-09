@@ -286,6 +286,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         const status = {
             pending: '<span class="ui dark red text">Pending</span>',
             waiting: '<span class="ui dark orange text">Pending</span>',
+            verified: '<span class="ui dark green text">Verified/Uploaded</span>',
         }
 
         const filePath = `/files/pdf/driver/application/${formId}`
@@ -353,12 +354,12 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         }
         hbs.checklist = {
             dl: {
-                check: checkStyle.unchecked,
-                status: status.pending,
+                check: uploaded.dl ? checkStyle.doubleChecked : checkStyle.unchecked,
+                status: !uploaded.dl ? status.pending : status.verified,
             },
             mec: {
-                check: checkStyle.unchecked,
-                status: status.pending,
+                check: uploaded.mec ? checkStyle.doubleChecked : checkStyle.unchecked,
+                status: !uploaded.mec ? status.pending : status.verified,
             },
             ssc: {
                 check: checkStyle.unchecked,
