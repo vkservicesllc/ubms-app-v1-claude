@@ -279,7 +279,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         const checkStyle = {
             unchecked: '<i class="red close icon"></i>',
             waiting: '<i class="orange wait icon"></i>',
-            ignored: '<i class="orange check icon"></i>',
+            skipped: '<i class="orange check icon"></i>',
             checked: '<i class="green check icon"></i>',
             doubleChecked: '<i class="green double check icon"></i>',
         }
@@ -287,6 +287,8 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             pending: '<span class="ui dark red text">Pending</span>',
             waiting: '<span class="ui dark orange text">Pending</span>',
             verified: '<span class="ui dark green text">Verified/Uploaded</span>',
+            uploaded: '<span class="ui dark green text">Uploaded</span>',
+            skipped: '<span class="ui dark orange text">Skipped</span>',
         }
 
         const filePath = `/files/pdf/driver/application/${formId}`
@@ -304,6 +306,9 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             mec: application?.checklist?.documents?.mec === 1,
             leg: application?.checklist?.documents?.leg === 1,
             ssc: application?.checklist?.documents?.ssc === 1,
+        }
+        const skipped = {
+            ssc: application?.checklist?.skipped?.ssc === 1,
         }
 
         const fileText = prop => uploaded[prop]
@@ -362,12 +367,24 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                 status: !uploaded.mec ? status.pending : status.verified,
             },
             ssc: {
-                check: checkStyle.unchecked,
-                status: status.pending,
+                check: uploaded.ssc
+                    ? checkStyle.doubleChecked
+                    : (
+                        skipped.ssc
+                        ? checkStyle.skipped
+                        : checkStyle.unchecked
+                    ),
+                status: uploaded.ssc
+                    ? status.verified
+                    : (
+                        skipped.ssc
+                        ? status.skipped
+                        : status.pending
+                    ),
             },
             leg: {
-                check: checkStyle.unchecked,
-                status: status.pending,
+                check: uploaded.leg ? checkStyle.doubleChecked : checkStyle.unchecked,
+                status: !uploaded.leg ? status.pending : status.verified,
             },
             reg: {
                 check: checkStyle.unchecked,
@@ -401,6 +418,17 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                 check: checkStyle.waiting,
                 status: status.waiting,
             },
+        }
+        const passed = {
+            dl: uploaded.dl,
+            mec: uploaded.mec,
+            leg: application.legalStatus[0] !== 2 || uploaded.leg,
+            ssc: uploaded.ssc || skipped.ssc,
+        }
+        if (passed.dl || passed.mec || passed.leg || passed.ssc) {
+            hbs.step.documents = ' active '
+            if (passed.dl && passed.mec && passed.leg && passed.ssc)
+                hbs.step.documents = ' completed '
         }
 
         let profileAction = 'profile'
