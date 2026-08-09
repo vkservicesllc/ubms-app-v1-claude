@@ -253,11 +253,3 @@ router.get('/settings', User.mw.verify, Team.mw.verify, async (req, res) => {
 // ==== EXPORT ==== //
 
 export default router
-
-export const fileLoggedOut = async (req, res, next) => {
-    const user = await User.mw.verify(req, res)
-    if (!user) return res.send('Your session has expired, so you can no longer view this file.<br/>Please log in using another tab and refresh this page to regain access.')
-
-    res.session.user = user
-    next()
-}

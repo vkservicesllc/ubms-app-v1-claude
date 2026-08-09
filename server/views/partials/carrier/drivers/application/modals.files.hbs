@@ -66,6 +66,34 @@
     }
 </style>
 
+<div class="ui modal" id="delete-files-modal">
+    <div class="center aligned header">
+        <small>Delete</small> <span class="delete-files-target"></span> — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
+    </div>
+    <div class="content">
+        <form id="delete-files-form" action="/files/delete/driver/application/{{formId}}" method="POST">
+            <input type="hidden" id="delete-files-target" name="target" />
+        </form>
+        <section>
+            
+            <div class="ui negative message">
+                <i class="close icon"></i>
+                <div class="header">
+                    WARNING
+                </div>
+                <p>
+                    This will permanently delete all <span class="delete-files-target"></span> files for this application.
+                    <strong>This cannot be undone.</strong>
+                </p>
+            </div>
+        </section>
+    </div>
+    <div class="actions">
+        <button class="ui cancel button" id="cancel-delete-files">Cancel</button>
+        <button type="submit" class="ui red button" form="delete-files-form">Delete</button>
+    </div>
+</div>
+
 <div class="ui overlay fullscreen modal" id="upload-dl-modal">
     <div class="center aligned header">
         <small>Upload</small> Driver's License — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}

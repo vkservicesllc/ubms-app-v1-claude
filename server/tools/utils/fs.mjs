@@ -34,3 +34,19 @@ export const renameFile = async (dir, oldName, newName) => {
         return { success: false, error: err.code || err.message }
     }
 }
+
+
+export const deleteFiles = async (dir, recr = false) => {
+    try {
+        await fs.rm(dir, { recursive: true })
+        if (recr === true) await fs.mkdir(dir)
+
+        return { success: true }
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return { success: false, deleted: false }
+        }
+
+        return { success: false, error: err.code || err.message }
+    }
+}

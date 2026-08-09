@@ -33,6 +33,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             dl: $('#upload-dl-modal'),
             mec: $('#upload-mec-modal'),
         },
+        delete: $('#delete-files-modal'),
     }
     const $button = {
         upload: {
@@ -47,6 +48,9 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 submit: $('#upload-mec-submit'),
             },
         },
+    }
+    const $a = {
+        delete: $('.delete-files'),
     }
     const $step = {
         upload: {
@@ -144,6 +148,25 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     })
 
     dropdownEvent($dropdown)
+
+    $modal.delete.modal({
+        closable: false,
+        onHidden() {
+            $('#delete-files-target').val(null)
+            $('.delete-files-target').text(null)
+        }
+    })
+    $a.delete.on('click', function(evt) {
+        evt.preventDefault()
+
+        const target = $(this).data('target')
+        $('#delete-files-target').val(target)
+        $('.delete-files-target').text({
+            dl: "Driver's License",
+        }[target])
+
+        $modal.delete.modal('show')
+    })
 
     $(RS.dlCommercial[dl.commercial ? 'yes' : 'no']).prop('checked', true)
     if (cdlRole) $commercial.prop('disabled', true)
