@@ -2,8 +2,8 @@ import table from './applications.mjs'
 import Address from '/modules/tools/core/address.us.mjs'
 import { tel as formatTel, ssn as formatSsn } from '/modules/tools/utils/formatter.mjs'
 
-const $modal = $('#apl-info-card-modal')
-const $fullName = $('#apl-info-card-fullname')
+const $modal = $('#apl-clipboard-modal')
+const $fullName = $('#apl-clipboard-fullname')
 
 
 $modal.modal({
@@ -15,9 +15,9 @@ $modal.modal({
 })
 
 table.on('draw', function() {
-    $('.apl-info-card').off('click')
+    $('.apl-clipboard').off('click')
 
-    $('.apl-info-card').on('click', function(evt) {
+    $('.apl-clipboard').on('click', function(evt) {
         evt.preventDefault()
 
         const _id = $(this).data('id')
@@ -71,11 +71,11 @@ table.on('draw', function() {
                     let item = application[prop]
                     if (optional && !item) item = na
                     else item = `<strong style="font-size: 1.05em;">${item}</strong>${!ncp ? cp : ''}`
-                    $(`#apl-info-card\\:${prop}`).html(item)
+                    $(`#apl-clipboard\\:${prop}`).html(item)
                 })
-                if (dl.class) $('#apl-info-card\\:dlNum').append(`&nbsp; <strong>/&nbsp; ${dl.class}</strong>${cp}`)
-                if (!dl.commercial) $('#apl-info-card\\:dlNum').append('<small> &nbsp;—&nbsp; CDL</small>')
-                // if (dl.commercial) $('#apl-info-card\\:dlClass').append('<small> &nbsp;—&nbsp; CDL</small>')
+                if (dl.class) $('#apl-clipboard\\:dlNum').append(`&nbsp; <strong>/&nbsp; ${dl.class}</strong>${cp}`)
+                if (!dl.commercial) $('#apl-clipboard\\:dlNum').append('<small> &nbsp;—&nbsp; CDL</small>')
+                // if (dl.commercial) $('#apl-clipboard\\:dlClass').append('<small> &nbsp;—&nbsp; CDL</small>')
 
                 $fullName.html(`${fullName} &nbsp;<small style="font-weight: normal;">(${formId})</small>`)
 

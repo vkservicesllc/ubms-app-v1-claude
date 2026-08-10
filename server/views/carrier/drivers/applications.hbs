@@ -40,14 +40,14 @@
             <div class="ui text loader">Loading images...</div>
         </div>
         <div class="ui modal" id="apl-upl-card-modal">
-            <div class="ui center aligned header" id="apl-info-card-header">
+            <div class="ui center aligned header" id="apl-upl-card-header">
                 <span class="ui grey text">Applicant's Uploads &nbsp;—&nbsp;</span>
                 <span id="apl-upl-card-fullname"></span>
             </div>
             <div class="content" id="apl-upl-content"></div>
             <script type="module" src="/modules/drivers/application.uploads.mjs"></script>
         </div>
-        <div class="ui modal" id="apl-info-card-modal">
+        <div class="ui modal" id="apl-clipboard-modal">
             <style>
                 .apl-info-segment {
                     height: 30rem;
@@ -66,9 +66,9 @@
                     padding-right: 1.2rem;
                 }
             </style>
-            <div class="ui center aligned header" id="apl-info-card-header">
-                <span class="ui grey text">Applicant's Info Card &nbsp;—&nbsp;</span>
-                <span id="apl-info-card-fullname"></span>
+            <div class="ui center aligned header" id="apl-clipboard-header">
+                <span class="ui grey text">Applicant's Clipboard &nbsp;—&nbsp;</span>
+                <span id="apl-clipboard-fullname"></span>
             </div>
             <div class="content" style="padding-left: 2.4rem; padding-right: 2.4rem;">
                 <div class="ui two column grid">
@@ -82,19 +82,19 @@
                                     <tbody>
                                         <tr>
                                             <td class="apl-info-side-th"><span class="ui grey text">First Name:</span></td>
-                                            <td class="apl-data" id="apl-info-card:firstName"></td>
+                                            <td class="apl-data" id="apl-clipboard:firstName"></td>
                                         </tr>
                                         <tr>
                                             <td class="apl-info-side-th"><span class="ui grey text">Middle Name:</span></td>
-                                            <td class="apl-data" id="apl-info-card:middleName"></td>
+                                            <td class="apl-data" id="apl-clipboard:middleName"></td>
                                         </tr>
                                         <tr>
                                             <td class="apl-info-side-th"><span class="ui grey text">Last Name:</span></td>
-                                            <td class="apl-data" id="apl-info-card:lastName"></td>
+                                            <td class="apl-data" id="apl-clipboard:lastName"></td>
                                         </tr>
                                         <tr>
                                             <td class="apl-info-side-th"><span class="ui grey text">Suffix:</span></td>
-                                            <td class="apl-data" id="apl-info-card:suffix"></td>
+                                            <td class="apl-data" id="apl-clipboard:suffix"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -107,15 +107,15 @@
                                     <tbody>
                                         <tr>
                                             <td class="apl-info-side-th"><span class="ui grey text">Gender:</span></td>
-                                            <td class="apl-data" id="apl-info-card:gender"></td>
+                                            <td class="apl-data" id="apl-clipboard:gender"></td>
                                         </tr>
                                         <tr>
                                             <td class="apl-info-side-th"><span class="ui grey text">DOB:</span></td>
-                                            <td class="apl-info-data" id="apl-info-card:dob"></td>
+                                            <td class="apl-info-data" id="apl-clipboard:dob"></td>
                                         </tr>
                                         <tr>
                                             <td class="apl-info-side-th"><span class="ui grey text">SSN:</span></td>
-                                            <td class="apl-data" id="apl-info-card:ssn"></td>
+                                            <td class="apl-data" id="apl-clipboard:ssn"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -132,15 +132,15 @@
                                     <tbody>
                                         <tr>
                                             <td class="apl-info2-side-th"><span class="ui grey text">Phone:</span></td>
-                                            <td class="apl-data" id="apl-info-card:phone"></td>
+                                            <td class="apl-data" id="apl-clipboard:phone"></td>
                                         </tr>
                                         <tr>
                                             <td class="apl-info2-side-th"><span class="ui grey text">Email:</span></td>
-                                            <td class="apl-data" id="apl-info-card:email"></td>
+                                            <td class="apl-data" id="apl-clipboard:email"></td>
                                         </tr>
                                         <tr>
                                             <td class="apl-info2-side-th"><span class="ui grey text">Current<br/>Address:</span></td>
-                                            <td class="apl-data" id="apl-info-card:address"></td>
+                                            <td class="apl-data" id="apl-clipboard:address"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -153,27 +153,27 @@
                                     <tbody>
                                         <tr>
                                             <td class="apl-info2-side-th"><span class="ui grey text">Number/Class:</span></td>
-                                            <td class="apl-data" id="apl-info-card:dlNum"></td>
+                                            <td class="apl-data" id="apl-clipboard:dlNum"></td>
                                         </tr>
                                         {{!-- <tr>
                                             <td class="apl-info2-side-th"><span class="ui grey text">Class:</span></td>
-                                            <td class="apl-data" id="apl-info-card:dlClass"></td>
+                                            <td class="apl-data" id="apl-clipboard:dlClass"></td>
                                         </tr> --}}
                                         <tr>
                                             <td class="apl-info2-side-th"><span class="ui grey text">State:</span></td>
-                                            <td class="apl-data" id="apl-info-card:dlState"></td>
+                                            <td class="apl-data" id="apl-clipboard:dlState"></td>
                                         </tr>
                                         {{!-- <tr>
                                             <td class="apl-info2-side-th"><span class="ui grey text">Expiration:</span></td>
-                                            <td class="apl-data" id="apl-info-card:dlExp"></td>
+                                            <td class="apl-data" id="apl-clipboard:dlExp"></td>
                                         </tr> --}}
                                         <tr>
                                             <td class="apl-info2-side-th"><span class="ui grey text">Duration:</span></td>
-                                            <td class="apl-data" id="apl-info-card:dlDuration"></td>
+                                            <td class="apl-data" id="apl-clipboard:dlDuration"></td>
                                         </tr>
                                         <tr>
                                             <td class="apl-info2-side-th"><span class="ui grey text">Address:</span></td>
-                                            <td class="apl-data" id="apl-info-card:dlAddress"></td>
+                                            <td class="apl-data" id="apl-clipboard:dlAddress"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -182,7 +182,7 @@
                     </div>
                 </div>
             </div>
-            <script type="module" src="/modules/drivers/application.info-card.mjs"></script>
+            <script type="module" src="/modules/drivers/application.clipboard.mjs"></script>
         </div>
         {{#if (eq permissions.modify true)}}
         <div class="ui small modal" id="apl-reinvite-card-modal">

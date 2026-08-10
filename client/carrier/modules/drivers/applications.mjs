@@ -312,7 +312,7 @@ const table = $('#driver-applications-table').DataTable({
                         const count = Object.keys(row.uploads).filter(prop => row.uploads[prop][0] === true).length
                         panel += `<a class="apl-uploads" data-id="${_id}" href="" title="Uploads available (${count} files)"><i class="purple cloud download icon"></i></a>`
                     }
-                    panel += `<a class="apl-info-card" data-id="${_id}" href="" title="Quick peek"><i class="dark green id card icon"></i></a>`
+                    panel += `<a class="apl-clipboard" data-id="${_id}" href="" title="Clipboard"><i class="dark green clipboard outline icon"></i></a>`
                     if (modify) {
                         panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form" title="Manage Application"><i class="dark green edit outline icon"></i></a>`
                         // panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`
