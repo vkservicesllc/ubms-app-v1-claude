@@ -66,24 +66,24 @@
     }
 </style>
 
-<div class="ui modal" id="delete-files-modal">
+<div class="ui tiny modal" id="delete-files-modal">
     <div class="center aligned header">
-        <small>Delete</small> <span class="delete-files-target"></span> — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
+        <small>Delete</small> <span class="delete-files-target"></span>
     </div>
     <div class="content">
         <form id="delete-files-form" action="/files/delete/driver/application/{{formId}}" method="POST">
             <input type="hidden" id="delete-files-target" name="target" />
         </form>
         <section>
-            
             <div class="ui negative message">
-                <i class="close icon"></i>
-                <div class="header">
-                    WARNING
-                </div>
+                <div class="header" style="text-align: center; margin-bottom: 1rem;">WARNING</div>
                 <p>
-                    This will permanently delete all <span class="delete-files-target"></span> files for this application.
-                    <strong>This cannot be undone.</strong>
+                    This will permanently delete all <span class="delete-files-target"></span> files for this application:
+                    <ul>
+                        <li>{{{applicant}}}</li>
+                        <li>{{formId}}{{#if (hv carrier)}} / {{{carrier}}}{{/if}}</li>
+                    </ul>
+                    <strong>This cannot be undone!</strong>
                 </p>
             </div>
         </section>
@@ -100,7 +100,7 @@
     </div>
     <div class="content">
         <form class="ui form" id="upload-dl-form" action="/upload/drivers/application/{{formId}}/initial-drivers-license" method="POST" enctype="multipart/form-data">
-            <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-aspect-ratio="1.65">
+            <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-init-aspect-ratio="1.6">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Front)</small></h1>
                     <i class="dark teal image file outline icon"></i>
@@ -116,7 +116,7 @@
                 </div>
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
-            <div class="ui placeholder segment dl-section" id="croparea-dl-back" data-aspect-ratio="1.65" style="display: none;">
+            <div class="ui placeholder segment dl-section" id="croparea-dl-back" data-init-aspect-ratio="1.6" style="display: none;">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Back)</small></h1>
                     <i class="dark teal image file outline icon"></i>

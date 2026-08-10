@@ -371,6 +371,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         const $preview = $(`#cropper-preview-${target}`)
         const width = $preview.data('width') + 'rem'
         const aspectRatio = +$cropArea.data('aspect-ratio') || NaN
+        const initialAspectRatio = +$cropArea.data('init-aspect-ratio') || NaN
 
         const $editor = {
             rotate: {
@@ -449,6 +450,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                     .on('load', function() {
                         croppers[target] = new Cropper($image[0], {
                             aspectRatio,
+                            initialAspectRatio,
                             viewMode: 1,
                             autoCropArea: 1,
                             responsive: false,

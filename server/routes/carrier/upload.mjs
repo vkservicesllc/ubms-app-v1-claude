@@ -12,7 +12,9 @@ import Company from '../../tools/core/company.mjs'
 import Individual from '../../tools/core/individual.mjs'
 import { Application } from '../../tools/core/driver.mjs'
 import uploader from '../../tools/utils/multer.mjs'
-import { getFiles } from '../../tools/utils/fs.mjs'
+import { getFiles, renameFile } from '../../tools/utils/fs.mjs'
+
+const path = require('path')
 
 
 // ==== SETUP ==== //
@@ -38,17 +40,9 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
     const individual = await Individual.fetch(res.session, { id: personId })
     if (!individual) throw new Error('Individual not found')
 
-    const { issuedOn, expiresOn } = application.dl
-
-    req.upload = {
-        id: driverId,
-        id2: id,
-        files: {
-            //* Initial
-            dlF: { filename: `${issuedOn}_${expiresOn}_front` },
-            dlB: { filename: `${issuedOn}_${expiresOn}_back` },
-        },
-    }
+    //* id/id2 only — the final filename depends on req.body.dl, which multer
+    //* hasn't parsed yet at this point, so it's applied via rename below instead
+    req.upload = { id: driverId, id2: id }
     req.data = { application, individual }
 
     next()
@@ -74,6 +68,15 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
         const { dlId } = application
 
         dl.commercial = dl.commercial === 'Y'
+
+        const { issuedOn, expiresOn, number } = dl
+        for (const [ field, suffix ] of [ [ 'dlF', 'front' ], [ 'dlB', 'back' ] ]) {
+            const file = req.files[field]?.[0]
+            if (!file) continue
+
+            const ext = path.extname(file.filename)
+            await renameFile(path.dirname(file.path), file.filename, `${issuedOn}_${expiresOn}_${number}_${suffix}_init${ext}`)
+        }
         // if (!dl.class) dl.class = null
         // if (!dl.endorsement) dl.endorsement = null
         // if (!dl.restriction) dl.restriction = null

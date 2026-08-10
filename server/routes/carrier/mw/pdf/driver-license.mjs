@@ -34,9 +34,11 @@ export default async application => {
 
     const list = {}
     files.map(file => {
-        const [ start, end, side ] = file.split('.')[0].split('_')
+        const [ start, end, number, side, init ] = file.split('.')[0].split('_')
         const prop = `${start}_${end}`
         if (!list[prop]) list[prop] = {}
+        list[prop].init = init === 'init'
+        list[prop].number = number
         list[prop].duration = `${moment(start).format('ll')} – ${moment(end).format('ll')}`
         list[prop][side] = {}
         list[prop][side].path = `${path}/${file}`
@@ -48,7 +50,7 @@ export default async application => {
         const imgBytes = fs.readFileSync(side.path)
         const img = await pdfDoc.embedJpg(imgBytes)
 
-        const widthRatio = (contentWidth * .75) / img.width
+        const widthRatio = (contentWidth * .65) / img.width
         const heightRatio = maxHeight / img.height
         const scale = Math.min(widthRatio, heightRatio, 1)
         const drawWidth = img.width * scale
@@ -75,14 +77,39 @@ export default async application => {
             x: (width - textWidth) / 2, y,
             font: font.title, size: size.title,
         })
-        y -= 20
 
-        text = `DRIVER'S LICENSE (${item.duration})`
+        if (application._carrierId) {
+            y -= 20
+            text = application.carrier.name
+            textWidth = font.title.widthOfTextAtSize(text, size.title)
+            page.drawText(text, {
+                x: (width - textWidth) / 2, y,
+                font: font.title, size: size.title,
+            })
+        }
+
+        y -= 25
+        text = `DRIVER'S LICENSE${item.init ? ' (Initial)' : ''}`
         textWidth = font.duration.widthOfTextAtSize(text, size.duration)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,
             font: font.duration, size: size.duration,
         })
+        y -= 20
+        text = `Number: ${item.number}`
+        textWidth = font.duration.widthOfTextAtSize(text, size.duration)
+        page.drawText(text, {
+            x: (width - textWidth) / 2, y,
+            font: font.duration, size: size.duration,
+        })
+        y -= 20
+        text = `Duration: ${item.duration}`
+        textWidth = font.duration.widthOfTextAtSize(text, size.duration)
+        page.drawText(text, {
+            x: (width - textWidth) / 2, y,
+            font: font.duration, size: size.duration,
+        })
+
         y -= marginY
 
         const slots = item.back ? 2 : 1
