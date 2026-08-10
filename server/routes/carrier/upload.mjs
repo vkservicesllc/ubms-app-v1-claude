@@ -103,6 +103,39 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
 })
 
 
+//* via fetch
+router.post('/drivers/application/:formId/additional-drivers-license', User.mw.verify, async (req, res, next) => {
+    const { formId } = req.params
+    const application = await Application.fetch(res.session, { formId })
+    if (!application) throw new Error('Application not found')
+
+    const { id, driverId } = application
+    req.upload = { id: driverId, id2: id }
+
+    next()
+}, upload.application.dlInit.fields([
+    { name: 'dlF', maxCount: 1 },
+    { name: 'dlB', maxCount: 1 },
+]), async (req, res) => {
+    try {
+        const { issuedOn, expiresOn, state, number } = req.body
+        const { id: userId } = res.session.user
+
+        for (const [ field, side ] of [ [ 'dlF', 'front' ], [ 'dlB', 'back' ] ]) {
+            const file = req.files[field]?.[0]
+            if (!file) continue
+
+            const ext = path.extname(file.filename)
+            await renameFile(path.dirname(file.path), file.filename, `${issuedOn}_${expiresOn}_${number}_${state}_${side}_${userId}${ext}`)
+        }
+
+        res.json({ status: 'OK' })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
 
 // ==== EXPORT ==== //
 

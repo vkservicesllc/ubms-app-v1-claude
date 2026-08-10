@@ -162,7 +162,7 @@
     </div>
     <div class="content">
         <form class="ui form" id="upload-add-dl-form" action="/upload/drivers/application/{{formId}}/additional-drivers-license" method="POST" enctype="multipart/form-data">
-            <div class="ui placeholder segment dl2-section" id="croparea-add-dl-front" data-init-aspect-ratio="1.6">
+            <div class="ui placeholder segment dl2-section" id="croparea-dl2-front" data-init-aspect-ratio="1.6">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Front)</small></h1>
                     <i class="dark teal image file outline icon"></i>
@@ -174,7 +174,7 @@
                 </div>
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
-            <div class="ui placeholder segment dl2-section" id="croparea-add-dl-back" data-init-aspect-ratio="1.6" style="display: none;">
+            <div class="ui placeholder segment dl2-section" id="croparea-dl2-back" data-init-aspect-ratio="1.6" style="display: none;">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Back)</small> — <small><span class="ui grey text"><i>Optional</i></span></small></h1>
                     <i class="dark teal image file outline icon"></i>
@@ -189,8 +189,8 @@
             <div class="ui two column relaxed grid dl2-section" id="confirmation-add-dl" style="display: none; margin: 0;">
                 <div class="six wide column">
                     <div>
-                        <div class="cropper-preview" id="cropper-preview-add-dl-front" data-width="36"></div>
-                        <div class="cropper-preview" id="cropper-preview-add-dl-back" data-width="36"></div>
+                        <div class="cropper-preview" id="cropper-preview-dl2-front" data-width="36"></div>
+                        <div class="cropper-preview" id="cropper-preview-dl2-back" data-width="36"></div>
                     </div>
                 </div>
                 <div class="ten wide column">
@@ -206,7 +206,7 @@
             <button class="ui primary button" id="upload-add-dl-prev-button" style="display: none;">Back</button>
             <button class="ui green button" id="upload-add-dl-skip-button"  style="display: none;">Skip</button>
             <button class="ui primary button" id="upload-add-dl-next-button" disabled>Next</button>
-            <button type="submit" form="upload-add-dl-form" class="ui primary button" id="upload-add-dl-submit" style="display: none;" disabled>Upload</button>
+            <button type="submit" form="upload-add-dl-form" class="ui primary button" id="upload-add-dl-submit" style="display: none;">Confirm and Upload</button>
         </div>
     </div>
 </div>

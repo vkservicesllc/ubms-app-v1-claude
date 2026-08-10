@@ -103,8 +103,8 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             },
             dl2: {
                 all: $('.dl2-section'),
-                cropperFront: $('#croparea-add-dl-front'),
-                cropperBack: $('#croparea-add-dl-back'),
+                cropperFront: $('#croparea-dl2-front'),
+                cropperBack: $('#croparea-dl2-back'),
                 confirmation: $('#confirmation-add-dl'),
             },
             mec: {
@@ -444,20 +444,21 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $step.upload.dl2.html(steps.upload.dl2[++activeStep.dl2])
     })
 
-    //! UNTESTED
+    //! UNFINISHED
     $('#upload-add-dl-form').on('submit', function(evt) {
         evt.preventDefault()
         if (!$dropdown.dlState2[0].dropdown('get value')) return alert('State is not selected')
 
         const form = this
 
-        Promise.all([
-            getResizedBlob('dl2-front'),
-            getResizedBlob('dl2-back'),
-        ]).then(([ dlF, dlB ]) => {
+        const blobs = [ getResizedBlob('dl2-front') ]
+        if (croppers['dl2-back']) blobs.push(getResizedBlob('dl2-back'))
+
+        Promise.all(blobs).then(([ dlF, dlB ]) => {
             const formData = new FormData(form)
             formData.set('dlF', dlF, 'dlF.jpg')
-            formData.set('dlB', dlB, 'dlB.jpg')
+            if (dlB) formData.set('dlB', dlB, 'dlB.jpg')
+            else formData.delete('dlB')
 
             const dateFields = [ 'issuedOn', 'expiresOn' ]
             for (const [ key, value ] of formData.entries())
