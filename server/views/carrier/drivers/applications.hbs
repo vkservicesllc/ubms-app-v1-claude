@@ -208,6 +208,13 @@
             <script type="module" src="/modules/drivers/application.id-card.mjs"></script>
         </div>
         {{/if}}
+        <div class="ui tiny modal" id="apl-details-modal">
+            <div class="ui header" id="apl-details-header">Application Details</div>
+            <div class="content">
+                DETAILS
+            </div>
+            <script type="module" src="/modules/drivers/application.details.mjs"></script>
+        </div>
         {{#if (eq permissions.delete true)}}
         <div class="ui tiny modal" id="delete-apl-modal">
             <div class="ui dark red text header" id="delete-apl-header">Delete Application</div>

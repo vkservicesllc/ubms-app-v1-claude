@@ -34,7 +34,7 @@ const table = $('#driver-applications-table').DataTable({
         dataSrc(response) {
             const { data, actions, aplAddress, unscoped, stepLen, sessionUser } = response
 
-            table?.column(12).visible(unscoped)
+            table?.column(13).visible(unscoped)
 
             // data = data.filter
             data.forEach(row => {
@@ -285,17 +285,18 @@ const table = $('#driver-applications-table').DataTable({
             searchable: false,
             orderable: false,
             className: 'right aligned',
-            width: '120px',
+            width: '10rem',
             defaultContent: '',
             render(data, type, row) {
                 const { _id, condition, formId } = row
                 const { comment, modify, delete: remove } = row.actions.data
+                const { _userId, sessionUser } = row
+                const self = _userId === sessionUser._id
                 let panel = ''
 
                 if (!row._driverId) {
                     if (!row?.lead?.dob) {
-                        const { _userId, sessionUser } = row
-                        const assigned = !_userId || _userId === sessionUser._id || sessionUser.DS
+                        const assigned = !_userId || self || sessionUser.DS
 
                         if (modify && assigned) {
                             panel += `<a class="reinvite-apl" data-id="${_id}" href="" title="Invite again"><i class="blue envelope outline icon"></i></a>`
@@ -307,18 +308,19 @@ const table = $('#driver-applications-table').DataTable({
                 }
 
                 const { access } = row.actions.file
+                const authorized = self || sessionUser.DS || !_userId
 
                 if (condition !== 'p') {
-                    if (access && row.uploads !== null) {
+                    if (access && row.uploads !== null && condition !== 'h' && authorized) {
                         const count = Object.keys(row.uploads).filter(prop => row.uploads[prop][0] === true).length
                         panel += `<a class="apl-uploads" data-id="${_id}" href="" title="Uploads available (${count} files)"><i class="purple cloud download icon"></i></a>`
                     }
                     panel += `<a class="apl-clipboard" data-id="${_id}" href="" title="Clipboard"><i class="dark green clipboard outline icon"></i></a>`
-                    if (modify) {
+                    if (modify && authorized && condition !== 'h') {
                         panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form" title="Manage Application"><i class="dark green edit outline icon"></i></a>`
                         // panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`
-                    }
-                    if (condition !== 'c' && access) panel += `<a class="apl-files" data-id="${_id}" href=""><i class="black folder outline icon"></i></a>`
+                    } else panel += `<a class="view-apl" href="" title="Application Details"><i class="dark green id card outline icon"></i></a>`
+                    if (access && (condition === 'h' || !authorized)) panel += `<a class="apl-files" data-id="${_id}" href=""><i class="dark orange folder outline icon"></i></a>`
                     if (comment) panel += `<a class="comment-apl" title="Comment"><i class="purple comment outline icon"></i></a>`
                 } else {
                     if (modify) {
@@ -326,7 +328,7 @@ const table = $('#driver-applications-table').DataTable({
                         panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank" title="External Form"><i class="blue external alternate icon"></i></a>`
                     }
                 }
-                if (remove && ['p', 'c'].includes(condition) && !row.locked)
+                if (remove && authorized && ['p', 'c'].includes(condition) && !row.locked)
                     panel += `<a class="delete-apl" data-id="${_id}" href="" title="Delete Application"><i class="red trash alternate outline icon"></i></a>`
 
                 return panel

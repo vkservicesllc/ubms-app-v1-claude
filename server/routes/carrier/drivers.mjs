@@ -223,6 +223,8 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         if (!application || application.condition === 'h' || application.rehire) return res.redirect(aplUrl)
         if (team && application._teamId !== team._id) return res.redirect(aplUrl)
 
+        if (user._id !== application.userId && !user.DS) respond404(res)
+
         const identity = await application.identity(res.session)
 
         const key = 'drivers.application.e-form'
@@ -934,6 +936,8 @@ router.get('/application/:formId/e-form/:target', User.mw.verify, Team.mw.verify
 
         if (!application || application.condition === 'h') return res.redirect(aplUrl)
         if (team && application._teamId !== team._id) return res.redirect(aplUrl)
+
+        if (user._id !== application.userId && !user.DS) respond404(res)
 
         const key = `drivers.application.e-form.${target}`
         let { hbs } = res
