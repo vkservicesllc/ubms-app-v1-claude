@@ -114,7 +114,7 @@
             </div>
             <div class="item">
                 <div class="content">
-                    <a href="" id="clipboard" title="Clipboard"><i class="clipboard outline icon" style="font-size: 2em;"></i></a>
+                    <a href="" class="apl-clipboard" title="Clipboard"><i class="clipboard outline icon" style="font-size: 2em;"></i></a>
                 </div>
             </div>
         </div>
@@ -1621,6 +1621,7 @@
         <script type="module" src="/modules/drivers/application/beneficiary.mjs"></script>
         <script type="module" src="/modules/drivers/application/misc.mjs"></script>
         <script type="module" src="/modules/drivers/application/workflow.mjs"></script>
+        <script type="module" src="/modules/drivers/application/clipboard.mjs"></script>
         <script>
             const $menu = $('#section-menu.ui.menu .item'), $tabs = $('#sections .ui.tab')
             let href = location.href, query
@@ -1640,6 +1641,8 @@
         </script>
 
     </div>
+
+    {{> carrier/drivers/application.clipboard}}
 
     {{#if (eq fileTab true)}}
     {{> carrier/drivers/application/modals.files}}

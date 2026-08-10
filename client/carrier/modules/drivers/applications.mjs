@@ -4,6 +4,7 @@ import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
 import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
 import styleSearch, { tag as searchTag } from '/modules/tools/search.mjs'
 import filterDropdown from '/modules/tools/filter-dropdown.mjs'
+import clipboardEvent from './application.clipboard.mjs'
 
 
 const interval = 60000
@@ -502,6 +503,9 @@ const table = $('#driver-applications-table').DataTable({
 setInterval(() => {
     dtFnFilterData(table)
 }, interval)
+
+
+table.on('draw', () => clipboardEvent())
 
 
 export default table
