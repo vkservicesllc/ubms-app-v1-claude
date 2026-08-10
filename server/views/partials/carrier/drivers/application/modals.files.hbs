@@ -151,7 +151,62 @@
         <div>
             <button class="ui primary button" id="upload-dl-prev-button" style="display: none;">Back</button>
             <button class="ui primary button" id="upload-dl-next-button" disabled>Next</button>
-            <button type="submit" form="upload-dl-form" class="ui primary button" id="upload-dl-submit" style="display: none;" disabled>Confirm and Create PDF</button>
+            <button type="submit" form="upload-dl-form" class="ui primary button" id="upload-dl-submit" style="display: none;" disabled>Confirm and Upload</button>
+        </div>
+    </div>
+</div>
+
+<div class="ui overlay fullscreen modal" id="upload-add-dl-modal">
+    <div class="center aligned header">
+        <small>Upload Additional</small> Driver's License — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
+    </div>
+    <div class="content">
+        <form class="ui form" id="upload-add-dl-form" action="/upload/drivers/application/{{formId}}/additional-drivers-license" method="POST" enctype="multipart/form-data">
+            <div class="ui placeholder segment dl-section" id="croparea-add-dl-front" data-init-aspect-ratio="1.6">
+                <div class="ui icon header cropper-dropzone">
+                    <h1 class="ui header">Driver's License <small>(Front)</small></h1>
+                    <i class="dark teal image file outline icon"></i>
+                    <span class="ui dark teal text cropper-drag-drop-click">Drag and drop here or click to upload</span>
+                </div>
+                <input class="cropper-file" type="file" accept="image/*" hidden name="dlF" />
+                <div class="cropper-wrapper" style="display: none;">
+                    <img class="cropper-image" style="display: none;" />
+                </div>
+                {{> carrier/components/modal.cropper.buttons}}
+            </div>
+            <div class="ui placeholder segment dl-section" id="croparea-add-dl-back" data-init-aspect-ratio="1.6" style="display: none;">
+                <div class="ui icon header cropper-dropzone">
+                    <h1 class="ui header">Driver's License <small>(Back)</small> — <small><span class="ui grey text"><i>Optional</i></span></small></h1>
+                    <i class="dark teal image file outline icon"></i>
+                    <span class="ui dark teal text cropper-drag-drop-click">Drag and drop here or click to upload</span>
+                </div>
+                <input class="cropper-file" type="file" accept="image/*" hidden name="dlB" />
+                <div class="cropper-wrapper" style="display: none;">
+                    <img class="cropper-image" style="display: none;" />
+                </div>
+                {{> carrier/components/modal.cropper.buttons}}
+            </div>
+            <div class="ui two column relaxed grid dl-section" id="confirmation-add-dl" style="display: none; margin: 0;">
+                <div class="six wide column">
+                    <div>
+                        <div class="cropper-preview" id="cropper-preview-add-dl-front" data-width="36"></div>
+                        <div class="cropper-preview" id="cropper-preview-add-dl-back" data-width="36"></div>
+                    </div>
+                </div>
+                <div class="ten wide column">
+                    {{> carrier/drivers/application/file_forms/drivers_license_additional}}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions" style="display: flex !important; justify-content: space-between;">
+        <a class="ui button" href="{{cancelUploadUrl}}">Cancel</a>
+        <strong id="upload-add-dl-step">Editor: Driver's License <small>(Front)</small></strong>
+        <div>
+            <button class="ui primary button" id="upload-add-dl-prev-button" style="display: none;">Back</button>
+            <button class="ui green button" id="upload-add-dl-next-button"  style="display: none;">Skip</button>
+            <button class="ui primary button" id="upload-add-dl-next-button" disabled>Next</button>
+            <button type="submit" form="upload-add-dl-form" class="ui primary button" id="upload-add-dl-submit" style="display: none;" disabled>Upload</button>
         </div>
     </div>
 </div>
@@ -196,7 +251,7 @@
         <div>
             <button class="ui primary button" id="upload-mec-prev-button" style="display: none;">Back</button>
             <button class="ui primary button" id="upload-mec-next-button" disabled>Next</button>
-            <button type="submit" form="upload-mec-form" class="ui primary button" id="upload-mec-submit" style="display: none;" disabled>Confirm and Create PDF</button>
+            <button type="submit" form="upload-mec-form" class="ui primary button" id="upload-mec-submit" style="display: none;" disabled>Confirm and Upload</button>
         </div>
     </div>
 </div>

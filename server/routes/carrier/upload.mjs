@@ -69,14 +69,14 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
 
         dl.commercial = dl.commercial === 'Y'
 
-        const { issuedOn, expiresOn, number } = dl
+        const { issuedOn, expiresOn, state, number } = dl
         const { id: userId } = res.session.user
         for (const [ field, side ] of [ [ 'dlF', 'front' ], [ 'dlB', 'back' ] ]) {
             const file = req.files[field]?.[0]
             if (!file) continue
 
             const ext = path.extname(file.filename)
-            await renameFile(path.dirname(file.path), file.filename, `${issuedOn}_${expiresOn}_${number}_${side}_${userId}_init${ext}`)
+            await renameFile(path.dirname(file.path), file.filename, `${issuedOn}_${expiresOn}_${number}_${state}_${side}_${userId}_init${ext}`)
         }
         await individual.update('identifications', dl, { id: dlId })
         await individual.update('names', name, { since: individual.dob })

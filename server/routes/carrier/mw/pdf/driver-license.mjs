@@ -8,6 +8,7 @@ import fontkit from '@pdf-lib/fontkit'
 import pdfParams, { CustomFonts } from '../../../../settings/pdf-lib.mjs'
 import User from '../../../../tools/core/user.mjs'
 import Driver, { Application } from '../../../../tools/core/driver.mjs'
+import Address from '../../../../../client/global/modules/tools/core/address.us.mjs'
 import { getFiles } from '../../../../tools/utils/fs.mjs'
 
 
@@ -39,11 +40,12 @@ export default async (application, session) => {
 
     const list = {}
     for (const file of files) {
-        const [ start, end, number, side, uploadedBy, init ] = file.split('.')[0].split('_')
+        const [ start, end, number, state, side, uploadedBy, init ] = file.split('.')[0].split('_')
         const prop = `${start}_${end}`
         if (!list[prop]) list[prop] = {}
         list[prop].init = init === 'init'
         list[prop].number = number
+        list[prop].state = Address.list.state[state]
         list[prop].duration = `${moment(start).format('ll')} – ${moment(end).format('ll')}`
         list[prop].uploadedBy = (await User.fetch(session, { id: +uploadedBy })).fullName()
         list[prop][side] = {}
@@ -102,7 +104,7 @@ export default async (application, session) => {
             font: font.info, size: size.info,
         })
         y -= 15
-        text = `Number: ${item.number}`
+        text = `Number: ${item.number} (${item.state})`
         textWidth = font.info.widthOfTextAtSize(text, size.info)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,

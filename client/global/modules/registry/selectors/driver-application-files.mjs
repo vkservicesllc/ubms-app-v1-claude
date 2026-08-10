@@ -17,9 +17,12 @@ const selector = {
         },
         text: {
             dlNumber: 'driver-license-number',
+            dlNumber2: 'driver-license-number-2',
             dlClass: 'driver-license-class',
             dlIss: 'driver-license-issue-date',
+            dlIss2: 'driver-license-issue-date-2',
             dlExp: 'driver-license-expiration-date',
+            dlExp2: 'driver-license-expiration-date-2',
             dlEndrs: 'driver-license-endrosement',
             dlRestr: 'driver-license-restriction',
             dlFirstName: 'dl-first-name',
@@ -33,6 +36,7 @@ const selector = {
         },
         select: {
             dlState: 'dl-state',
+            dlState2: 'dl-state-2',
             dlSuffix: 'dl-suffix',
             dlGender: 'dl-gender',
             dlAddrState: 'dl-address-state',

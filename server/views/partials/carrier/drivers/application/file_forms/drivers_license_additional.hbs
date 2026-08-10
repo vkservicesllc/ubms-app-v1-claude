@@ -1,0 +1,59 @@
+<div class="ui yellow icon message" style="width: 100% !important; margin-bottom: 2.4rem;">
+    <i class="tasks icon"></i>
+    <div class="content">
+        <div class="header">
+            Driver's License Data Verification
+        </div>
+        <p>Before uploading, make sure the details on the license match what you entered in the form</p>
+    </div>
+</div>
+
+
+<table class="ui compact celled definition table">
+    <thead>
+        <tr>
+            <th style="width: 15rem;">{{{fileForm.dlState2.select.label}}}</th>
+            <th style="width: 15rem;">{{{fileForm.dlNumber2.text.label}}}</th>
+            <th style="width: 12rem;">{{{fileForm.dlIss2.text.label}}}</th>
+            <th style="width: 12rem;">{{{fileForm.dlExp2.text.label}}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <div class="ui fluid selection required dropdown" id="dl-state-2-confirm-dropdown">
+                    {{{fileForm.dlState2.hidden.input}}}
+                    <i class="dropdown icon"></i>
+                    <div class="default text"></div>
+                    <div class="menu">{{{dropdown.confDlState}}}
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    {{{fileForm.dlNumber2.text.input}}}
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui calendar" id="dl-issued-2-confirm-calendar">
+                        <div class="ui fluid input left icon">
+                            {{{fileForm.dlIss2.text.input}}}
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui calendar" id="dl-expires-2-confirm-calendar">
+                        <div class="ui fluid input left icon">
+                            {{{fileForm.dlExp2.text.input}}}
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
