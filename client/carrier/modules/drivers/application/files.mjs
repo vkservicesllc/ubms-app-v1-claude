@@ -25,12 +25,14 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     const croppers = {}
     const $upload = {
         dl: $('#upload-dl-file'),
+        dl2: $('#upload-add-dl-file'),
         mec: $('#upload-mec-file'),
     }
 
     const $modal = {
         upload: {
             dl: $('#upload-dl-modal'),
+            dl2: $('#upload-add-dl-modal'),
             mec: $('#upload-mec-modal'),
         },
         delete: $('#delete-files-modal'),
@@ -41,6 +43,12 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 prev: $('#upload-dl-prev-button'),
                 next: $('#upload-dl-next-button'),
                 submit: $('#upload-dl-submit'),
+            },
+            dl2: {
+                prev: $('#upload-add-dl-prev-button'),
+                skip: $('#upload-add-dl-skip-button'),
+                next: $('#upload-add-dl-next-button'),
+                submit: $('#upload-add-dl-submit'),
             },
             mec: {
                 prev: $('#upload-mec-prev-button'),
@@ -55,6 +63,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     const $step = {
         upload: {
             dl: $('#upload-dl-step'),
+            dl2: $('#upload-add-dl-step'),
             mec: $('#upload-mec-step'),
         },
     }
@@ -65,6 +74,11 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 "Editor: Driver's License <small>(Back)</small>",
                 'Data Verification and Confirmation',
             ],
+            dl2: [
+                "Editor: Driver's License <small>(Front)</small>",
+                "Editor: Driver's License <small>(Back) — <i>Optional</i></small>",
+                'Data Verification and Confirmation',
+            ],
             mec: [
                 "Editor: Medical Certificate",
                 'Data Verification and Confirmation',
@@ -73,6 +87,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     }
     const activeStep = {
         dl: 0,
+        dl2: 0,
         mec: 0,
     }
 
@@ -84,6 +99,12 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 cropperBack: $('#croparea-dl-back'),
                 confirmation: $('#confirmation-dl'),
             },
+            dl2: {
+                all: $('.dl2-section'),
+                cropperFront: $('#croparea-add-dl-front'),
+                cropperBack: $('#croparea-add-dl-back'),
+                confirmation: $('#confirmation-add-dl'),
+            },
             mec: {
                 all: $('.mec-section'),
                 cropper: $('#croparea-mec'),
@@ -94,6 +115,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 
     const $dropdown = {
         dlState: [ $('#dl-state-confirm-dropdown'), dl.state ],
+        dlState2: [ $('#dl-state-2-confirm-dropdown') ],
         dlSuffix: [ $('#dl-suffix-confirm-dropdown'), application.suffix ],
         dlGender: [ $('#dl-gender-confirm-dropdown'), application.gender ],
         dlAddrState: [ $('#dl-addr-state-confirm-dropdown') ],
@@ -125,6 +147,8 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     const $calendar = {
         dlIssuedOn: $('#dl-issued-confirm-calendar'),
         dlExpiresOn: $('#dl-expires-confirm-calendar'),
+        dlIssuedOn2: $('#dl-issued-2-confirm-calendar'),
+        dlExpiresOn2: $('#dl-expires-2-confirm-calendar'),
         dlDob: $('#dl-dob-confirm-calendar'),
     }
 
@@ -178,6 +202,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     })
 
     driverLicenseEvent(TS.dlNumber, { value: dl.number })
+    driverLicenseEvent(TS.dlNumber2)
     
     dlClassEvent(TS.dlClass, { value: dl.class })
 
@@ -187,6 +212,11 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             maxDate: moment(finishedAt).toDate(),
         })
         .calendar('set date', new Date(moment(dl.issuedOn).toDate()))
+    $calendar.dlIssuedOn2
+        .calendar({
+            ...calSettings,
+            maxDate: moment(finishedAt).toDate(),
+        })
 
     $calendar.dlExpiresOn
         .calendar({
@@ -194,6 +224,11 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             minDate: moment(finishedAt).add(1, 'days').toDate(),
         })
         .calendar('set date', new Date(moment(dl.expiresOn).toDate()))
+    $calendar.dlExpiresOn2
+        .calendar({
+            ...calSettings,
+            minDate: moment(finishedAt).add(1, 'days').toDate(),
+        })
 
     inputEvent(TS.dlEndrs, { strip: true, capitalize: 'first', value: dl.endorsement })
     inputEvent(TS.dlRestr, { strip: true, capitalize: 'first', value: dl.restriction })
@@ -239,6 +274,19 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         }).modal('show')
     })
 
+    $.upload.dl2.click(function() {
+        $modal.upload.dl2.modal({
+            autofocus: false,
+            closable: false,
+            onVisible() {
+                setTimeout(() => {
+                    croppers?.['dl2-front']?.resize()
+                    croppers?.['dl2-back']?.resize()
+                }, 250)
+            },
+        }).modal('show')
+    })
+
     $upload.mec.click(function() {
         $modal.upload.mec.modal({
             autofocus: false,
@@ -260,7 +308,19 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     })
     dropzoneEvents('dl-back', {
         onImageLoad() {
-            $button.upload.dl.next.prop('disabled', false)
+            $button.upload.dl2.next.prop('disabled', false)
+        },
+    })
+
+    dropzoneEvents('dl2-front', {
+        onImageLoad() {
+            $button.upload.dl2.next.prop('disabled', false)
+            $step.upload.dl2.html(steps.upload.dl2[0])
+        },
+    })
+    dropzoneEvents('dl2-back', {
+        onImageLoad() {
+            $button.upload.dl2.next.prop('disabled', false)
         },
     })
 
@@ -328,6 +388,88 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 })
         })
     })
+
+
+
+
+    //! UNFINISHED
+    $button.upload.dl2.next.click(function() {
+        $section.upload.dl2.all.hide()
+        if (activeStep.dl2 === 0) {
+            $button.upload.dl2.prev.show()
+            if (!croppers['dl2-back']) $button.upload.dl2.next.prop('disabled', true)
+            $section.upload.dl2.cropperBack.show()
+            croppers['dl2-back']?.resize()
+            $button.upload.dl2.skip.show()
+        }
+        if (activeStep.dl2 === 1) {
+            $button.upload.dl2.next.hide()
+            $button.upload.dl2.submit.show()
+            $button.upload.dl2.skip.hide()
+            $section.upload.dl2.confirmation.show()
+        }
+        $step.upload.dl2.html(steps.upload.dl2[++activeStep.dl2])
+    })
+
+    //! UNIFINISHED
+    $button.upload.dl2.prev.click(function() {
+        $section.upload.dl2.all.hide()
+        if (activeStep.dl2 === 1) {
+            $button.upload.dl2.prev.hide()
+            $section.upload.dl2.cropperFront.show()
+            croppers['dl2-front']?.resize()
+            $button.upload.dl2.next.prop('disabled', false)
+            $button.upload.dl2.skip.hide()
+        }
+        if (activeStep.dl2 === 2) {
+            $button.upload.dl2.submit.hide()
+            $button.upload.dl2.next.show()
+            $section.upload.dl2.cropperBack.show()
+            croppers['dl2-back']?.resize()
+            $button.upload.dl2.skip.show()
+        }
+        $step.upload.dl2.html(steps.upload.dl2[--activeStep.dl2])
+    })
+
+    //! UNTESTED
+    $button.upload.dl2.skip.click(function() {
+        $section.upload.dl2.all.hide()
+        $button.upload.dl2.next.hide()
+        $button.upload.dl2.submit.show()
+        $section.upload.dl2.confirmation.show()
+        $(this).hide()
+        $step.upload.dl2.html(steps.upload.dl2[++activeStep.dl2])
+    })
+
+    //! UNTESTED
+    $('#upload-add-dl-form').on('submit', function(evt) {
+        evt.preventDefault()
+        if (!$dropdown.dlState2[0].dropdown('get value')) return alert('State is not selected')
+
+        const form = this
+
+        Promise.all([
+            getResizedBlob('dl2-front'),
+            getResizedBlob('dl2-back'),
+        ]).then(([ dlF, dlB ]) => {
+            const formData = new FormData(form)
+            formData.set('dlF', dlF, 'dlF.jpg')
+            formData.set('dlB', dlB, 'dlB.jpg')
+
+            const dateFields = [ 'issuedOn', 'expiresOn' ]
+            for (const [ key, value ] of formData.entries())
+                if (dateFields.includes(key)) formData.set(key, moment(value).format('YYYY-MM-DD'))
+
+            fetch(form.action, { method: 'POST', body: formData })
+                // .then(res => res.json())
+                .then(data => {
+                    location.reload()
+                })
+        })
+    })
+
+
+
 
     $button.upload.mec.next.click(function() {
         $section.upload.mec.all.hide()
