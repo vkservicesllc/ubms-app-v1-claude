@@ -176,7 +176,7 @@ router.get('/driver/application/:formId/:documentType', fileLoggedOut, Team.mw.v
 
         switch (documentType) {
             case 'drivers-license':
-                pdfBytes = await createDriverLicensePdf(application)
+                pdfBytes = await createDriverLicensePdf(application, res.session)
                 downloadName = "Driver's License"
                 break
         }
