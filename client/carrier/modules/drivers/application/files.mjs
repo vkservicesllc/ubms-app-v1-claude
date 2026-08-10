@@ -18,6 +18,8 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     const filenameProps = {
         'dl-front': 'dlF',
         'dl-back': 'dlB',
+        'dl2-front': 'dlF',
+        'dl2-back': 'dlB',
         'mec': 'mec',
         //! add more
     }
@@ -274,7 +276,8 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         }).modal('show')
     })
 
-    $.upload.dl2.click(function() {
+    $upload.dl2.click(function(evt) {
+        evt.preventDefault()
         $modal.upload.dl2.modal({
             autofocus: false,
             closable: false,
@@ -665,7 +668,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 resizeWorkZone()
             }
 
-            function resizeWorkZone() { //! SOME ISSUES PERSIST
+            function resizeWorkZone() { //? SOME ISSUES PERSIST //* May be not
                 //! $image.css()
                 $preview.css({ width, height: '100%', overflow: 'hidden' })
                     .find('img').css({ width: 'inherit', height: 'inherit' })
