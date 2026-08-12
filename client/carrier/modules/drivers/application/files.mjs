@@ -11,7 +11,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { _id, cdlRole, dl, finishedAt } = application
+    const { _id, formId, cdlRole, dl, finishedAt } = application
     const TS = selector.id.text, RS = selector.id.radio, CS = selector.id.checkbox
     const $commercial = $(selector.class.radio.dlCommercial)
 
@@ -311,7 +311,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     })
     dropzoneEvents('dl-back', {
         onImageLoad() {
-            $button.upload.dl2.next.prop('disabled', false)
+            $button.upload.dl.next.prop('disabled', false)
         },
     })
 
@@ -384,7 +384,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             for (const [ key, value ] of formData.entries())
                 if (dateFields.includes(key)) formData.set(key, moment(value).format('YYYY-MM-DD'))
 
-            fetch(form.action, { method: 'POST', body: formData })
+            fetch(`/upload/api/drivers/application/${formId}/initial-drivers-license`, { method: 'POST', body: formData })
                 // .then(res => res.json())
                 .then(data => {
                     location.reload()
@@ -392,10 +392,6 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         })
     })
 
-
-
-
-    //! UNFINISHED
     $button.upload.dl2.next.click(function() {
         $section.upload.dl2.all.hide()
         if (activeStep.dl2 === 0) {
@@ -414,7 +410,6 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $step.upload.dl2.html(steps.upload.dl2[++activeStep.dl2])
     })
 
-    //! UNIFINISHED
     $button.upload.dl2.prev.click(function() {
         $section.upload.dl2.all.hide()
         if (activeStep.dl2 === 1) {
@@ -434,7 +429,6 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $step.upload.dl2.html(steps.upload.dl2[--activeStep.dl2])
     })
 
-    //! UNTESTED
     $button.upload.dl2.skip.click(function() {
         $section.upload.dl2.all.hide()
         $button.upload.dl2.next.hide()
@@ -444,7 +438,6 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $step.upload.dl2.html(steps.upload.dl2[++activeStep.dl2])
     })
 
-    //! UNFINISHED
     $('#upload-add-dl-form').on('submit', function(evt) {
         evt.preventDefault()
         if (!$dropdown.dlState2[0].dropdown('get value')) return alert('State is not selected')
@@ -464,16 +457,13 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             for (const [ key, value ] of formData.entries())
                 if (dateFields.includes(key)) formData.set(key, moment(value).format('YYYY-MM-DD'))
 
-            fetch(form.action, { method: 'POST', body: formData })
+            fetch(`/upload/api/drivers/application/${formId}/additional-drivers-license`, { method: 'POST', body: formData })
                 // .then(res => res.json())
                 .then(data => {
                     location.reload()
                 })
         })
     })
-
-
-
 
     $button.upload.mec.next.click(function() {
         $section.upload.mec.all.hide()

@@ -40,12 +40,15 @@ export default async (application, session) => {
 
     const list = {}
     for (const file of files) {
-        const [ start, end, number, state, side, uploadedBy, init ] = file.split('.')[0].split('_')
+        const [ start, end, state, number, dlClass, cdl, side, uploadedBy, init ] = file.split('.')[0].split('_')
+
         const prop = `${start}_${end}`
         if (!list[prop]) list[prop] = {}
         list[prop].init = init === 'init'
-        list[prop].number = number
+        list[prop].cdl = cdl === 'Y'
         list[prop].state = Address.list.state[state]
+        list[prop].number = number
+        list[prop].class = dlClass
         list[prop].duration = `${moment(start).format('ll')} – ${moment(end).format('ll')}`
         list[prop].uploadedBy = (await User.fetch(session, { id: +uploadedBy })).fullName()
         list[prop][side] = {}
@@ -79,7 +82,7 @@ export default async (application, session) => {
         const page = pdfDoc.addPage([width, height])
         let y = height - marginY * 1.5
 
-        let text = `${application.fullName} (${application.formId})`
+        let text = `${application.fullName} – ${application.formId}`
         let textWidth = font.title.widthOfTextAtSize(text, size.title)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,
@@ -97,14 +100,16 @@ export default async (application, session) => {
         }
 
         y -= 30
-        text = `DRIVER'S LICENSE${item.init ? ' (Initial)' : ''}`
+        text = `DRIVER'S LICENSE${item.init ? ' *' : ''}`
+        if (item.cdl) text = `COMMERCIAL ${text}`
+        text += ` – ${item.state}`
         textWidth = font.info.widthOfTextAtSize(text, size.info)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,
             font: font.info, size: size.info,
         })
         y -= 15
-        text = `Number: ${item.number} (${item.state})`
+        text = `Number: ${item.number} / Class: ${item.class !== '-' ? item.class : 'n/a'}`
         textWidth = font.info.widthOfTextAtSize(text, size.info)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,

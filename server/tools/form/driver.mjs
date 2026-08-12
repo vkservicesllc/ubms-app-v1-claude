@@ -1702,12 +1702,14 @@ class ApplicationFileForm {
 
 
     static dlCommercial = createDlCommercialFrom({ selector: appFileSelector, group: 'dlCommercial', name: 'dl[commercial]' })
+    static dlCommercial2 = createDlCommercialFrom({ selector: appFileSelector, group: 'dlCommercial2', name: 'commercial' })
 
     static dlState = createDlStateForm({ selector: appFileSelector, name: 'dl[state]' })
     static dlState2 = createDlStateForm({ selector: appFileSelector, target: 'dlState2', name: 'state' })
     static dlNumber = createDlNumberForm({ selector: appFileSelector, name: 'dl[number]' })
     static dlNumber2 = createDlNumberForm({ selector: appFileSelector, target: 'dlNumber2', name: 'number' })
     static dlClass = createDlClassForm({ selector: appFileSelector, name: 'dl[class]' })
+    static dlClass2 = createDlClassForm({ selector: appFileSelector, target: 'dlClass2', name: 'class' })
     static dlIss = createDlIssForm({ selector: appFileSelector, name: 'dl[issuedOn]' })
     static dlExp = createDlExpForm({ selector: appFileSelector, name: 'dl[expiresOn]' })
     static dlIss2 = createDlIssForm({ selector: appFileSelector, target: 'dlIss2', name: 'issuedOn' })

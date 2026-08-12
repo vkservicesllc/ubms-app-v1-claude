@@ -31,7 +31,7 @@ const upload = {
 
 
 //* via fetch
-router.post('/drivers/application/:formId/initial-drivers-license', User.mw.verify, async (req, res, next) => {
+router.post('/api/drivers/application/:formId/initial-drivers-license', User.mw.verify, async (req, res, next) => {
     const { formId } = req.params
     const application = await Application.fetch(res.session, { formId })
     if (!application) throw new Error('Application not found')
@@ -69,14 +69,17 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
 
         dl.commercial = dl.commercial === 'Y'
 
-        const { issuedOn, expiresOn, state, number } = dl
+        const cdl = dl.commercial ? 'Y' : 'N'
+        let dlClass = dl.class
+        if (!dlClass) dlClass = '-'
         const { id: userId } = res.session.user
         for (const [ field, side ] of [ [ 'dlF', 'front' ], [ 'dlB', 'back' ] ]) {
             const file = req.files[field]?.[0]
             if (!file) continue
 
             const ext = path.extname(file.filename)
-            await renameFile(path.dirname(file.path), file.filename, `${issuedOn}_${expiresOn}_${number}_${state}_${side}_${userId}_init${ext}`)
+            const filename = `${dl.issuedOn}_${dl.expiresOn}_${dl.state}_${dl.number}_${dlClass}_${cdl}_${side}_${userId}_init${ext}`
+            await renameFile(path.dirname(file.path), file.filename, filename)
         }
         await individual.update('identifications', dl, { id: dlId })
         await individual.update('names', name, { since: individual.dob })
@@ -104,7 +107,7 @@ router.post('/drivers/application/:formId/initial-drivers-license', User.mw.veri
 
 
 //* via fetch
-router.post('/drivers/application/:formId/additional-drivers-license', User.mw.verify, async (req, res, next) => {
+router.post('/api/drivers/application/:formId/additional-drivers-license', User.mw.verify, async (req, res, next) => {
     const { formId } = req.params
     const application = await Application.fetch(res.session, { formId })
     if (!application) throw new Error('Application not found')
@@ -118,15 +121,17 @@ router.post('/drivers/application/:formId/additional-drivers-license', User.mw.v
     { name: 'dlB', maxCount: 1 },
 ]), async (req, res) => {
     try {
-        const { issuedOn, expiresOn, state, number } = req.body
+        req.body.commercial = req.body.commercial === 'Y'
+        const { issuedOn, expiresOn, commercial, state, number, class: dlClass } = req.body
         const { id: userId } = res.session.user
+        const cdl = commercial ? 'Y' : 'N'
 
         for (const [ field, side ] of [ [ 'dlF', 'front' ], [ 'dlB', 'back' ] ]) {
             const file = req.files[field]?.[0]
             if (!file) continue
 
             const ext = path.extname(file.filename)
-            await renameFile(path.dirname(file.path), file.filename, `${issuedOn}_${expiresOn}_${number}_${state}_${side}_${userId}${ext}`)
+            await renameFile(path.dirname(file.path), file.filename, `${issuedOn}_${expiresOn}_${state}_${number}_${dlClass || '-'}_${cdl}_${side}_${userId}${ext}`)
         }
 
         res.json({ status: 'OK' })

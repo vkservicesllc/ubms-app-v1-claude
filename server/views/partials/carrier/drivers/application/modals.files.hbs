@@ -99,7 +99,7 @@
         <small>Upload</small> Driver's License — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
     </div>
     <div class="content">
-        <form class="ui form" id="upload-dl-form" action="/upload/drivers/application/{{formId}}/initial-drivers-license" method="POST" enctype="multipart/form-data">
+        <form class="ui form" id="upload-dl-form" method="POST" enctype="multipart/form-data">
             <div class="ui placeholder segment dl-section" id="croparea-dl-front" data-init-aspect-ratio="1.6">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Front)</small></h1>
@@ -161,7 +161,7 @@
         <small>Upload Additional</small> Driver's License — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
     </div>
     <div class="content">
-        <form class="ui form" id="upload-add-dl-form" action="/upload/drivers/application/{{formId}}/additional-drivers-license" method="POST" enctype="multipart/form-data">
+        <form class="ui form" id="upload-add-dl-form" method="POST" enctype="multipart/form-data">
             <div class="ui placeholder segment dl2-section" id="croparea-dl2-front" data-init-aspect-ratio="1.6">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Driver's License <small>(Front)</small></h1>
@@ -187,13 +187,13 @@
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
             <div class="ui two column relaxed grid dl2-section" id="confirmation-add-dl" style="display: none; margin: 0;">
-                <div class="six wide column">
+                <div class="five wide column">
                     <div>
                         <div class="cropper-preview" id="cropper-preview-dl2-front" data-width="36"></div>
                         <div class="cropper-preview" id="cropper-preview-dl2-back" data-width="36"></div>
                     </div>
                 </div>
-                <div class="ten wide column">
+                <div class="eleven wide column">
                     {{> carrier/drivers/application/file_forms/drivers_license_additional}}
                 </div>
             </div>

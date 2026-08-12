@@ -9,6 +9,7 @@ const selector = {
         },
         radio: {
             dlCommercial: 'dl-commercial',
+            dlCommercial2: 'dl-commercial-2',
         },
     },
     id: {
@@ -19,6 +20,7 @@ const selector = {
             dlNumber: 'driver-license-number',
             dlNumber2: 'driver-license-number-2',
             dlClass: 'driver-license-class',
+            dlClass2: 'driver-license-class-2',
             dlIss: 'driver-license-issue-date',
             dlIss2: 'driver-license-issue-date-2',
             dlExp: 'driver-license-expiration-date',
@@ -45,6 +47,10 @@ const selector = {
             dlCommercial: {
                 yes: 'dl-commercial',
                 no: 'dl-non-commercial',
+            },
+            dlCommercial2: {
+                yes: 'dl-commercial-2',
+                no: 'dl-non-commercial-2',
             },
             dlGender: {
                 male: 'dl-gender-male',

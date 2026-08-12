@@ -9,11 +9,13 @@
 </div>
 
 
-<table class="ui compact celled definition table">
+<table class="ui compact celled table">
     <thead>
         <tr>
+            <th>{{{fileForm.dlCommercial2.radio.label}}}</th>
             <th style="width: 15rem;">{{{fileForm.dlState2.select.label}}}</th>
             <th style="width: 15rem;">{{{fileForm.dlNumber2.text.label}}}</th>
+            <th style="width: 7.5rem;">{{{fileForm.dlClass2.text.label}}}</th>
             <th style="width: 12rem;">{{{fileForm.dlIss2.text.label}}}</th>
             <th style="width: 12rem;">{{{fileForm.dlExp2.text.label}}}</th>
         </tr>
@@ -21,17 +23,40 @@
     <tbody>
         <tr>
             <td>
-                <div class="ui fluid selection required dropdown" id="dl-state-2-confirm-dropdown">
-                    {{{fileForm.dlState2.hidden.input}}}
-                    <i class="dropdown icon"></i>
-                    <div class="default text"></div>
-                    <div class="menu">{{{dropdown.confDlState}}}
+                <div class="inline fields">
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            {{{fileForm.dlCommercial2.radio.yes.input}}}
+                            {{{fileForm.dlCommercial2.radio.yes.label}}}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            {{{fileForm.dlCommercial2.radio.no.input}}}
+                            {{{fileForm.dlCommercial2.radio.no.label}}}
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui fluid selection required dropdown" id="dl-state-2-confirm-dropdown">
+                        {{{fileForm.dlState2.hidden.input}}}
+                        <i class="dropdown icon"></i>
+                        <div class="default text"></div>
+                        <div class="menu">{{{dropdown.confDlState}}}
+                        </div>
                     </div>
                 </div>
             </td>
             <td>
                 <div class="field">
                     {{{fileForm.dlNumber2.text.input}}}
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    {{{fileForm.dlClass2.text.input}}}
                 </div>
             </td>
             <td>
@@ -57,3 +82,9 @@
         </tr>
     </tbody>
 </table>
+<p style="text-align: right;">
+    <span class="ui red text">
+        <i class="exclamation circle icon"></i>
+        <i>On some driver's licenses, the class is printed on the back instead of the front — check both sides</i>
+    </span>
+</p>
