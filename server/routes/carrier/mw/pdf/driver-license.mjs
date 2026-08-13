@@ -109,7 +109,7 @@ export default async (application, session) => {
             font: font.info, size: size.info,
         })
         y -= 15
-        text = `Number: ${item.number} / Class: ${item.class !== '-' ? item.class : 'n/a'}`
+        text = `Number: ${item.number}; Class: ${item.class !== '-' ? item.class : 'n/a'}`
         textWidth = font.info.widthOfTextAtSize(text, size.info)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,

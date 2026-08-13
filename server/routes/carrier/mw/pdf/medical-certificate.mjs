@@ -62,23 +62,14 @@ export default async (application, session) => {
         let y = height - marginY * 1.5
 
         let text = `${application.fullName} – ${application.formId}`
+        if (application._carrierId) text += `; ${application.carrier.name}`
         let textWidth = font.title.widthOfTextAtSize(text, size.title)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,
             font: font.title, size: size.title,
         })
 
-        if (application._carrierId) {
-            y -= 20
-            text = application.carrier.name
-            textWidth = font.subtitle.widthOfTextAtSize(text, size.subtitle)
-            page.drawText(text, {
-                x: (width - textWidth) / 2, y,
-                font: font.subtitle, size: size.subtitle,
-            })
-        }
-
-        y -= 30
+        y -= 20
         text = `MEDICAL CERTIFICATE${item.init ? ' *' : ''}`
         textWidth = font.info.widthOfTextAtSize(text, size.info)
         page.drawText(text, {
@@ -86,27 +77,20 @@ export default async (application, session) => {
             font: font.info, size: size.info,
         })
         y -= 15
-        text = `National Registry Number: ${item.number !== '-' ? item.number : 'n/a'}`
-        textWidth = font.info.widthOfTextAtSize(text, size.info)
-        page.drawText(text, {
-            x: (width - textWidth) / 2, y,
-            font: font.info, size: size.info,
-        })
-        y -= 15
-        text = `Expires on: ${item.expiresOn} / Exam Date: ${item.issuedOn !== '-' ? item.issuedOn : 'n/a'}`
+        text = `Expires on: ${item.expiresOn}; Exam Date: ${item.issuedOn !== '-' ? item.issuedOn : 'n/a'}; NRCME: ${item.number !== '-' ? item.number : 'n/a'}`
         textWidth = font.info.widthOfTextAtSize(text, size.info)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,
             font: font.info, size: size.info,
         })
 
-        y -= marginY
+        y -= marginY / 2
 
         const imgBytes = fs.readFileSync(item.path)
         const img = await pdfDoc.embedJpg(imgBytes)
 
         const maxHeight = y - marginY
-        const widthRatio = (contentWidth * .65) / img.width
+        const widthRatio = (contentWidth * .8) / img.width
         const heightRatio = maxHeight / img.height
         const scale = Math.min(widthRatio, heightRatio, 1)
         const drawWidth = img.width * scale
@@ -130,7 +114,7 @@ export default async (application, session) => {
         //     y = await drawSide(page, item.back, y, maxHeight)
         // }
 
-        y -= marginY
+        y -= marginY / 2
         text = `Uploaded by: ${item.uploadedBy}`
         textWidth = font.comment.widthOfTextAtSize(text, size.comment)
         page.drawText(text, {
