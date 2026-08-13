@@ -11,7 +11,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { _id, formId, cdlRole, dl, finishedAt } = application
+    const { _id, formId, cdlRole, dl, mec, finishedAt } = application
     const TS = selector.id.text, RS = selector.id.radio, CS = selector.id.checkbox
     const $commercial = $(selector.class.radio.dlCommercial)
 
@@ -152,6 +152,8 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         dlIssuedOn2: $('#dl-issued-2-confirm-calendar'),
         dlExpiresOn2: $('#dl-expires-2-confirm-calendar'),
         dlDob: $('#dl-dob-confirm-calendar'),
+        mecExpiresOn: $('#mec-expires-confirm-calendar'),
+        mecIssuedOn: $('#mec-issued-confirm-calendar'),
     }
 
     $('.file-form-confirm-check').on('change', function() {
@@ -173,6 +175,12 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $dropdown.dlChooseAddr[0].addClass('disabled')
     })
 
+    $('.file-form-confirm-mec-check').on('change', function() {
+        const $checks = $('.file-form-confirm-mec-check')
+        const allChecked = $checks.length === $checks.filter(':checked').length
+        $button.upload.mec.submit.prop('disabled', !allChecked)
+    })
+
     dropdownEvent($dropdown)
 
     $modal.delete.modal({
@@ -189,6 +197,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $('#delete-files-target').val(target)
         $('.delete-files-target').text({
             dl: "Driver's License",
+            mec: 'Medical Certificate',
         }[target])
 
         $modal.delete.modal('show')
@@ -255,6 +264,29 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         },
     })
     cityEvent(TS.dlAddrCity)
+
+    $calendar.mecExpiresOn
+        .calendar({
+            ...calSettings,
+            minDate: moment(finishedAt).add(1, 'days').toDate(),
+        })
+    if (mec?.expiresOn)
+        $calendar.mecExpiresOn.calendar('set date', new Date(moment(mec.expiresOn).toDate()))
+    $calendar.mecIssuedOn
+        .calendar({
+            ...calSettings,
+            minDate: moment(finishedAt).add(1, 'days').toDate(),
+        })
+    if (mec?.issuedOn)
+        $calendar.mecIssuedOn.calendar('set date', new Date(moment(mec.issuedOn).toDate()))
+
+    inputEvent(TS.mecNumber, {
+        value: mec?.nrcme,
+        onInput(number, $number) {
+            number = number.replace(/\D/, '')
+            $number.val(number)
+        },
+    })
 
     $calendar.dlDob
         .calendar({
@@ -457,7 +489,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             for (const [ key, value ] of formData.entries())
                 if (dateFields.includes(key)) formData.set(key, moment(value).format('YYYY-MM-DD'))
 
-            fetch(`/upload/api/drivers/application/${formId}/additional-drivers-license`, { method: 'POST', body: formData })
+            fetch(`/upload/api/drivers/application/${formId}/drivers-license?record=false`, { method: 'POST', body: formData })
                 // .then(res => res.json())
                 .then(data => {
                     location.reload()
@@ -486,6 +518,29 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             croppers['mec']?.resize()
         }
         $step.upload.mec.html(steps.upload.mec[--activeStep.mec])
+    })
+
+    $('#upload-mec-form').on('submit', function(evt) {
+        evt.preventDefault()
+
+        const form = this
+
+        const blobs = [ getResizedBlob('mec') ]
+
+        Promise.all(blobs).then(([ mec ]) => {
+            const formData = new FormData(form)
+            formData.set('mec', mec, 'mec.jpg')
+
+            const dateFields = [ 'expiresOn', 'issuedOn' ]
+            for (const [ key, value ] of formData.entries())
+                if (dateFields.includes(key) && value) formData.set(key, moment(value).format('YYYY-MM-DD'))
+
+            fetch(`/upload/api/drivers/application/${formId}/initial-medical-certificate`, { method: 'POST', body: formData })
+                // .then(res => res.json())
+                .then(data => {
+                    location.reload()
+                })
+        })
     })
 
 

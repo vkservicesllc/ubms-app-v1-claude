@@ -1761,6 +1761,10 @@ class ApplicationFileForm {
         name: 'address[state]',
     })
 
+    static mecExp = createMecExpForm({ selector: appFileSelector })
+    static mecIss = createMecIssForm({ selector: appFileSelector })
+    static mecNumber = createMecNumberForm({ selector: appFileSelector })
+
 }
 
 

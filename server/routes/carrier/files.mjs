@@ -47,6 +47,7 @@ router.post('/delete/driver/application/:formId', fileLoggedOut, Team.mw.verify,
         const path = dir + `/driver/${driverId}/`
         + {
             dl: 'drivers-license',
+            mec: 'medical-certificate',
         }[target] + `/${id}`
 
         const { success } = await deleteFiles(path, true)
@@ -55,17 +56,25 @@ router.post('/delete/driver/application/:formId', fileLoggedOut, Team.mw.verify,
             const individual = await Individual.fetch(res.session, { id: personId })
 
             switch (target) {
-            case 'dl':
-                {
-                    const { dlId } = application
-                    const body = {}
-                    const fields = [ 'addrSince', 'address1', 'address2', 'addrCity', 'addrState', 'addrZip' ]
-                    fields.forEach(field => body[field] = null)
-                    checklist.documents.dl = 0
 
-                    await individual.update('identifications', body, { id: dlId })
-                }
-                break
+                case 'dl':
+                    {
+                        const { dlId } = application
+                        const body = {}
+                        const fields = [ 'addrSince', 'address1', 'address2', 'addrCity', 'addrState', 'addrZip' ]
+                        fields.forEach(field => body[field] = null)
+                        checklist.documents.dl = 0
+
+                        await individual.update('identifications', body, { id: dlId })
+                    }
+                    break
+
+                case 'mec':
+                    {
+                        checklist.documents.mec = 0
+                    }
+                    break
+
             }
 
             await application.update('checklist', { checklist })

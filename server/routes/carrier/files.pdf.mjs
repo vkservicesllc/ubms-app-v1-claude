@@ -14,6 +14,7 @@ import Company from '../../tools/core/company.mjs'
 import { Application, Employment } from '../../tools/core/driver.mjs'
 import createApplicationPdf from './mw/pdf/driver-application.mjs'
 import createDriverLicensePdf from './mw/pdf/driver-license.mjs'
+import createMedicalCertificatePdf from './mw/pdf/medical-certificate.mjs'
 import createEmplVerifPdf from './mw/pdf/prev-employment-verification.mjs'
 import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 import fillPdf from '../../tools/utils/pdf.fillable.mjs'
@@ -178,6 +179,10 @@ router.get('/driver/application/:formId/:documentType', fileLoggedOut, Team.mw.v
             case 'drivers-license':
                 pdfBytes = await createDriverLicensePdf(application, res.session)
                 downloadName = "Driver's License"
+                break
+            case 'medical-certificate':
+                pdfBytes = await createMedicalCertificatePdf(application, res.session)
+                downloadName = 'Medical Certificate'
                 break
         }
 

@@ -6,6 +6,7 @@ const selector = {
     class: {
         combo: {
             driverLicense: 'driver-license',
+            medCard: 'medical-card',
         },
         radio: {
             dlCommercial: 'dl-commercial',
@@ -35,6 +36,9 @@ const selector = {
             dlAddress2: 'dl-address-2',
             dlAddrZip: 'dl-address-zip',
             dlAddrCity: 'dl-address-city',
+            mecIss: 'med-card-exam-date',
+            mecExp: 'med-card-expiration-date',
+            mecNumber: 'med-card-number',
         },
         select: {
             dlState: 'dl-state',

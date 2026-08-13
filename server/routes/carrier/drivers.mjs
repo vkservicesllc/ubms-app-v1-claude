@@ -296,7 +296,7 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
         const filePath = `/files/pdf/driver/application/${formId}`
         hbs.downloadLinks = { //! index 3 is download name
             dl: [ `${filePath}/drivers-license`, "Driver's License", `[${formId}] Driver's License (${fullName})` ],
-            mec: [ ``, 'Medical Certificate', `[${formId}] Medical Certificate (${fullName})` ],
+            mec: [ `${filePath}/medical-certificate`, 'Medical Certificate', `[${formId}] Medical Certificate (${fullName})` ],
             leg: [ ``, 'Legal Documents', `[${formId}] Legal Documents (${fullName})` ],
             ssc: [ ``, 'Social Security Card', `[${formId}] Social Security Card (${fullName})` ],
 

@@ -216,8 +216,8 @@
         <small>Upload</small> Medical Certificate — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
     </div>
     <div class="content">
-        <form class="ui form" id="upload-mec-form" action="" method="POST" enctype="multipart/form-data">
-            <div class="ui placeholder segment mec-section" id="croparea-mec">
+        <form class="ui form" id="upload-mec-form" method="POST" enctype="multipart/form-data">
+            <div class="ui placeholder segment mec-section" id="croparea-mec" data-init-aspect-ratio="1.3">
                 <div class="ui icon header cropper-dropzone">
                     <h1 class="ui header">Medical Certificate</h1>
                     <i class="dark teal image file outline icon"></i>
@@ -234,13 +234,13 @@
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
             <div class="ui two column relaxed grid mec-section" id="confirmation-mec" style="display: none; margin: 0;">
-                <div class="ten wide column">
+                <div class="nine wide column">
                     <div>
                         <div class="cropper-preview" id="cropper-preview-mec" data-width="64"></div>
                     </div>
                 </div>
-                <div class="six wide column">
-                    CONFIRMATION FORM
+                <div class="seven wide column">
+                    {{> carrier/drivers/application/file_forms/medical_card}}
                 </div>
             </div>
         </form>

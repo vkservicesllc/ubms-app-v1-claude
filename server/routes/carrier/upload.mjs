@@ -10,7 +10,7 @@ import moment, { defaultFormat } from 'moment'
 import User from '../../tools/core/user.mjs'
 import Company from '../../tools/core/company.mjs'
 import Individual from '../../tools/core/individual.mjs'
-import { Application } from '../../tools/core/driver.mjs'
+import Driver, { Application } from '../../tools/core/driver.mjs'
 import uploader from '../../tools/utils/multer.mjs'
 import { getFiles, renameFile } from '../../tools/utils/fs.mjs'
 
@@ -21,8 +21,29 @@ const path = require('path')
 
 const upload = {
     application: {
-        dlInit: uploader('/driver/{id}/drivers-license/{id2}'),
+        dl: uploader('/driver/{id}/drivers-license/{id2}'),
+        mec: uploader('/driver/{id}/medical-certificate/{id2}'),
     },
+}
+
+const uploadDriverPreset = async (req, res, next) => {
+    const { formId } = req.params
+
+    const application = await Application.fetch(res.session, { formId })
+    if (!application) throw new Error('Application not found')
+
+    const { id, driverId, personId } = application
+
+    const driver = await Driver.fetch(res.session, { id: driverId })
+    if (!driver) throw new Error('Driver not found')
+
+    const individual = await Individual.fetch(res.session, { id: personId })
+    if (!individual) throw new Error('Individual not found')
+
+    req.upload = { id: driverId, id2: id }
+    req.data = { application, driver, individual }
+
+    next()
 }
 
 
@@ -30,28 +51,11 @@ const upload = {
 // ==== ROUTES ==== //
 
 
-//* via fetch
-router.post('/api/drivers/application/:formId/initial-drivers-license', User.mw.verify, async (req, res, next) => {
-    const { formId } = req.params
-    const application = await Application.fetch(res.session, { formId })
-    if (!application) throw new Error('Application not found')
-
-    const { id, driverId, personId } = application
-    const individual = await Individual.fetch(res.session, { id: personId })
-    if (!individual) throw new Error('Individual not found')
-
-    //* id/id2 only — the final filename depends on req.body.dl, which multer
-    //* hasn't parsed yet at this point, so it's applied via rename below instead
-    req.upload = { id: driverId, id2: id }
-    req.data = { application, individual }
-
-    next()
-}, upload.application.dlInit.fields([
+router.post('/api/drivers/application/:formId/initial-drivers-license', User.mw.verify, uploadDriverPreset, upload.application.dl.fields([
     { name: 'dlF', maxCount: 1 },
     { name: 'dlB', maxCount: 1 },
 ]), async (req, res) => {
     try {
-        //* Runs when upload is successfull
         const { application, individual } = req.data
         let { checklist } = application
         if (!checklist) checklist = {}
@@ -106,17 +110,52 @@ router.post('/api/drivers/application/:formId/initial-drivers-license', User.mw.
 })
 
 
-//* via fetch
-router.post('/api/drivers/application/:formId/additional-drivers-license', User.mw.verify, async (req, res, next) => {
-    const { formId } = req.params
-    const application = await Application.fetch(res.session, { formId })
-    if (!application) throw new Error('Application not found')
+router.post('/api/drivers/application/:formId/initial-medical-certificate', User.mw.verify, uploadDriverPreset, upload.application.mec.fields([
+    { name: 'mec', maxCount: 1 },
+]), async (req, res) => {
+    try {
+        const file = req.files.mec?.[0]
+        if (!file) throw new Error('File not found')
 
-    const { id, driverId } = application
-    req.upload = { id: driverId, id2: id }
+        const { application, driver } = req.data
+        let { checklist } = application
+        if (!checklist) checklist = {}
 
-    next()
-}, upload.application.dlInit.fields([
+        let action = 'update'
+
+        if (!checklist.documents) {
+            checklist.documents = {}
+            action = 'add'
+        }
+        checklist.documents.mec = 1
+
+        const { expiresOn, issuedOn, nrcme } = req.body
+        const { id: userId } = res.session.user
+        const ext = path.extname(file.filename)
+        const filename = `${expiresOn}_${issuedOn || '-'}_${nrcme || '-'}_${userId}_init${ext}`
+
+        await renameFile(path.dirname(file.path), file.filename, filename)
+
+        let { mecId } = application
+        if (mecId) await driver.update('mecs', { expiresOn, issuedOn, nrcme }, { id: mecId })
+        else {
+            const { insertId } = await driver.add('mecs', { expiresOn, issuedOn, nrcme })
+            if (!insertId) throw new Error('Failed to add medical card')
+
+            mecId = insertId
+            await application.update({ mecId })
+        }
+
+        await application[action]('checklist', { checklist })
+
+        res.json({ status: 'OK' })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/api/drivers/application/:formId/drivers-license', User.mw.verify, uploadDriverPreset, upload.application.dl.fields([
     { name: 'dlF', maxCount: 1 },
     { name: 'dlB', maxCount: 1 },
 ]), async (req, res) => {
@@ -134,7 +173,23 @@ router.post('/api/drivers/application/:formId/additional-drivers-license', User.
             await renameFile(path.dirname(file.path), file.filename, `${issuedOn}_${expiresOn}_${state}_${number}_${dlClass || '-'}_${cdl}_${side}_${userId}${ext}`)
         }
 
+        const { record } = req.query
+        if (record !== 'false') {
+            //
+        }
+
         res.json({ status: 'OK' })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/api/drivers/application/:formId/medical-certificate', User.mw.verify, uploadDriverPreset, upload.application.mec.fields([
+    { name: 'mec', maxCount: 1 },
+]), async (req, res) => {
+    try {
+        //
     } catch (err) {
         sendError.server(req, res, err)
     }

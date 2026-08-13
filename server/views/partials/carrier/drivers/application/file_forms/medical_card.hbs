@@ -1,0 +1,61 @@
+<div class="ui yellow icon message" style="width: 100% !important; margin-bottom: 2.4rem;">
+    <i class="tasks icon"></i>
+    <div class="content">
+        <div class="header">
+            Medical Certificate Data Verification/Registration
+        </div>
+        <ul class="list">
+            <li>Thoroughly compare the data shown on the uploaded certificate image with the information entered in the form</li>
+            <li>Identify any discrepancies and correct all inaccuracies to ensure the data matches exactly</li>
+            <li>Once verified, confirm the correctness of the data by checking the slider</li>
+        </ul>
+    </div>
+</div>
+
+<table class="ui compact celled definition table">
+    <thead>
+        <tr>
+            <th class="empty-header"></th>
+            <th style="width: 12rem;">{{{fileForm.mecExp.text.label}}}</th>
+            <th style="width: 12rem;">{{{fileForm.mecIss.text.label}}}</th>
+            <th>{{{fileForm.mecNumber.text.label}}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="collapsing">
+                <div class="ui fitted slider checkbox">
+                    <input class="file-form-confirm-check file-form-confirm-mec-check" type="checkbox" required /><label></label>
+                </div>
+                <span class="ui dark green text" style="display: none;">
+                    <i class="icon checkmark"></i> Correct
+                </span>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui calendar" id="mec-expires-confirm-calendar">
+                        <div class="ui fluid input left icon">
+                            {{{fileForm.mecExp.text.input}}}
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui calendar" id="mec-issued-confirm-calendar">
+                        <div class="ui fluid input left icon">
+                            {{{fileForm.mecIss.text.input}}}
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    {{{fileForm.mecNumber.text.input}}}
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

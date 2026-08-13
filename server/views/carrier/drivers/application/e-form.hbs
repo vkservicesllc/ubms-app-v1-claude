@@ -858,7 +858,7 @@
                                         <div class="one wide field"></div>
                                     </div>
                                     <div class="ui compact grid" id="mec-fields" style="{{style.mecDetailsRow}}">
-                                        <div class="four wide field">
+                                        <div class="four wide {{#if (eq file.mec.uploaded true)}}disabled {{/if}}field">
                                             {{{form.mecExp.text.label}}}
                                             <div class="ui calendar" id="mec-expires-calendar">
                                                 <div class="ui fluid input left icon">
@@ -867,7 +867,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="four wide field">
+                                        <div class="four wide {{#if (eq file.mec.uploaded true)}}disabled {{/if}}field">
                                             {{{form.mecIss.text.label}}}
                                             <div class="ui calendar" id="mec-issued-calendar">
                                                 <div class="ui fluid input left icon">
@@ -876,7 +876,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="four wide field">
+                                        <div class="four wide {{#if (eq file.mec.uploaded true)}}disabled {{/if}}field">
                                             {{{form.mecNumber.text.label}}}
                                             {{{form.mecNumber.text.input}}}
                                         </div>
