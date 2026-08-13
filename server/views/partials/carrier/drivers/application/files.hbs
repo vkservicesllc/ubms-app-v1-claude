@@ -160,7 +160,7 @@
                                                                                                 <i class="dark green download action icon"></i>
                                                                                             </a>
                                                                                             {{#if (eq filePerms.sup.delete true)}}
-                                                                                            <a class="delete-files" data-target="mec"  title="Delete {{idx downloadLinks.mec 1}}"><i class="dark red trash alternate outline action icon"></i></a>
+                                                                                            <a class="delete-files" data-target="mec" title="Delete {{idx downloadLinks.mec 1}}"><i class="dark red trash alternate outline action icon"></i></a>
                                                                                             {{/if}}
                                                                                             {{/if}}
                                                                                         </span>
@@ -205,14 +205,11 @@
                                                                                             <a title="Upload {{idx downloadLinks.ssc 1}}"><i class="blue upload action icon"></i></a>
                                                                                             {{/if}}
                                                                                             {{else}}
-                                                                                            <a href="{{idx downloadLinks.ssc 0}}" title="Download {{idx downloadLinks.ssc 1}}" download="{{idx downloadLinks.ssc 2}}">
+                                                                                            <a href="{{idx downloadLinks.ssc 0}}" title="Download {{idx downloadLinks.ssc 1}}" download>
                                                                                                 <i class="dark green download action icon"></i>
                                                                                             </a>
-                                                                                            {{#if (eq filePerms.sup.upload true)}}
-                                                                                            <a href="" title="Replace {{idx downloadLinks.ssc 1}}"><i class="grey upload action icon"></i></a>
-                                                                                            {{/if}}
                                                                                             {{#if (eq filePerms.sup.delete true)}}
-                                                                                            <a title="Delete {{idx downloadLinks.ssc 1}}"><i class="dark red trash alternate outline action icon"></i></a>
+                                                                                            <a class="delete-files" data-target="ssc" title="Delete {{idx downloadLinks.ssc 1}}"><i class="dark red trash alternate outline action icon"></i></a>
                                                                                             {{/if}}
                                                                                             {{/if}}
                                                                                         </span>

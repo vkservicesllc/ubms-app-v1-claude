@@ -204,7 +204,7 @@
         <strong id="upload-add-dl-step">Editor: Driver's License <small>(Front)</small></strong>
         <div>
             <button class="ui primary button" id="upload-add-dl-prev-button" style="display: none;">Back</button>
-            <button class="ui green button" id="upload-add-dl-skip-button"  style="display: none;">Skip</button>
+            <button class="ui green button" id="upload-add-dl-skip-button" style="display: none;">Skip</button>
             <button class="ui primary button" id="upload-add-dl-next-button" disabled>Next</button>
             <button type="submit" form="upload-add-dl-form" class="ui primary button" id="upload-add-dl-submit" style="display: none;">Confirm and Upload</button>
         </div>
@@ -252,6 +252,28 @@
             <button class="ui primary button" id="upload-mec-prev-button" style="display: none;">Back</button>
             <button class="ui primary button" id="upload-mec-next-button" disabled>Next</button>
             <button type="submit" form="upload-mec-form" class="ui primary button" id="upload-mec-submit" style="display: none;" disabled>Confirm and Upload</button>
+        </div>
+    </div>
+</div>
+
+<div class="ui overlay fullscreen modal" id="upload-ssc-modal">
+    <div class="center aligned header">
+        <small>Upload</small> Social Security Card — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
+    </div>
+    <div class="content">
+        <form action="/files/skip/driver/application/{{formId}}/social-security-card" method="POST"></form>
+        <form class="ui form" id="upload-ssc-form" method="POST" enctype="multipart/form-data">
+            <div class="ui placeholder segment ssc-section" id="croparea-ssc-front" data-init-aspect-ratio="1.6"></div>
+        </form>
+    </div>
+    <div class="actions" style="display: flex !important; justify-content: space-between;">
+        <a class="ui button" href="{{cancelUploadUrl}}">Cancel</a>
+        <strong id="upload-ssc-step">Editor: Social Security Card</strong>
+        <div>
+            <button class="ui primary button" id="upload-ssc-prev-button" style="display: none;">Back</button>
+            <button type="submit" form="skip-ssc-form" class="ui green button" id="skip-ssc-submit">Skip</button>
+            <button class="ui primary button" id="upload-ssc-next-button" disabled>Next</button>
+            <button type="submit" form="upload-ssc-form" class="ui primary button" id="upload-ssc-submit" style="display: none;">Confirm and Upload</button>
         </div>
     </div>
 </div>
