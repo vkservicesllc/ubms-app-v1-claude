@@ -483,7 +483,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="four wide field">
+                                        <div class="four wide {{#if (eq file.ssc.uploaded true)}}disabled {{/if}}field">
                                             {{{form.ssn.text.label}}}
                                             {{{form.ssn.text.input}}}
                                         </div>

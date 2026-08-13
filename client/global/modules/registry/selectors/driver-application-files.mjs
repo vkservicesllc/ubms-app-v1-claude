@@ -39,6 +39,7 @@ const selector = {
             mecIss: 'med-card-exam-date',
             mecExp: 'med-card-expiration-date',
             mecNumber: 'med-card-number',
+            ssn: 'ssn',
         },
         select: {
             dlState: 'dl-state',
@@ -63,6 +64,7 @@ const selector = {
         },
         checkbox: {
             dlCommercial: 'dl-commercial',
+            dhsReq: 'dhs-required',
         },
     },
 }

@@ -1765,6 +1765,14 @@ class ApplicationFileForm {
     static mecIss = createMecIssForm({ selector: appFileSelector })
     static mecNumber = createMecNumberForm({ selector: appFileSelector })
 
+    static ssn = createSsnForm({ selector: appFileSelector, target: 'ssn' })
+    static dhsReq = createCheckForm({
+        selector: appFileSelector,
+        target: 'dhsReq',
+        name: 'dhsReq',
+        label: 'DHS Authorization Required',
+    })
+
 }
 
 

@@ -310,12 +310,13 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             ssc: application?.checklist?.documents?.ssc === 1,
         }
         const skipped = {
+            leg: application?.checklist?.skipped?.leg === 1,
             ssc: application?.checklist?.skipped?.ssc === 1,
         }
 
         const fileText = prop => uploaded[prop]
             ? `<span class="ui dark blue text"><a href="${hbs.downloadLinks[prop][0]}" target="_blank">${hbs.downloadLinks[prop][1]}</a></span>`
-            : `<span class="ui grey text">${hbs.downloadLinks[prop][1]}</span>`
+            : `<span class="ui grey text">${skipped[prop] ? `<s>${hbs.downloadLinks[prop][1]}</s>` : hbs.downloadLinks[prop][1]}</span>`
 
         hbs.folder = {
             driverQualification: folderStyle.open,

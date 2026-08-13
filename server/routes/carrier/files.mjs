@@ -32,7 +32,7 @@ router.post('/delete/driver/application/:formId', fileLoggedOut, Team.mw.verify,
         const { DS } = user
 
         const permissions = await user.permissions(res.session)
-        if (!withPrivileges('f:drv/apl', 'delete', permissions, DS))
+        if (!withPrivileges('f:drv/sup', 'delete', permissions, DS))
             return res.redirect(aplUrl)
 
         const { formId } = req.params
@@ -48,6 +48,7 @@ router.post('/delete/driver/application/:formId', fileLoggedOut, Team.mw.verify,
         + {
             dl: 'drivers-license',
             mec: 'medical-certificate',
+            ssc: 'social-security-card',
         }[target] + `/${id}`
 
         const { success } = await deleteFiles(path, true)
@@ -75,10 +76,49 @@ router.post('/delete/driver/application/:formId', fileLoggedOut, Team.mw.verify,
                     }
                     break
 
+                case 'ssc':
+                    {
+                        checklist.documents.ssc = 0
+                    }
+                    break
+
             }
 
             await application.update('checklist', { checklist })
         }
+
+        res.redirect(`/drivers/application/${formId}/e-form?files`)
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/skip/driver/application/:formId/:target', fileLoggedOut, Team.mw.verify, async (req, res) => {
+    try {
+        const aplUrl = '/drivers/applications'
+        const { user, team } = res.session
+        const { DS } = user
+
+        const permissions = await user.permissions(res.session)
+        if (!withPrivileges('f:drv/sup', 'upload', permissions, DS))
+            return res.redirect(aplUrl)
+
+        const { formId, target } = req.params
+        const application = await Application.fetch(res.session, { formId })
+        if (!application || application.condition === 'p' || (team && application._teamId !== team._id))
+            return res.redirect(aplUrl)
+
+        let { checklist } = application
+        if (!checklist) checklist = {}
+        if (!checklist.skipped) checklist.skipped = {}
+
+        checklist.skipped[{
+            'legal-documents': 'leg',
+            'social-security-card': 'ssc',
+        }[target]] = 1
+
+        await application.update('checklist', { checklist })
 
         res.redirect(`/drivers/application/${formId}/e-form?files`)
     } catch (err) {

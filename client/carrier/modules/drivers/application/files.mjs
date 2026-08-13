@@ -4,6 +4,7 @@ import { nameEvent, ssnEvent } from '/modules/events/person.mjs'
 import { addr1Event, addr2Event, zipEvent, cityEvent } from '/modules/events/address.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import application, { addresses, dropdownEvent } from './hub.mjs'
+import stripNum from '/modules/tools/utils/formatter.mjs'
 import selector from '/modules/registry/selectors/driver-application-files.mjs'
 import filenames from '/modules/registry/filenames/driver-application-uploads.mjs'
 
@@ -11,7 +12,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { _id, formId, cdlRole, dl, mec, finishedAt } = application
+    const { _id, formId, cdlRole, dl, mec, ssn, finishedAt } = application
     const TS = selector.id.text, RS = selector.id.radio, CS = selector.id.checkbox
     const $commercial = $(selector.class.radio.dlCommercial)
 
@@ -22,6 +23,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         'dl2-back': 'dlB',
         'mec': 'mec',
         //! add more
+        'ssc': 'ssc',
     }
     const uploadMaxWidth = 1200
     const croppers = {}
@@ -29,6 +31,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         dl: $('#upload-dl-file'),
         dl2: $('#upload-add-dl-file'),
         mec: $('#upload-mec-file'),
+        ssc: $('#upload-ssc-file'),
     }
 
     const $modal = {
@@ -36,6 +39,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             dl: $('#upload-dl-modal'),
             dl2: $('#upload-add-dl-modal'),
             mec: $('#upload-mec-modal'),
+            ssc: $('#upload-ssc-modal'),
         },
         delete: $('#delete-files-modal'),
     }
@@ -57,6 +61,12 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 next: $('#upload-mec-next-button'),
                 submit: $('#upload-mec-submit'),
             },
+            ssc: {
+                prev: $('#upload-ssc-prev-button'),
+                skip: $('#skip-ssc-submit'),
+                next: $('#upload-ssc-next-button'),
+                submit: $('#upload-ssc-submit'),
+            },
         },
     }
     const $a = {
@@ -67,6 +77,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             dl: $('#upload-dl-step'),
             dl2: $('#upload-add-dl-step'),
             mec: $('#upload-mec-step'),
+            ssc: $('#upload-ssc-step'),
         },
     }
     const steps = {
@@ -85,12 +96,17 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 "Editor: Medical Certificate",
                 'Data Verification and Confirmation',
             ],
+            ssc: [
+                "Editor: Social Security Card",
+                'Data Verification and Confirmation',
+            ],
         },
     }
     const activeStep = {
         dl: 0,
         dl2: 0,
         mec: 0,
+        ssc: 0,
     }
 
     const $section = {
@@ -111,6 +127,11 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 all: $('.mec-section'),
                 cropper: $('#croparea-mec'),
                 confirmation: $('#confirmation-mec'),
+            },
+            ssc: {
+                all: $('.ssc-section'),
+                cropper: $('#croparea-ssc'),
+                confirmation: $('#confirmation-ssc'),
             },
         },
     }
@@ -179,6 +200,12 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         const $checks = $('.file-form-confirm-mec-check')
         const allChecked = $checks.length === $checks.filter(':checked').length
         $button.upload.mec.submit.prop('disabled', !allChecked)
+    })
+
+    $('.file-form-confirm-ssc-check').on('change', function() {
+        const $checks = $('.file-form-confirm-ssc-check')
+        const allChecked = $checks.length === $checks.filter(':checked').length
+        $button.upload.ssc.submit.prop('disabled', !allChecked)
     })
 
     dropdownEvent($dropdown)
@@ -275,7 +302,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     $calendar.mecIssuedOn
         .calendar({
             ...calSettings,
-            minDate: moment(finishedAt).add(1, 'days').toDate(),
+            maxDate: moment(finishedAt).add(1, 'days').toDate(),
         })
     if (mec?.issuedOn)
         $calendar.mecIssuedOn.calendar('set date', new Date(moment(mec.issuedOn).toDate()))
@@ -335,6 +362,21 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         }).modal('show')
     })
 
+    $upload.ssc.click(function() {
+        $modal.upload.ssc.modal({
+            autofocus: false,
+            closable: false,
+            onVisible() {
+                setTimeout(() => {
+                    croppers?.['ssc']?.resize()
+                    croppers?.['ssc']?.resize()
+                }, 250)
+            },
+        }).modal('show')
+    })
+
+    ssnEvent(TS.ssn, { value: ssn })
+
     dropzoneEvents('dl-front', {
         onImageLoad() {
             $button.upload.dl.next.prop('disabled', false)
@@ -362,6 +404,12 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     dropzoneEvents('mec', {
         onImageLoad() {
             $button.upload.mec.next.prop('disabled', false)
+        },
+    })
+
+    dropzoneEvents('ssc', {
+        onImageLoad() {
+            $button.upload.ssc.next.prop('disabled', false)
         },
     })
 
@@ -536,6 +584,52 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 if (dateFields.includes(key) && value) formData.set(key, moment(value).format('YYYY-MM-DD'))
 
             fetch(`/upload/api/drivers/application/${formId}/initial-medical-certificate`, { method: 'POST', body: formData })
+                // .then(res => res.json())
+                .then(data => {
+                    location.reload()
+                })
+        })
+    })
+
+    $button.upload.ssc.next.click(function() {
+        $section.upload.ssc.all.hide()
+        if (activeStep.ssc === 0) {
+            $button.upload.ssc.next.hide()
+            $button.upload.ssc.skip.hide()
+            $button.upload.ssc.prev.show()
+            $button.upload.ssc.submit.show()
+            $section.upload.ssc.confirmation.show()
+        }
+        $step.upload.ssc.html(steps.upload.ssc[++activeStep.ssc])
+    })
+
+    $button.upload.ssc.prev.click(function() {
+        $section.upload.ssc.all.hide()
+        if (activeStep.ssc === 1) {
+            $button.upload.ssc.prev.hide()
+            $button.upload.ssc.submit.hide()
+            $button.upload.ssc.next.show()
+            $button.upload.ssc.skip.show()
+            $section.upload.ssc.cropper.show()
+            croppers['ssc']?.resize()
+        }
+        $step.upload.ssc.html(steps.upload.ssc[--activeStep.ssc])
+    })
+
+    $('#upload-ssc-form').on('submit', function(evt) {
+        evt.preventDefault()
+
+        const form = this
+
+        const blobs = [ getResizedBlob('ssc') ]
+
+        Promise.all(blobs).then(([ mec ]) => {
+            const formData = new FormData(form)
+            formData.set('ssc', mec, 'ssc.jpg')
+            formData.set('ssn', stripNum(formData.get('ssn')))
+            formData.set('dhsReq', formData.has('dhsReq'))
+
+            fetch(`/upload/api/drivers/application/${formId}/initial-social-security-card`, { method: 'POST', body: formData })
                 // .then(res => res.json())
                 .then(data => {
                     location.reload()

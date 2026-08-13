@@ -23,6 +23,7 @@ const upload = {
     application: {
         dl: uploader('/driver/{id}/drivers-license/{id2}'),
         mec: uploader('/driver/{id}/medical-certificate/{id2}'),
+        ssc: uploader('/driver/{id}/social-security-card/{id2}'),
     },
 }
 
@@ -146,6 +147,42 @@ router.post('/api/drivers/application/:formId/initial-medical-certificate', User
             await application.update({ mecId })
         }
 
+        await application[action]('checklist', { checklist })
+
+        res.json({ status: 'OK' })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/api/drivers/application/:formId/initial-social-security-card', User.mw.verify, uploadDriverPreset, upload.application.ssc.fields([
+    { name: 'ssc', maxCount: 1 },
+]), async (req, res) => {
+    try {
+        const file = req.files.ssc?.[0]
+        if (!file) throw new Error('File not found')
+
+        const { application, individual } = req.data
+        let { checklist } = application
+        if (!checklist) checklist = {}
+
+        let action = 'update'
+
+        if (!checklist.documents) {
+            checklist.documents = {}
+            action = 'add'
+        }
+        checklist.documents.ssc = 1
+
+        const { ssn, dhsReq } = req.body
+        const { id: userId } = res.session.user
+        const ext = path.extname(file.filename)
+        const filename = `${application.finishedOn}_${dhsReq === 'true' ? 'Y' : 'N'}_${userId}_init${ext}`
+
+        await renameFile(path.dirname(file.path), file.filename, filename)
+
+        await individual.update({ ssn })
         await application[action]('checklist', { checklist })
 
         res.json({ status: 'OK' })
