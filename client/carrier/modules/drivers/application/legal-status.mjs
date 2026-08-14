@@ -1,4 +1,4 @@
-import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
+import { driverLicenseEvent } from '/modules/events/person.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
 import selector from '/modules/registry/selectors/driver-application.mjs'
 import application, { dropdownEvent } from './hub.mjs'

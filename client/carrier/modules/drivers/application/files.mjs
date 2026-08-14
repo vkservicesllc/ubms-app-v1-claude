@@ -12,10 +12,10 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 (() => {
     if (!application || !Object.keys(application).length) return
 
-    const { _id, formId, cdlRole, dl, mec, ssn, finishedAt } = application
+    const { _id, formId, cdlRole, dl, mec, legalStatus, ssn, finishedAt } = application
     const TS = selector.id.text, RS = selector.id.radio, CS = selector.id.checkbox
     const $commercial = $(selector.class.radio.dlCommercial)
-    const legalDoc = !!application.legalStatus[0]
+    const legalDoc = !!legalStatus[0]
 
     const filenameProps = {
         'dl-front': 'dlF',
@@ -341,6 +341,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         })
     if (mec?.expiresOn)
         $calendar.mecExpiresOn.calendar('set date', new Date(moment(mec.expiresOn).toDate()))
+
     $calendar.mecIssuedOn
         .calendar({
             ...calSettings,
@@ -360,7 +361,24 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     ssnEvent(TS.ssn, { value: ssn })
 
     if (legalDoc) {
-        //! Legal Events
+
+        $calendar.legExpiresOn
+            .calendar({
+                ...calSettings,
+                minDate: moment(finishedAt).add(1, 'months').toDate(),
+            })
+        if (legalStatus[1])
+            $calendar.legExpiresOn.calendar('set date', new Date(moment(legalStatus[1]).toDate()))
+
+        $calendar.legIssuedOn
+            .calendar({
+                ...calSettings,
+                maxDate: moment(finishedAt).toDate(),
+            })
+        if (legalStatus[2])
+            $calendar.legIssuedOn.calendar('set date', new Date(moment(legalStatus[2]).toDate()))
+
+        driverLicenseEvent(TS.statusDoc, { value: legalStatus[3] || null })
     }
 
     $upload.dl.click(function() {
