@@ -1,4 +1,6 @@
+import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
 import calSettings from '/modules/settings/calendar.mjs'
+import selector from '/modules/registry/selectors/driver-application.mjs'
 import application, { dropdownEvent } from './hub.mjs'
 
 
@@ -10,6 +12,7 @@ import application, { dropdownEvent } from './hub.mjs'
     const $form = $('#status-form')
     const $calendar = {
         statusExp: $('#status-exp-calendar'),
+        statusIss: $('#status-iss-calendar'),
     }
     const $dropdown = {
         status: [
@@ -23,7 +26,7 @@ import application, { dropdownEvent } from './hub.mjs'
                     action = 'show'
                 }
 
-                $calendar.statusExp.parent()[action]().find('input').prop('disabled', disabled)
+                $('.status-temp-fields')[action]().find('input').prop('disabled', disabled)
             },
         ]
     }
@@ -34,6 +37,10 @@ import application, { dropdownEvent } from './hub.mjs'
         ...calSettings,
         minDate: moment(finishedAt).add(1, 'months').toDate(),
     })
+    $calendar.statusIss.calendar({
+        ...calSettings,
+        maxDate: moment(finishedAt).toDate(),
+    })
 
     if (legalStatus[1]) {
         $calendar.statusExp
@@ -41,6 +48,15 @@ import application, { dropdownEvent } from './hub.mjs'
             .parent().show()
             .find('input').prop('disabled', false)
     }
+
+    if (legalStatus[2]) {
+        $calendar.statusIss
+            .calendar('set date', new Date(moment(legalStatus[2]).toDate()))
+            .parent().show()
+            .find('input').prop('disabled', false)
+    }
+
+    driverLicenseEvent(selector.id.text.statusDoc, { value: legalStatus[3] || null })
 
     $form.find('input').on('change', () => {
         $form.find('[type="submit"]').prop('disabled', false)

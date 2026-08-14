@@ -119,6 +119,8 @@ const selector = {
             addrZip: 'address-zip',
             addrCity: 'address-city',
             statusExp: 'status-expiration',
+            statusIss: 'status-issue-date',
+            statusDoc: 'status-document',
             dlNumber: 'driver-license-number',
             dlClass: 'driver-license-class',
             dlIss: 'driver-license-issue-date',

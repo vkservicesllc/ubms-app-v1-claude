@@ -386,8 +386,20 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
                     ),
             },
             leg: {
-                check: uploaded.leg ? checkStyle.doubleChecked : checkStyle.unchecked,
-                status: !uploaded.leg ? status.pending : status.verified,
+                check: uploaded.leg
+                    ? checkStyle.doubleChecked
+                    : (
+                        skipped.leg
+                        ? checkStyle.skipped
+                        : checkStyle.unchecked
+                    ),
+                status: uploaded.leg
+                    ? status.verified
+                    : (
+                        skipped.leg
+                        ? status.skipped
+                        : status.pending
+                    ),
             },
             reg: {
                 check: checkStyle.unchecked,

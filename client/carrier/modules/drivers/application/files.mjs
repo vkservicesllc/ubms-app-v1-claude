@@ -179,7 +179,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     }
 
     if (legalDoc) {
-        $upload.mec = $('#upload-leg-file')
+        $upload.leg = $('#upload-leg-file')
         $modal.upload.leg = $('#upload-leg-modal')
         $button.upload.leg = {
             prev: $('#upload-leg-prev-button'),
@@ -357,6 +357,8 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         },
     })
 
+    ssnEvent(TS.ssn, { value: ssn })
+
     if (legalDoc) {
         //! Legal Events
     }
@@ -414,7 +416,19 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         }).modal('show')
     })
 
-    ssnEvent(TS.ssn, { value: ssn })
+    if (legalDoc)
+        $upload.leg.click(function() {
+            $modal.upload.leg.modal({
+                autofocus: false,
+                closable: false,
+                onVisible() {
+                    setTimeout(() => {
+                        croppers?.['leg-front']?.resize()
+                        croppers?.['leg-back']?.resize()
+                    }, 250)
+                },
+            }).modal('show')
+        })
 
     dropzoneEvents('dl-front', {
         onImageLoad() {
@@ -451,6 +465,20 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             $button.upload.ssc.next.prop('disabled', false)
         },
     })
+
+    if (legalDoc) {
+        dropzoneEvents('leg-front', {
+            onImageLoad() {
+                $button.upload.leg.next.prop('disabled', false)
+                $step.upload.leg.html(steps.upload.leg[0])
+            },
+        })
+        dropzoneEvents('leg-back', {
+            onImageLoad() {
+                $button.upload.leg.next.prop('disabled', false)
+            },
+        })
+    }
 
     $button.upload.dl.next.click(function() {
         $section.upload.dl.all.hide()
@@ -677,22 +705,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     })
 
     if (legalDoc) {
-
-        dropzoneEvents('leg-front', {
-            onImageLoad() {
-                $button.upload.leg.next.prop('disabled', false)
-                $step.upload.leg.html(steps.upload.leg[0])
-            },
-        })
-
-        dropzoneEvents('leg-back', {
-            onImageLoad() {
-                $button.upload.leg.next.prop('disabled', false)
-            },
-        })
-
         //! Unfinished
-
     }
 
 

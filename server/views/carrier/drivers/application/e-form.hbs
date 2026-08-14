@@ -623,7 +623,10 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="four wide field" id="legal-status-expiration-field" style="display: none;">
+                                        <div class="one wide field"></div>
+                                    </div>
+                                    <div class="ui compact grid status-temp-fields" style="margin-top: .35rem; display: none;">
+                                        <div class="four wide field">
                                             {{{form.statusExp.text.label}}}
                                             <div class="ui calendar" id="status-exp-calendar">
                                                 <div class="ui fluid input left icon">
@@ -631,6 +634,19 @@
                                                     <i class="calendar icon"></i>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="four wide field">
+                                            {{{form.statusIss.text.label}}}
+                                            <div class="ui calendar" id="status-iss-calendar">
+                                                <div class="ui fluid input left icon">
+                                                    {{{form.statusIss.text.input}}}
+                                                    <i class="calendar icon"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="five wide field">
+                                            {{{form.statusDocNum.text.label}}}
+                                            {{{form.statusDocNum.text.input}}}
                                         </div>
                                     </div>
                                     <div class="ui divider"></div>

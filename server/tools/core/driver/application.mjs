@@ -202,12 +202,16 @@ export const initialProgress = async (inst, step, body) => {
 
         case 'legal-status': //* Carrier E-Form
             {
-                if (body.legalStatus < 2) body.legalExpiration = null
+                if (body.legalStatus < 2) {
+                    body.expiresOn = null
+                    body.issuedOn = null
+                    body.docNumber = null
+                }
 
-                const { legalStatus: status, legalExpiration: expiresOn } = body
-                await person.update('legal', { status, expiresOn }, { since: tz2utc(inst.appliedOn, true) })
+                const { legalStatus: status, expiresOn, issuedOn, docNumber } = body
+                await person.update('legal', { status, expiresOn, issuedOn, docNumber }, { since: tz2utc(inst.appliedOn, true) })
 
-                cache.legal = { status, expiresOn }
+                cache.legal = { status, expiresOn, issuedOn, docNumber }
 
                 //? cache = JSON.stringify(cache)
                 await driver.update('appDef', { cache })

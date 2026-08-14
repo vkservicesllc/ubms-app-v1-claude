@@ -537,10 +537,26 @@ class ApplicationForm {
     static statusExp = createDateForm({
         selector: appSelector,
         target: 'statusExp',
-        name: 'legalExpiration',
+        name: 'expiresOn',
         required,
         disabled,
         label: 'Status Expires on',
+    })
+
+    static statusIss = createDateForm({
+        selector: appSelector,
+        target: 'statusIss',
+        name: 'issuedOn',
+        disabled,
+        label: 'Status Issued on',
+    })
+
+    static statusDocNum = createDateForm({
+        selector: appSelector,
+        target: 'statusDoc',
+        name: 'docNumber',
+        disabled,
+        label: 'Legal Document Number',
     })
 
 
@@ -1590,7 +1606,7 @@ class ApplicationForm {
 
 
             case 'carrier/legal':
-                fields = legalFields
+                fields = [...legalFields, 'statusIss', 'statusDocNum']
                 break
 
 
