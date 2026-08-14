@@ -183,7 +183,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $modal.upload.leg = $('#upload-leg-modal')
         $button.upload.leg = {
             prev: $('#upload-leg-prev-button'),
-            ignore: $('#skip-leg-submit'),
+            ignore: legalStatus[0] === 1 ? $('#skip-leg-submit') : null,
             skip: $('#upload-leg-skip-button'),
             next: $('#upload-leg-next-button'),
             submit: $('#upload-leg-submit'),
@@ -723,7 +723,81 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     })
 
     if (legalDoc) {
-        //! Unfinished
+
+        $button.upload.leg.next.click(function() {
+            $section.upload.leg.all.hide()
+            if (activeStep.leg === 0) {
+                $button.upload.leg.prev.show()
+                if (!croppers['leg-back']) $button.upload.leg.next.prop('disabled', true)
+                $section.upload.leg.cropperBack.show()
+                croppers['leg-back']?.resize()
+                $button.upload.leg.skip.show()
+                if ($button.upload.leg.ignore) $button.upload.leg.ignore.hide()
+            }
+            if (activeStep.leg === 1) {
+                $button.upload.leg.next.hide()
+                $button.upload.leg.submit.show()
+                $button.upload.leg.skip.hide()
+                $section.upload.leg.confirmation.show()
+            }
+            $step.upload.leg.html(steps.upload.leg[++activeStep.leg])
+        })
+
+        $button.upload.leg.prev.click(function() {
+            $section.upload.leg.all.hide()
+            if (activeStep.leg === 1) {
+                $button.upload.leg.prev.hide()
+                $section.upload.leg.cropperFront.show()
+                croppers['leg-front']?.resize()
+                $button.upload.leg.next.prop('disabled', false)
+                $button.upload.leg.skip.hide()
+                if ($button.upload.leg.ignore) $button.upload.leg.ignore.show()
+            }
+            if (activeStep.leg === 2) {
+                $button.upload.leg.submit.hide()
+                $button.upload.leg.next.show()
+                $section.upload.leg.cropperBack.show()
+                croppers['leg-back']?.resize()
+                $button.upload.leg.skip.show()
+            }
+            $step.upload.leg.html(steps.upload.leg[--activeStep.leg])
+        })
+
+        $button.upload.leg.skip.click(function() {
+            $section.upload.leg.all.hide()
+            $button.upload.leg.next.hide()
+            $button.upload.leg.submit.show()
+            $section.upload.leg.confirmation.show()
+            $(this).hide()
+            $step.upload.leg.html(steps.upload.leg[++activeStep.leg])
+        })
+
+        $('#upload-leg-form').on('submit', function(evt) {
+            evt.preventDefault()
+
+            const form = this
+
+            const blobs = [ getResizedBlob('leg-front') ]
+            if (croppers['leg-back']) blobs.push(getResizedBlob('leg-back'))
+
+            Promise.all(blobs).then(([ legF, legB ]) => {
+                const formData = new FormData(form)
+                formData.set('legF', legF, 'legF.jpg')
+                if (legB) formData.set('legB', legB, 'legB.jpg')
+                else formData.delete('legB')
+
+                const dateFields = [ 'expiresOn', 'issuedOn' ]
+                for (const [ key, value ] of formData.entries())
+                    if (dateFields.includes(key)) formData.set(key, moment(value).format('YYYY-MM-DD'))
+
+                fetch(`/upload/api/drivers/application/${formId}/initital-legal-document`, { method: 'POST', body: formData })
+                    // .then(res => res.json())
+                    .then(data => {
+                        location.reload()
+                    })
+            })
+        })
+
     }
 
 
