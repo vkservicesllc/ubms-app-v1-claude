@@ -42,19 +42,12 @@ import application, { dropdownEvent } from './hub.mjs'
         maxDate: moment(finishedAt).toDate(),
     })
 
-    if (legalStatus[1]) {
-        $calendar.statusExp
-            .calendar('set date', new Date(moment(legalStatus[1]).toDate()))
-            .parent().show()
-            .find('input').prop('disabled', false)
+    if (legalStatus[0] === 2 && legalStatus[1]) {
+        $calendar.statusExp.calendar('set date', new Date(moment(legalStatus[1]).toDate()))
+        $('.status-temp-fields').show().find('input').prop('disabled', false)
     }
 
-    if (legalStatus[2]) {
-        $calendar.statusIss
-            .calendar('set date', new Date(moment(legalStatus[2]).toDate()))
-            .parent().show()
-            .find('input').prop('disabled', false)
-    }
+    if (legalStatus[2]) $calendar.statusIss.calendar('set date', new Date(moment(legalStatus[2]).toDate()))
 
     driverLicenseEvent(selector.id.text.statusDoc, { value: legalStatus[3] || null })
 

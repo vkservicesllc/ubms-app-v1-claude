@@ -202,7 +202,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             confirmation: $('#confirmation-leg'),
         }
         $calendar.legExpiresOn = $('#leg-expires-confirm-calendar')
-        $calendar.mecIssuedOn = $('#leg-issued-confirm-calendar')
+        $calendar.legIssuedOn = $('#leg-issued-confirm-calendar')
     }
 
     $('.file-form-confirm-check').on('change', function() {
