@@ -663,8 +663,14 @@ router.get('/application/:formId/e-form', User.mw.verify, Team.mw.verify, async 
             })
 
             if (hbs.fileTab) {
+                const legalStatus = application.legalStatus[0]
                 hbs.filePerms = {}
-                hbs.fileLegalDoc = application.legalStatus[0] === 2
+                hbs.fileLegalDoc = !!legalStatus
+                if (hbs.fileLegalDoc) {
+                    hbs.fileLegalPerm = legalStatus === 1
+                    hbs.fileLegalTemp = legalStatus === 2
+                    hbs.fileLegalType = legalStatus === 1 ? 'perm' : 'temp'
+                }
 
                 for (const prop in carrierPrivs['f:drv'].groups) {
                     hbs.filePerms[prop] = {}

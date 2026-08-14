@@ -349,7 +349,12 @@ class Application {
                 position: data.decPosition,
             }
 
-        this.legalStatus = [ data.legalStatus, data.legalExpiration !== '0000-00-00' ? data.legalExpiration : null ]
+        this.legalStatus = [
+            data.legalStatus,
+            data.legalExpiration !== '0000-00-00' ? data.legalExpiration : null,
+            data.legalIssueDate !== '0000-00-00' ? data.legalIssueDate : null,
+            data.docNumber,
+        ]
         this.marital = data.marital
 
         this.email = data.email
@@ -1332,7 +1337,12 @@ class Application {
             {
                 db: db.person,
                 table: query.person.legal.table,
-                fields: [ [ 'status', 'legalStatus' ], [ 'expiresOn', 'legalExpiration' ] ],
+                fields: [
+                    [ 'status', 'legalStatus' ],
+                    [ 'expiresOn', 'legalExpiration' ],
+                    [ 'issuedOn', 'legalIssueDate' ],
+                    [ 'docNumber', 'legalDocNum' ],
+                ],
                 // join: [ 'personId', 'personId', 2, [ 'since', 'legalSince', 3 ] ],
                 join: [ 'personId', 'personId', {
                     table: query.driver.main.table,

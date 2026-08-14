@@ -48,6 +48,7 @@ router.post('/delete/driver/application/:formId', fileLoggedOut, Team.mw.verify,
         + {
             dl: 'drivers-license',
             mec: 'medical-certificate',
+            leg: 'legal-document',
             ssc: 'social-security-card',
         }[target] + `/${id}`
 
@@ -73,6 +74,12 @@ router.post('/delete/driver/application/:formId', fileLoggedOut, Team.mw.verify,
                 case 'mec':
                     {
                         checklist.documents.mec = 0
+                    }
+                    break
+
+                case 'leg':
+                    {
+                        checklist.documents.leg = 0
                     }
                     break
 
@@ -115,7 +122,7 @@ router.post('/skip/driver/application/:formId/:target', fileLoggedOut, Team.mw.v
         if (!checklist.skipped) checklist.skipped = {}
 
         const prop = {
-            'legal-documents': 'leg',
+            'legal-document': 'leg',
             'social-security-card': 'ssc',
         }[target]
 

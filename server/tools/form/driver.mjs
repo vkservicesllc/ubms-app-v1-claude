@@ -1773,6 +1773,18 @@ class ApplicationFileForm {
         label: 'DHS Authorization Required',
     })
 
+    static legExp = createDateForm({
+        target: 'legExp',
+        name: 'expiresOn',
+        label: 'Expires Date',
+        required,
+    })
+    static legIss = createDateForm({
+        target: 'legIss',
+        name: 'issuedOn',
+        label: 'Issued on',
+    })
+
 }
 
 

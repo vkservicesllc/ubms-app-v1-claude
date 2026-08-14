@@ -35,11 +35,13 @@ const uploadDriverPreset = async (req, res, next) => {
 
     const { id, driverId, personId } = application
 
-    const driver = await Driver.fetch(res.session, { id: driverId })
-    if (!driver) throw new Error('Driver not found')
+    const [ driver, individual ] = await Promise.all([
+        await Driver.fetch(res.session, { id: driverId }),
+        await Individual.fetch(res.session, { id: personId }),
+    ])
 
-    const individual = await Individual.fetch(res.session, { id: personId })
-    if (!individual) throw new Error('Individual not found')
+    if (!driver) throw new Error('Driver not found')
+    else if (!individual) throw new Error('Individual not found')
 
     req.upload = { id: driverId, id2: id }
     req.data = { application, driver, individual }

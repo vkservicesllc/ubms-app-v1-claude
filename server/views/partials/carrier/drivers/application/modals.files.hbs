@@ -255,6 +255,77 @@
         </div>
     </div>
 </div>
+{{#if (eq fileLegalDoc true)}}
+<div class="ui overlay fullscreen modal" id="upload-leg-modal">
+    <div class="center aligned header">
+        <small>Upload</small> Legal Document — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
+    </div>
+    <div class="content">
+        {{#if (eq fileLegalPerm true)}}
+        <form id="skip-leg-form" action="/files/skip/driver/application/{{formId}}/legal-document" method="POST"></form>
+        {{/if}}
+        <form class="ui form" id="upload-leg-form" method="POST" enctype="multipart/form-data">
+            <div class="ui placeholder segment leg-section" id="croparea-leg-front" data-init-aspect-ratio="1.6">
+                <div class="ui icon header cropper-dropzone">
+                    <h1 class="ui header">
+                        {{#if (eq fileLegalPerm true)}}Green Card{{/if}}
+                        {{#if (eq fileLegalTemp true)}}Work Authorization/Visa{{/if}}
+                        <small>(Front)</small>
+                    </h1>
+                    <i class="dark teal image file outline icon"></i>
+                    <span class="ui dark teal text cropper-drag-drop-click">Drag and drop here or click to upload</span>
+                </div>
+                <input class="cropper-file" type="file" accept="image/*" hidden name="legF" />
+                <div class="cropper-wrapper" style="display: none;">
+                    <img class="cropper-image" style="display: none;" />
+                </div>
+                {{> carrier/components/modal.cropper.buttons}}
+            </div>
+            <div class="ui placeholder segment leg-section" id="croparea-leg-back" data-init-aspect-ratio="1.6" style="display: none;">
+                <div class="ui icon header cropper-dropzone">
+                    <h1 class="ui header">
+                        {{#if (eq fileLegalPerm true)}}Green Card{{/if}}
+                        {{#if (eq fileLegalTemp true)}}Work Authorization/Visa{{/if}}
+                        <small>(Back)</small> — <small><span class="ui grey text"><i>Optional if not available</i></span></small>
+                    </h1>
+                    <i class="dark teal image file outline icon"></i>
+                    <span class="ui dark teal text cropper-drag-drop-click">Drag and drop here or click to upload</span>
+                </div>
+                <input class="cropper-file" type="file" accept="image/*" hidden name="legB" />
+                <div class="cropper-wrapper" style="display: none;">
+                    <img class="cropper-image" style="display: none;" />
+                </div>
+                {{> carrier/components/modal.cropper.buttons}}
+            </div>
+            <div class="ui two column relaxed grid leg-section" id="confirmation-leg" style="display: none; margin: 0;">
+                <div class="five wide column">
+                    <div>
+                        <div class="cropper-preview" id="cropper-preview-leg-front" data-width="36"></div>
+                        <div class="cropper-preview" id="cropper-preview-leg-back" data-width="36"></div>
+                    </div>
+                </div>
+                <div class="eleven wide column">
+                    <input type="hidden" name="docType" value="{{fileLegalType}}" />
+                    {{> carrier/drivers/application/file_forms/legal_document}}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions" style="display: flex !important; justify-content: space-between;">
+        <a class="ui button" href="{{cancelUploadUrl}}">Cancel</a>
+        <strong id="upload-leg-step">Editor: Legal Document <small>(Front)</small></strong>
+        <div>
+            <button class="ui primary button" id="upload-leg-prev-button" style="display: none;">Back</button>
+            {{#if (eq fileLegalPerm true)}}
+            <button type="submit" form="skip-leg-form" class="ui orange button" id="skip-leg-submit">Upload Later</button>
+            {{/if}}
+            <button class="ui green button" id="upload-leg-skip-button" style="display: none;">Skip</button>
+            <button class="ui primary button" id="upload-leg-next-button" disabled>Next</button>
+            <button type="submit" form="upload-leg-form" class="ui primary button" id="upload-leg-submit" style="display: none;">Confirm and Upload</button>
+        </div>
+    </div>
+</div>
+{{/if}}
 
 <div class="ui overlay fullscreen modal" id="upload-ssc-modal">
     <div class="center aligned header">
@@ -296,7 +367,7 @@
         <strong id="upload-ssc-step">Editor: Social Security Card</strong>
         <div>
             <button class="ui primary button" id="upload-ssc-prev-button" style="display: none;">Back</button>
-            <button type="submit" form="skip-ssc-form" class="ui green button" id="skip-ssc-submit">Skip</button>
+            <button type="submit" form="skip-ssc-form" class="ui orange button" id="skip-ssc-submit">Upload Later</button>
             <button class="ui primary button" id="upload-ssc-next-button" disabled>Next</button>
             <button type="submit" form="upload-ssc-form" class="ui primary button" id="upload-ssc-submit" style="display: none;" disabled>Confirm and Upload</button>
         </div>

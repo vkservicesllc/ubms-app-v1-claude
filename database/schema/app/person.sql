@@ -54,10 +54,12 @@ SELECT 'Creating table `app_person`.`legal_presence`...';
 CREATE TABLE legal_presence (
 
     personId   MEDIUMINT UNSIGNED   NOT NULL,
-    since      DATE                 NOT NULL,
+    since      DATE                 NOT NULL,  -- Always shows the last registered status
 
     `status`   TINYINT              NOT NULL,  -- idx for Array [ 'US Citizen', 'Permanent Resident', 'Authorized to work' ]
     expiresOn  DATE                 DEFAULT NULL,
+    issuedOn   DATE                 DEFAULT NULL,  -- NOT sorted by Issue/Expiration Dates
+    docNumber  VARCHAR(20)          DEFAULT NULL,
 
     -- Create/update location required
     createdBy  SMALLINT UNSIGNED    DEFAULT NULL,  -- NULL when self registered

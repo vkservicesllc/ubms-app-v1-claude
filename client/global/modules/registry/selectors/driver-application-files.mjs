@@ -39,6 +39,8 @@ const selector = {
             mecIss: 'med-card-exam-date',
             mecExp: 'med-card-expiration-date',
             mecNumber: 'med-card-number',
+            mecIss: 'leg-card-exam-date',
+            mecExp: 'leg-card-expiration-date',
             ssn: 'ssn',
         },
         select: {

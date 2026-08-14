@@ -15,6 +15,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     const { _id, formId, cdlRole, dl, mec, ssn, finishedAt } = application
     const TS = selector.id.text, RS = selector.id.radio, CS = selector.id.checkbox
     const $commercial = $(selector.class.radio.dlCommercial)
+    const legalDoc = !!application.legalStatus[0]
 
     const filenameProps = {
         'dl-front': 'dlF',
@@ -63,7 +64,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             },
             ssc: {
                 prev: $('#upload-ssc-prev-button'),
-                skip: $('#skip-ssc-submit'),
+                ignore: $('#skip-ssc-submit'),
                 next: $('#upload-ssc-next-button'),
                 submit: $('#upload-ssc-submit'),
             },
@@ -90,7 +91,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             dl2: [
                 "Editor: Driver's License <small>(Front)</small>",
                 "Editor: Driver's License <small>(Back) — <i>Optional</i></small>",
-                'Data Verification and Confirmation',
+                'Data Registration and Confirmation',
             ],
             mec: [
                 "Editor: Medical Certificate",
@@ -177,6 +178,33 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         mecIssuedOn: $('#mec-issued-confirm-calendar'),
     }
 
+    if (legalDoc) {
+        $upload.mec = $('#upload-leg-file')
+        $modal.upload.leg = $('#upload-leg-modal')
+        $button.upload.leg = {
+            prev: $('#upload-leg-prev-button'),
+            ignore: $('#skip-leg-submit'),
+            skip: $('#upload-leg-skip-button'),
+            next: $('#upload-leg-next-button'),
+            submit: $('#upload-leg-submit'),
+        }
+        $step.upload.leg = $('#upload-leg-step')
+        steps.upload.leg = [
+            "Editor: Legal Document <small>(Front)</small>",
+            "Editor: Legal Document <small>(Back) — <i>Optional</i></small>",
+            'Data Registration and Confirmation',
+        ]
+        activeStep.leg = 0
+        $section.upload.leg = {
+            all: $('.leg-section'),
+            cropperFront: $('#croparea-leg-front'),
+            cropperBack: $('#croparea-leg-back'),
+            confirmation: $('#confirmation-leg'),
+        }
+        $calendar.legExpiresOn = $('#leg-expires-confirm-calendar')
+        $calendar.mecIssuedOn = $('#leg-issued-confirm-calendar')
+    }
+
     $('.file-form-confirm-check').on('change', function() {
         const $div = $(this).parent()
         $div.fadeOut(250)
@@ -207,6 +235,13 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         const allChecked = $checks.length === $checks.filter(':checked').length
         $button.upload.ssc.submit.prop('disabled', !allChecked)
     })
+
+    if (legalDoc)
+        $('.file-form-confirm-leg-check').on('change', function() {
+            const $checks = $('.file-form-confirm-leg-check')
+            const allChecked = $checks.length === $checks.filter(':checked').length
+            $button.upload.leg.submit.prop('disabled', !allChecked)
+        })
 
     dropdownEvent($dropdown)
 
@@ -282,6 +317,13 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         },
     })
 
+    $calendar.dlDob
+        .calendar({
+            ...calSettings,
+            maxDate: moment(finishedAt).subtract(18, 'years').toDate(),
+        })
+        .calendar('set date', new Date(moment(application.dob).toDate()))
+
     addr1Event(TS.dlAddress1, { addr2Id: TS.dlAddress2 })
     addr2Event(TS.dlAddress2)
     zipEvent(TS.dlAddrZip, {
@@ -315,12 +357,9 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         },
     })
 
-    $calendar.dlDob
-        .calendar({
-            ...calSettings,
-            maxDate: moment(finishedAt).subtract(18, 'years').toDate(),
-        })
-        .calendar('set date', new Date(moment(application.dob).toDate()))
+    if (legalDoc) {
+        //! Legal Events
+    }
 
     $upload.dl.click(function() {
         $modal.upload.dl.modal({
@@ -595,7 +634,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $section.upload.ssc.all.hide()
         if (activeStep.ssc === 0) {
             $button.upload.ssc.next.hide()
-            $button.upload.ssc.skip.hide()
+            $button.upload.ssc.ignore.hide()
             $button.upload.ssc.prev.show()
             $button.upload.ssc.submit.show()
             $section.upload.ssc.confirmation.show()
@@ -609,7 +648,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             $button.upload.ssc.prev.hide()
             $button.upload.ssc.submit.hide()
             $button.upload.ssc.next.show()
-            $button.upload.ssc.skip.show()
+            $button.upload.ssc.ignore.show()
             $section.upload.ssc.cropper.show()
             croppers['ssc']?.resize()
         }
@@ -636,6 +675,25 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 })
         })
     })
+
+    if (legalDoc) {
+
+        dropzoneEvents('leg-front', {
+            onImageLoad() {
+                $button.upload.leg.next.prop('disabled', false)
+                $step.upload.leg.html(steps.upload.leg[0])
+            },
+        })
+
+        dropzoneEvents('leg-back', {
+            onImageLoad() {
+                $button.upload.leg.next.prop('disabled', false)
+            },
+        })
+
+        //! Unfinished
+
+    }
 
 
     function getResizedBlob(target, { quality = .85 } = {}) {
