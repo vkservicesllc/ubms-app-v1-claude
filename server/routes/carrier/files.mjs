@@ -111,12 +111,16 @@ router.post('/skip/driver/application/:formId/:target', fileLoggedOut, Team.mw.v
 
         let { checklist } = application
         if (!checklist) checklist = {}
+        if (!checklist.documents) checklist.documents = {}
         if (!checklist.skipped) checklist.skipped = {}
 
-        checklist.skipped[{
+        const prop = {
             'legal-documents': 'leg',
             'social-security-card': 'ssc',
-        }[target]] = 1
+        }[target]
+
+        checklist.documents[prop] = 0
+        checklist.skipped[prop] = 1
 
         await application.update('checklist', { checklist })
 

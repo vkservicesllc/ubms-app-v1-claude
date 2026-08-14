@@ -173,7 +173,9 @@ router.post('/api/drivers/application/:formId/initial-social-security-card', Use
             checklist.documents = {}
             action = 'add'
         }
+        if (!checklist.skipped) checklist.skipped = {}
         checklist.documents.ssc = 1
+        checklist.skipped.ssc = 0
 
         const { ssn, dhsReq } = req.body
         const { id: userId } = res.session.user
