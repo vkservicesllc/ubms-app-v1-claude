@@ -260,6 +260,8 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         $('.delete-files-target').text({
             dl: "Driver's License",
             mec: 'Medical Certificate',
+            leg: 'Legal Document',
+            ssc: 'Social Security Card',
         }[target])
 
         $modal.delete.modal('show')
@@ -547,7 +549,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 
             const dateFields = [ 'dl[issuedOn]', 'dl[expiresOn]', 'person[dob]' ]
             for (const [ key, value ] of formData.entries())
-                if (dateFields.includes(key)) formData.set(key, moment(value).format('YYYY-MM-DD'))
+                if (dateFields.includes(key)) formData.set(key, moment(value, 'MMM D, YYYY').format('YYYY-MM-DD'))
 
             fetch(`/upload/api/drivers/application/${formId}/initial-drivers-license`, { method: 'POST', body: formData })
                 // .then(res => res.json())
@@ -620,7 +622,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 
             const dateFields = [ 'issuedOn', 'expiresOn' ]
             for (const [ key, value ] of formData.entries())
-                if (dateFields.includes(key)) formData.set(key, moment(value).format('YYYY-MM-DD'))
+                if (dateFields.includes(key)) formData.set(key, moment(value, 'MMM D, YYYY').format('YYYY-MM-DD'))
 
             fetch(`/upload/api/drivers/application/${formId}/drivers-license?record=false`, { method: 'POST', body: formData })
                 // .then(res => res.json())
@@ -666,7 +668,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 
             const dateFields = [ 'expiresOn', 'issuedOn' ]
             for (const [ key, value ] of formData.entries())
-                if (dateFields.includes(key) && value) formData.set(key, moment(value).format('YYYY-MM-DD'))
+                if (dateFields.includes(key) && value) formData.set(key, moment(value, 'MMM D, YYYY').format('YYYY-MM-DD'))
 
             fetch(`/upload/api/drivers/application/${formId}/initial-medical-certificate`, { method: 'POST', body: formData })
                 // .then(res => res.json())
@@ -788,9 +790,9 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
 
                 const dateFields = [ 'expiresOn', 'issuedOn' ]
                 for (const [ key, value ] of formData.entries())
-                    if (dateFields.includes(key)) formData.set(key, moment(value).format('YYYY-MM-DD'))
+                    if (value && dateFields.includes(key)) formData.set(key, moment(value, 'MMM D, YYYY').format('YYYY-MM-DD'))
 
-                fetch(`/upload/api/drivers/application/${formId}/initital-legal-document`, { method: 'POST', body: formData })
+                fetch(`/upload/api/drivers/application/${formId}/initial-legal-document`, { method: 'POST', body: formData })
                     // .then(res => res.json())
                     .then(data => {
                         location.reload()

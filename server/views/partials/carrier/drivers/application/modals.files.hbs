@@ -298,13 +298,13 @@
                 {{> carrier/components/modal.cropper.buttons}}
             </div>
             <div class="ui two column relaxed grid leg-section" id="confirmation-leg" style="display: none; margin: 0;">
-                <div class="five wide column">
+                <div class="nine wide column">
                     <div>
                         <div class="cropper-preview" id="cropper-preview-leg-front" data-width="36"></div>
                         <div class="cropper-preview" id="cropper-preview-leg-back" data-width="36"></div>
                     </div>
                 </div>
-                <div class="eleven wide column">
+                <div class="seven wide column">
                     <input type="hidden" name="docType" value="{{fileLegalType}}" />
                     {{> carrier/drivers/application/file_forms/legal_document}}
                 </div>
@@ -321,7 +321,7 @@
             {{/if}}
             <button class="ui green button" id="upload-leg-skip-button" style="display: none;">Skip</button>
             <button class="ui primary button" id="upload-leg-next-button" disabled>Next</button>
-            <button type="submit" form="upload-leg-form" class="ui primary button" id="upload-leg-submit" style="display: none;">Confirm and Upload</button>
+            <button type="submit" form="upload-leg-form" class="ui primary button" id="upload-leg-submit" style="display: none;" disabled>Confirm and Upload</button>
         </div>
     </div>
 </div>

@@ -24,6 +24,7 @@ const upload = {
     application: {
         dl: uploader('/driver/{id}/drivers-license/{id2}'),
         mec: uploader('/driver/{id}/medical-certificate/{id2}'),
+        leg: uploader('/driver/{id}/legal-document/{id2}'),
         ssc: uploader('/driver/{id}/social-security-card/{id2}'),
     },
 }
@@ -46,7 +47,7 @@ const uploadDriverPreset = async (req, res, next) => {
 
     req.upload = { id: driverId, id2: id }
     req.data = { application, driver, individual }
-
+console.log(req.upload)
     next()
 }
 
@@ -177,7 +178,7 @@ router.post('/api/drivers/application/:formId/initial-legal-document', User.mw.v
         if (!checklist.skipped) checklist.skipped = {}
         checklist.documents.leg = 1
         checklist.skipped.leg = 0
-
+console.log(req.body)
         let { expiresOn, issuedOn, docNumber } = req.body
         if (application.legalStatus[0] < 2) {
             expiresOn = null
