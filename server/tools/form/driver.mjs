@@ -1800,6 +1800,12 @@ class ApplicationFileForm {
         name: 'issuedOn',
         label: 'Issued on',
     })
+    static legDocNumber = createForm({
+        selector: appFileSelector,
+        target: 'legDocNumber',
+        name: 'docNumber',
+        label: 'Document Number',
+    })
 
 }
 

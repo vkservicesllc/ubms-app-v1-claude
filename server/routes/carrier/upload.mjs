@@ -13,6 +13,7 @@ import Individual from '../../tools/core/individual.mjs'
 import Driver, { Application } from '../../tools/core/driver.mjs'
 import uploader from '../../tools/utils/multer.mjs'
 import { getFiles, renameFile } from '../../tools/utils/fs.mjs'
+import { tz2utc } from '../../tools/utils/date.mjs'
 
 const path = require('path')
 
@@ -149,6 +150,61 @@ router.post('/api/drivers/application/:formId/initial-medical-certificate', User
             await application.update({ mecId })
         }
 
+        await application[action]('checklist', { checklist })
+
+        res.json({ status: 'OK' })
+    } catch (err) {
+        sendError.server(req, res, err)
+    }
+})
+
+
+router.post('/api/drivers/application/:formId/initial-legal-document', User.mw.verify, uploadDriverPreset, upload.application.leg.fields([
+    { name: 'legF', maxCount: 1 },
+    { name: 'legB', maxCount: 1 },
+]), async (req, res) => {
+    try {
+        const { application, individual } = req.data
+        let { checklist } = application
+        if (!checklist) checklist = {}
+
+        let action = 'update'
+
+        if (!checklist.documents) {
+            checklist.documents = {}
+            action = 'add'
+        }
+        if (!checklist.skipped) checklist.skipped = {}
+        checklist.documents.leg = 1
+        checklist.skipped.leg = 0
+
+        let { expiresOn, issuedOn, docNumber } = req.body
+        if (application.legalStatus[0] < 2) {
+            expiresOn = null
+            issuedOn = null
+            docNumber = null
+        }
+        let type
+        switch (application.legalStatus[0]) {
+            case 1:
+                type = 'gc'
+                break
+            case 2:
+                type = 'wa'
+                break
+        }
+
+        const { id: userId } = res.session.user
+        for (const [ field, side ] of [ [ 'legF', 'front' ], [ 'legB', 'back' ] ]) {
+            const file = req.files[field]?.[0]
+            if (!file) continue
+
+            const ext = path.extname(file.filename)
+            const filename = `${type}_${application.appliedOn}_${expiresOn || '-'}_${issuedOn || '-'}_${side}_${userId}_init${ext}`
+            await renameFile(path.dirname(file.path), file.filename, filename)
+        }
+
+        await individual.update('legal', { expiresOn, issuedOn, docNumber }, { since: tz2utc(application.appliedAt, true) })
         await application[action]('checklist', { checklist })
 
         res.json({ status: 'OK' })

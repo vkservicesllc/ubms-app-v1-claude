@@ -12,9 +12,46 @@
     <thead>
         <tr>
             <th class="empty-header"></th>
-            <th style="width: 12rem;">{{{fileForm.mecExp.text.label}}}</th>
-            <th style="width: 12rem;">{{{fileForm.mecIss.text.label}}}</th>
-            <th>{{{fileForm.mecNumber.text.label}}}</th>
+            <th style="width: 12rem;">{{{fileForm.legExp.text.label}}}</th>
+            <th style="width: 12rem;">{{{fileForm.legIss.text.label}}}</th>
+            <th>{{{fileForm.legDocNumber.text.label}}}</th>
         </tr>
     </thead>
+    <tbody>
+        <tr>
+            <td class="collapsing">
+                <div class="ui fitted slider checkbox">
+                    <input class="file-form-confirm-check file-form-confirm-leg-check" type="checkbox" required /><label></label>
+                </div>
+                <span class="ui dark green text" style="display: none;">
+                    <i class="icon checkmark"></i> Correct
+                </span>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui calendar" id="leg-expires-confirm-calendar">
+                        <div class="ui fluid input left icon">
+                            {{{fileForm.legExp.text.input}}}
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    <div class="ui calendar" id="leg-issued-confirm-calendar">
+                        <div class="ui fluid input left icon">
+                            {{{fileForm.legIss.text.input}}}
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="field">
+                    {{{fileForm.legDocNumber.text.input}}}
+                </div>
+            </td>
+        </tr>
+    </tbody>
 </table>

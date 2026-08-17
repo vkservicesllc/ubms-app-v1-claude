@@ -209,7 +209,7 @@ export const initialProgress = async (inst, step, body) => {
                 }
 
                 const { legalStatus: status, expiresOn, issuedOn, docNumber } = body
-                await person.update('legal', { status, expiresOn, issuedOn, docNumber }, { since: tz2utc(inst.appliedOn, true) })
+                await person.update('legal', { status, expiresOn, issuedOn, docNumber }, { since: tz2utc(inst.appliedAt, true) })
 
                 cache.legal = { status, expiresOn, issuedOn, docNumber }
 
