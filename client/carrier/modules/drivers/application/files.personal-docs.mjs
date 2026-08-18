@@ -380,7 +380,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         if (legalStatus[2])
             $calendar.legIssuedOn.calendar('set date', new Date(moment(legalStatus[2]).toDate()))
 
-        driverLicenseEvent(TS.statusDoc, { value: legalStatus[3] || null })
+        driverLicenseEvent(TS.legDocNumber, { value: legalStatus[3] || null })
     }
 
     $upload.dl.click(function() {
@@ -471,6 +471,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     dropzoneEvents('dl2-back', {
         onImageLoad() {
             $button.upload.dl2.next.prop('disabled', false)
+            $button.upload.dl2.skip.hide()
         },
     })
 
@@ -483,6 +484,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     dropzoneEvents('ssc', {
         onImageLoad() {
             $button.upload.ssc.next.prop('disabled', false)
+            $button.upload.ssc.ignore.hide()
         },
     })
 
@@ -491,11 +493,13 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             onImageLoad() {
                 $button.upload.leg.next.prop('disabled', false)
                 $step.upload.leg.html(steps.upload.leg[0])
+                if ($button.upload.leg.ignore) $button.upload.leg.ignore.hide()
             },
         })
         dropzoneEvents('leg-back', {
             onImageLoad() {
                 $button.upload.leg.next.prop('disabled', false)
+                $button.upload.leg.skip.hide()
             },
         })
     }
@@ -591,7 +595,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             $button.upload.dl2.next.show()
             $section.upload.dl2.cropperBack.show()
             croppers['dl2-back']?.resize()
-            $button.upload.dl2.skip.show()
+            if (!croppers['dl2-back']) $button.upload.dl2.skip.show()
         }
         $step.upload.dl2.html(steps.upload.dl2[--activeStep.dl2])
     })
@@ -696,7 +700,6 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             $button.upload.ssc.prev.hide()
             $button.upload.ssc.submit.hide()
             $button.upload.ssc.next.show()
-            $button.upload.ssc.ignore.show()
             $section.upload.ssc.cropper.show()
             croppers['ssc']?.resize()
         }
@@ -753,14 +756,13 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 croppers['leg-front']?.resize()
                 $button.upload.leg.next.prop('disabled', false)
                 $button.upload.leg.skip.hide()
-                if ($button.upload.leg.ignore) $button.upload.leg.ignore.show()
             }
             if (activeStep.leg === 2) {
                 $button.upload.leg.submit.hide()
                 $button.upload.leg.next.show()
                 $section.upload.leg.cropperBack.show()
                 croppers['leg-back']?.resize()
-                $button.upload.leg.skip.show()
+                if (!croppers['leg-back']) $button.upload.leg.skip.show()
             }
             $step.upload.leg.html(steps.upload.leg[--activeStep.leg])
         })

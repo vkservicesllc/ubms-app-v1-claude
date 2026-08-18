@@ -353,7 +353,7 @@ class Application {
             data.legalStatus,
             data.legalExpiration !== '0000-00-00' ? data.legalExpiration : null,
             data.legalIssueDate !== '0000-00-00' ? data.legalIssueDate : null,
-            data.docNumber,
+            data.legalDocNum,
         ]
         this.marital = data.marital
 

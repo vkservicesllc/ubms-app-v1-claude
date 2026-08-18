@@ -306,7 +306,9 @@
                 </div>
                 <div class="seven wide column">
                     <input type="hidden" name="docType" value="{{fileLegalType}}" />
+                    {{#if (eq fileLegalTemp true)}}
                     {{> carrier/drivers/application/file_forms/legal_document}}
+                    {{/if}}
                 </div>
             </div>
         </form>
@@ -321,7 +323,7 @@
             {{/if}}
             <button class="ui green button" id="upload-leg-skip-button" style="display: none;">Skip</button>
             <button class="ui primary button" id="upload-leg-next-button" disabled>Next</button>
-            <button type="submit" form="upload-leg-form" class="ui primary button" id="upload-leg-submit" style="display: none;" disabled>Confirm and Upload</button>
+            <button type="submit" form="upload-leg-form" class="ui primary button" id="upload-leg-submit" style="display: none;"{{#if (eq fileLegalTemp true)}} disabled{{/if}}>Confirm and Upload</button>
         </div>
     </div>
 </div>

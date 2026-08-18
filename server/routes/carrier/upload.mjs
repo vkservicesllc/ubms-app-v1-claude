@@ -47,7 +47,7 @@ const uploadDriverPreset = async (req, res, next) => {
 
     req.upload = { id: driverId, id2: id }
     req.data = { application, driver, individual }
-console.log(req.upload)
+
     next()
 }
 
@@ -178,7 +178,7 @@ router.post('/api/drivers/application/:formId/initial-legal-document', User.mw.v
         if (!checklist.skipped) checklist.skipped = {}
         checklist.documents.leg = 1
         checklist.skipped.leg = 0
-console.log(req.body)
+
         let { expiresOn, issuedOn, docNumber } = req.body
         if (application.legalStatus[0] < 2) {
             expiresOn = null

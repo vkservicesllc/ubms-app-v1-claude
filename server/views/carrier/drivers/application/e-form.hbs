@@ -613,7 +613,7 @@
                                 <form class="ui loading form" id="status-form" action="{{actionUrl.status}}" method="POST" autocomplete="off">
                                     <h5 class="ui blue text first header">Legal Presence</h5>
                                     <div class="ui compact grid" style="margin-top: .35rem;">
-                                        <div class="five wide field">
+                                        <div class="five wide {{#if (eq file.leg.uploaded true)}}disabled {{/if}}field">
                                             {{{form.status.radio.label}}}
                                             <div class="ui fluid selection required dropdown" id="legal-status-dropdown">
                                                 {{{form.status.hidden.input}}}
@@ -626,7 +626,7 @@
                                         <div class="one wide field"></div>
                                     </div>
                                     <div class="ui compact grid status-temp-fields" style="margin-top: .35rem; display: none;">
-                                        <div class="four wide field">
+                                        <div class="four wide {{#if (eq file.leg.uploaded true)}}disabled {{/if}}field">
                                             {{{form.statusExp.text.label}}}
                                             <div class="ui calendar" id="status-exp-calendar">
                                                 <div class="ui fluid input left icon">
@@ -635,7 +635,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="four wide field">
+                                        <div class="four wide {{#if (eq file.leg.uploaded true)}}disabled {{/if}}field">
                                             {{{form.statusIss.text.label}}}
                                             <div class="ui calendar" id="status-iss-calendar">
                                                 <div class="ui fluid input left icon">
@@ -644,7 +644,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="five wide field">
+                                        <div class="five wide {{#if (eq file.leg.uploaded true)}}disabled {{/if}}field">
                                             {{{form.statusDocNum.text.label}}}
                                             {{{form.statusDocNum.text.input}}}
                                         </div>
