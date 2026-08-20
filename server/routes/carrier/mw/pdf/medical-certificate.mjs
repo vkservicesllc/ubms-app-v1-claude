@@ -2,13 +2,11 @@ let { DIR__PATH: dir } = Bun.env
 dir += '/uploads/driver/'
 
 import fs from 'fs'
-import moment, { duration } from 'moment'
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
+import moment from 'moment'
+import { PDFDocument, StandardFonts } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
-import pdfParams, { CustomFonts } from '../../../../settings/pdf-lib.mjs'
+import pdfParams from '../../../../settings/pdf-lib.mjs'
 import User from '../../../../tools/core/user.mjs'
-import Driver, { Application } from '../../../../tools/core/driver.mjs'
-import Address from '../../../../../client/global/modules/tools/core/address.us.mjs'
 import { getFiles } from '../../../../tools/utils/fs.mjs'
 
 
@@ -44,12 +42,12 @@ export default async (application, session) => {
     for (const file of files) {
         const [ end, start, number, uploadedBy, init ] = file.split('.')[0].split('_')
 
-        const prop = `${start}_${end}`
+        const prop = `${end}_${start}`
         if (!list[prop]) list[prop] = {}
         list[prop].init = init === 'init'
-        list[prop].number = number
+        list[prop].number = number !== '-' ? number : null
         list[prop].expiresOn = moment(end).format('ll')
-        list[prop].issuedOn = start !== '-' ? moment(start).format('ll') : start
+        list[prop].issuedOn = start !== '-' ? moment(start).format('ll') : null
         list[prop].uploadedBy = (await User.fetch(session, { id: +uploadedBy })).fullName()
         list[prop].path = `${path}/${file}`
     }
@@ -77,7 +75,7 @@ export default async (application, session) => {
             font: font.info, size: size.info,
         })
         y -= 15
-        text = `Expires on: ${item.expiresOn}; Exam Date: ${item.issuedOn !== '-' ? item.issuedOn : 'n/a'}; NRCME: ${item.number !== '-' ? item.number : 'n/a'}`
+        text = `Expires on: ${item.expiresOn}; Exam Date: ${item.issuedOn || 'n/a'}; NRCME: ${item.number || 'n/a'}`
         textWidth = font.info.widthOfTextAtSize(text, size.info)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,
@@ -90,7 +88,7 @@ export default async (application, session) => {
         const img = await pdfDoc.embedJpg(imgBytes)
 
         const maxHeight = y - marginY
-        const widthRatio = (contentWidth * .8) / img.width
+        const widthRatio = (contentWidth * .9) / img.width
         const heightRatio = maxHeight / img.height
         const scale = Math.min(widthRatio, heightRatio, 1)
         const drawWidth = img.width * scale

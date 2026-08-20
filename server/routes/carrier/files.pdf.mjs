@@ -15,6 +15,8 @@ import { Application, Employment } from '../../tools/core/driver.mjs'
 import createApplicationPdf from './mw/pdf/driver-application.mjs'
 import createDriverLicensePdf from './mw/pdf/driver-license.mjs'
 import createMedicalCertificatePdf from './mw/pdf/medical-certificate.mjs'
+import createLegalDocumentPdf from './mw/pdf/legal-document.mjs'
+import createSSCPdf from './mw/pdf/social-security-card.mjs'
 import createEmplVerifPdf from './mw/pdf/prev-employment-verification.mjs'
 import { inPGroup, inPEnvironment, withPrivileges } from '../../tools/core/user/permissions.mjs'
 import fillPdf from '../../tools/utils/pdf.fillable.mjs'
@@ -157,8 +159,8 @@ router.get('/driver/application/:formId/consent/psp', fileLoggedOut, Team.mw.ver
 })
 
 
-router.get('/driver/application/:formId/:documentType', fileLoggedOut, Team.mw.verify, async (req, res) => {
-    const { formId, documentType } = req.params
+router.get('/driver/application/:formId/:target', fileLoggedOut, Team.mw.verify, async (req, res) => {
+    const { formId, target } = req.params
 
     try {
         const aplUrl = '/drivers/applications'
@@ -175,7 +177,7 @@ router.get('/driver/application/:formId/:documentType', fileLoggedOut, Team.mw.v
 
         let pdfBytes, downloadName
 
-        switch (documentType) {
+        switch (target) {
             case 'drivers-license':
                 pdfBytes = await createDriverLicensePdf(application, res.session)
                 downloadName = "Driver's License"
@@ -183,6 +185,14 @@ router.get('/driver/application/:formId/:documentType', fileLoggedOut, Team.mw.v
             case 'medical-certificate':
                 pdfBytes = await createMedicalCertificatePdf(application, res.session)
                 downloadName = 'Medical Certificate'
+                break
+            case 'legal-document':
+                pdfBytes = await createLegalDocumentPdf(application, res.session)
+                downloadName = 'Legal Document'
+                break
+            case 'social-security-card':
+                pdfBytes = await createSSCPdf(application, res.session)
+                downloadName = 'Social Security Card'
                 break
         }
 

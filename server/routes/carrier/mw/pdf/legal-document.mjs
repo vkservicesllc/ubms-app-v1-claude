@@ -6,24 +6,23 @@ import { PDFDocument, StandardFonts } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import pdfParams from '../../../../settings/pdf-lib.mjs'
 import User from '../../../../tools/core/user.mjs'
-import Address from '../../../../../client/global/modules/tools/core/address.us.mjs'
 import { getFiles } from '../../../../tools/utils/fs.mjs'
 import { drawSide } from './components.mjs'
 
 
 export default async (application, session) => {
     if (!application) return
-
+    
     const { driverId, id } = application
-    const title = `${application.fullName} - Driver's License`
-    const path = `${dir}/${driverId}/drivers-license/${id}`
+    const title = `${application.fullName} - Legal Document`
+    const path = `${dir}/${driverId}/legal-document/${id}`
 
     const files = await getFiles(path, false)
     const pdfDoc = await PDFDocument.create()
     pdfDoc.registerFontkit(fontkit)
     pdfDoc.setTitle(title)
 
-    const { width, height, marginY } = pdfParams.letter
+    const { width, height, marginX, marginY } = pdfParams.letter
     const font = {
         title: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         subtitle: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
@@ -39,16 +38,19 @@ export default async (application, session) => {
 
     const list = {}
     for (const file of files) {
-        const [ start, end, state, number, dlClass, cdl, side, uploadedBy, init ] = file.split('.')[0].split('_')
+        const [ type, date, start, number, side, uploadedBy, init ] = file.split('.')[0].split('_')
 
-        const prop = `${start}_${end}`
+        const prop = `${date}_${start}`
         if (!list[prop]) list[prop] = {}
         list[prop].init = init === 'init'
-        list[prop].cdl = cdl === 'Y'
-        list[prop].state = Address.list.state[state]
-        list[prop].number = number
-        list[prop].class = dlClass !== '-' ? dlClass : null
-        list[prop].duration = `${moment(start).format('ll')} – ${moment(end).format('ll')}`
+        list[prop].type = type
+        if (type === 'wa') {
+            list[prop].number = number !== '-' ? number : null
+            list[prop].expiresOn = moment(date).format('ll')
+            list[prop].issuedOn = start !== '-' ? moment(start).format('ll') : null
+        } else if (type === 'gc') {
+            list[prop].date = moment(date).format('ll')
+        }
         list[prop].uploadedBy = (await User.fetch(session, { id: +uploadedBy })).fullName()
         list[prop][side] = {}
         list[prop][side].path = `${path}/${file}`
@@ -77,29 +79,16 @@ export default async (application, session) => {
         }
 
         y -= 30
-        text = `DRIVER'S LICENSE${item.init ? ' *' : ''}`
-        if (item.cdl) text = `COMMERCIAL ${text}`
-        text += ` – ${item.state}`
+        text = item.type === 'wa' ? 'WORK AUTHORIZATION' : 'PERMANENT RESIDENT CARD'
+        if (item.init) text += ' *'
+        if (item.type === 'wa')
+            text += ` / Expiration ${item.expiresOn}`
         textWidth = font.info.widthOfTextAtSize(text, size.info)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,
             font: font.info, size: size.info,
         })
-        y -= 15
-        text = `Number: ${item.number}; Class: ${item.class || 'n/a'}`
-        textWidth = font.info.widthOfTextAtSize(text, size.info)
-        page.drawText(text, {
-            x: (width - textWidth) / 2, y,
-            font: font.info, size: size.info,
-        })
-        y -= 15
-        text = `Duration: ${item.duration}`
-        textWidth = font.info.widthOfTextAtSize(text, size.info)
-        page.drawText(text, {
-            x: (width - textWidth) / 2, y,
-            font: font.info, size: size.info,
-        })
-
+        
         y -= marginY * .8
 
         const slots = item.back ? 2 : 1

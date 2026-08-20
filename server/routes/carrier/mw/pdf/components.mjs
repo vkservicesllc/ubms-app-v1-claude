@@ -1,4 +1,6 @@
 import { rgb } from 'pdf-lib'
+import pdfParams from '../../../../settings/pdf-lib.mjs'
+import fs from 'fs'
 
 
 export const drawCheckBox = (page, x, y, checked, color = {}, size = 10) => {
@@ -74,4 +76,27 @@ export const wrapText = (text, width, font, fontSize, marginX, padding = 0, xGap
     if (line) lines.push(line)
 
     return lines
+}
+
+
+export const drawSide = async (pdfDoc, page, side, y, maxHeight, widthScale = .75) => {
+    const { width, marginX } = pdfParams.letter
+    const imgBytes = fs.readFileSync(side.path)
+    const img = await pdfDoc.embedJpg(imgBytes)
+
+    const contentWidth = width - marginX * 2
+    const widthRatio = (contentWidth * widthScale) / img.width
+    const heightRatio = maxHeight / img.height
+    const scale = Math.min(widthRatio, heightRatio, 1)
+    const drawWidth = img.width * scale
+    const drawHeight = img.height * scale
+
+    y -= drawHeight
+    page.drawImage(img, {
+        x: (width - drawWidth) / 2, y,
+        width: drawWidth,
+        height: drawHeight,
+    })
+
+    return y
 }

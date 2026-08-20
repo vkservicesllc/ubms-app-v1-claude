@@ -6,24 +6,23 @@ import { PDFDocument, StandardFonts } from 'pdf-lib'
 import fontkit from '@pdf-lib/fontkit'
 import pdfParams from '../../../../settings/pdf-lib.mjs'
 import User from '../../../../tools/core/user.mjs'
-import Address from '../../../../../client/global/modules/tools/core/address.us.mjs'
 import { getFiles } from '../../../../tools/utils/fs.mjs'
 import { drawSide } from './components.mjs'
 
 
 export default async (application, session) => {
     if (!application) return
-
+    
     const { driverId, id } = application
-    const title = `${application.fullName} - Driver's License`
-    const path = `${dir}/${driverId}/drivers-license/${id}`
+    const title = `${application.fullName} - Social Security Card`
+    const path = `${dir}/${driverId}/social-security-card/${id}`
 
     const files = await getFiles(path, false)
     const pdfDoc = await PDFDocument.create()
     pdfDoc.registerFontkit(fontkit)
     pdfDoc.setTitle(title)
 
-    const { width, height, marginY } = pdfParams.letter
+    const { width, height, marginX, marginY } = pdfParams.letter
     const font = {
         title: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
         subtitle: await pdfDoc.embedFont(StandardFonts.HelveticaBold),
@@ -39,19 +38,15 @@ export default async (application, session) => {
 
     const list = {}
     for (const file of files) {
-        const [ start, end, state, number, dlClass, cdl, side, uploadedBy, init ] = file.split('.')[0].split('_')
+        const [ since, dhs, uploadedBy, init ] = file.split('.')[0].split('_')
 
-        const prop = `${start}_${end}`
+        const prop = since
         if (!list[prop]) list[prop] = {}
         list[prop].init = init === 'init'
-        list[prop].cdl = cdl === 'Y'
-        list[prop].state = Address.list.state[state]
-        list[prop].number = number
-        list[prop].class = dlClass !== '-' ? dlClass : null
-        list[prop].duration = `${moment(start).format('ll')} – ${moment(end).format('ll')}`
+        list[prop].since = moment(since).format('ll')
+        list[prop].dhs = dhs === 'Y'
         list[prop].uploadedBy = (await User.fetch(session, { id: +uploadedBy })).fullName()
-        list[prop][side] = {}
-        list[prop][side].path = `${path}/${file}`
+        list[prop].path = `${path}/${file}`
     }
 
     for (const key in list) {
@@ -77,41 +72,21 @@ export default async (application, session) => {
         }
 
         y -= 30
-        text = `DRIVER'S LICENSE${item.init ? ' *' : ''}`
-        if (item.cdl) text = `COMMERCIAL ${text}`
-        text += ` – ${item.state}`
-        textWidth = font.info.widthOfTextAtSize(text, size.info)
-        page.drawText(text, {
-            x: (width - textWidth) / 2, y,
-            font: font.info, size: size.info,
-        })
-        y -= 15
-        text = `Number: ${item.number}; Class: ${item.class || 'n/a'}`
-        textWidth = font.info.widthOfTextAtSize(text, size.info)
-        page.drawText(text, {
-            x: (width - textWidth) / 2, y,
-            font: font.info, size: size.info,
-        })
-        y -= 15
-        text = `Duration: ${item.duration}`
+        text = `SOCIAL SECURITY CARD${item.init ? ' *' : ''}`
+        if (item.dhs) text += ` – DHS Authorization Required`
         textWidth = font.info.widthOfTextAtSize(text, size.info)
         page.drawText(text, {
             x: (width - textWidth) / 2, y,
             font: font.info, size: size.info,
         })
 
-        y -= marginY * .8
+        y -= marginY
 
         const slots = item.back ? 2 : 1
         const sectionGap = item.back ? 50 : 0
         const maxHeight = (y - marginY - sectionGap) / slots
 
-        y = await drawSide(pdfDoc, page, item.front, y, maxHeight)
-
-        if (item.back) {
-            y -= marginY / 1.8
-            y = await drawSide(pdfDoc, page, item.back, y, maxHeight)
-        }
+        y = await drawSide(pdfDoc, page, item, y, maxHeight, .65)
 
         y -= marginY
         text = `Uploaded by: ${item.uploadedBy}`

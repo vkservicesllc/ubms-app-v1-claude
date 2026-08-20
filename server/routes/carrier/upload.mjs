@@ -201,7 +201,7 @@ router.post('/api/drivers/application/:formId/initial-legal-document', User.mw.v
             if (!file) continue
 
             const ext = path.extname(file.filename)
-            const filename = `${type}_${application.appliedOn}_${expiresOn || '-'}_${issuedOn || '-'}_${side}_${userId}_init${ext}`
+            const filename = `${type}_${expiresOn || application.appliedOn}_${issuedOn || '-'}_${docNumber || '-'}_${side}_${userId}_init${ext}`
             await renameFile(path.dirname(file.path), file.filename, filename)
         }
 
