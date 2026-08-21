@@ -23,6 +23,10 @@ export default {
         url: { max: 100 },
     },
 
+    vehicle: {
+        vin: { min: 17, max: 17 },
+    },
+
     company: {
         busName: { max: 35 },
         alias: { max: 6 },

@@ -14,6 +14,7 @@ export default {
         suffix: /(\bjr\b|\bsr\b)/i,
         coType: /(\binc\b|\bllc\b)/i,
         addr2: /\b(suite|ste|unit|apt)\b\.?.*?$/i,
+        vin: /^[A-HJ-NPR-Z0-9]{17}$/,
     },
 
     change: {
@@ -108,6 +109,7 @@ export default {
             [/&+/g, '&'],
             [/'+/g, "'"],
         ],
+        vhlVin: [[/[^A-HJ-NPR-Za-hj-npr-z0-9]/g, '']],
         vhlMake: [
             [/[^\sA-Za-z\-]/g, ''],
             [/\s+/g, ' '],
