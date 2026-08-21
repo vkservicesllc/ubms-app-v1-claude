@@ -274,6 +274,10 @@
                     </h1>
                     <i class="dark teal image file outline icon"></i>
                     <span class="ui dark teal text cropper-drag-drop-click">Drag and drop here or click to upload</span>
+                    {{#if (eq uploads.leg true)}}
+                    <p class="cropper-opt-or"><span class="ui grey text">OR</span></p>
+                    <button class="ui primary button cropper-load-shared">Load Shared</button>
+                    {{/if}}
                 </div>
                 <input class="cropper-file" type="file" accept="image/*" hidden name="legF" />
                 <div class="cropper-wrapper" style="display: none;">

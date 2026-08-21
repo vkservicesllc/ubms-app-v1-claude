@@ -7,6 +7,7 @@ import application, { addresses, dropdownEvent } from './hub.mjs';
 import stripNum from '/modules/tools/utils/formatter.mjs';
 import selector from '/modules/registry/selectors/driver-application-files.mjs';
 import filenames from '/modules/registry/filenames/driver-application-uploads.mjs';
+import { buttonEvents, uploadFormEvent, createGetResizedBlob, dropzoneEvents } from './files.support.mjs';
 
 (() => {
     if (!application || !Object.keys(application).length) return;
@@ -24,11 +25,12 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         'dl2-front': 'dlF',
         'dl2-back': 'dlB',
         mec: 'mec',
-        //! add more
+        'leg-front': 'leg',
         ssc: 'ssc',
     };
     const uploadMaxWidth = 1200;
     const croppers = {};
+    const getResizedBlob = createGetResizedBlob({ croppers, maxWidth: uploadMaxWidth });
     const $upload = {
         dl: $('#upload-dl-file'),
         dl2: $('#upload-add-dl-file'),
@@ -132,6 +134,15 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         },
     };
 
+    const $form = {
+        upload: {
+            dl: $('#upload-dl-form'),
+            dl2: $('#upload-add-dl-form'),
+            mec: $('#upload-mec-form'),
+            ssc: $('#upload-ssc-form'),
+        },
+    };
+
     const $dropdown = {
         dlState: [$('#dl-state-confirm-dropdown'), dl.state],
         dlState2: [$('#dl-state-2-confirm-dropdown')],
@@ -205,6 +216,7 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
             cropperBack: $('#croparea-leg-back'),
             confirmation: $('#confirmation-leg'),
         };
+        $form.upload.leg = $('#upload-leg-form');
         $calendar.legExpiresOn = $('#leg-expires-confirm-calendar');
         $calendar.legIssuedOn = $('#leg-issued-confirm-calendar');
     }
@@ -458,38 +470,40 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
                 .modal('show');
         });
 
-    dropzoneEvents('dl-front', {
+    const dropzoneCtx = { _id, filenames, filenameProps, croppers };
+
+    dropzoneEvents(dropzoneCtx, 'dl-front', {
         onImageLoad() {
             $button.upload.dl.next.prop('disabled', false);
             $step.upload.dl.html(steps.upload.dl[0]);
         },
     });
-    dropzoneEvents('dl-back', {
+    dropzoneEvents(dropzoneCtx, 'dl-back', {
         onImageLoad() {
             $button.upload.dl.next.prop('disabled', false);
         },
     });
 
-    dropzoneEvents('dl2-front', {
+    dropzoneEvents(dropzoneCtx, 'dl2-front', {
         onImageLoad() {
             $button.upload.dl2.next.prop('disabled', false);
             $step.upload.dl2.html(steps.upload.dl2[0]);
         },
     });
-    dropzoneEvents('dl2-back', {
+    dropzoneEvents(dropzoneCtx, 'dl2-back', {
         onImageLoad() {
             $button.upload.dl2.next.prop('disabled', false);
             $button.upload.dl2.skip.hide();
         },
     });
 
-    dropzoneEvents('mec', {
+    dropzoneEvents(dropzoneCtx, 'mec', {
         onImageLoad() {
             $button.upload.mec.next.prop('disabled', false);
         },
     });
 
-    dropzoneEvents('ssc', {
+    dropzoneEvents(dropzoneCtx, 'ssc', {
         onImageLoad() {
             $button.upload.ssc.next.prop('disabled', false);
             $button.upload.ssc.ignore.hide();
@@ -497,14 +511,14 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
     });
 
     if (legalDoc) {
-        dropzoneEvents('leg-front', {
+        dropzoneEvents(dropzoneCtx, 'leg-front', {
             onImageLoad() {
                 $button.upload.leg.next.prop('disabled', false);
                 $step.upload.leg.html(steps.upload.leg[0]);
                 if ($button.upload.leg.ignore) $button.upload.leg.ignore.hide();
             },
         });
-        dropzoneEvents('leg-back', {
+        dropzoneEvents(dropzoneCtx, 'leg-back', {
             onImageLoad() {
                 $button.upload.leg.next.prop('disabled', false);
                 $button.upload.leg.skip.hide();
@@ -512,514 +526,55 @@ import filenames from '/modules/registry/filenames/driver-application-uploads.mj
         });
     }
 
-    $button.upload.dl.next.click(function () {
-        $section.upload.dl.all.hide();
-        if (activeStep.dl === 0) {
-            $button.upload.dl.prev.show();
-            if (!croppers['dl-back']) $button.upload.dl.next.prop('disabled', true);
-            $section.upload.dl.cropperBack.show();
-            croppers['dl-back']?.resize();
-        }
-        if (activeStep.dl === 1) {
-            $button.upload.dl.next.hide();
-            $button.upload.dl.submit.show();
-            $section.upload.dl.confirmation.show();
-        }
-        $step.upload.dl.html(steps.upload.dl[++activeStep.dl]);
+    buttonEvents({ $button, $section, $step, steps, activeStep, croppers }, 'dl');
+
+    uploadFormEvent({ $form, $section, $button, croppers, getResizedBlob, formId }, 'dl', {
+        endpoint: 'initial-drivers-license',
+        dateFields: ['dl[issuedOn]', 'dl[expiresOn]', 'person[dob]'],
+        validate() {
+            if ($dropdown.dlAddrState[0].dropdown('get value')) return true;
+            alert('Address State is not selected');
+            return false;
+        },
     });
 
-    $button.upload.dl.prev.click(function () {
-        $section.upload.dl.all.hide();
-        if (activeStep.dl === 1) {
-            $button.upload.dl.prev.hide();
-            $section.upload.dl.cropperFront.show();
-            croppers['dl-front']?.resize();
-            $button.upload.dl.next.prop('disabled', false);
-        }
-        if (activeStep.dl === 2) {
-            $button.upload.dl.submit.hide();
-            $button.upload.dl.next.show();
-            $section.upload.dl.cropperBack.show();
-            croppers['dl-back']?.resize();
-        }
-        $step.upload.dl.html(steps.upload.dl[--activeStep.dl]);
+    buttonEvents({ $button, $section, $step, steps, activeStep, croppers }, 'dl2');
+
+    uploadFormEvent({ $form, $section, $button, croppers, getResizedBlob, formId }, 'dl2', {
+        fieldName: 'dl',
+        endpoint: 'drivers-license?record=false',
+        dateFields: ['issuedOn', 'expiresOn'],
+        validate() {
+            if ($dropdown.dlState2[0].dropdown('get value')) return true;
+            alert('State is not selected');
+            return false;
+        },
     });
 
-    $('#upload-dl-form').on('submit', function (evt) {
-        evt.preventDefault();
-        if (!$dropdown.dlAddrState[0].dropdown('get value'))
-            return alert('Address State is not selected');
+    buttonEvents({ $button, $section, $step, steps, activeStep, croppers }, 'mec');
 
-        const form = this;
-
-        Promise.all([getResizedBlob('dl-front'), getResizedBlob('dl-back')]).then(([dlF, dlB]) => {
-            const formData = new FormData(form);
-            formData.set('dlF', dlF, 'dlF.jpg');
-            formData.set('dlB', dlB, 'dlB.jpg');
-
-            const dateFields = ['dl[issuedOn]', 'dl[expiresOn]', 'person[dob]'];
-            for (const [key, value] of formData.entries())
-                if (dateFields.includes(key))
-                    formData.set(key, moment(value, 'MMM D, YYYY').format('YYYY-MM-DD'));
-
-            fetch(`/upload/api/drivers/application/${formId}/initial-drivers-license`, {
-                method: 'POST',
-                body: formData,
-            })
-                // .then(res => res.json())
-                .then((data) => {
-                    location.reload();
-                });
-        });
+    uploadFormEvent({ $form, $section, $button, croppers, getResizedBlob, formId }, 'mec', {
+        endpoint: 'initial-medical-certificate',
+        dateFields: ['expiresOn', 'issuedOn'],
     });
 
-    $button.upload.dl2.next.click(function () {
-        $section.upload.dl2.all.hide();
-        if (activeStep.dl2 === 0) {
-            $button.upload.dl2.prev.show();
-            if (!croppers['dl2-back']) $button.upload.dl2.next.prop('disabled', true);
-            $section.upload.dl2.cropperBack.show();
-            croppers['dl2-back']?.resize();
-            $button.upload.dl2.skip.show();
-        }
-        if (activeStep.dl2 === 1) {
-            $button.upload.dl2.next.hide();
-            $button.upload.dl2.submit.show();
-            $button.upload.dl2.skip.hide();
-            $section.upload.dl2.confirmation.show();
-        }
-        $step.upload.dl2.html(steps.upload.dl2[++activeStep.dl2]);
-    });
+    buttonEvents({ $button, $section, $step, steps, activeStep, croppers }, 'ssc');
 
-    $button.upload.dl2.prev.click(function () {
-        $section.upload.dl2.all.hide();
-        if (activeStep.dl2 === 1) {
-            $button.upload.dl2.prev.hide();
-            $section.upload.dl2.cropperFront.show();
-            croppers['dl2-front']?.resize();
-            $button.upload.dl2.next.prop('disabled', false);
-            $button.upload.dl2.skip.hide();
-        }
-        if (activeStep.dl2 === 2) {
-            $button.upload.dl2.submit.hide();
-            $button.upload.dl2.next.show();
-            $section.upload.dl2.cropperBack.show();
-            croppers['dl2-back']?.resize();
-            if (!croppers['dl2-back']) $button.upload.dl2.skip.show();
-        }
-        $step.upload.dl2.html(steps.upload.dl2[--activeStep.dl2]);
-    });
-
-    $button.upload.dl2.skip.click(function () {
-        $section.upload.dl2.all.hide();
-        $button.upload.dl2.next.hide();
-        $button.upload.dl2.submit.show();
-        $section.upload.dl2.confirmation.show();
-        $(this).hide();
-        $step.upload.dl2.html(steps.upload.dl2[++activeStep.dl2]);
-    });
-
-    $('#upload-add-dl-form').on('submit', function (evt) {
-        evt.preventDefault();
-        if (!$dropdown.dlState2[0].dropdown('get value')) return alert('State is not selected');
-
-        const form = this;
-
-        const blobs = [getResizedBlob('dl2-front')];
-        if (croppers['dl2-back']) blobs.push(getResizedBlob('dl2-back'));
-
-        Promise.all(blobs).then(([dlF, dlB]) => {
-            const formData = new FormData(form);
-            formData.set('dlF', dlF, 'dlF.jpg');
-            if (dlB) formData.set('dlB', dlB, 'dlB.jpg');
-            else formData.delete('dlB');
-
-            const dateFields = ['issuedOn', 'expiresOn'];
-            for (const [key, value] of formData.entries())
-                if (dateFields.includes(key))
-                    formData.set(key, moment(value, 'MMM D, YYYY').format('YYYY-MM-DD'));
-
-            fetch(`/upload/api/drivers/application/${formId}/drivers-license?record=false`, {
-                method: 'POST',
-                body: formData,
-            })
-                // .then(res => res.json())
-                .then((data) => {
-                    location.reload();
-                });
-        });
-    });
-
-    $button.upload.mec.next.click(function () {
-        $section.upload.mec.all.hide();
-        if (activeStep.mec === 0) {
-            $button.upload.mec.next.hide();
-            $button.upload.mec.prev.show();
-            $button.upload.mec.submit.show();
-            $section.upload.mec.confirmation.show();
-        }
-        $step.upload.mec.html(steps.upload.mec[++activeStep.mec]);
-    });
-
-    $button.upload.mec.prev.click(function () {
-        $section.upload.mec.all.hide();
-        if (activeStep.mec === 1) {
-            $button.upload.mec.prev.hide();
-            $button.upload.mec.submit.hide();
-            $button.upload.mec.next.show();
-            $section.upload.mec.cropper.show();
-            croppers['mec']?.resize();
-        }
-        $step.upload.mec.html(steps.upload.mec[--activeStep.mec]);
-    });
-
-    $('#upload-mec-form').on('submit', function (evt) {
-        evt.preventDefault();
-
-        const form = this;
-
-        const blobs = [getResizedBlob('mec')];
-
-        Promise.all(blobs).then(([mec]) => {
-            const formData = new FormData(form);
-            formData.set('mec', mec, 'mec.jpg');
-
-            const dateFields = ['expiresOn', 'issuedOn'];
-            for (const [key, value] of formData.entries())
-                if (dateFields.includes(key) && value)
-                    formData.set(key, moment(value, 'MMM D, YYYY').format('YYYY-MM-DD'));
-
-            fetch(`/upload/api/drivers/application/${formId}/initial-medical-certificate`, {
-                method: 'POST',
-                body: formData,
-            })
-                // .then(res => res.json())
-                .then((data) => {
-                    location.reload();
-                });
-        });
-    });
-
-    $button.upload.ssc.next.click(function () {
-        $section.upload.ssc.all.hide();
-        if (activeStep.ssc === 0) {
-            $button.upload.ssc.next.hide();
-            $button.upload.ssc.ignore.hide();
-            $button.upload.ssc.prev.show();
-            $button.upload.ssc.submit.show();
-            $section.upload.ssc.confirmation.show();
-        }
-        $step.upload.ssc.html(steps.upload.ssc[++activeStep.ssc]);
-    });
-
-    $button.upload.ssc.prev.click(function () {
-        $section.upload.ssc.all.hide();
-        if (activeStep.ssc === 1) {
-            $button.upload.ssc.prev.hide();
-            $button.upload.ssc.submit.hide();
-            $button.upload.ssc.next.show();
-            $section.upload.ssc.cropper.show();
-            croppers['ssc']?.resize();
-        }
-        $step.upload.ssc.html(steps.upload.ssc[--activeStep.ssc]);
-    });
-
-    $('#upload-ssc-form').on('submit', function (evt) {
-        evt.preventDefault();
-
-        const form = this;
-
-        const blobs = [getResizedBlob('ssc')];
-
-        Promise.all(blobs).then(([mec]) => {
-            const formData = new FormData(form);
-            formData.set('ssc', mec, 'ssc.jpg');
+    uploadFormEvent({ $form, $section, $button, croppers, getResizedBlob, formId }, 'ssc', {
+        endpoint: 'initial-social-security-card',
+        extend(formData) {
             formData.set('ssn', stripNum(formData.get('ssn')));
             formData.set('dhsReq', formData.has('dhsReq'));
-
-            fetch(`/upload/api/drivers/application/${formId}/initial-social-security-card`, {
-                method: 'POST',
-                body: formData,
-            })
-                // .then(res => res.json())
-                .then((data) => {
-                    location.reload();
-                });
-        });
+        },
     });
 
     if (legalDoc) {
-        $button.upload.leg.next.click(function () {
-            $section.upload.leg.all.hide();
-            if (activeStep.leg === 0) {
-                $button.upload.leg.prev.show();
-                if (!croppers['leg-back']) $button.upload.leg.next.prop('disabled', true);
-                $section.upload.leg.cropperBack.show();
-                croppers['leg-back']?.resize();
-                $button.upload.leg.skip.show();
-                if ($button.upload.leg.ignore) $button.upload.leg.ignore.hide();
-            }
-            if (activeStep.leg === 1) {
-                $button.upload.leg.next.hide();
-                $button.upload.leg.submit.show();
-                $button.upload.leg.skip.hide();
-                $section.upload.leg.confirmation.show();
-            }
-            $step.upload.leg.html(steps.upload.leg[++activeStep.leg]);
-        });
+        buttonEvents({ $button, $section, $step, steps, activeStep, croppers }, 'leg');
 
-        $button.upload.leg.prev.click(function () {
-            $section.upload.leg.all.hide();
-            if (activeStep.leg === 1) {
-                $button.upload.leg.prev.hide();
-                $section.upload.leg.cropperFront.show();
-                croppers['leg-front']?.resize();
-                $button.upload.leg.next.prop('disabled', false);
-                $button.upload.leg.skip.hide();
-            }
-            if (activeStep.leg === 2) {
-                $button.upload.leg.submit.hide();
-                $button.upload.leg.next.show();
-                $section.upload.leg.cropperBack.show();
-                croppers['leg-back']?.resize();
-                if (!croppers['leg-back']) $button.upload.leg.skip.show();
-            }
-            $step.upload.leg.html(steps.upload.leg[--activeStep.leg]);
-        });
-
-        $button.upload.leg.skip.click(function () {
-            $section.upload.leg.all.hide();
-            $button.upload.leg.next.hide();
-            $button.upload.leg.submit.show();
-            $section.upload.leg.confirmation.show();
-            $(this).hide();
-            $step.upload.leg.html(steps.upload.leg[++activeStep.leg]);
-        });
-
-        $('#upload-leg-form').on('submit', function (evt) {
-            evt.preventDefault();
-
-            const form = this;
-
-            const blobs = [getResizedBlob('leg-front')];
-            if (croppers['leg-back']) blobs.push(getResizedBlob('leg-back'));
-
-            Promise.all(blobs).then(([legF, legB]) => {
-                const formData = new FormData(form);
-                formData.set('legF', legF, 'legF.jpg');
-                if (legB) formData.set('legB', legB, 'legB.jpg');
-                else formData.delete('legB');
-
-                const dateFields = ['expiresOn', 'issuedOn'];
-                for (const [key, value] of formData.entries())
-                    if (value && dateFields.includes(key))
-                        formData.set(key, moment(value, 'MMM D, YYYY').format('YYYY-MM-DD'));
-
-                fetch(`/upload/api/drivers/application/${formId}/initial-legal-document`, {
-                    method: 'POST',
-                    body: formData,
-                })
-                    // .then(res => res.json())
-                    .then((data) => {
-                        location.reload();
-                    });
-            });
+        uploadFormEvent({ $form, $section, $button, croppers, getResizedBlob, formId }, 'leg', {
+            endpoint: 'initial-legal-document',
+            dateFields: ['expiresOn', 'issuedOn'],
         });
     }
 
-    function getResizedBlob(target, { quality = 0.85 } = {}) {
-        return new Promise((resolve) => {
-            croppers[target]
-                .getCroppedCanvas({ width: uploadMaxWidth })
-                .toBlob(resolve, 'image/jpeg', quality);
-        });
-    }
-
-    function dropzoneEvents(target, cb = {}) {
-        const $cropArea = $(`#croparea-${target}`);
-        const $dropZone = $cropArea.find('.cropper-dropzone');
-        const $loadShared = $cropArea.find('.cropper-load-shared');
-        const $file = $cropArea.find('.cropper-file');
-        const $image = $cropArea.find('.cropper-image');
-        const $buttons = $cropArea.find('.cropper-buttons');
-        const $preview = $(`#cropper-preview-${target}`);
-        const width = $preview.data('width') + 'rem';
-        const aspectRatio = +$cropArea.data('aspect-ratio') || NaN;
-        const initialAspectRatio = +$cropArea.data('init-aspect-ratio') || NaN;
-
-        const $editor = {
-            rotate: {
-                left: $cropArea.find('.cropper-rotate-left-button'),
-                right: $cropArea.find('.cropper-rotate-right-button'),
-            },
-            zoom: {
-                in: $cropArea.find('.cropper-zoom-in-button'),
-                out: $cropArea.find('.cropper-zoom-out-button'),
-            },
-            reset: $cropArea.find('.cropper-reset-button'),
-            replace: $cropArea.find('.cropper-replace-button'),
-        };
-
-        $dropZone
-            .on('click', function (evt) {
-                if ($(evt.target).closest('.cropper-load-shared').length) return;
-                $file.trigger('click');
-            })
-            .on('dragover', function (evt) {
-                evt.preventDefault();
-                evt.stopPropagation();
-                $(this).css('outline', '2px dashed #2185d0');
-            })
-            .on('dragleave', function () {
-                $(this).css('outline', 'none');
-            })
-            .on('drop', function (evt) {
-                evt.preventDefault();
-                evt.stopPropagation();
-                $(this).css('outline', 'none');
-
-                loadImage(evt.originalEvent.dataTransfer.files[0]);
-            });
-
-        $loadShared.on('click', function (evt) {
-            evt.preventDefault();
-
-            $cropArea.addClass('loading');
-            const filename = filenames[filenameProps[target]].filename;
-
-            const url = `/image/driver/application/${_id}/uploads/${filename}`;
-            fetch(url)
-                .then((res) => res.blob())
-                .then((blob) => {
-                    const file = new File([blob], filename, { type: blob.type });
-                    loadImage(file);
-                    $cropArea.removeClass('loading');
-                });
-        });
-
-        $file.on('change', function () {
-            loadImage(this.files[0]);
-        });
-
-        $('.confirm-file-toggle').on('change', function () {
-            const $check = $(this)
-                .parent()
-                .parent()
-                .parent()
-                .prev()
-                .find('.confirm-file-check > .check.icon');
-            const action = $(this).prop('checked') ? 'show' : 'hide';
-            $check[action]();
-        });
-
-        function loadImage(file) {
-            if (!file || !file.type.startsWith('image/')) return;
-
-            window.loadImage(
-                file,
-                function (img) {
-                    const src = img.toDataURL ? img.toDataURL() : img.src;
-
-                    if (croppers[target]) {
-                        croppers[target].destroy();
-                        croppers[target] = null;
-                    }
-
-                    $image
-                        .off('load')
-                        .attr('src', src)
-                        .on('load', function () {
-                            croppers[target] = new Cropper($image[0], {
-                                aspectRatio,
-                                initialAspectRatio,
-                                viewMode: 1,
-                                autoCropArea: 1,
-                                responsive: false,
-                                checkOrientation: true,
-                                preview: `#cropper-preview-${target}`,
-                                crop() {
-                                    updatePreview();
-                                },
-                                cropend() {
-                                    updatePreview();
-                                },
-                                zoom() {
-                                    updatePreview();
-                                },
-                            });
-
-                            setTimeout(updatePreview, 100);
-                        });
-                },
-                {
-                    canvas: true,
-                    orientation: true,
-                },
-            );
-
-            $image.parent().show();
-            $dropZone.hide();
-            $buttons.show();
-
-            $editor.rotate.left.on('click', function (evt) {
-                evt.preventDefault();
-                croppers[target].rotate(-0.5);
-                updatePreview();
-            });
-
-            $editor.rotate.right.on('click', function (evt) {
-                evt.preventDefault();
-                croppers[target].rotate(0.5);
-                updatePreview();
-            });
-
-            $editor.zoom.in.on('click', function (evt) {
-                evt.preventDefault();
-                croppers[target].zoom(0.05);
-                updatePreview();
-            });
-
-            $editor.zoom.out.on('click', function (evt) {
-                evt.preventDefault();
-                croppers[target].zoom(-0.05);
-                updatePreview();
-            });
-
-            $editor.reset.on('click', function (evt) {
-                evt.preventDefault();
-                croppers[target].reset();
-                updatePreview();
-            });
-
-            $editor.replace.on('click', function (evt) {
-                evt.preventDefault();
-                $file.click();
-            });
-
-            if (cb.onImageLoad) cb.onImageLoad();
-
-            function updatePreview() {
-                const cropper = croppers[target];
-                if (!cropper) return;
-
-                const canvas = cropper.getCroppedCanvas();
-                if (!canvas) return;
-
-                const dataUrl = canvas.toDataURL();
-                if (!dataUrl) return;
-
-                $preview.find('img').attr('src', dataUrl);
-                resizeWorkZone();
-            }
-
-            function resizeWorkZone() {
-                //? SOME ISSUES PERSIST //* May be not
-                //! $image.css()
-                $preview
-                    .css({ width, height: '100%', overflow: 'hidden' })
-                    .find('img')
-                    .css({ width: 'inherit', height: 'inherit' });
-            }
-        }
-    }
 })();
