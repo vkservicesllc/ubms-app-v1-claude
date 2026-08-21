@@ -20,7 +20,7 @@ CREATE TABLE trucks (
     id          MEDIUMINT UNSIGNED  AUTO_INCREMENT,  -- max 16,777,215 / 3 bytes
     vehicleId   MEDIUMINT UNSIGNED  NOT NULL UNIQUE,
 
-    FOREIGN KEY (vehicleId) REFERNCES vehicles(id),
+    FOREIGN KEY (vehicleId) REFERENCES vehicles(id),
     PRIMARY KEY (id)
 
 );
@@ -32,7 +32,7 @@ CREATE TABLE trailers (
     id          MEDIUMINT UNSIGNED  AUTO_INCREMENT,  -- max 16,777,215 / 3 bytes
     vehicleId   MEDIUMINT UNSIGNED  NOT NULL UNIQUE,
 
-    FOREIGN KEY (vehicleId) REFERNCES vehicles(id),
+    FOREIGN KEY (vehicleId) REFERENCES vehicles(id),
     PRIMARY KEY (id)
 
 );
@@ -44,7 +44,7 @@ CREATE TABLE vans (
     id          MEDIUMINT UNSIGNED  AUTO_INCREMENT,  -- max 16,777,215 / 3 bytes
     vehicleId   MEDIUMINT UNSIGNED  NOT NULL UNIQUE,
 
-    FOREIGN KEY (vehicleId) REFERNCES vehicles(id),
+    FOREIGN KEY (vehicleId) REFERENCES vehicles(id),
     PRIMARY KEY (id)
 
 );
