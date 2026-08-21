@@ -12,3 +12,39 @@ CREATE TABLE vehicles (
     PRIMARY KEY (id)
 
 );
+
+
+SELECT 'Creating table `app_vehicle`.`trucks`...';
+CREATE TABLE trucks (
+
+    id          MEDIUMINT UNSIGNED  AUTO_INCREMENT,  -- max 16,777,215 / 3 bytes
+    vehicleId   MEDIUMINT UNSIGNED  NOT NULL UNIQUE,
+
+    FOREIGN KEY (vehicleId) REFERNCES vehicles(id),
+    PRIMARY KEY (id)
+
+);
+
+
+SELECT 'Creating table `app_vehicle`.`trailers`...';
+CREATE TABLE trailers (
+
+    id          MEDIUMINT UNSIGNED  AUTO_INCREMENT,  -- max 16,777,215 / 3 bytes
+    vehicleId   MEDIUMINT UNSIGNED  NOT NULL UNIQUE,
+
+    FOREIGN KEY (vehicleId) REFERNCES vehicles(id),
+    PRIMARY KEY (id)
+
+);
+
+
+SELECT 'Creating table `app_vehicle`.`vans`...';
+CREATE TABLE vans (
+
+    id          MEDIUMINT UNSIGNED  AUTO_INCREMENT,  -- max 16,777,215 / 3 bytes
+    vehicleId   MEDIUMINT UNSIGNED  NOT NULL UNIQUE,
+
+    FOREIGN KEY (vehicleId) REFERNCES vehicles(id),
+    PRIMARY KEY (id)
+
+);

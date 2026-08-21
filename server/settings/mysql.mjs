@@ -5,6 +5,7 @@ const db = {
     store: 'app_store',
     online: 'app_online',
     person: 'app_person',
+    vehicle: 'app_vehicle',
     office: 'app_office',
     business: 'app_business',
     carrier: 'app_carrier',
@@ -45,6 +46,22 @@ export const query = {
         emails: new Query(db.person, 'emails'), //* 1-to-many
         identifications: new Query(db.person, 'identifications'), //* 1-to-many
         //? ...Add more if needed
+    },
+
+    vehicle: {
+        main: new Query(db.vehicle, 'vehicles'),
+    },
+
+    truck: {
+        main: new Query(db.vehicle, 'trucks'),
+    },
+
+    trailer: {
+        main: new Query(db.vehicle, 'trailers'),
+    },
+
+    van: {
+        main: new Query(db.vehicle, 'vans'),
     },
 
     business: {
