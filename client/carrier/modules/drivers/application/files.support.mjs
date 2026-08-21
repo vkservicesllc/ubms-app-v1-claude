@@ -1,3 +1,24 @@
+export function refreshPreview(croppers, target) {
+    const cropper = croppers[target]
+    if (!cropper) return
+
+    const canvas = cropper.getCroppedCanvas()
+    if (!canvas) return
+
+    const dataUrl = canvas.toDataURL()
+    if (!dataUrl) return
+
+    const $preview = $(`#cropper-preview-${target}`)
+    const maxWidth = $preview.data('width') + 'rem'
+
+    let $img = $preview.find('img')
+    if (!$img.length) $img = $('<img />').appendTo($preview)
+
+    $preview.css({ width: 'auto', height: 'auto', overflow: 'visible' })
+    $img.attr('src', dataUrl)
+        .css({ width: 'auto', height: 'auto', maxWidth, maxHeight: '100%' })
+}
+
 export function buttonEvents({ $button, $section, $step, steps, activeStep, croppers }, prop) {
     const button = $button.upload[prop];
     const section = $section.upload[prop];
@@ -16,7 +37,6 @@ export function buttonEvents({ $button, $section, $step, steps, activeStep, crop
                 button.prev.show();
                 if (!croppers[backKey]) button.next.prop('disabled', true);
                 section.cropperBack.show();
-                croppers[backKey]?.resize();
                 if (button.skip) button.skip.show();
             } else {
                 button.next.hide();
@@ -43,7 +63,6 @@ export function buttonEvents({ $button, $section, $step, steps, activeStep, crop
             if (activeStep[prop] === 1) {
                 button.prev.hide();
                 section.cropperFront.show();
-                croppers[frontKey]?.resize();
                 button.next.prop('disabled', false);
                 if (button.skip) button.skip.hide();
             }
@@ -51,7 +70,6 @@ export function buttonEvents({ $button, $section, $step, steps, activeStep, crop
                 button.submit.hide();
                 button.next.show();
                 section.cropperBack.show();
-                croppers[backKey]?.resize();
                 if (!croppers[backKey] && button.skip) button.skip.show();
             }
         } else if (activeStep[prop] === 1) {
@@ -59,7 +77,6 @@ export function buttonEvents({ $button, $section, $step, steps, activeStep, crop
             button.submit.hide();
             button.next.show();
             section.cropper.show();
-            croppers[frontKey]?.resize();
         }
 
         $step.upload[prop].html(steps.upload[prop][--activeStep[prop]]);
@@ -204,6 +221,8 @@ export function dropzoneEvents({ _id, filenames, filenameProps, croppers }, targ
     function loadImage(file) {
         if (!file || !file.type.startsWith('image/')) return
 
+        let rotation = 0
+
         window.loadImage(file, function(img) {
             const src = img.toDataURL ? img.toDataURL() : img.src
 
@@ -223,10 +242,9 @@ export function dropzoneEvents({ _id, filenames, filenameProps, croppers }, targ
                         autoCropArea: 1,
                         responsive: false,
                         checkOrientation: true,
-                        preview: `#cropper-preview-${target}`,
                         crop() { updatePreview() },
-                        cropend() { updatePreview() },
-                        zoom() { updatePreview() },
+                        cropend() { setTimeout(updatePreview, 100) },
+                        zoom() { setTimeout(updatePreview, 100) },
                     })
 
                     setTimeout(updatePreview, 100)
@@ -242,32 +260,35 @@ export function dropzoneEvents({ _id, filenames, filenameProps, croppers }, targ
 
         $editor.rotate.left.on('click', function(evt) {
             evt.preventDefault()
-            croppers[target].rotate(-.5)
-            updatePreview()
+            rotation -= .5
+            croppers[target].rotateTo(rotation)
+            setTimeout(updatePreview, 100)
         })
 
         $editor.rotate.right.on('click', function(evt) {
             evt.preventDefault()
-            croppers[target].rotate(.5)
-            updatePreview()
+            rotation += .5
+            croppers[target].rotateTo(rotation)
+            setTimeout(updatePreview, 100)
         })
 
         $editor.zoom.in.on('click', function(evt) {
             evt.preventDefault()
             croppers[target].zoom(.05)
-            updatePreview()
+            setTimeout(updatePreview, 100)
         })
 
         $editor.zoom.out.on('click', function(evt) {
             evt.preventDefault()
             croppers[target].zoom(-.05)
-            updatePreview()
+            setTimeout(updatePreview, 100)
         })
 
         $editor.reset.on('click', function(evt) {
             evt.preventDefault()
+            rotation = 0
             croppers[target].reset()
-            updatePreview()
+            setTimeout(updatePreview, 100)
         })
 
         $editor.replace.on('click', function(evt) {
@@ -278,24 +299,7 @@ export function dropzoneEvents({ _id, filenames, filenameProps, croppers }, targ
         if (cb.onImageLoad) cb.onImageLoad()
 
         function updatePreview() {
-            const cropper = croppers[target]
-            if (!cropper) return
-
-            const canvas = cropper.getCroppedCanvas()
-            if (!canvas) return
-
-            const dataUrl = canvas.toDataURL()
-            if (!dataUrl) return
-
-            $preview.find('img').attr('src', dataUrl)
-            resizeWorkZone()
-        }
-
-        function resizeWorkZone() {
-            //? SOME ISSUES PERSIST //* May be not
-            //! $image.css()
-            $preview.css({ width, height: '100%', overflow: 'hidden' })
-                .find('img').css({ width: 'inherit', height: 'inherit' })
+            refreshPreview(croppers, target)
         }
     }
 }
