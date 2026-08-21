@@ -4,11 +4,14 @@ import selector from '/modules/registry/selectors/driver-application.mjs';
 import settings from '/modules/settings/driver-application.mjs';
 
 selectEvent(selector.id.select.currentVhlType, {
-  fill: true,
-  onChange(type, $type) {
-    const found = settings.vhlType_wTrailer.includes(type);
-    $('#own-trailer')[found ? 'show' : 'hide']().find('[type="radio"]').prop('disabled', !found);
+    fill: true,
+    onChange(type, $type) {
+        const found = settings.vhlType_wTrailer.includes(type);
+        $('#own-trailer')
+            [found ? 'show' : 'hide']()
+            .find('[type="radio"]')
+            .prop('disabled', !found);
 
-    onChange(type, $type);
-  },
+        onChange(type, $type);
+    },
 });

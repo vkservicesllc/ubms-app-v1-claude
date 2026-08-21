@@ -12,53 +12,61 @@ import { ApplicationForm } from '../../tools/form/driver.mjs';
 
 /* Middleware */
 import {
-  applicationStart,
-  applicationRegistration,
-  applicationLogin,
-  applicationProgress,
-  applicationRehireProgress,
-  applicationSummary,
-  applicationDocuments,
-  applicationAgreement,
+    applicationStart,
+    applicationRegistration,
+    applicationLogin,
+    applicationProgress,
+    applicationRehireProgress,
+    applicationSummary,
+    applicationDocuments,
+    applicationAgreement,
 } from './mw/application.mjs';
 
 const validateApplicantLogin = [];
 const applicantLoginFields = ['phone', 'dob', 'pin'];
 applicantLoginFields.forEach((prop) =>
-  validateApplicantLogin.push(ApplicationForm[prop].validate()),
+    validateApplicantLogin.push(ApplicationForm[prop].validate()),
 );
 
 // ==== ROUTES ==== //
 
 router.get(
-  '/:param?',
-  applicationStart,
-  applicationLogin,
-  applicationProgress,
-  applicationRehireProgress,
+    '/:param?',
+    applicationStart,
+    applicationLogin,
+    applicationProgress,
+    applicationRehireProgress,
 );
 
 router.get('/:formId/registration', applicationRegistration);
 
 router.post('/auth/login/:formId', validateApplicantLogin, validationCheck, async (req, res) => {
-  try {
-    const { formId } = req.params;
-    const application = await Application.fetch(res.session, { formId }, { hideSensitive: false });
-    if (!application) throw new Error('Application not found');
+    try {
+        const { formId } = req.params;
+        const application = await Application.fetch(
+            res.session,
+            { formId },
+            { hideSensitive: false },
+        );
+        if (!application) throw new Error('Application not found');
 
-    const { phone, dob, pin } = req.body;
+        const { phone, dob, pin } = req.body;
 
-    if (phone == application.phone && dob == application.dob && pin == application.ssn.slice(-4)) {
-      const referer = req.headers.referer || req.headers.referrer;
-      req.session.application = application._id;
+        if (
+            phone == application.phone &&
+            dob == application.dob &&
+            pin == application.ssn.slice(-4)
+        ) {
+            const referer = req.headers.referer || req.headers.referrer;
+            req.session.application = application._id;
 
-      return res.redirect(referer);
+            return res.redirect(referer);
+        }
+
+        sendError.auth(req, res, 'Auth Error: Incorrect credentials used');
+    } catch (err) {
+        sendError.server(req, res, err);
     }
-
-    sendError.auth(req, res, 'Auth Error: Incorrect credentials used');
-  } catch (err) {
-    sendError.server(req, res, err);
-  }
 });
 
 router.get('/:formId/summary', applicationSummary);

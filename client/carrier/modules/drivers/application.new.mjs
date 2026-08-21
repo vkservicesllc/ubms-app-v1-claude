@@ -15,10 +15,10 @@ const aplUrl = $aplUrl.attr('href');
 const $pdfLink = $('#pdf-link');
 const pdfUrl = $pdfLink.attr('href');
 const $message = {
-  email: $('#email-help'),
+    email: $('#email-help'),
 };
 const message = {
-  email: $message.email.html(),
+    email: $message.email.html(),
 };
 
 const $submit = $('#new-apl-submit');
@@ -30,57 +30,57 @@ const $posRole = $('.position-role');
 const formAction = $form.attr('action');
 
 const $dropdown = {
-  carrier: $('#new-apl-carrier-dropdown'),
-  team: $('#new-apl-team-dropdown'),
-  vehicle: $('#new-apl-vehicle-dropdown'),
-  suffix: $('#suffix-dropdown'),
-  gender: $('#gender-dropdown'),
-  position: $('#position-dropdown'),
+    carrier: $('#new-apl-carrier-dropdown'),
+    team: $('#new-apl-team-dropdown'),
+    vehicle: $('#new-apl-vehicle-dropdown'),
+    suffix: $('#suffix-dropdown'),
+    gender: $('#gender-dropdown'),
+    position: $('#position-dropdown'),
 };
 const $menu = {
-  vehicle: $('#new-apl-vehicle-menu'),
+    vehicle: $('#new-apl-vehicle-menu'),
 };
 const $field = {
-  applicant: $('.applicant-field'),
+    applicant: $('.applicant-field'),
 };
 
 const vehicleInfo = $.ajax('/api/enum/driver-application?filter=vehicle', {
-  async: false,
+    async: false,
 }).responseJSON;
 const vehicleCodes = [];
 for (const type of vehicleInfo.types) {
-  const { codes } = vehicleInfo;
-  let data = {};
+    const { codes } = vehicleInfo;
+    let data = {};
 
-  for (const prop in type) {
-    const code = Object.entries(codes).find(([k, v]) => v === prop)?.[0];
-    if (code && !data[code]) data[code] = type[prop];
-  }
+    for (const prop in type) {
+        const code = Object.entries(codes).find(([k, v]) => v === prop)?.[0];
+        if (code && !data[code]) data[code] = type[prop];
+    }
 
-  data = sortObjectByValue(data);
-  vehicleCodes.push(data);
+    data = sortObjectByValue(data);
+    vehicleCodes.push(data);
 }
 
 const vehicleMenu = (cdl) => {
-  let html = '';
-  for (const code in vehicleCodes[cdl])
-    html += `<div class="item" data-value="${code}">${vehicleCodes[cdl][code]}</div>`;
-  return html;
+    let html = '';
+    for (const code in vehicleCodes[cdl])
+        html += `<div class="item" data-value="${code}">${vehicleCodes[cdl][code]}</div>`;
+    return html;
 };
 
 emailEvent(emailId, {
-  onInput() {
-    $message.email.html(message.email);
-  },
-  onChange(email, valid, $email) {
-    if (!valid) {
-      $message.email.html(`<span class="ui red text">
+    onInput() {
+        $message.email.html(message.email);
+    },
+    onChange(email, valid, $email) {
+        if (!valid) {
+            $message.email.html(`<span class="ui red text">
                     <i class="close icon"></i>
                     "<b>${email}</b>" is not valid
                 </span>`);
-      $email.val(null);
-    }
-  },
+            $email.val(null);
+        }
+    },
 });
 
 // const calSettings = {
@@ -95,26 +95,26 @@ emailEvent(emailId, {
 // }
 
 $posRole.on('change', function () {
-  const cdl = $(this).val();
-  let [base, query] = $aplUrl.attr('href').split('?');
-  query = query.split('&');
+    const cdl = $(this).val();
+    let [base, query] = $aplUrl.attr('href').split('?');
+    query = query.split('&');
 
-  query[1] = `cdl=${cdl}`;
+    query[1] = `cdl=${cdl}`;
 
-  const url = base + '?' + query.join('&');
-  $aplUrl.text(url).attr('href', url);
+    const url = base + '?' + query.join('&');
+    $aplUrl.text(url).attr('href', url);
 });
 
 $selfAssign.click(function () {
-  const checked = $(this).prop('checked');
-  let [base, query] = $aplUrl.attr('href').split('?');
-  query = query.split('&');
+    const checked = $(this).prop('checked');
+    let [base, query] = $aplUrl.attr('href').split('?');
+    query = query.split('&');
 
-  if (!checked) query = query.filter((item) => !item.startsWith('rec='));
-  else query.push(`rec=${$('#recruiter-id').val()}`);
+    if (!checked) query = query.filter((item) => !item.startsWith('rec='));
+    else query.push(`rec=${$('#recruiter-id').val()}`);
 
-  const url = base + '?' + query.join('&');
-  $aplUrl.text(url).attr('href', url);
+    const url = base + '?' + query.join('&');
+    $aplUrl.text(url).attr('href', url);
 });
 
 // $('#dob-calendar').calendar({
@@ -123,79 +123,79 @@ $selfAssign.click(function () {
 // })
 
 const enableApplicant = () => {
-  $field.applicant.removeClass('disabled').find('input').prop('disabled', false);
-  $form.attr('action', formAction.replace('/invite/', '/insert/'));
-  // $('#self-assign-field').removeClass('disabled').find('input').prop('disabled', false)
-  $submit.text('Register & Invite');
+    $field.applicant.removeClass('disabled').find('input').prop('disabled', false);
+    $form.attr('action', formAction.replace('/invite/', '/insert/'));
+    // $('#self-assign-field').removeClass('disabled').find('input').prop('disabled', false)
+    $submit.text('Register & Invite');
 };
 
 const disableApplicant = () => {
-  $field.applicant.addClass('disabled').find('input').prop('disabled', true);
-  $(`${selector.class.global}:not([type=hidden])`).val(null);
-  $dropdown.suffix.dropdown('clear');
-  $dropdown.gender.dropdown('clear');
-  $dropdown.position.dropdown('clear');
-  // $('#self-assign-field').addClass('disabled').find('input').prop('disabled', true).prop('checked', true)
-  $form.attr('action', formAction);
-  $submit.text('Invite');
+    $field.applicant.addClass('disabled').find('input').prop('disabled', true);
+    $(`${selector.class.global}:not([type=hidden])`).val(null);
+    $dropdown.suffix.dropdown('clear');
+    $dropdown.gender.dropdown('clear');
+    $dropdown.position.dropdown('clear');
+    // $('#self-assign-field').addClass('disabled').find('input').prop('disabled', true).prop('checked', true)
+    $form.attr('action', formAction);
+    $submit.text('Invite');
 };
 
 $registerApl.on('change', function () {
-  if ($(this).prop('checked')) enableApplicant();
-  else disableApplicant();
+    if ($(this).prop('checked')) enableApplicant();
+    else disableApplicant();
 });
 
 $dropdown.carrier.dropdown().on('change', function () {
-  const _carrierId = $(this).dropdown('get value');
-  const route = $dropdown.carrier.find(`.item[data-value="${_carrierId}"]`).data('route');
+    const _carrierId = $(this).dropdown('get value');
+    const route = $dropdown.carrier.find(`.item[data-value="${_carrierId}"]`).data('route');
 
-  let [base] = aplUrl.split('?');
-  if (route) base += `/${route}`;
+    let [base] = aplUrl.split('?');
+    if (route) base += `/${route}`;
 
-  const currentUrl = $aplUrl.attr('href');
-  const query = currentUrl.split('?')[1];
+    const currentUrl = $aplUrl.attr('href');
+    const query = currentUrl.split('?')[1];
 
-  const url = base + '?' + query;
-  $aplUrl.text(url).attr('href', url);
-  $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''));
+    const url = base + '?' + query;
+    $aplUrl.text(url).attr('href', url);
+    $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''));
 });
 
 $('.position-role').on('change', function () {
-  const cdl = $(this).val();
-  $dropdown.vehicle.dropdown('clear');
-  $menu.vehicle.html(vehicleMenu(cdl));
+    const cdl = $(this).val();
+    $dropdown.vehicle.dropdown('clear');
+    $menu.vehicle.html(vehicleMenu(cdl));
 });
 
 $dropdown.suffix.dropdown();
 $dropdown.gender.dropdown();
 $dropdown.position.dropdown();
 $dropdown.vehicle.dropdown({
-  onChange(code) {
-    const currentUrl = $aplUrl.attr('href');
-    let [base, query] = currentUrl.split('?');
-    query = query.split('&');
+    onChange(code) {
+        const currentUrl = $aplUrl.attr('href');
+        let [base, query] = currentUrl.split('?');
+        query = query.split('&');
 
-    const idx = query.findIndex((v) => v.startsWith('vhl'));
-    if (idx > -1) query.splice(idx, 1);
-    if (code) query.splice(2, 0, `vhl=${code}`);
+        const idx = query.findIndex((v) => v.startsWith('vhl'));
+        if (idx > -1) query.splice(idx, 1);
+        if (code) query.splice(2, 0, `vhl=${code}`);
 
-    const url = `${base}?${query.join('&')}`;
-    $aplUrl.text(url).attr('href', url);
-  },
+        const url = `${base}?${query.join('&')}`;
+        $aplUrl.text(url).attr('href', url);
+    },
 });
 
 if ($dropdown.team.length) {
-  $dropdown.team.dropdown().on('change', function () {
-    const _id = $(this).dropdown('get value') || 'global';
+    $dropdown.team.dropdown().on('change', function () {
+        const _id = $(this).dropdown('get value') || 'global';
 
-    const currentUrl = $aplUrl.attr('href');
-    let [base, query] = currentUrl.split('?');
-    query = query.split('&');
-    query[0] = `env=${_id}`;
+        const currentUrl = $aplUrl.attr('href');
+        let [base, query] = currentUrl.split('?');
+        query = query.split('&');
+        query[0] = `env=${_id}`;
 
-    const url = `${base}?${query.join('&')}`;
-    $aplUrl.text(url).attr('href', url);
-  });
+        const url = `${base}?${query.join('&')}`;
+        $aplUrl.text(url).attr('href', url);
+    });
 }
 
 nameEvent(TS.firstName);
@@ -203,10 +203,10 @@ nameEvent(TS.firstName);
 nameEvent(TS.middleName);
 
 nameEvent(TS.lastName, {
-  sfxId: true,
-  onChange(lastName, $lastName, suffix) {
-    if (suffix) $dropdown.suffix.dropdown('set selected', suffix);
-  },
+    sfxId: true,
+    onChange(lastName, $lastName, suffix) {
+        if (suffix) $dropdown.suffix.dropdown('set selected', suffix);
+    },
 });
 
 // ssnEvent(TS.ssn)
@@ -214,134 +214,134 @@ nameEvent(TS.lastName, {
 telEvent(TS.phone);
 
 table.on('draw', function () {
-  const { actions } = table.ajax.json();
-  $('#create-apl').off('click');
+    const { actions } = table.ajax.json();
+    $('#create-apl').off('click');
 
-  if (actions.data.create === true) {
-    $(table.column(table.columns().count() - 1).header()).html(
-      '<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>',
-    );
+    if (actions.data.create === true) {
+        $(table.column(table.columns().count() - 1).header()).html(
+            '<button class="ui mini circular right floated basic violet icon button" id="create-apl"><i class="plus icon"></i></button>',
+        );
 
-    $('#create-apl').on('click', function () {
-      const cdl = aplUrl.split('?')[1].split('&')[1].split('=')[1];
-      $(`.position-role[value="${cdl}"]`).prop('checked', true);
-      $menu.vehicle.html(vehicleMenu(cdl));
+        $('#create-apl').on('click', function () {
+            const cdl = aplUrl.split('?')[1].split('&')[1].split('=')[1];
+            $(`.position-role[value="${cdl}"]`).prop('checked', true);
+            $menu.vehicle.html(vehicleMenu(cdl));
 
-      $modal
-        .modal({
-          autofocus: false,
-          closable: false,
-          onHidden() {
-            $aplUrl.text(aplUrl).attr('href', aplUrl);
-            $pdfLink.attr('href', pdfUrl);
-            $dropdown.carrier.dropdown('clear');
-            $email.val(null);
-            $message.email.html(message.email);
-            $registerApl.prop('checked', false);
-            $selfAssign.prop('checked', true);
-            disableApplicant();
-            $posRole.prop('checked', false);
-            if ($dropdown.team.length) $dropdown.team.dropdown('clear');
-            $dropdown.vehicle.dropdown('clear');
-            $menu.vehicle.html(null);
-          },
-        })
-        .modal('show');
+            $modal
+                .modal({
+                    autofocus: false,
+                    closable: false,
+                    onHidden() {
+                        $aplUrl.text(aplUrl).attr('href', aplUrl);
+                        $pdfLink.attr('href', pdfUrl);
+                        $dropdown.carrier.dropdown('clear');
+                        $email.val(null);
+                        $message.email.html(message.email);
+                        $registerApl.prop('checked', false);
+                        $selfAssign.prop('checked', true);
+                        disableApplicant();
+                        $posRole.prop('checked', false);
+                        if ($dropdown.team.length) $dropdown.team.dropdown('clear');
+                        $dropdown.vehicle.dropdown('clear');
+                        $menu.vehicle.html(null);
+                    },
+                })
+                .modal('show');
 
-      // $.ajax('/api/lists', {
-      //     method: 'POST',
-      //     success(response) {
-      //         const { carriers } = response
-      //         let items = ''
+            // $.ajax('/api/lists', {
+            //     method: 'POST',
+            //     success(response) {
+            //         const { carriers } = response
+            //         let items = ''
 
-      //         carriers.forEach(carrier => {
-      //             const { _id, route, name } = carrier
-      //             items += `<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
-      //         })
-      //         $dropdown.carrier.find('.menu').html(items)
+            //         carriers.forEach(carrier => {
+            //             const { _id, route, name } = carrier
+            //             items += `<div class="item" data-id="${_id}" data-value="${route}">${name}</div>`
+            //         })
+            //         $dropdown.carrier.find('.menu').html(items)
 
-      //         $dropdown.carrier.dropdown().on('change', function() {
-      //             const route = $(this).dropdown('get value')
-      //             let [ base ] = aplUrl.split('?')
-      //             let query = $aplUrl.attr('href').split('?')[1]
+            //         $dropdown.carrier.dropdown().on('change', function() {
+            //             const route = $(this).dropdown('get value')
+            //             let [ base ] = aplUrl.split('?')
+            //             let query = $aplUrl.attr('href').split('?')[1]
 
-      //             if (route) base += `/${route}`
+            //             if (route) base += `/${route}`
 
-      //             const url = base + '?' + query
-      //             $aplUrl.text(url).attr('href', url)
-      //             $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''))
-      //         })
+            //             const url = base + '?' + query
+            //             $aplUrl.text(url).attr('href', url)
+            //             $pdfLink.attr('href', pdfUrl + (route ? `/${route}` : ''))
+            //         })
 
-      //         $modal.modal({
-      //             autofocus: false,
-      //             closable: false,
-      //             onHidden() {
-      //                 $aplUrl.text(aplUrl).attr('href', aplUrl)
-      //                 $pdfLink.attr('href', pdfUrl)
-      //                 $dropdown.carrier.dropdown('clear')
-      //                 $email.val(null)
-      //                 $message.email.html(message.email)
-      //                 $registerApl.prop('checked', false)
-      //                 $selfAssign.prop('checked', true)
-      //                 disableApplicant()
-      //                 $posRole.prop('checked', false)
-      //                 if ($dropdown.team.length) $dropdown.team.dropdown('clear')
-      //             },
-      //         }).modal('show')
+            //         $modal.modal({
+            //             autofocus: false,
+            //             closable: false,
+            //             onHidden() {
+            //                 $aplUrl.text(aplUrl).attr('href', aplUrl)
+            //                 $pdfLink.attr('href', pdfUrl)
+            //                 $dropdown.carrier.dropdown('clear')
+            //                 $email.val(null)
+            //                 $message.email.html(message.email)
+            //                 $registerApl.prop('checked', false)
+            //                 $selfAssign.prop('checked', true)
+            //                 disableApplicant()
+            //                 $posRole.prop('checked', false)
+            //                 if ($dropdown.team.length) $dropdown.team.dropdown('clear')
+            //             },
+            //         }).modal('show')
 
-      //         if ($dropdown.team.length) {
-      //             const { teams } = response
-      //             let items = ''
+            //         if ($dropdown.team.length) {
+            //             const { teams } = response
+            //             let items = ''
 
-      //             teams.forEach(team => {
-      //                 const { _id, name } = team
-      //                 items += `<div class="item" data-id="${_id}" data-value="${_id}">${name}</div>`
-      //             })
-      //             $dropdown.team.find('.menu').html(items)
+            //             teams.forEach(team => {
+            //                 const { _id, name } = team
+            //                 items += `<div class="item" data-id="${_id}" data-value="${_id}">${name}</div>`
+            //             })
+            //             $dropdown.team.find('.menu').html(items)
 
-      //             $dropdown.team.dropdown().on('change', function() {
-      //                 const _id = $(this).dropdown('get value') || 'global'
-      //                 let [ base, query ] = aplUrl.split('?')
-      //                 query = query.split('&')
+            //             $dropdown.team.dropdown().on('change', function() {
+            //                 const _id = $(this).dropdown('get value') || 'global'
+            //                 let [ base, query ] = aplUrl.split('?')
+            //                 query = query.split('&')
 
-      //                 query[0] = `env=${_id}`
+            //                 query[0] = `env=${_id}`
 
-      //                 const url = `${base}?${query.join('&')}`
-      //                 $aplUrl.text(url).attr('href', url)
-      //             })
+            //                 const url = `${base}?${query.join('&')}`
+            //                 $aplUrl.text(url).attr('href', url)
+            //             })
 
-      //         }
-      //     }
-      // })
-    });
-  }
+            //         }
+            //     }
+            // })
+        });
+    }
 });
 
 $('#copy-apl-url').click(function (evt) {
-  evt.preventDefault();
+    evt.preventDefault();
 
-  navigator.clipboard.writeText($aplUrl.attr('href')).then(() => {
-    $modal.toast({
-      message: 'URL successfully copied!',
-      class: 'success',
-      showIcon: 'clipboard outline',
-      context: modalId,
-      position: 'top left',
-    });
+    navigator.clipboard.writeText($aplUrl.attr('href')).then(() => {
+        $modal.toast({
+            message: 'URL successfully copied!',
+            class: 'success',
+            showIcon: 'clipboard outline',
+            context: modalId,
+            position: 'top left',
+        });
 
-    $('.ui.toast-container').css({
-      top: '75px',
-      left: `${$aplUrl.outerWidth() + 65}px`,
+        $('.ui.toast-container').css({
+            top: '75px',
+            left: `${$aplUrl.outerWidth() + 65}px`,
+        });
     });
-  });
 });
 
 $form.submit(function (evt) {
-  evt.preventDefault();
+    evt.preventDefault();
 
-  if ($registerApl.prop('checked')) {
-    if (!$dropdown.gender.dropdown('get value')) return alert("Applicant's gender is required");
-  }
+    if ($registerApl.prop('checked')) {
+        if (!$dropdown.gender.dropdown('get value')) return alert("Applicant's gender is required");
+    }
 
-  this.submit();
+    this.submit();
 });

@@ -1,3 +1,3 @@
 export default {
-  vhlType_wTrailer: ['hotshot', 'semiTR'],
+    vhlType_wTrailer: ['hotshot', 'semiTR'],
 };

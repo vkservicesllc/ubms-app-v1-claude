@@ -6,7 +6,7 @@ import { onInput, onChange, onAccept, onComplete, onSubmit } from './support.mjs
 import selector from '/modules/registry/selectors/driver-application.mjs';
 
 const TS = selector.id.text,
-  SS = selector.id.select;
+    SS = selector.id.select;
 const firstNameId = TS.firstName;
 const middleNameId = TS.middleName;
 const lastNameId = TS.lastName;
@@ -18,9 +18,9 @@ const emailId = TS.email;
 
 const $card = $('#apl-card');
 const $help = {
-  dob: $('#profile-dob-help'),
-  email: $('#profile-email-help'),
-  form: $('#profile-form-help'),
+    dob: $('#profile-dob-help'),
+    email: $('#profile-email-help'),
+    form: $('#profile-form-help'),
 };
 const $submit = $('#profile-submit');
 const $form = $('#profile-form');
@@ -30,43 +30,43 @@ nameEvent(firstNameId, { onInput, onChange });
 nameEvent(middleNameId, { onChange });
 
 nameEvent(lastNameId, {
-  sfxId: suffixId,
-  onInput,
-  onChange(lastName, $lastName, suffix, $suffix) {
-    onChange(lastName, $lastName);
+    sfxId: suffixId,
+    onInput,
+    onChange(lastName, $lastName, suffix, $suffix) {
+        onChange(lastName, $lastName);
 
-    if (suffix) onChange(suffix, $suffix);
-  },
+        if (suffix) onChange(suffix, $suffix);
+    },
 });
 
 selectEvent(suffixId, { onChange });
 
 dateMask(dobId, {
-  pattern: 'us',
-  onAccept(mask, $dob) {
-    $help.dob.text(null);
-    $dob.removeClass('is-valid is-invalid');
-  },
-  onComplete(mask, $dob) {
-    const dob = mask.value;
+    pattern: 'us',
+    onAccept(mask, $dob) {
+        $help.dob.text(null);
+        $dob.removeClass('is-valid is-invalid');
+    },
+    onComplete(mask, $dob) {
+        const dob = mask.value;
 
-    if (dob) {
-      const date = moment(dob, 'MM/DD/YYYY', true);
+        if (dob) {
+            const date = moment(dob, 'MM/DD/YYYY', true);
 
-      if (!date.isValid()) {
-        $dob.addClass('is-invalid');
-        $help.dob.text('* Invalid date');
-      } else {
-        const today = moment();
-        const diff = today.clone().subtract(18, 'years').startOf('day');
+            if (!date.isValid()) {
+                $dob.addClass('is-invalid');
+                $help.dob.text('* Invalid date');
+            } else {
+                const today = moment();
+                const diff = today.clone().subtract(18, 'years').startOf('day');
 
-        if (date.isAfter(diff)) {
-          $dob.addClass('is-invalid');
-          $help.dob.text('* Too young to apply');
-        } else $dob.addClass('is-valid');
-      }
-    }
-  },
+                if (date.isAfter(diff)) {
+                    $dob.addClass('is-invalid');
+                    $help.dob.text('* Too young to apply');
+                } else $dob.addClass('is-valid');
+            }
+        }
+    },
 });
 
 // idMask(ssnId, 'ssn', { onAccept, onComplete })
@@ -74,17 +74,17 @@ dateMask(dobId, {
 telMask(phoneId, { onAccept, onComplete });
 
 emailEvent(emailId, {
-  onInput(email, $email) {
-    $help.email.text(null);
-    $email.removeClass('is-valid is-invalid');
-  },
-  onChange(email, valid, $email) {
-    if (email)
-      if (!valid) {
-        $help.email.text('* Invalid email address');
-        $email.addClass('is-invalid');
-      } else $email.addClass('is-valid');
-  },
+    onInput(email, $email) {
+        $help.email.text(null);
+        $email.removeClass('is-valid is-invalid');
+    },
+    onChange(email, valid, $email) {
+        if (email)
+            if (!valid) {
+                $help.email.text('* Invalid email address');
+                $email.addClass('is-invalid');
+            } else $email.addClass('is-valid');
+    },
 });
 
 onSubmit($form, $help, $submit, $card);

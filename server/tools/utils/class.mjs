@@ -6,524 +6,554 @@ const mysql = require('./mysql');
 const { sqlMode } = Query;
 
 const logActions = [
-  'created',
-  'deleted',
-  'archived',
-  'invited',
-  'finished',
-  'reviewed',
-  'declined',
+    'created',
+    'deleted',
+    'archived',
+    'invited',
+    'finished',
+    'reviewed',
+    'declined',
 ];
 const logFields = [];
 logActions.map((action) => {
-  logFields.push(action + 'By');
-  logFields.push(action + 'At');
-  logFields.push(action + 'In');
+    logFields.push(action + 'By');
+    logFields.push(action + 'At');
+    logFields.push(action + 'In');
 });
 logFields.push('updateLog');
 
 export const classInstance = {
-  //* Support only one record at a time
-  add: async (inst, Cls, target, bodyOrIds, bodyCB = null) => {
-    if (!target || target === 'main')
-      throw new Error(`${Cls.name} Constructor Method Error [ADD]: Target not supplied`);
-
-    const config = Cls.config();
-
-    const { enforceUser = true, enforceLocation = false } = config;
-    const { user: sessionUser, branch, siteId } = inst.session || {};
-    if (enforceUser && !sessionUser?.id)
-      throw new Error(`${Cls.name} Constructor Method Error [ADD]: Session user not supplied`);
-    if (enforceLocation && !branch)
-      throw new Error(`${Cls.name} Constructor Method Error [ADD]: Session branch not supplied`);
-
-    const createdBy = sessionUser?.id || null;
-    const jx = target.slice(0, 3) === 'jx.';
-    if (jx) target = target.slice(3);
-
-    //* Many-to-Many
-    if (jx) {
-      const { jxTargets, idProp: refIdProp } = config;
-      if (!jxTargets)
-        throw new Error(`${Cls.name} Constructor Method Error [ADD]: Junction targets not found`);
-
-      if (!Array.isArray(bodyOrIds) || !bodyOrIds.length)
-        throw new Error(`${Cls.name} Constructor Method Error [ADD]: Invalid ids supplied`);
-
-      const [jxQuery, idProp, Src] = jxTargets[target];
-      const data = [];
-      let ids, _ids;
-      if (typeof bodyOrIds[0] === 'number') ids = bodyOrIds;
-      if (typeof bodyOrIds[0] === 'string') _ids = bodyOrIds;
-      if (!ids && !_ids)
-        throw new Error(`${Cls.name} Constructor Method Error [ADD]: Invalid id types supplied`);
-
-      const list = await Src.fetch(inst.session, { ids, _ids });
-      list.map((item) => data.push({ [refIdProp]: inst.id, [idProp]: item.id, createdBy }));
-
-      const [result] = await mysql.execute(jxQuery.insert(data));
-
-      return { added: result.affectedRows > 0 };
-    }
-
-    //* One-to-One & One-to-Many
-
-    const { query, idProp } = config;
-    let body = bodyOrIds || {};
-
-    body = await processData(body);
-
-    if (typeof bodyCB === 'function') body = await bodyCB(body);
-    body.createdBy = createdBy;
-
-    if (
-      (typeof enforceLocation === 'string' && enforceLocation.includes('add')) ||
-      enforceLocation === true
-    ) {
-      const createdIn = { branch };
-      if (siteId) createdIn.siteId = siteId;
-
-      body.createdIn = JSON.stringify(createdIn);
-    }
-
-    body[idProp] = inst.id;
-
-    const [result] = await mysql.execute(query[target].insert(body));
-    const { insertId } = result;
-
-    return { added: result.affectedRows > 0, insertId };
-  },
-
-  fetch: async (
-    inst,
-    Cls,
-    target,
-    filter = {},
-    {
-      hideRawId: hideRawIdEnf,
-      hideSensitive: hideSensitiveEnf,
-      idsOnly = false,
-      sorts = null,
-      mode = 'data',
-    } = {},
-  ) => {
-    if (!target || target === 'main')
-      throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Target not supplied`);
-
-    const config = Cls.config();
-
-    const { enforceUser = true, idProp } = config;
-    const { user: sessionUser, offline = false } = inst.session || {};
-    if (enforceUser && !sessionUser?.id)
-      throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Session user not supplied`);
-    if (!idProp)
-      throw new Error(`${Cls.name} Constructor Method Error [FETCH]: ID Property not supplied`);
-
-    let { hideRawId, hideSensitive } = inst.config;
-
-    if (typeof hideRawIdEnf === 'boolean') hideRawId = hideRawIdEnf;
-    if (typeof hideSensitiveEnf === 'boolean') hideSensitive = hideSensitiveEnf;
-
-    const jx = target.slice(0, 3) === 'jx.';
-    if (jx) target = target.slice(3);
-
-    //* Many-to-Many
-    if (jx) {
-      const { jxTargets, defSorts = null } = config;
-      if (!jxTargets)
-        throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Junction targets not found`);
-
-      const ids = [];
-      const [jxQuery, jxIdProp, Src] = jxTargets[target];
-      if (!sorts) sorts = Src.config().defSorts || null;
-
-      const [rows] = await mysql.execute(
-        jxQuery.select(jxIdProp, {
-          match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
-        }),
-      );
-      rows.map((row) => ids.push(row[jxIdProp]));
-
-      return idsOnly
-        ? ids
-        : await Src.fetch(
-            inst.session,
-            { ids, ...filter },
-            { hideRawId, hideSensitive, offline, sorts, mode },
-          );
-    }
-
-    //* One-to-Many
-
-    //! NEED TO THINK THROUGH STATIC SELECT WITH JOINS
-
-    const { query, childBatch = {}, childSort = {}, childIdHash = {}, childExclude = {} } = config;
-
-    if (childBatch[target]) {
-      //! figure out
-    }
-
-    const options = {
-      match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
-      sort: { desc: childSort[target] || 'since' },
-    };
-
-    let single = false;
-
-    for (let prop in filter) {
-      let value = filter[prop];
-      if (prop === '_id') {
-        if (!value) continue;
-        prop = 'id';
-        value = matchHash(value, childIdHash[target]);
-        single = true;
-      } else if (prop === 'id' && value) single = true;
-
-      options.match[prop] = value;
-    }
-
-    if (childExclude[target]) {
-      const [prop, parent] = childExclude[target];
-      const value = parent ? inst[parent][prop] : inst[prop];
-
-      options.match[prop] = { not: value };
-    }
-
-    let fields = ['*', Cls.hashId(idProp)];
-    if (childIdHash[target]) fields.push(hash('id', childIdHash[target]));
-
-    const queryStr = query[target].select(fields, options);
-    if (mode === 'query') return queryStr;
-
-    const [rows] = await mysql.execute(queryStr);
-    rows.map((row) => {
-      if (!inst.id || hideRawId === true) {
-        delete row.id;
-        delete row[idProp];
-      }
-      logFields.map((logField) => delete row[logField]);
-    });
-
-    return single ? rows[0] : rows;
-  },
-
-  update: async (
-    inst,
-    Cls,
-    targetOrBody,
-    body,
-    match = {},
-    { sanitize, final, skipLog = false, hideRawId = false, debug } = {},
-  ) => {
-    const config = Cls.config();
-
-    const { enforceUser = true, enforceLocation = false } = config;
-    const { user: sessionUser, branch, siteId } = inst.session || {};
-    if (enforceUser && !sessionUser?.id)
-      throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session user not supplied`);
-    if (enforceLocation && !branch)
-      throw new Error(`${Cls.name} Constructor Method Error [UPDATE]: Session branch not supplied`);
-
-    const { query, childIdHash = {} } = config;
-    let target = 'main';
-    if (typeof targetOrBody === 'string') target = targetOrBody;
-    else body = targetOrBody;
-
-    const idProp = target === 'main' ? 'id' : config.idProp;
-
-    if ('_id' in match) {
-      match.id = matchHash(match._id, childIdHash[target]);
-      delete match._id;
-    }
-    match = { [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match };
-
-    const options = { query, target, skipLog, match, modifiedBy: sessionUser.id };
-    if (
-      (typeof enforceLocation === 'string' && enforceLocation.includes('update')) ||
-      enforceLocation === true
-    ) {
-      options.branch = branch;
-      options.siteId = siteId;
-    }
-
-    //! Debugger
-    if (debug?.processData) options.debug = { processData: debug.processData };
-
-    if (typeof sanitize === 'function') body = sanitize(target, body);
-    body = await processData(body, options);
-
-    const updateQuery = config.query[target].update(body, {
-      [idProp]: inst.id || Cls.matchIdHash(inst._id),
-      ...match,
-    });
-
-    //! Debugger
-    if (debug?.classInstance?.update?.updateQuery)
-      console.log(
-        '[debug] classInstance.update updateQuery',
-        `
-${updateQuery}
-`,
-      );
-
-    const [result] = await mysql.execute(updateQuery);
-
-    if (typeof final === 'function') await final(inst, body, target);
-
-    const data = await Cls.fetch(
-      { user: sessionUser, branch, siteId },
-      { id: inst.id || Cls.matchIdHash(inst._id) },
-      { hideRawId },
-    );
-
-    return { updated: result.affectedRows > 0, data };
-  },
-
-  delete: async (inst, Cls, target = null, matchOrIds, handle) => {
-    const config = Cls.config();
-
-    const { enforceUser = true } = config;
-    const { user: sessionUser } = inst.session || {};
-    if (enforceUser && !sessionUser?.id)
-      throw new Error(`${Cls.name} Constructor Method Error [DELETE]: Session user not supplied`);
-
-    if (target === 'main') target = null;
-
-    const { idProp } = config;
-    const jx = target && target.slice(0, 3) === 'jx.';
-    if (jx) target = target.slice(3);
-
-    //* Many-to-Many
-    if (jx) {
-      const { jxTargets } = config;
-      if (!jxTargets)
-        throw new Error(
-          `${Cls.name} Constructor Method Error [DELETE]: Junction targets not found`,
-        );
-
-      const match = { [idProp]: inst.id };
-      const [jxQuery, jxIdProp, Src] = jxTargets[target];
-
-      if (Array.isArray(matchOrIds) && matchOrIds.length) {
-        let ids, _ids;
-        if (typeof matchOrIds[0] === 'number') ids = matchOrIds;
-        if (typeof matchOrIds[0] === 'string') _ids = matchOrIds;
-
-        if (!ids && _ids) {
-          ids = [];
-
-          const list = await Src.fetch(inst.session, { _ids });
-          list.map((item) => ids.push(item.id));
+    //* Support only one record at a time
+    add: async (inst, Cls, target, bodyOrIds, bodyCB = null) => {
+        if (!target || target === 'main')
+            throw new Error(`${Cls.name} Constructor Method Error [ADD]: Target not supplied`);
+
+        const config = Cls.config();
+
+        const { enforceUser = true, enforceLocation = false } = config;
+        const { user: sessionUser, branch, siteId } = inst.session || {};
+        if (enforceUser && !sessionUser?.id)
+            throw new Error(
+                `${Cls.name} Constructor Method Error [ADD]: Session user not supplied`,
+            );
+        if (enforceLocation && !branch)
+            throw new Error(
+                `${Cls.name} Constructor Method Error [ADD]: Session branch not supplied`,
+            );
+
+        const createdBy = sessionUser?.id || null;
+        const jx = target.slice(0, 3) === 'jx.';
+        if (jx) target = target.slice(3);
+
+        //* Many-to-Many
+        if (jx) {
+            const { jxTargets, idProp: refIdProp } = config;
+            if (!jxTargets)
+                throw new Error(
+                    `${Cls.name} Constructor Method Error [ADD]: Junction targets not found`,
+                );
+
+            if (!Array.isArray(bodyOrIds) || !bodyOrIds.length)
+                throw new Error(`${Cls.name} Constructor Method Error [ADD]: Invalid ids supplied`);
+
+            const [jxQuery, idProp, Src] = jxTargets[target];
+            const data = [];
+            let ids, _ids;
+            if (typeof bodyOrIds[0] === 'number') ids = bodyOrIds;
+            if (typeof bodyOrIds[0] === 'string') _ids = bodyOrIds;
+            if (!ids && !_ids)
+                throw new Error(
+                    `${Cls.name} Constructor Method Error [ADD]: Invalid id types supplied`,
+                );
+
+            const list = await Src.fetch(inst.session, { ids, _ids });
+            list.map((item) => data.push({ [refIdProp]: inst.id, [idProp]: item.id, createdBy }));
+
+            const [result] = await mysql.execute(jxQuery.insert(data));
+
+            return { added: result.affectedRows > 0 };
         }
 
-        match[jxIdProp] = ids;
-      }
+        //* One-to-One & One-to-Many
 
-      const [result] = await mysql.execute(jxQuery.delete(match));
+        const { query, idProp } = config;
+        let body = bodyOrIds || {};
 
-      return { deleted: result.affectedRows > 0 };
-    }
+        body = await processData(body);
 
-    //* One-to-One & One-to-Many
-    //? No option to log target deletion
-    else if (target) {
-      const match = matchOrIds || {};
+        if (typeof bodyCB === 'function') body = await bodyCB(body);
+        body.createdBy = createdBy;
 
-      const { query, childIdHash = {} } = config;
-      if ('_id' in match) {
-        match.id = matchHash(match._id, childIdHash[target]);
-        delete match._id;
-      }
+        if (
+            (typeof enforceLocation === 'string' && enforceLocation.includes('add')) ||
+            enforceLocation === true
+        ) {
+            const createdIn = { branch };
+            if (siteId) createdIn.siteId = siteId;
 
-      const [result] = await mysql.execute(query[target].delete({ [idProp]: inst.id, ...match }));
+            body.createdIn = JSON.stringify(createdIn);
+        }
 
-      return { deleted: result.affectedRows > 0 };
-    }
+        body[idProp] = inst.id;
 
-    //* Self
+        const [result] = await mysql.execute(query[target].insert(body));
+        const { insertId } = result;
 
-    if (typeof handle === 'function') {
-      const handled = await handle();
-      if (handled === true) return { deleted: true };
-    } else if (!handle) handle = {};
+        return { added: result.affectedRows > 0, insertId };
+    },
 
-    const { query, logDeleted = true, logFile } = Cls.config();
-    let log = logDeleted && logFile && inst.id ? await inst.log() : null;
+    fetch: async (
+        inst,
+        Cls,
+        target,
+        filter = {},
+        {
+            hideRawId: hideRawIdEnf,
+            hideSensitive: hideSensitiveEnf,
+            idsOnly = false,
+            sorts = null,
+            mode = 'data',
+        } = {},
+    ) => {
+        if (!target || target === 'main')
+            throw new Error(`${Cls.name} Constructor Method Error [FETCH]: Target not supplied`);
 
-    const [result] = await mysql.execute(
-      query.main.delete({ id: inst.id || Cls.matchIdHash(inst._id) }),
-    );
-    if (!result.affectedRows) return { deleted: false };
+        const config = Cls.config();
 
-    if (log) {
-      const { id } = inst;
-      const { extendLog } = handle;
+        const { enforceUser = true, idProp } = config;
+        const { user: sessionUser, offline = false } = inst.session || {};
+        if (enforceUser && !sessionUser?.id)
+            throw new Error(
+                `${Cls.name} Constructor Method Error [FETCH]: Session user not supplied`,
+            );
+        if (!idProp)
+            throw new Error(
+                `${Cls.name} Constructor Method Error [FETCH]: ID Property not supplied`,
+            );
 
-      for (const prop in log) inst[prop] = log[prop];
-      if (typeof extendLog === 'function') inst = await extendLog(inst, log);
+        let { hideRawId, hideSensitive } = inst.config;
 
-      await logDeletion(inst.session, logFile, inst, { id });
-    }
+        if (typeof hideRawIdEnf === 'boolean') hideRawId = hideRawIdEnf;
+        if (typeof hideSensitiveEnf === 'boolean') hideSensitive = hideSensitiveEnf;
 
-    return { deleted: true };
-  },
+        const jx = target.slice(0, 3) === 'jx.';
+        if (jx) target = target.slice(3);
 
-  log: async (inst, Cls, { target = 'main', field, match = {} } = {}) => {
-    const config = Cls.config();
+        //* Many-to-Many
+        if (jx) {
+            const { jxTargets, defSorts = null } = config;
+            if (!jxTargets)
+                throw new Error(
+                    `${Cls.name} Constructor Method Error [FETCH]: Junction targets not found`,
+                );
 
-    const { enforceUser = true } = config;
-    const { user: sessionUser } = inst.session || {};
-    if (enforceUser && !sessionUser?.id)
-      throw new Error(`${Cls.name} Constructor Method Error [LOG]: Session user not supplied`);
+            const ids = [];
+            const [jxQuery, jxIdProp, Src] = jxTargets[target];
+            if (!sorts) sorts = Src.config().defSorts || null;
 
-    const { query } = config;
-    const idProp = target === 'main' ? 'id' : config.idProp;
+            const [rows] = await mysql.execute(
+                jxQuery.select(jxIdProp, {
+                    match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
+                }),
+            );
+            rows.map((row) => ids.push(row[jxIdProp]));
 
-    const data = (
-      await mysql.execute(
-        query[target].select('*', {
-          match: { [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match },
-        }),
-      )
-    )[0][0];
-    if (!data) return;
+            return idsOnly
+                ? ids
+                : await Src.fetch(
+                      inst.session,
+                      { ids, ...filter },
+                      { hideRawId, hideSensitive, offline, sorts, mode },
+                  );
+        }
 
-    const log = {};
-    for (const field in data)
-      if (logFields.includes(field)) {
-        log[field] = data[field];
+        //* One-to-Many
 
-        if (field === 'updateLog' && field.updateLog)
-          for (const row of data.updateLog) row.modifiedBy = utc2tz(row.modifiedBy);
-        else if (log[field] !== null) log[field] = utc2tz(log[field]);
-      }
+        //! NEED TO THINK THROUGH STATIC SELECT WITH JOINS
 
-    return field ? log[field] : log;
-  },
+        const {
+            query,
+            childBatch = {},
+            childSort = {},
+            childIdHash = {},
+            childExclude = {},
+        } = config;
+
+        if (childBatch[target]) {
+            //! figure out
+        }
+
+        const options = {
+            match: { [idProp]: inst.id || Cls.matchIdHash(inst._id) },
+            sort: { desc: childSort[target] || 'since' },
+        };
+
+        let single = false;
+
+        for (let prop in filter) {
+            let value = filter[prop];
+            if (prop === '_id') {
+                if (!value) continue;
+                prop = 'id';
+                value = matchHash(value, childIdHash[target]);
+                single = true;
+            } else if (prop === 'id' && value) single = true;
+
+            options.match[prop] = value;
+        }
+
+        if (childExclude[target]) {
+            const [prop, parent] = childExclude[target];
+            const value = parent ? inst[parent][prop] : inst[prop];
+
+            options.match[prop] = { not: value };
+        }
+
+        let fields = ['*', Cls.hashId(idProp)];
+        if (childIdHash[target]) fields.push(hash('id', childIdHash[target]));
+
+        const queryStr = query[target].select(fields, options);
+        if (mode === 'query') return queryStr;
+
+        const [rows] = await mysql.execute(queryStr);
+        rows.map((row) => {
+            if (!inst.id || hideRawId === true) {
+                delete row.id;
+                delete row[idProp];
+            }
+            logFields.map((logField) => delete row[logField]);
+        });
+
+        return single ? rows[0] : rows;
+    },
+
+    update: async (
+        inst,
+        Cls,
+        targetOrBody,
+        body,
+        match = {},
+        { sanitize, final, skipLog = false, hideRawId = false, debug } = {},
+    ) => {
+        const config = Cls.config();
+
+        const { enforceUser = true, enforceLocation = false } = config;
+        const { user: sessionUser, branch, siteId } = inst.session || {};
+        if (enforceUser && !sessionUser?.id)
+            throw new Error(
+                `${Cls.name} Constructor Method Error [UPDATE]: Session user not supplied`,
+            );
+        if (enforceLocation && !branch)
+            throw new Error(
+                `${Cls.name} Constructor Method Error [UPDATE]: Session branch not supplied`,
+            );
+
+        const { query, childIdHash = {} } = config;
+        let target = 'main';
+        if (typeof targetOrBody === 'string') target = targetOrBody;
+        else body = targetOrBody;
+
+        const idProp = target === 'main' ? 'id' : config.idProp;
+
+        if ('_id' in match) {
+            match.id = matchHash(match._id, childIdHash[target]);
+            delete match._id;
+        }
+        match = { [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match };
+
+        const options = { query, target, skipLog, match, modifiedBy: sessionUser.id };
+        if (
+            (typeof enforceLocation === 'string' && enforceLocation.includes('update')) ||
+            enforceLocation === true
+        ) {
+            options.branch = branch;
+            options.siteId = siteId;
+        }
+
+        //! Debugger
+        if (debug?.processData) options.debug = { processData: debug.processData };
+
+        if (typeof sanitize === 'function') body = sanitize(target, body);
+        body = await processData(body, options);
+
+        const updateQuery = config.query[target].update(body, {
+            [idProp]: inst.id || Cls.matchIdHash(inst._id),
+            ...match,
+        });
+
+        //! Debugger
+        if (debug?.classInstance?.update?.updateQuery)
+            console.log(
+                '[debug] classInstance.update updateQuery',
+                `
+${updateQuery}
+`,
+            );
+
+        const [result] = await mysql.execute(updateQuery);
+
+        if (typeof final === 'function') await final(inst, body, target);
+
+        const data = await Cls.fetch(
+            { user: sessionUser, branch, siteId },
+            { id: inst.id || Cls.matchIdHash(inst._id) },
+            { hideRawId },
+        );
+
+        return { updated: result.affectedRows > 0, data };
+    },
+
+    delete: async (inst, Cls, target = null, matchOrIds, handle) => {
+        const config = Cls.config();
+
+        const { enforceUser = true } = config;
+        const { user: sessionUser } = inst.session || {};
+        if (enforceUser && !sessionUser?.id)
+            throw new Error(
+                `${Cls.name} Constructor Method Error [DELETE]: Session user not supplied`,
+            );
+
+        if (target === 'main') target = null;
+
+        const { idProp } = config;
+        const jx = target && target.slice(0, 3) === 'jx.';
+        if (jx) target = target.slice(3);
+
+        //* Many-to-Many
+        if (jx) {
+            const { jxTargets } = config;
+            if (!jxTargets)
+                throw new Error(
+                    `${Cls.name} Constructor Method Error [DELETE]: Junction targets not found`,
+                );
+
+            const match = { [idProp]: inst.id };
+            const [jxQuery, jxIdProp, Src] = jxTargets[target];
+
+            if (Array.isArray(matchOrIds) && matchOrIds.length) {
+                let ids, _ids;
+                if (typeof matchOrIds[0] === 'number') ids = matchOrIds;
+                if (typeof matchOrIds[0] === 'string') _ids = matchOrIds;
+
+                if (!ids && _ids) {
+                    ids = [];
+
+                    const list = await Src.fetch(inst.session, { _ids });
+                    list.map((item) => ids.push(item.id));
+                }
+
+                match[jxIdProp] = ids;
+            }
+
+            const [result] = await mysql.execute(jxQuery.delete(match));
+
+            return { deleted: result.affectedRows > 0 };
+        }
+
+        //* One-to-One & One-to-Many
+        //? No option to log target deletion
+        else if (target) {
+            const match = matchOrIds || {};
+
+            const { query, childIdHash = {} } = config;
+            if ('_id' in match) {
+                match.id = matchHash(match._id, childIdHash[target]);
+                delete match._id;
+            }
+
+            const [result] = await mysql.execute(
+                query[target].delete({ [idProp]: inst.id, ...match }),
+            );
+
+            return { deleted: result.affectedRows > 0 };
+        }
+
+        //* Self
+
+        if (typeof handle === 'function') {
+            const handled = await handle();
+            if (handled === true) return { deleted: true };
+        } else if (!handle) handle = {};
+
+        const { query, logDeleted = true, logFile } = Cls.config();
+        let log = logDeleted && logFile && inst.id ? await inst.log() : null;
+
+        const [result] = await mysql.execute(
+            query.main.delete({ id: inst.id || Cls.matchIdHash(inst._id) }),
+        );
+        if (!result.affectedRows) return { deleted: false };
+
+        if (log) {
+            const { id } = inst;
+            const { extendLog } = handle;
+
+            for (const prop in log) inst[prop] = log[prop];
+            if (typeof extendLog === 'function') inst = await extendLog(inst, log);
+
+            await logDeletion(inst.session, logFile, inst, { id });
+        }
+
+        return { deleted: true };
+    },
+
+    log: async (inst, Cls, { target = 'main', field, match = {} } = {}) => {
+        const config = Cls.config();
+
+        const { enforceUser = true } = config;
+        const { user: sessionUser } = inst.session || {};
+        if (enforceUser && !sessionUser?.id)
+            throw new Error(
+                `${Cls.name} Constructor Method Error [LOG]: Session user not supplied`,
+            );
+
+        const { query } = config;
+        const idProp = target === 'main' ? 'id' : config.idProp;
+
+        const data = (
+            await mysql.execute(
+                query[target].select('*', {
+                    match: { [idProp]: inst.id || Cls.matchIdHash(inst._id), ...match },
+                }),
+            )
+        )[0][0];
+        if (!data) return;
+
+        const log = {};
+        for (const field in data)
+            if (logFields.includes(field)) {
+                log[field] = data[field];
+
+                if (field === 'updateLog' && field.updateLog)
+                    for (const row of data.updateLog) row.modifiedBy = utc2tz(row.modifiedBy);
+                else if (log[field] !== null) log[field] = utc2tz(log[field]);
+            }
+
+        return field ? log[field] : log;
+    },
 };
 
 export const classStatic = {
-  create: async (
-    Cls,
-    { user: sessionUser = {}, branch, siteId = null },
-    body = {},
-    { hideRawId = false } = {},
-    { find, sanitize, split, final } = {},
-  ) => {
-    const config = Cls.config();
+    create: async (
+        Cls,
+        { user: sessionUser = {}, branch, siteId = null },
+        body = {},
+        { hideRawId = false } = {},
+        { find, sanitize, split, final } = {},
+    ) => {
+        const config = Cls.config();
 
-    const { enforceUser = true } = config;
-    if (enforceUser && !sessionUser?.id)
-      throw new Error(`${Cls.name} Static Method Error [CREATE]: Session user not supplied`);
+        const { enforceUser = true } = config;
+        if (enforceUser && !sessionUser?.id)
+            throw new Error(`${Cls.name} Static Method Error [CREATE]: Session user not supplied`);
 
-    let found = false,
-      data;
-    if (typeof find === 'function') ({ found, data } = await find(body, hideRawId));
+        let found = false,
+            data;
+        if (typeof find === 'function') ({ found, data } = await find(body, hideRawId));
 
-    if (found) {
-      if (Array.isArray(data)) data = data[0];
-      return { created: false, data };
-    }
-
-    if (typeof sanitize === 'function') body = sanitize(body);
-    body = await processData(body);
-
-    if (typeof split === 'function') body = await split(body);
-    else body = { main: body };
-
-    let createdIn = { branch };
-    if (siteId) createdIn.siteId = siteId;
-    createdIn = JSON.stringify(createdIn);
-
-    const { enforceLocation = false, query, idProp } = config;
-    const locationEnforced =
-      (typeof enforceLocation === 'string' && enforceLocation.includes('create')) ||
-      enforceLocation === true;
-
-    if (sessionUser?.id) body.main.createdBy = sessionUser.id;
-    if (locationEnforced) body.main.createdIn = createdIn;
-
-    const [result] = await mysql.execute(query.main.insert(body.main));
-    const id = result.insertId;
-    if (!id) throw new Error(`Failed to create ${Cls.name.toLowerCase()}`);
-
-    for (const target in body) {
-      if (target === 'main') continue;
-
-      if (Array.isArray(body[target]))
-        for (const row of body[target]) {
-          row[idProp] = id;
-          if (sessionUser?.id) row.createdBy = sessionUser.id;
-          if (locationEnforced) row.createdIn = createdIn;
+        if (found) {
+            if (Array.isArray(data)) data = data[0];
+            return { created: false, data };
         }
-      else {
-        body[target][idProp] = id;
-        if (sessionUser?.id) body[target].createdBy = sessionUser.id;
-        if (locationEnforced) body[target].createdIn = createdIn;
-      }
 
-      const [result] = await mysql.execute(query[target].insert(body[target]));
-      if (!result.affectedRows)
-        throw new Error(`Failed to create ${Cls.name.toLowerCase()}'s ${target}`);
-    }
+        if (typeof sanitize === 'function') body = sanitize(body);
+        body = await processData(body);
 
-    data = await Cls.fetch({ user: sessionUser, branch, siteId }, { id }, { hideRawId });
+        if (typeof split === 'function') body = await split(body);
+        else body = { main: body };
 
-    if (typeof final === 'function') await final(data, id, body);
+        let createdIn = { branch };
+        if (siteId) createdIn.siteId = siteId;
+        createdIn = JSON.stringify(createdIn);
 
-    return { created: true, data };
-  },
+        const { enforceLocation = false, query, idProp } = config;
+        const locationEnforced =
+            (typeof enforceLocation === 'string' && enforceLocation.includes('create')) ||
+            enforceLocation === true;
 
-  fetch: async (
-    Cls,
-    { user: sessionUser = {}, branch, siteId = null } = {},
-    filter = {},
-    { hideRawId = false, hideSensitive = true, sorts, limit, mode = 'data' } = {},
-    { batch = [], prepare, removeFullGroupBy = false } = {},
-  ) => {
-    const { enforceUser = true, db } = Cls.config();
-    if (enforceUser && !sessionUser?.id)
-      throw new Error(`${Cls.name} Static Method Error [FETCH]: Session user not supplied`);
+        if (sessionUser?.id) body.main.createdBy = sessionUser.id;
+        if (locationEnforced) body.main.createdIn = createdIn;
 
-    let single = false,
-      custom = {};
-    if (typeof prepare === 'function')
-      ({
-        batch,
-        single = false,
-        custom = {},
-      } = await prepare(batch, filter, { user: sessionUser, branch, siteId }));
+        const [result] = await mysql.execute(query.main.insert(body.main));
+        const id = result.insertId;
+        if (!id) throw new Error(`Failed to create ${Cls.name.toLowerCase()}`);
 
-    if (!single && Array.isArray(sorts))
-      sorts.forEach((sort, i) => {
-        if (sort) batch[i].sort = sort;
-      });
+        for (const target in body) {
+            if (target === 'main') continue;
 
-    if (mode === 'batch') return batch;
+            if (Array.isArray(body[target]))
+                for (const row of body[target]) {
+                    row[idProp] = id;
+                    if (sessionUser?.id) row.createdBy = sessionUser.id;
+                    if (locationEnforced) row.createdIn = createdIn;
+                }
+            else {
+                body[target][idProp] = id;
+                if (sessionUser?.id) body[target].createdBy = sessionUser.id;
+                if (locationEnforced) body[target].createdIn = createdIn;
+            }
 
-    const queryStr = Query.select(db, batch, limit);
-    if (mode === 'query') return queryStr;
+            const [result] = await mysql.execute(query[target].insert(body[target]));
+            if (!result.affectedRows)
+                throw new Error(`Failed to create ${Cls.name.toLowerCase()}'s ${target}`);
+        }
 
-    if (removeFullGroupBy) await mysql.query(sqlMode.onlyFullGroupBy.remove);
-    const list = (await mysql.execute(queryStr))[0];
+        data = await Cls.fetch({ user: sessionUser, branch, siteId }, { id }, { hideRawId });
 
-    const session = setSession(sessionUser, branch, siteId);
-    list.forEach(
-      (data, i, arr) =>
-        (arr[i] = new Cls(data, { single, session, hideRawId, hideSensitive, custom })),
-    );
+        if (typeof final === 'function') await final(data, id, body);
 
-    return single ? list[0] : list;
-  },
+        return { created: true, data };
+    },
+
+    fetch: async (
+        Cls,
+        { user: sessionUser = {}, branch, siteId = null } = {},
+        filter = {},
+        { hideRawId = false, hideSensitive = true, sorts, limit, mode = 'data' } = {},
+        { batch = [], prepare, removeFullGroupBy = false } = {},
+    ) => {
+        const { enforceUser = true, db } = Cls.config();
+        if (enforceUser && !sessionUser?.id)
+            throw new Error(`${Cls.name} Static Method Error [FETCH]: Session user not supplied`);
+
+        let single = false,
+            custom = {};
+        if (typeof prepare === 'function')
+            ({
+                batch,
+                single = false,
+                custom = {},
+            } = await prepare(batch, filter, { user: sessionUser, branch, siteId }));
+
+        if (!single && Array.isArray(sorts))
+            sorts.forEach((sort, i) => {
+                if (sort) batch[i].sort = sort;
+            });
+
+        if (mode === 'batch') return batch;
+
+        const queryStr = Query.select(db, batch, limit);
+        if (mode === 'query') return queryStr;
+
+        if (removeFullGroupBy) await mysql.query(sqlMode.onlyFullGroupBy.remove);
+        const list = (await mysql.execute(queryStr))[0];
+
+        const session = setSession(sessionUser, branch, siteId);
+        list.forEach(
+            (data, i, arr) =>
+                (arr[i] = new Cls(data, { single, session, hideRawId, hideSensitive, custom })),
+        );
+
+        return single ? list[0] : list;
+    },
 };
 
 function setSession(user = {}, branch, siteId = null) {
-  const { id, DS, DSA, status, location, unscoped } = user;
-  const signature_ = user.sign ? user.sign() : null;
+    const { id, DS, DSA, status, location, unscoped } = user;
+    const signature_ = user.sign ? user.sign() : null;
 
-  return {
-    user: { id, DS, DSA, status, location, unscoped, signature_ },
-    branch,
-    siteId,
-  };
+    return {
+        user: { id, DS, DSA, status, location, unscoped, signature_ },
+        branch,
+        siteId,
+    };
 }

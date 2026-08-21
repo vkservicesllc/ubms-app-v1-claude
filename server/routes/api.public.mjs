@@ -21,106 +21,109 @@ import { capitalizeEach } from '../../client/global/modules/tools/utils/string.m
 // ==== ROUTES ==== //
 
 router.get('/us-zips/:zip', async (req, res) => {
-  try {
-    const { zip } = req.params;
-    const [rows] = await mysql.execute(
-      new Query(db.public, 'us_zips').select('*', { match: { zip } }),
-    );
+    try {
+        const { zip } = req.params;
+        const [rows] = await mysql.execute(
+            new Query(db.public, 'us_zips').select('*', { match: { zip } }),
+        );
 
-    if (rows.length) rows[0].data.city = capitalizeEach(rows[0].data.city, true);
+        if (rows.length) rows[0].data.city = capitalizeEach(rows[0].data.city, true);
 
-    res.send(rows[0] || {});
-  } catch (err) {
-    sendError.server(res, err, true);
-  }
+        res.send(rows[0] || {});
+    } catch (err) {
+        sendError.server(res, err, true);
+    }
 });
 
 router.post('/enum/:source', (req, res) => {
-  try {
-    const { filter } = req.query;
-    const { source } = req.params;
-    let result;
+    try {
+        const { filter } = req.query;
+        const { source } = req.params;
+        let result;
 
-    switch (source) {
-      case 'company':
-        result = {
-          categories: Company.list.category,
-          types: Company.list.type,
-        };
-        break;
+        switch (source) {
+            case 'company':
+                result = {
+                    categories: Company.list.category,
+                    types: Company.list.type,
+                };
+                break;
 
-      case 'driver':
-        result = {
-          positions: Driver.list.position,
-        };
-        break;
+            case 'driver':
+                result = {
+                    positions: Driver.list.position,
+                };
+                break;
 
-      case 'driver-application':
-        result = {
-          violations: DriverApplication.list.violation,
-          accidents: DriverApplication.list.collision,
-        };
-        break;
+            case 'driver-application':
+                result = {
+                    violations: DriverApplication.list.violation,
+                    accidents: DriverApplication.list.collision,
+                };
+                break;
+        }
+
+        if (filter) result = result[filter];
+
+        res.send(result);
+    } catch (err) {
+        sendError.server(res, err, true);
     }
-
-    if (filter) result = result[filter];
-
-    res.send(result);
-  } catch (err) {
-    sendError.server(res, err, true);
-  }
 });
 
 router.post('/unique/user', async (req, res) => {
-  try {
-    const { username } = req.body;
-    const user = await User.fetch(res.session, { username }, { offline: true });
+    try {
+        const { username } = req.body;
+        const user = await User.fetch(res.session, { username }, { offline: true });
 
-    res.json({ unique: !user });
-  } catch (err) {
-    sendError.server(req, res, err);
-  }
+        res.json({ unique: !user });
+    } catch (err) {
+        sendError.server(req, res, err);
+    }
 });
 
 router.post('/google/places/autocomplete', async (req, res) => {
-  try {
-    const { input, sessionToken } = req.body;
+    try {
+        const { input, sessionToken } = req.body;
 
-    const response = await axios.get(
-      'https://maps.googleapis.com/maps/api/place/autocomplete/json',
-      {
-        params: {
-          input,
-          key: config.apiKeys.google,
-          sessionToken,
-          types: 'address',
-          components: 'country:us',
-        },
-      },
-    );
+        const response = await axios.get(
+            'https://maps.googleapis.com/maps/api/place/autocomplete/json',
+            {
+                params: {
+                    input,
+                    key: config.apiKeys.google,
+                    sessionToken,
+                    types: 'address',
+                    components: 'country:us',
+                },
+            },
+        );
 
-    res.json(response.data);
-  } catch (err) {
-    sendError.server(req, res, err);
-  }
+        res.json(response.data);
+    } catch (err) {
+        sendError.server(req, res, err);
+    }
 });
 
 router.post('/google/places/details', async (req, res) => {
-  try {
-    const { placeId, sessionToken } = req.body;
+    try {
+        const { placeId, sessionToken } = req.body;
 
-    const response = await axios.get('https://maps.googleapis.com/maps/api/place/details/json', {
-      params: {
-        place_id: placeId,
-        key: config.apiKeys.google,
-        sessionToken,
-      },
-    });
+        const response = await axios.get(
+            'https://maps.googleapis.com/maps/api/place/details/json',
+            {
+                params: {
+                    place_id: placeId,
+                    key: config.apiKeys.google,
+                    sessionToken,
+                },
+            },
+        );
 
-    res.json(response.data.result);
-  } catch (err) {
-    sendError.server(req, res, err);
-  }
+        res.json(response.data.result);
+    } catch (err) {
+        sendError.server(req, res, err);
+    }
 });
 
 // ==== EXPORT ==== //

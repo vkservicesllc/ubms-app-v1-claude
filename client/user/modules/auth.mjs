@@ -5,27 +5,27 @@ import selector from '/modules/registry/selectors/user.mjs';
 tokenEvent();
 
 authEvent(($form, $token, params) => {
-  const { valid } = params;
+    const { valid } = params;
 
-  if (!valid) return alert('Invalid token');
+    if (!valid) return alert('Invalid token');
 
-  $form.unbind().submit();
+    $form.unbind().submit();
 });
 
 $('#resend').click(() => {
-  const params = new URLSearchParams(window.location.search);
-  const _id = params.get('user');
+    const params = new URLSearchParams(window.location.search);
+    const _id = params.get('user');
 
-  $.ajax('/api/token/resend', {
-    method: 'POST',
-    data: { _id },
-    success(response) {
-      const { status, token } = response;
-      if (status === 'error') return alert('Error Occured');
+    $.ajax('/api/token/resend', {
+        method: 'POST',
+        data: { _id },
+        success(response) {
+            const { status, token } = response;
+            if (status === 'error') return alert('Error Occured');
 
-      if (token) $(selector.id.text.token).val(token);
-      else
-        $('#notification').html(`
+            if (token) $(selector.id.text.token).val(token);
+            else
+                $('#notification').html(`
                     <p>
                         <i class="thumbs up outline icon"></i>
                         The token has been resent.
@@ -36,10 +36,10 @@ $('#resend').click(() => {
                         In such case, please contact technical support.
                     </span>
                 `);
-    },
-    error(err) {
-      console.error(err);
-      alert(err.responseJSON);
-    },
-  });
+        },
+        error(err) {
+            console.error(err);
+            alert(err.responseJSON);
+        },
+    });
 });

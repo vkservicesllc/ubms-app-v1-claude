@@ -17,10 +17,10 @@ const $submit = $('#misc-submit');
 telMask(phoneId, { onAccept, onComplete });
 
 nameEvent(nameId, {
-  sfxId: true,
-  onChange(name, $name, suffix) {
-    if (suffix) $name.val(`${name}, ${suffix}`);
-  },
+    sfxId: true,
+    onChange(name, $name, suffix) {
+        if (suffix) $name.val(`${name}, ${suffix}`);
+    },
 });
 
 inputEvent(relationId, { strip: true, word: true, capitalize: 'first', onInput, onChange });

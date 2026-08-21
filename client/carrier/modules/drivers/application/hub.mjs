@@ -1,7 +1,7 @@
 const _id = $('#id').val();
 
 const response = $.ajax(`/api/resource/drivers/applications/${_id}?sensitive=true`, {
-  async: false,
+    async: false,
 }).responseJSON;
 const { data, error } = response;
 
@@ -14,28 +14,28 @@ export { identity, addresses, count, unmatchedIdx };
 export const errorIcon = '<i class="ui red exclamation triangle icon"></i>';
 
 export const dropdownEvent = ($dropdown) => {
-  Object.keys($dropdown).forEach((prop) => {
-    const [$el, value, onChange] = $dropdown[prop];
+    Object.keys($dropdown).forEach((prop) => {
+        const [$el, value, onChange] = $dropdown[prop];
 
-    $el.dropdown('set value', value).dropdown({ onChange });
-    // $el.dropdown({ onChange })
-    // if (value) $el.dropdown('set value', value)
-  });
+        $el.dropdown('set value', value).dropdown({ onChange });
+        // $el.dropdown({ onChange })
+        // if (value) $el.dropdown('set value', value)
+    });
 };
 
 export function errorMessage(header, message, list) {
-  const $message = $('<div class="ui icon error message"></div>');
-  $message.append('<i class="exclamation triangle icon"></i>');
+    const $message = $('<div class="ui icon error message"></div>');
+    $message.append('<i class="exclamation triangle icon"></i>');
 
-  const $content = $('<div class="content"></div>');
-  $content.append(`<div class="header">${header}</div>`);
-  if (message) $content.append(`<p>${message}</p>`);
-  if (Array.isArray(list)) {
-    const $list = $('<ul class="list"></ul>');
-    list.forEach((item) => $list.append(`<li>${item}</li>`));
+    const $content = $('<div class="content"></div>');
+    $content.append(`<div class="header">${header}</div>`);
+    if (message) $content.append(`<p>${message}</p>`);
+    if (Array.isArray(list)) {
+        const $list = $('<ul class="list"></ul>');
+        list.forEach((item) => $list.append(`<li>${item}</li>`));
 
-    $content.append($list);
-  }
+        $content.append($list);
+    }
 
-  return $message.append($content);
+    return $message.append($content);
 }

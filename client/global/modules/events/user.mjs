@@ -5,241 +5,241 @@ import patterns from '../registry/patterns.mjs';
 import { capitalizeEach } from '../tools/utils/string.mjs';
 
 export const usernameEvent = (options = {}) => {
-  const { onInput, onChange, onAjax, onFocus, onBlur, value } = options;
-  const { username, newUsername } = selector.id.text;
+    const { onInput, onChange, onAjax, onFocus, onBlur, value } = options;
+    const { username, newUsername } = selector.id.text;
 
-  inputEvent(`${username}, ${newUsername}`, {
-    lower: true,
-    word: true,
-    strip: true,
-    value,
-    onInput(username, $username, pos) {
-      username = patterns.replace(username, 'username');
+    inputEvent(`${username}, ${newUsername}`, {
+        lower: true,
+        word: true,
+        strip: true,
+        value,
+        onInput(username, $username, pos) {
+            username = patterns.replace(username, 'username');
 
-      $username.val(username);
-      if (onInput) onInput(username, $username, pos);
-    },
-    onChange(username, $username) {
-      if (onChange) {
-        const valid = username ? patterns.match.username.test(username) : null;
+            $username.val(username);
+            if (onInput) onInput(username, $username, pos);
+        },
+        onChange(username, $username) {
+            if (onChange) {
+                const valid = username ? patterns.match.username.test(username) : null;
 
-        onChange(username, valid, $username);
-      }
+                onChange(username, valid, $username);
+            }
 
-      if (onAjax && username) {
-        let url = '/api/unique/user';
-        const formMode = $('#form-mode')?.val();
-        if (formMode == 'reg') url = '/api/public/unique/user';
+            if (onAjax && username) {
+                let url = '/api/unique/user';
+                const formMode = $('#form-mode')?.val();
+                if (formMode == 'reg') url = '/api/public/unique/user';
 
-        $.ajax(url, {
-          method: 'POST',
-          data: { username },
-          success(response) {
-            onAjax(response, $username);
-          },
-        });
-      }
-    },
-    onFocus,
-    onBlur,
-  });
+                $.ajax(url, {
+                    method: 'POST',
+                    data: { username },
+                    success(response) {
+                        onAjax(response, $username);
+                    },
+                });
+            }
+        },
+        onFocus,
+        onBlur,
+    });
 };
 
 export const passwordEvent = (flag, callback = {}) => {
-  const { onInput, onChange, onFocus, onBlur } = callback;
-  if (!flag || !['current', 'new', 'confirm'].includes(flag)) return;
-  const key = { current: 'password', new: 'createPassword', confirm: 'confirmPassword' }[flag];
+    const { onInput, onChange, onFocus, onBlur } = callback;
+    if (!flag || !['current', 'new', 'confirm'].includes(flag)) return;
+    const key = { current: 'password', new: 'createPassword', confirm: 'confirmPassword' }[flag];
 
-  inputEvent(selector.id.text[key], {
-    onInput(password, $password, pos) {
-      $password.val(password.replace(/\s+/g, ''));
-      if (onInput) onInput($password, pos);
-    },
-    onChange(password, $password) {
-      if (onChange) {
-        let valid;
+    inputEvent(selector.id.text[key], {
+        onInput(password, $password, pos) {
+            $password.val(password.replace(/\s+/g, ''));
+            if (onInput) onInput($password, pos);
+        },
+        onChange(password, $password) {
+            if (onChange) {
+                let valid;
 
-        switch (flag) {
-          case 'new':
-            if (password) valid = patterns.match.password.test(password);
-            onChange(valid, $password, $(selector.id.text.confirmPassword));
-            break;
+                switch (flag) {
+                    case 'new':
+                        if (password) valid = patterns.match.password.test(password);
+                        onChange(valid, $password, $(selector.id.text.confirmPassword));
+                        break;
 
-          case 'confirm':
-            const original = $(selector.id.text.createPassword).val();
-            if (password && original) valid = password === original;
-            onChange(valid, $password);
-            break;
+                    case 'confirm':
+                        const original = $(selector.id.text.createPassword).val();
+                        if (password && original) valid = password === original;
+                        onChange(valid, $password);
+                        break;
 
-          default:
-            onChange($password);
-        }
-      }
-    },
-    onFocus,
-    onBlur,
-  });
+                    default:
+                        onChange($password);
+                }
+            }
+        },
+        onFocus,
+        onBlur,
+    });
 };
 
 export const tokenEvent = (callback = {}) => {
-  const { onInput, onChange, onFocus, onBlur } = callback;
+    const { onInput, onChange, onFocus, onBlur } = callback;
 
-  inputEvent(selector.id.text.token, {
-    onInput(token, $token, pos) {
-      token = token.replace(/[\D]/g, '');
+    inputEvent(selector.id.text.token, {
+        onInput(token, $token, pos) {
+            token = token.replace(/[\D]/g, '');
 
-      $token.val(token);
-      if (onInput) onInput(token, $token, pos);
-    },
-    onChange(token, $token) {
-      if (onChange) {
-        const valid = token ? patterns.match.token.test(token) : null;
+            $token.val(token);
+            if (onInput) onInput(token, $token, pos);
+        },
+        onChange(token, $token) {
+            if (onChange) {
+                const valid = token ? patterns.match.token.test(token) : null;
 
-        onChange(token, valid, $token);
-      }
-    },
-    onFocus,
-    onBlur,
-  });
+                onChange(token, valid, $token);
+            }
+        },
+        onFocus,
+        onBlur,
+    });
 };
 
 export const loginEvent = (callback = {}) => {
-  const { onSubmit, onAjax } = callback;
-  const $form = $('#login-form, #sign-in-form');
-  const $username = $(selector.id.text.username),
-    $password = $(selector.id.text.password);
+    const { onSubmit, onAjax } = callback;
+    const $form = $('#login-form, #sign-in-form');
+    const $username = $(selector.id.text.username),
+        $password = $(selector.id.text.password);
 
-  $form.on('submit', (event) => {
-    event.preventDefault();
+    $form.on('submit', (event) => {
+        event.preventDefault();
 
-    const username = $username.val(),
-      password = $password.val();
+        const username = $username.val(),
+            password = $password.val();
 
-    if (onSubmit) onSubmit($form, $username, $password);
+        if (onSubmit) onSubmit($form, $username, $password);
 
-    if (username && password)
-      setTimeout(() => {
-        $.ajax('/api/login', {
-          method: 'POST',
-          data: { username, password },
-          success(response) {
-            if (onAjax) onAjax(response, { username, $form, $username, $password });
-            else $form.unbind().submit();
-          },
-          error(err) {
-            console.error(err);
-            alert(JSON.stringify(err.responseJSON, null, 2));
-          },
-        });
-      }, 500);
-  });
+        if (username && password)
+            setTimeout(() => {
+                $.ajax('/api/login', {
+                    method: 'POST',
+                    data: { username, password },
+                    success(response) {
+                        if (onAjax) onAjax(response, { username, $form, $username, $password });
+                        else $form.unbind().submit();
+                    },
+                    error(err) {
+                        console.error(err);
+                        alert(JSON.stringify(err.responseJSON, null, 2));
+                    },
+                });
+            }, 500);
+    });
 
-  setTimeout(() => {
-    $(`${selector.class.text.signIn}, [type=submit]`).removeAttr('disabled');
-  }, 750);
+    setTimeout(() => {
+        $(`${selector.class.text.signIn}, [type=submit]`).removeAttr('disabled');
+    }, 750);
 };
 
 export const authEvent = (onSubmit) => {
-  const $form = $('#auth-form');
-  const $token = $(selector.id.text.token);
+    const $form = $('#auth-form');
+    const $token = $(selector.id.text.token);
 
-  $form.on('submit', (event) => {
-    event.preventDefault();
+    $form.on('submit', (event) => {
+        event.preventDefault();
 
-    const token = $token.val();
+        const token = $token.val();
 
-    if (token) {
-      const valid = patterns.match.token.test(token);
+        if (token) {
+            const valid = patterns.match.token.test(token);
 
-      if (onSubmit) onSubmit($form, $token, { token, valid });
-    } else $form.unbind().submit();
-  });
+            if (onSubmit) onSubmit($form, $token, { token, valid });
+        } else $form.unbind().submit();
+    });
 };
 
 export const registerEvent = (onSubmit) => {
-  const $form = $('#sign-up-form');
-  const $username = $(selector.id.text.newUsername);
-  const $password = $(selector.id.text.createPassword);
+    const $form = $('#sign-up-form');
+    const $username = $(selector.id.text.newUsername);
+    const $password = $(selector.id.text.createPassword);
 
-  $form.on('submit', (event) => {
-    event.preventDefault();
+    $form.on('submit', (event) => {
+        event.preventDefault();
 
-    const username = $username.val();
-    const password = $password.val();
+        const username = $username.val();
+        const password = $password.val();
 
-    if (username && password) {
-      const valid = patterns.match.password.test(password);
+        if (username && password) {
+            const valid = patterns.match.password.test(password);
 
-      if (onSubmit) onSubmit($form, valid);
-      else $form.unbind().submit();
-    }
-  });
+            if (onSubmit) onSubmit($form, valid);
+            else $form.unbind().submit();
+        }
+    });
 
-  //! (DO NOT UNCOMMENT) This will force "Sign up" to be enabled before terms and conditions
-  // setTimeout(() => {
-  //     $(`${selector.class.text.signUp}, [type=submit]`).removeAttr('disabled')
-  // }, 750)
+    //! (DO NOT UNCOMMENT) This will force "Sign up" to be enabled before terms and conditions
+    // setTimeout(() => {
+    //     $(`${selector.class.text.signUp}, [type=submit]`).removeAttr('disabled')
+    // }, 750)
 };
 
 export const roleNameEvent = (ajaxData = {}, options = {}) => {
-  const { category, $id, $location } = ajaxData;
-  const { onInput, onChange, onAjax, onFocus, onBlur, value } = options;
+    const { category, $id, $location } = ajaxData;
+    const { onInput, onChange, onAjax, onFocus, onBlur, value } = options;
 
-  inputEvent(selector.class.text.roleName, {
-    strip: true,
-    word: true,
-    value,
-    onInput(name, $name, pos) {
-      name = patterns.replace(name, 'roleName');
-      name = capitalizeEach(name);
+    inputEvent(selector.class.text.roleName, {
+        strip: true,
+        word: true,
+        value,
+        onInput(name, $name, pos) {
+            name = patterns.replace(name, 'roleName');
+            name = capitalizeEach(name);
 
-      $name.val(name);
-      if (onInput) onInput(name, $name, pos);
-    },
-    onChange(name, $name) {
-      if (onChange) onChange(name, $name);
+            $name.val(name);
+            if (onInput) onInput(name, $name, pos);
+        },
+        onChange(name, $name) {
+            if (onChange) onChange(name, $name);
 
-      if (name && category) {
-        const _id = $id.val();
-        const location = $location.val();
+            if (name && category) {
+                const _id = $id.val();
+                const location = $location.val();
 
-        $.ajax('/api/unique/role', {
-          method: 'POST',
-          data: { _id, category, name, location },
-          success(response) {
-            if (onAjax) onAjax(response, name, $name);
-          },
-        });
-      }
-    },
-    onFocus,
-    onBlur,
-  });
+                $.ajax('/api/unique/role', {
+                    method: 'POST',
+                    data: { _id, category, name, location },
+                    success(response) {
+                        if (onAjax) onAjax(response, name, $name);
+                    },
+                });
+            }
+        },
+        onFocus,
+        onBlur,
+    });
 };
 
 export const roleLocationEvent = (ajaxData = {}, options = {}) => {
-  const { category, $id, $name } = ajaxData;
-  const { onChange, onAjax, onFocus, onBlur, value } = options;
+    const { category, $id, $name } = ajaxData;
+    const { onChange, onAjax, onFocus, onBlur, value } = options;
 
-  selectEvent(selector.class.select.roleLocation, {
-    value,
-    onChange(location, $location) {
-      if (onChange) onChange(location, $location);
+    selectEvent(selector.class.select.roleLocation, {
+        value,
+        onChange(location, $location) {
+            if (onChange) onChange(location, $location);
 
-      const name = $name.val();
-      if (name && category) {
-        const _id = $id.val();
+            const name = $name.val();
+            if (name && category) {
+                const _id = $id.val();
 
-        $.ajax('/api/unique/role', {
-          method: 'POST',
-          data: { _id, category, name, location },
-          success(response) {
-            if (onAjax) onAjax(response, location, $location);
-          },
-        });
-      }
-    },
-    onFocus,
-    onBlur,
-  });
+                $.ajax('/api/unique/role', {
+                    method: 'POST',
+                    data: { _id, category, name, location },
+                    success(response) {
+                        if (onAjax) onAjax(response, location, $location);
+                    },
+                });
+            }
+        },
+        onFocus,
+        onBlur,
+    });
 };

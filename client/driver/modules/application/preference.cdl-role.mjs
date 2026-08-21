@@ -11,39 +11,39 @@ const $submit = $('#preference-submit');
 const $partner = $('#partner');
 
 inputEvent(selector.class.radio.operType, {
-  onChange(value) {
-    let disabled = true,
-      action = 'hide';
+    onChange(value) {
+        let disabled = true,
+            action = 'hide';
 
-    if (value === 't') {
-      disabled = false;
-      action = 'show';
-    }
+        if (value === 't') {
+            disabled = false;
+            action = 'show';
+        }
 
-    $(selector.class.combo.teamPartner).prop('disabled', disabled);
-    $partner[action]();
-  },
+        $(selector.class.combo.teamPartner).prop('disabled', disabled);
+        $partner[action]();
+    },
 });
 
 nameEvent(selector.id.text.teamName, {
-  sfxId: true,
-  onChange(name, $name, suffix) {
-    if (suffix) $name.val(`${name}, ${suffix}`);
-  },
+    sfxId: true,
+    onChange(name, $name, suffix) {
+        if (suffix) $name.val(`${name}, ${suffix}`);
+    },
 });
 
 telMask(selector.id.text.teamPhone);
 
 onSubmit($form, null, $submit, $card, {
-  dismiss: () => {
-    const checked = {
-      haulRegion: $(`${selector.class.checkbox.haulRegion}:checked`).length > 0,
-      equipmentType: $(`${selector.class.checkbox.equipmentType}:checked`).length > 0,
-    };
+    dismiss: () => {
+        const checked = {
+            haulRegion: $(`${selector.class.checkbox.haulRegion}:checked`).length > 0,
+            equipmentType: $(`${selector.class.checkbox.equipmentType}:checked`).length > 0,
+        };
 
-    if (!checked.haulRegion || !checked.equipmentType) {
-      alert('At least one option must be selected!');
-      return true;
-    }
-  },
+        if (!checked.haulRegion || !checked.equipmentType) {
+            alert('At least one option must be selected!');
+            return true;
+        }
+    },
 });

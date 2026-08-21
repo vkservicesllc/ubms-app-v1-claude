@@ -4,46 +4,46 @@ import patterns from '../registry/patterns.mjs';
 import strip, { tel as formatTel } from '../tools/utils/formatter.mjs';
 
 export const telEvent = (id, options = {}) => {
-  const { onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted, value } = options;
+    const { onInput, onChange, onFocus, onBlur, onKeydown, onKeyup, onCompleted, value } = options;
 
-  inputEvent(id, {
-    mask: '(999) 999-9999',
-    caret: 1,
-    onInput,
-    onChange,
-    onFocus,
-    onBlur,
-    onKeydown,
-    onKeyup,
-    onCompleted,
-    value: value ? formatTel(strip(value)) : undefined,
-  });
+    inputEvent(id, {
+        mask: '(999) 999-9999',
+        caret: 1,
+        onInput,
+        onChange,
+        onFocus,
+        onBlur,
+        onKeydown,
+        onKeyup,
+        onCompleted,
+        value: value ? formatTel(strip(value)) : undefined,
+    });
 };
 
 export const emailEvent = (id, options = {}) => {
-  const { onInput, onChange, onFocus, onBlur, value } = options;
-  let { multiple } = options;
-  if (typeof multiple != 'boolean') multiple = false;
+    const { onInput, onChange, onFocus, onBlur, value } = options;
+    let { multiple } = options;
+    if (typeof multiple != 'boolean') multiple = false;
 
-  inputEvent(id, {
-    lower: true,
-    value,
-    onInput(email, $email, pos) {
-      email = patterns.replace(email, 'email');
+    inputEvent(id, {
+        lower: true,
+        value,
+        onInput(email, $email, pos) {
+            email = patterns.replace(email, 'email');
 
-      $email.val(email);
-      if (onInput) onInput(email, $email, pos);
-    },
-    onChange(email, $email) {
-      if (!multiple) $email.val(email.replace(',', ''));
+            $email.val(email);
+            if (onInput) onInput(email, $email, pos);
+        },
+        onChange(email, $email) {
+            if (!multiple) $email.val(email.replace(',', ''));
 
-      if (onChange) {
-        const valid = email ? patterns.match.email.test(email) : null;
+            if (onChange) {
+                const valid = email ? patterns.match.email.test(email) : null;
 
-        onChange(email, valid, $email);
-      }
-    },
-    onFocus,
-    onBlur,
-  });
+                onChange(email, valid, $email);
+            }
+        },
+        onFocus,
+        onBlur,
+    });
 };

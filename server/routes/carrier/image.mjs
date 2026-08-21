@@ -17,17 +17,17 @@ const imgExt = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
 // ==== ROUTES ==== //
 
 router.get('/driver/application/:_id/uploads/:filename', User.mw.verify, async (req, res) => {
-  const { _id, filename } = req.params;
-  const application = await Application.fetch(res.session, { _id });
-  const { driverId, id } = application;
-  const path = `${dir}/uploads/driver/${driverId}/application/${id}/uploads/${filename}`;
+    const { _id, filename } = req.params;
+    const application = await Application.fetch(res.session, { _id });
+    const { driverId, id } = application;
+    const path = `${dir}/uploads/driver/${driverId}/application/${id}/uploads/${filename}`;
 
-  for (const ext of imgExt) {
-    const filePath = path + ext;
-    if (fs.existsSync(filePath)) return res.sendFile(filePath);
-  }
+    for (const ext of imgExt) {
+        const filePath = path + ext;
+        if (fs.existsSync(filePath)) return res.sendFile(filePath);
+    }
 
-  res.status(404).send('Image not found');
+    res.status(404).send('Image not found');
 });
 
 // ==== EXPORT ==== //

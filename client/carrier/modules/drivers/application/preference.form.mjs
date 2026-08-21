@@ -1,6 +1,6 @@
 const $form = $('#preference-form');
 
 $form.find('input').on('change', () => {
-  $form.find('[type="submit"]').prop('disabled', false);
-  $form.find('.unsaved-changes').show();
+    $form.find('[type="submit"]').prop('disabled', false);
+    $form.find('.unsaved-changes').show();
 });

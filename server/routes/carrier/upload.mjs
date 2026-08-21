@@ -20,323 +20,329 @@ const path = require('path');
 // ==== SETUP ==== //
 
 const upload = {
-  application: {
-    dl: uploader('/driver/{id}/drivers-license/{id2}'),
-    mec: uploader('/driver/{id}/medical-certificate/{id2}'),
-    leg: uploader('/driver/{id}/legal-document/{id2}'),
-    ssc: uploader('/driver/{id}/social-security-card/{id2}'),
-  },
+    application: {
+        dl: uploader('/driver/{id}/drivers-license/{id2}'),
+        mec: uploader('/driver/{id}/medical-certificate/{id2}'),
+        leg: uploader('/driver/{id}/legal-document/{id2}'),
+        ssc: uploader('/driver/{id}/social-security-card/{id2}'),
+    },
 };
 
 const uploadDriverPreset = async (req, res, next) => {
-  const { formId } = req.params;
+    const { formId } = req.params;
 
-  const application = await Application.fetch(res.session, { formId });
-  if (!application) throw new Error('Application not found');
+    const application = await Application.fetch(res.session, { formId });
+    if (!application) throw new Error('Application not found');
 
-  const { id, driverId, personId } = application;
+    const { id, driverId, personId } = application;
 
-  const [driver, individual] = await Promise.all([
-    await Driver.fetch(res.session, { id: driverId }),
-    await Individual.fetch(res.session, { id: personId }),
-  ]);
+    const [driver, individual] = await Promise.all([
+        await Driver.fetch(res.session, { id: driverId }),
+        await Individual.fetch(res.session, { id: personId }),
+    ]);
 
-  if (!driver) throw new Error('Driver not found');
-  else if (!individual) throw new Error('Individual not found');
+    if (!driver) throw new Error('Driver not found');
+    else if (!individual) throw new Error('Individual not found');
 
-  req.upload = { id: driverId, id2: id };
-  req.data = { application, driver, individual };
+    req.upload = { id: driverId, id2: id };
+    req.data = { application, driver, individual };
 
-  next();
+    next();
 };
 
 // ==== ROUTES ==== //
 
 router.post(
-  '/api/drivers/application/:formId/initial-drivers-license',
-  User.mw.verify,
-  uploadDriverPreset,
-  upload.application.dl.fields([
-    { name: 'dlF', maxCount: 1 },
-    { name: 'dlB', maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const { application, individual } = req.data;
-      let { checklist } = application;
-      if (!checklist) checklist = {};
+    '/api/drivers/application/:formId/initial-drivers-license',
+    User.mw.verify,
+    uploadDriverPreset,
+    upload.application.dl.fields([
+        { name: 'dlF', maxCount: 1 },
+        { name: 'dlB', maxCount: 1 },
+    ]),
+    async (req, res) => {
+        try {
+            const { application, individual } = req.data;
+            let { checklist } = application;
+            if (!checklist) checklist = {};
 
-      let action = 'update';
+            let action = 'update';
 
-      if (!checklist.documents) {
-        checklist.documents = {};
-        action = 'add';
-      }
-      checklist.documents.dl = 1;
+            if (!checklist.documents) {
+                checklist.documents = {};
+                action = 'add';
+            }
+            checklist.documents.dl = 1;
 
-      const { dl, name, person, address } = req.body;
-      const { dlId } = application;
+            const { dl, name, person, address } = req.body;
+            const { dlId } = application;
 
-      dl.commercial = dl.commercial === 'Y';
+            dl.commercial = dl.commercial === 'Y';
 
-      const cdl = dl.commercial ? 'Y' : 'N';
-      let dlClass = dl.class;
-      if (!dlClass) dlClass = '-';
-      const { id: userId } = res.session.user;
-      for (const [field, side] of [
-        ['dlF', 'front'],
-        ['dlB', 'back'],
-      ]) {
-        const file = req.files[field]?.[0];
-        if (!file) continue;
+            const cdl = dl.commercial ? 'Y' : 'N';
+            let dlClass = dl.class;
+            if (!dlClass) dlClass = '-';
+            const { id: userId } = res.session.user;
+            for (const [field, side] of [
+                ['dlF', 'front'],
+                ['dlB', 'back'],
+            ]) {
+                const file = req.files[field]?.[0];
+                if (!file) continue;
 
-        const ext = path.extname(file.filename);
-        const filename = `${dl.issuedOn}_${dl.expiresOn}_${dl.state}_${dl.number}_${dlClass}_${cdl}_${side}_${userId}_init${ext}`;
-        await renameFile(path.dirname(file.path), file.filename, filename);
-      }
-      await individual.update('identifications', dl, { id: dlId });
-      await individual.update('names', name, { since: individual.dob });
+                const ext = path.extname(file.filename);
+                const filename = `${dl.issuedOn}_${dl.expiresOn}_${dl.state}_${dl.number}_${dlClass}_${cdl}_${side}_${userId}_init${ext}`;
+                await renameFile(path.dirname(file.path), file.filename, filename);
+            }
+            await individual.update('identifications', dl, { id: dlId });
+            await individual.update('names', name, { since: individual.dob });
 
-      const { since } = address;
-      delete address.since;
-      if (since) {
-        await individual.update('addresses', address, { since });
-        await individual.update('identifications', { addrSince: since }, { id: dlId });
-      } else {
-        const { address1, address2, city: addrCity, state: addrState, zip: addrZip } = address;
-        await individual.update(
-          'identifications',
-          {
-            address1,
-            address2,
-            addrCity,
-            addrState,
-            addrZip,
-          },
-          { id: dlId },
-        );
-      }
+            const { since } = address;
+            delete address.since;
+            if (since) {
+                await individual.update('addresses', address, { since });
+                await individual.update('identifications', { addrSince: since }, { id: dlId });
+            } else {
+                const {
+                    address1,
+                    address2,
+                    city: addrCity,
+                    state: addrState,
+                    zip: addrZip,
+                } = address;
+                await individual.update(
+                    'identifications',
+                    {
+                        address1,
+                        address2,
+                        addrCity,
+                        addrState,
+                        addrZip,
+                    },
+                    { id: dlId },
+                );
+            }
 
-      await individual.update(person);
-      await application[action]('checklist', { checklist });
+            await individual.update(person);
+            await application[action]('checklist', { checklist });
 
-      res.json({ status: 'OK' });
-    } catch (err) {
-      sendError.server(req, res, err);
-    }
-  },
+            res.json({ status: 'OK' });
+        } catch (err) {
+            sendError.server(req, res, err);
+        }
+    },
 );
 
 router.post(
-  '/api/drivers/application/:formId/initial-medical-certificate',
-  User.mw.verify,
-  uploadDriverPreset,
-  upload.application.mec.fields([{ name: 'mec', maxCount: 1 }]),
-  async (req, res) => {
-    try {
-      const file = req.files.mec?.[0];
-      if (!file) throw new Error('File not found');
+    '/api/drivers/application/:formId/initial-medical-certificate',
+    User.mw.verify,
+    uploadDriverPreset,
+    upload.application.mec.fields([{ name: 'mec', maxCount: 1 }]),
+    async (req, res) => {
+        try {
+            const file = req.files.mec?.[0];
+            if (!file) throw new Error('File not found');
 
-      const { application, driver } = req.data;
-      let { checklist } = application;
-      if (!checklist) checklist = {};
+            const { application, driver } = req.data;
+            let { checklist } = application;
+            if (!checklist) checklist = {};
 
-      let action = 'update';
+            let action = 'update';
 
-      if (!checklist.documents) {
-        checklist.documents = {};
-        action = 'add';
-      }
-      checklist.documents.mec = 1;
+            if (!checklist.documents) {
+                checklist.documents = {};
+                action = 'add';
+            }
+            checklist.documents.mec = 1;
 
-      const { expiresOn, issuedOn, nrcme } = req.body;
-      const { id: userId } = res.session.user;
-      const ext = path.extname(file.filename);
-      const filename = `${expiresOn}_${issuedOn || '-'}_${nrcme || '-'}_${userId}_init${ext}`;
+            const { expiresOn, issuedOn, nrcme } = req.body;
+            const { id: userId } = res.session.user;
+            const ext = path.extname(file.filename);
+            const filename = `${expiresOn}_${issuedOn || '-'}_${nrcme || '-'}_${userId}_init${ext}`;
 
-      await renameFile(path.dirname(file.path), file.filename, filename);
+            await renameFile(path.dirname(file.path), file.filename, filename);
 
-      let { mecId } = application;
-      if (mecId) await driver.update('mecs', { expiresOn, issuedOn, nrcme }, { id: mecId });
-      else {
-        const { insertId } = await driver.add('mecs', { expiresOn, issuedOn, nrcme });
-        if (!insertId) throw new Error('Failed to add medical card');
+            let { mecId } = application;
+            if (mecId) await driver.update('mecs', { expiresOn, issuedOn, nrcme }, { id: mecId });
+            else {
+                const { insertId } = await driver.add('mecs', { expiresOn, issuedOn, nrcme });
+                if (!insertId) throw new Error('Failed to add medical card');
 
-        mecId = insertId;
-        await application.update({ mecId });
-      }
+                mecId = insertId;
+                await application.update({ mecId });
+            }
 
-      await application[action]('checklist', { checklist });
+            await application[action]('checklist', { checklist });
 
-      res.json({ status: 'OK' });
-    } catch (err) {
-      sendError.server(req, res, err);
-    }
-  },
+            res.json({ status: 'OK' });
+        } catch (err) {
+            sendError.server(req, res, err);
+        }
+    },
 );
 
 router.post(
-  '/api/drivers/application/:formId/initial-legal-document',
-  User.mw.verify,
-  uploadDriverPreset,
-  upload.application.leg.fields([
-    { name: 'legF', maxCount: 1 },
-    { name: 'legB', maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const { application, individual } = req.data;
-      let { checklist } = application;
-      if (!checklist) checklist = {};
+    '/api/drivers/application/:formId/initial-legal-document',
+    User.mw.verify,
+    uploadDriverPreset,
+    upload.application.leg.fields([
+        { name: 'legF', maxCount: 1 },
+        { name: 'legB', maxCount: 1 },
+    ]),
+    async (req, res) => {
+        try {
+            const { application, individual } = req.data;
+            let { checklist } = application;
+            if (!checklist) checklist = {};
 
-      let action = 'update';
+            let action = 'update';
 
-      if (!checklist.documents) {
-        checklist.documents = {};
-        action = 'add';
-      }
-      if (!checklist.skipped) checklist.skipped = {};
-      checklist.documents.leg = 1;
-      checklist.skipped.leg = 0;
+            if (!checklist.documents) {
+                checklist.documents = {};
+                action = 'add';
+            }
+            if (!checklist.skipped) checklist.skipped = {};
+            checklist.documents.leg = 1;
+            checklist.skipped.leg = 0;
 
-      let { expiresOn, issuedOn, docNumber } = req.body;
-      if (application.legalStatus[0] < 2) {
-        expiresOn = null;
-        issuedOn = null;
-        docNumber = null;
-      }
-      let type;
-      switch (application.legalStatus[0]) {
-        case 1:
-          type = 'gc';
-          break;
-        case 2:
-          type = 'wa';
-          break;
-      }
+            let { expiresOn, issuedOn, docNumber } = req.body;
+            if (application.legalStatus[0] < 2) {
+                expiresOn = null;
+                issuedOn = null;
+                docNumber = null;
+            }
+            let type;
+            switch (application.legalStatus[0]) {
+                case 1:
+                    type = 'gc';
+                    break;
+                case 2:
+                    type = 'wa';
+                    break;
+            }
 
-      const { id: userId } = res.session.user;
-      for (const [field, side] of [
-        ['legF', 'front'],
-        ['legB', 'back'],
-      ]) {
-        const file = req.files[field]?.[0];
-        if (!file) continue;
+            const { id: userId } = res.session.user;
+            for (const [field, side] of [
+                ['legF', 'front'],
+                ['legB', 'back'],
+            ]) {
+                const file = req.files[field]?.[0];
+                if (!file) continue;
 
-        const ext = path.extname(file.filename);
-        const filename = `${type}_${expiresOn || application.appliedOn}_${issuedOn || '-'}_${docNumber || '-'}_${side}_${userId}_init${ext}`;
-        await renameFile(path.dirname(file.path), file.filename, filename);
-      }
+                const ext = path.extname(file.filename);
+                const filename = `${type}_${expiresOn || application.appliedOn}_${issuedOn || '-'}_${docNumber || '-'}_${side}_${userId}_init${ext}`;
+                await renameFile(path.dirname(file.path), file.filename, filename);
+            }
 
-      await individual.update(
-        'legal',
-        { expiresOn, issuedOn, docNumber },
-        { since: tz2utc(application.appliedAt, true) },
-      );
-      await application[action]('checklist', { checklist });
+            await individual.update(
+                'legal',
+                { expiresOn, issuedOn, docNumber },
+                { since: tz2utc(application.appliedAt, true) },
+            );
+            await application[action]('checklist', { checklist });
 
-      res.json({ status: 'OK' });
-    } catch (err) {
-      sendError.server(req, res, err);
-    }
-  },
+            res.json({ status: 'OK' });
+        } catch (err) {
+            sendError.server(req, res, err);
+        }
+    },
 );
 
 router.post(
-  '/api/drivers/application/:formId/initial-social-security-card',
-  User.mw.verify,
-  uploadDriverPreset,
-  upload.application.ssc.fields([{ name: 'ssc', maxCount: 1 }]),
-  async (req, res) => {
-    try {
-      const file = req.files.ssc?.[0];
-      if (!file) throw new Error('File not found');
+    '/api/drivers/application/:formId/initial-social-security-card',
+    User.mw.verify,
+    uploadDriverPreset,
+    upload.application.ssc.fields([{ name: 'ssc', maxCount: 1 }]),
+    async (req, res) => {
+        try {
+            const file = req.files.ssc?.[0];
+            if (!file) throw new Error('File not found');
 
-      const { application, individual } = req.data;
-      let { checklist } = application;
-      if (!checklist) checklist = {};
+            const { application, individual } = req.data;
+            let { checklist } = application;
+            if (!checklist) checklist = {};
 
-      let action = 'update';
+            let action = 'update';
 
-      if (!checklist.documents) {
-        checklist.documents = {};
-        action = 'add';
-      }
-      if (!checklist.skipped) checklist.skipped = {};
-      checklist.documents.ssc = 1;
-      checklist.skipped.ssc = 0;
+            if (!checklist.documents) {
+                checklist.documents = {};
+                action = 'add';
+            }
+            if (!checklist.skipped) checklist.skipped = {};
+            checklist.documents.ssc = 1;
+            checklist.skipped.ssc = 0;
 
-      const { ssn, dhsReq } = req.body;
-      const { id: userId } = res.session.user;
-      const ext = path.extname(file.filename);
-      const filename = `${application.finishedOn}_${dhsReq === 'true' ? 'Y' : 'N'}_${userId}_init${ext}`;
+            const { ssn, dhsReq } = req.body;
+            const { id: userId } = res.session.user;
+            const ext = path.extname(file.filename);
+            const filename = `${application.finishedOn}_${dhsReq === 'true' ? 'Y' : 'N'}_${userId}_init${ext}`;
 
-      await renameFile(path.dirname(file.path), file.filename, filename);
+            await renameFile(path.dirname(file.path), file.filename, filename);
 
-      await individual.update({ ssn });
-      await application[action]('checklist', { checklist });
+            await individual.update({ ssn });
+            await application[action]('checklist', { checklist });
 
-      res.json({ status: 'OK' });
-    } catch (err) {
-      sendError.server(req, res, err);
-    }
-  },
+            res.json({ status: 'OK' });
+        } catch (err) {
+            sendError.server(req, res, err);
+        }
+    },
 );
 
 router.post(
-  '/api/drivers/application/:formId/drivers-license',
-  User.mw.verify,
-  uploadDriverPreset,
-  upload.application.dl.fields([
-    { name: 'dlF', maxCount: 1 },
-    { name: 'dlB', maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      req.body.commercial = req.body.commercial === 'Y';
-      const { issuedOn, expiresOn, commercial, state, number, class: dlClass } = req.body;
-      const { id: userId } = res.session.user;
-      const cdl = commercial ? 'Y' : 'N';
+    '/api/drivers/application/:formId/drivers-license',
+    User.mw.verify,
+    uploadDriverPreset,
+    upload.application.dl.fields([
+        { name: 'dlF', maxCount: 1 },
+        { name: 'dlB', maxCount: 1 },
+    ]),
+    async (req, res) => {
+        try {
+            req.body.commercial = req.body.commercial === 'Y';
+            const { issuedOn, expiresOn, commercial, state, number, class: dlClass } = req.body;
+            const { id: userId } = res.session.user;
+            const cdl = commercial ? 'Y' : 'N';
 
-      for (const [field, side] of [
-        ['dlF', 'front'],
-        ['dlB', 'back'],
-      ]) {
-        const file = req.files[field]?.[0];
-        if (!file) continue;
+            for (const [field, side] of [
+                ['dlF', 'front'],
+                ['dlB', 'back'],
+            ]) {
+                const file = req.files[field]?.[0];
+                if (!file) continue;
 
-        const ext = path.extname(file.filename);
-        await renameFile(
-          path.dirname(file.path),
-          file.filename,
-          `${issuedOn}_${expiresOn}_${state}_${number}_${dlClass || '-'}_${cdl}_${side}_${userId}${ext}`,
-        );
-      }
+                const ext = path.extname(file.filename);
+                await renameFile(
+                    path.dirname(file.path),
+                    file.filename,
+                    `${issuedOn}_${expiresOn}_${state}_${number}_${dlClass || '-'}_${cdl}_${side}_${userId}${ext}`,
+                );
+            }
 
-      const { record } = req.query;
-      if (record !== 'false') {
-        //
-      }
+            const { record } = req.query;
+            if (record !== 'false') {
+                //
+            }
 
-      res.json({ status: 'OK' });
-    } catch (err) {
-      sendError.server(req, res, err);
-    }
-  },
+            res.json({ status: 'OK' });
+        } catch (err) {
+            sendError.server(req, res, err);
+        }
+    },
 );
 
 router.post(
-  '/api/drivers/application/:formId/medical-certificate',
-  User.mw.verify,
-  uploadDriverPreset,
-  upload.application.mec.fields([{ name: 'mec', maxCount: 1 }]),
-  async (req, res) => {
-    try {
-      //
-    } catch (err) {
-      sendError.server(req, res, err);
-    }
-  },
+    '/api/drivers/application/:formId/medical-certificate',
+    User.mw.verify,
+    uploadDriverPreset,
+    upload.application.mec.fields([{ name: 'mec', maxCount: 1 }]),
+    async (req, res) => {
+        try {
+            //
+        } catch (err) {
+            sendError.server(req, res, err);
+        }
+    },
 );
 
 // ==== EXPORT ==== //

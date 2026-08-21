@@ -13,5 +13,5 @@ nameEvent(lastNameId, { sfxId: true });
 emailEvent(emailId);
 
 setTimeout(() => {
-  $(`${firstNameId}, ${lastNameId}, ${emailId}`).removeAttr('disabled');
+    $(`${firstNameId}, ${lastNameId}, ${emailId}`).removeAttr('disabled');
 }, 750);

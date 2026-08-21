@@ -22,14 +22,14 @@ $card.fadeIn(duration);
 const onInput = () => $help.hide().html(null);
 
 const onBlur = (value, $el) => {
-  if (value) {
-    const $next = $el.parent().parent().next().find('input');
+    if (value) {
+        const $next = $el.parent().parent().next().find('input');
 
-    if ($next.length) {
-      const next = $next.val();
-      if (!next) $next.focus();
-    } else $submit.focus();
-  }
+        if ($next.length) {
+            const next = $next.val();
+            if (!next) $next.focus();
+        } else $submit.focus();
+    }
 };
 
 telMask(phoneId, { onAccept: onInput, onComplete: onBlur });
@@ -37,77 +37,77 @@ telMask(phoneId, { onAccept: onInput, onComplete: onBlur });
 dateMask(dobId, { pattern: 'us', onAccept: onInput, onComplete: onBlur });
 
 inputEvent(pinId, {
-  onInput(pin, $pin) {
-    onInput();
+    onInput(pin, $pin) {
+        onInput();
 
-    const length = $pin.attr('maxlength');
-    if (pin.length == length) $pin.blur();
-  },
-  onBlur,
+        const length = $pin.attr('maxlength');
+        if (pin.length == length) $pin.blur();
+    },
+    onBlur,
 });
 
 $('#resend-pin').click(function (evt) {
-  evt.preventDefault();
+    evt.preventDefault();
 
-  const dirs = $form.attr('action').split('/');
-  const formId = dirs[dirs.length - 1];
+    const dirs = $form.attr('action').split('/');
+    const formId = dirs[dirs.length - 1];
 
-  $.ajax(`/api/resend-pin/application/${formId}`, {
-    method: 'POST',
-    success() {
-      $resentModal.modal('show');
-    },
-  });
+    $.ajax(`/api/resend-pin/application/${formId}`, {
+        method: 'POST',
+        success() {
+            $resentModal.modal('show');
+        },
+    });
 });
 
 $form.submit(function (evt) {
-  evt.preventDefault();
+    evt.preventDefault();
 
-  const phone = $(phoneId).val(),
-    dob = $(dobId).val(),
-    pin = $(pinId).val();
+    const phone = $(phoneId).val(),
+        dob = $(dobId).val(),
+        pin = $(pinId).val();
 
-  if (!phone && !dob && !pin) return;
+    if (!phone && !dob && !pin) return;
 
-  const action = $(this).attr('action').split('/');
-  const formId = action[action.length - 1];
+    const action = $(this).attr('action').split('/');
+    const formId = action[action.length - 1];
 
-  $submit
-    .prop('disabled', true)
-    .html('<span class="spinner-border spinner-border-sm"></span> Signing in...');
+    $submit
+        .prop('disabled', true)
+        .html('<span class="spinner-border spinner-border-sm"></span> Signing in...');
 
-  $.ajax(`/api/login/application/${formId}`, {
-    method: 'POST',
-    data: { phone, dob, pin },
-    success(response) {
-      const { passed } = response;
+    $.ajax(`/api/login/application/${formId}`, {
+        method: 'POST',
+        data: { phone, dob, pin },
+        success(response) {
+            const { passed } = response;
 
-      if (!passed) {
-        $submit.prop('disabled', false).html('Continue Application');
+            if (!passed) {
+                $submit.prop('disabled', false).html('Continue Application');
 
-        return $help
-          .html(
-            '<i class="fas fa-triangle-exclamation"></i> Incorrect credentials used<br/>Please try again...',
-          )
-          .show();
-      }
+                return $help
+                    .html(
+                        '<i class="fas fa-triangle-exclamation"></i> Incorrect credentials used<br/>Please try again...',
+                    )
+                    .show();
+            }
 
-      $card.fadeOut(duration);
-      setTimeout(() => $form.unbind().submit(), duration);
-    },
-  });
+            $card.fadeOut(duration);
+            setTimeout(() => $form.unbind().submit(), duration);
+        },
+    });
 });
 
 setTimeout(async () => {
-  $(pinId).prop('disabled', false);
+    $(pinId).prop('disabled', false);
 
-  const creds = await navigator.clipboard.readText();
+    const creds = await navigator.clipboard.readText();
 
-  if (creds.includes('[QuickPaste]')) {
-    const parts = creds.split('|');
+    if (creds.includes('[QuickPaste]')) {
+        const parts = creds.split('|');
 
-    $(phoneId).val(parts[1]);
-    $(dobId).val(parts[2]);
-    $(pinId).val(parts[3]);
-  }
+        $(phoneId).val(parts[1]);
+        $(dobId).val(parts[2]);
+        $(pinId).val(parts[3]);
+    }
 }, 100);

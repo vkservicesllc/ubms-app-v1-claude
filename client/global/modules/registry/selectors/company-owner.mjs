@@ -3,44 +3,44 @@ import initialize from './support.mjs';
 const prefix = 'company-owner';
 
 const selector = {
-  class: {
-    combo: {
-      gender: 'gender',
-      since: 'update-date',
+    class: {
+        combo: {
+            gender: 'gender',
+            since: 'update-date',
+        },
+        select: {
+            gender: 'gender',
+        },
+        radio: {
+            gender: 'gender',
+        },
     },
-    select: {
-      gender: 'gender',
+    id: {
+        hidden: {
+            id: 'id',
+            modifyId: 'modify-phone-id',
+            deleteId: 'delete-id',
+        },
+        text: {
+            firstName: 'first-name',
+            middleName: 'middle-name',
+            lastName: 'last-name',
+            dob: 'dob',
+            ssn: 'ssn',
+            phone: 'phone',
+            nameSince: 'name-update-date',
+        },
+        select: {
+            suffix: 'suffix',
+            gender: 'gender',
+        },
+        radio: {
+            gender: {
+                male: 'gender-male',
+                female: 'gender-female',
+            },
+        },
     },
-    radio: {
-      gender: 'gender',
-    },
-  },
-  id: {
-    hidden: {
-      id: 'id',
-      modifyId: 'modify-phone-id',
-      deleteId: 'delete-id',
-    },
-    text: {
-      firstName: 'first-name',
-      middleName: 'middle-name',
-      lastName: 'last-name',
-      dob: 'dob',
-      ssn: 'ssn',
-      phone: 'phone',
-      nameSince: 'name-update-date',
-    },
-    select: {
-      suffix: 'suffix',
-      gender: 'gender',
-    },
-    radio: {
-      gender: {
-        male: 'gender-male',
-        female: 'gender-female',
-      },
-    },
-  },
 };
 
 initialize(prefix, selector);

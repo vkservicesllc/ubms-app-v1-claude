@@ -20,39 +20,39 @@ import validationCheck from '../../tools/form/validator.mjs';
 // ==== ROUTES ==== //
 
 router.post('/unique/user/new/username', async (req, res) => {
-  try {
-    const { username } = req.body;
-    const response = { unique: true };
+    try {
+        const { username } = req.body;
+        const response = { unique: true };
 
-    const user = await User.fetch(res.session, { username }, { offline: true });
-    response.unique = !user;
+        const user = await User.fetch(res.session, { username }, { offline: true });
+        response.unique = !user;
 
-    res.send(response);
-  } catch (err) {
-    sendError.server(req, res, err);
-  }
+        res.send(response);
+    } catch (err) {
+        sendError.server(req, res, err);
+    }
 });
 
 router.post('/user/decline/:_id', async (req, res) => {
-  try {
-    const { _id } = req.params;
+    try {
+        const { _id } = req.params;
 
-    const user = await User.fetch(res.session, { _id }, { offline: true });
-    if (!user) throw new Error('Oops! Something went wrong!');
+        const user = await User.fetch(res.session, { _id }, { offline: true });
+        if (!user) throw new Error('Oops! Something went wrong!');
 
-    const inviter = await user.inviter();
-    await mysql.execute(query.user.registration.delete({ userId: user.id }));
-    await mysql.execute(
-      query.user.main.update({ declinedAt: utcTimeStamp(), condition: 'L' }, { id: user.id }),
-    );
+        const inviter = await user.inviter();
+        await mysql.execute(query.user.registration.delete({ userId: user.id }));
+        await mysql.execute(
+            query.user.main.update({ declinedAt: utcTimeStamp(), condition: 'L' }, { id: user.id }),
+        );
 
-    const userName = user.fullName('FAL');
+        const userName = user.fullName('FAL');
 
-    transporter.sendMail({
-      from: sender,
-      to: inviter.email,
-      subject: 'User Declined Terms and Conditions',
-      html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+        transporter.sendMail({
+            from: sender,
+            to: inviter.email,
+            subject: 'User Declined Terms and Conditions',
+            html: `<div style="font-family: Arial, Helvetica, sans-serif;">
                 <p>Dear ${inviter.name},</p>
                 <p>
                     We would like to inform you that the user ${userName} has declined the terms and conditions.<br/>
@@ -60,13 +60,13 @@ router.post('/user/decline/:_id', async (req, res) => {
                 </p>
                 <p>If you need further information or have any questions, please feel free to contact the support team.</p>
             </div>`,
-    });
+        });
 
-    transporter.sendMail({
-      from: sender,
-      to: user.email,
-      subject: 'Important Notice: Declined Terms and Conditions',
-      html: `<div style="font-family: Arial, Helvetica, sans-serif;">
+        transporter.sendMail({
+            from: sender,
+            to: user.email,
+            subject: 'Important Notice: Declined Terms and Conditions',
+            html: `<div style="font-family: Arial, Helvetica, sans-serif;">
                 <p>Dear ${userName},</p>
                 <p>
                     We have noticed that you declined the Terms and Conditions.<br/>
@@ -86,58 +86,58 @@ router.post('/user/decline/:_id', async (req, res) => {
                 </ol>
                 <p>If no action is taken, your account may be permanently banned.</p>
             </div>`,
-    });
+        });
 
-    res.send('OK');
-  } catch (err) {
-    sendError.server(req, res, err);
-  }
+        res.send('OK');
+    } catch (err) {
+        sendError.server(req, res, err);
+    }
 });
 
 router.post(
-  '/user/security',
-  User.mw.verify,
-  [UserForm.password.validate(), UserForm.createPassword.validate()],
-  validationCheck,
-  async (req, res) => {
-    try {
-      const user = await User.fetch(
-        res.session,
-        { id: res.session.user.id },
-        { offline: true, auth: true },
-      );
+    '/user/security',
+    User.mw.verify,
+    [UserForm.password.validate(), UserForm.createPassword.validate()],
+    validationCheck,
+    async (req, res) => {
+        try {
+            const user = await User.fetch(
+                res.session,
+                { id: res.session.user.id },
+                { offline: true, auth: true },
+            );
 
-      const { password, newPassword } = req.body;
-      const { _hash } = user;
-      const matched = await Bun.password.verify(password, _hash);
-      const same = password === newPassword;
-      let updated = false;
+            const { password, newPassword } = req.body;
+            const { _hash } = user;
+            const matched = await Bun.password.verify(password, _hash);
+            const same = password === newPassword;
+            let updated = false;
 
-      if (matched && !same) updated = await user.password(newPassword);
+            if (matched && !same) updated = await user.password(newPassword);
 
-      return res.json({ matched, updated, same });
-    } catch (err) {
-      sendError.server(req, res, err);
-    }
-  },
+            return res.json({ matched, updated, same });
+        } catch (err) {
+            sendError.server(req, res, err);
+        }
+    },
 );
 
 router.post('/token/resend', async (req, res) => {
-  try {
-    const { _id } = req.body;
-    const user = await User.fetch(res.session, { _id }, { offline: true });
-    if (!user) throw new Error('Oops! Something went wrong!');
+    try {
+        const { _id } = req.body;
+        const user = await User.fetch(res.session, { _id }, { offline: true });
+        if (!user) throw new Error('Oops! Something went wrong!');
 
-    const { clientIp } = req.session;
-    const { key: token } = await Token.create({ userId: user.id, clientIp });
+        const { clientIp } = req.session;
+        const { key: token } = await Token.create({ userId: user.id, clientIp });
 
-    const response = { status: token ? 'success' : 'error' };
-    if (token && !config.notification.email.authToken) response.token = token;
+        const response = { status: token ? 'success' : 'error' };
+        if (token && !config.notification.email.authToken) response.token = token;
 
-    res.send(response);
-  } catch (err) {
-    sendError.server(req, res, err);
-  }
+        res.send(response);
+    } catch (err) {
+        sendError.server(req, res, err);
+    }
 });
 
 // ==== EXPORT ==== //

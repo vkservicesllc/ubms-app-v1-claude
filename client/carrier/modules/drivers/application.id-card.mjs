@@ -7,59 +7,59 @@ const $copyIcon = $('.copy-apl-cred');
 const $copySuccess = $('#apl-copy-sucess');
 
 $modal.modal({
-  onHidden() {
-    $('.apl-data').html(null);
-    $copySuccess.hide();
-  },
+    onHidden() {
+        $('.apl-data').html(null);
+        $copySuccess.hide();
+    },
 });
 
 table.on('draw', function () {
-  $('.apl-id-card').off('click');
+    $('.apl-id-card').off('click');
 
-  $('.apl-id-card').on('click', function (evt) {
-    evt.preventDefault();
+    $('.apl-id-card').on('click', function (evt) {
+        evt.preventDefault();
 
-    const _id = $(this).data('id');
-    const href = $(this).next().attr('href');
+        const _id = $(this).data('id');
+        const href = $(this).next().attr('href');
 
-    $.ajax(`/api/resource/drivers/applications/${_id}?sensitive=true`, {
-      success(response) {
-        const { application } = response.data;
-        const { phone, dob, ssn } = application;
+        $.ajax(`/api/resource/drivers/applications/${_id}?sensitive=true`, {
+            success(response) {
+                const { application } = response.data;
+                const { phone, dob, ssn } = application;
 
-        application.url = `<a href="${href}" target="_blank">${href}</a>`;
-        application.phone = formatTel(phone);
-        application.dob = moment(dob).format('MM/DD/YYYY');
-        application.pin = ssn.slice(-4);
+                application.url = `<a href="${href}" target="_blank">${href}</a>`;
+                application.phone = formatTel(phone);
+                application.dob = moment(dob).format('MM/DD/YYYY');
+                application.pin = ssn.slice(-4);
 
-        const items = ['fullName', 'formId', 'url', 'phone', 'dob', 'pin'];
-        items.forEach((item) => $(`#apl-id-card\\:${item}`).html(application[item]));
+                const items = ['fullName', 'formId', 'url', 'phone', 'dob', 'pin'];
+                items.forEach((item) => $(`#apl-id-card\\:${item}`).html(application[item]));
 
-        $modal.modal('show');
-      },
+                $modal.modal('show');
+            },
+        });
     });
-  });
 
-  $copyIcon.on('click', function (evt) {
-    evt.preventDefault();
+    $copyIcon.on('click', function (evt) {
+        evt.preventDefault();
 
-    const text = $(this).parent().next().text();
+        const text = $(this).parent().next().text();
 
-    navigator.clipboard.writeText(text).then(() => {
-      $copySuccess.fadeIn();
-      setTimeout(() => $copySuccess.fadeOut(), 3500);
+        navigator.clipboard.writeText(text).then(() => {
+            $copySuccess.fadeIn();
+            setTimeout(() => $copySuccess.fadeOut(), 3500);
+        });
     });
-  });
 
-  $copyBtn.on('click', () => {
-    let text = '[QuickPaste]';
-    text += '|' + $('#apl-id-card\\:phone').text();
-    text += '|' + $('#apl-id-card\\:dob').text();
-    text += '|' + $('#apl-id-card\\:pin').text();
+    $copyBtn.on('click', () => {
+        let text = '[QuickPaste]';
+        text += '|' + $('#apl-id-card\\:phone').text();
+        text += '|' + $('#apl-id-card\\:dob').text();
+        text += '|' + $('#apl-id-card\\:pin').text();
 
-    navigator.clipboard.writeText(text).then(() => {
-      $copySuccess.fadeIn();
-      setTimeout(() => $copySuccess.fadeOut(), 3500);
+        navigator.clipboard.writeText(text).then(() => {
+            $copySuccess.fadeIn();
+            setTimeout(() => $copySuccess.fadeOut(), 3500);
+        });
     });
-  });
 });

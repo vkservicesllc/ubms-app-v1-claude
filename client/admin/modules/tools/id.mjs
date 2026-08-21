@@ -1,6 +1,6 @@
 export default function () {
-  const { href } = window.location;
-  const x = href.split('/');
+    const { href } = window.location;
+    const x = href.split('/');
 
-  return x[x.length - 1];
+    return x[x.length - 1];
 }

@@ -7,7 +7,7 @@ import selector from '/modules/registry/selectors/driver-application.mjs';
 import { Relationship } from '/modules/tools/core/person.mjs';
 
 const TS = selector.id.text,
-  SS = selector.id.select;
+    SS = selector.id.select;
 const relationId = SS.benefRelation;
 const otherRelId = TS.benefOtherRel;
 const firstNameId = TS.benefFirstName;
@@ -28,21 +28,21 @@ const $submit = $('#beneficiary-submit');
 const $form = $('#beneficiary-form');
 
 selectEvent(relationId, {
-  fill: true,
-  onChange(relation, $relation) {
-    const gender = Relationship.gender(relation);
-    let disabled = true,
-      action = 'hide';
+    fill: true,
+    onChange(relation, $relation) {
+        const gender = Relationship.gender(relation);
+        let disabled = true,
+            action = 'hide';
 
-    if (relation === 'Other') {
-      disabled = false;
-      action = 'show';
-    } else if (gender)
-      $(genderId).val(gender).addClass('is-valid').find('option[value=""]').remove();
+        if (relation === 'Other') {
+            disabled = false;
+            action = 'show';
+        } else if (gender)
+            $(genderId).val(gender).addClass('is-valid').find('option[value=""]').remove();
 
-    $(otherRelId).prop('disabled', disabled).parent()[action]();
-    onChange(relation, $relation);
-  },
+        $(otherRelId).prop('disabled', disabled).parent()[action]();
+        onChange(relation, $relation);
+    },
 });
 
 inputEvent(otherRelId, { strip: true, word: true, capitalize: 'first', onInput, onChange });
@@ -52,13 +52,13 @@ nameEvent(firstNameId, { onInput, onChange });
 nameEvent(middleNameId, { onChange });
 
 nameEvent(lastNameId, {
-  sfxId: suffixId,
-  onInput,
-  onChange(lastName, $lastName, suffix, $suffix) {
-    onChange(lastName, $lastName);
+    sfxId: suffixId,
+    onInput,
+    onChange(lastName, $lastName, suffix, $suffix) {
+        onChange(lastName, $lastName);
 
-    if (suffix) onChange(suffix, $suffix);
-  },
+        if (suffix) onChange(suffix, $suffix);
+    },
 });
 
 selectEvent(suffixId, { onChange });
