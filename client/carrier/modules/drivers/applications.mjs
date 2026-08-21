@@ -1,513 +1,555 @@
-import Person from '/modules/tools/core/person.mjs'
-import escapeHTML from '/modules/tools/utils/html.mjs'
-import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
-import styleSearch, { tag as searchTag } from '/modules/tools/search.mjs'
-import filterDropdown from '/modules/tools/filter-dropdown.mjs'
-import clipboardEvent from './application.clipboard.mjs'
+import Person from '/modules/tools/core/person.mjs';
+import escapeHTML from '/modules/tools/utils/html.mjs';
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs';
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs';
+import styleSearch, { tag as searchTag } from '/modules/tools/search.mjs';
+import filterDropdown from '/modules/tools/filter-dropdown.mjs';
+import clipboardEvent from './application.clipboard.mjs';
 
-
-const interval = 60000
+const interval = 60000;
 const conditions = {
-    p: [ '<span class="ui grey text">In progress...</span>', 'spinner' ],
-    c: [ '<span class="ui blue text">Completed</span>', 'blue text clock' ],
-    a: [ '<span class="ui dark green text">Approved</span>', 'dark green text thumbs up' ],
-    r: [ '<span class="ui orange text">Waiting List</span>', 'orange text hourglass half' ],
-    b: [ '<span class="ui red text">Disqualified</span>', 'red text thumbs down' ],
-    h: [ 'Hired', 'truck moving' ],
-}
-const positions = $.ajax('/api/enum/driver?filter=positions', { async: false }).responseJSON
-const defaultContent = '<i style="color: pink; font-size: .9em;">Unassigned</i>'
+  p: ['<span class="ui grey text">In progress...</span>', 'spinner'],
+  c: ['<span class="ui blue text">Completed</span>', 'blue text clock'],
+  a: ['<span class="ui dark green text">Approved</span>', 'dark green text thumbs up'],
+  r: ['<span class="ui orange text">Waiting List</span>', 'orange text hourglass half'],
+  b: ['<span class="ui red text">Disqualified</span>', 'red text thumbs down'],
+  h: ['Hired', 'truck moving'],
+};
+const positions = $.ajax('/api/enum/driver?filter=positions', { async: false }).responseJSON;
+const defaultContent = '<i style="color: pink; font-size: .9em;">Unassigned</i>';
 
 const table = $('#driver-applications-table').DataTable({
+  ajax: {
+    url: '/api/resource/drivers/applications/query',
+    data(body) {
+      body.filter = {
+        condition: $('#condition-filter').val(),
+        position: $('#position-filter').val(),
+        carrier: $('#carrier-filter').val(),
+        // user: $('#user-filter').val(),
+      };
+    },
+    dataSrc(response) {
+      const { data, actions, aplAddress, unscoped, stepLen, sessionUser } = response;
 
-    ajax: {
-        url: '/api/resource/drivers/applications/query',
-        data(body) {
-            body.filter = {
-                condition: $('#condition-filter').val(),
-                position: $('#position-filter').val(),
-                carrier: $('#carrier-filter').val(),
-                // user: $('#user-filter').val(),
+      table?.column(13).visible(unscoped);
+
+      // data = data.filter
+      data.forEach((row) => {
+        row.actions = actions;
+        row.stepLen = stepLen;
+        if (row.condition == 'p') row.aplAddress = aplAddress + row.formId;
+        row.sessionUser = sessionUser;
+      });
+
+      return data;
+    },
+  },
+
+  columns: [
+    {
+      title:
+        '<a class="ui small basic button" href="/drivers/applicants">Applicants <i class="angle double right icon"></i></a>',
+      searchable: false,
+      orderable: false,
+      data(row) {
+        if (!row._driverId && !row?.lead?.dob)
+          return '<div class="ui inverted grey label">Pre-Application</div>';
+
+        const { step, stepLen, legalStatus } = row;
+        let { condition } = row;
+        const progress =
+          condition === 'p' ? ` ${step < stepLen ? Math.round((step / stepLen) * 100) : 100}%` : '';
+        condition = conditions[condition];
+
+        let data = '';
+
+        if (step > 5) {
+          let style = 'green',
+            icon = 'green smile outline',
+            title = 'Driving Experience';
+          switch (true) {
+            case row.experience === false:
+              style = 'red';
+              icon = 'red frown outline';
+              title = 'No Experience';
+              break;
+            case row?.experience?.cmv === true:
+              icon = 'green truck';
+              title = 'CMV Experience';
+              break;
+          }
+          data += `<div class="ui inverted dark ${style} label experience-label">`;
+          data += `<span title="${title}"><i class="inverted ${icon} icon"></i></span>`;
+          data += '</div>';
+        } else
+          data +=
+            '<div class="ui label experience-label"><span title="Unknown Experience"><i class="question icon"></i></span></div>';
+
+        data += `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`;
+        if (legalStatus[0] === 2)
+          data +=
+            '<span title="Temporary Legal Status"><i class="orange hourglass start icon"></i></span>';
+
+        if (step > 2 && !row._mecId)
+          data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`;
+
+        if (step > 3) {
+          if (row.criminal)
+            data += `<span title="Red Flag: Misdemeanor/Felony in the Past"><i class="ui red skull crossbones icon"></i></span>`;
+          if (row.dui) {
+            let flag = 'Red Flag',
+              msg = 'withing the past 10 years',
+              color = 'red';
+            if (!row.duiInDecade) {
+              flag = 'Warning';
+              msg = 'more than 10 years ago';
+              color = 'orange';
             }
-        },
-        dataSrc(response) {
-            const { data, actions, aplAddress, unscoped, stepLen, sessionUser } = response
-
-            table?.column(13).visible(unscoped)
-
-            // data = data.filter
-            data.forEach(row => {
-                row.actions = actions
-                row.stepLen = stepLen
-                if (row.condition == 'p')
-                    row.aplAddress = aplAddress + row.formId
-                row.sessionUser = sessionUser
-            })
-
-            return data
-        },
-    },
-
-    columns: [
-
-        {
-            title: '<a class="ui small basic button" href="/drivers/applicants">Applicants <i class="angle double right icon"></i></a>',
-            searchable: false,
-            orderable: false,
-            data(row) {
-                if (!row._driverId && !row?.lead?.dob) return '<div class="ui inverted grey label">Pre-Application</div>'
-
-                const { step, stepLen, legalStatus } = row
-                let { condition } = row
-                const progress = condition === 'p' ? ` ${step < stepLen ? Math.round(step / stepLen * 100) : 100}%` : ''
-                condition = conditions[condition]
-
-                let data = ''
-
-                if (step > 5) {
-                    let style = 'green', icon = 'green smile outline', title = 'Driving Experience'
-                    switch (true) {
-                        case row.experience === false:
-                            style = 'red'
-                            icon = 'red frown outline'
-                            title = 'No Experience'
-                            break
-                        case row?.experience?.cmv === true:
-                            icon = 'green truck'
-                            title = 'CMV Experience'
-                            break
-
-                    }
-                    data += `<div class="ui inverted dark ${style} label experience-label">`
-                    data += `<span title="${title}"><i class="inverted ${icon} icon"></i></span>`
-                    data += '</div>'
-                } else data += '<div class="ui label experience-label"><span title="Unknown Experience"><i class="question icon"></i></span></div>'
-
-                data += `<span title="${$(condition[0]).text() + progress}"><i class="${condition[1]} icon"></i></span>`
-                if (legalStatus[0] === 2)
-                    data += '<span title="Temporary Legal Status"><i class="orange hourglass start icon"></i></span>'
-
-                if (step > 2 && !row._mecId)
-                    data += `<span title="Fitness Warning: No Medical Card"><i class="ui orange first aid icon"></i></span>`
-
-                if (step > 3) {
-                    if (row.criminal)
-                        data += `<span title="Red Flag: Misdemeanor/Felony in the Past"><i class="ui red skull crossbones icon"></i></span>`
-                    if (row.dui) {
-                        let flag = 'Red Flag', msg = 'withing the past 10 years', color = 'red'
-                        if (!row.duiInDecade) {
-                            flag = 'Warning'
-                            msg = 'more than 10 years ago'
-                            color = 'orange'
-                        }
-                        data += `<span title="${flag}: DUI/DWI ${msg}">`
-                        data += `<i class="ui ${color} wine bottle icon"></i></span>`
-                    }
-                    if (row.dotDat)
-                        data += `<span title="Attention: Refused/Failed Drug/Alcohol Test in the Past"><i class="ui red prescription bottle icon"></i></span>`
-                    if (row.citations)
-                        data += `<span title="Warning: Had Citations"><i class="ui orange exclamation circle icon"></i></span>`
-                }
-
-                if (step > 4) {
-                    if (row.accidents)
-                        data += `<span title="Warning: Had Accidents"><i class="ui orange car crash icon"></i></span>`
-                }
-
-                if (step > 6) {
-                    if (row.prevEmployed === false) data += `<span title="Red Flag: Previously Never Employed"><i class="ui red ban icon"></i></span>`
-                }
-
-                if (step > 8 && !row.activeBusiness)
-                    data += `<span title="Warning: No Active LLC"><i class="ui orange briefcase icon"></i></span>`
-
-                return data
-            },
-        },
-
-        {
-            data: 'formId',
-            title: `Form ID ${searchTag}`,
-            orderable: false,
-            render(data) {
-                return escapeHTML(data)
-            },
-            createdCell(td) {
-                $(td).css('font-family', 'monospace')
-            },
-        },
-
-        {
-            data: 'lastName',
-            title: `Last Name ${searchTag}`,
-            orderable: false,
-            render(data, type, row) {
-                if (!data) row = row.lead
-                if (!row.lastName) return
-
-                data = new Person(row).fullLastName()
-                if (row.count)
-                    data += ` <sup style="color: gray; font-size: .5em; border: 1px solid gainsboro; border-radius: .25rem; padding: 0 .2rem; margin-left: .12rem;">${row.count}</sup>`
-
-                return data
-            },
-        },
-
-        {
-            data: 'firstName',
-            title: `First Name ${searchTag}`,
-            orderable: false,
-            render(data, type, row) {
-                if (!data) row = row.lead
-                if (!row.firstName) return
-
-                return new Person(row).fullFirstName()
-            },
-        },
-
-        {
-            title: 'Age',
-            searchable: false,
-            orderable: false,
-            type: 'string',
-            data(row) {
-                const dob = row.dob || row?.lead?.dob
-                if (!dob) return
-
-                return new Person({ firstName: 'fn', lastName: 'ln', dob }).age
-            },
-        },
-
-        {
-            data: 'phone',
-            title: `Phone ${searchTag}`,
-            orderable: false,
-            render(data, type, row) {
-                return formatTel(data || row?.lead?.phone)
-            },
-        },
-
-        {
-            title: 'State',
-            searchable: false,
-            orderable: false,
-            render(data, type, row) {
-                let state = row?.address?.state
-                if (!state) return
-
-                const { state: dlState } = row?.dl || {}
-                if (dlState && state !== dlState) state += ` <small>(${dlState})</small>`
-
-                return state
-            },
-        },
-
-        {
-            data: 'position',
-            title: 'Position',
-            searchable: false,
-            orderable: false,
-            render(data, type, row) {
-                data = positions[data]
-                if (row?.dl?.commercial) data += ` <sup title="Commercial Driver's License"><small><i class="green star outline icon"></i></small></sup>`
-
-                return data
-            },
-        },
-
-        {
-            data: 'cdlRole',
-            title: 'Role',
-            searchable: false,
-            orderable: false,
-            render(data) {
-                return data ? 'CDL' : 'Non-CDL' 
-            },
-        },
-
-        {
-            data: 'appliedOn',
-            title: 'Applied on',
-            searchable: false,
-            orderable: false,
-            defaultContent: '<i style="color: pink; font-size: .9em;">...pending</i>',
-            type: 'string',
-            render(data, type, row) {
-                if (!row._driverId && !row?.lead?.dob) return
-                return type == 'display' ? `<span title="${moment(row.appliedAt).format('MMM D, YYYY HH:mm')}">${moment(data).format('ll')}</span>` : data
-            },
-        },
-
-        {
-            data: 'finishedAt',
-            title: 'Submitted on',
-            searchable: false,
-            orderable: false,
-            defaultContent: '<i style="color: pink; font-size: .9em;">...pending</i>',
-            type: 'string',
-            render(data, type) {
-                return type == 'display' && data ? `<span title="${moment(data).format('MMM D, YYYY HH:mm')}">${moment(data).format('ll')}</span>` : data
-            },
-        },
-
-        {
-            title: 'Company',
-            searchable: false,
-            orderable: false,
-            defaultContent,
-            data(row) {
-                return row?.carrier?.name
-            },
-        },
-
-        {
-            title: 'User',
-            searchable: false,
-            orderable: false,
-            defaultContent,
-            data(row) {
-                return row?.user?.shortName
-            },
-        },
-
-        {
-            title: 'Team',
-            searchable: false,
-            orderable: false,
-            defaultContent,
-            data(row) {
-                return row?.team?.name
-            },
-        },
-
-        {
-            searchable: false,
-            orderable: false,
-            className: 'right aligned',
-            width: '10rem',
-            defaultContent: '',
-            render(data, type, row) {
-                const { _id, condition, formId } = row
-                const { comment, modify, delete: remove } = row.actions.data
-                const { _userId, sessionUser } = row
-                const self = _userId === sessionUser._id
-                let panel = ''
-
-                if (!row._driverId) {
-                    if (!row?.lead?.dob) {
-                        const assigned = !_userId || self || sessionUser.DS
-
-                        if (modify && assigned) {
-                            panel += `<a class="reinvite-apl" data-id="${_id}" href="" title="Invite again"><i class="blue envelope outline icon"></i></a>`
-                            return panel += `<a class="modify-preapl" data-id="${_id}" data-assigned="${assigned ? 1 : 0}" href="" title="Modify Pre-Application"><i class="dark green edit outline icon"></i></a>`
-                        }
-                    }
-
-                    return
-                }
-
-                const { access } = row.actions.file
-                const authorized = self || sessionUser.DS || !_userId
-
-                if (condition !== 'p') {
-                    if (access && row.uploads !== null && condition !== 'h' && authorized) {
-                        const count = Object.keys(row.uploads).filter(prop => row.uploads[prop][0] === true).length
-                        panel += `<a class="apl-uploads" data-id="${_id}" href="" title="Uploads available (${count} files)"><i class="purple cloud download icon"></i></a>`
-                    }
-                    panel += `<a class="apl-clipboard" data-id="${_id}" href="" title="Clipboard"><i class="dark green clipboard outline icon"></i></a>`
-                    if (modify && authorized && condition !== 'h') {
-                        panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form" title="Manage Application"><i class="dark green edit outline icon"></i></a>`
-                        // panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`
-                    } else panel += `<a class="view-apl" href="" title="Application Details"><i class="dark green id card outline icon"></i></a>`
-                    if (access && (condition === 'h' || !authorized)) panel += `<a class="apl-files" data-id="${_id}" href=""><i class="dark orange folder outline icon"></i></a>`
-                    if (comment) panel += `<a class="comment-apl" title="Comment"><i class="purple comment outline icon"></i></a>`
-                } else {
-                    if (modify) {
-                        panel += `<a class="apl-id-card" data-id="${_id}" href="" title="Login Credentials"><i class="dark green id card outline icon"></i></a>`
-                        panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank" title="External Form"><i class="blue external alternate icon"></i></a>`
-                    }
-                }
-                if (remove && authorized && ['p', 'c'].includes(condition) && !row.locked)
-                    panel += `<a class="delete-apl" data-id="${_id}" href="" title="Delete Application"><i class="red trash alternate outline icon"></i></a>`
-
-                return panel
-            },
-            createdCell(cell) {
-                $(cell).css({ color: 'black', fontWeight: 'normal' })
-            },
-        },
-
-    ],
-
-    createdRow(row, data) {
-        switch (data.condition) {
-            case 'p':
-                $(row).css({ backgroundColor: '#FFE9EC', color: 'grey' })
-                break
-            case 'c':
-                $(row).css('color', '#4169E1')
-                break
-            case 'a':
-                $(row).css('color', 'green')
-                break
-            case 'r':
-                $(row).css('color', '#F28C28')
-                break
-            case 'b':
-                $(row).css('color', '#DC143C')
-                break
-            case 'h':
-                [2, 3].forEach(idx => $('td', row).eq(idx).css({ fontWeight: 'bold' }))
-                break
-        }
-    },
-
-    dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
-
-    fixedHeader: {
-        header: true,
-        headerOffset: $('#top-nav').height(),
-    },
-
-    initComplete(settings, response) {
-        styleSearch()
-
-        const { carriers, users } = response.supData
-
-        const toolbar = $('<div class="custom-dt-toolbar"></div>')
-        const dropdown = {
-            condition: filterDropdown('condition-filter', 'Status', { multiple: true, clearable: true, element: 'div', short: true }),
-            position: filterDropdown('position-filter', 'Position', { multiple: true, clearable: true, element: 'div', short: true }),
-            carrier: filterDropdown('carrier-filter', 'Company', { multiple: true, clearable: true, element: 'div' }),
-            user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
+            data += `<span title="${flag}: DUI/DWI ${msg}">`;
+            data += `<i class="ui ${color} wine bottle icon"></i></span>`;
+          }
+          if (row.dotDat)
+            data += `<span title="Attention: Refused/Failed Drug/Alcohol Test in the Past"><i class="ui red prescription bottle icon"></i></span>`;
+          if (row.citations)
+            data += `<span title="Warning: Had Citations"><i class="ui orange exclamation circle icon"></i></span>`;
         }
 
-        dropdown.carrier.find('.menu').append(`<div class="item" data-value="null" data-text="<i class='red text handshake slash icon'></i>"><span class="ui red text">Unassigned</span></div>`)
-        dropdown.user.find('.menu').append(`<div class="item" data-value="null" data-text="<span class='ui red text'><i>Not assigned to User</span>"><span class="ui red text">Unassigned</span></div>`)
-
-        for (const value in conditions) {
-            const option = conditions[value]
-
-            dropdown.condition.find('.menu').append(`<div class="item" data-value="${value}" data-text="<i class='${option[1]} icon'></i>">${option[0]}</div>`)
+        if (step > 4) {
+          if (row.accidents)
+            data += `<span title="Warning: Had Accidents"><i class="ui orange car crash icon"></i></span>`;
         }
 
-        for (const value in positions) {
-            const option = positions[value]
-
-            dropdown.position.find('.menu').append(`<div class="item" data-value="${value}" data-text="${value}">${option}</div>`)
+        if (step > 6) {
+          if (row.prevEmployed === false)
+            data += `<span title="Red Flag: Previously Never Employed"><i class="ui red ban icon"></i></span>`;
         }
 
-        carriers.map(carrier => {
-            const { _id, name, alias } = carrier
-            dropdown.carrier.find('.menu').append(`<div class="item" data-value="${_id}" data-text="${alias}">${name}</div>`)
-        })
+        if (step > 8 && !row.activeBusiness)
+          data += `<span title="Warning: No Active LLC"><i class="ui orange briefcase icon"></i></span>`;
 
-        toolbar.append(dropdown.condition)
-        toolbar.append(dropdown.position)
-        toolbar.append(dropdown.carrier)
-        toolbar.append(dropdown.user)
-        toolbar.append('<button class="ui button" id="other-filters"><i class="filter icon"></i></button>')
-
-        $('.dt-length').after(toolbar)
-
-        $('.custom-dt-dropdown')
-            .dropdown()
-            .on('change', function() {
-                const length = $(this).dropdown('get value').length
-                $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue')
-
-                $(this).blur()
-                table.ajax.reload()
-            })
-
-        $('#dt-search-0')
-            .on('input', function() {
-                $(this).val($(this).val().replace(/\W/gi, ''))
-            })
-
-        $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
-
-        // $.ajax('/api/lists?filter=driver-applications', {
-        //     method: 'POST',
-        //     success(lists) {
-        //         const { carriers = [], users = [] } = lists
-
-        //         carriers.forEach(carrier => {
-        //             const { _carrierId, active, until, alias } = carrier
-        //             let { name } = carrier
-        //             let color = 'green'
-
-        //             if (until) color = 'red'
-        //             else if (!active) color = 'blue'
-
-        //             dropdown.carrier.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
-        //         })
-
-        //         users.forEach(user => {
-        //             const { firstName, lastName, alias } = user
-        //             const person = new Person({ firstName, lastName, alias })
-
-        //             user.name = person.fullName('AL')
-        //             user.shortName = person.fullName('Al')
-        //         })
-
-        //         const self = users.filter(user => user.self === true)[0]
-        //         const others = sortArrayByObjectKey(users.filter(user => user.self === false), 'name')
-
-        //         if (self)
-        //             dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="<span class='ui dark blue text'><i><b>My Applicants</b></i></span>">${self.name} <small>(self)</small></div>`)
-        //         others.forEach(user => {
-        //             const { _id, name, shortName } = user
-
-        //             dropdown.user.find('.menu').append(`<div class="item" data-value="${_id}" data-text="<small>Assigned to</small> <b>${shortName}</b>">${name}</div>`)
-        //         })
-
-        //         toolbar.append(dropdown.condition)
-        //         toolbar.append(dropdown.position)
-        //         toolbar.append(dropdown.carrier)
-        //         toolbar.append(dropdown.user)
-        //         toolbar.append('<button class="ui button" id="other-filters"><i class="filter icon"></i></button>')
-
-        //         $('.dt-length').after(toolbar)
-
-        //         $('.custom-dt-dropdown')
-        //             .dropdown()
-        //             .on('change', function() {
-        //                 const length = $(this).dropdown('get value').length
-        //                 $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue')
-
-        //                 $(this).blur()
-        //                 table.ajax.reload()
-        //             })
-
-        //         $('#dt-search-0')
-        //             .on('input', function() {
-        //                 $(this).val($(this).val().replace(/\W/gi, ''))
-        //             })
-
-        //         $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
-        //     },
-        // })
+        return data;
+      },
     },
 
-    language: {
-        emptyTable: '<span class="ui red text">No applications at this time</span>',
+    {
+      data: 'formId',
+      title: `Form ID ${searchTag}`,
+      orderable: false,
+      render(data) {
+        return escapeHTML(data);
+      },
+      createdCell(td) {
+        $(td).css('font-family', 'monospace');
+      },
     },
 
-    lengthMenu,
-    processing: true,
-    serverSide: true,
+    {
+      data: 'lastName',
+      title: `Last Name ${searchTag}`,
+      orderable: false,
+      render(data, type, row) {
+        if (!data) row = row.lead;
+        if (!row.lastName) return;
 
-})
+        data = new Person(row).fullLastName();
+        if (row.count)
+          data += ` <sup style="color: gray; font-size: .5em; border: 1px solid gainsboro; border-radius: .25rem; padding: 0 .2rem; margin-left: .12rem;">${row.count}</sup>`;
 
+        return data;
+      },
+    },
+
+    {
+      data: 'firstName',
+      title: `First Name ${searchTag}`,
+      orderable: false,
+      render(data, type, row) {
+        if (!data) row = row.lead;
+        if (!row.firstName) return;
+
+        return new Person(row).fullFirstName();
+      },
+    },
+
+    {
+      title: 'Age',
+      searchable: false,
+      orderable: false,
+      type: 'string',
+      data(row) {
+        const dob = row.dob || row?.lead?.dob;
+        if (!dob) return;
+
+        return new Person({ firstName: 'fn', lastName: 'ln', dob }).age;
+      },
+    },
+
+    {
+      data: 'phone',
+      title: `Phone ${searchTag}`,
+      orderable: false,
+      render(data, type, row) {
+        return formatTel(data || row?.lead?.phone);
+      },
+    },
+
+    {
+      title: 'State',
+      searchable: false,
+      orderable: false,
+      render(data, type, row) {
+        let state = row?.address?.state;
+        if (!state) return;
+
+        const { state: dlState } = row?.dl || {};
+        if (dlState && state !== dlState) state += ` <small>(${dlState})</small>`;
+
+        return state;
+      },
+    },
+
+    {
+      data: 'position',
+      title: 'Position',
+      searchable: false,
+      orderable: false,
+      render(data, type, row) {
+        data = positions[data];
+        if (row?.dl?.commercial)
+          data += ` <sup title="Commercial Driver's License"><small><i class="green star outline icon"></i></small></sup>`;
+
+        return data;
+      },
+    },
+
+    {
+      data: 'cdlRole',
+      title: 'Role',
+      searchable: false,
+      orderable: false,
+      render(data) {
+        return data ? 'CDL' : 'Non-CDL';
+      },
+    },
+
+    {
+      data: 'appliedOn',
+      title: 'Applied on',
+      searchable: false,
+      orderable: false,
+      defaultContent: '<i style="color: pink; font-size: .9em;">...pending</i>',
+      type: 'string',
+      render(data, type, row) {
+        if (!row._driverId && !row?.lead?.dob) return;
+        return type == 'display'
+          ? `<span title="${moment(row.appliedAt).format('MMM D, YYYY HH:mm')}">${moment(data).format('ll')}</span>`
+          : data;
+      },
+    },
+
+    {
+      data: 'finishedAt',
+      title: 'Submitted on',
+      searchable: false,
+      orderable: false,
+      defaultContent: '<i style="color: pink; font-size: .9em;">...pending</i>',
+      type: 'string',
+      render(data, type) {
+        return type == 'display' && data
+          ? `<span title="${moment(data).format('MMM D, YYYY HH:mm')}">${moment(data).format('ll')}</span>`
+          : data;
+      },
+    },
+
+    {
+      title: 'Company',
+      searchable: false,
+      orderable: false,
+      defaultContent,
+      data(row) {
+        return row?.carrier?.name;
+      },
+    },
+
+    {
+      title: 'User',
+      searchable: false,
+      orderable: false,
+      defaultContent,
+      data(row) {
+        return row?.user?.shortName;
+      },
+    },
+
+    {
+      title: 'Team',
+      searchable: false,
+      orderable: false,
+      defaultContent,
+      data(row) {
+        return row?.team?.name;
+      },
+    },
+
+    {
+      searchable: false,
+      orderable: false,
+      className: 'right aligned',
+      width: '10rem',
+      defaultContent: '',
+      render(data, type, row) {
+        const { _id, condition, formId } = row;
+        const { comment, modify, delete: remove } = row.actions.data;
+        const { _userId, sessionUser } = row;
+        const self = _userId === sessionUser._id;
+        let panel = '';
+
+        if (!row._driverId) {
+          if (!row?.lead?.dob) {
+            const assigned = !_userId || self || sessionUser.DS;
+
+            if (modify && assigned) {
+              panel += `<a class="reinvite-apl" data-id="${_id}" href="" title="Invite again"><i class="blue envelope outline icon"></i></a>`;
+              return (panel += `<a class="modify-preapl" data-id="${_id}" data-assigned="${assigned ? 1 : 0}" href="" title="Modify Pre-Application"><i class="dark green edit outline icon"></i></a>`);
+            }
+          }
+
+          return;
+        }
+
+        const { access } = row.actions.file;
+        const authorized = self || sessionUser.DS || !_userId;
+
+        if (condition !== 'p') {
+          if (access && row.uploads !== null && condition !== 'h' && authorized) {
+            const count = Object.keys(row.uploads).filter(
+              (prop) => row.uploads[prop][0] === true,
+            ).length;
+            panel += `<a class="apl-uploads" data-id="${_id}" href="" title="Uploads available (${count} files)"><i class="purple cloud download icon"></i></a>`;
+          }
+          panel += `<a class="apl-clipboard" data-id="${_id}" href="" title="Clipboard"><i class="dark green clipboard outline icon"></i></a>`;
+          if (modify && authorized && condition !== 'h') {
+            panel += `<a class="modify-apl" href="/drivers/application/${formId}/e-form" title="Manage Application"><i class="dark green edit outline icon"></i></a>`;
+            // panel += `<a class="assign-apl"><i class="blue clipboard outline icon"></i></a>`
+          } else
+            panel += `<a class="view-apl" href="" title="Application Details"><i class="dark green id card outline icon"></i></a>`;
+          if (access && (condition === 'h' || !authorized))
+            panel += `<a class="apl-files" data-id="${_id}" href=""><i class="dark orange folder outline icon"></i></a>`;
+          if (comment)
+            panel += `<a class="comment-apl" title="Comment"><i class="purple comment outline icon"></i></a>`;
+        } else {
+          if (modify) {
+            panel += `<a class="apl-id-card" data-id="${_id}" href="" title="Login Credentials"><i class="dark green id card outline icon"></i></a>`;
+            panel += `<a class="apl-external-form" href="${row.aplAddress}" target="_blank" title="External Form"><i class="blue external alternate icon"></i></a>`;
+          }
+        }
+        if (remove && authorized && ['p', 'c'].includes(condition) && !row.locked)
+          panel += `<a class="delete-apl" data-id="${_id}" href="" title="Delete Application"><i class="red trash alternate outline icon"></i></a>`;
+
+        return panel;
+      },
+      createdCell(cell) {
+        $(cell).css({ color: 'black', fontWeight: 'normal' });
+      },
+    },
+  ],
+
+  createdRow(row, data) {
+    switch (data.condition) {
+      case 'p':
+        $(row).css({ backgroundColor: '#FFE9EC', color: 'grey' });
+        break;
+      case 'c':
+        $(row).css('color', '#4169E1');
+        break;
+      case 'a':
+        $(row).css('color', 'green');
+        break;
+      case 'r':
+        $(row).css('color', '#F28C28');
+        break;
+      case 'b':
+        $(row).css('color', '#DC143C');
+        break;
+      case 'h':
+        [2, 3].forEach((idx) => $('td', row).eq(idx).css({ fontWeight: 'bold' }));
+        break;
+    }
+  },
+
+  dom: '<"top-toolbar"lf>rt<"bottom-toolbar"ip><"clear">',
+
+  fixedHeader: {
+    header: true,
+    headerOffset: $('#top-nav').height(),
+  },
+
+  initComplete(settings, response) {
+    styleSearch();
+
+    const { carriers, users } = response.supData;
+
+    const toolbar = $('<div class="custom-dt-toolbar"></div>');
+    const dropdown = {
+      condition: filterDropdown('condition-filter', 'Status', {
+        multiple: true,
+        clearable: true,
+        element: 'div',
+        short: true,
+      }),
+      position: filterDropdown('position-filter', 'Position', {
+        multiple: true,
+        clearable: true,
+        element: 'div',
+        short: true,
+      }),
+      carrier: filterDropdown('carrier-filter', 'Company', {
+        multiple: true,
+        clearable: true,
+        element: 'div',
+      }),
+      user: filterDropdown('user-filter', 'User', { clearable: true, element: 'div' }),
+    };
+
+    dropdown.carrier
+      .find('.menu')
+      .append(
+        `<div class="item" data-value="null" data-text="<i class='red text handshake slash icon'></i>"><span class="ui red text">Unassigned</span></div>`,
+      );
+    dropdown.user
+      .find('.menu')
+      .append(
+        `<div class="item" data-value="null" data-text="<span class='ui red text'><i>Not assigned to User</span>"><span class="ui red text">Unassigned</span></div>`,
+      );
+
+    for (const value in conditions) {
+      const option = conditions[value];
+
+      dropdown.condition
+        .find('.menu')
+        .append(
+          `<div class="item" data-value="${value}" data-text="<i class='${option[1]} icon'></i>">${option[0]}</div>`,
+        );
+    }
+
+    for (const value in positions) {
+      const option = positions[value];
+
+      dropdown.position
+        .find('.menu')
+        .append(`<div class="item" data-value="${value}" data-text="${value}">${option}</div>`);
+    }
+
+    carriers.map((carrier) => {
+      const { _id, name, alias } = carrier;
+      dropdown.carrier
+        .find('.menu')
+        .append(`<div class="item" data-value="${_id}" data-text="${alias}">${name}</div>`);
+    });
+
+    toolbar.append(dropdown.condition);
+    toolbar.append(dropdown.position);
+    toolbar.append(dropdown.carrier);
+    toolbar.append(dropdown.user);
+    toolbar.append(
+      '<button class="ui button" id="other-filters"><i class="filter icon"></i></button>',
+    );
+
+    $('.dt-length').after(toolbar);
+
+    $('.custom-dt-dropdown')
+      .dropdown()
+      .on('change', function () {
+        const length = $(this).dropdown('get value').length;
+        $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue');
+
+        $(this).blur();
+        table.ajax.reload();
+      });
+
+    $('#dt-search-0').on('input', function () {
+      $(this).val($(this).val().replace(/\W/gi, ''));
+    });
+
+    $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible');
+
+    // $.ajax('/api/lists?filter=driver-applications', {
+    //     method: 'POST',
+    //     success(lists) {
+    //         const { carriers = [], users = [] } = lists
+
+    //         carriers.forEach(carrier => {
+    //             const { _carrierId, active, until, alias } = carrier
+    //             let { name } = carrier
+    //             let color = 'green'
+
+    //             if (until) color = 'red'
+    //             else if (!active) color = 'blue'
+
+    //             dropdown.carrier.find('.menu').append(`<div class="item" data-value="${_carrierId}" data-text="${alias}"><div class="ui ${color} empty circular label"></div>${name}</div>`)
+    //         })
+
+    //         users.forEach(user => {
+    //             const { firstName, lastName, alias } = user
+    //             const person = new Person({ firstName, lastName, alias })
+
+    //             user.name = person.fullName('AL')
+    //             user.shortName = person.fullName('Al')
+    //         })
+
+    //         const self = users.filter(user => user.self === true)[0]
+    //         const others = sortArrayByObjectKey(users.filter(user => user.self === false), 'name')
+
+    //         if (self)
+    //             dropdown.user.find('.menu').append(`<div class="item" data-value="${self._id}" data-text="<span class='ui dark blue text'><i><b>My Applicants</b></i></span>">${self.name} <small>(self)</small></div>`)
+    //         others.forEach(user => {
+    //             const { _id, name, shortName } = user
+
+    //             dropdown.user.find('.menu').append(`<div class="item" data-value="${_id}" data-text="<small>Assigned to</small> <b>${shortName}</b>">${name}</div>`)
+    //         })
+
+    //         toolbar.append(dropdown.condition)
+    //         toolbar.append(dropdown.position)
+    //         toolbar.append(dropdown.carrier)
+    //         toolbar.append(dropdown.user)
+    //         toolbar.append('<button class="ui button" id="other-filters"><i class="filter icon"></i></button>')
+
+    //         $('.dt-length').after(toolbar)
+
+    //         $('.custom-dt-dropdown')
+    //             .dropdown()
+    //             .on('change', function() {
+    //                 const length = $(this).dropdown('get value').length
+    //                 $(this).siblings('.label')[length ? 'addClass' : 'removeClass']('blue')
+
+    //                 $(this).blur()
+    //                 table.ajax.reload()
+    //             })
+
+    //         $('#dt-search-0')
+    //             .on('input', function() {
+    //                 $(this).val($(this).val().replace(/\W/gi, ''))
+    //             })
+
+    //         $('.dt-length, .dt-search, .custom-dt-toolbar').css('visibility', 'visible')
+    //     },
+    // })
+  },
+
+  language: {
+    emptyTable: '<span class="ui red text">No applications at this time</span>',
+  },
+
+  lengthMenu,
+  processing: true,
+  serverSide: true,
+});
 
 setInterval(() => {
-    dtFnFilterData(table)
-}, interval)
+  dtFnFilterData(table);
+}, interval);
 
+table.on('draw', () => clipboardEvent());
 
-table.on('draw', () => clipboardEvent())
-
-
-export default table
+export default table;

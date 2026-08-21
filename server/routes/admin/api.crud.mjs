@@ -1,426 +1,462 @@
-const router = require('express').Router()
-const sendError = require('../../tools/utils/error')
+const router = require('express').Router();
+const sendError = require('../../tools/utils/error');
 
 /* Import: Tools */
-import User, { Role } from '../../tools/core/user.mjs'
-import Team from '../../tools/core/team.mjs'
-import Individual from '../../tools/core/individual.mjs'
-import Address from '../../../client/global/modules/tools/core/address.us.mjs'
-import Company, { Owner, RefSource } from '../../tools/core/company.mjs'
-import Carrier from '../../tools/core/carrier.mjs'
-import { Application as DriverApplication } from '../../tools/core/driver.mjs'
-import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs'
+import User, { Role } from '../../tools/core/user.mjs';
+import Team from '../../tools/core/team.mjs';
+import Individual from '../../tools/core/individual.mjs';
+import Address from '../../../client/global/modules/tools/core/address.us.mjs';
+import Company, { Owner, RefSource } from '../../tools/core/company.mjs';
+import Carrier from '../../tools/core/carrier.mjs';
+import { Application as DriverApplication } from '../../tools/core/driver.mjs';
+import { sortArrayByObjectKey } from '../../../client/global/modules/tools/utils/sorter.mjs';
 
 /* Import: Validators */
-import validationCheck from '../../tools/form/validator.mjs'
-import UserForm, { RoleForm } from '../../tools/form/user.mjs'
-import TeamForm from '../../tools/form/team.mjs'
-import CompanyForm, { OwnerForm } from '../../tools/form/company.mjs'
-import CarrierForm from '../../tools/form/carrier.mjs'
-
-
+import validationCheck from '../../tools/form/validator.mjs';
+import UserForm, { RoleForm } from '../../tools/form/user.mjs';
+import TeamForm from '../../tools/form/team.mjs';
+import CompanyForm, { OwnerForm } from '../../tools/form/company.mjs';
+import CarrierForm from '../../tools/form/carrier.mjs';
 
 //* GET *//
 
-
-const hideRawId = true
-
+const hideRawId = true;
 
 router.get('/users/:_id?/:target?', User.mw.verify, async (req, res) => {
-    try {
-        const { _id, target } = req.params
-        const { user: sessionUser } = res.session
-        const options = { hideRawId, hideSensitive: false }
+  try {
+    const { _id, target } = req.params;
+    const { user: sessionUser } = res.session;
+    const options = { hideRawId, hideSensitive: false };
 
-        if (!_id) {
-            const filter = {}
-            if (sessionUser.location !== 'US') filter.location = sessionUser.location
-            options.hideEvents = false
+    if (!_id) {
+      const filter = {};
+      if (sessionUser.location !== 'US') filter.location = sessionUser.location;
+      options.hideEvents = false;
 
-            return res.json({ data: await User.fetch(res.session, filter, options) })
-        }
-
-        const relationships = target === 'relationships'
-        if (target && !relationships) throw new Error('Invalid user target supplied')
-
-        const user = await User.fetch(res.session, { _id }, options)
-        if (!user) return res.status(404).end()
-
-        if (relationships) {
-            const data = {}
-            const targets = User.config().jxTargets
-
-            for (const target in targets) {
-                const Src = targets[target][2]
-                const sorts = Src.config().sorts
-                const filter = {}
-                data[target] = {}
-
-                if (target === 'roles') filter.location = [ user.location, null ]
-                if (target === 'companies') filter.confirmed = true
-
-                data[target].all = await Src.fetch(res.session, filter, { hideRawId, sorts })
-                data[target].applied = await user.fetch(`jx.${target}`)
-
-                if (!sessionUser.DS) {
-                    const sessData = await sessionUser.fetch(`jx.${target}`)
-
-                    data[target].all = data[target].all.filter(row => sessData.some(sessRow => sessRow._id === row._id))
-                    data[target].applied = data[target].applied.filter(row => sessData.some(sessRow => sessRow._id === row._id))
-                }
-
-                data[target].available = data[target].all.filter(row => !data[target].applied.some(appliedRow => appliedRow._id === row._id))
-            }
-
-            return res.json({ data, resource: user })
-        }
-
-        res.json({ data: user })
-    } catch (err) {
-        sendError.server(req, res, err)
+      return res.json({ data: await User.fetch(res.session, filter, options) });
     }
-})
 
+    const relationships = target === 'relationships';
+    if (target && !relationships) throw new Error('Invalid user target supplied');
 
-router.get('/companies', User.mw.verify, async (req, res) => {
-    try {
-        const { user: sessionUser } = res.session
-        const { category, owner: _ownerId, state, alphabet: abc } = req.query
+    const user = await User.fetch(res.session, { _id }, options);
+    if (!user) return res.status(404).end();
 
-        const options = { hideRawId }, filter = { category, _ownerId, state, abc }
-        let data
+    if (relationships) {
+      const data = {};
+      const targets = User.config().jxTargets;
+
+      for (const target in targets) {
+        const Src = targets[target][2];
+        const sorts = Src.config().sorts;
+        const filter = {};
+        data[target] = {};
+
+        if (target === 'roles') filter.location = [user.location, null];
+        if (target === 'companies') filter.confirmed = true;
+
+        data[target].all = await Src.fetch(res.session, filter, { hideRawId, sorts });
+        data[target].applied = await user.fetch(`jx.${target}`);
 
         if (!sessionUser.DS) {
-            filter.closed = false
-            filter.confirmed = true
+          const sessData = await sessionUser.fetch(`jx.${target}`);
 
-            data = await sessionUser.fetch('jx.companies', filter, options)
-        } else data = await Company.fetch(res.session, filter, options)
-
-        const alphabet = []
-        let categories = [], owners = [], states = []
-
-        for (const company of data) {
-            const firstLetter = company.name[0]
-            if (!alphabet.includes(firstLetter)) alphabet.push(firstLetter)
-            if (!categories.some(category => category.code = company.category)) categories.push({ code: company.category, name: company.expansion.categoryGroup })
-            if (company?.owner?._id && !owners.some(owner => owner._id === company.owner._id))
-                owners.push({ _id: company.owner._id, name: company.owner.fullName() || company.owner.parent.name })
-            if (company?.address?.physical?.state && !states.some(state => state.code === company.address.physical.state))
-                states.push({ code: company.address.physical.state, name: Address.list.state[company.address.physical.state] })
+          data[target].all = data[target].all.filter((row) =>
+            sessData.some((sessRow) => sessRow._id === row._id),
+          );
+          data[target].applied = data[target].applied.filter((row) =>
+            sessData.some((sessRow) => sessRow._id === row._id),
+          );
         }
-        categories = sortArrayByObjectKey(categories, 'name')
-        owners = sortArrayByObjectKey(owners, 'name')
-        states = sortArrayByObjectKey(states, 'name')
 
-        res.json({ data, supData: { alphabet, categories, owners, states } })
-    } catch (err) {
-        sendError.server(req, res, err)
+        data[target].available = data[target].all.filter(
+          (row) => !data[target].applied.some((appliedRow) => appliedRow._id === row._id),
+        );
+      }
+
+      return res.json({ data, resource: user });
     }
-})
 
+    res.json({ data: user });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
+
+router.get('/companies', User.mw.verify, async (req, res) => {
+  try {
+    const { user: sessionUser } = res.session;
+    const { category, owner: _ownerId, state, alphabet: abc } = req.query;
+
+    const options = { hideRawId },
+      filter = { category, _ownerId, state, abc };
+    let data;
+
+    if (!sessionUser.DS) {
+      filter.closed = false;
+      filter.confirmed = true;
+
+      data = await sessionUser.fetch('jx.companies', filter, options);
+    } else data = await Company.fetch(res.session, filter, options);
+
+    const alphabet = [];
+    let categories = [],
+      owners = [],
+      states = [];
+
+    for (const company of data) {
+      const firstLetter = company.name[0];
+      if (!alphabet.includes(firstLetter)) alphabet.push(firstLetter);
+      if (!categories.some((category) => (category.code = company.category)))
+        categories.push({ code: company.category, name: company.expansion.categoryGroup });
+      if (company?.owner?._id && !owners.some((owner) => owner._id === company.owner._id))
+        owners.push({
+          _id: company.owner._id,
+          name: company.owner.fullName() || company.owner.parent.name,
+        });
+      if (
+        company?.address?.physical?.state &&
+        !states.some((state) => state.code === company.address.physical.state)
+      )
+        states.push({
+          code: company.address.physical.state,
+          name: Address.list.state[company.address.physical.state],
+        });
+    }
+    categories = sortArrayByObjectKey(categories, 'name');
+    owners = sortArrayByObjectKey(owners, 'name');
+    states = sortArrayByObjectKey(states, 'name');
+
+    res.json({ data, supData: { alphabet, categories, owners, states } });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 router.get('/individuals', User.mw.verify, User.mw.developerOnly, async (req, res) => {
-    try {
-        res.json({ data: await Individual.fetch(res.session, {}, { hideRawId }) })
-    } catch(err) {
-        sendError.server(req, res, err)
-    }
-})
-
+  try {
+    res.json({ data: await Individual.fetch(res.session, {}, { hideRawId }) });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 router.get('/roles', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        let { category = null } = req.query
-        if (category) category = Company.list.category.key(category)
+  try {
+    let { category = null } = req.query;
+    if (category) category = Company.list.category.key(category);
 
-        res.json({ data: await Role.fetch(res.session, { category }, { hideRawId }) })
-    } catch(err) {
-        sendError.server(req, res, err)
-    }  
-})
-
+    res.json({ data: await Role.fetch(res.session, { category }, { hideRawId }) });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 router.get('/:src', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        const { src } = req.params
-        const Src = { teams: Team, 'company-owners': Owner, 'company-parents': Owner, refsources: RefSource }[src]
-        const filter = {}
+  try {
+    const { src } = req.params;
+    const Src = {
+      teams: Team,
+      'company-owners': Owner,
+      'company-parents': Owner,
+      refsources: RefSource,
+    }[src];
+    const filter = {};
 
-        if (src === 'company-owners') filter.type = 'individuals'
-        if (src === 'company-parents') filter.type = 'parents'
+    if (src === 'company-owners') filter.type = 'individuals';
+    if (src === 'company-parents') filter.type = 'parents';
 
-        res.json({ data: await Src.fetch(res.session, filter, { hideRawId }) })
-    } catch(err) {
-        sendError.server(req, res, err)
-    }
-})
-
+    res.json({ data: await Src.fetch(res.session, filter, { hideRawId }) });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 router.get('/companies/:_id/history', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        const { _id } = req.params
-        const company = await Company.fetch(res.session, { _id }, { hideRawId })
-        if (!company) throw new Error('Company not found')
+  try {
+    const { _id } = req.params;
+    const company = await Company.fetch(res.session, { _id }, { hideRawId });
+    if (!company) throw new Error('Company not found');
 
-        const data = {}
-        const targets = ['names', 'ownerships', 'addresses', 'mail', 'phones', 'faxes', 'emails']
-        const { since } = company
+    const data = {};
+    const targets = ['names', 'ownerships', 'addresses', 'mail', 'phones', 'faxes', 'emails'];
+    const { since } = company;
 
-        for (const target of targets) {
-            data[target] = await company.fetch(target)
+    for (const target of targets) {
+      data[target] = await company.fetch(target);
 
-            for (const row of data[target]) {
-                row.initial = row.since === since
+      for (const row of data[target]) {
+        row.initial = row.since === since;
 
-                if (target === 'ownerships') {
-                    row.owner = await Owner.fetch(res.session, { id: row.ownerId }, { hideRawId })
-                    if (!row.owner) throw new Error('Owner not found')
+        if (target === 'ownerships') {
+          row.owner = await Owner.fetch(res.session, { id: row.ownerId }, { hideRawId });
+          if (!row.owner) throw new Error('Owner not found');
 
-                    delete row.ownerId
-                }
-            }
+          delete row.ownerId;
         }
-
-        res.json({ data })
-    } catch(err) {
-        sendError.server(req, res, err)
+      }
     }
-})
 
+    res.json({ data });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 router.get('/company-owners/:_id', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        const { _id } = req.params
+  try {
+    const { _id } = req.params;
 
-        res.json({ data: await Owner.fetch(res.session, { _id }, { hideRawId, hideSensitive: false }) })
-    } catch(err) {
-        sendError.server(req, res, err)
-    }
-})
-
+    res.json({
+      data: await Owner.fetch(res.session, { _id }, { hideRawId, hideSensitive: false }),
+    });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 router.get('/:src/:_id/:target?', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
-    try {
-        const { src, _id, target } = req.params
-        const [ PriSrc ] = { roles: [ Role ], teams: [ Team ], companies: [ Company ], refsources: [ RefSource ] }[src]
-        if (!PriSrc) throw new Error('Invalid data requested')
+  try {
+    const { src, _id, target } = req.params;
+    const [PriSrc] = {
+      roles: [Role],
+      teams: [Team],
+      companies: [Company],
+      refsources: [RefSource],
+    }[src];
+    if (!PriSrc) throw new Error('Invalid data requested');
 
-        const inst = await PriSrc.fetch(res.session, { _id }, { hideRawId })
-        if (!inst) throw new Error(`${PriSrc.name} not found`)
+    const inst = await PriSrc.fetch(res.session, { _id }, { hideRawId });
+    if (!inst) throw new Error(`${PriSrc.name} not found`);
 
-        if (target) {
-            const targets = PriSrc.config().jxTargets
-            if (!Object.keys(targets).includes(target)) throw new Error(`Invalid ${PriSrc.name.toLowerCase()} target`)
+    if (target) {
+      const targets = PriSrc.config().jxTargets;
+      if (!Object.keys(targets).includes(target))
+        throw new Error(`Invalid ${PriSrc.name.toLowerCase()} target`);
 
-            const Src = targets[target][2]
-            const sorts = Src.config().sorts
-            const data = {}, filter = {}
+      const Src = targets[target][2];
+      const sorts = Src.config().sorts;
+      const data = {},
+        filter = {};
 
-            switch (target) {
-                case 'users':
-                    filter.status = ['U', 'A']
-                    if (src === 'roles' && inst.location) filter.location = [ inst.location, null ]
-                    break
-            }
+      switch (target) {
+        case 'users':
+          filter.status = ['U', 'A'];
+          if (src === 'roles' && inst.location) filter.location = [inst.location, null];
+          break;
+      }
 
-            data.all = await Src.fetch(res.session, filter, { hideRawId, hideSensitive: false, sorts })
-            data.applied = await inst.fetch(`jx.${target}`, {}, { hideRawId, hideSensitive: false })
-            data.available = data.all.filter(row => !data.applied.some(appliedRow => appliedRow._id === row._id))
+      data.all = await Src.fetch(res.session, filter, { hideRawId, hideSensitive: false, sorts });
+      data.applied = await inst.fetch(`jx.${target}`, {}, { hideRawId, hideSensitive: false });
+      data.available = data.all.filter(
+        (row) => !data.applied.some((appliedRow) => appliedRow._id === row._id),
+      );
 
-            return res.json({ data, resource: inst })
-        }
-
-        let settings
-        if (typeof inst.settings === 'function') settings = await inst.settings()
-
-        res.json({ data: inst, settings })
-    } catch(err) {
-        sendError.server(req, res, err)
+      return res.json({ data, resource: inst });
     }
-})
 
+    let settings;
+    if (typeof inst.settings === 'function') settings = await inst.settings();
 
+    res.json({ data: inst, settings });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 //* POST/PUT/PATCH *//
 
 const dynamicValidator = {
+  user: (req, res, next) => {
+    let validators = UserForm.validate();
 
-    user: (req, res, next) => {
-        let validators = UserForm.validate()
+    if (req.method === 'PATCH') {
+      const { field } = req.params;
 
-        if (req.method === 'PATCH') {
-            const { field } = req.params
+      switch (field) {
+        default:
+          validators = [UserForm[field].validate()];
+          break;
+      }
+    }
 
-            switch (field) {
-                default:
-                    validators = [ UserForm[field].validate() ]
-                    break
+    Promise.all(validators.map((validator) => validator.run(req)))
+      .then(() => next())
+      .catch(next);
+  },
+
+  companies: (req, res, next) => {
+    const { step } = req.params;
+    let validators = [];
+
+    switch (step) {
+      case 'address':
+        validators = CompanyForm.validate('address');
+        break;
+      case 'contacts':
+        validators = CompanyForm.validate('contacts');
+        break;
+    }
+
+    Promise.all(validators.map((validator) => validator.run(req)))
+      .then(() => next())
+      .catch(next);
+  },
+
+  companyTargets: (req, res, next) => {
+    const { target } = req.params;
+    let validators = [CompanyForm.since.validate()];
+
+    switch (target) {
+      case 'names':
+        validators.push(CompanyForm.busName.validate(), CompanyForm.coType.validate());
+        validators.push(CompanyForm.alias.validate());
+        break;
+      case 'phones':
+        validators.push(CompanyForm.phone.validate());
+        break;
+      case 'faxes':
+        validators.push(CompanyForm.fax.validate());
+        break;
+      case 'emails':
+        validators.push(CompanyForm.email.validate());
+        break;
+      case 'addresses':
+        //? need to figure out
+        break;
+      case 'mail':
+        //? need to figure out
+        break;
+    }
+
+    Promise.all(validators.map((validator) => validator.run(req)))
+      .then(() => next())
+      .catch(next);
+  },
+};
+
+router.post(
+  '/companies/:_id/:target',
+  User.mw.verify,
+  User.mw.superAdminOnly,
+  dynamicValidator.companyTargets,
+  validationCheck,
+  async (req, res) => {
+    try {
+      const { _id, target } = req.params;
+      const company = await Company.fetch(res.session, { _id });
+      if (!company) throw new Error('Company not found');
+
+      if (target === 'addresses') req.body.mail = req.body.mail === 'on';
+
+      const { route: oldRoute } = company;
+      const { added } = await company.add(target, req.body);
+      const data = await company.fetch(target);
+      const resource = await Company.fetch(res.session, { _id }, { hideRawId });
+      const { route: newRoute } = resource;
+
+      res.json({ added, data, props: { oldRoute, newRoute } });
+    } catch (err) {
+      sendError.server(req, res, err);
+    }
+  },
+);
+
+router.put(
+  '/companies/:_id/:target/:since',
+  User.mw.verify,
+  User.mw.superAdminOnly,
+  dynamicValidator.companyTargets,
+  validationCheck,
+  async (req, res) => {
+    try {
+      const { _id, target, since } = req.params;
+      const company = await Company.fetch(res.session, { _id });
+      if (!company) throw new Error('Company not found');
+
+      if (target === 'addresses') req.body.mail = req.body.mail === 'on';
+      if (target === 'ownerships') {
+        const _id = req.body._ownerId.split(':')[1];
+        const owner = await Owner.fetch(res.session, { _id });
+        if (!owner) throw new Error('Owner not found');
+
+        delete req.body._ownerId;
+        req.body.ownerId = owner.id;
+      }
+
+      const { route: oldRoute } = company;
+      const { updated } = await company.update(target, req.body, { since });
+      const data = await company.fetch(target);
+      const resource = await Company.fetch(res.session, { _id }, { hideRawId });
+      const { route: newRoute } = resource;
+
+      res.json({ updated, data, props: { oldRoute, newRoute } });
+    } catch (err) {
+      sendError.server(req, res, err);
+    }
+  },
+);
+
+router.patch(
+  '/users/:_id/:field?',
+  User.mw.verify,
+  dynamicValidator.user,
+  validationCheck,
+  async (req, res) => {
+    try {
+      const { _id, field } = req.params;
+      const user = await User.fetch(res.session, { _id });
+      if (!user) throw new Error('User not found');
+
+      switch (field) {
+        case 'unscoped':
+          {
+            const { unscoped } = req.body;
+            // unscoped = unscoped === 'true'
+
+            await user.update({ unscoped });
+            if (unscoped) {
+              const teamIds = await user.fetch('jx.teams', {}, { idsOnly: true });
+              await user.delete('jx.teams', teamIds);
             }
-        }
+          }
+          break;
 
-        Promise.all(validators.map(validator => validator.run(req)))
-            .then(() => next())
-            .catch(next)
-    },
+        default:
+          await user.update(req.body);
+      }
 
-    companies: (req, res, next) => {
-        const { step } = req.params
-        let validators = []
-
-        switch (step) {
-            case 'address':
-                validators = CompanyForm.validate('address')
-                break
-            case 'contacts':
-                validators = CompanyForm.validate('contacts')
-                break
-        }
-
-        Promise.all(validators.map(validator => validator.run(req)))
-            .then(() => next())
-            .catch(next)
-    },
-
-    companyTargets: (req, res, next) => {
-        const { target } = req.params
-        let validators = [ CompanyForm.since.validate() ]
-
-        switch (target) {
-            case 'names':
-                validators.push(CompanyForm.busName.validate(), CompanyForm.coType.validate())
-                validators.push(CompanyForm.alias.validate())
-                break
-            case 'phones':
-                validators.push(CompanyForm.phone.validate())
-                break
-            case 'faxes':
-                validators.push(CompanyForm.fax.validate())
-                break
-            case 'emails':
-                validators.push(CompanyForm.email.validate())
-                break
-            case 'addresses':
-                //? need to figure out
-                break
-            case 'mail':
-                //? need to figure out
-                break
-        }
-
-        Promise.all(validators.map(validator => validator.run(req)))
-            .then(() => next())
-            .catch(next)
-    },
-
-}
-
-
-router.post('/companies/:_id/:target', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.companyTargets, validationCheck, async (req, res) => {
-    try {
-        const { _id, target } = req.params
-        const company = await Company.fetch(res.session, { _id })
-        if (!company) throw new Error('Company not found')
-
-        if (target === 'addresses') req.body.mail = req.body.mail === 'on'
-
-        const { route: oldRoute } = company
-        const { added } = await company.add(target, req.body)
-        const data = await company.fetch(target)
-        const resource = await Company.fetch(res.session, { _id }, { hideRawId })
-        const { route: newRoute } = resource
-
-        res.json({ added, data, props: { oldRoute, newRoute } })
+      res.json({ resource: await User.fetch(res.session, { _id }, { hideRawId }) });
     } catch (err) {
-        sendError.server(req, res, err)
+      sendError.server(req, res, err);
     }
-})
-
-
-router.put('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminOnly, dynamicValidator.companyTargets, validationCheck, async (req, res) => {
-    try {
-        const { _id, target, since } = req.params
-        const company = await Company.fetch(res.session, { _id })
-        if (!company) throw new Error('Company not found')
-
-        if (target === 'addresses') req.body.mail = req.body.mail === 'on'
-        if (target === 'ownerships') {
-            const _id = req.body._ownerId.split(':')[1]
-            const owner = await Owner.fetch(res.session, { _id })
-            if (!owner) throw new Error('Owner not found')
-
-            delete req.body._ownerId
-            req.body.ownerId = owner.id
-        }
-
-        const { route: oldRoute } = company
-        const { updated } = await company.update(target, req.body, { since })
-        const data = await company.fetch(target)
-        const resource = await Company.fetch(res.session, { _id }, { hideRawId })
-        const { route: newRoute } = resource
-
-        res.json({ updated, data, props: { oldRoute, newRoute } })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
-
-router.patch('/users/:_id/:field?', User.mw.verify, dynamicValidator.user, validationCheck, async (req, res) => {
-    try {
-        const { _id, field } = req.params
-        const user = await User.fetch(res.session, { _id })
-        if (!user) throw new Error('User not found')
-
-        switch (field) {
-
-            case 'unscoped':
-                {
-                    const { unscoped } = req.body
-                    // unscoped = unscoped === 'true'
-
-                    await user.update({ unscoped })
-                    if (unscoped) {
-                        const teamIds = await user.fetch('jx.teams', {}, { idsOnly: true })
-                        await user.delete('jx.teams', teamIds)
-                    }
-                }
-                break
-
-            default: await user.update(req.body)
-
-        }
-
-        res.json({ resource: await User.fetch(res.session, { _id }, { hideRawId }) })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
-
+  },
+);
 
 //* DELETE *//
 
-
-router.delete('/companies/:_id/:target/:since', User.mw.verify, User.mw.superAdminOnly, async (req, res) => {
+router.delete(
+  '/companies/:_id/:target/:since',
+  User.mw.verify,
+  User.mw.superAdminOnly,
+  async (req, res) => {
     try {
-        const { _id, target, since } = req.params
-        const company = await Company.fetch(res.session, { _id })
-        if (!company) throw new Error('Company not found')
+      const { _id, target, since } = req.params;
+      const company = await Company.fetch(res.session, { _id });
+      if (!company) throw new Error('Company not found');
 
-        const { route: oldRoute } = company
-        const { deleted } = await company.delete(target, { since })
-        const data = await company.fetch(target, {}, { hideRawId })
-        const resource = await Company.fetch(res.session, { _id }, { hideRawId })
-        const { route: newRoute } = resource
+      const { route: oldRoute } = company;
+      const { deleted } = await company.delete(target, { since });
+      const data = await company.fetch(target, {}, { hideRawId });
+      const resource = await Company.fetch(res.session, { _id }, { hideRawId });
+      const { route: newRoute } = resource;
 
-        res.json({ deleted, data, props: { oldRoute, newRoute } })
+      res.json({ deleted, data, props: { oldRoute, newRoute } });
     } catch (err) {
-        sendError.server(req, res, err)
+      sendError.server(req, res, err);
     }
-})
-
-
+  },
+);
 
 /* Export */
-export default router
+export default router;

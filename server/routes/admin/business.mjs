@@ -1,113 +1,112 @@
 // ==== IMPORT ==== //
 
-const router = require('express').Router()
-const sendError = require('../../tools/utils/error')
+const router = require('express').Router();
+const sendError = require('../../tools/utils/error');
 
 /* Tools */
-import User from '../../tools/core/user.mjs'
+import User from '../../tools/core/user.mjs';
 
 /* Forms */
-import { updateFormOptions } from '../../tools/form/builder.mjs'
-import { OwnerForm, RefSourceForm } from '../../tools/form/company.mjs'
+import { updateFormOptions } from '../../tools/form/builder.mjs';
+import { OwnerForm, RefSourceForm } from '../../tools/form/company.mjs';
 
 /* Middleware */
-import { companyById, companyByCategoryAndRoute, companyManagement } from './mw/company.mjs'
+import { companyById, companyByCategoryAndRoute, companyManagement } from './mw/company.mjs';
 
 /* Assets */
-import { labelClass, labelClassRequired } from './assets.mjs'
-
+import { labelClass, labelClassRequired } from './assets.mjs';
 
 // ==== SETUP ==== //
 
-
-
 // ==== ROUTES ==== //
 
-
-
 router.get('/companies', User.mw.verify, (req, res) => {
-    try {
-        const key = 'companies'
-        let { hbs } = res
-        hbs = hbs.set(key)
+  try {
+    const key = 'companies';
+    let { hbs } = res;
+    hbs = hbs.set(key);
 
-        res.render(key, hbs)
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
+    res.render(key, hbs);
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
+router.get('/company/:_id', User.mw.verify, User.mw.superAdminOnly, companyById);
 
-router.get('/company/:_id', User.mw.verify, User.mw.superAdminOnly, companyById)
+router.get('/:category/:route', User.mw.verify, User.mw.superAdminOnly, companyByCategoryAndRoute);
 
-router.get('/:category/:route', User.mw.verify, User.mw.superAdminOnly, companyByCategoryAndRoute)
-
-router.get('/:category/:route/management', User.mw.verify, User.mw.superAdminOnly, companyManagement)
-
+router.get(
+  '/:category/:route/management',
+  User.mw.verify,
+  User.mw.superAdminOnly,
+  companyManagement,
+);
 
 router.get('/company-owners', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
-    try {
-        const key = 'owners'
-        let { hbs } = res
-        hbs = hbs.set(key, { titlePfx: 'Company Owners' })
+  try {
+    const key = 'owners';
+    let { hbs } = res;
+    hbs = hbs.set(key, { titlePfx: 'Company Owners' });
 
-        const fields = [
-            'firstName', 'middleName',
-            'lastName', 'suffix', 'nameSince',
-            'gender', 'dob', 'ssn', 'phone',
-        ]
-        const options = updateFormOptions({}, OwnerForm, fields, {
-            labelClass,
-            labelClassRequired,
-            textClass: 'input',
-            tabs: 7,
-        })
+    const fields = [
+      'firstName',
+      'middleName',
+      'lastName',
+      'suffix',
+      'nameSince',
+      'gender',
+      'dob',
+      'ssn',
+      'phone',
+    ];
+    const options = updateFormOptions({}, OwnerForm, fields, {
+      labelClass,
+      labelClassRequired,
+      textClass: 'input',
+      tabs: 7,
+    });
 
-        hbs.ownerForm = new OwnerForm(options)
+    hbs.ownerForm = new OwnerForm(options);
 
-        res.render(key, hbs)
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
+    res.render(key, hbs);
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 router.get('/parents', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
-    try {
-        const key = 'parents'
-        let { hbs } = res
-        hbs = hbs.set(key, { titlePfx: 'Holding Companies' })
+  try {
+    const key = 'parents';
+    let { hbs } = res;
+    hbs = hbs.set(key, { titlePfx: 'Holding Companies' });
 
-        res.render(key, hbs)
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
+    res.render(key, hbs);
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 router.get('/advertisement', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
-    try {
-        const key = 'advertisement'
-        let { hbs } = res
-        hbs = hbs.set(key)
+  try {
+    const key = 'advertisement';
+    let { hbs } = res;
+    hbs = hbs.set(key);
 
-        const fields = [
-            'srcName',
-        ]
-        const options = updateFormOptions({}, RefSourceForm, fields, {
-            labelClass,
-            labelClassRequired,
-            textClass: 'input',
-        })
+    const fields = ['srcName'];
+    const options = updateFormOptions({}, RefSourceForm, fields, {
+      labelClass,
+      labelClassRequired,
+      textClass: 'input',
+    });
 
-        hbs.form = new RefSourceForm(options)
+    hbs.form = new RefSourceForm(options);
 
-        res.render(key, hbs)
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
+    res.render(key, hbs);
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 // router.get('/branches', User.mw.verify, User.mw.superAdminOnly, (req, res) => {
 //     try {
@@ -121,8 +120,6 @@ router.get('/advertisement', User.mw.verify, User.mw.superAdminOnly, (req, res) 
 //     }
 // })
 
-
-
 // ==== EXPORT ==== //
 
-export default router
+export default router;

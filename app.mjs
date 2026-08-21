@@ -1,5 +1,4 @@
-import { apps } from './config.mjs'
-import runServer from './server.mjs'
+import { apps } from './config.mjs';
+import runServer from './server.mjs';
 
-
-for (const branch in apps) runServer(branch)
+for (const branch in apps) runServer(branch);

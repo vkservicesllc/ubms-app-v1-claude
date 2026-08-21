@@ -1,154 +1,136 @@
 // ==== IMPORT ==== //
 
-const router = require('express').Router()
-const sendError = require('../tools/utils/error')
+const router = require('express').Router();
+const sendError = require('../tools/utils/error');
 
 /* Tools */
-import Individual from '../tools/core/individual.mjs'
-import User, { Role } from '../tools/core/user.mjs'
-import Team from '../tools/core/team.mjs'
-import Company, { Owner as CompanyOwner, RefSource } from '../tools/core/company.mjs'
-import Carrier from '../tools/core/carrier.mjs'
-import Driver, { Application as DriverApplication } from '../tools/core/driver.mjs'
-
+import Individual from '../tools/core/individual.mjs';
+import User, { Role } from '../tools/core/user.mjs';
+import Team from '../tools/core/team.mjs';
+import Company, { Owner as CompanyOwner, RefSource } from '../tools/core/company.mjs';
+import Carrier from '../tools/core/carrier.mjs';
+import Driver, { Application as DriverApplication } from '../tools/core/driver.mjs';
 
 // ==== SETUP ==== //
 
-
 export const sessionDetails = (req, res) => {
-    try {
-        const { prop } = req.params
-        let data = {}
+  try {
+    const { prop } = req.params;
+    let data = {};
 
-        switch (prop) {
+    switch (prop) {
+      case 'current':
+        const { maxAge, logoutUrl } = res.session;
+        data = { maxAge, logoutUrl };
+        break;
 
-            case 'current':
-                const { maxAge, logoutUrl } = res.session
-                data = { maxAge, logoutUrl }
-                break
-
-            default:
-                data = res.session.user[req.params.prop]
-
-        }
-
-        res.json(data)
-    } catch (err) {
-        sendError.server(res, err, true)
+      default:
+        data = res.session.user[req.params.prop];
     }
-}
 
-
+    res.json(data);
+  } catch (err) {
+    sendError.server(res, err, true);
+  }
+};
 
 // ==== ROUTES ==== //
 
-
-router.post('/login', User.mw.login)
-
+router.post('/login', User.mw.login);
 
 router.get('/session/keep-alive', User.mw.verify, (req, res) => {
-    if (req.session) req.session.touch()
-    return res.sendStatus(204)
-})
+  if (req.session) req.session.touch();
+  return res.sendStatus(204);
+});
 
-
-router.post('/session/:prop', User.mw.verify, sessionDetails)
-
+router.post('/session/:prop', User.mw.verify, sessionDetails);
 
 router.get('/enum/:source/:_id?', User.mw.verify, async (req, res) => {
-    const { filter, self, call } = req.query
-    const { source } = req.params
-    let { _id } = req.params
-    let Src, result
+  const { filter, self, call } = req.query;
+  const { source } = req.params;
+  let { _id } = req.params;
+  let Src, result;
 
-    switch (source) {
+  switch (source) {
+    case 'user':
+      Src = User;
+      result = {
+        statuses: User.list.status,
+        locations: User.list.location,
+      };
+      if (self === 'true') _id = req.session.user;
+      break;
 
-        case 'user':
-            Src = User
-            result = {
-                statuses: User.list.status,
-                locations: User.list.location,
-            }
-            if (self === 'true') _id = req.session.user
-            break
+    case 'company':
+      Src = Company;
+      result = {
+        categories: Company.list.category,
+        types: Company.list.type,
+      };
+      break;
 
-        case 'company':
-            Src = Company
-            result = {
-                categories: Company.list.category,
-                types: Company.list.type,
-            }
-            break
+    case 'driver':
+      Src = Driver;
+      result = {
+        positions: Driver.list.position,
+      };
+      break;
 
-        case 'driver':
-            Src = Driver
-            result = {
-                positions: Driver.list.position,
-            }
-            break
+    case 'driver-application':
+      Src = DriverApplication;
+      result = {
+        violations: DriverApplication.list.violation,
+        accidents: DriverApplication.list.collision,
+        vehicle: {
+          types: DriverApplication.list.vhlType,
+          codes: DriverApplication.list.vhlCode,
+        },
+      };
+      break;
+  }
 
-        case 'driver-application':
-            Src = DriverApplication
-            result = {
-                violations: DriverApplication.list.violation,
-                accidents: DriverApplication.list.collision,
-                vehicle: {
-                    types: DriverApplication.list.vhlType,
-                    codes: DriverApplication.list.vhlCode,
-                },
-            }
-            break
+  if (filter) {
+    if (_id && Src) {
+      const instance = await Src.fetch(res.session, { _id });
+      result = call === 'true' ? await instance[filter]() : instance[filter];
+    } else result = result[filter];
+  }
 
-    }
-
-    if (filter) {
-        if (_id && Src) {
-            const instance = await Src.fetch(res.session, { _id })
-            result = call === 'true'
-                ? await instance[filter]()
-                : instance[filter]
-        } else
-            result = result[filter]
-    }
-
-    res.json(result)
-})
-
+  res.json(result);
+});
 
 router.post('/unique/:src', User.mw.verify, async (req, res) => {
-    try {
-        const { src } = req.params
-        const Src = {
-            'user': User,
-            'role': Role,
-            'team': Team,
-            'individual': Individual,
-            'company': Company,
-            'company-owner': CompanyOwner,
-            'refsource': RefSource,
-            'carrier': Carrier,
-        }[src]
+  try {
+    const { src } = req.params;
+    const Src = {
+      user: User,
+      role: Role,
+      team: Team,
+      individual: Individual,
+      company: Company,
+      'company-owner': CompanyOwner,
+      refsource: RefSource,
+      carrier: Carrier,
+    }[src];
 
-        const { _id } = req.body
-        delete req.body._id
+    const { _id } = req.body;
+    delete req.body._id;
 
-        let searchedInst = await Src.fetch(res.session, req.body)
-        if (Array.isArray(searchedInst)) [ searchedInst ] = searchedInst
-        if (!searchedInst) return res.json({ unique: true, original: false })
+    let searchedInst = await Src.fetch(res.session, req.body);
+    if (Array.isArray(searchedInst)) [searchedInst] = searchedInst;
+    if (!searchedInst) return res.json({ unique: true, original: false });
 
-        if (!_id) return res.json({ unique: false, original: false })
+    if (!_id) return res.json({ unique: false, original: false });
 
-        const inst = await Src.fetch(res.session, { _id })
-        if (!inst) throw new Error(`${Src.name} not found`)
+    const inst = await Src.fetch(res.session, { _id });
+    if (!inst) throw new Error(`${Src.name} not found`);
 
-        res.json({ unique: false, original: searchedInst._id === inst._id })
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
-
+    res.json({ unique: false, original: searchedInst._id === inst._id });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 // ==== EXPORT ==== //
 
-export default router
+export default router;

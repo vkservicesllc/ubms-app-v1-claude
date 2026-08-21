@@ -1,111 +1,104 @@
 const defaults = {
-    external: [ 'jquery', 'jquery.cookie', 'jquery.caret', 'fomantic-ui' ],
-    internal: {
-        css: [],
-        js: [],
-        mjs: [],
-    },
-}
-
+  external: ['jquery', 'jquery.cookie', 'jquery.caret', 'fomantic-ui'],
+  internal: {
+    css: [],
+    js: [],
+    mjs: [],
+  },
+};
 
 const offline = {
-    external: [ ...defaults.external ],
-    internal: {
-        css: [ ...defaults.internal.css ],
-        js: [ ...defaults.internal.js ],
-        mjs: [ ...defaults.internal.mjs ],
-    },
-}
-
+  external: [...defaults.external],
+  internal: {
+    css: [...defaults.internal.css],
+    js: [...defaults.internal.js],
+    mjs: [...defaults.internal.mjs],
+  },
+};
 
 const online = {
-    external: [ ...defaults.external, 'store', 'jquery.ui', 'jquery.idle-timeout-plus' ],
-    internal: {
-        css: [ ...defaults.internal.css, 'fomantic-ui.form' ],
-        js: [ ...defaults.internal.js, 'no-mobile', '^idle-timeout-plus' ],
-        mjs: [ ...defaults.internal.mjs ],
-    },
-}
-
+  external: [...defaults.external, 'store', 'jquery.ui', 'jquery.idle-timeout-plus'],
+  internal: {
+    css: [...defaults.internal.css, 'fomantic-ui.form'],
+    js: [...defaults.internal.js, 'no-mobile', '^idle-timeout-plus'],
+    mjs: [...defaults.internal.mjs],
+  },
+};
 
 const includes = {
-
-    'login': {
-        external: [ ...offline.external ],
-        internal: {
-            css: [ ...offline.internal.css, 'login' ],
-            js: [ ...offline.internal.js ],
-            mjs: [ ...offline.internal.mjs, '^login' ],
-        },
+  login: {
+    external: [...offline.external],
+    internal: {
+      css: [...offline.internal.css, 'login'],
+      js: [...offline.internal.js],
+      mjs: [...offline.internal.mjs, '^login'],
     },
+  },
 
-    'register': {
-        external: [ ...offline.external ],
-        internal: {
-            css: [ ...offline.internal.css, 'fomantic-ui.form', 'register' ],
-            js: [ ...offline.internal.js ],
-            mjs: [ ...offline.internal.mjs ],
-        },
+  register: {
+    external: [...offline.external],
+    internal: {
+      css: [...offline.internal.css, 'fomantic-ui.form', 'register'],
+      js: [...offline.internal.js],
+      mjs: [...offline.internal.mjs],
     },
+  },
 
-    'reset': {
-        external: [ ...offline.external ],
-        internal: {
-            css: [ ...offline.internal.css, 'fomantic-ui.form', 'register' ],
-            js: [ ...offline.internal.js ],
-            mjs: [ ...offline.internal.mjs ],
-        },
+  reset: {
+    external: [...offline.external],
+    internal: {
+      css: [...offline.internal.css, 'fomantic-ui.form', 'register'],
+      js: [...offline.internal.js],
+      mjs: [...offline.internal.mjs],
     },
+  },
 
-    'auth': {
-        external: [ ...offline.external ],
-        internal: {
-            css: [ ...offline.internal.css, 'auth' ],
-            js: [ ...offline.internal.js ],
-            mjs: [ ...offline.internal.mjs, '^auth' ],
-        },
+  auth: {
+    external: [...offline.external],
+    internal: {
+      css: [...offline.internal.css, 'auth'],
+      js: [...offline.internal.js],
+      mjs: [...offline.internal.mjs, '^auth'],
     },
+  },
 
-    'profile': {
-        external: [ ...online.external ],
-        internal: {
-            css: [ ...online.internal.css ],
-            js: [ ...online.internal.js ],
-            mjs: [ ...online.internal.mjs, '^profile' ],
-        },
+  profile: {
+    external: [...online.external],
+    internal: {
+      css: [...online.internal.css],
+      js: [...online.internal.js],
+      mjs: [...online.internal.mjs, '^profile'],
     },
+  },
 
-    'account': {
-        external: [ ...online.external, 'jquery.masked-input' ],
-        internal: {
-            css: [ ...online.internal.css ],
-            js: [ ...online.internal.js ],
-            mjs: [ ...online.internal.mjs, '^account' ],
-        },
+  account: {
+    external: [...online.external, 'jquery.masked-input'],
+    internal: {
+      css: [...online.internal.css],
+      js: [...online.internal.js],
+      mjs: [...online.internal.mjs, '^account'],
     },
+  },
 
-    'security': {
-        external: [ ...online.external ],
-        internal: {
-            css: [ ...online.internal.css ],
-            js: [ ...online.internal.js ],
-            mjs: [ ...online.internal.mjs ],
-        },
+  security: {
+    external: [...online.external],
+    internal: {
+      css: [...online.internal.css],
+      js: [...online.internal.js],
+      mjs: [...online.internal.mjs],
     },
+  },
 
-    'apps': {
-        external: [ ...online.external ],
-        internal: {
-            css: [ ...online.internal.css ],
-            js: [ ...online.internal.js ],
-            mjs: [ ...online.internal.mjs ],
-        },
+  apps: {
+    external: [...online.external],
+    internal: {
+      css: [...online.internal.css],
+      js: [...online.internal.js],
+      mjs: [...online.internal.mjs],
     },
+  },
+};
 
-}
+for (const target in includes) includes[target].internal.js.push('scale');
 
-for (const target in includes)
-    includes[target].internal.js.push('scale')
-
-
-module.exports = includes
+module.exports = includes;

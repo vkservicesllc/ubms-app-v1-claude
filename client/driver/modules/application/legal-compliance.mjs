@@ -1,283 +1,277 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { dateMask } from '/modules/events/imask.mjs'
-import formId, { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
-import selector from '/modules/registry/selectors/driver-application.mjs'
-import { capitalizeEach } from '/modules/tools/utils/string.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
+import { inputEvent, selectEvent } from '/modules/events/form.mjs';
+import { dateMask } from '/modules/events/imask.mjs';
+import formId, { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs';
+import selector from '/modules/registry/selectors/driver-application.mjs';
+import { capitalizeEach } from '/modules/tools/utils/string.mjs';
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs';
 
-const violations = $.ajax('/api/public/enum/driver-application?filter=violations', { method: 'POST', async: false }).responseJSON
+const violations = $.ajax('/api/public/enum/driver-application?filter=violations', {
+  method: 'POST',
+  async: false,
+}).responseJSON;
 
-const RS = selector.id.radio
-const TS = selector.class.text, SS = selector.class.select
-const duiId = RS.dui
-const criminalId = RS.criminal
-const criminalExplId = selector.id.text.criminalExpl
-const citationsId = RS.citations
+const RS = selector.id.radio;
+const TS = selector.class.text,
+  SS = selector.class.select;
+const duiId = RS.dui;
+const criminalId = RS.criminal;
+const criminalExplId = selector.id.text.criminalExpl;
+const citationsId = RS.citations;
 
-const $card = $('#apl-card')
-const $form = $('#legal-form')
-const $submit = $('#legal-submit')
+const $card = $('#apl-card');
+const $form = $('#legal-form');
+const $submit = $('#legal-submit');
 const $help = {
-    form: $('#legal-form-help'),
-}
-const $citations = $('#citations')
-const $citList = $('#citation-list')
-const $citForm = $('#citation-form-template')
-const $addButton = $('#add-citation-button')
-const $removeButton = $('#remove-citation-button')
-const $deleteModal = $('#delete-citation-modal')
-const $deleteTarget = $('#delete-citation-target')
-const $deleteCitDesc = $('#delete-citation-desc')
-const appliedOn = $(selector.id.hidden.appliedOn).val()
+  form: $('#legal-form-help'),
+};
+const $citations = $('#citations');
+const $citList = $('#citation-list');
+const $citForm = $('#citation-form-template');
+const $addButton = $('#add-citation-button');
+const $removeButton = $('#remove-citation-button');
+const $deleteModal = $('#delete-citation-modal');
+const $deleteTarget = $('#delete-citation-target');
+const $deleteCitDesc = $('#delete-citation-desc');
+const appliedOn = $(selector.id.hidden.appliedOn).val();
 
-const countCitList = () => $citList.children().length
-let selected = false
+const countCitList = () => $citList.children().length;
+let selected = false;
 
 if ($(citationsId.yes).is(':checked')) {
-    selected = true
-    drawCitationForms()
+  selected = true;
+  drawCitationForms();
 }
 
+onYesNoRadioChange(duiId, selector.class.radio.duiInDecade, 2);
 
-onYesNoRadioChange(duiId, selector.class.radio.duiInDecade, 2)
+onYesNoRadioChange(criminalId, criminalExplId);
 
-onYesNoRadioChange(criminalId, criminalExplId)
-
-inputEvent(criminalExplId, { strip: true, capitalize: 'first', onInput, onChange })
-
+inputEvent(criminalExplId, { strip: true, capitalize: 'first', onInput, onChange });
 
 inputEvent(citationsId.yes, {
-    onChange() {
-        selected = true
-        drawCitationForms()
-    },
-})
+  onChange() {
+    selected = true;
+    drawCitationForms();
+  },
+});
 
 inputEvent(citationsId.no, {
-    onChange(value, $el) {
-        if (selected === true) {
-            if (confirm('By confirming, you acknowledge that your citation data will be erased!')) {
-                $citations.hide()
-                $citList.html(null)
+  onChange(value, $el) {
+    if (selected === true) {
+      if (confirm('By confirming, you acknowledge that your citation data will be erased!')) {
+        $citations.hide();
+        $citList.html(null);
 
-                selected = false
-            } else {
-                $el.prop('checked', false)
-                $(citationsId.yes).prop('checked', true)
-            }
-        }
-    },
-})
+        selected = false;
+      } else {
+        $el.prop('checked', false);
+        $(citationsId.yes).prop('checked', true);
+      }
+    }
+  },
+});
 
 $deleteModal
-    .on('hide.bs.modal', () => {
-        $('.btn').blur()
-    })
-    .on('hidden.bs.modal', () => {
-        $deleteTarget.val(null)
-        $deleteCitDesc.html(null)
-    })
+  .on('hide.bs.modal', () => {
+    $('.btn').blur();
+  })
+  .on('hidden.bs.modal', () => {
+    $deleteTarget.val(null);
+    $deleteCitDesc.html(null);
+  });
 
 $removeButton.click(() => {
-    document.activeElement.blur()
-    const target = $deleteTarget.val()
+  document.activeElement.blur();
+  const target = $deleteTarget.val();
 
-    $(`#${target}`).remove()
-    $deleteTarget.val(null)
-    $deleteModal.modal('hide')
-    $deleteCitDesc.html(null)
+  $(`#${target}`).remove();
+  $deleteTarget.val(null);
+  $deleteModal.modal('hide');
+  $deleteCitDesc.html(null);
 
-    if (!$citList.html()) $citList.append(cloneCitForm())
-    resetEvents()
-})
+  if (!$citList.html()) $citList.append(cloneCitForm());
+  resetEvents();
+});
 
 $addButton.click(() => {
-    $citList.append(cloneCitForm(countCitList()))
-    resetEvents()
-})
+  $citList.append(cloneCitForm(countCitList()));
+  resetEvents();
+});
 
-
-onSubmit($form, $help, $submit, $card)
-
+onSubmit($form, $help, $submit, $card);
 
 function cloneCitForm(i = 0, data = null) {
-    const tsi = `${Date.now()}-${i}`
-    const $clone = $citForm.clone().attr('id', `citation-form-${tsi}`)
-    const otherReasonCls = TS.citOtherReason.replace('.', '')
+  const tsi = `${Date.now()}-${i}`;
+  const $clone = $citForm.clone().attr('id', `citation-form-${tsi}`);
+  const otherReasonCls = TS.citOtherReason.replace('.', '');
 
-    $clone.find('input, select').each(function() {
-        const $field = $(this)
+  $clone.find('input, select').each(function () {
+    const $field = $(this);
 
-        const id = $field.attr('id')
-        if (id) {
-            const newId = `${id}-${tsi}`
+    const id = $field.attr('id');
+    if (id) {
+      const newId = `${id}-${tsi}`;
 
-            $field.attr('id', newId)
-            $clone.find(`label[for="${id}"]`).attr('for', newId)
-        }
+      $field.attr('id', newId);
+      $clone.find(`label[for="${id}"]`).attr('for', newId);
+    }
 
-        const name = $field.attr('name').replace('[]', '')
-        if ($field.hasClass(otherReasonCls)) $field.prop('required', false)
+    const name = $field.attr('name').replace('[]', '');
+    if ($field.hasClass(otherReasonCls)) $field.prop('required', false);
 
-        if (data) {
-            const value = data[i][name]
+    if (data) {
+      const value = data[i][name];
 
-            if (value) {
-                $field.val(value).addClass('is-valid')
-                if ($field.hasClass(otherReasonCls)) $field.prop('required', true)
+      if (value) {
+        $field.val(value).addClass('is-valid');
+        if ($field.hasClass(otherReasonCls)) $field.prop('required', true);
 
-                if ($field.is('select'))
-                    $field.find('option[value=""]').remove()
+        if ($field.is('select')) $field.find('option[value=""]').remove();
 
-                if ($field.parent().is(':hidden'))
-                    $field.parent().show()
-            }
-        }
-    })
+        if ($field.parent().is(':hidden')) $field.parent().show();
+      }
+    }
+  });
 
-    return $clone.show()
+  return $clone.show();
 }
-
 
 function drawCitationForms() {
-    $.ajax(`/api/resource/application/${formId()}/citations`, {
-        success(response) {
-            let { data, error } = response
-            if (error) return alert(error)
+  $.ajax(`/api/resource/application/${formId()}/citations`, {
+    success(response) {
+      let { data, error } = response;
+      if (error) return alert(error);
 
-            if (!data.length)
-                data.push({
-                    violation: null,
-                    other: null,
-                    citedOn: null,
-                    state: null,
-                })
-            else {
-                // data = sortArrayByObjectKey(data, 'citedOn', false)
-                data.forEach(row => row.citedOn = moment(row.citedOn).format('MM/DD/YYYY'))
-            }
+      if (!data.length)
+        data.push({
+          violation: null,
+          other: null,
+          citedOn: null,
+          state: null,
+        });
+      else {
+        // data = sortArrayByObjectKey(data, 'citedOn', false)
+        data.forEach((row) => (row.citedOn = moment(row.citedOn).format('MM/DD/YYYY')));
+      }
 
-            const count = data.length
-            for (let i = 0; i < count; i++) $citList.append(cloneCitForm(i, data))
+      const count = data.length;
+      for (let i = 0; i < count; i++) $citList.append(cloneCitForm(i, data));
 
-            resetEvents()
-            $citations.show()
-        },
-    })
+      resetEvents();
+      $citations.show();
+    },
+  });
 }
 
-
 function resetEvents() {
-    $('.delete-citation-button')
-        .off('click')
-        .on('click', function() {
-            const target = $(this).parent().parent().parent().parent().attr('id')
+  $('.delete-citation-button')
+    .off('click')
+    .on('click', function () {
+      const target = $(this).parent().parent().parent().parent().attr('id');
 
-            $deleteTarget.val(target)
+      $deleteTarget.val(target);
 
-            const $target = $(`#${target}`)
-            let reason = $target.find(SS.citReason).val()
-            let desc = '<em class="text-danger">Empty Form</em>'
+      const $target = $(`#${target}`);
+      let reason = $target.find(SS.citReason).val();
+      let desc = '<em class="text-danger">Empty Form</em>';
 
-            if (reason) {
-                if (reason != 'other') {
-                    violationLoop:
-                    for (const group in violations) {
-                        const set = violations[group]
+      if (reason) {
+        if (reason != 'other') {
+          violationLoop: for (const group in violations) {
+            const set = violations[group];
 
-                        if (typeof set === 'object')
-                            for (const prop in set) {
-                                if (reason !== prop) continue
+            if (typeof set === 'object')
+              for (const prop in set) {
+                if (reason !== prop) continue;
 
-                                reason = set[prop]
-                                break violationLoop
-                            }
-                    }
-                } else {
-                    const otherReason = $target.find(TS.citOtherReason).val()
-                    if (otherReason) reason = otherReason
-                    else reason = ''
-                }
+                reason = set[prop];
+                break violationLoop;
+              }
+          }
+        } else {
+          const otherReason = $target.find(TS.citOtherReason).val();
+          if (otherReason) reason = otherReason;
+          else reason = '';
+        }
 
-                if (reason) {
-                    desc = `<strong>${reason}</strong>`
+        if (reason) {
+          desc = `<strong>${reason}</strong>`;
 
-                    const citedOn = $target.find(TS.citDate).val()
-                    const citState = $target.find(SS.citState).val()
+          const citedOn = $target.find(TS.citDate).val();
+          const citState = $target.find(SS.citState).val();
 
-                    if (citedOn) desc += ` on ${citedOn}`
-                    if (citState) desc += ` in ${citState}`
-                }
-            }
+          if (citedOn) desc += ` on ${citedOn}`;
+          if (citState) desc += ` in ${citState}`;
+        }
+      }
 
-            $deleteCitDesc.html(desc)
-        })
-        .parent()
-        .attr('style', countCitList() > 1 ? '' : 'display: none !important;')
-
-    selectEvent(SS.citReason, {
-        fill: true,
-        onChange(reason, $reason) {
-            onChange(reason, $reason)
-
-            const $otherReason = $reason.parent().parent().next().find(TS.citOtherReason)
-            let required = false, action = 'hide'
-            if (reason === 'other') {
-                required = true
-                action = 'show'
-            }
-
-            $otherReason.prop('required', required)
-                .parent()[action]()
-        },
+      $deleteCitDesc.html(desc);
     })
+    .parent()
+    .attr('style', countCitList() > 1 ? '' : 'display: none !important;');
 
-    inputEvent(TS.citOtherReason, {
-        strip: true,
-        word: true,
-        onInput(citation, $citation) {
-            $citation.val(capitalizeEach(citation))
-            onInput(citation, $citation)
-        },
-        onChange,
-    })
+  selectEvent(SS.citReason, {
+    fill: true,
+    onChange(reason, $reason) {
+      onChange(reason, $reason);
 
-    dateMask(TS.citDate, {
-        pattern: 'us',
-        onAccept(mask, $date) {
-            $date.removeClass('is-valid is-invalid').next().text(null)
-        },
-        onComplete(mask, $date) {
-            let date = mask.value
+      const $otherReason = $reason.parent().parent().next().find(TS.citOtherReason);
+      let required = false,
+        action = 'hide';
+      if (reason === 'other') {
+        required = true;
+        action = 'show';
+      }
 
-            if (date) {
-                const $help = $date.next()
-                date = moment(date, 'MM/DD/YYYY', true)
+      $otherReason.prop('required', required).parent()[action]();
+    },
+  });
 
-                if (!date.isValid()) {
-                    $date.addClass('is-invalid')
-                    $help.text('* Invalid date')
-                } else {
-                    const today = moment(appliedOn)
+  inputEvent(TS.citOtherReason, {
+    strip: true,
+    word: true,
+    onInput(citation, $citation) {
+      $citation.val(capitalizeEach(citation));
+      onInput(citation, $citation);
+    },
+    onChange,
+  });
 
-                    if (date.isAfter(today)) {
-                        $date.addClass('is-invalid')
-                        $help.text('* Future date forbidden')
-                    } else {
-                        const limit = today.clone().subtract(3, 'years')
+  dateMask(TS.citDate, {
+    pattern: 'us',
+    onAccept(mask, $date) {
+      $date.removeClass('is-valid is-invalid').next().text(null);
+    },
+    onComplete(mask, $date) {
+      let date = mask.value;
 
-                        if (date.isBefore(limit)) {
-                            $date.addClass('is-invalid')
-                            $help.text('* Over 3 years ago')
-                        } else $date.addClass('is-valid')
-                    }
-                }
-            }
+      if (date) {
+        const $help = $date.next();
+        date = moment(date, 'MM/DD/YYYY', true);
 
-            if (check($form)) $help.form.hide().html(null)
-        },
-    })
+        if (!date.isValid()) {
+          $date.addClass('is-invalid');
+          $help.text('* Invalid date');
+        } else {
+          const today = moment(appliedOn);
 
-    selectEvent(SS.citState, { fill: true, onChange })
+          if (date.isAfter(today)) {
+            $date.addClass('is-invalid');
+            $help.text('* Future date forbidden');
+          } else {
+            const limit = today.clone().subtract(3, 'years');
 
+            if (date.isBefore(limit)) {
+              $date.addClass('is-invalid');
+              $help.text('* Over 3 years ago');
+            } else $date.addClass('is-valid');
+          }
+        }
+      }
+
+      if (check($form)) $help.form.hide().html(null);
+    },
+  });
+
+  selectEvent(SS.citState, { fill: true, onChange });
 }

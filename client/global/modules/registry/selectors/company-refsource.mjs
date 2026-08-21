@@ -1,22 +1,21 @@
-import initialize from './support.mjs'
+import initialize from './support.mjs';
 
-const prefix = 'company-refsource'
-
+const prefix = 'company-refsource';
 
 const selector = {
-    class: {},
-    id: {
-        hidden: {
-            id: 'id',
-            deleteId: 'delete-id',
-            name: 'current-name',
-        },
-        text: {
-            name: 'name',
-        },
+  class: {},
+  id: {
+    hidden: {
+      id: 'id',
+      deleteId: 'delete-id',
+      name: 'current-name',
     },
-}
+    text: {
+      name: 'name',
+    },
+  },
+};
 
-initialize(prefix, selector)
+initialize(prefix, selector);
 
-export default selector
+export default selector;

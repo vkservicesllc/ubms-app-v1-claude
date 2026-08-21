@@ -1,161 +1,164 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { dateMask } from '/modules/events/imask.mjs'
-import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs'
-import { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs'
-import selector from '/modules/registry/selectors/driver-application.mjs'
+import { inputEvent, selectEvent } from '/modules/events/form.mjs';
+import { dateMask } from '/modules/events/imask.mjs';
+import { driverLicenseEvent, dlClassEvent } from '/modules/events/person.mjs';
+import { check, onInput, onChange, onSubmit, onYesNoRadioChange } from './support.mjs';
+import selector from '/modules/registry/selectors/driver-application.mjs';
 
-const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio
-const dlCommercialClass = selector.class.radio.dlCategory
-const dlStateId = SS.dlState
-const dlNumId = TS.dlNumber
-const dlClassId = TS.dlClass
-const dlIssId = TS.dlIss
-const dlExpId = TS.dlExp
-const dlEndrsId = TS.dlEndrs
-const dlRestrId = TS.dlRestr
-const dlDeniedId = RS.dlDenied
-const dlRevokedId = RS.dlRevoked
-const dlDeniedExplId = TS.dlDeniedExpl
-const dlRevokedExplId = TS.dlRevokedExpl
+const TS = selector.id.text,
+  SS = selector.id.select,
+  RS = selector.id.radio;
+const dlCommercialClass = selector.class.radio.dlCategory;
+const dlStateId = SS.dlState;
+const dlNumId = TS.dlNumber;
+const dlClassId = TS.dlClass;
+const dlIssId = TS.dlIss;
+const dlExpId = TS.dlExp;
+const dlEndrsId = TS.dlEndrs;
+const dlRestrId = TS.dlRestr;
+const dlDeniedId = RS.dlDenied;
+const dlRevokedId = RS.dlRevoked;
+const dlDeniedExplId = TS.dlDeniedExpl;
+const dlRevokedExplId = TS.dlRevokedExpl;
 
-const $card = $('#apl-card')
+const $card = $('#apl-card');
 const $help = {
-    issued: $('#dl-iss-help'),
-    expires: $('#dl-exp-help'),
-    form: $('#dl-form-help'),
-}
-const $submit = $('#dl-submit')
-const $form = $('#dl-form')
+  issued: $('#dl-iss-help'),
+  expires: $('#dl-exp-help'),
+  form: $('#dl-form-help'),
+};
+const $submit = $('#dl-submit');
+const $form = $('#dl-form');
 
-const $issued = $(dlIssId)
-const $expires = $(dlExpId)
+const $issued = $(dlIssId);
+const $expires = $(dlExpId);
 
 const $expl = {
-    denied: $(dlDeniedExplId),
-    revoked: $(dlRevokedExplId),
-}
-for (const key in $expl)
-    if ($expl[key].val()) $expl[key].parent().show()
+  denied: $(dlDeniedExplId),
+  revoked: $(dlRevokedExplId),
+};
+for (const key in $expl) if ($expl[key].val()) $expl[key].parent().show();
 
-const appliedOn = $(selector.id.hidden.appliedOn).val()
+const appliedOn = $(selector.id.hidden.appliedOn).val();
 
-const $endorsement = $(dlEndrsId)
-if ($endorsement.prop('disabled')) $endorsement.parent().hide()
-
+const $endorsement = $(dlEndrsId);
+if ($endorsement.prop('disabled')) $endorsement.parent().hide();
 
 inputEvent(dlCommercialClass, {
-    onChange(value) {
-        const action = { 'Y': 'show', 'N': 'hide' }[value]
+  onChange(value) {
+    const action = { Y: 'show', N: 'hide' }[value];
 
-        $endorsement.prop('disabled', value === 'N').parent()[action]()
-    },
-})
+    $endorsement
+      .prop('disabled', value === 'N')
+      .parent()
+      [action]();
+  },
+});
 
-selectEvent(dlStateId, { fill: true, onChange })
+selectEvent(dlStateId, { fill: true, onChange });
 
-driverLicenseEvent(dlNumId, { onInput, onChange })
+driverLicenseEvent(dlNumId, { onInput, onChange });
 
-dlClassEvent(dlClassId)
+dlClassEvent(dlClassId);
 
 dateMask(dlIssId, {
-    pattern: 'us',
-    onAccept(mask, $issued) {
-        $help.issued.text(null)
-        $issued.removeClass('is-valid is-invalid')
-    },
-    onComplete(mask, $issued) {
-        let issued = mask.value
+  pattern: 'us',
+  onAccept(mask, $issued) {
+    $help.issued.text(null);
+    $issued.removeClass('is-valid is-invalid');
+  },
+  onComplete(mask, $issued) {
+    let issued = mask.value;
 
-        if (issued) {
-            issued = moment(issued, 'MM/DD/YYYY', true)
+    if (issued) {
+      issued = moment(issued, 'MM/DD/YYYY', true);
 
-            if (!issued.isValid()) {
-                $issued.addClass('is-invalid')
-                $help.issued.text('* Invalid date')
-            } else {
-                const today = moment(appliedOn)
-                let expires = $expires.val() 
+      if (!issued.isValid()) {
+        $issued.addClass('is-invalid');
+        $help.issued.text('* Invalid date');
+      } else {
+        const today = moment(appliedOn);
+        let expires = $expires.val();
 
-                if (issued.isAfter(today)) {
-                    $issued.addClass('is-invalid')
-                    $help.issued.text('* Future date forbidden')
-                } else if (expires) {
-                    expires = moment(expires, 'MM/DD/YYYY', true)
+        if (issued.isAfter(today)) {
+          $issued.addClass('is-invalid');
+          $help.issued.text('* Future date forbidden');
+        } else if (expires) {
+          expires = moment(expires, 'MM/DD/YYYY', true);
 
-                    if (issued.isSameOrAfter(expires)) {
-                        $issued.addClass('is-invalid')
-                        $help.issued.text('* Issued when expires')
-                    } else $issued.addClass('is-valid')
-                } else $issued.addClass('is-valid')
-            }
-        }
+          if (issued.isSameOrAfter(expires)) {
+            $issued.addClass('is-invalid');
+            $help.issued.text('* Issued when expires');
+          } else $issued.addClass('is-valid');
+        } else $issued.addClass('is-valid');
+      }
+    }
 
-        if (check($form)) $help.form.hide().html(null)
-    },
-})
+    if (check($form)) $help.form.hide().html(null);
+  },
+});
 
 dateMask(dlExpId, {
-    pattern: 'us',
-    onAccept(mask, $expires) {
-        $help.expires.text(null).removeClass('text-danger text-warning')
-        $expires.removeClass('is-valid is-invalid')
-    },
-    onComplete(mask, $expires) {
-        let expires = mask.value
+  pattern: 'us',
+  onAccept(mask, $expires) {
+    $help.expires.text(null).removeClass('text-danger text-warning');
+    $expires.removeClass('is-valid is-invalid');
+  },
+  onComplete(mask, $expires) {
+    let expires = mask.value;
 
-        if (expires) {
-            expires = moment(expires, 'MM/DD/YYYY', true)
+    if (expires) {
+      expires = moment(expires, 'MM/DD/YYYY', true);
 
-            if (!expires.isValid()) {
-                $expires.addClass('is-invalid')
-                $help.expires.addClass('text-danger').text('* Invalid date')
-            } else {
-                const today = moment(appliedOn)
-                let issued = $issued.val()
+      if (!expires.isValid()) {
+        $expires.addClass('is-invalid');
+        $help.expires.addClass('text-danger').text('* Invalid date');
+      } else {
+        const today = moment(appliedOn);
+        let issued = $issued.val();
 
-                const diff = {
-                    day: today.clone().add(1, 'days').startOf('day'),
-                    week: today.clone().add(1, 'weeks').startOf('day'),
-                    month: today.clone().add(1, 'months').startOf('day'),
-                }
-                let invalid, valid
+        const diff = {
+          day: today.clone().add(1, 'days').startOf('day'),
+          week: today.clone().add(1, 'weeks').startOf('day'),
+          month: today.clone().add(1, 'months').startOf('day'),
+        };
+        let invalid, valid;
 
-                if (expires.isSameOrBefore(today)) invalid = '* Expired'
-                else if (expires.isSame(diff.day)) invalid = '* Expires tomorrow'
-                else if (expires.isBefore(diff.week)) invalid = '* Almost expired'
-                else if (expires.isSame(diff.week)) invalid = '* Expires in a week'
-                else if (expires.isBefore(diff.month)) valid = '<i class="fas fa-triangle-exclamation"></i> Expires soon'
-                else if (issued) {
-                    issued = moment(issued, 'MM/DD/YYYY', true)
+        if (expires.isSameOrBefore(today)) invalid = '* Expired';
+        else if (expires.isSame(diff.day)) invalid = '* Expires tomorrow';
+        else if (expires.isBefore(diff.week)) invalid = '* Almost expired';
+        else if (expires.isSame(diff.week)) invalid = '* Expires in a week';
+        else if (expires.isBefore(diff.month))
+          valid = '<i class="fas fa-triangle-exclamation"></i> Expires soon';
+        else if (issued) {
+          issued = moment(issued, 'MM/DD/YYYY', true);
 
-                    if (expires.isSameOrBefore(issued)) invalid = '* Expired when issued'
-                }
-
-                if (invalid) {
-                    $help.expires.addClass('text-danger').text(invalid)
-                    $expires.addClass('is-invalid')
-                } else {
-                    if (valid) $help.expires.addClass('text-warning').html(valid)
-                    $expires.addClass('is-valid')
-                }
-            }
+          if (expires.isSameOrBefore(issued)) invalid = '* Expired when issued';
         }
 
-        if (check($form)) $help.form.hide().html(null)
-    },
-})
+        if (invalid) {
+          $help.expires.addClass('text-danger').text(invalid);
+          $expires.addClass('is-invalid');
+        } else {
+          if (valid) $help.expires.addClass('text-warning').html(valid);
+          $expires.addClass('is-valid');
+        }
+      }
+    }
 
-inputEvent(dlEndrsId, { strip: true, capitalize: 'first' })
+    if (check($form)) $help.form.hide().html(null);
+  },
+});
 
-inputEvent(dlRestrId, { strip: true, capitalize: 'first' })
+inputEvent(dlEndrsId, { strip: true, capitalize: 'first' });
 
-onYesNoRadioChange(dlDeniedId, dlDeniedExplId)
+inputEvent(dlRestrId, { strip: true, capitalize: 'first' });
 
-onYesNoRadioChange(dlRevokedId, dlRevokedExplId)
+onYesNoRadioChange(dlDeniedId, dlDeniedExplId);
 
-inputEvent(dlDeniedExplId, { strip: true, capitalize: 'first', onInput, onChange })
+onYesNoRadioChange(dlRevokedId, dlRevokedExplId);
 
-inputEvent(dlRevokedExplId, { strip: true, capitalize: 'first', onInput, onChange })
+inputEvent(dlDeniedExplId, { strip: true, capitalize: 'first', onInput, onChange });
 
+inputEvent(dlRevokedExplId, { strip: true, capitalize: 'first', onInput, onChange });
 
-onSubmit($form, $help, $submit, $card, () => $(dlCommercialClass).prop('disabled', false))
+onSubmit($form, $help, $submit, $card, () => $(dlCommercialClass).prop('disabled', false));

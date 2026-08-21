@@ -1,639 +1,650 @@
-import Person from '/modules/tools/core/person.mjs'
-import escapeHTML from '/modules/tools/utils/html.mjs'
-import selector from '/modules/registry/selectors/user.mjs'
-import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
-import { capitalizeFirst } from '/modules/tools/utils/string.mjs'
-import { nameEvent } from '/modules/events/person.mjs'
-import { telEvent, emailEvent } from '/modules/events/contacts.mjs'
+import Person from '/modules/tools/core/person.mjs';
+import escapeHTML from '/modules/tools/utils/html.mjs';
+import selector from '/modules/registry/selectors/user.mjs';
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs';
+import { capitalizeFirst } from '/modules/tools/utils/string.mjs';
+import { nameEvent } from '/modules/events/person.mjs';
+import { telEvent, emailEvent } from '/modules/events/contacts.mjs';
 
-const emailId = selector.id.text.email
-const phoneId = selector.id.text.phone
-const firstNameId = selector.id.text.firstName
-const lastNameId = selector.id.text.lastName
-const aliasId = selector.id.text.alias
-const conditionClass = selector.class.radio.condition
-const genderClass = selector.class.radio.gender
+const emailId = selector.id.text.email;
+const phoneId = selector.id.text.phone;
+const firstNameId = selector.id.text.firstName;
+const lastNameId = selector.id.text.lastName;
+const aliasId = selector.id.text.alias;
+const conditionClass = selector.class.radio.condition;
+const genderClass = selector.class.radio.gender;
 
-const $id = $(selector.class.hidden)
-const $status = $(selector.id.select.status)
-const $location = $(selector.id.select.location)
-const $email = $(selector.id.text.email)
-const $hiddenUsername = $(selector.id.hidden.username)
-const $hiddenEmail = $(selector.id.hidden.email)
-const $phone = $(phoneId)
-const $firstName = $(firstNameId)
-const $lastName = $(lastNameId)
-const $alias = $(aliasId)
-const $gender = $(genderClass)
-const $condition = $(conditionClass)
-const setLockedCondition = (disabled = true) => $(selector.id.radio.condition.locked).prop('disabled', disabled)
+const $id = $(selector.class.hidden);
+const $status = $(selector.id.select.status);
+const $location = $(selector.id.select.location);
+const $email = $(selector.id.text.email);
+const $hiddenUsername = $(selector.id.hidden.username);
+const $hiddenEmail = $(selector.id.hidden.email);
+const $phone = $(phoneId);
+const $firstName = $(firstNameId);
+const $lastName = $(lastNameId);
+const $alias = $(aliasId);
+const $gender = $(genderClass);
+const $condition = $(conditionClass);
+const setLockedCondition = (disabled = true) =>
+  $(selector.id.radio.condition.locked).prop('disabled', disabled);
 
 const $title = {
-    all: $('.modal-card-title:not(#user-security-modal-title)'),
-    user: $('#user-modal-title'),
-    deleteUser: $('#user-delete-modal-title'),
-    userCondition: $('#user-condition-modal-title'),
-}
+  all: $('.modal-card-title:not(#user-security-modal-title)'),
+  user: $('#user-modal-title'),
+  deleteUser: $('#user-delete-modal-title'),
+  userCondition: $('#user-condition-modal-title'),
+};
 const $form = {
-    user: $('#user-form'),
-    deleteUser: $('#user-delete-form'),
-}
+  user: $('#user-form'),
+  deleteUser: $('#user-delete-form'),
+};
 const $field = {
-    status: $status.parent().parent().parent().parent(),
-}
+  status: $status.parent().parent().parent().parent(),
+};
 const $submit = {
-    user: $('#user-modal-submit'),
-    deleteUser: $('#user-delete-modal-submit'),
-}
+  user: $('#user-modal-submit'),
+  deleteUser: $('#user-delete-modal-submit'),
+};
 const $trigger = {
-    userLog: $('#user-update-log-trigger'),
-}
+  userLog: $('#user-update-log-trigger'),
+};
 const $help = {
-    email: $('#user-email-help'),
-    name: $('#user-fname-help, #user-alias-help'),
-}
+  email: $('#user-email-help'),
+  name: $('#user-fname-help, #user-alias-help'),
+};
 const $confirmation = {
-    deleteUser: $('#confirm-delete-user'),
-}
+  deleteUser: $('#confirm-delete-user'),
+};
 const message = {
-    email: {
-        success: '<i class="fa fa-check"></i> Email is available',
-        failed: '<i class="fa fa-close"></i> Email is taken',
-        invalid: '<i class="fa fa-triangle-exclamation"></i> Invalid email',
-    },
-    name: {
-        failed: '<i class="fa fa-triangle-exclamation"></i> First Name and Alias must not be identical',
-    },
-    invite: '<p class="notification is-warning">The user will receive an invitation email with additional instructions</p>',
-    buildInvite() {
-        this.removeInvite()
-        $form.user.append(this.invite)
-    },
-    removeInvite() {
-        $form.user.find('> p').remove()
-    },
-}
+  email: {
+    success: '<i class="fa fa-check"></i> Email is available',
+    failed: '<i class="fa fa-close"></i> Email is taken',
+    invalid: '<i class="fa fa-triangle-exclamation"></i> Invalid email',
+  },
+  name: {
+    failed: '<i class="fa fa-triangle-exclamation"></i> First Name and Alias must not be identical',
+  },
+  invite:
+    '<p class="notification is-warning">The user will receive an invitation email with additional instructions</p>',
+  buildInvite() {
+    this.removeInvite();
+    $form.user.append(this.invite);
+  },
+  removeInvite() {
+    $form.user.find('> p').remove();
+  },
+};
 
-setLockedCondition()
+setLockedCondition();
 
+$status.on('change', function () {
+  const status = $(this).val();
 
-$status.on('change', function() {
-    const status = $(this).val()
+  if (status === 'S') {
+    const location = $location.val();
 
-    if (status === 'S') {
-        const location = $location.val()
-
-        if (location && location !== 'US') {
-            $location.val('US')
-            $phone.prop('readonly', false)
-        }
-
-        $location.find('option:not([value=US])').prop('disabled', true)
-    } else
-        $location.find('option').prop('disabled', false)
-})
-
-$location.on('change', function() {
-    const location = $(this).val()
-    let readonly = false
-
-    if (location) {
-        if (location !== 'US') {
-            $phone.val(null)
-            readonly = true
-        } else $status.find('option[value=S]').prop('disabled', false)
+    if (location && location !== 'US') {
+      $location.val('US');
+      $phone.prop('readonly', false);
     }
 
-    $phone.prop('readonly', readonly)
-})
+    $location.find('option:not([value=US])').prop('disabled', true);
+  } else $location.find('option').prop('disabled', false);
+});
 
-$condition.on('change', setLockedCondition)
+$location.on('change', function () {
+  const location = $(this).val();
+  let readonly = false;
+
+  if (location) {
+    if (location !== 'US') {
+      $phone.val(null);
+      readonly = true;
+    } else $status.find('option[value=S]').prop('disabled', false);
+  }
+
+  $phone.prop('readonly', readonly);
+});
+
+$condition.on('change', setLockedCondition);
 
 const removeNameErrMsg = () => {
-    const emailTip = $help.email.html()
+  const emailTip = $help.email.html();
 
-    $help.name.hide().html(null).removeClass('is-danger')
-    if (!emailTip || emailTip.includes(message.email.success.split('</i> ')[1]))
-        $submit.user.prop('disabled', false)
-}
+  $help.name.hide().html(null).removeClass('is-danger');
+  if (!emailTip || emailTip.includes(message.email.success.split('</i> ')[1]))
+    $submit.user.prop('disabled', false);
+};
 
 const checkNameMatch = (firstName, alias) => {
-    if (firstName && firstName === alias) {
-        $help.name
-            .addClass('is-danger')
-            .html(message.name.failed)
-            .show()
-        $submit.user.prop('disabled', true)
-    }
-}
+  if (firstName && firstName === alias) {
+    $help.name.addClass('is-danger').html(message.name.failed).show();
+    $submit.user.prop('disabled', true);
+  }
+};
 
 nameEvent(firstNameId, {
-    onInput: removeNameErrMsg,
-    onChange(firstName) {
-        const alias = $alias.val()
+  onInput: removeNameErrMsg,
+  onChange(firstName) {
+    const alias = $alias.val();
 
-        checkNameMatch(firstName, alias)
-    },
-})
+    checkNameMatch(firstName, alias);
+  },
+});
 
 nameEvent(aliasId, {
-    onInput: removeNameErrMsg,
-    onChange(alias) {
-        const firstName = $firstName.val()
+  onInput: removeNameErrMsg,
+  onChange(alias) {
+    const firstName = $firstName.val();
 
-        checkNameMatch(firstName, alias)
-    },
-})
+    checkNameMatch(firstName, alias);
+  },
+});
 
-nameEvent(lastNameId, { sfxId: true })
+nameEvent(lastNameId, { sfxId: true });
 
 emailEvent(emailId, {
-    onChange(email, valid) {
-        const $tip = $help.email
-        const $button = $submit.user
-        const _id = $(selector.id.hidden.id).val()
-        const username = $hiddenUsername.val()
-        const currentEmail = $hiddenEmail.val()
+  onChange(email, valid) {
+    const $tip = $help.email;
+    const $button = $submit.user;
+    const _id = $(selector.id.hidden.id).val();
+    const username = $hiddenUsername.val();
+    const currentEmail = $hiddenEmail.val();
 
-        $tip.hide().removeClass('is-danger is-success').html(null)
-        if (!$help.name.html()) $button.prop('disabled', false)
+    $tip.hide().removeClass('is-danger is-success').html(null);
+    if (!$help.name.html()) $button.prop('disabled', false);
 
-        if (_id) message.removeInvite()
+    if (_id) message.removeInvite();
 
-        if (email) {
-            if (!valid) {
-                $tip
-                    .addClass('is-danger')
-                    .html(message.email.invalid)
-                    .show()
-                $button.prop('disabled', true)
-            } else
-                $.ajax('/api/unique/user', {
-                    method: 'POST',
-                    data: { email },
-                    success(response) {
-                        const { unique } = response
+    if (email) {
+      if (!valid) {
+        $tip.addClass('is-danger').html(message.email.invalid).show();
+        $button.prop('disabled', true);
+      } else
+        $.ajax('/api/unique/user', {
+          method: 'POST',
+          data: { email },
+          success(response) {
+            const { unique } = response;
 
-                        if (unique) {
-                            $tip
-                                .addClass('is-success')
-                                .html(message.email.success)
-                                .show()
+            if (unique) {
+              $tip.addClass('is-success').html(message.email.success).show();
 
-                            if (_id && !username)
-                                message.buildInvite()
-                        } else if (currentEmail !== email) {
-                            $tip
-                                .addClass('is-danger')
-                                .html(message.email.failed)
-                                .show()
-                            $button.prop('disabled', true)
-                        }
-                    },
-                })
-        }
-    },
-})
+              if (_id && !username) message.buildInvite();
+            } else if (currentEmail !== email) {
+              $tip.addClass('is-danger').html(message.email.failed).show();
+              $button.prop('disabled', true);
+            }
+          },
+        });
+    }
+  },
+});
 
-telEvent(phoneId)
+telEvent(phoneId);
 
-
-const statusReq = $.ajax('/api/session/status', { method: 'POST' })
-const locationReq = $.ajax('/api/session/location', { method: 'POST' })
+const statusReq = $.ajax('/api/session/status', { method: 'POST' });
+const locationReq = $.ajax('/api/session/location', { method: 'POST' });
 
 $.when(statusReq, locationReq).done((statusRes, locationRes) => {
-    const [ adminStatus ] = statusRes
-    const [ adminLocation ] = locationRes
-    const interval = 15000
-    let refreshed = false
+  const [adminStatus] = statusRes;
+  const [adminLocation] = locationRes;
+  const interval = 15000;
+  let refreshed = false;
 
-    const table = new DataTable('#users-table', {
+  const table = new DataTable('#users-table', {
+    ajax: {
+      url: '/api/resource/users',
+      dataSrc(response) {
+        return response.data;
+      },
+    },
 
-        ajax: {
-            url: '/api/resource/users',
-            dataSrc(response) {
-                return response.data
-            },
+    columns: [
+      {
+        data: null,
+        searchable: false,
+        orderable: false,
+        width: '2.14rem',
+        render(data, type, row) {
+          if (row.self || row.status === 'D' || (adminStatus === 'A' && row.username && row.DS))
+            return '<i class="fas fa-lock has-text-grey"></i>';
+          if (row.events.declinedAt) return '<i class="fas fa-user-times has-text-dark"></i>';
+          if (!row.username || row.events.passReset)
+            return '<i class="fas fa-user-clock has-text-grey"></i>';
+
+          const condition = { fa: 'user-check', style: 'success' };
+
+          switch (row.condition) {
+            case 'L':
+              condition.fa = 'user-lock';
+              condition.style = 'danger';
+              break;
+            case 'I':
+              condition.fa = 'user-xmark';
+              condition.style = 'danger';
+              break;
+          }
+
+          return `<a class="has-text-${condition.style} modify-user-condition" data-id="${row._id}" title="Modify Condition"><i class="fa fa-${condition.fa}"></i></a>`;
         },
+      },
 
-        columns: [
-
-            {
-                data: null,
-                searchable: false,
-                orderable: false,
-                width: '2.14rem',
-                render(data, type, row) {
-                    if (row.self || row.status === 'D' || (adminStatus === 'A' && row.username && row.DS)) return '<i class="fas fa-lock has-text-grey"></i>'
-                    if (row.events.declinedAt) return '<i class="fas fa-user-times has-text-dark"></i>'
-                    if (!row.username || row.events.passReset) return '<i class="fas fa-user-clock has-text-grey"></i>'
-
-                    const condition = { fa: 'user-check', style: 'success' }
-
-                    switch (row.condition) {
-                        case 'L':
-                            condition.fa = 'user-lock'
-                            condition.style = 'danger'
-                            break
-                        case 'I':
-                            condition.fa = 'user-xmark'
-                            condition.style = 'danger'
-                            break
-                    }
-
-                    return `<a class="has-text-${condition.style} modify-user-condition" data-id="${row._id}" title="Modify Condition"><i class="fa fa-${condition.fa}"></i></a>`
-                },
-            },
-
-            {
-                data: null,
-                searchable: false,
-                orderable: false,
-                width: '2.5rem',
-                render(data, type, row) {
-                    return `<img src="${row.avaSrc}" />`
-                },
-                createdCell(cell) {
-                    $(cell).css('padding', '.35rem .35rem 0 0')
-                },
-            },
-
-            {
-                data: 'status',
-                searchable: false,
-                orderable: false,
-                render(data, type, row) {
-                    if (row.events.declinedAt) return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>'
-
-                    data = row.expansion.status
-                    if (adminLocation === 'US') data += ` <small class="has-text-grey">(${row.location})</small>`
-                    if (row.unscoped) data += ` <sup><i class="far fa-star has-text-success-40" style="font-size: .75em;"></i></sup>`
-
-                    return data
-                },
-            },
-
-            {
-                data: null,
-                title: 'Name',
-                render(data, type, row) {
-                    let name = `<span class="has-text-weight-semibold">${new Person(row).fullName('FAL')}</span>`
-                    if (row.self) name += ' <small class="tag table-tag mx-1">You</small>'
-
-                    return name
-                },
-            },
-
-            {
-                data: 'email',
-                title: 'Email',
-                orderable: false,
-                render(data, type, row) {
-                    if (!row.username && !row.events.declinedAt) return `<span class="user-email">${data}</span>&nbsp;&nbsp;<a class="has-text-info-55 resend-invitation" data-id="${row._id}" title="Resend Invitation"><i class="fa fa-envelope-open-text"></i></a>`
-                    return data
-                },
-            },
-
-            {
-                data: 'phone',
-                title: 'US Cell Phone',
-                orderable: false,
-                defaultContent: '<small class="has-text-danger">N/A</small>',
-                render(data, type, row) {
-                    if (!data && row.events.declinedAt) return '<small>N/A</small>'
-                    return formatTel(data)
-                },
-            },
-
-            {
-                data: null,
-                title: 'Last Login <small style="font-weight: normal;">(Eastern Time)</small>',
-                searchable: false,
-                orderable: false,
-                className: 'has-text-left',
-                render(data, type, row) {
-                    if (row.events.declinedAt) return ''
-                    if (!row.username) return '<small class="has-text-danger-60">Registration pending</small>'
-
-                    const { lastLogin, lastBranch } = row.events
-                    if (!lastLogin) return '<small class="has-text-grey"><i>Never logged in</i></small>'
-
-                    return type === 'display'
-                        ? moment(lastLogin).format('llll')
-                            + ` <small class="has-text-grey">(${capitalizeFirst(lastBranch)})</small>`
-                        : lastLogin
-                },
-            },
-
-            // {
-            //     data: null,
-            //     searchable: false,
-            //     orderable: false,
-            //     render(data, type, row) {
-            //         if (row.DS) return ''
-            //         let cell = '<div class="field is-grouped is-grouped-multiline">'
-
-            //         for (let target in row.count) {
-            //             const count = row.count[target]
-            //             target = capitalizeFirst(target)
-            //             const tag = !count ? 'span' : 'a'
-
-            //             cell += '<div class ="control"><div class="tags has-addons">'
-            //             cell += `<${tag} class="tag${!count ? ' has-text-danger' : ''}">${target}</${tag}>`
-            //             cell += `<span class="tag is-${!count ? 'danger' : 'success'}">${count}</span>`
-            //             cell += '</div></div>'
-            //         }
-
-            //         cell += '</div>'
-
-            //         return cell
-            //     },
-            // },
-
-            {
-                data: null,
-                searchable: false,
-                orderable: false,
-                title: '<div class="dt-action"><a class="has-text-link-70" id="invite-user" title="Invite"><i class="fas fa-user-plus"></i></a></div>',
-                render(data, type, row) {
-                    const { username, _id } = row
-                    let cell = '<div class="dt-action">'
-
-                    if (['D', 'S'].includes(adminStatus) || (adminStatus === 'A' && !row.DS)) {
-                        if (row.status !== 'D') {
-                            if (!row.self) cell += `<a class="has-text-${row.events.declinedAt ? 'dark' : 'danger'} delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`
-                            if (!row.events.declinedAt) {
-                                if (row.username && !row.self) cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`
-                                cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`
-                            }
-                        }
-                        if (row.status !== 'D' || adminStatus === 'D')
-                            if (!row.events.declinedAt)
-                                cell += `<a class="has-text-success-45 edit-user" data-id="${row._id}" title="Edit"><i class="fas fa-user-pen"></i></a>`
-                    }
-
-                    cell += '</div>'
-
-                    return cell
-                },
-            },
-
-        ],
-
-        createdRow(tr, data) {
-            if (data.events.declinedAt) $(tr).addClass('is-danger').find('td').css('border-bottom', '1px solid grey')
-            else if (data.condition !== 'A' || data.events.passReset) $(tr).addClass('is-warning')
+      {
+        data: null,
+        searchable: false,
+        orderable: false,
+        width: '2.5rem',
+        render(data, type, row) {
+          return `<img src="${row.avaSrc}" />`;
         },
+        createdCell(cell) {
+          $(cell).css('padding', '.35rem .35rem 0 0');
+        },
+      },
 
-        lengthMenu,
+      {
+        data: 'status',
+        searchable: false,
+        orderable: false,
+        render(data, type, row) {
+          if (row.events.declinedAt)
+            return '<span class="tag is-dark has-text-danger has-text-weight-bold">Terms & Condition Declined</span>';
 
-        order: [],
+          data = row.expansion.status;
+          if (adminLocation === 'US')
+            data += ` <small class="has-text-grey">(${row.location})</small>`;
+          if (row.unscoped)
+            data += ` <sup><i class="far fa-star has-text-success-40" style="font-size: .75em;"></i></sup>`;
 
-    })
+          return data;
+        },
+      },
 
-    setInterval(() => {
-        dtFnFilterData(table)
-        refreshed = true
-    }, interval)
+      {
+        data: null,
+        title: 'Name',
+        render(data, type, row) {
+          let name = `<span class="has-text-weight-semibold">${new Person(row).fullName('FAL')}</span>`;
+          if (row.self) name += ' <small class="tag table-tag mx-1">You</small>';
 
-    onDraw(table, () => {
-        if (!refreshed) {
-            const closeModals = () => {
-                $('.modal').removeClass('is-active')
-                $title.all.html(null)
-                message.removeInvite()
-                $(`input:not(${genderClass}):not(${conditionClass}):not([type=search]), select:not('.dt-input')`).val(null)
-                $status.prop('disabled', false).val(null)
-                $status.find('[value=S]').prop('disabled', false)
-                $gender.prop('checked', false)
-                $condition.prop('checked', false)
-                setLockedCondition()
-                $confirmation.deleteUser.prop('checked', false)
-                $submit.user.text(null).removeClass('is-link is-success')
-                $submit.deleteUser.prop('disabled', true)
-                $trigger.userLog.hide()
-                $field.status.show()
-                $location.prop('disabled', false).val(adminLocation !== 'US' ? adminLocation : null)
-                $location.find('option').prop('disabled', false)
-                $phone.prop('readonly', false)
-                for (const key in $help)
-                    $help[key].hide().removeClass('is-danger is-success').html(null)
-                $hiddenUsername.val(null)
-                $hiddenEmail.val(null)
+          return name;
+        },
+      },
 
-                $('#user-update-log-modal-list').html(null)
-                $('#user-security-modal-body').html(null)
+      {
+        data: 'email',
+        title: 'Email',
+        orderable: false,
+        render(data, type, row) {
+          if (!row.username && !row.events.declinedAt)
+            return `<span class="user-email">${data}</span>&nbsp;&nbsp;<a class="has-text-info-55 resend-invitation" data-id="${row._id}" title="Resend Invitation"><i class="fa fa-envelope-open-text"></i></a>`;
+          return data;
+        },
+      },
+
+      {
+        data: 'phone',
+        title: 'US Cell Phone',
+        orderable: false,
+        defaultContent: '<small class="has-text-danger">N/A</small>',
+        render(data, type, row) {
+          if (!data && row.events.declinedAt) return '<small>N/A</small>';
+          return formatTel(data);
+        },
+      },
+
+      {
+        data: null,
+        title: 'Last Login <small style="font-weight: normal;">(Eastern Time)</small>',
+        searchable: false,
+        orderable: false,
+        className: 'has-text-left',
+        render(data, type, row) {
+          if (row.events.declinedAt) return '';
+          if (!row.username)
+            return '<small class="has-text-danger-60">Registration pending</small>';
+
+          const { lastLogin, lastBranch } = row.events;
+          if (!lastLogin) return '<small class="has-text-grey"><i>Never logged in</i></small>';
+
+          return type === 'display'
+            ? moment(lastLogin).format('llll') +
+                ` <small class="has-text-grey">(${capitalizeFirst(lastBranch)})</small>`
+            : lastLogin;
+        },
+      },
+
+      // {
+      //     data: null,
+      //     searchable: false,
+      //     orderable: false,
+      //     render(data, type, row) {
+      //         if (row.DS) return ''
+      //         let cell = '<div class="field is-grouped is-grouped-multiline">'
+
+      //         for (let target in row.count) {
+      //             const count = row.count[target]
+      //             target = capitalizeFirst(target)
+      //             const tag = !count ? 'span' : 'a'
+
+      //             cell += '<div class ="control"><div class="tags has-addons">'
+      //             cell += `<${tag} class="tag${!count ? ' has-text-danger' : ''}">${target}</${tag}>`
+      //             cell += `<span class="tag is-${!count ? 'danger' : 'success'}">${count}</span>`
+      //             cell += '</div></div>'
+      //         }
+
+      //         cell += '</div>'
+
+      //         return cell
+      //     },
+      // },
+
+      {
+        data: null,
+        searchable: false,
+        orderable: false,
+        title:
+          '<div class="dt-action"><a class="has-text-link-70" id="invite-user" title="Invite"><i class="fas fa-user-plus"></i></a></div>',
+        render(data, type, row) {
+          const { username, _id } = row;
+          let cell = '<div class="dt-action">';
+
+          if (['D', 'S'].includes(adminStatus) || (adminStatus === 'A' && !row.DS)) {
+            if (row.status !== 'D') {
+              if (!row.self)
+                cell += `<a class="has-text-${row.events.declinedAt ? 'dark' : 'danger'} delete-user" data-id="${row._id}" title="Delete"><i class="fas fa-user-minus"></i></a>`;
+              if (!row.events.declinedAt) {
+                if (row.username && !row.self)
+                  cell += `<a class="has-text-info-55 reset-user-security" data-id="${row._id}" title="Reset Security"><i class="fas fa-user-shield"></i></a>`;
+                cell += `<a class="has-text-primary-35 modify-user" title="Modify" href="/online/user/${username || _id}"><i class="fas fa-user-gear"></i></a>`;
+              }
             }
+            if (row.status !== 'D' || adminStatus === 'D')
+              if (!row.events.declinedAt)
+                cell += `<a class="has-text-success-45 edit-user" data-id="${row._id}" title="Edit"><i class="fas fa-user-pen"></i></a>`;
+          }
 
-            $('.modal-cancel, .modal-close, .delete:not(.close-role-section)').click(closeModals)
+          cell += '</div>';
 
-            $('#invite-user').click(() => {
-                $title.user.html('<small>New User</small>')
-                $submit.user.addClass('is-link').text('Invite')
-                message.buildInvite()
+          return cell;
+        },
+      },
+    ],
 
-                $('#user-modal').addClass('is-active')
+    createdRow(tr, data) {
+      if (data.events.declinedAt)
+        $(tr).addClass('is-danger').find('td').css('border-bottom', '1px solid grey');
+      else if (data.condition !== 'A' || data.events.passReset) $(tr).addClass('is-warning');
+    },
+
+    lengthMenu,
+
+    order: [],
+  });
+
+  setInterval(() => {
+    dtFnFilterData(table);
+    refreshed = true;
+  }, interval);
+
+  onDraw(table, () => {
+    if (!refreshed) {
+      const closeModals = () => {
+        $('.modal').removeClass('is-active');
+        $title.all.html(null);
+        message.removeInvite();
+        $(
+          `input:not(${genderClass}):not(${conditionClass}):not([type=search]), select:not('.dt-input')`,
+        ).val(null);
+        $status.prop('disabled', false).val(null);
+        $status.find('[value=S]').prop('disabled', false);
+        $gender.prop('checked', false);
+        $condition.prop('checked', false);
+        setLockedCondition();
+        $confirmation.deleteUser.prop('checked', false);
+        $submit.user.text(null).removeClass('is-link is-success');
+        $submit.deleteUser.prop('disabled', true);
+        $trigger.userLog.hide();
+        $field.status.show();
+        $location.prop('disabled', false).val(adminLocation !== 'US' ? adminLocation : null);
+        $location.find('option').prop('disabled', false);
+        $phone.prop('readonly', false);
+        for (const key in $help) $help[key].hide().removeClass('is-danger is-success').html(null);
+        $hiddenUsername.val(null);
+        $hiddenEmail.val(null);
+
+        $('#user-update-log-modal-list').html(null);
+        $('#user-security-modal-body').html(null);
+      };
+
+      $('.modal-cancel, .modal-close, .delete:not(.close-role-section)').click(closeModals);
+
+      $('#invite-user').click(() => {
+        $title.user.html('<small>New User</small>');
+        $submit.user.addClass('is-link').text('Invite');
+        message.buildInvite();
+
+        $('#user-modal').addClass('is-active');
+      });
+
+      $confirmation.deleteUser.click(function () {
+        const checked = $(this).is(':checked');
+        let disabled = true;
+
+        if (checked) disabled = false;
+
+        $submit.deleteUser.prop('disabled', disabled);
+      });
+
+      if (adminStatus !== 'A')
+        $trigger.userLog.click(function () {
+          const _id = $id.val();
+          closeModals();
+
+          $.ajax(`/api/log/user/${_id}`, {
+            success(response) {
+              const { data: user, labels, log } = response;
+              const { name } = user;
+              const { createdBy, createdAt, deletedBy, deletedAt, updateLog } = log;
+              const portals = { admin: 'Admin Portal', user: 'User Profile/Account' };
+              const formatTimeStamp = (stamp) => {
+                stamp = moment(stamp);
+                const date = stamp.format('ddd, MMM D, YYYY');
+                const time = stamp.format('h:mm:ss A');
+
+                return `on ${date} at ${time}`;
+              };
+
+              let pre = '<pre class="has-text-grey" style="background: inherit;">';
+              if (deletedBy) {
+                pre += `Deleted by <span class="has-text-primary">${deletedBy}</span><br/>`;
+                pre += `${formatTimeStamp(deletedAt)} Eastern Time`;
+              }
+
+              if (updateLog)
+                updateLog.forEach((log) => {
+                  const { data, oldData, modifiedBy, modifiedIn, modifiedAt } = log;
+                  const updates = [];
+
+                  for (const key in data) {
+                    let value = data[key];
+                    let oldValue = oldData[key];
+
+                    if (key === 'phone') {
+                      if (value) value = formatTel(value);
+                      if (oldValue) oldValue = formatTel(oldValue);
+                    }
+
+                    if (typeof value === 'string') value = `"${value}"`;
+                    if (typeof oldValue === 'string') oldValue = `"${oldValue}"`;
+
+                    let update = `<span class="has-text-info">${labels[key]}:</span> `;
+                    update += `<span class="has-text-danger">${oldValue}</span>`;
+                    update += ` &#8594; <span class="has-text-success">${value}</span>`;
+
+                    updates.push(update);
+                  }
+
+                  pre += `Updated by <span class="has-text-primary">${modifiedBy}</span> in ${portals[modifiedIn.branch]}<br/>`;
+                  pre += `${formatTimeStamp(modifiedAt)} Eastern Time<br/>`;
+                  pre += `${updates.join('<br/>')}<br/><br/>`;
+                });
+
+              pre += `Created by <span class="has-text-primary">${createdBy}</span><br/>`;
+              pre += `${formatTimeStamp(createdAt)} Eastern Time</pre>`;
+
+              $('#user-update-log-modal-subtitle').text(name);
+              $('#user-update-log-modal-list').html(pre);
+              $('#user-update-log-modal').addClass('is-active');
+            },
+          });
+        });
+    }
+
+    $('.modify-user-condition').click(function () {
+      const _id = $(this).data('id');
+
+      $.ajax(`/api/resource/users/${_id}`, {
+        success(response) {
+          const { data } = response;
+
+          const { _id, condition } = data;
+
+          $id.val(_id);
+          if (condition === 'L') setLockedCondition(false);
+          $condition
+            .filter(function () {
+              return $(this).val() === condition;
             })
+            .prop('checked', true);
 
-            $confirmation.deleteUser.click(function() {
-                const checked = $(this).is(':checked')
-                let disabled = true
+          $title.userCondition.html(
+            `<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`,
+          );
+          $('#user-condition-modal').addClass('is-active');
+        },
+        error(err) {
+          console.error(err);
+          alert(err.responseJSON.message);
+        },
+      });
+    });
 
-                if (checked) disabled = false
+    $('.reset-user-security').click(function () {
+      const _id = $(this).data('id');
 
-                $submit.deleteUser.prop('disabled', disabled)
-            })
+      $.ajax(`/api/resource/users/${_id}`, {
+        success(response) {
+          const { data: user } = response;
+          const { email } = user;
+          const name = new Person(user).fullName('AL');
 
-            if (adminStatus !== 'A')
-                $trigger.userLog.click(function() {
-                    const _id = $id.val()
-                    closeModals()
-
-                    $.ajax(`/api/log/user/${_id}`, {
-                        success(response) {
-                            const { data: user, labels, log } = response
-                            const { name } = user
-                            const { createdBy, createdAt, deletedBy, deletedAt, updateLog } = log
-                            const portals = { admin: 'Admin Portal', user: 'User Profile/Account' }
-                            const formatTimeStamp = stamp => {
-                                stamp = moment(stamp)
-                                const date = stamp.format('ddd, MMM D, YYYY')
-                                const time = stamp.format('h:mm:ss A')
-
-                                return `on ${date} at ${time}`
-                            }
-
-                            let pre = '<pre class="has-text-grey" style="background: inherit;">'
-                            if (deletedBy) {
-                                pre += `Deleted by <span class="has-text-primary">${deletedBy}</span><br/>`
-                                pre += `${formatTimeStamp(deletedAt)} Eastern Time`
-                            }
-
-                            if (updateLog)
-                                updateLog.forEach(log => {
-                                    const { data, oldData, modifiedBy, modifiedIn, modifiedAt } = log
-                                    const updates = []
-
-                                    for (const key in data) {
-                                        let value = data[key]
-                                        let oldValue = oldData[key]
-
-                                        if (key === 'phone') {
-                                            if (value) value = formatTel(value)
-                                            if (oldValue) oldValue = formatTel(oldValue)
-                                        }
-
-                                        if (typeof value === 'string') value = `"${value}"`
-                                        if (typeof oldValue === 'string') oldValue = `"${oldValue}"`
-
-                                        let update = `<span class="has-text-info">${labels[key]}:</span> `
-                                        update += `<span class="has-text-danger">${oldValue}</span>`
-                                        update += ` &#8594; <span class="has-text-success">${value}</span>`
-
-                                        updates.push(update)
-                                    }
-
-                                    pre += `Updated by <span class="has-text-primary">${modifiedBy}</span> in ${portals[modifiedIn.branch]}<br/>`
-                                    pre += `${formatTimeStamp(modifiedAt)} Eastern Time<br/>`
-                                    pre += `${updates.join('<br/>')}<br/><br/>`
-                                })
-
-                            pre += `Created by <span class="has-text-primary">${createdBy}</span><br/>`
-                            pre += `${formatTimeStamp(createdAt)} Eastern Time</pre>`
-
-                            $('#user-update-log-modal-subtitle').text(name)
-                            $('#user-update-log-modal-list').html(pre)
-                            $('#user-update-log-modal').addClass('is-active')
-                        },
-                    })
-                })
-        }
-
-        $('.modify-user-condition').click(function() {
-            const _id = $(this).data('id')
-
-            $.ajax(`/api/resource/users/${_id}`, {
-                success(response) {
-                    const { data } = response
-
-                    const { _id, condition } = data
-
-                    $id.val(_id)
-                    if (condition === 'L') setLockedCondition(false)
-                    $condition.filter(function() {
-                        return $(this).val() === condition
-                    }).prop('checked', true)
-
-                    $title.userCondition.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
-                    $('#user-condition-modal').addClass('is-active')
-                },
-                error(err) {
-                    console.error(err)
-                    alert(err.responseJSON.message)
-                },
-            })
-        })
-
-        $('.reset-user-security').click(function() {
-            const _id = $(this).data('id')
-
-            $.ajax(`/api/resource/users/${_id}`, {
-                success(response) {
-                    const { data: user } = response
-                    const { email } = user
-                    const name = new Person(user).fullName('AL')
-
-                    $id.val(_id)
-                    $('#user-security-modal-body').html(`
+          $id.val(_id);
+          $('#user-security-modal-body').html(`
                         This action will send a password reset link to
                         <b>${name}</b> at <i>${email}</i><br/><br/>
                         <span class="has-text-danger-65">
                             <i class="fas fa-triangle-exclamation"></i>
                             The current password will no longer be valid!
                         </span>
-                    `)
-                    $('#user-security-modal').addClass('is-active')
-                },
-            })
-        })
+                    `);
+          $('#user-security-modal').addClass('is-active');
+        },
+      });
+    });
 
-        $('.edit-user, .delete-user').click(function() {
-            const src = $(this).hasClass('edit-user') ? 'edit' : 'delete'
-            const _id = $(this).data('id')
+    $('.edit-user, .delete-user').click(function () {
+      const src = $(this).hasClass('edit-user') ? 'edit' : 'delete';
+      const _id = $(this).data('id');
 
-            $.ajax(`/api/resource/users/${_id}`, {
-                success(response) {
-                    const { data } = response
+      $.ajax(`/api/resource/users/${_id}`, {
+        success(response) {
+          const { data } = response;
 
-                    const { _id } = data
-                    $id.val(_id)
+          const { _id } = data;
+          $id.val(_id);
 
-                    if (src === 'delete') {
-                        $title.deleteUser.html(`<small class="has-text-danger is-size-6">Delete User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
+          if (src === 'delete') {
+            $title.deleteUser.html(
+              `<small class="has-text-danger is-size-6">Delete User</small> <strong>${new Person(data).fullName('AL')}</strong>`,
+            );
 
-                        return $('#user-delete-modal').addClass('is-active')
-                    }
+            return $('#user-delete-modal').addClass('is-active');
+          }
 
-                    const { username, status, location, email, phone, firstName, lastName, alias, gender, count } = data
+          const {
+            username,
+            status,
+            location,
+            email,
+            phone,
+            firstName,
+            lastName,
+            alias,
+            gender,
+            count,
+          } = data;
 
-                    const $gender = {
-                        'M': $(selector.id.radio.gender.male),
-                        'F': $(selector.id.radio.gender.female),
-                    }
-                    let disabled = false
+          const $gender = {
+            M: $(selector.id.radio.gender.male),
+            F: $(selector.id.radio.gender.female),
+          };
+          let disabled = false;
 
-                    $title.user.html(`<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`)
-                    $hiddenUsername.val(username)
-                    $hiddenEmail.val(email)
-                    if (status === 'D') {
-                        disabled = true
-                        $status.prop('disabled', disabled)
-                        $field.status.hide()
-                    } else {
-                        $status.val(status)
-                        if (count.locationRoles) disabled = true
-                        if (status === 'S')
-                            $location.find('option:not([value=US])').prop('disabled', true)
-                    }
-                    $location.val(location).prop('disabled', disabled)
-                    $email.val(email)
-                    $phone.val(formatTel(phone))
-                    $firstName.val(firstName)
-                    $lastName.val(lastName)
-                    $alias.val(alias)
-                    if (gender !== null) $gender[gender].prop('checked', true)
-                    $submit.user.addClass('is-success').text('Update')
-                    $trigger.userLog.show()
+          $title.user.html(
+            `<small class="has-text-grey is-size-6">Edit User</small> <strong>${new Person(data).fullName('AL')}</strong>`,
+          );
+          $hiddenUsername.val(username);
+          $hiddenEmail.val(email);
+          if (status === 'D') {
+            disabled = true;
+            $status.prop('disabled', disabled);
+            $field.status.hide();
+          } else {
+            $status.val(status);
+            if (count.locationRoles) disabled = true;
+            if (status === 'S') $location.find('option:not([value=US])').prop('disabled', true);
+          }
+          $location.val(location).prop('disabled', disabled);
+          $email.val(email);
+          $phone.val(formatTel(phone));
+          $firstName.val(firstName);
+          $lastName.val(lastName);
+          $alias.val(alias);
+          if (gender !== null) $gender[gender].prop('checked', true);
+          $submit.user.addClass('is-success').text('Update');
+          $trigger.userLog.show();
 
-                    if (location !== 'US') {
-                        $status.find('[value=S]').prop('disabled', true)
-                        $phone.prop('readonly', true)
-                    }
+          if (location !== 'US') {
+            $status.find('[value=S]').prop('disabled', true);
+            $phone.prop('readonly', true);
+          }
 
-                    $('#user-modal').addClass('is-active')
-                },
-                error(err) {
-                    console.error(err)
-                    alert(err.responseJSON.message)
-                },
-            })
-        })
+          $('#user-modal').addClass('is-active');
+        },
+        error(err) {
+          console.error(err);
+          alert(err.responseJSON.message);
+        },
+      });
+    });
 
-        $('.resend-invitation').click(function() {
-            const _id = $(this).data('id')
-            const email = $(this).parent().find('.user-email').text()
+    $('.resend-invitation').click(function () {
+      const _id = $(this).data('id');
+      const email = $(this).parent().find('.user-email').text();
 
-            $.ajax(`/api/invite/user/${_id}`, {
-                method: 'POST',
-                success(response) {
-                    if (response === 'OK')
-                        alert(`The invitation has been resent to ${email}`)
-                },
-                error(err) {
-                    console.error(err)
-                    alert(err.responseJSON.message)
-                },
-            })
-        })
-    })
-})
+      $.ajax(`/api/invite/user/${_id}`, {
+        method: 'POST',
+        success(response) {
+          if (response === 'OK') alert(`The invitation has been resent to ${email}`);
+        },
+        error(err) {
+          console.error(err);
+          alert(err.responseJSON.message);
+        },
+      });
+    });
+  });
+});

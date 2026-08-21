@@ -1,102 +1,91 @@
 // ==== IMPORT ==== //
 
-const router = require('express').Router()
-const sendError = require('../../tools/utils/error')
+const router = require('express').Router();
+const sendError = require('../../tools/utils/error');
 
 /* Tools */
-import User from '../../tools/core/user.mjs'
-import Team from '../../tools/core/team.mjs'
-import Driver, { Application, Employment } from '../../tools/core/driver.mjs'
+import User from '../../tools/core/user.mjs';
+import Team from '../../tools/core/team.mjs';
+import Driver, { Application, Employment } from '../../tools/core/driver.mjs';
 
 /* Middleware */
-import { dtDriverList, dtApplicationList } from './mw/drivers.mjs'
-
+import { dtDriverList, dtApplicationList } from './mw/drivers.mjs';
 
 // ==== SETUP ==== //
 
-
-
 // ==== ROUTES ==== //
-
 
 router.post('/session/team/:_id/switch', User.mw.verify, async (req, res) => {
-    try {
-        let switched = false
-        const { _id } = req.params
-        const team = await Team.fetch(res.session, { _id })
+  try {
+    let switched = false;
+    const { _id } = req.params;
+    const team = await Team.fetch(res.session, { _id });
 
-        if (team) {
-            req.session.team = _id
-            switched = true
-        }
-
-        res.send(switched)
-    } catch (err) {
-        sendError.server(req, res, err)
+    if (team) {
+      req.session.team = _id;
+      switched = true;
     }
-})
 
+    res.send(switched);
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 router.post('/login/validation', async (req, res) => {
-    try {
-        let validated = false
-        const { username } = req.body
+  try {
+    let validated = false;
+    const { username } = req.body;
 
-        const user = await User.fetch(res.session, { username }, { offline: true })
-        if (!user) throw new Error('User not found')
+    const user = await User.fetch(res.session, { username }, { offline: true });
+    if (!user) throw new Error('User not found');
 
-        if (user.unscoped || user.DS) validated = true
-        else {
-            const teams = await user.fetch('jx.teams')
-            validated = teams.length > 0
-        }
-
-        res.send({ validated })
-    } catch (err) {
-        sendError.server(req, res, err)
+    if (user.unscoped || user.DS) validated = true;
+    else {
+      const teams = await user.fetch('jx.teams');
+      validated = teams.length > 0;
     }
-})
 
+    res.send({ validated });
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 // ==== ROUTES ==== //
 
-
 router.post('/lists', User.mw.verify, Team.mw.verify, async (req, res) => {
-    try {
-        const { filter, priv } = req.query
-        let response = { users: [], teams: [], carriers: [] }
+  try {
+    const { filter, priv } = req.query;
+    let response = { users: [], teams: [], carriers: [] };
 
-        if (filter)
-            switch(filter) {
+    if (filter)
+      switch (filter) {
+        case 'driver-applications':
+          response = await Application.assigned(res.session);
+          break;
+      }
 
-                case 'driver-applications':
-                    response = await Application.assigned(res.session)
-                    break
+    //* filter === "driver-applications"
+    // users: filter application by their conditions and where user not null and make unique list of users
+    // carriers: filter applications by their conditions and where carriers not null and exclude carriers not in self jx relationship
 
-            }
+    // users: all users
+    // user in team: filter by specific team
+    // user by priv: filter by specific permissions
 
-        //* filter === "driver-applications"
-        // users: filter application by their conditions and where user not null and make unique list of users
-        // carriers: filter applications by their conditions and where carriers not null and exclude carriers not in self jx relationship
+    //* sessionUser.DS === true
+    // carriers: all carrier by category 'crr'
+    //* sessionUser.DS !== true
+    // carriers in sessionUser jx relationships
 
-        // users: all users
-        // user in team: filter by specific team
-        // user by priv: filter by specific permissions
-
-        //* sessionUser.DS === true
-        // carriers: all carrier by category 'crr'
-        //* sessionUser.DS !== true
-        // carriers in sessionUser jx relationships
-
-        res.json(response)
-    } catch (err) {
-        sendError.server(req, res, err)
-    }
-})
-
+    res.json(response);
+  } catch (err) {
+    sendError.server(req, res, err);
+  }
+});
 
 // ==== DRIVERS ROUTES ==== //
-
 
 // router.post('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
 //     try {
@@ -125,7 +114,6 @@ router.post('/lists', User.mw.verify, Team.mw.verify, async (req, res) => {
 //     }
 // })
 
-
 // router.delete('/data/drivers/application/:_id', User.mw.verify, Team.mw.verify, async (req, res) => {
 //     try {
 //         const { _id } = req.params
@@ -139,7 +127,6 @@ router.post('/lists', User.mw.verify, Team.mw.verify, async (req, res) => {
 //         sendError.server(req, res, err)
 //     }
 // })
-
 
 // router.post('/list/drivers/application/:_id/:target', User.mw.verify, Team.mw.verify, async (req, res) => {
 //     try {
@@ -171,7 +158,6 @@ router.post('/lists', User.mw.verify, Team.mw.verify, async (req, res) => {
 //     }
 // })
 
-
 // ==== EXPORT ==== //
 
-export default router
+export default router;

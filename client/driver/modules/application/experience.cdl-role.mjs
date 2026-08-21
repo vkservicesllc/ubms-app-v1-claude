@@ -1,32 +1,35 @@
-import { inputEvent, selectEvent } from '/modules/events/form.mjs'
-import { dateMask, telMask } from '/modules/events/imask.mjs'
-import { busNameEvent } from '/modules/events/company.mjs'
-import { check, onInput, onAccept, onChange, onComplete, onBlur } from './support.mjs'
-import selector from '/modules/registry/selectors/driver-application.mjs'
+import { inputEvent, selectEvent } from '/modules/events/form.mjs';
+import { dateMask, telMask } from '/modules/events/imask.mjs';
+import { busNameEvent } from '/modules/events/company.mjs';
+import { check, onInput, onAccept, onChange, onComplete, onBlur } from './support.mjs';
+import selector from '/modules/registry/selectors/driver-application.mjs';
 
-const TS = selector.id.text, SS = selector.id.select, RS = selector.id.radio, CS = selector.id.checkbox
-const noExpId = CS.noExp
-const cmvExpId = RS.cmvExp
-const mileageId = TS.expMileage
-const expHoursCls = selector.class.text.expHours
-const cdlSchoolId = RS.cdlSchool
-const cdlSchoolCls = selector.class.combo.cdlSchool
-const schNameId = TS.schName
-const schPhoneId = TS.schPhone
-const schStateId = SS.schState
-const schEndDateId = TS.schEndDate
-const schDurationId = SS.schDuration
+const TS = selector.id.text,
+  SS = selector.id.select,
+  RS = selector.id.radio,
+  CS = selector.id.checkbox;
+const noExpId = CS.noExp;
+const cmvExpId = RS.cmvExp;
+const mileageId = TS.expMileage;
+const expHoursCls = selector.class.text.expHours;
+const cdlSchoolId = RS.cdlSchool;
+const cdlSchoolCls = selector.class.combo.cdlSchool;
+const schNameId = TS.schName;
+const schPhoneId = TS.schPhone;
+const schStateId = SS.schState;
+const schEndDateId = TS.schEndDate;
+const schDurationId = SS.schDuration;
 
-const $expDetails = $('#experience-details')
+const $expDetails = $('#experience-details');
 // const $hours = $(expHoursCls)
 // const $totalHours = $('#total-weekly-experience-hours')
-const appliedOn = $(selector.id.hidden.appliedOn).val()
+const appliedOn = $(selector.id.hidden.appliedOn).val();
 
-const $form = $('#experience-form')
+const $form = $('#experience-form');
 const $help = {
-    schEnd: $('#sch-end-help'),
-    form: $('#exp-form-help'),
-}
+  schEnd: $('#sch-end-help'),
+  form: $('#exp-form-help'),
+};
 
 // const calculateHours = () => {
 //     let total = 0
@@ -39,75 +42,72 @@ const $help = {
 //     $totalHours.val(total)
 // }
 
-
 // calculateHours()
 
-if ($(cdlSchoolId.yes).prop('checked')) $(cdlSchoolCls).prop('disabled', false)
-
+if ($(cdlSchoolId.yes).prop('checked')) $(cdlSchoolCls).prop('disabled', false);
 
 inputEvent(noExpId, {
-    onChange(value, $el) {
-        const checked = $el.prop('checked')
+  onChange(value, $el) {
+    const checked = $el.prop('checked');
 
-        $expDetails[checked ? 'hide' : 'show']()
-        if (!checked) {
-            const selectors = ['input', 'select']
-            const $noCmvExp = $(cmvExpId.no)
-            // const $noCdlSchool = $(cdlSchoolId.no)
+    $expDetails[checked ? 'hide' : 'show']();
+    if (!checked) {
+      const selectors = ['input', 'select'];
+      const $noCmvExp = $(cmvExpId.no);
+      // const $noCdlSchool = $(cdlSchoolId.no)
 
-            if ($noCmvExp.prop('checked')) {
-                selectors[0] += `:not(${selector.class.checkbox.semiExp})`
-                selectors[0] += `:not(${selector.id.checkbox.tandemExp})`
-            }
+      if ($noCmvExp.prop('checked')) {
+        selectors[0] += `:not(${selector.class.checkbox.semiExp})`;
+        selectors[0] += `:not(${selector.id.checkbox.tandemExp})`;
+      }
 
-            // if ($noCdlSchool.prop('checked')) {
-            //     selectors[0] += `:not(${cdlSchoolCls})`
-            //     selectors[1] += `:not(${cdlSchoolCls})`
-            // }
+      // if ($noCdlSchool.prop('checked')) {
+      //     selectors[0] += `:not(${cdlSchoolCls})`
+      //     selectors[1] += `:not(${cdlSchoolCls})`
+      // }
 
-            $expDetails.find(selectors.join(', ')).prop('disabled', false)
-        } else
-            $expDetails.find('input, select').prop('disabled', true)
-    },
-})
-
+      $expDetails.find(selectors.join(', ')).prop('disabled', false);
+    } else $expDetails.find('input, select').prop('disabled', true);
+  },
+});
 
 inputEvent(`${cmvExpId.yes}, ${cmvExpId.no}`, {
-    onChange(value) {
-        const $cols = $('.vehicle-experience-col-width')
-        const $form = $('.cmv-experience')
-        const $checkboxes = $form.find('[type="checkbox"]')
-        let disabled = false, action = 'show', colClass = 'col-md-4'
+  onChange(value) {
+    const $cols = $('.vehicle-experience-col-width');
+    const $form = $('.cmv-experience');
+    const $checkboxes = $form.find('[type="checkbox"]');
+    let disabled = false,
+      action = 'show',
+      colClass = 'col-md-4';
 
-        if (value === 'N') {
-            disabled = true
-            action = 'hide'
-            colClass = 'col-md-6'
-        }
+    if (value === 'N') {
+      disabled = true;
+      action = 'hide';
+      colClass = 'col-md-6';
+    }
 
-        $cols.removeClass('col-md-4 col-md-6').addClass(colClass)
-        $checkboxes.prop('disabled', disabled)
-        $form[action]()
-    },
-})
+    $cols.removeClass('col-md-4 col-md-6').addClass(colClass);
+    $checkboxes.prop('disabled', disabled);
+    $form[action]();
+  },
+});
 
 inputEvent(mileageId, {
-    onFocus(miles, $miles) {
-        if (miles) $miles.val(Number(miles.replace(/,/g, '')))
-    },
-    onInput(miles, $mileage) {
-        miles = miles.replace(/\D/g, '')
+  onFocus(miles, $miles) {
+    if (miles) $miles.val(Number(miles.replace(/,/g, '')));
+  },
+  onInput(miles, $mileage) {
+    miles = miles.replace(/\D/g, '');
 
-        $mileage.val(miles)
-    },
-    onBlur(miles, $mileage) {
-        miles = (+miles).toLocaleString()
+    $mileage.val(miles);
+  },
+  onBlur(miles, $mileage) {
+    miles = (+miles).toLocaleString();
 
-        $mileage.val(miles)
-        onBlur(miles, $mileage)
-    },
-})
-
+    $mileage.val(miles);
+    onBlur(miles, $mileage);
+  },
+});
 
 // inputEvent(expHoursCls, {
 //     onInput(hours, $hours) {
@@ -128,63 +128,63 @@ inputEvent(mileageId, {
 //     },
 // })
 
-
 inputEvent(`${cdlSchoolId.yes}, ${cdlSchoolId.no}`, {
-    onChange(value) {
-        const $form = $('#cdl-school-form')
-        const $fields = $form.find('input, select')
-        let disabled = true, action = 'hide'
+  onChange(value) {
+    const $form = $('#cdl-school-form');
+    const $fields = $form.find('input, select');
+    let disabled = true,
+      action = 'hide';
 
-        if (value === 'Y') {
-            disabled = false
-            action = 'show'
-        }
+    if (value === 'Y') {
+      disabled = false;
+      action = 'show';
+    }
 
-        $fields.prop('disabled', disabled)
-        $form[action]()
-    },
-})
-
+    $fields.prop('disabled', disabled);
+    $form[action]();
+  },
+});
 
 busNameEvent(schNameId, true, {
-    onInput,
-    onChange(schName, type, $schName) {
-        if (type) $schName.val(`${schName}, ${type}`)
-        onChange(schName, $schName)
-    },
-})
+  onInput,
+  onChange(schName, type, $schName) {
+    if (type) $schName.val(`${schName}, ${type}`);
+    onChange(schName, $schName);
+  },
+});
 
-telMask(schPhoneId, { onAccept, onComplete })
+telMask(schPhoneId, { onAccept, onComplete });
 
 dateMask(schEndDateId, {
-    pattern: 'us',
-    onAccept(mask, $endDate) {
-        $help.schEnd.text(null)
-        $endDate.removeClass('is-valid is-invalid')
-    },
-    onComplete(mask, $endDate) {
-        let endDate = mask.value
+  pattern: 'us',
+  onAccept(mask, $endDate) {
+    $help.schEnd.text(null);
+    $endDate.removeClass('is-valid is-invalid');
+  },
+  onComplete(mask, $endDate) {
+    let endDate = mask.value;
 
-        if (endDate) {
-            endDate = moment(endDate, 'MM/DD/YYYY', true)
+    if (endDate) {
+      endDate = moment(endDate, 'MM/DD/YYYY', true);
 
-            if (!endDate.isValid()) {
-                $endDate.addClass('is-invalid')
-                $help.schEnd.text('* Invalid date')
-            } else {
-                const today = moment(appliedOn)
+      if (!endDate.isValid()) {
+        $endDate.addClass('is-invalid');
+        $help.schEnd.text('* Invalid date');
+      } else {
+        const today = moment(appliedOn);
 
-                if (endDate.isAfter(today)) {
-                    $endDate.addClass('is-invalid')
-                    $help.schEnd.text('* Future date forbidden')
-                } $endDate.addClass('is-valid')
-            }
+        if (endDate.isAfter(today)) {
+          $endDate.addClass('is-invalid');
+          $help.schEnd.text('* Future date forbidden');
         }
+        $endDate.addClass('is-valid');
+      }
+    }
 
-        if (check($form)) $help.form.hide().html(null)
-    },
-})
+    if (check($form)) $help.form.hide().html(null);
+  },
+});
 
-selectEvent(schStateId, { fill: true, onChange })
+selectEvent(schStateId, { fill: true, onChange });
 
-selectEvent(schDurationId, { fill: true, onChange })
+selectEvent(schDurationId, { fill: true, onChange });

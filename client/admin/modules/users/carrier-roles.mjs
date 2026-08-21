@@ -1,193 +1,190 @@
-import selector from '/modules/registry/selectors/user-role.mjs'
-import { roleNameEvent, roleLocationEvent } from '/modules/events/user.mjs'
-import roleRelationshipEvent from './relationships.mjs'
+import selector from '/modules/registry/selectors/user-role.mjs';
+import { roleNameEvent, roleLocationEvent } from '/modules/events/user.mjs';
+import roleRelationshipEvent from './relationships.mjs';
 
-
-const $section = $('#carrier-roles-form-section')
-const $list = $('#carrier-role-panel-list')
+const $section = $('#carrier-roles-form-section');
+const $list = $('#carrier-role-panel-list');
 const $button = {
-    add: $('#carrier-role-add'),
-    close: $('#carrier-role-close'),
-    delete: $('#carrier-role-delete-button'),
-    submit: $('#carrier-role-submit'),
-}
-const $warning = $('#carrier-name-unavailable-warning')
+  add: $('#carrier-role-add'),
+  close: $('#carrier-role-close'),
+  delete: $('#carrier-role-delete-button'),
+  submit: $('#carrier-role-submit'),
+};
+const $warning = $('#carrier-name-unavailable-warning');
 const $form = {
-    role: $('#carrier-role-form'),
-    delete: $('#delete-carrier-role-form'),
-}
+  role: $('#carrier-role-form'),
+  delete: $('#delete-carrier-role-form'),
+};
 
-const $id = $(selector.id.hidden.carrierRoleId)
-const $deleteId = $(selector.id.hidden.carrierRoleDeleteId)
-const $name = $(selector.id.text.carrierRoleName)
-const $location = $(selector.id.select.carrierRoleLocation)
+const $id = $(selector.id.hidden.carrierRoleId);
+const $deleteId = $(selector.id.hidden.carrierRoleDeleteId);
+const $name = $(selector.id.text.carrierRoleName);
+const $location = $(selector.id.select.carrierRoleLocation);
 
 const showWarning = () => {
-    $warning.show()
-    $button.submit.prop('disabled', true)
-}
+  $warning.show();
+  $button.submit.prop('disabled', true);
+};
 
 const hideWarning = () => {
-    $warning.hide()
-    $button.submit.prop('disabled', false)
-}
+  $warning.hide();
+  $button.submit.prop('disabled', false);
+};
 
 const unset = () => {
-    $id.val(null)
-    $deleteId.val(null)
-    $name.val(null)
-    $location.val(null)
-    $('.carrier-role-checkbox, .carrier-role-checkbox-all').prop('checked', false)
-    $button.delete.hide()
-    hideWarning()
-}
+  $id.val(null);
+  $deleteId.val(null);
+  $name.val(null);
+  $location.val(null);
+  $('.carrier-role-checkbox, .carrier-role-checkbox-all').prop('checked', false);
+  $button.delete.hide();
+  hideWarning();
+};
 
 const ajaxData = {
-    category: 'crr',
-    $id,
-    $name,
-    $location,
-}
+  category: 'crr',
+  $id,
+  $name,
+  $location,
+};
 
-const onAjax = response => {
-    const { unique, original } = response
-    if (!unique && !original) showWarning()
-}
+const onAjax = (response) => {
+  const { unique, original } = response;
+  if (!unique && !original) showWarning();
+};
 
-const onChange = () => hideWarning()
-
+const onChange = () => hideWarning();
 
 roleNameEvent(ajaxData, {
-    onInput() {
-        hideWarning()
-    },
-    onAjax,
-})
+  onInput() {
+    hideWarning();
+  },
+  onAjax,
+});
 
-
-roleLocationEvent(ajaxData, { onChange, onAjax })
-
+roleLocationEvent(ajaxData, { onChange, onAjax });
 
 $.ajax('/api/resource/roles?category=carrier', {
-    success(response) {
-        let list = ''
-        let { data } = response
+  success(response) {
+    let list = '';
+    let { data } = response;
 
-        data.forEach(role => {
-            const { _id, name, location, count } = role
-            const { users } = count
-            const userStyle = `is-${users ? 'primary' : 'danger'}`
+    data.forEach((role) => {
+      const { _id, name, location, count } = role;
+      const { users } = count;
+      const userStyle = `is-${users ? 'primary' : 'danger'}`;
 
-            list += `<span class="panel-block is-flex is-justify-content-space-between"><a class="carrier-role" data-id="${_id}">`
-            list += name
-            if (location) list += `&nbsp; <span class="tag has-text-weight-normal">${role.expansion.location} only</span>`
-            list += `</a><div class="tags has-addons"><span class="tag">Users</span><a class="tag ${userStyle} carrier-role-relationship" data-role-id="${_id}">${users}</a></div>`
-            list += '</span>'
-        })
+      list += `<span class="panel-block is-flex is-justify-content-space-between"><a class="carrier-role" data-id="${_id}">`;
+      list += name;
+      if (location)
+        list += `&nbsp; <span class="tag has-text-weight-normal">${role.expansion.location} only</span>`;
+      list += `</a><div class="tags has-addons"><span class="tag">Users</span><a class="tag ${userStyle} carrier-role-relationship" data-role-id="${_id}">${users}</a></div>`;
+      list += '</span>';
+    });
 
-        $list.html(list)
+    $list.html(list);
 
-        const $role = $('.carrier-role')
-        const highlight = {
-            block: 'has-background-dark has-text-light',
-            tag: 'is-dark',
-        }
-        const removeHighlight = () => {
-            $role.parent().removeClass(highlight.block).find('.tag').removeClass(highlight.tag)
-        }
+    const $role = $('.carrier-role');
+    const highlight = {
+      block: 'has-background-dark has-text-light',
+      tag: 'is-dark',
+    };
+    const removeHighlight = () => {
+      $role.parent().removeClass(highlight.block).find('.tag').removeClass(highlight.tag);
+    };
 
-        $button.add.click(() => {
-            $button.submit.removeClass('is-success').addClass('is-link').text('Create')
-            setTimeout(() => $('.tables').scrollTop(0), 0)
-            unset()
-            removeHighlight()
-            $section.show()
-        })
-        
-        $button.close.click(() => {
-            $section.hide()
-            removeHighlight()
-            unset()
-            $button.submit.removeClass('is-link is-success').text(null)
-        })
+    $button.add.click(() => {
+      $button.submit.removeClass('is-success').addClass('is-link').text('Create');
+      setTimeout(() => $('.tables').scrollTop(0), 0);
+      unset();
+      removeHighlight();
+      $section.show();
+    });
 
-        $button.delete.click(() => {
-            if (confirm('Confirm deletion: Are you sure you want to delete the current role?'))
-                $form.delete.submit()
-        })
+    $button.close.click(() => {
+      $section.hide();
+      removeHighlight();
+      unset();
+      $button.submit.removeClass('is-link is-success').text(null);
+    });
 
-        $role.on('click', function() {
-            unset()
-            $button.delete.show()
-            const _id = $(this).data('id')
+    $button.delete.click(() => {
+      if (confirm('Confirm deletion: Are you sure you want to delete the current role?'))
+        $form.delete.submit();
+    });
 
-            removeHighlight()
-            $(this).parent().addClass(highlight.block).find('.tag').addClass(highlight.tag)
+    $role.on('click', function () {
+      unset();
+      $button.delete.show();
+      const _id = $(this).data('id');
 
-            $.ajax(`/api/resource/roles/${_id}`, {
-                success(response) {
-                    const { _id, name, location, permissions } = response.data
+      removeHighlight();
+      $(this).parent().addClass(highlight.block).find('.tag').addClass(highlight.tag);
 
-                    $id.val(_id)
-                    $deleteId.val(_id)
-                    $name.val(name)
-                    $location.val(location)
-                    $button.submit.removeClass('is-link').addClass('is-success').text('Update')
+      $.ajax(`/api/resource/roles/${_id}`, {
+        success(response) {
+          const { _id, name, location, permissions } = response.data;
 
-                    for (const permission in permissions) {
-                        permissions[permission]
-                            .forEach(value => $(`[name="permissions[${permission}][]"][value="${value}"]`).prop('checked', true))
+          $id.val(_id);
+          $deleteId.val(_id);
+          $name.val(name);
+          $location.val(location);
+          $button.submit.removeClass('is-link').addClass('is-success').text('Update');
 
-                        const row = permission.replace(/[:\/]/g, '-')
-                        if ($(`.${row}`).length == $(`.${row}:checked`).length) $(`#${row}`).prop('checked', true)
-                    }
+          for (const permission in permissions) {
+            permissions[permission].forEach((value) =>
+              $(`[name="permissions[${permission}][]"][value="${value}"]`).prop('checked', true),
+            );
 
-                    setTimeout(() => $('.tables').scrollTop(0), 0)
-                    $section.show()
-                },
-            })
-        })
+            const row = permission.replace(/[:\/]/g, '-');
+            if ($(`.${row}`).length == $(`.${row}:checked`).length)
+              $(`#${row}`).prop('checked', true);
+          }
 
-        roleRelationshipEvent('carrier')
-    },
-})
+          setTimeout(() => $('.tables').scrollTop(0), 0);
+          $section.show();
+        },
+      });
+    });
 
+    roleRelationshipEvent('carrier');
+  },
+});
 
-$('.carrier-role-checkbox-all').on('change', function() {
-    const row = $(this).attr('id')
-    const checked = $(this).is(':checked')
+$('.carrier-role-checkbox-all').on('change', function () {
+  const row = $(this).attr('id');
+  const checked = $(this).is(':checked');
 
-    $(`.${row}`).prop('checked', checked)
-})
+  $(`.${row}`).prop('checked', checked);
+});
 
-$('.carrier-role-checkbox').on('change', function() {
-    const row = $(this).attr('class').split(' ')[1]
-    const value = $(this).attr('value')
-    const checked = $(this).is(':checked')
-    const allChecked = $(`.${row}`).length == $(`.${row}:checked`).length
+$('.carrier-role-checkbox').on('change', function () {
+  const row = $(this).attr('class').split(' ')[1];
+  const value = $(this).attr('value');
+  const checked = $(this).is(':checked');
+  const allChecked = $(`.${row}`).length == $(`.${row}:checked`).length;
 
-    $(`#${row}`).prop('checked', allChecked)
-    if (checked && value != '0') {
-        $(`.${row}[value="0"]`).prop('checked', true)
-    }
-})
+  $(`#${row}`).prop('checked', allChecked);
+  if (checked && value != '0') {
+    $(`.${row}[value="0"]`).prop('checked', true);
+  }
+});
 
-$('.carrier-role-checkbox[value="0"]').on('change', function() {
-    const row = $(this).attr('class').split(' ')[1]
-    const checked = $(this).is(':checked')
+$('.carrier-role-checkbox[value="0"]').on('change', function () {
+  const row = $(this).attr('class').split(' ')[1];
+  const checked = $(this).is(':checked');
 
-    if (!checked) {
-        $(`.${row}`).prop('checked', false)
-        $(`#${row}`).prop('checked', false)
-    }
-})
+  if (!checked) {
+    $(`.${row}`).prop('checked', false);
+    $(`#${row}`).prop('checked', false);
+  }
+});
 
+$form.role.submit(function (e) {
+  e.preventDefault();
 
-$form.role.submit(function(e) {
-    e.preventDefault()
+  if (!$('.carrier-role-checkbox:checked').length)
+    return alert('At least 1 permission must be checked before saving!');
 
-    if (!$('.carrier-role-checkbox:checked').length)
-        return alert('At least 1 permission must be checked before saving!')
-
-    $(this).unbind().submit()
-})
+  $(this).unbind().submit();
+});

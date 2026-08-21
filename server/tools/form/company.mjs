@@ -1,61 +1,63 @@
-import createForm, { constructForm } from './builder.mjs'
+import createForm, { constructForm } from './builder.mjs';
 import {
-    emptyOpt,
-    createIdForm,
-    createSinceForm,
-    createUntilForm,
-    createWebsiteForm,
-    createAddressForm,
-    createAddrZipForm,
-    createAddrCityForm,
-    createAddrStateForm,
-    createPhoneForm,
-    createEmailForm,
-    createPersonNameForm,
-    createDobForm,
-    createGenderForm,
-    createSsnForm,
-} from './reusable.mjs'
+  emptyOpt,
+  createIdForm,
+  createSinceForm,
+  createUntilForm,
+  createWebsiteForm,
+  createAddressForm,
+  createAddrZipForm,
+  createAddrCityForm,
+  createAddrStateForm,
+  createPhoneForm,
+  createEmailForm,
+  createPersonNameForm,
+  createDobForm,
+  createGenderForm,
+  createSsnForm,
+} from './reusable.mjs';
 
-import Company from '../core/company.mjs'
-import companySelector from '../../../client/global/modules/registry/selectors/company.mjs'
-import ownerSelector from '../../../client/global/modules/registry/selectors/company-owner.mjs'
-import refSrcSelector from '../../../client/global/modules/registry/selectors/company-refsource.mjs'
-import length from '../../../client/global/modules/registry/length.mjs'
-import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs'
-import strip from '../../../client/global/modules/tools/utils/formatter.mjs'
-import { validate } from './validator.mjs'
+import Company from '../core/company.mjs';
+import companySelector from '../../../client/global/modules/registry/selectors/company.mjs';
+import ownerSelector from '../../../client/global/modules/registry/selectors/company-owner.mjs';
+import refSrcSelector from '../../../client/global/modules/registry/selectors/company-refsource.mjs';
+import length from '../../../client/global/modules/registry/length.mjs';
+import { getStaticProps } from '../../../client/global/modules/tools/utils/class.mjs';
+import strip from '../../../client/global/modules/tools/utils/formatter.mjs';
+import { validate } from './validator.mjs';
 
-const required = true, disabled = true
-
+const required = true,
+  disabled = true;
 
 const createCategoryForm = (selector, props = {}) => {
-    const data = {}, list = Company.list.category
-    for (const key in list) {
-        if (typeof list[key] === 'function') continue
-        data[key] = list[key].item[1]
-    }
+  const data = {},
+    list = Company.list.category;
+  for (const key in list) {
+    if (typeof list[key] === 'function') continue;
+    data[key] = list[key].item[1];
+  }
 
-    //! Temporary
-    let { options } = props
-    if (!options) options = {}
-    options.disabled = ['brk', 'whs', 'shp', 'scl', 'cst' ]
+  //! Temporary
+  let { options } = props;
+  if (!options) options = {};
+  options.disabled = ['brk', 'whs', 'shp', 'scl', 'cst'];
 
-    return createForm({
-        selector,
-        target: 'category',
-        name: 'category',
-        emptyOpt,
-        required,
-        label: 'Category',
-        ...props,
-        type: 'select',
-        data,
-        options,
-    })
-}
+  return createForm({
+    selector,
+    target: 'category',
+    name: 'category',
+    emptyOpt,
+    required,
+    label: 'Category',
+    ...props,
+    type: 'select',
+    data,
+    options,
+  });
+};
 
-const createBusNameForm = (selector, props = {}) => createForm({
+const createBusNameForm = (selector, props = {}) =>
+  createForm({
     selector,
     target: 'busName',
     name: 'busName',
@@ -63,9 +65,10 @@ const createBusNameForm = (selector, props = {}) => createForm({
     label: 'Business Name',
     ...props,
     maxLength: length.company.busName.max,
-})
+  });
 
-const createCoTypeForm = (selector, props = {}) => createForm({
+const createCoTypeForm = (selector, props = {}) =>
+  createForm({
     selector,
     target: 'coType',
     name: 'coType',
@@ -76,9 +79,10 @@ const createCoTypeForm = (selector, props = {}) => createForm({
     ...props,
     type: 'select',
     data: Company.list.type.full(),
-})
+  });
 
-const createAliasForm = (confirm = false) => createForm({
+const createAliasForm = (confirm = false) =>
+  createForm({
     selector: companySelector,
     target: confirm === true ? 'confirmAlias' : 'alias',
     name: 'alias',
@@ -87,225 +91,257 @@ const createAliasForm = (confirm = false) => createForm({
     required,
     label: 'Alias',
     validator: {
-        sanitizer: value => value.replace(/[^A-Za-z]/, '').toUpperCase(),
+      sanitizer: (value) => value.replace(/[^A-Za-z]/, '').toUpperCase(),
     },
-})
+  });
 
-const createEinForm = (selector, props = {}) => createForm({
+const createEinForm = (selector, props = {}) =>
+  createForm({
     selector,
     target: 'ein',
     mode: 'numeric',
     name: 'ein',
     // required,
     label: {
-        content: 'EIN',
-        title: 'Employer Identification Number',
+      content: 'EIN',
+      title: 'Employer Identification Number',
     },
     ...props,
     validator: {
-        rule: 'numeric',
-        sanitizer: value => strip(value),
+      rule: 'numeric',
+      sanitizer: (value) => strip(value),
     },
-})
-
+  });
 
 class CompanyForm {
-    constructor(options = {}) {
-        getStaticProps(CompanyForm)
-            .forEach(target => this[target] = constructForm(CompanyForm, target, options))
-    }
+  constructor(options = {}) {
+    getStaticProps(CompanyForm).forEach(
+      (target) => (this[target] = constructForm(CompanyForm, target, options)),
+    );
+  }
 
-    static id = createIdForm({ selector: companySelector })
-    static deleteId = createIdForm({ selector: companySelector, target: 'deleteId' })
-    static category = createCategoryForm(companySelector)
-    static since = createSinceForm({
-        selector: companySelector,
-        label: 'Launch Date',
-        required: false,
-    })
-    static effective = createSinceForm({ selector: companySelector, target: 'effective' })
-    static until = createUntilForm({ selector: companySelector })
+  static id = createIdForm({ selector: companySelector });
+  static deleteId = createIdForm({ selector: companySelector, target: 'deleteId' });
+  static category = createCategoryForm(companySelector);
+  static since = createSinceForm({
+    selector: companySelector,
+    label: 'Launch Date',
+    required: false,
+  });
+  static effective = createSinceForm({ selector: companySelector, target: 'effective' });
+  static until = createUntilForm({ selector: companySelector });
 
-    static busName = createBusNameForm(companySelector)
-    static coType = createCoTypeForm(companySelector)
-    static alias = createAliasForm()
-    static confirmAlias = createAliasForm(true)
-    static ein = createEinForm(companySelector)
+  static busName = createBusNameForm(companySelector);
+  static coType = createCoTypeForm(companySelector);
+  static alias = createAliasForm();
+  static confirmAlias = createAliasForm(true);
+  static ein = createEinForm(companySelector);
 
-    // static ein = createForm({
-    //     selector: companySelector,
-    //     target: 'ein',
-    //     name: 'ein',
-    //     required,
-    //     label: {
-    //         content: 'EIN',
-    //         title: 'Employer Identification Number',
-    //     },
-    //     validator: {
-    //         rule: 'numeric',
-    //         sanitizer: value => strip(value),
-    //     },
-    // })
+  // static ein = createForm({
+  //     selector: companySelector,
+  //     target: 'ein',
+  //     name: 'ein',
+  //     required,
+  //     label: {
+  //         content: 'EIN',
+  //         title: 'Employer Identification Number',
+  //     },
+  //     validator: {
+  //         rule: 'numeric',
+  //         sanitizer: value => strip(value),
+  //     },
+  // })
 
-    static duns = createForm({
-        selector: companySelector,
-        target: 'duns',
-        name: 'duns',
-        label: {
-            content: 'DUNS',
-            title: 'Data Universal Numbering System',
-        },
-        validator: {
-            rule: 'numeric',
-            sanitizer: value => strip(value),
-            length: { min: 9, max: 9 },
-        },
-    })
+  static duns = createForm({
+    selector: companySelector,
+    target: 'duns',
+    name: 'duns',
+    label: {
+      content: 'DUNS',
+      title: 'Data Universal Numbering System',
+    },
+    validator: {
+      rule: 'numeric',
+      sanitizer: (value) => strip(value),
+      length: { min: 9, max: 9 },
+    },
+  });
 
-    static website = createWebsiteForm({ selector: companySelector })
+  static website = createWebsiteForm({ selector: companySelector });
 
-    static ownership = createForm({
-        selector: companySelector,
-        target: 'ownership',
-        name: '_ownerId',
-        type: 'select',
-        emptyOpt,
-        required,
-        label: 'Owner',
-        validate: false,
-    })
+  static ownership = createForm({
+    selector: companySelector,
+    target: 'ownership',
+    name: '_ownerId',
+    type: 'select',
+    emptyOpt,
+    required,
+    label: 'Owner',
+    validate: false,
+  });
 
-    static address1 = createAddressForm({ selector: companySelector }, { mail: false })
+  static address1 = createAddressForm({ selector: companySelector }, { mail: false });
 
-    static address2 = createAddressForm(
-        { selector: companySelector },
-        { idx: 2, mail: false, business: true }
-    )
+  static address2 = createAddressForm(
+    { selector: companySelector },
+    { idx: 2, mail: false, business: true },
+  );
 
-    static addrZip = createAddrZipForm({ selector: companySelector }, false)
-    static addrCity = createAddrCityForm({ selector: companySelector }, false)
-    static addrState = createAddrStateForm({ selector: companySelector, options: { valOpt: true } }, false)
+  static addrZip = createAddrZipForm({ selector: companySelector }, false);
+  static addrCity = createAddrCityForm({ selector: companySelector }, false);
+  static addrState = createAddrStateForm(
+    { selector: companySelector, options: { valOpt: true } },
+    false,
+  );
 
-    static mailAddress1 = createAddressForm({ selector: companySelector, disabled }, { mail: true })
+  static mailAddress1 = createAddressForm({ selector: companySelector, disabled }, { mail: true });
 
-    static mailAddress2 = createAddressForm(
-        { selector: companySelector, disabled },
-        { idx: 2, mail: true, business: true }
-    )
+  static mailAddress2 = createAddressForm(
+    { selector: companySelector, disabled },
+    { idx: 2, mail: true, business: true },
+  );
 
-    static mailAddrZip = createAddrZipForm({ selector: companySelector, disabled }, true)
-    static mailAddrCity = createAddrCityForm({ selector: companySelector, disabled }, true)
-    static mailAddrState = createAddrStateForm({ selector: companySelector, disabled, options: { valOpt: true } }, true)
+  static mailAddrZip = createAddrZipForm({ selector: companySelector, disabled }, true);
+  static mailAddrCity = createAddrCityForm({ selector: companySelector, disabled }, true);
+  static mailAddrState = createAddrStateForm(
+    { selector: companySelector, disabled, options: { valOpt: true } },
+    true,
+  );
 
-    static phone = createPhoneForm({ selector: companySelector, required })
-    static fax = createPhoneForm({ selector: companySelector, target: 'fax', name: 'fax', label: 'Fax' })
-    static email = createEmailForm({ selector: companySelector})
+  static phone = createPhoneForm({ selector: companySelector, required });
+  static fax = createPhoneForm({
+    selector: companySelector,
+    target: 'fax',
+    name: 'fax',
+    label: 'Fax',
+  });
+  static email = createEmailForm({ selector: companySelector });
 
-    // static addrSince = createSinceForm({ selector: companySelector, target: 'addrSince' })
-    // static mailAddrSince = createSinceForm({ selector: companySelector, target: 'mailAddrSince' })
-    // static phoneSince = createSinceForm({ selector: companySelector, target: 'phoneSince' })
-    // static faxSince = createSinceForm({ selector: companySelector, target: 'faxSince' })
-    // static emailSince = createSinceForm({ selector: companySelector, target: 'emailSince' })
+  // static addrSince = createSinceForm({ selector: companySelector, target: 'addrSince' })
+  // static mailAddrSince = createSinceForm({ selector: companySelector, target: 'mailAddrSince' })
+  // static phoneSince = createSinceForm({ selector: companySelector, target: 'phoneSince' })
+  // static faxSince = createSinceForm({ selector: companySelector, target: 'faxSince' })
+  // static emailSince = createSinceForm({ selector: companySelector, target: 'emailSince' })
 
-    static validate = (target, options) => validate(CompanyForm, (target, options) => {
-        let fields
+  static validate = (target, options) =>
+    validate(
+      CompanyForm,
+      (target, options) => {
+        let fields;
 
         switch (target) {
-            case 'address':
-                fields = [] //! use options
-                break
-            case 'contacts':
-                fields = ['phone', 'fax', 'email']
-                break
-            case 'static':
-                fields = ['since', 'ein', 'duns', 'website']
-                break
-            default:
-                fields = ['category', 'ein', 'duns', 'busName', 'coType', 'alias', 'website', 'since']
+          case 'address':
+            fields = []; //! use options
+            break;
+          case 'contacts':
+            fields = ['phone', 'fax', 'email'];
+            break;
+          case 'static':
+            fields = ['since', 'ein', 'duns', 'website'];
+            break;
+          default:
+            fields = ['category', 'ein', 'duns', 'busName', 'coType', 'alias', 'website', 'since'];
         }
 
-        return fields
-    }, target, options)
-
+        return fields;
+      },
+      target,
+      options,
+    );
 }
-
 
 class OwnerForm {
-    constructor(options = {}) {
-        getStaticProps(OwnerForm)
-            .forEach(target => this[target] = constructForm(OwnerForm, target, options))
-    }
+  constructor(options = {}) {
+    getStaticProps(OwnerForm).forEach(
+      (target) => (this[target] = constructForm(OwnerForm, target, options)),
+    );
+  }
 
-    static id = createIdForm({ selector: ownerSelector })
-    static modifyId = createIdForm({ selector: ownerSelector, target: 'modifyId' })
-    static deleteId = createIdForm({ selector: ownerSelector, target: 'deleteId' })
+  static id = createIdForm({ selector: ownerSelector });
+  static modifyId = createIdForm({ selector: ownerSelector, target: 'modifyId' });
+  static deleteId = createIdForm({ selector: ownerSelector, target: 'deleteId' });
 
-    static nameSince = createSinceForm({ selector: ownerSelector, target: 'nameSince', required, disabled })
-    static firstName = createPersonNameForm('first', { selector: ownerSelector, group: 'name' })
-    static middleName = createPersonNameForm('middle', { selector: ownerSelector, group: 'name' })
-    static lastName = createPersonNameForm('last', { selector: ownerSelector, group: 'name' })
-    static suffix = createPersonNameForm('suffix', { selector: ownerSelector, group: 'name' })
+  static nameSince = createSinceForm({
+    selector: ownerSelector,
+    target: 'nameSince',
+    required,
+    disabled,
+  });
+  static firstName = createPersonNameForm('first', { selector: ownerSelector, group: 'name' });
+  static middleName = createPersonNameForm('middle', { selector: ownerSelector, group: 'name' });
+  static lastName = createPersonNameForm('last', { selector: ownerSelector, group: 'name' });
+  static suffix = createPersonNameForm('suffix', { selector: ownerSelector, group: 'name' });
 
-    static gender = createGenderForm({ selector: ownerSelector })
-    static dob = createDobForm({ selector: ownerSelector, required: false })
+  static gender = createGenderForm({ selector: ownerSelector });
+  static dob = createDobForm({ selector: ownerSelector, required: false });
 
-    static ssn = createSsnForm({
-        selector: ownerSelector,
-        required: false,
-        disabled, //! TEMPORARILY DISABLED
-        label: 'SSN <small>(optional but highly recommended)</small>',
-    })
+  static ssn = createSsnForm({
+    selector: ownerSelector,
+    required: false,
+    disabled, //! TEMPORARILY DISABLED
+    label: 'SSN <small>(optional but highly recommended)</small>',
+  });
 
-    static phone = createPhoneForm({ selector: ownerSelector, required })
+  static phone = createPhoneForm({ selector: ownerSelector, required });
 
-    static validate = target => validate(OwnerForm, (target) => {
-        const fields = ['firstName', 'middleName', 'lastName', 'suffix']
-        if (target === 'name') fields.push('nameSince')
-        else fields.push('dob', 'gender') //! ssn
+  static validate = (target) =>
+    validate(
+      OwnerForm,
+      (target) => {
+        const fields = ['firstName', 'middleName', 'lastName', 'suffix'];
+        if (target === 'name') fields.push('nameSince');
+        else fields.push('dob', 'gender'); //! ssn
 
-        return fields
-    }, target)
-
+        return fields;
+      },
+      target,
+    );
 }
-
 
 class RefSourceForm {
-    constructor(options = {}) {
-        getStaticProps(RefSourceForm)
-            .forEach(target => this[target] = constructForm(RefSourceForm, target, options))
-    }
+  constructor(options = {}) {
+    getStaticProps(RefSourceForm).forEach(
+      (target) => (this[target] = constructForm(RefSourceForm, target, options)),
+    );
+  }
 
-    static id = createIdForm({ selector: refSrcSelector })
-    static deleteId = createIdForm({ selector: refSrcSelector, target: 'deleteId' })
+  static id = createIdForm({ selector: refSrcSelector });
+  static deleteId = createIdForm({ selector: refSrcSelector, target: 'deleteId' });
 
-    static hiddenSrcName = createForm({
-        selector: refSrcSelector,
-        target: 'name',
-        type: 'hidden',
-    })
+  static hiddenSrcName = createForm({
+    selector: refSrcSelector,
+    target: 'name',
+    type: 'hidden',
+  });
 
-    //* "name" can not be used as an own property
-    static srcName = createForm({
-        selector: refSrcSelector,
-        target: 'name',
-        name: 'name',
-        maxLength: length.refSrc.name.max,
-        required,
-        label: 'Name',
-        validator: {
-            length: { min: length.refSrc.name.min },
-            sanitizer: value => value.replace('&amp;', '&').replace('&#x27;', "'"),
-        },
-    })
+  //* "name" can not be used as an own property
+  static srcName = createForm({
+    selector: refSrcSelector,
+    target: 'name',
+    name: 'name',
+    maxLength: length.refSrc.name.max,
+    required,
+    label: 'Name',
+    validator: {
+      length: { min: length.refSrc.name.min },
+      sanitizer: (value) => value.replace('&amp;', '&').replace('&#x27;', "'"),
+    },
+  });
 
-    static validate = () => validate(RefSourceForm, () => {
-        const fields = ['srcName']
+  static validate = () =>
+    validate(RefSourceForm, () => {
+      const fields = ['srcName'];
 
-        return fields
-    })
-
+      return fields;
+    });
 }
 
-
-export default CompanyForm
-export { OwnerForm, RefSourceForm, createCategoryForm, createBusNameForm, createCoTypeForm, createEinForm }
+export default CompanyForm;
+export {
+  OwnerForm,
+  RefSourceForm,
+  createCategoryForm,
+  createBusNameForm,
+  createCoTypeForm,
+  createEinForm,
+};

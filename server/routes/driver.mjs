@@ -1,42 +1,36 @@
 // ==== IMPORT ==== //
 
-const router = require('express').Router()
-const sendError = require('../tools/utils/error')
+const router = require('express').Router();
+const sendError = require('../tools/utils/error');
 
 /* Tools */
-import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs'
-
+import { capitalizeEach } from '../../client/global/modules/tools/utils/string.mjs';
 
 // ==== SETUP ==== //
 
-
 router.use((req, res, next) => {
-    res.hbs.set = function(key, params = {}) {
-        let { inclKey, title } = params
+  res.hbs.set = function (key, params = {}) {
+    let { inclKey, title } = params;
 
-        const includer = require('../includes/src')
-        const includes = require('../includes/driver')
+    const includer = require('../includes/src');
+    const includes = require('../includes/driver');
 
-        const hbs = { ...this }
-        
-        if (!inclKey) inclKey = key
-        if (!title) title = `${capitalizeEach(key.replace(/\./g, ' '))} - ${hbs.title}`
+    const hbs = { ...this };
 
-        hbs.title = title
-        hbs.includes = includer.render(includes[inclKey])
+    if (!inclKey) inclKey = key;
+    if (!title) title = `${capitalizeEach(key.replace(/\./g, ' '))} - ${hbs.title}`;
 
-        return hbs
-    }
+    hbs.title = title;
+    hbs.includes = includer.render(includes[inclKey]);
 
-    next()
-})
+    return hbs;
+  };
 
-
+  next();
+});
 
 // ==== ROUTES ==== //
 
-
-
 // ==== EXPORT ==== //
 
-export default router
+export default router;

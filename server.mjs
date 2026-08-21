@@ -1,85 +1,88 @@
-import express from 'express'
-import session from 'express-session'
-import cookieParser from 'cookie-parser'
-import hbs from 'hbs'
+import express from 'express';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import hbs from 'hbs';
 
-import config, { apps, userApps, addrBook } from './config.mjs'
+import config, { apps, userApps, addrBook } from './config.mjs';
 
 /* Tools */
-import Site from './server/tools/core/site.mjs'
-import { respond404 } from './server/tools/utils/response.mjs'
+import Site from './server/tools/core/site.mjs';
+import { respond404 } from './server/tools/utils/response.mjs';
 
 /* Forms & Validators */
-import UserForm from './server/tools/form/user.mjs'
-import validationCheck from './server/tools/form/validator.mjs'
+import UserForm from './server/tools/form/user.mjs';
+import validationCheck from './server/tools/form/validator.mjs';
 
 /* Routes */
-import apiRoute from './server/routes/api.mjs'
-import publicApiRoute from './server/routes/api.public.mjs'
+import apiRoute from './server/routes/api.mjs';
+import publicApiRoute from './server/routes/api.public.mjs';
 
+const MySQLStore = require('express-mysql-session')(session);
+const { storeOptions, loginUrl, sessionUrl, logoutUrl, secret } = config.session;
+const store = new MySQLStore(storeOptions);
 
-const MySQLStore = require('express-mysql-session')(session)
-const { storeOptions, loginUrl, sessionUrl, logoutUrl, secret } = config.session
-const store = new MySQLStore(storeOptions)
+const validateLocalAuth = [UserForm.username.validate(), UserForm.password.validate()];
+const validateSession = [UserForm.token.validate()];
 
-const validateLocalAuth = [ UserForm.username.validate(), UserForm.password.validate() ]
-const validateSession = [ UserForm.token.validate() ]
-
-hbs.registerPartials('./server/views/partials')
-hbs.registerHelper('author', config.author)
-hbs.registerHelper('siteName', config.site.name)
-hbs.registerHelper('loginUrl', loginUrl)
-hbs.registerHelper('logoutUrl', logoutUrl)
-hbs.registerHelper('idx', (arr, idx) => arr[idx])
+hbs.registerPartials('./server/views/partials');
+hbs.registerHelper('author', config.author);
+hbs.registerHelper('siteName', config.site.name);
+hbs.registerHelper('loginUrl', loginUrl);
+hbs.registerHelper('logoutUrl', logoutUrl);
+hbs.registerHelper('idx', (arr, idx) => arr[idx]);
 hbs.registerHelper({
-    eq: (v1, v2) => v1 === v2,
-    ne: (v1, v2) => v1 !== v2,
-    lt: (v1, v2) => v1 < v2,
-    gt: (v1, v2) => v1 > v2,
-    lte: (v1, v2) => v1 <= v2,
-    gte: (v1, v2) => v1 >= v2,
-    hv: (v1) => !!v1,
-    nhv: (v1) => !v1,
-    and() { return Array.prototype.every.call(arguments, Boolean) },
-    or() { return Array.prototype.slice.call(arguments, 0, -1).some(Boolean) },
-})
+  eq: (v1, v2) => v1 === v2,
+  ne: (v1, v2) => v1 !== v2,
+  lt: (v1, v2) => v1 < v2,
+  gt: (v1, v2) => v1 > v2,
+  lte: (v1, v2) => v1 <= v2,
+  gte: (v1, v2) => v1 >= v2,
+  hv: (v1) => !!v1,
+  nhv: (v1) => !v1,
+  and() {
+    return Array.prototype.every.call(arguments, Boolean);
+  },
+  or() {
+    return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+  },
+});
 
+export default (branch) => {
+  const app = apps[branch];
+  if (!app.active) return;
 
+  const server = express();
+  const { type, name, port, route, routes } = app;
+  const { maxAge, src: UserSrc, userApp, teams, companies } = app.session;
 
-export default branch => {
-    const app = apps[branch]
-    if (!app.active) return
+  server.set('trust proxy', '127.0.0.1');
+  server.set('view engine', 'hbs');
+  server.set('views', `./server/views/${branch}`);
+  server.engine('hbs', hbs.__express, { layoutsDir: false });
 
-    const server = express()
-    const { type, name, port, route, routes } = app
-    const { maxAge, src: UserSrc, userApp, teams, companies } = app.session
+  server.use(express.static(`./client/${branch}`));
+  server.use(express.static('./client/global/'));
 
-    server.set('trust proxy', '127.0.0.1')
-    server.set('view engine', 'hbs')
-    server.set('views', `./server/views/${branch}`)
-    server.engine('hbs', hbs.__express, { layoutsDir: false })
+  server.use(express.urlencoded({ extended: true }));
+  server.use(express.json());
 
-    server.use(express.static(`./client/${branch}`))
-    server.use(express.static('./client/global/'))
-
-    server.use(express.urlencoded({ extended: true }))
-    server.use(express.json())
-
-    server.use(cookieParser(config.cookie.secret, { httpOnly: true }))
-    server.use(session({
-        secret: `${secret}-${branch}`,
-        name: `connect.sid.${branch}`,
-        resave: false,
-        saveUninitialized: false,
-        rolling: true,
-        cookie: {
-            httpOnly: true,
-            secure: false,
-            maxAge,
-        },
-        store,
-    }))
-    /*
+  server.use(cookieParser(config.cookie.secret, { httpOnly: true }));
+  server.use(
+    session({
+      secret: `${secret}-${branch}`,
+      name: `connect.sid.${branch}`,
+      resave: false,
+      saveUninitialized: false,
+      rolling: true,
+      cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge,
+      },
+      store,
+    }),
+  );
+  /*
         * Session Notes:
         The main idea is to keep a separate session id and session name for each subdomain.
         The site id can not be accessed from outside a middleware so the idea was abandoned.
@@ -87,69 +90,80 @@ export default branch => {
         ? Time will show...
     */
 
-    server.use(async (req, res, next) => {
-        const { defUrl, excUrl } = app.session
-        const { protocol, originalUrl } = req
-        const host = req.get('host')
-        const parsedUrl = new URL(`${protocol}://${host + originalUrl}`)
-        const domain = parsedUrl.hostname
-        const match = domain.match(/\./g) || []
-        let subdomain = '', coreDomain = domain
+  server.use(async (req, res, next) => {
+    const { defUrl, excUrl } = app.session;
+    const { protocol, originalUrl } = req;
+    const host = req.get('host');
+    const parsedUrl = new URL(`${protocol}://${host + originalUrl}`);
+    const domain = parsedUrl.hostname;
+    const match = domain.match(/\./g) || [];
+    let subdomain = '',
+      coreDomain = domain;
 
-        if (match.length > 1) {
-            if (match.length === 2) {
-                const x = domain.split('.')
-                subdomain = x[0]
-                coreDomain = `${x[1]}.${x[2]}`
-            }
-        }
+    if (match.length > 1) {
+      if (match.length === 2) {
+        const x = domain.split('.');
+        subdomain = x[0];
+        coreDomain = `${x[1]}.${x[2]}`;
+      }
+    }
 
-        const site = await new Site(branch, coreDomain)
-        if (!site.active)
-            return res.send(`Access Denied: the site domain <u>${domain}</> is deactivated`)
+    const site = await new Site(branch, coreDomain);
+    if (!site.active)
+      return res.send(`Access Denied: the site domain <u>${domain}</> is deactivated`);
 
-        const xForwardedFor = req.header('x-forwarded-for')
+    const xForwardedFor = req.header('x-forwarded-for');
 
-        req.session.clientIp = xForwardedFor
-            ? xForwardedFor.split(',')[0].trim()
-            : req.socket?.remoteAddress || '::1'
+    req.session.clientIp = xForwardedFor
+      ? xForwardedFor.split(',')[0].trim()
+      : req.socket?.remoteAddress || '::1';
 
-        res.site = { ...site, type }
-        res.session = { branch, siteId: site.id, type, userApp, teams, companies, maxAge, defUrl, excUrl, logoutUrl }
-        res.hbs = {
-            appName: name,
-            title: name,
-            userApps,
-            addrBook,
-            copyright: config.copyright.html(),
-        }
+    res.site = { ...site, type };
+    res.session = {
+      branch,
+      siteId: site.id,
+      type,
+      userApp,
+      teams,
+      companies,
+      maxAge,
+      defUrl,
+      excUrl,
+      logoutUrl,
+    };
+    res.hbs = {
+      appName: name,
+      title: name,
+      userApps,
+      addrBook,
+      copyright: config.copyright.html(),
+    };
 
-        if (req.method === 'GET' && req.url.startsWith('/api')) {
-            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
-            res.setHeader('Pragma', 'no-cache')
-            res.setHeader('Expires', '0')
-            res.setHeader('Surrogate-Control', 'no-store')
-        }
+    if (req.method === 'GET' && req.url.startsWith('/api')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+    }
 
-        next()
-    })
+    next();
+  });
 
-    server.use('/api', apiRoute)
-    server.use('/api/public', publicApiRoute)
+  server.use('/api', apiRoute);
+  server.use('/api/public', publicApiRoute);
 
-    server.get('/*.map', (req, res) => res.sendStatus(204))
-    //? server.get(/.*\.map$/, (req, res) => res.sendStatus(204))
-    server.post(loginUrl, validateLocalAuth, validationCheck, UserSrc.mw.login)
-    server.post(sessionUrl, validateSession, validationCheck, UserSrc.mw.session)
-    server.get(logoutUrl, UserSrc.mw.logout)
+  server.get('/*.map', (req, res) => res.sendStatus(204));
+  //? server.get(/.*\.map$/, (req, res) => res.sendStatus(204))
+  server.post(loginUrl, validateLocalAuth, validationCheck, UserSrc.mw.login);
+  server.post(sessionUrl, validateSession, validationCheck, UserSrc.mw.session);
+  server.get(logoutUrl, UserSrc.mw.logout);
 
-    if (route) server.use(route)
-    if (routes && routes.length)
-        routes.forEach(route => server.use(route.url, route.router))
+  if (route) server.use(route);
+  if (routes && routes.length) routes.forEach((route) => server.use(route.url, route.router));
 
-    server.use((req, res) => {
-        respond404(res)
-    })
+  server.use((req, res) => {
+    respond404(res);
+  });
 
-    server.listen(port, console.log(`App [${name}]: Server is running on Port ${port}...`))
-}
+  server.listen(port, console.log(`App [${name}]: Server is running on Port ${port}...`));
+};

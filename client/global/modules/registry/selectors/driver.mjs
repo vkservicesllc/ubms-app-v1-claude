@@ -1,16 +1,16 @@
-import initialize from './support.mjs'
+import initialize from './support.mjs';
 
-const prefix = 'driver'
+const prefix = 'driver';
 
 const selector = {
-    class: {},
-    id: {
-        hidden: {
-            id: 'id',
-        },
+  class: {},
+  id: {
+    hidden: {
+      id: 'id',
     },
-}
+  },
+};
 
-initialize(prefix, selector)
+initialize(prefix, selector);
 
-export default selector
+export default selector;

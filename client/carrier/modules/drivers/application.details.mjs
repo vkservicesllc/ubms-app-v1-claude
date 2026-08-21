@@ -1,21 +1,19 @@
-import table from './applications.mjs'
-import { tel as formatTel } from '/modules/tools/utils/formatter.mjs'
+import table from './applications.mjs';
+import { tel as formatTel } from '/modules/tools/utils/formatter.mjs';
 
-const $modal = $('#apl-details-modal')
-
+const $modal = $('#apl-details-modal');
 
 $modal.modal({
-    onHidden() {
-        //
-    },
-})
+  onHidden() {
+    //
+  },
+});
 
+table.on('draw', function () {
+  $('.view-apl').off('click');
 
-table.on('draw', function() {
-    $('.view-apl').off('click')
-
-    $('.view-apl').on('click', function(evt) {
-        evt.preventDefault()
-        $modal.modal('show')
-    })
-})
+  $('.view-apl').on('click', function (evt) {
+    evt.preventDefault();
+    $modal.modal('show');
+  });
+});

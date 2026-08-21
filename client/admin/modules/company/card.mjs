@@ -1,109 +1,113 @@
-import Person from '/modules/tools/core/person.mjs'
-import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs'
-import selector from '/modules/registry/selectors/company.mjs'
+import Person from '/modules/tools/core/person.mjs';
+import { sortArrayByObjectKey } from '/modules/tools/utils/sorter.mjs';
+import selector from '/modules/registry/selectors/company.mjs';
 
-const $tabs = $('.company-card-tabs')
-const $sections = $('.company-card-content')
+const $tabs = $('.company-card-tabs');
+const $sections = $('.company-card-content');
 const $content = {
-    logo: $('#logo-card-content'),
-    users: $('#users-card-content'),
-    refSrc: $('#sources-card-content'),
-}
-const urlParams = new URLSearchParams(window.location.search)
-const timeout = 250
+  logo: $('#logo-card-content'),
+  users: $('#users-card-content'),
+  refSrc: $('#sources-card-content'),
+};
+const urlParams = new URLSearchParams(window.location.search);
+const timeout = 250;
 
-$tabs.click(function() {
-    $tabs.removeClass('is-active')
-    $sections.fadeOut(timeout)
-    $(this).addClass('is-active')
+$tabs.click(function () {
+  $tabs.removeClass('is-active');
+  $sections.fadeOut(timeout);
+  $(this).addClass('is-active');
 
-    setTimeout(() => {
-        const section = $(this).data('section')
+  setTimeout(() => {
+    const section = $(this).data('section');
 
-        $(`#${section}-card-content`).fadeIn(timeout)
-    }, timeout)
-})
-
+    $(`#${section}-card-content`).fadeIn(timeout);
+  }, timeout);
+});
 
 if ($content.logo.length) {
-    if (urlParams.has('logo')) {
-        $tabs.removeClass('is-active')
-        $sections.hide()
-        history.replaceState(null, '', window.location.href.split('?')[0])
-        $('[data-section=logo]').addClass('is-active')
-        $content.logo.fadeIn(timeout)
-    }
+  if (urlParams.has('logo')) {
+    $tabs.removeClass('is-active');
+    $sections.hide();
+    history.replaceState(null, '', window.location.href.split('?')[0]);
+    $('[data-section=logo]').addClass('is-active');
+    $content.logo.fadeIn(timeout);
+  }
 }
-
 
 if ($content.users.length) {
-    if (urlParams.has('users')) {
-        $tabs.removeClass('is-active')
-        $sections.hide()
-        history.replaceState(null, '', window.location.href.split('?')[0])
-    }
+  if (urlParams.has('users')) {
+    $tabs.removeClass('is-active');
+    $sections.hide();
+    history.replaceState(null, '', window.location.href.split('?')[0]);
+  }
 
-    const _id = $(selector.id.hidden.id).val()
-    const $users = {
-        available: $('#available-users'),
-        applied: $('#current-users'),
-    }
+  const _id = $(selector.id.hidden.id).val();
+  const $users = {
+    available: $('#available-users'),
+    applied: $('#current-users'),
+  };
 
-    $.ajax(`/api/resource/companies/${_id}/users`, {
-        success(response) {
-            const { data: users } = response
-            const options = { available: '', applied: '' }
-            const option = '<option value=""></option>'
+  $.ajax(`/api/resource/companies/${_id}/users`, {
+    success(response) {
+      const { data: users } = response;
+      const options = { available: '', applied: '' };
+      const option = '<option value=""></option>';
 
-            for (const prop of ['available', 'applied']) {
-                users[prop].map(user => user.option = `${new Person(user).fullName('AL')} (${user.location} ${user.expansion.status})` )
-                users[prop] = sortArrayByObjectKey(users[prop], 'option')
-                users[prop].forEach(user => options[prop] += `<option value="${user._id}">${user.option}</option>`)
-            }
+      for (const prop of ['available', 'applied']) {
+        users[prop].map(
+          (user) =>
+            (user.option = `${new Person(user).fullName('AL')} (${user.location} ${user.expansion.status})`),
+        );
+        users[prop] = sortArrayByObjectKey(users[prop], 'option');
+        users[prop].forEach(
+          (user) => (options[prop] += `<option value="${user._id}">${user.option}</option>`),
+        );
+      }
 
-            $users.available.html(options.available || option)
-            $users.applied.html(options.applied || option)
+      $users.available.html(options.available || option);
+      $users.applied.html(options.applied || option);
 
-            if (urlParams.has('users')) {
-                $('[data-section=users]').addClass('is-active')
-                $content.users.fadeIn(timeout)
-            }
-        },
-    })
+      if (urlParams.has('users')) {
+        $('[data-section=users]').addClass('is-active');
+        $content.users.fadeIn(timeout);
+      }
+    },
+  });
 }
 
-
 if ($content.refSrc.length) {
-    if (urlParams.has('sources')) {
-        $tabs.removeClass('is-active')
-        $sections.hide()
-        history.replaceState(null, '', window.location.href.split('?')[0])
-    }
+  if (urlParams.has('sources')) {
+    $tabs.removeClass('is-active');
+    $sections.hide();
+    history.replaceState(null, '', window.location.href.split('?')[0]);
+  }
 
-    const _id = $(selector.id.hidden.id).val()
-    const $sources = {
-        available: $('#available-refsources'),
-        applied: $('#current-refsources'),
-    }
+  const _id = $(selector.id.hidden.id).val();
+  const $sources = {
+    available: $('#available-refsources'),
+    applied: $('#current-refsources'),
+  };
 
-    $.ajax(`/api/resource/companies/${_id}/refsources`, {
-        success(response) {
-            const { data: sources } = response
-            const options = { available: '', applied: '' }
-            const option = '<option value=""></option>'
+  $.ajax(`/api/resource/companies/${_id}/refsources`, {
+    success(response) {
+      const { data: sources } = response;
+      const options = { available: '', applied: '' };
+      const option = '<option value=""></option>';
 
-            for (const prop of ['available', 'applied']) {
-                sources[prop] = sortArrayByObjectKey(sources[prop], 'name')
-                sources[prop].forEach(src => options[prop] += `<option value="${src._id}">${src.name}</option>`)
-            }
+      for (const prop of ['available', 'applied']) {
+        sources[prop] = sortArrayByObjectKey(sources[prop], 'name');
+        sources[prop].forEach(
+          (src) => (options[prop] += `<option value="${src._id}">${src.name}</option>`),
+        );
+      }
 
-            $sources.available.html(options.available || option)
-            $sources.applied.html(options.applied || option)
+      $sources.available.html(options.available || option);
+      $sources.applied.html(options.applied || option);
 
-            if (urlParams.has('sources')) {
-                $('[data-section=sources]').addClass('is-active')
-                $content.refSrc.fadeIn(timeout)
-            }
-        },
-    })
+      if (urlParams.has('sources')) {
+        $('[data-section=sources]').addClass('is-active');
+        $content.refSrc.fadeIn(timeout);
+      }
+    },
+  });
 }

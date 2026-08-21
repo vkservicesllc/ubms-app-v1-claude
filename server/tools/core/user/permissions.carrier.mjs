@@ -1,116 +1,100 @@
-import { privileges } from './permissions.mjs'
-
-
-
+import { privileges } from './permissions.mjs';
 
 export default {
-    'd:crr': {
-        title: 'Carriers',
-        groups: {
-            'pub': {
-                name: [ 'Public Information',
-                    'Logo, MC, USDOT'
-                ],
-                privileges: [ 0 ],
-            },
-            'own': {
-                name: 'Ownerships',
-                privileges: [ 0 ],
-            },
-            'pri': {
-                name: [ 'Sensitive Information',
-                    'EIN'
-                ],
-                privileges: [ 0 ],
-            },
-        },
+  'd:crr': {
+    title: 'Carriers',
+    groups: {
+      pub: {
+        name: ['Public Information', 'Logo, MC, USDOT'],
+        privileges: [0],
+      },
+      own: {
+        name: 'Ownerships',
+        privileges: [0],
+      },
+      pri: {
+        name: ['Sensitive Information', 'EIN'],
+        privileges: [0],
+      },
     },
-    'd:drv': {
-        title: 'Drivers',
-        groups: {
-            'apl': {
-                name: 'Applications',
-                privileges: [ 0, 1, 2, 3, 5 ],
-            },
-            'emp': {
-                name: 'Previous Employments',
-                privileges: [ 0, 2, 3, 4 ],
-            },
-            'agr': {
-                name: 'Pay Agreements',
-                privileges: [ 0, 2, 3, 4, 5 ],
-            },
-            'drv': {
-                name: 'Hired Contractors',
-                privileges: [ 0, 1, 2, 3, 4 ],
-            },
-            'lvn': {
-                name: 'Leaving Process',
-                privileges: '*',
-            },
-            'lft': {
-                name: 'Former Employees',
-                privileges: [ 0, 4 ],
-            },
-        },
+  },
+  'd:drv': {
+    title: 'Drivers',
+    groups: {
+      apl: {
+        name: 'Applications',
+        privileges: [0, 1, 2, 3, 5],
+      },
+      emp: {
+        name: 'Previous Employments',
+        privileges: [0, 2, 3, 4],
+      },
+      agr: {
+        name: 'Pay Agreements',
+        privileges: [0, 2, 3, 4, 5],
+      },
+      drv: {
+        name: 'Hired Contractors',
+        privileges: [0, 1, 2, 3, 4],
+      },
+      lvn: {
+        name: 'Leaving Process',
+        privileges: '*',
+      },
+      lft: {
+        name: 'Former Employees',
+        privileges: [0, 4],
+      },
     },
-    'f:drv': {
-        title: 'Driver Files',
-        groups: {
-            'apl': {
-                name: 'Application & Authorizations/Consents',
-                format: '.pdf (automatic)',
-                privileges: [ 0 ],
-            },
-            'sup': {
-                name: [ 'Application Supporting Documents',
-                    "Driver's License, Medical Certificate, Social Security Card, Legal Documents, Vehicle Documents, Additional Authorization/Consent Forms"
-                ],
-                format: '.pdf, .jpeg, .png',
-                privileges: '*',
-            },
-            'bkg': {
-                name: [ 'Background Check',
-                    'Clearinghouse, Motor Vehicle Report (MVR), Pre-Employment Screening Program (PSP), etc.'
-                ],
-                format: '.pdf',
-                privileges: '*',
-            },
-            'hir': {
-                name: [ 'Hiring Process',
-                    'Drug Test Result, Lease Agreement (LA), Safety Technology Agreement (STA), etc.'
-                ],
-                format: '.pdf',
-                privileges: '*',
-            },
-            'emp': {
-                name: [ 'Previous Employment',
-                    'Previous Employment Verification Documents'
-                ],
-                format: '.pdf',
-                privileges: '*',
-            },
-            'agr': {
-                name: 'Pay Agreement',
-                format: '.pdf (automatic)',
-                privileges: [ 0 ],
-            },
-        },
+  },
+  'f:drv': {
+    title: 'Driver Files',
+    groups: {
+      apl: {
+        name: 'Application & Authorizations/Consents',
+        format: '.pdf (automatic)',
+        privileges: [0],
+      },
+      sup: {
+        name: [
+          'Application Supporting Documents',
+          "Driver's License, Medical Certificate, Social Security Card, Legal Documents, Vehicle Documents, Additional Authorization/Consent Forms",
+        ],
+        format: '.pdf, .jpeg, .png',
+        privileges: '*',
+      },
+      bkg: {
+        name: [
+          'Background Check',
+          'Clearinghouse, Motor Vehicle Report (MVR), Pre-Employment Screening Program (PSP), etc.',
+        ],
+        format: '.pdf',
+        privileges: '*',
+      },
+      hir: {
+        name: [
+          'Hiring Process',
+          'Drug Test Result, Lease Agreement (LA), Safety Technology Agreement (STA), etc.',
+        ],
+        format: '.pdf',
+        privileges: '*',
+      },
+      emp: {
+        name: ['Previous Employment', 'Previous Employment Verification Documents'],
+        format: '.pdf',
+        privileges: '*',
+      },
+      agr: {
+        name: 'Pay Agreement',
+        format: '.pdf (automatic)',
+        privileges: [0],
+      },
     },
-    // 'd:vhl': {
-    //     title: 'Vehicles/Equipment',
-    // },
-}
-
-
-
-
-
-
-
-
-
-
+  },
+  // 'd:vhl': {
+  //     title: 'Vehicles/Equipment',
+  // },
+};
 
 // export default {
 

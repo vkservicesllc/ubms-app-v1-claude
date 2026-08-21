@@ -1,100 +1,100 @@
-import initialize from './support.mjs'
+import initialize from './support.mjs';
 
-const prefix = 'driver-application-employment'
+const prefix = 'driver-application-employment';
 
 const selector = {
-    class: {
-        hidden: {
-            id: 'id',
-            appId: 'app-id',
-        },
-        text: {
-            employer: 'employer',
-            usdot: 'us-dot',
-            phone: 'employer-phone',
-            address1: 'employer-address-1',
-            address2: 'employer-address-2',
-            addrZip: 'employer-address-zip',
-            addrCity: 'employer-address-city',
-            startDate: 'employment-start-date',
-            position: 'employment-position',
-            earnings: 'employment-earnings',
-            endDate: 'employment-end-date',
-            rfl: 'employment-reason-for-leaving',
-            gapExpl: 'employment-gap-explanation',
-        },
-        select: {
-            addrState: 'employer-address-state',
-        },
-        radio: {
-            fmcsr: 'employment-subject-to-fmcsr',
-            dotDat: 'employment-subject-to-dot-drug-alcohol-test',
-        },
-        checkbox: {
-            fmcsr: 'employment-subject-to-fmcsr',
-            dotDat: 'employment-subject-to-dot-drug-alcohol-test',
-        },
+  class: {
+    hidden: {
+      id: 'id',
+      appId: 'app-id',
     },
-    id: {
-        hidden: {
-            id: 'id',
-            appId: 'app-id',
-        },
-        text: {
-            employer: 'employer',
-            urEmployer: 'unregistered-employer',
-            usdot: 'employer-usdot',
-            urUsdot: 'unregistered-employer-usdot',
-            phone: 'employer-phone',
-            urPhone: 'unregistered-employer-phone',
-            fax: 'employer-fax',
-            email: 'employer-email',
-            address1: 'employer-address-1',
-            address2: 'employer-address-2',
-            addrZip: 'employer-address-zip',
-            addrCity: 'employer-address-city',
-            urAddress1: 'unregistered-employer-address-1',
-            urAddress2: 'unregistered-employer-address-2',
-            urAddrZip: 'unregistered-employer-address-zip',
-            urAddrCity: 'unregistered-employer-address-city',
-            startDate: 'employment-start-date',
-            position: 'employment-position',
-            earnings: 'employment-earnings',
-            endDate: 'employment-end-date',
-            rfl: 'employment-reason-for-leaving',
-            gapExpl: 'employment-gap-explanation',
-            // inquiryDate: 'employment-verification-date',
-            inquiryResponse: 'employment-verification-response',
-            inquiryNote: 'employment-verification-note',
-            inquiryEmail: 'employment-verification-email',
-            verifComment: 'employment-verification-comment',
-        },
-        select: {
-            addrState: 'employer-address-state',
-            urAddrState: 'unregistered-employer-address-state',
-            inquiryMethod: 'employment-verification-method',
-            verifStatus: 'employment-verification-status',
-            pvTermType: 'employment-phone-verification-termination-type',
-            pvRehire: 'employment-phone-verification-rehire',
-        },
-        radio: {
-            fmcsr: {
-                yes: 'employment-subject-to-fmcsr',
-                no: 'employment-not-subject-to-fmcsr',
-            },
-            dotDat: {
-                yes: 'employment-subject-to-dot-drug-alcohol-test',
-                no: 'employment-not-subject-to-dot-drug-alcohol-test',
-            },
-        },
-        checkbox: {
-            fmcsr: 'employment-subject-to-fmcsr',
-            dotDat: 'employment-subject-to-dot-drug-alcohol-test',
-            pvIncorrect: 'employment-phone-verification-incorrect-info',
-        },
+    text: {
+      employer: 'employer',
+      usdot: 'us-dot',
+      phone: 'employer-phone',
+      address1: 'employer-address-1',
+      address2: 'employer-address-2',
+      addrZip: 'employer-address-zip',
+      addrCity: 'employer-address-city',
+      startDate: 'employment-start-date',
+      position: 'employment-position',
+      earnings: 'employment-earnings',
+      endDate: 'employment-end-date',
+      rfl: 'employment-reason-for-leaving',
+      gapExpl: 'employment-gap-explanation',
     },
-}
+    select: {
+      addrState: 'employer-address-state',
+    },
+    radio: {
+      fmcsr: 'employment-subject-to-fmcsr',
+      dotDat: 'employment-subject-to-dot-drug-alcohol-test',
+    },
+    checkbox: {
+      fmcsr: 'employment-subject-to-fmcsr',
+      dotDat: 'employment-subject-to-dot-drug-alcohol-test',
+    },
+  },
+  id: {
+    hidden: {
+      id: 'id',
+      appId: 'app-id',
+    },
+    text: {
+      employer: 'employer',
+      urEmployer: 'unregistered-employer',
+      usdot: 'employer-usdot',
+      urUsdot: 'unregistered-employer-usdot',
+      phone: 'employer-phone',
+      urPhone: 'unregistered-employer-phone',
+      fax: 'employer-fax',
+      email: 'employer-email',
+      address1: 'employer-address-1',
+      address2: 'employer-address-2',
+      addrZip: 'employer-address-zip',
+      addrCity: 'employer-address-city',
+      urAddress1: 'unregistered-employer-address-1',
+      urAddress2: 'unregistered-employer-address-2',
+      urAddrZip: 'unregistered-employer-address-zip',
+      urAddrCity: 'unregistered-employer-address-city',
+      startDate: 'employment-start-date',
+      position: 'employment-position',
+      earnings: 'employment-earnings',
+      endDate: 'employment-end-date',
+      rfl: 'employment-reason-for-leaving',
+      gapExpl: 'employment-gap-explanation',
+      // inquiryDate: 'employment-verification-date',
+      inquiryResponse: 'employment-verification-response',
+      inquiryNote: 'employment-verification-note',
+      inquiryEmail: 'employment-verification-email',
+      verifComment: 'employment-verification-comment',
+    },
+    select: {
+      addrState: 'employer-address-state',
+      urAddrState: 'unregistered-employer-address-state',
+      inquiryMethod: 'employment-verification-method',
+      verifStatus: 'employment-verification-status',
+      pvTermType: 'employment-phone-verification-termination-type',
+      pvRehire: 'employment-phone-verification-rehire',
+    },
+    radio: {
+      fmcsr: {
+        yes: 'employment-subject-to-fmcsr',
+        no: 'employment-not-subject-to-fmcsr',
+      },
+      dotDat: {
+        yes: 'employment-subject-to-dot-drug-alcohol-test',
+        no: 'employment-not-subject-to-dot-drug-alcohol-test',
+      },
+    },
+    checkbox: {
+      fmcsr: 'employment-subject-to-fmcsr',
+      dotDat: 'employment-subject-to-dot-drug-alcohol-test',
+      pvIncorrect: 'employment-phone-verification-incorrect-info',
+    },
+  },
+};
 
-initialize(prefix, selector)
+initialize(prefix, selector);
 
-export default selector
+export default selector;

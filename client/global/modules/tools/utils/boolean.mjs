@@ -1,1 +1,1 @@
-export default value => value === null ? null : Boolean(value)
+export default (value) => (value === null ? null : Boolean(value));

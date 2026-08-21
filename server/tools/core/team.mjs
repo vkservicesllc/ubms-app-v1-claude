@@ -1,256 +1,267 @@
 /* Settings */
-import db, { query } from '../../settings/mysql.mjs'
+import db, { query } from '../../settings/mysql.mjs';
 
 /* Tools */
-import User from './user.mjs'
-import Address from '../../../client/global/modules/tools/core/address.us.mjs'
-import { hash, matchHash } from '../utils/query.mjs'
-import { classInstance, classStatic } from '../utils/class.mjs'
+import User from './user.mjs';
+import Address from '../../../client/global/modules/tools/core/address.us.mjs';
+import { hash, matchHash } from '../utils/query.mjs';
+import { classInstance, classStatic } from '../utils/class.mjs';
 
-const mysql = require('../utils/mysql')
-const sendError = require('../utils/error')
-
-
+const mysql = require('../utils/mysql');
+const sendError = require('../utils/error');
 
 class Team {
-    constructor(data = {}, { single = true, session, hideRawId = false, custom = {} } = {}) {
-        if (!data?._id) throw new Error('Constructor Error: Invalid Team Data')
+  constructor(data = {}, { single = true, session, hideRawId = false, custom = {} } = {}) {
+    if (!data?._id) throw new Error('Constructor Error: Invalid Team Data');
 
-        const { offline = false } = custom
-        this._id = data._id
-        if (!hideRawId) this.id = data.id
-        this.scoped = !!data.scoped
+    const { offline = false } = custom;
+    this._id = data._id;
+    if (!hideRawId) this.id = data.id;
+    this.scoped = !!data.scoped;
 
-        this.name = data.name
-        this.description = data.description
+    this.name = data.name;
+    this.description = data.description;
 
-        if (data.busName && data.coType)
-            this.profile = {
-                busName: data.busName,
-                coType: data.coType,
-                company: data.company,
-                phone: data.phone,
-                email: data.email,
-                website: data.website,
-                address: new Address({
-                    address1: data.address1,
-                    address2: data.address2,
-                    city: data.city,
-                    state: data.state,
-                    zip: data.zip,
-                })
-            }
+    if (data.busName && data.coType)
+      this.profile = {
+        busName: data.busName,
+        coType: data.coType,
+        company: data.company,
+        phone: data.phone,
+        email: data.email,
+        website: data.website,
+        address: new Address({
+          address1: data.address1,
+          address2: data.address2,
+          city: data.city,
+          state: data.state,
+          zip: data.zip,
+        }),
+      };
 
-        this.count = {
-            users: data.userCount,
+    this.count = {
+      users: data.userCount,
+    };
+
+    if (single) {
+      this.session = session || {};
+      this.session.offline = offline;
+      this.config = { hideRawId };
+
+      this.add = (target, bodyOrIds) => {
+        if (!this.session?.user?.id)
+          throw new Error('Team Constructor Method Error [ADD]: Session user not supplied');
+
+        return classInstance.add(this, new.target, target, bodyOrIds);
+      };
+
+      this.fetch = (target, filter, params) =>
+        classInstance.fetch(this, new.target, target, filter, params);
+
+      this.update = (targetOrBody, body) => {
+        if (!session?.user?.id)
+          throw new Error('Team Constructor Method Error [UPDATE]: Session user not supplied');
+
+        return classInstance.update(this, new.target, targetOrBody, body);
+      };
+
+      this.delete = (target, matchOrIds) => {
+        if (!this.session?.user?.id)
+          throw new Error('Team Constructor Method Error [DELETE]: Session user not supplied');
+
+        return classInstance.delete(this, new.target, target, matchOrIds);
+      };
+
+      this.settings = async (body) => {
+        if (!this.session?.user?.id)
+          throw new Error('Team Constructor Method Error [SETTINGS]: Session user not supplied');
+
+        let { settings } = (
+          await mysql.execute(
+            query.team.main.select('settings', {
+              match: { id: this.id || Team.matchIdHash(this._id) },
+            }),
+          )
+        )[0][0];
+        if (!settings) settings = {};
+
+        if (body && typeof body === 'object') {
+          if (!settings.carrier) settings.carrier = {};
+          if (!settings.carrier.application) settings.carrier.application = {};
+          //? More to be added...
+
+          settings.carrier.application.cdl = Number(body?.carrier?.application?.cdl === 'on');
+          //? More to be added...
+
+          await this.update({ settings });
         }
 
-        if (single) {
-            this.session = session || {}
-            this.session.offline = offline
-            this.config = { hideRawId }
+        return settings;
+      };
 
-
-            this.add = (target, bodyOrIds) => {
-                if (!this.session?.user?.id) throw new Error('Team Constructor Method Error [ADD]: Session user not supplied')
-
-                return classInstance.add(this, new.target, target, bodyOrIds)
-            }
-
-
-            this.fetch = (target, filter, params) => classInstance.fetch(this, new.target, target, filter, params)
-
-
-            this.update = (targetOrBody, body) => {
-                if (!session?.user?.id) throw new Error('Team Constructor Method Error [UPDATE]: Session user not supplied')
-
-                return classInstance.update(this, new.target, targetOrBody, body)
-            }
-
-
-            this.delete = (target, matchOrIds) => {
-                if (!this.session?.user?.id) throw new Error('Team Constructor Method Error [DELETE]: Session user not supplied')
-
-                return classInstance.delete(this, new.target, target, matchOrIds)
-            }
-
-
-            this.settings = async body => {
-                if (!this.session?.user?.id) throw new Error('Team Constructor Method Error [SETTINGS]: Session user not supplied')
-
-                let { settings } = (await mysql.execute(query.team.main.select('settings', { match: { id: this.id || Team.matchIdHash(this._id) } })))[0][0]
-                if (!settings) settings = {}
-
-                if (body && typeof body === 'object') {
-                    if (!settings.carrier) settings.carrier = {}
-                    if (!settings.carrier.application) settings.carrier.application = {}
-                    //? More to be added...
-
-                    settings.carrier.application.cdl = Number(body?.carrier?.application?.cdl === 'on')
-                    //? More to be added...
-
-                    await this.update({ settings })
-                }
-
-                return settings
-            }
-
-
-            this.log = params => classInstance.log(this, new.target, params)
-        }
+      this.log = (params) => classInstance.log(this, new.target, params);
     }
+  }
 
-    static #algorithm = 'MD5'
-    static hashId = (field = 'id') => hash(field, Team.#algorithm)
-    static matchIdHash = value => matchHash(value, Team.#algorithm)
-            
-    static config = () => ({
-        enforceUser: false,
-        db: db.online,
-        query: query.team,
-        idProp: 'teamId',
-        jxTargets: jxTargets('team'),
-        defSorts: [ 'name' ],
-        logFile: 'teams',
-    })
+  static #algorithm = 'MD5';
+  static hashId = (field = 'id') => hash(field, Team.#algorithm);
+  static matchIdHash = (value) => matchHash(value, Team.#algorithm);
 
+  static config = () => ({
+    enforceUser: false,
+    db: db.online,
+    query: query.team,
+    idProp: 'teamId',
+    jxTargets: jxTargets('team'),
+    defSorts: ['name'],
+    logFile: 'teams',
+  });
 
-    static create = (session, body, params) => {
-        if (!session?.user?.id) throw new Error('Team Static Method Error [CREATE]: Session user not supplied')
+  static create = (session, body, params) => {
+    if (!session?.user?.id)
+      throw new Error('Team Static Method Error [CREATE]: Session user not supplied');
 
-        return classStatic.create(this, session, body, params, {
-            async find(body, hideRawId) {
-                const { name } = body
-                const data = await Team.fetch(session, { name }, { hideRawId })
+    return classStatic.create(this, session, body, params, {
+      async find(body, hideRawId) {
+        const { name } = body;
+        const data = await Team.fetch(session, { name }, { hideRawId });
 
-                return { found: !!data, data }
-            },
-        })
-    }
+        return { found: !!data, data };
+      },
+    });
+  };
 
+  static fetch = (
+    session,
+    filter,
+    { hideRawId = false, offline = false, sorts = Team.config().defSorts, limit, mode } = {},
+  ) => {
+    if (!offline && !session?.user?.id)
+      throw new Error('Team Static Method Error [FETCH]: Session user not supplied');
+    const join = ['teamId', 'id'];
 
-    static fetch = (session, filter, { hideRawId = false, offline = false, sorts = Team.config().defSorts, limit, mode } = {}) => {
-        if (!offline && !session?.user?.id) throw new Error('Team Static Method Error [FETCH]: Session user not supplied')
-        const join = [ 'teamId', 'id' ]
-
-        return classStatic.fetch(this, session, filter, { hideRawId, sorts, limit, mode }, {
-            batch: [
-                {
-                    table: query.team.main.table,
-                    fields: [ 'id', Team.hashId(), 'scoped', 'name', 'description' ],
-                    group: 'id',
-                },
-                {
-                    table: query.team.profile.table,
-                    fields: [
-                        'busName', 'coType',
-                        { concat: [ [ 'busName', '^, ', 'coType' ], 'company' ] },
-                        'phone', 'email', 'website',
-                        'address1', 'address2', 'city', 'state', 'zip',
-                    ],
-                    join,
-                },
-                {
-                    table: query.jx.users_teams.table,
-                    fields: { countDist: [ 'userId', 'userCount' ] },
-                    join,
-                },
-                //! No need to use case based counter since jx relationships get deleted if user deleted or upgraded to super admin
-                // {
-                //     table: query.jx.users_teams.table,
-                //     fields: [ { countDist: ['userId', 'userCount', {
-                //         case: {
-                //             table: query.user.main.table,
-                //             match: { deletedBy: null },
-                //         },
-                //     }] } ],
-                //     join,
-                // },
-                // {
-                //     table: query.user.main.table,
-                //     join: ['id', 'userId', { table: query.jx.users_teams.table }],
-                // },
+    return classStatic.fetch(
+      this,
+      session,
+      filter,
+      { hideRawId, sorts, limit, mode },
+      {
+        batch: [
+          {
+            table: query.team.main.table,
+            fields: ['id', Team.hashId(), 'scoped', 'name', 'description'],
+            group: 'id',
+          },
+          {
+            table: query.team.profile.table,
+            fields: [
+              'busName',
+              'coType',
+              { concat: [['busName', '^, ', 'coType'], 'company'] },
+              'phone',
+              'email',
+              'website',
+              'address1',
+              'address2',
+              'city',
+              'state',
+              'zip',
             ],
-            prepare(batch, filter) {
-                const {
-                    id, _id, name,
-                    ids, _ids, scoped,
-                } = filter
-                const single = !!id || !!_id || !!name
+            join,
+          },
+          {
+            table: query.jx.users_teams.table,
+            fields: { countDist: ['userId', 'userCount'] },
+            join,
+          },
+          //! No need to use case based counter since jx relationships get deleted if user deleted or upgraded to super admin
+          // {
+          //     table: query.jx.users_teams.table,
+          //     fields: [ { countDist: ['userId', 'userCount', {
+          //         case: {
+          //             table: query.user.main.table,
+          //             match: { deletedBy: null },
+          //         },
+          //     }] } ],
+          //     join,
+          // },
+          // {
+          //     table: query.user.main.table,
+          //     join: ['id', 'userId', { table: query.jx.users_teams.table }],
+          // },
+        ],
+        prepare(batch, filter) {
+          const { id, _id, name, ids, _ids, scoped } = filter;
+          const single = !!id || !!_id || !!name;
 
-                const match = { id, name, scoped }
-                if (!id) {
-                    if (ids) match.id = ids
-                    else match.id = Team.matchIdHash(_id || _ids)
-                }
+          const match = { id, name, scoped };
+          if (!id) {
+            if (ids) match.id = ids;
+            else match.id = Team.matchIdHash(_id || _ids);
+          }
 
-                batch[0].match = match
+          batch[0].match = match;
 
-                return { single, batch, custom: { offline } }
-            },
-        })
-    }
-
-
-    static mw = {
-
-
-        verify: async (req, res, next) => {
-            try {
-                const { user } = res.session
-                if (!user) return sendError.auth(req, res)
-
-                if (user.unscoped || user.DS) {
-                    delete req.session.team
-
-                    return next()
-                }
-
-                const { team: _id } = req.session
-
-                if (!_id) return res.redirect('/')
-    
-                const team = await Team.fetch(res.session, { _id })
-    
-                const userId = user.id
-                const teamId = team.id
-                const found = (await mysql.execute(query.jx.users_teams.select('teamId', {
-                    match: { userId, teamId },
-                })))[0].length === 1
-
-                if ((!user.DS && !found) || !team) {
-                    delete req.session.team
-
-                    return res.redirect('/')
-                }
-
-                team.session = { user: { id: user.id } }
-
-                res.session.team = team
-                next()
-            } catch (err) {
-                sendError.server(req, res, err)
-            }
+          return { single, batch, custom: { offline } };
         },
+      },
+    );
+  };
 
+  static mw = {
+    verify: async (req, res, next) => {
+      try {
+        const { user } = res.session;
+        if (!user) return sendError.auth(req, res);
 
-    }
+        if (user.unscoped || user.DS) {
+          delete req.session.team;
 
+          return next();
+        }
 
+        const { team: _id } = req.session;
+
+        if (!_id) return res.redirect('/');
+
+        const team = await Team.fetch(res.session, { _id });
+
+        const userId = user.id;
+        const teamId = team.id;
+        const found =
+          (
+            await mysql.execute(
+              query.jx.users_teams.select('teamId', {
+                match: { userId, teamId },
+              }),
+            )
+          )[0].length === 1;
+
+        if ((!user.DS && !found) || !team) {
+          delete req.session.team;
+
+          return res.redirect('/');
+        }
+
+        team.session = { user: { id: user.id } };
+
+        res.session.team = team;
+        next();
+      } catch (err) {
+        sendError.server(req, res, err);
+      }
+    },
+  };
 }
-
-
 
 function jxTargets(src, target = null) {
-    const targets =  {
-        team: {
-            users: [ query.jx.users_teams, 'userId', User, User.defSort ],
-        },
-    }[src]
+  const targets = {
+    team: {
+      users: [query.jx.users_teams, 'userId', User, User.defSort],
+    },
+  }[src];
 
-    return target ? targets[target] : targets
+  return target ? targets[target] : targets;
 }
 
-
-
-export default Team
+export default Team;
