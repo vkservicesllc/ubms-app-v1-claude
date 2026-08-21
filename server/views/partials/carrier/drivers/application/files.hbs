@@ -1,4 +1,4 @@
-<div class="ui active tab" data-tab="files">
+<div class='ui active tab' data-tab='files'>
     <style>
         .hover-outline .hidden {
             display: none;
@@ -10,315 +10,662 @@
         }
         .hover-outline:hover {
             outline: 1px solid rgb(224, 224, 224);
-            outline-offset: .32rem;
+            outline-offset: 0.32rem;
         }
         .hover-outline:hover .hidden {
             display: inline;
         }
         .action.icon {
-            font-size: .84em;
+            font-size: 0.84em;
         }
     </style>
-    <div class="ui grid" style="margin-top: 2rem;">
-        <div class="nine wide column" style="padding: .5rem 2rem;">
-            <div class="ui list">
-                <div class="item">
+    <div class='ui grid' style='margin-top: 2rem;'>
+        <div class='nine wide column' style='padding: .5rem 2rem;'>
+            <div class='ui list'>
+                <div class='item'>
                     {{{folder.driverQualification}}}
-                    <div class="content">
-                        <div class="header">Driver Qualification</div>
-                        <div class="list">
-                            <div class="item">
+                    <div class='content'>
+                        <div class='header'>Driver Qualification</div>
+                        <div class='list'>
+                            <div class='item'>
                                 {{{folder.applicationDocs}}}
-                                <div class="content">
-                                    <div class="header">Application Documents</div>
-                                    <div class="content">
-                                        <div class="list">
+                                <div class='content'>
+                                    <div class='header'>Application Documents</div>
+                                    <div class='content'>
+                                        <div class='list'>
                                             {{#if (eq filePerms.apl.download true)}}
-                                            <div class="item">
-                                                <i class="pdf file outline icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}">
-                                                            <span class="ui dark blue text">Application</span>
-                                                        </a>
-                                                        <a href="/files/pdf/driver/application/{{formId}}" title="Download Application" download>
-                                                            <i class="dark green download action icon"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{#if (hv carrier)}}
-                                            <div class="item">
-                                                <i class="pdf file outline icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/doteda">
-                                                            <span class="ui dark blue text">DOT Employment & Drug-Alcohol Authorization</span>
-                                                        </a>
-                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/doteda" title="Download DOT Employment & Drug/Alcohol Authorization" download>
-                                                            <i class="dark green download action icon"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                <i class="pdf file outline icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/fcra">
-                                                            <span class="ui dark blue text">FCRA Disclosure and Authorization</span>
-                                                        </a>
-                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/fcra" title="Download FCRA Disclosure and Authorization" download>
-                                                            <i class="dark green download action icon"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                <i class="pdf file outline icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/mvr">
-                                                            <span class="ui dark blue text">MVR Authorization</span>
-                                                        </a>
-                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/mvr" title="Download MVR Authorization" download>
-                                                            <i class="dark green download action icon"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                <i class="pdf file outline icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <a target="_blank" href="/files/pdf/driver/application/{{formId}}/consent/psp">
-                                                            <span class="ui dark blue text">PSP Authorization</span>
-                                                        </a>
-                                                        <a href="/files/pdf/driver/application/{{formId}}/consent/psp" title="Download PSP Authorization" download>
-                                                            <i class="dark green download action icon"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {{/if}}
-                                            {{/if}}
-                                            {{#if (eq filePerms.sup.download true)}}
-                                            <div class="item">
-                                                {{{folder.supportingDocs}}}
-                                                <div class="content">
-                                                    <div class="header">Supporting Documents</div>
-                                                    <div class="content">
-                                                        <div class="list">
-                                                            <div class="item">
-                                                                {{{folder.personalDocs}}}
-                                                                <div class="content">
-                                                                    <div class="header">Personal Documents</div>
-                                                                    <div class="content">
-                                                                        <div class="list">
-                                                                            <div class="item">
-                                                                                {{{file.dl.style}}}
-                                                                                <div class="content">
-                                                                                    <div class="header hover-outline">
-                                                                                        {{{file.dl.text}}}
-                                                                                        <span>
-                                                                                            {{#if (eq file.dl.uploaded false)}}
-                                                                                            {{#if (eq filePerms.sup.upload true)}}
-                                                                                            <a title="Upload {{idx downloadLinks.dl 1}}" id="upload-dl-file">
-                                                                                                <i class="blue upload action icon"></i>
-                                                                                            </a>
-                                                                                            {{/if}}
-                                                                                            {{else}}
-                                                                                            <a href="{{idx downloadLinks.dl 0}}" title="Download {{idx downloadLinks.dl 1}}" download>
-                                                                                                <i class="dark green download action icon"></i>
-                                                                                            </a>
-                                                                                            {{#if (eq filePerms.sup.upload true)}}
-                                                                                            <a href="" title="Add to {{idx downloadLinks.dl 1}}" id="upload-add-dl-file"><i class="grey upload action icon"></i></a>
-                                                                                            {{/if}}
-                                                                                            {{#if (eq filePerms.sup.delete true)}}
-                                                                                            <a class="delete-files" data-target="dl" title="Delete {{idx downloadLinks.dl 1}}"><i class="dark red trash alternate outline action icon"></i></a>
-                                                                                            {{/if}}
-                                                                                            {{/if}}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                    <div class="description">
-                                                                                        <small>Front and back</small>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="item">
-                                                                                {{{file.mec.style}}}
-                                                                                <div class="content">
-                                                                                    <div class="header hover-outline">
-                                                                                        {{{file.mec.text}}}
-                                                                                        <span>
-                                                                                            {{#if (eq file.mec.uploaded false)}}
-                                                                                            {{#if (eq filePerms.sup.upload true)}}
-                                                                                            <a title="Upload {{idx downloadLinks.mec 1}}" id="upload-mec-file"><i class="blue upload action icon"></i></a>
-                                                                                            {{/if}}
-                                                                                            {{else}}
-                                                                                            <a href="{{idx downloadLinks.mec 0}}" title="Download {{idx downloadLinks.mec 1}}" download>
-                                                                                                <i class="dark green download action icon"></i>
-                                                                                            </a>
-                                                                                            {{#if (eq filePerms.sup.delete true)}}
-                                                                                            <a class="delete-files" data-target="mec" title="Delete {{idx downloadLinks.mec 1}}"><i class="dark red trash alternate outline action icon"></i></a>
-                                                                                            {{/if}}
-                                                                                            {{/if}}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            {{#if (eq fileLegalDoc true)}}
-                                                                            <div class="item">
-                                                                                {{{file.leg.style}}}
-                                                                                <div class="content">
-                                                                                    <div class="header hover-outline">
-                                                                                        {{{file.leg.text}}}
-                                                                                        <span>
-                                                                                            {{#if (eq file.leg.uploaded false)}}
-                                                                                            {{#if (eq filePerms.sup.upload true)}}
-                                                                                            <a title="Upload {{idx downloadLinks.leg 1}}" id="upload-leg-file"><i class="blue upload action icon"></i></a>
-                                                                                            {{/if}}
-                                                                                            {{else}}
-                                                                                            <a href="{{idx downloadLinks.leg 0}}" title="Download {{idx downloadLinks.leg 1}}" download="{{idx downloadLinks.leg 2}}">
-                                                                                                <i class="dark green download action icon"></i>
-                                                                                            </a>
-                                                                                            {{#if (eq filePerms.sup.delete true)}}
-                                                                                            <a class="delete-files" data-target="leg" title="Delete {{idx downloadLinks.leg 1}}"><i class="dark red trash alternate outline action icon"></i></a>
-                                                                                            {{/if}}
-                                                                                            {{/if}}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            {{/if}}
-                                                                            <div class="item">
-                                                                                {{{file.ssc.style}}}
-                                                                                <div class="content">
-                                                                                    <div class="header hover-outline">
-                                                                                        {{{file.ssc.text}}}
-                                                                                        <span>
-                                                                                            {{#if (eq file.ssc.uploaded false)}}
-                                                                                            {{#if (eq filePerms.sup.upload true)}}
-                                                                                            <a title="Upload {{idx downloadLinks.ssc 1}}" id="upload-ssc-file"><i class="blue upload action icon"></i></a>
-                                                                                            {{/if}}
-                                                                                            {{else}}
-                                                                                            <a href="{{idx downloadLinks.ssc 0}}" title="Download {{idx downloadLinks.ssc 1}}" download>
-                                                                                                <i class="dark green download action icon"></i>
-                                                                                            </a>
-                                                                                            {{#if (eq filePerms.sup.delete true)}}
-                                                                                            <a class="delete-files" data-target="ssc" title="Delete {{idx downloadLinks.ssc 1}}"><i class="dark red trash alternate outline action icon"></i></a>
-                                                                                            {{/if}}
-                                                                                            {{/if}}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            {{#if (eq posProp 'OO')}}
-                                                            <div class="item">
-                                                                {{{folder.vehicleDocs}}}
-                                                                <div class="content">
-                                                                    <div class="header">Vehicle Documents</div>
-                                                                    <div class="content">
-                                                                        <div class="list">
-                                                                            <div class="item">
-                                                                                <i class="grey file icon"></i>
-                                                                                <div class="content">
-                                                                                    <div class="header hover-outline">
-                                                                                        <span class="ui grey text">Registration</span>
-                                                                                        <span>
-                                                                                            <a title="Upload Registration"><i class="blue upload action icon"></i></a>
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            {{#if (eq fileTrlReg true)}}
-                                                                            <div class="item">
-                                                                                <i class="grey file icon"></i>
-                                                                                <div class="content">
-                                                                                    <div class="header hover-outline">
-                                                                                        <span class="ui grey text">Trailer Registration</span>
-                                                                                        <span>
-                                                                                            <a title="Upload Trailer Registration"><i class="blue upload action icon"></i></a>
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            {{/if}}
-                                                                            <div class="item">
-                                                                                <i class="grey file icon"></i>
-                                                                                <div class="content">
-                                                                                    <div class="header hover-outline">
-                                                                                        <span class="ui grey text">VGW Sticker</span>
-                                                                                        <span>
-                                                                                            <a title="Upload VGW Sticker"><i class="blue upload action icon"></i></a>
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            {{/if}}
+                                                <div class='item'>
+                                                    <i class='pdf file outline icon'></i>
+                                                    <div class='content'>
+                                                        <div class='header hover-outline'>
+                                                            <a
+                                                                target='_blank'
+                                                                href='/files/pdf/driver/application/{{formId}}'
+                                                            >
+                                                                <span
+                                                                    class='ui dark blue text'
+                                                                >Application</span>
+                                                            </a>
+                                                            <a
+                                                                href='/files/pdf/driver/application/{{formId}}'
+                                                                title='Download Application'
+                                                                download
+                                                            >
+                                                                <i
+                                                                    class='dark green download action icon'
+                                                                ></i>
+                                                            </a>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                                {{#if (hv carrier)}}
+                                                    <div class='item'>
+                                                        <i class='pdf file outline icon'></i>
+                                                        <div class='content'>
+                                                            <div class='header hover-outline'>
+                                                                <a
+                                                                    target='_blank'
+                                                                    href='/files/pdf/driver/application/{{formId}}/consent/doteda'
+                                                                >
+                                                                    <span
+                                                                        class='ui dark blue text'
+                                                                    >DOT Employment & Drug-Alcohol
+                                                                        Authorization</span>
+                                                                </a>
+                                                                <a
+                                                                    href='/files/pdf/driver/application/{{formId}}/consent/doteda'
+                                                                    title='Download DOT Employment & Drug/Alcohol Authorization'
+                                                                    download
+                                                                >
+                                                                    <i
+                                                                        class='dark green download action icon'
+                                                                    ></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class='item'>
+                                                        <i class='pdf file outline icon'></i>
+                                                        <div class='content'>
+                                                            <div class='header hover-outline'>
+                                                                <a
+                                                                    target='_blank'
+                                                                    href='/files/pdf/driver/application/{{formId}}/consent/fcra'
+                                                                >
+                                                                    <span
+                                                                        class='ui dark blue text'
+                                                                    >FCRA Disclosure and
+                                                                        Authorization</span>
+                                                                </a>
+                                                                <a
+                                                                    href='/files/pdf/driver/application/{{formId}}/consent/fcra'
+                                                                    title='Download FCRA Disclosure and Authorization'
+                                                                    download
+                                                                >
+                                                                    <i
+                                                                        class='dark green download action icon'
+                                                                    ></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class='item'>
+                                                        <i class='pdf file outline icon'></i>
+                                                        <div class='content'>
+                                                            <div class='header hover-outline'>
+                                                                <a
+                                                                    target='_blank'
+                                                                    href='/files/pdf/driver/application/{{formId}}/consent/mvr'
+                                                                >
+                                                                    <span
+                                                                        class='ui dark blue text'
+                                                                    >MVR Authorization</span>
+                                                                </a>
+                                                                <a
+                                                                    href='/files/pdf/driver/application/{{formId}}/consent/mvr'
+                                                                    title='Download MVR Authorization'
+                                                                    download
+                                                                >
+                                                                    <i
+                                                                        class='dark green download action icon'
+                                                                    ></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class='item'>
+                                                        <i class='pdf file outline icon'></i>
+                                                        <div class='content'>
+                                                            <div class='header hover-outline'>
+                                                                <a
+                                                                    target='_blank'
+                                                                    href='/files/pdf/driver/application/{{formId}}/consent/psp'
+                                                                >
+                                                                    <span
+                                                                        class='ui dark blue text'
+                                                                    >PSP Authorization</span>
+                                                                </a>
+                                                                <a
+                                                                    href='/files/pdf/driver/application/{{formId}}/consent/psp'
+                                                                    title='Download PSP Authorization'
+                                                                    download
+                                                                >
+                                                                    <i
+                                                                        class='dark green download action icon'
+                                                                    ></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {{/if}}
+                                            {{/if}}
+                                            {{#if (eq filePerms.sup.download true)}}
+                                                <div class='item'>
+                                                    {{{folder.supportingDocs}}}
+                                                    <div class='content'>
+                                                        <div class='header'>Supporting Documents</div>
+                                                        <div class='content'>
+                                                            <div class='list'>
+                                                                <div class='item'>
+                                                                    {{{folder.personalDocs}}}
+                                                                    <div class='content'>
+                                                                        <div class='header'>Personal
+                                                                            Documents</div>
+                                                                        <div class='content'>
+                                                                            <div class='list'>
+                                                                                <div class='item'>
+                                                                                    {{{file.dl.style}}}
+                                                                                    <div
+                                                                                        class='content'
+                                                                                    >
+                                                                                        <div
+                                                                                            class='header hover-outline'
+                                                                                        >
+                                                                                            {{{file.dl.text}}}
+                                                                                            <span>
+                                                                                                {{#if
+                                                                                                    (eq
+                                                                                                        file.dl.uploaded
+                                                                                                        false
+                                                                                                    )
+                                                                                                }}
+                                                                                                    {{#if
+                                                                                                        (eq
+                                                                                                            filePerms.sup.upload
+                                                                                                            true
+                                                                                                        )
+                                                                                                    }}
+                                                                                                        <a
+                                                                                                            title='Upload {{idx
+                                                                                                                downloadLinks.dl
+                                                                                                                1
+                                                                                                            }}'
+                                                                                                            id='upload-dl-file'
+                                                                                                        >
+                                                                                                            <i
+                                                                                                                class='blue upload action icon'
+                                                                                                            ></i>
+                                                                                                        </a>
+                                                                                                    {{/if}}
+                                                                                                {{else}}
+                                                                                                    <a
+                                                                                                        href='{{idx
+                                                                                                            downloadLinks.dl
+                                                                                                            0
+                                                                                                        }}'
+                                                                                                        title='Download {{idx
+                                                                                                            downloadLinks.dl
+                                                                                                            1
+                                                                                                        }}'
+                                                                                                        download
+                                                                                                    >
+                                                                                                        <i
+                                                                                                            class='dark green download action icon'
+                                                                                                        ></i>
+                                                                                                    </a>
+                                                                                                    {{#if
+                                                                                                        (eq
+                                                                                                            filePerms.sup.upload
+                                                                                                            true
+                                                                                                        )
+                                                                                                    }}
+                                                                                                        <a
+                                                                                                            href=''
+                                                                                                            title='Add to {{idx
+                                                                                                                downloadLinks.dl
+                                                                                                                1
+                                                                                                            }}'
+                                                                                                            id='upload-add-dl-file'
+                                                                                                        ><i
+                                                                                                                class='grey upload action icon'
+                                                                                                            ></i></a>
+                                                                                                    {{/if}}
+                                                                                                    {{#if
+                                                                                                        (eq
+                                                                                                            filePerms.sup.delete
+                                                                                                            true
+                                                                                                        )
+                                                                                                    }}
+                                                                                                        <a
+                                                                                                            class='delete-files'
+                                                                                                            data-target='dl'
+                                                                                                            title='Delete {{idx
+                                                                                                                downloadLinks.dl
+                                                                                                                1
+                                                                                                            }}'
+                                                                                                        ><i
+                                                                                                                class='dark red trash alternate outline action icon'
+                                                                                                            ></i></a>
+                                                                                                    {{/if}}
+                                                                                                {{/if}}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                        <div
+                                                                                            class='description'
+                                                                                        >
+                                                                                            <small
+                                                                                            >Front
+                                                                                                and
+                                                                                                back</small>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class='item'>
+                                                                                    {{{file.mec.style}}}
+                                                                                    <div
+                                                                                        class='content'
+                                                                                    >
+                                                                                        <div
+                                                                                            class='header hover-outline'
+                                                                                        >
+                                                                                            {{{file.mec.text}}}
+                                                                                            <span>
+                                                                                                {{#if
+                                                                                                    (eq
+                                                                                                        file.mec.uploaded
+                                                                                                        false
+                                                                                                    )
+                                                                                                }}
+                                                                                                    {{#if
+                                                                                                        (eq
+                                                                                                            filePerms.sup.upload
+                                                                                                            true
+                                                                                                        )
+                                                                                                    }}
+                                                                                                        <a
+                                                                                                            title='Upload {{idx
+                                                                                                                downloadLinks.mec
+                                                                                                                1
+                                                                                                            }}'
+                                                                                                            id='upload-mec-file'
+                                                                                                        ><i
+                                                                                                                class='blue upload action icon'
+                                                                                                            ></i></a>
+                                                                                                    {{/if}}
+                                                                                                {{else}}
+                                                                                                    <a
+                                                                                                        href='{{idx
+                                                                                                            downloadLinks.mec
+                                                                                                            0
+                                                                                                        }}'
+                                                                                                        title='Download {{idx
+                                                                                                            downloadLinks.mec
+                                                                                                            1
+                                                                                                        }}'
+                                                                                                        download
+                                                                                                    >
+                                                                                                        <i
+                                                                                                            class='dark green download action icon'
+                                                                                                        ></i>
+                                                                                                    </a>
+                                                                                                    {{#if
+                                                                                                        (eq
+                                                                                                            filePerms.sup.delete
+                                                                                                            true
+                                                                                                        )
+                                                                                                    }}
+                                                                                                        <a
+                                                                                                            class='delete-files'
+                                                                                                            data-target='mec'
+                                                                                                            title='Delete {{idx
+                                                                                                                downloadLinks.mec
+                                                                                                                1
+                                                                                                            }}'
+                                                                                                        ><i
+                                                                                                                class='dark red trash alternate outline action icon'
+                                                                                                            ></i></a>
+                                                                                                    {{/if}}
+                                                                                                {{/if}}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                {{#if
+                                                                                    (eq
+                                                                                        fileLegalDoc
+                                                                                        true
+                                                                                    )
+                                                                                }}
+                                                                                    <div
+                                                                                        class='item'
+                                                                                    >
+                                                                                        {{{file.leg.style}}}
+                                                                                        <div
+                                                                                            class='content'
+                                                                                        >
+                                                                                            <div
+                                                                                                class='header hover-outline'
+                                                                                            >
+                                                                                                {{{file.leg.text}}}
+                                                                                                <span
+                                                                                                >
+                                                                                                    {{#if
+                                                                                                        (eq
+                                                                                                            file.leg.uploaded
+                                                                                                            false
+                                                                                                        )
+                                                                                                    }}
+                                                                                                        {{#if
+                                                                                                            (eq
+                                                                                                                filePerms.sup.upload
+                                                                                                                true
+                                                                                                            )
+                                                                                                        }}
+                                                                                                            <a
+                                                                                                                title='Upload {{idx
+                                                                                                                    downloadLinks.leg
+                                                                                                                    1
+                                                                                                                }}'
+                                                                                                                id='upload-leg-file'
+                                                                                                            ><i
+                                                                                                                    class='blue upload action icon'
+                                                                                                                ></i></a>
+                                                                                                        {{/if}}
+                                                                                                    {{else}}
+                                                                                                        <a
+                                                                                                            href='{{idx
+                                                                                                                downloadLinks.leg
+                                                                                                                0
+                                                                                                            }}'
+                                                                                                            title='Download {{idx
+                                                                                                                downloadLinks.leg
+                                                                                                                1
+                                                                                                            }}'
+                                                                                                            download='{{idx
+                                                                                                                downloadLinks.leg
+                                                                                                                2
+                                                                                                            }}'
+                                                                                                        >
+                                                                                                            <i
+                                                                                                                class='dark green download action icon'
+                                                                                                            ></i>
+                                                                                                        </a>
+                                                                                                        {{#if
+                                                                                                            (eq
+                                                                                                                filePerms.sup.delete
+                                                                                                                true
+                                                                                                            )
+                                                                                                        }}
+                                                                                                            <a
+                                                                                                                class='delete-files'
+                                                                                                                data-target='leg'
+                                                                                                                title='Delete {{idx
+                                                                                                                    downloadLinks.leg
+                                                                                                                    1
+                                                                                                                }}'
+                                                                                                            ><i
+                                                                                                                    class='dark red trash alternate outline action icon'
+                                                                                                                ></i></a>
+                                                                                                        {{/if}}
+                                                                                                    {{/if}}
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                {{/if}}
+                                                                                <div class='item'>
+                                                                                    {{{file.ssc.style}}}
+                                                                                    <div
+                                                                                        class='content'
+                                                                                    >
+                                                                                        <div
+                                                                                            class='header hover-outline'
+                                                                                        >
+                                                                                            {{{file.ssc.text}}}
+                                                                                            <span>
+                                                                                                {{#if
+                                                                                                    (eq
+                                                                                                        file.ssc.uploaded
+                                                                                                        false
+                                                                                                    )
+                                                                                                }}
+                                                                                                    {{#if
+                                                                                                        (eq
+                                                                                                            filePerms.sup.upload
+                                                                                                            true
+                                                                                                        )
+                                                                                                    }}
+                                                                                                        <a
+                                                                                                            title='Upload {{idx
+                                                                                                                downloadLinks.ssc
+                                                                                                                1
+                                                                                                            }}'
+                                                                                                            id='upload-ssc-file'
+                                                                                                        ><i
+                                                                                                                class='blue upload action icon'
+                                                                                                            ></i></a>
+                                                                                                    {{/if}}
+                                                                                                {{else}}
+                                                                                                    <a
+                                                                                                        href='{{idx
+                                                                                                            downloadLinks.ssc
+                                                                                                            0
+                                                                                                        }}'
+                                                                                                        title='Download {{idx
+                                                                                                            downloadLinks.ssc
+                                                                                                            1
+                                                                                                        }}'
+                                                                                                        download
+                                                                                                    >
+                                                                                                        <i
+                                                                                                            class='dark green download action icon'
+                                                                                                        ></i>
+                                                                                                    </a>
+                                                                                                    {{#if
+                                                                                                        (eq
+                                                                                                            filePerms.sup.delete
+                                                                                                            true
+                                                                                                        )
+                                                                                                    }}
+                                                                                                        <a
+                                                                                                            class='delete-files'
+                                                                                                            data-target='ssc'
+                                                                                                            title='Delete {{idx
+                                                                                                                downloadLinks.ssc
+                                                                                                                1
+                                                                                                            }}'
+                                                                                                        ><i
+                                                                                                                class='dark red trash alternate outline action icon'
+                                                                                                            ></i></a>
+                                                                                                    {{/if}}
+                                                                                                {{/if}}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {{#if (eq posProp 'OO')}}
+                                                                    <div class='item'>
+                                                                        {{{folder.vehicleDocs}}}
+                                                                        <div class='content'>
+                                                                            <div
+                                                                                class='header'
+                                                                            >Vehicle Documents</div>
+                                                                            <div class='content'>
+                                                                                <div class='list'>
+                                                                                    <div
+                                                                                        class='item'
+                                                                                    >
+                                                                                        <i
+                                                                                            class='grey file icon'
+                                                                                        ></i>
+                                                                                        <div
+                                                                                            class='content'
+                                                                                        >
+                                                                                            <div
+                                                                                                class='header hover-outline'
+                                                                                            >
+                                                                                                <span
+                                                                                                    class='ui grey text'
+                                                                                                >Registration</span>
+                                                                                                <span
+                                                                                                >
+                                                                                                    <a
+                                                                                                        title='Upload Registration'
+                                                                                                    ><i
+                                                                                                            class='blue upload action icon'
+                                                                                                        ></i></a>
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    {{#if
+                                                                                        (eq
+                                                                                            fileTrlReg
+                                                                                            true
+                                                                                        )
+                                                                                    }}
+                                                                                        <div
+                                                                                            class='item'
+                                                                                        >
+                                                                                            <i
+                                                                                                class='grey file icon'
+                                                                                            ></i>
+                                                                                            <div
+                                                                                                class='content'
+                                                                                            >
+                                                                                                <div
+                                                                                                    class='header hover-outline'
+                                                                                                >
+                                                                                                    <span
+                                                                                                        class='ui grey text'
+                                                                                                    >Trailer
+                                                                                                        Registration</span>
+                                                                                                    <span
+                                                                                                    >
+                                                                                                        <a
+                                                                                                            title='Upload Trailer Registration'
+                                                                                                        ><i
+                                                                                                                class='blue upload action icon'
+                                                                                                            ></i></a>
+                                                                                                    </span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    {{/if}}
+                                                                                    <div
+                                                                                        class='item'
+                                                                                    >
+                                                                                        <i
+                                                                                            class='grey file icon'
+                                                                                        ></i>
+                                                                                        <div
+                                                                                            class='content'
+                                                                                        >
+                                                                                            <div
+                                                                                                class='header hover-outline'
+                                                                                            >
+                                                                                                <span
+                                                                                                    class='ui grey text'
+                                                                                                >VGW
+                                                                                                    Sticker</span>
+                                                                                                <span
+                                                                                                >
+                                                                                                    <a
+                                                                                                        title='Upload VGW Sticker'
+                                                                                                    ><i
+                                                                                                            class='blue upload action icon'
+                                                                                                        ></i></a>
+                                                                                                </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {{/if}}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             {{/if}}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             {{#if (eq filePerms.bkg.download true)}}
-                            <div class="item">
-                                {{{folder.backgroundCheck}}}
-                                <div class="content">
-                                    <div class="header">Background Check</div>
-                                    <div class="content">
-                                        <div class="list">
-                                            {{#if (eq cdl true)}}
-                                            <div class="item">
-                                                <i class="grey file icon"></i>
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span>Clearinghouse</span>
-                                                        <a href="" title="Upload Clearinghouse Report">
-                                                            <i class="blue upload action icon"></i>
-                                                        </a>
+                                <div class='item'>
+                                    {{{folder.backgroundCheck}}}
+                                    <div class='content'>
+                                        <div class='header'>Background Check</div>
+                                        <div class='content'>
+                                            <div class='list'>
+                                                {{#if (eq cdl true)}}
+                                                    <div class='item'>
+                                                        <i class='grey file icon'></i>
+                                                        <div class='content'>
+                                                            <div class='header hover-outline'>
+                                                                <span>Clearinghouse</span>
+                                                                <a
+                                                                    href=''
+                                                                    title='Upload Clearinghouse Report'
+                                                                >
+                                                                    <i
+                                                                        class='blue upload action icon'
+                                                                    ></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {{/if}}
+                                                <div class='item'>
+                                                    {{{folder.mvr}}}
+                                                    <div class='content'>
+                                                        <div class='header hover-outline'>
+                                                            <span>MVR{{#if (eq cdl true)}}
+                                                                    & CDLIS{{/if}}</span>
+                                                            <a
+                                                                href=''
+                                                                title='Upload MVR/CDLIS Report'
+                                                            >
+                                                                <i
+                                                                    class='blue upload action icon'
+                                                                ></i>
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            {{/if}}
-                                            <div class="item">
-                                                {{{folder.mvr}}}
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span>MVR{{#if (eq cdl true)}} & CDLIS{{/if}}</span>
-                                                        <a href="" title="Upload MVR/CDLIS Report">
-                                                            <i class="blue upload action icon"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                {{{folder.psp}}}
-                                                <div class="content">
-                                                    <div class="header hover-outline">
-                                                        <span>PSP</span>
-                                                        <a href="" title="Upload PSP Report">
-                                                            <i class="blue upload action icon"></i>
-                                                        </a>
+                                                <div class='item'>
+                                                    {{{folder.psp}}}
+                                                    <div class='content'>
+                                                        <div class='header hover-outline'>
+                                                            <span>PSP</span>
+                                                            <a href='' title='Upload PSP Report'>
+                                                                <i
+                                                                    class='blue upload action icon'
+                                                                ></i>
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                             {{/if}}
                         </div>
                     </div>
@@ -326,29 +673,35 @@
             </div>
         </div>
         {{#if (eq filePerms.hir.download true)}}
-        <div class="seven wide column" style="padding: .5rem 2rem; border-left: 1px solid rgba(34, 36, 38, 0.15);">
-            <div class="ui list">
-                <div class="item">
-                    {{{folder.hiringProcess}}}
-                    <div class="content">
-                        <div class="header">Hiring Process</div>
-                        <div class="content">
-                            <div class="list">
-                                <div class="item">
-                                    <i class="grey file icon"></i>
-                                    <div class="content">
-                                        <div class="header hover-outline">
-                                            <span class="ui grey text">Drug Test Results</span>
-                                            <span>
-                                                <a title="Upload Drug Test Results"><i class="blue upload action icon"></i></a>
-                                            </span>
+            <div
+                class='seven wide column'
+                style='padding: .5rem 2rem; border-left: 1px solid rgba(34, 36, 38, 0.15);'
+            >
+                <div class='ui list'>
+                    <div class='item'>
+                        {{{folder.hiringProcess}}}
+                        <div class='content'>
+                            <div class='header'>Hiring Process</div>
+                            <div class='content'>
+                                <div class='list'>
+                                    <div class='item'>
+                                        <i class='grey file icon'></i>
+                                        <div class='content'>
+                                            <div class='header hover-outline'>
+                                                <span class='ui grey text'>Drug Test Results</span>
+                                                <span>
+                                                    <a title='Upload Drug Test Results'><i
+                                                            class='blue upload action icon'
+                                                        ></i></a>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="item">
-                                    {{{folder.orientation}}}
-                                    <div class="content">
-                                        <div class="header">Orientation</div>
+                                    <div class='item'>
+                                        {{{folder.orientation}}}
+                                        <div class='content'>
+                                            <div class='header'>Orientation</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -356,7 +709,6 @@
                     </div>
                 </div>
             </div>
-        </div>
         {{/if}}
     </div>
 </div>

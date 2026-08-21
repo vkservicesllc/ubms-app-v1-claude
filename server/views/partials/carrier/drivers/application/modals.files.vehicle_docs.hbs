@@ -1,0 +1,44 @@
+<div class='ui overlay fullscreen modal' id='upload-reg-modal'>
+    <div class="center aligned header">
+        <small>Upload</small> Registration — {{{applicant}}}; {{formId}}{{#if (hv carrier)}}; {{{carrier}}}{{/if}}
+    </div>
+    <div class="content">
+        <form class="ui form" id="upload-reg-form" method="POST" enctype="multipart/form-data">
+            <div class="ui placeholder segment reg-section" id="croparea-reg">
+                <div class="ui icon header cropper-dropzone">
+                    <h1 class="ui header">Registration</h1>
+                    <i class="dark teal image file outline icon"></i>
+                    <span class="ui dark teal text cropper-drag-drop-click">Drag and drop here or click to upload</span>
+                    {{#if (eq uploads.reg true)}}
+                    <p class="cropper-opt-or"><span class="ui grey text">OR</span></p>
+                    <button class="ui primary button cropper-load-shared">Load Shared</button>
+                    {{/if}}
+                </div>
+                <input class="cropper-file" type="file" accept="image/*" hidden />
+                <div class="cropper-wrapper" style="display: none;">
+                    <img class="cropper-image" style="display: none;" />
+                </div>
+                {{> carrier/components/modal.cropper.buttons}}
+            </div>
+            <div class="ui two column relaxed grid reg-section" id="confirmation-reg" style="display: none; margin: 0;">
+                <div class="nine wide column">
+                    <div>
+                        <div class="cropper-preview" id="cropper-preview-reg" data-height="64"></div>
+                    </div>
+                </div>
+                <div class="seven wide column">
+                    {{> carrier/drivers/application/file_forms/registration}}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions" style="display: flex !important; justify-content: space-between;">
+        <a class="ui button" href="{{cancelUploadUrl}}">Cancel</a>
+        <strong id="upload-reg-step">Editor: Registration</strong>
+        <div>
+            <button class="ui primary button" id="upload-reg-prev-button" style="display: none;">Back</button>
+            <button class="ui primary button" id="upload-reg-next-button" disabled>Next</button>
+            <button type="submit" form="upload-reg-form" class="ui primary button" id="upload-reg-submit" style="display: none;" disabled>Confirm and Upload</button>
+        </div>
+    </div>
+</div>

@@ -1661,7 +1661,10 @@
     {{> carrier/drivers/application.clipboard}}
 
     {{#if (eq fileTab true)}}
-    {{> carrier/drivers/application/modals.files}}
+    {{> carrier/drivers/application/modals.files.personal_docs}}
+    {{#if (eq posProp 'OO')}}
+    {{> carrier/drivers/application/modals.files.vehicle_docs}}
+    {{/if}}
     {{/if}}
 
 {{> carrier/nav.omega}}
