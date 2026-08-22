@@ -258,6 +258,97 @@ class Truck extends Vehicle {
             Isuzu: ['NPR-HD', 'NQR', 'FTR'],
             Hino: ['268A', 'L6 Box'],
         },
+
+        htr: {
+            'Semi Tractor': {
+                FRT: {
+                    make: 'Freightliner',
+                    models: ['Cascadia', 'eCascadia', 'Coronado', '114SD', '122SD'],
+                },
+                KEN: {
+                    make: 'Kenworth',
+                    models: ['T680', 'T800', 'T880', 'W900'],
+                },
+                PBT: {
+                    make: 'Peterbilt',
+                    models: ['579', '389', '567'],
+                },
+                INT: {
+                    make: 'International',
+                    models: ['LT Series', 'RH Series', 'HX Series'],
+                },
+                VOL: {
+                    make: 'Volvo',
+                    models: ['VNL', 'VNR', 'VNX'],
+                },
+                MCK: {
+                    make: 'Mack',
+                    models: ['Anthem', 'Pinnacle'],
+                },
+            },
+        },
+
+        mtr: {
+            'Box Truck': {
+                FRT: {
+                    make: 'Freightliner',
+                    models: ['MT45', 'M2 106 Box'],
+                },
+                FRD: {
+                    make: 'Ford',
+                    models: ['F-600 Box', 'F-650 Box', 'F-750 Box'],
+                },
+                CHV: {
+                    make: 'Chevrolet',
+                    models: ['LCF 5500XD', 'LCF 6500XD'],
+                },
+                KEN: {
+                    make: 'Kenworth',
+                    models: ['T270 Box', 'T370 Box'],
+                },
+                INT: {
+                    make: 'International',
+                    models: ['CV Series', 'MV607', 'Durastar 4300'],
+                },
+                ISZ: {
+                    make: 'Isuzu',
+                    models: ['NPR-HD', 'NQR', 'NRR', 'FTR', 'FVR'],
+                },
+                HIN: {
+                    make: 'Hino',
+                    models: ['155', '268A', 'L6 Box', '338'],
+                },
+            },
+        },
+
+        ltr: {
+            Hotshot: {
+                FRD: {
+                    make: 'Ford',
+                    models: ['F-250', 'F-350', 'F-450', 'F-550'],
+                },
+                RAM: {
+                    make: 'Ram',
+                    models: ['2500', '3500', '4500', '5500'],
+                },
+                CHV: {
+                    make: 'Chevrolet',
+                    models: ['Silverado 2500HD', 'Silverado 3500HD', 'Silverado 4500HD', 'Silverado 5500HD'],
+                },
+                GMC: {
+                    make: 'GMC',
+                    models: ['Sierra 2500HD', 'Sierra 3500HD', 'Sierra 4500HD', 'Sierra 5500HD'],
+                },
+                NIS: {
+                    make: 'Nissan',
+                    models: ['Titan XD'],
+                },
+                TOY: {
+                    make: 'Toyota',
+                    models: ['Tundra'],
+                },
+            },
+        },
     };
 
     // static straightCubeMakeModelList = {
