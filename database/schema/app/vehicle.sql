@@ -5,7 +5,7 @@ CREATE TABLE vehicles (
     vin         CHAR(17)            NOT NULL UNIQUE,
     category    CHAR(3)             NOT NULL,
 
-    make        VARCHAR(30)         NOT NULL,
+    make        CHAR(3)             NOT NULL,
     model       VARCHAR(30)         NOT NULL,
     `year`      YEAR(4)             NOT NULL,
 
@@ -19,6 +19,10 @@ CREATE TABLE trucks (
 
     id          MEDIUMINT UNSIGNED  AUTO_INCREMENT,  -- max 16,777,215 / 3 bytes
     vehicleId   MEDIUMINT UNSIGNED  NOT NULL UNIQUE,
+
+    `type`      VARCHAR(10)         NOT NULL,  -- Based on category (htr, mtr, ltr)
+    `length`    TINYINT             DEFAULT NULL,  -- ft
+    axles       TINYINT             DEFAULT NULL, 
 
     FOREIGN KEY (vehicleId) REFERENCES vehicles(id),
     PRIMARY KEY (id)

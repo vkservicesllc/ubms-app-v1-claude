@@ -260,92 +260,121 @@ class Truck extends Vehicle {
         },
 
         htr: {
-            'Semi Tractor': {
-                FRT: {
-                    make: 'Freightliner',
-                    models: ['Cascadia', 'eCascadia', 'Coronado', '114SD', '122SD'],
-                },
-                KEN: {
-                    make: 'Kenworth',
-                    models: ['T680', 'T800', 'T880', 'W900'],
-                },
-                PBT: {
-                    make: 'Peterbilt',
-                    models: ['579', '389', '567'],
-                },
-                INT: {
-                    make: 'International',
-                    models: ['LT Series', 'RH Series', 'HX Series'],
-                },
-                VOL: {
-                    make: 'Volvo',
-                    models: ['VNL', 'VNR', 'VNX'],
-                },
-                MCK: {
-                    make: 'Mack',
-                    models: ['Anthem', 'Pinnacle'],
+            semi: {
+                type: 'Semi Tractor',
+                vehicles: {
+                    FRT: {
+                        make: 'Freightliner',
+                        models: ['Cascadia', 'eCascadia', 'Coronado', '114SD', '122SD'],
+                    },
+                    KEN: {
+                        make: 'Kenworth',
+                        models: ['T680', 'T800', 'T880', 'W900'],
+                    },
+                    PBT: {
+                        make: 'Peterbilt',
+                        models: ['579', '389', '567'],
+                    },
+                    INT: {
+                        make: 'International',
+                        models: ['LT Series', 'RH Series', 'HX Series'],
+                    },
+                    VOL: {
+                        make: 'Volvo',
+                        models: ['VNL', 'VNR', 'VNX'],
+                    },
+                    MAC: {
+                        make: 'Mack',
+                        models: ['Anthem', 'Pinnacle'],
+                    },
                 },
             },
         },
 
         mtr: {
-            'Box Truck': {
-                FRT: {
-                    make: 'Freightliner',
-                    models: ['MT45', 'M2 106 Box'],
+            box: {
+                type: 'Box Truck',
+                lengths: {
+                    10: '10 ft (Small)',
+                    12: '12 ft (Medium-Small)',
+                    14: '14 ft (Medium)',
+                    16: '16 ft (Mid-Large)',
+                    20: '20 ft (Large)',
+                    24: '24 ft (Extra Large)',
+                    26: '26 ft (Heavy Duty)',
+                    28: '28 ft (Heavy Duty)',
                 },
-                FRD: {
-                    make: 'Ford',
-                    models: ['F-600 Box', 'F-650 Box', 'F-750 Box'],
-                },
-                CHV: {
-                    make: 'Chevrolet',
-                    models: ['LCF 5500XD', 'LCF 6500XD'],
-                },
-                KEN: {
-                    make: 'Kenworth',
-                    models: ['T270 Box', 'T370 Box'],
-                },
-                INT: {
-                    make: 'International',
-                    models: ['CV Series', 'MV607', 'Durastar 4300'],
-                },
-                ISZ: {
-                    make: 'Isuzu',
-                    models: ['NPR-HD', 'NQR', 'NRR', 'FTR', 'FVR'],
-                },
-                HIN: {
-                    make: 'Hino',
-                    models: ['155', '268A', 'L6 Box', '338'],
+                vehicles: {
+                    FRT: {
+                        make: 'Freightliner',
+                        models: ['MT45', 'M2 106 Box'],
+                    },
+                    FRD: {
+                        make: 'Ford',
+                        models: ['F-600 Box', 'F-650 Box', 'F-750 Box'],
+                    },
+                    CHV: {
+                        make: 'Chevrolet',
+                        models: ['LCF 5500XD', 'LCF 6500XD'],
+                    },
+                    KEN: {
+                        make: 'Kenworth',
+                        models: ['T270 Box', 'T370 Box'],
+                    },
+                    INT: {
+                        make: 'International',
+                        models: ['CV Series', 'MV607', 'Durastar 4300'],
+                    },
+                    ISZ: {
+                        make: 'Isuzu',
+                        models: ['NPR-HD', 'NQR', 'NRR', 'FTR', 'FVR'],
+                    },
+                    HIN: {
+                        make: 'Hino',
+                        models: ['155', '268A', 'L6 Box', '338'],
+                    },
                 },
             },
         },
 
         ltr: {
-            Hotshot: {
-                FRD: {
-                    make: 'Ford',
-                    models: ['F-250', 'F-350', 'F-450', 'F-550'],
-                },
-                RAM: {
-                    make: 'Ram',
-                    models: ['2500', '3500', '4500', '5500'],
-                },
-                CHV: {
-                    make: 'Chevrolet',
-                    models: ['Silverado 2500HD', 'Silverado 3500HD', 'Silverado 4500HD', 'Silverado 5500HD'],
-                },
-                GMC: {
-                    make: 'GMC',
-                    models: ['Sierra 2500HD', 'Sierra 3500HD', 'Sierra 4500HD', 'Sierra 5500HD'],
-                },
-                NIS: {
-                    make: 'Nissan',
-                    models: ['Titan XD'],
-                },
-                TOY: {
-                    make: 'Toyota',
-                    models: ['Tundra'],
+            hotshot: {
+                type: 'Hotshot Pickup Truck',
+                vehicles: {
+                    FRD: {
+                        make: 'Ford',
+                        models: ['F-250', 'F-350', 'F-450', 'F-550'],
+                    },
+                    RAM: {
+                        make: 'Ram',
+                        models: ['2500', '3500', '4500', '5500'],
+                    },
+                    CHV: {
+                        make: 'Chevrolet',
+                        models: [
+                            'Silverado 2500HD',
+                            'Silverado 3500HD',
+                            'Silverado 4500HD',
+                            'Silverado 5500HD',
+                        ],
+                    },
+                    GMC: {
+                        make: 'GMC',
+                        models: [
+                            'Sierra 2500HD',
+                            'Sierra 3500HD',
+                            'Sierra 4500HD',
+                            'Sierra 5500HD',
+                        ],
+                    },
+                    NIS: {
+                        make: 'Nissan',
+                        models: ['Titan XD'],
+                    },
+                    TOY: {
+                        make: 'Toyota',
+                        models: ['Tundra'],
+                    },
                 },
             },
         },
@@ -454,6 +483,216 @@ class Trailer extends Vehicle {
                 },
             },
         );
+
+    static list = {
+        hotshot: {
+            type: 'Hotshot',
+            vehicles: {
+                PJT: {
+                    make: 'PJ Trailers',
+                    models: ['Low-Pro Gooseneck', 'Deckover Gooseneck', 'Low-Pro Car Hauler'],
+                },
+                BTX: {
+                    make: 'Big Tex Trailers',
+                    models: ['22GN Gooseneck', '25GN Gooseneck', '14CH Car Hauler', '22CH Car Hauler'],
+                },
+                LDT: {
+                    make: 'Load Trail',
+                    models: ['Gooseneck Flatbed', 'Deckover', 'Gooseneck Carhauler'],
+                },
+                DMC: {
+                    make: 'Diamond C',
+                    models: ['LPX Low-Pro Gooseneck', 'GNT Gooseneck', 'GNT Tilt Car Hauler'],
+                },
+                LMR: {
+                    make: 'Lamar Trailers',
+                    models: ['Gooseneck Deckover'],
+                },
+                SRT: {
+                    make: 'Sure-Trac',
+                    models: ['Gooseneck Flatbed'],
+                },
+            },
+        },
+
+        van: {
+            type: 'Dry Van',
+            vehicles: {
+                GDN: {
+                    make: 'Great Dane',
+                    models: ['Everest Dry Van', 'Champion Dry Van'],
+                },
+                WAB: {
+                    make: 'Wabash National',
+                    models: ['DuraPlate Dry Van'],
+                },
+                UTL: {
+                    make: 'Utility Trailer',
+                    models: ['4000D-X Composite Van'],
+                },
+                HTL: {
+                    make: 'Hyundai Translead',
+                    models: ['Dry Van'],
+                },
+                STG: {
+                    make: 'Stoughton Trailers',
+                    models: ['Z-Plate Dry Van'],
+                },
+                VNG: {
+                    make: 'Vanguard National Trailer',
+                    models: ['Dry Van'],
+                },
+            },
+        },
+
+        reefer: {
+            type: 'Reefer',
+            vehicles: {
+                GDN: {
+                    make: 'Great Dane',
+                    models: ['Everest Reefer'],
+                },
+                WAB: {
+                    make: 'Wabash National',
+                    models: ['DuraPlate Reefer'],
+                },
+                UTL: {
+                    make: 'Utility Trailer',
+                    models: ['3000R Reefer'],
+                },
+                HTL: {
+                    make: 'Hyundai Translead',
+                    models: ['Reefer'],
+                },
+                STG: {
+                    make: 'Stoughton Trailers',
+                    models: ['Reefer'],
+                },
+            },
+        },
+
+        flat: {
+            type: 'Flatbed',
+            vehicles: {
+                FON: {
+                    make: 'Fontaine Trailer',
+                    models: ['Revolution Flatbed', 'Infinity Flatbed'],
+                },
+                GDN: {
+                    make: 'Great Dane',
+                    models: ['Flatbed'],
+                },
+                MAN: {
+                    make: 'Manac',
+                    models: ['Standard Flatbed'],
+                },
+                TRK: {
+                    make: 'Trail King',
+                    models: ['Flatbed'],
+                },
+                EMF: {
+                    make: 'East Manufacturing',
+                    models: ['Flatbed'],
+                },
+                DON: {
+                    make: 'Doonan',
+                    models: ['Flatbed'],
+                },
+            },
+        },
+
+        step: {
+            type: 'Step Deck',
+            vehicles: {
+                FON: {
+                    make: 'Fontaine Trailer',
+                    models: ['Stepdeck'],
+                },
+                MAN: {
+                    make: 'Manac',
+                    models: ['Step Deck'],
+                },
+                TRK: {
+                    make: 'Trail King',
+                    models: ['Drop Deck'],
+                },
+                DON: {
+                    make: 'Doonan',
+                    models: ['Step Deck'],
+                },
+                LND: {
+                    make: 'Landoll',
+                    models: ['Step Deck'],
+                },
+            },
+        },
+
+        tanker: {
+            type: 'Tanker',
+            vehicles: {
+                PLR: {
+                    make: 'Polar Tank Trailer',
+                    models: ['Aluminum Petroleum Tanker', 'Aluminum Tank Trailer'],
+                },
+                HEI: {
+                    make: 'Heil Trailer',
+                    models: ['Tank Trailer'],
+                },
+                BRN: {
+                    make: 'Brenner Tank',
+                    models: ['Tank Trailer'],
+                },
+                MAC: {
+                    make: 'MAC Trailer',
+                    models: ['Tank Trailer'],
+                },
+            },
+        },
+
+        lowboy: {
+            type: 'Lowboy',
+            vehicles: {
+                TRK: {
+                    make: 'Trail King',
+                    models: ['Lowboy', 'Double Drop Lowboy'],
+                },
+                LND: {
+                    make: 'Landoll',
+                    models: ['Traveling Axle Lowboy'],
+                },
+                FON: {
+                    make: 'Fontaine Trailer',
+                    models: ['Magnitude Lowboy'],
+                },
+                XLS: {
+                    make: 'XL Specialized',
+                    models: ['Lowboy'],
+                },
+            },
+        },
+
+        carhaul: {
+            type: 'Car Hauler',
+            vehicles: {
+                COT: {
+                    make: 'Cottrell',
+                    models: ['Car Hauler'],
+                },
+                KFM: {
+                    make: 'Kaufman Trailers',
+                    models: ['Car Hauler'],
+                },
+                SCT: {
+                    make: 'Sun Country Trailers',
+                    models: ['Car Hauler'],
+                },
+                BMW: {
+                    make: 'Boydstun Metal Works',
+                    models: ['Car Hauler'],
+                },
+            },
+        },
+    };
 }
 
 class Van extends Vehicle {
